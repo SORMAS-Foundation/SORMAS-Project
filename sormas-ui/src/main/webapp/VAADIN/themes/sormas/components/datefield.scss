@@ -31,5 +31,11 @@
         display: none;
       }
     }
+   
+  	&.soft-required {
+  	  .v-datefield-textfield {
+	 	border-color: $v-selection-color;
+	  }
+	}
   }
 }  

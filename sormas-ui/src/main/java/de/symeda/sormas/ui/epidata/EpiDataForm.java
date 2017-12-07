@@ -79,10 +79,13 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		}
 		
 		OptionGroup burialAttendedField = addField(EpiDataDto.BURIAL_ATTENDED, OptionGroup.class);
+		CssStyles.style(burialAttendedField, CssStyles.ERROR_COLOR_PRIMARY);
 		EpiDataBurialsField burialsField = addField(EpiDataDto.BURIALS, EpiDataBurialsField.class);
 		OptionGroup gatheringAttendedField = addField(EpiDataDto.GATHERING_ATTENDED, OptionGroup.class);
+		CssStyles.style(gatheringAttendedField, CssStyles.ERROR_COLOR_PRIMARY);
 		EpiDataGatheringsField gatheringsField = addField(EpiDataDto.GATHERINGS, EpiDataGatheringsField.class);
 		OptionGroup traveledField = addField(EpiDataDto.TRAVELED, OptionGroup.class);
+		CssStyles.style(traveledField, CssStyles.ERROR_COLOR_PRIMARY);
 		EpiDataTravelsField travelsField = addField(EpiDataDto.TRAVELS, EpiDataTravelsField.class);
 		addField(EpiDataDto.RODENTS, OptionGroup.class);
 		addField(EpiDataDto.BATS, OptionGroup.class);

@@ -80,7 +80,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 	}
 	
 	@Override
-	protected void editEntry(EpiDataTravelDto entry, Consumer<EpiDataTravelDto> commitCallback) {
+	protected void editEntry(EpiDataTravelDto entry, boolean create, Consumer<EpiDataTravelDto> commitCallback) {
 		EpiDataTravelEditForm editForm = new EpiDataTravelEditForm();
 		editForm.setValue(entry);
 		

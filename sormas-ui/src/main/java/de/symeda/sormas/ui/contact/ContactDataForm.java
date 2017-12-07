@@ -132,10 +132,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
         	}
     	});
     	
-    	FieldHelper.makeFieldSoftRequired(lastContactDate, contactProximity, relationToCase);
+    	setRequired(true, ContactDto.CONTACT_CLASSIFICATION);
+    	FieldHelper.addSoftRequiredStyle(lastContactDate, contactProximity, relationToCase);
 	}
     
-    private void updateFollowUpStatusComponents() {
+    @SuppressWarnings("unchecked")
+	private void updateFollowUpStatusComponents() {
 
 		getContent().removeComponent(CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 		getContent().removeComponent(LOST_FOLLOW_UP_BTN_LOC);

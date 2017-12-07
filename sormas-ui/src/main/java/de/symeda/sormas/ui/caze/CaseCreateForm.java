@@ -49,17 +49,14 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     	
     	addField(CaseDataDto.DISEASE, ComboBox.class);
     	addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
-    	addField(CaseDataDto.PLAGUE_TYPE, ComboBox.class);
-    	
+    	ComboBox plagueType = addField(CaseDataDto.PLAGUE_TYPE, ComboBox.class);
     	addCustomField(FIRST_NAME, String.class, TextField.class);
     	addCustomField(LAST_NAME, String.class, TextField.class);
-
     	ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
     	ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
     	ComboBox community = addField(CaseDataDto.COMMUNITY, ComboBox.class);
 		community.setNullSelectionAllowed(true);
     	ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
-    	
     	TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
     	facilityDetails.setVisible(false);
     	
@@ -92,8 +89,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     	});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 
-    	setRequired(true, FIRST_NAME, LAST_NAME, CaseDataDto.DISEASE, 
-    			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
+    	setRequired(true, FIRST_NAME, LAST_NAME, CaseDataDto.DISEASE, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
+		FieldHelper.addSoftRequiredStyle(plagueType, community, facilityDetails);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), CaseDataDto.DISEASE, Arrays.asList(CaseDataDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));

@@ -73,6 +73,8 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @import "components/label.scss";
 @import "components/window.scss";
 @import "components/svg.scss";
+@import "components/customcomponent.scss";
+@import "components/textarea.scss";
 
 @import "views/view.scss";
 @import "views/about.scss";
@@ -111,6 +113,8 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-label;
   @include sormas-window;
   @include sormas-svg;
+  @include sormas-customcomponent;
+  @include sormas-textarea;
 
   @include sormas-view;
   @include sormas-about-view;

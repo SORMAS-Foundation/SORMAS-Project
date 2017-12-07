@@ -119,8 +119,8 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 	}
 	
 	@Override
-	protected void editEntry(EpiDataBurialDto entry, Consumer<EpiDataBurialDto> commitCallback) {
-		EpiDataBurialEditForm editForm = new EpiDataBurialEditForm();
+	protected void editEntry(EpiDataBurialDto entry, boolean create, Consumer<EpiDataBurialDto> commitCallback) {
+		EpiDataBurialEditForm editForm = new EpiDataBurialEditForm(create);
 		editForm.setValue(entry);
 		
 		final CommitDiscardWrapperComponent<EpiDataBurialEditForm> editView = new CommitDiscardWrapperComponent<EpiDataBurialEditForm>(editForm, editForm.getFieldGroup());

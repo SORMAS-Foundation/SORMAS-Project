@@ -46,7 +46,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			LayoutUtil.fluidRowLocs(TaskDto.TASK_STATUS)
 			;
 
-    public TaskEditForm() {
+    public TaskEditForm(boolean create) {
         super(TaskDto.class, TaskDto.I18N_PREFIX);
         addValueChangeListener(e -> {
     		updateByTaskContext();
@@ -54,6 +54,10 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
         });
         
         setWidth(680, Unit.PIXELS);
+        
+        if (create) {
+        	hideValidationUntilNextCommit();
+        }
     }
     
 	@Override
@@ -63,7 +67,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     	addField(TaskDto.EVENT, ComboBox.class);
     	addField(TaskDto.CONTACT, ComboBox.class);
     	addField(TaskDto.SUGGESTED_START, DateTimeField.class);
-    	addField(TaskDto.DUE_DATE, DateTimeField.class);
+    	DateTimeField dueDate = addField(TaskDto.DUE_DATE, DateTimeField.class);
+    	dueDate.setImmediate(true);
     	addField(TaskDto.PRIORITY, ComboBox.class);
     	OptionGroup taskStatus = addField(TaskDto.TASK_STATUS, OptionGroup.class);
     	OptionGroup taskContext = addField(TaskDto.TASK_CONTEXT, OptionGroup.class);
@@ -89,9 +94,11 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
     	assigneeUser.addValueChangeListener(e -> updateByCreatingAndAssignee());
     	assigneeUser.setImmediate(true);
 
-    	addField(TaskDto.CREATOR_COMMENT, TextArea.class).setRows(2);
+    	TextArea creatorComment = addField(TaskDto.CREATOR_COMMENT, TextArea.class);
+    	creatorComment.setRows(2);
+    	creatorComment.setImmediate(true);
     	addField(TaskDto.ASSIGNEE_REPLY, TextArea.class).setRows(2);
-    	
+
     	setRequired(true, TaskDto.TASK_CONTEXT, TaskDto.TASK_TYPE, TaskDto.ASSIGNEE_USER, TaskDto.DUE_DATE);
     	setReadOnly(true, TaskDto.TASK_CONTEXT, TaskDto.CAZE, TaskDto.CONTACT, TaskDto.EVENT);
     	

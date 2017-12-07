@@ -105,6 +105,9 @@ public final class CssStyles {
 	 */
 	public static final String FORCE_CAPTION = "force-caption";
 	public static final String CAPTION_HIDDEN = "caption-hidden";
+	
+	public static final String SOFT_REQUIRED = "soft-required";
+	public static final String ERROR_COLOR_PRIMARY = "error-color-primary";
 
 	public static final String ALIGN_CENTER = "align-center";
 	public static final String ALIGN_RIGHT = "align-right";
@@ -130,6 +133,12 @@ public final class CssStyles {
 	public static void style(Component component, String... styles) {
 		for (String style : styles)
 			component.addStyleName(style);
+	}
+	
+	public static void style(String style, Component... components) {
+		for (Component component : components) {
+			component.addStyleName(style);
+		}
 	}
 	
 	public static void removeStyles(Component component, String... styles) {

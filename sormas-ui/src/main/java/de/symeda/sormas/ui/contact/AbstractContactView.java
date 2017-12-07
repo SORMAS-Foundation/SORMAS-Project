@@ -26,7 +26,7 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(params);
-		contactRef = contact.toReference();	
+		contactRef = FacadeProvider.getContactFacade().getReferenceByUuid(contact.getUuid());
 		
 		menu.removeAllViews();
 		menu.addView(ContactsView.VIEW_NAME, "Contacts list");
@@ -35,7 +35,7 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 		menu.addView(ContactPersonView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON), params);
 		menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(ContactDto.I18N_PREFIX, "visits"), params);
 		
-		infoLabel.setValue(contact.toString());
+		infoLabel.setValue(contactRef.getCaption());
 		CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid());
 		infoLabelSub.setValue(
 				caseData.getDisease() != Disease.OTHER 

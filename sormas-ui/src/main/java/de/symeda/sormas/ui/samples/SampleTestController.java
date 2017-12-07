@@ -10,7 +10,6 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestFacade;
-import de.symeda.sormas.api.sample.SampleTestReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -30,7 +29,7 @@ public class SampleTestController {
 	}
 	
 	public void create(SampleReferenceDto sampleRef, SampleTestGrid grid) {
-		SampleTestEditForm createForm = new SampleTestEditForm();
+		SampleTestEditForm createForm = new SampleTestEditForm(true);
 		createForm.setValue(createNewSampleTest(sampleRef));
 		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(createForm, createForm.getFieldGroup());
 	
@@ -52,7 +51,7 @@ public class SampleTestController {
 		// get fresh data
 		SampleTestDto newDto = stf.getByUuid(dto.getUuid());
 		
-		SampleTestEditForm form = new SampleTestEditForm();
+		SampleTestEditForm form = new SampleTestEditForm(false);
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(form, form.getFieldGroup());
 

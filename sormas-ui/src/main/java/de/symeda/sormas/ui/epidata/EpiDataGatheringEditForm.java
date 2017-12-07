@@ -30,7 +30,7 @@ public class EpiDataGatheringEditForm extends AbstractEditForm<EpiDataGatheringD
 		addField(EpiDataGatheringDto.DESCRIPTION, TextArea.class).setRows(2);
 		addField(EpiDataGatheringDto.GATHERING_ADDRESS, LocationEditForm.class).setCaption(null);
 		
-		FieldHelper.makeFieldSoftRequired(gatheringDate);
+		FieldHelper.addSoftRequiredStyle(gatheringDate);
 	}
 	
 	@Override

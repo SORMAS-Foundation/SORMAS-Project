@@ -85,17 +85,28 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			);
 	
 	private final VerticalLayout statusChangeLayout;
+	private Boolean isCreateForm = null;
 	
-	public EventDataForm() {
+	public EventDataForm(boolean create) {
 		super(EventDto.class, EventDto.I18N_PREFIX);
+		isCreateForm = create;
+		if (create) {
+			hideValidationUntilNextCommit();
+		}
 		statusChangeLayout = new VerticalLayout();
 		statusChangeLayout.setSpacing(false);
 		statusChangeLayout.setMargin(false);
 		getContent().addComponent(statusChangeLayout, STATUS_CHANGE);
+		
+		addFields();
 	}
 
 	@Override
 	protected void addFields() {
+		if (isCreateForm == null) {
+			return;
+		}
+		
 		addField(EventDto.UUID, TextField.class);
 		addField(EventDto.EVENT_TYPE, OptionGroup.class);
 		addField(EventDto.DISEASE, ComboBox.class).setNullSelectionAllowed(true);
@@ -106,6 +117,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.EVENT_LOCATION, LocationEditForm.class).setCaption(null);
 
 		LocationEditForm locationForm = (LocationEditForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
+		if (isCreateForm) {
+			locationForm.hideValidationUntilNextCommit();
+		}
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 		ComboBox surveillanceOfficerField = addField(EventDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
@@ -139,8 +153,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			surveillanceOfficerField.addItems(assignableSurveillanceOfficers);
 		});
 		
-		FieldHelper.makeFieldSoftRequired(eventDate, typeOfPlace, surveillanceOfficerField);
-		FieldHelper.makeTextFieldSoftRequired(srcFirstName, srcLastName, srcTelNo);
+		FieldHelper.addSoftRequiredStyle(eventDate, typeOfPlace, surveillanceOfficerField, srcFirstName, srcLastName, srcTelNo);
 	}
 	
 	@Override

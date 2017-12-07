@@ -3,8 +3,6 @@ package de.symeda.sormas.ui.contact;
 import org.joda.time.LocalDate;
 
 import com.vaadin.data.Validator;
-import com.vaadin.data.fieldgroup.FieldGroup.CommitEvent;
-import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.validator.DateRangeValidator;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.ComboBox;
@@ -13,6 +11,7 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -21,7 +20,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -39,8 +37,6 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION),
 					LayoutUtil.fluidRowLocs(ContactDto.CONTACT_OFFICER, "")
 					);
-	private TextField firstNameField;
-	private TextField lastNameField;
 
     public ContactCreateForm() {
         super(ContactDto.class, ContactDto.I18N_PREFIX);
@@ -53,23 +49,24 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     @Override
 	protected void addFields() {
 
-    	firstNameField = addCustomField(FIRST_NAME, String.class, TextField.class);
-    	lastNameField = addCustomField(LAST_NAME, String.class, TextField.class);
+    	TextField firstName = addCustomField(FIRST_NAME, String.class, TextField.class);
+    	TextField lastName = addCustomField(LAST_NAME, String.class, TextField.class);
     	
-    	addField(ContactDto.CAZE, ComboBox.class)
-    		.addItems(FacadeProvider.getCaseFacade().getSelectableCases(LoginHelper.getCurrentUserAsReference()));
+    	ComboBox caze = addField(ContactDto.CAZE, ComboBox.class);
+    	caze.addItems(FacadeProvider.getCaseFacade().getSelectableCases(LoginHelper.getCurrentUserAsReference()));
 
     	DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
     	OptionGroup contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
+    	contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
     	addField(ContactDto.DESCRIPTION, TextArea.class).setRows(2);
     	ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
+    	
+    	CssStyles.style(CssStyles.SOFT_REQUIRED, firstName, lastName, caze, lastContactDate, contactProximity, relationToCase);
 
     	ComboBox contactOfficerField = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
     	contactOfficerField.setNullSelectionAllowed(true);
     	
     	setRequired(true, ContactDto.CAZE, FIRST_NAME, LAST_NAME);
-    	
-    	FieldHelper.makeFieldSoftRequired(lastContactDate, contactProximity, relationToCase);
     	
     	addValueChangeListener(e -> {
     		updateLastContactDateValidator();
@@ -83,19 +80,6 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     	});
     }
     
-    @Override
-    public void preCommit(CommitEvent commitEvent) throws CommitException {
-    	super.preCommit(commitEvent);
-    	
-    	// TODO replace with general logic that validates custom field pre commit
-    	if (firstNameField != null) {
-    		firstNameField.validate();
-    	}
-    	if (lastNameField != null) {
-    		lastNameField.validate();
-    	}
-    }
-    
     protected void updateLastContactDateValidator() {
     	Field<?> dateField = getField(ContactDto.LAST_CONTACT_DATE);
     	for (Validator validator : dateField.getValidators()) {
@@ -105,7 +89,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     	}
     	if (getValue() != null) {
 	    	dateField.addValidator(new DateRangeValidator("Date of last contact has to be before date of report",
-	    			null, new LocalDate(getValue().getReportDateTime()).plusDays(1).toDate(), Resolution.SECOND));
+	    			null, new LocalDate(getValue().getReportDateTime()).toDate(), Resolution.SECOND));
     	}
     }
     

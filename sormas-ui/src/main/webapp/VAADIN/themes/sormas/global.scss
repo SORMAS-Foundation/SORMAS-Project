@@ -14,6 +14,12 @@
   .force-caption {
 	margin-top: 1.5em;
   }
+ 
+  .hide-errorindicator {
+  	.v-errorindicator {
+  	  display: none;
+  	}
+  }
   
   .v-widget.v-textfield,
   .v-widget.v-textarea,

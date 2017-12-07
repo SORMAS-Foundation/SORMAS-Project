@@ -15,6 +15,15 @@ $v-textfield-background-color--readonly: $v-app-background-color !default;
       height: inherit;
     }
    
+    &.soft-required {
+  	  border-color: $v-selection-color;
+	}
+
+	&.error-color-primary {
+	  &.v-textfield-error {
+	  	border-color: $v-selection-color !important;
+	  }
+    }
   }
 
   // Hide spinner buttons from number input

@@ -13,7 +13,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
-import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -74,7 +73,7 @@ public class EventController {
 	}
 	
 	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent() {
-		EventDataForm eventCreateForm = new EventDataForm();
+		EventDataForm eventCreateForm = new EventDataForm(true);
 		eventCreateForm.setValue(createNewEvent());
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventCreateForm, eventCreateForm.getFieldGroup());
 		
@@ -94,7 +93,7 @@ public class EventController {
 	}
 	
 	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid) {
-		EventDataForm eventEditForm = new EventDataForm();
+		EventDataForm eventEditForm = new EventDataForm(false);
 		EventDto event = findEvent(eventUuid);
 		eventEditForm.setValue(event);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventEditForm, eventEditForm.getFieldGroup());

@@ -45,6 +45,26 @@
 	    }
 	  }
 		
+	  &.soft-required {
+	  	.v-radiobutton {
+		  border-color: $v-selection-color;
+        }
+      }
+     
+      &.error-color-primary {
+	  	&.v-select-optiongroup-error {
+	  	  .v-radiobutton {
+	  	  	border-color: $v-selection-color !important;
+	  	  }
+	  	}
+      }
+     
+      &.v-select-optiongroup-error {
+	  	.v-radiobutton {
+	  	  border-color: $v-error-indicator-color;
+	  	}
+	  }
+		
 	  &.v-select-optiongroup-caption-inline {
 	  	text-align: right;
 	  }
@@ -62,12 +82,21 @@
 	  	  }
 		}
   	  }
-  
-	  &.v-select-optiongroup-error {
-	  	.v-radiobutton {
-	  	  border-color: $v-error-indicator-color;
-	  	}
+  }
+ 
+  .v-select-optiongroup {
+  	
+ 	&.soft-required {
+	  .v-radiobutton {
+	 	& > input {
+	  	  & ~ label:before,
+	      & ~ label:after {
+		    border-color: $v-selection-color;
+		  }
+        }
 	  }
+    }
+   
   }
 
   .v-caption-caption-inline {
@@ -79,5 +108,4 @@
     text-transform: none;
   }
  
-  
 }

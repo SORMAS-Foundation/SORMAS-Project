@@ -1,0 +1,22 @@
+
+@mixin sormas-customcomponent {
+	
+	.v-customcomponent {
+	
+	  &.soft-required {
+  	  	.v-datefield-textfield,
+  	  	.v-filterselect-input {
+	 	  border-color: $v-selection-color;
+	  	}
+	  }
+	 
+	  &.v-customcomponent-error {
+	  	.v-datefield-textfield,
+	  	.v-filterselect-input {
+	  	  border-color: $v-error-indicator-color;
+	  	}
+	  }
+	
+	}
+
+}	

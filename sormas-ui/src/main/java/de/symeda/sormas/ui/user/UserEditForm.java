@@ -41,11 +41,15 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 					LayoutUtil.fluidRowLocs(UserDto.REGION, UserDto.DISTRICT),
 					LayoutUtil.fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY)
 					);
-
-    public UserEditForm() {
+    
+    public UserEditForm(boolean create) {
         super(UserDto.class, UserDto.I18N_PREFIX);
 
         setWidth(640, Unit.PIXELS);
+        
+        if (create) {
+        	hideValidationUntilNextCommit();
+        }
     }
 
     @Override
@@ -96,7 +100,6 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 
-    	
     	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);
     	addValidators(UserDto.USER_NAME, new UserNameValidator());
     	
@@ -118,7 +121,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	// associated officer
     	ComboBox associatedOfficer = (ComboBox)getFieldGroup().getField(UserDto.ASSOCIATED_OFFICER);
     	associatedOfficer.setVisible(isInformant);
-    	associatedOfficer.setRequired(isInformant);
+    	setRequired(isInformant, UserDto.ASSOCIATED_OFFICER);
     	if (!isInformant) {
     		associatedOfficer.clear();
     	}
@@ -126,7 +129,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	// health facility
     	ComboBox healthFacility = (ComboBox)getFieldGroup().getField(UserDto.HEALTH_FACILITY);
     	healthFacility.setVisible(isInformant);
-    	healthFacility.setRequired(isInformant);
+    	setRequired(isInformant, UserDto.HEALTH_FACILITY);
     	if (!isInformant) {
     		healthFacility.clear();
     	}
@@ -134,7 +137,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	// laboratory
     	ComboBox laboratory = (ComboBox)getFieldGroup().getField(UserDto.LABORATORY);
     	laboratory.setVisible(isLabUser);
-    	laboratory.setRequired(isLabUser);
+    	setRequired(isLabUser, UserDto.LABORATORY);
     	if (!isLabUser) {
     		laboratory.clear();
     	}
@@ -142,7 +145,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	ComboBox region = (ComboBox)getFieldGroup().getField(UserDto.REGION);
     	boolean useRegion = isSupervisor || isInformant || isOfficer;
     	region.setVisible(useRegion);
-    	region.setRequired(useRegion);
+    	setRequired(useRegion, UserDto.REGION);
     	if (!useRegion) {
     		region.clear();
     	}
@@ -150,7 +153,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	ComboBox district = (ComboBox)getFieldGroup().getField(UserDto.DISTRICT);
     	boolean useDistrict = isInformant || isOfficer;
     	district.setVisible(useDistrict);
-    	district.setRequired(useDistrict);
+    	setRequired(useDistrict, UserDto.DISTRICT);
     	if (!useDistrict) {
     		district.clear();
     	}

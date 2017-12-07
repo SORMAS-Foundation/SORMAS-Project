@@ -101,17 +101,18 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				"The EPID number does not match the required pattern. You may still save the case and enter the correct number later."));
 		epidField.addValidator(new StringLengthValidator("An EPID number has to be provided. You may still save the case and enter the correct number later.", 1, null, false));
 		epidField.setInvalidCommitted(true);
+		CssStyles.style(epidField, CssStyles.ERROR_COLOR_PRIMARY);
 
 		addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
 		addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
-		AbstractSelect diseaseField = addField(CaseDataDto.DISEASE, ComboBox.class);
+		ComboBox diseaseField = addField(CaseDataDto.DISEASE, ComboBox.class);
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
-		addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
+		OptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
 		TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 
 		addField(CaseDataDto.REGION, ComboBox.class);
 		ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
-		addField(CaseDataDto.COMMUNITY, ComboBox.class);
+		ComboBox community = addField(CaseDataDto.COMMUNITY, ComboBox.class);
 		ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
 
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
@@ -127,8 +128,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, OptionGroup.class);
 		addField(CaseDataDto.SMALLPOX_VACCINATION_DATE, DateField.class);
 
-		setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS,
-				CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
+		setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.DISEASE, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
+		FieldHelper.addSoftRequiredStyle(plagueType, community, surveillanceOfficerField);
 
 		setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER,
 				CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.REGION,

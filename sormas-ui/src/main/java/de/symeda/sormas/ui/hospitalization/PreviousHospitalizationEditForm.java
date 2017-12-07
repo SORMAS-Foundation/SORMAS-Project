@@ -17,7 +17,6 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHospitalizationDto> {
 
-
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.ADMISSION_DATE, PreviousHospitalizationDto.DISCHARGE_DATE)+
 			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT)+
@@ -26,10 +25,14 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.DESCRIPTION)
 			;
 
-	public PreviousHospitalizationEditForm() {
+	public PreviousHospitalizationEditForm(boolean create) {
 		super(PreviousHospitalizationDto.class, PreviousHospitalizationDto.I18N_PREFIX);
 
 		setWidth(540, Unit.PIXELS);
+		
+		if (create) {
+			hideValidationUntilNextCommit();
+		}
 	}
 
 	@Override
@@ -37,7 +40,6 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 
 		DateField admissionDate = addField(PreviousHospitalizationDto.ADMISSION_DATE, DateField.class);
 		DateField dischargeDate = addField(PreviousHospitalizationDto.DISCHARGE_DATE, DateField.class);
-		FieldHelper.makeFieldSoftRequired(admissionDate, dischargeDate);
 		addField(PreviousHospitalizationDto.ISOLATED, OptionGroup.class);
 		addField(PreviousHospitalizationDto.DESCRIPTION, TextArea.class).setRows(2);
 
@@ -78,6 +80,7 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 
 		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 
+		FieldHelper.addSoftRequiredStyle(admissionDate, dischargeDate, facilityCommunity);
 		setRequired(true,
 				PreviousHospitalizationDto.REGION,
 				PreviousHospitalizationDto.DISTRICT,

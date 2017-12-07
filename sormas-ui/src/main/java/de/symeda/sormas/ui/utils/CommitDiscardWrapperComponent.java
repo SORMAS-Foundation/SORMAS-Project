@@ -23,7 +23,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -494,7 +493,7 @@ VerticalLayout implements Buffered {
 						// Alle nochmal
 						for (int i = 0; i < causes.length; i++) {
 							if (!causes[i].isInvisible()) {
-								htmlMsg.append("<li>").append(findHtmlMessage(causes[i])).append("</li>");
+								htmlMsg.append("<li style=\"color: #FFF;\">").append(findHtmlMessage(causes[i])).append("</li>");
 							}
 						}
 						htmlMsg.append("</ul>");

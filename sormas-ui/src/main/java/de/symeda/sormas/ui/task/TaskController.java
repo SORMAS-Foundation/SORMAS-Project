@@ -56,7 +56,7 @@ public class TaskController {
 	}
 
 	public void create(TaskContext context, ReferenceDto entityRef, TaskGrid grid) {
-		TaskEditForm createForm = new TaskEditForm();
+		TaskEditForm createForm = new TaskEditForm(true);
 		createForm.setValue(createNewTask(context, entityRef));
 		final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(createForm, createForm.getFieldGroup());
 
@@ -75,7 +75,7 @@ public class TaskController {
 	}
 
 	public void createSampleCollectionTask(TaskContext context, ReferenceDto entityRef, SampleDto sample) {
-		TaskEditForm createForm = new TaskEditForm();
+		TaskEditForm createForm = new TaskEditForm(true);
 		TaskDto taskDto = createNewTask(context, entityRef);
 		taskDto.setTaskType(TaskType.SAMPLE_COLLECTION);
 		taskDto.setCreatorComment(sample.getNoTestPossibleReason());
@@ -100,7 +100,7 @@ public class TaskController {
 		// get fresh data
 		TaskDto newDto = FacadeProvider.getTaskFacade().getByUuid(dto.getUuid());
 
-		TaskEditForm form = new TaskEditForm();
+		TaskEditForm form = new TaskEditForm(false);
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(form, form.getFieldGroup());
 

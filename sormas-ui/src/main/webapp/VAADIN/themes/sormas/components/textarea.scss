@@ -1,0 +1,10 @@
+
+@mixin sormas-textarea {
+	
+	.v-textarea {
+	  &.soft-required {
+  	  	border-color: $v-selection-color;
+	  }
+	}
+
+}

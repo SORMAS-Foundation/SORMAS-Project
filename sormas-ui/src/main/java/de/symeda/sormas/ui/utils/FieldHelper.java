@@ -3,14 +3,10 @@ package de.symeda.sormas.ui.utils;
 import java.util.Arrays;
 import java.util.List;
 
-import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.validator.NullValidator;
-import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Field;
-import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -127,12 +123,6 @@ public final class FieldHelper {
 		setRequiredWhen(fieldGroup, fieldGroup.getField(sourcePropertyId), targetPropertyIds, sourceValues);
 	}
 	
-	public static void setSoftRequiredWhen(FieldGroup fieldGroup, Object sourcePropertyId,
-			List<String> targetPropertyIds, final List<Object> sourceValues) {
-		
-		setRequiredWhen(fieldGroup, fieldGroup.getField(sourcePropertyId), targetPropertyIds, sourceValues);
-	}
-	
 	@SuppressWarnings("rawtypes")
 	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField,
 			List<String> targetPropertyIds, final List<Object> sourceValues) {
@@ -147,35 +137,8 @@ public final class FieldHelper {
 			for(Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				targetField.setRequired(required);
-			}
-		}
-		
-		sourceField.addValueChangeListener(event -> {
-			boolean required = sourceValues.contains(event.getProperty().getValue());
-			for(Object targetPropertyId : targetPropertyIds) {
-				Field targetField = fieldGroup.getField(targetPropertyId);
-				targetField.setRequired(required);
-			}
-		});
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public static void setSoftRequiredWhen(FieldGroup fieldGroup, Field sourceField,
-			List<String> targetPropertyIds, final List<Object> sourceValues) {
-		
-		if(sourceField instanceof AbstractField<?>) {
-			((AbstractField) sourceField).setImmediate(true);
-		}
-		
-		// initialize
-		{
-			boolean required = sourceValues.contains(sourceField.getValue());
-			for(Object targetPropertyId : targetPropertyIds) {
-				Field targetField = fieldGroup.getField(targetPropertyId);
 				if (required) {
-					makeFieldSoftRequired(targetField);
-				} else {
-					removeSoftRequirement(targetField);
+					addSoftRequiredStyle(targetField);
 				}
 			}
 		}
@@ -184,10 +147,11 @@ public final class FieldHelper {
 			boolean required = sourceValues.contains(event.getProperty().getValue());
 			for(Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
+				targetField.setRequired(required);
 				if (required) {
-					makeFieldSoftRequired(targetField);
+					addSoftRequiredStyle(targetField);
 				} else {
-					removeSoftRequirement(targetField);
+					removeSoftRequiredStyle(targetField);
 				}
 			}
 		});
@@ -213,6 +177,7 @@ public final class FieldHelper {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
 					targetField.setRequired(required);
+					addSoftRequiredStyle(targetField);
 				}
 			}
 		}
@@ -223,44 +188,9 @@ public final class FieldHelper {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
 					targetField.setRequired(required);
-				}
-			}
-		});
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public static void setSoftRequiredWhen(FieldGroup fieldGroup, Field sourceField, 
-			List<String> targetPropertyIds, final List<Object> sourceValues, Disease disease) {
-		
-		if(sourceField instanceof AbstractField<?>) {
-			((AbstractField) sourceField).setImmediate(true);
-		}
-		
-		// initialize
-		{
-			boolean required = sourceValues.contains(sourceField.getValue());
-			for(Object targetPropertyId : targetPropertyIds) {
-				Field targetField = fieldGroup.getField(targetPropertyId);
-				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
-					if (required) {
-						makeFieldSoftRequired(targetField);
-					} else {
-						removeSoftRequirement(targetField);
-					}
-				}
-			}
-		}
-		
-		sourceField.addValueChangeListener(event -> {
-			boolean required = sourceValues.contains(event.getProperty().getValue());
-			for(Object targetPropertyId : targetPropertyIds) {
-				Field targetField = fieldGroup.getField(targetPropertyId);
-				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
-					if (required) {
-						makeFieldSoftRequired(targetField);
-					} else {
-						removeSoftRequirement(targetField);
-					}
+					addSoftRequiredStyle(targetField);
+				} else {
+					removeSoftRequiredStyle(targetField);
 				}
 			}
 		});
@@ -333,56 +263,86 @@ public final class FieldHelper {
 		select.setReadOnly(readOnly);
 	}
 	
-	public static void makeFieldSoftRequired(Field<?> ...fields) {
+	public static void addSoftRequiredStyle(Field<?> ...fields) {
 		for (Field<?> field : fields) {
-			boolean alreadySoftRequired = false;
-			for (Validator validator : field.getValidators()) {
-				if (validator instanceof NullValidator) {
-					alreadySoftRequired = true;
-					break;
-				}
-			}
-			if (!alreadySoftRequired) {
-				field.addValidator(new NullValidator("Please fill in this field if possible. You can still save without doing so.", false));
-				field.setInvalidCommitted(true);
+			if (!field.getStyleName().contains(CssStyles.SOFT_REQUIRED)) {
+				CssStyles.style(field, CssStyles.SOFT_REQUIRED);
 			}
 		}
 	}
 	
-	public static void makeTextFieldSoftRequired(TextField ...fields) {
-		for (TextField field : fields) {
-			boolean alreadySoftRequired = false;
-			for (Validator validator : field.getValidators()) {
-				if (validator instanceof StringLengthValidator) {
-					alreadySoftRequired = true;
-					break;
-				}
-			}
-			if (!alreadySoftRequired) {
-				field.addValidator(new StringLengthValidator("Please fill in this field if possible. You can still save without doing so.", 1, null, false));
-				field.setInvalidCommitted(true);
-			}
-		}
-	}
-	
-	public static void removeSoftRequirement(Field<?> ...fields) {
+	public static void removeSoftRequiredStyle(Field<?> ...fields) {
 		for (Field<?> field : fields) {
-			for (Validator validator : field.getValidators()) {
-				if (validator instanceof NullValidator) {
-					field.removeValidator(validator);
-				}
-			}
-		}
-	}
-	
-	public static void removeSoftRequirement(TextField ...fields) {
-		for (TextField field : fields) {
-			for (Validator validator : field.getValidators()) {
-				if (validator instanceof StringLengthValidator) {
-					field.removeValidator(validator);
-				}
-			}
+	    	CssStyles.removeStyles(field, CssStyles.SOFT_REQUIRED);
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
+	public static void addSoftRequiredStyleWhen(Field<?> sourceField, List<Field<?>> targetFields, final List<Object> sourceValues) {	
+		if(sourceField instanceof AbstractField<?>) {
+			((AbstractField) sourceField).setImmediate(true);
+		}
+		
+		// initialize
+		{
+			boolean softRequired = sourceValues.contains(sourceField.getValue());
+			for(Field<?> targetField : targetFields) {
+				if (softRequired) {
+					addSoftRequiredStyle(targetField);
+				} else {
+					removeSoftRequiredStyle(targetField);
+				}
+			}
+		}
+		
+		sourceField.addValueChangeListener(event -> {
+			boolean softRequired = sourceValues.contains(event.getProperty().getValue());
+			for(Field<?> targetField : targetFields) {
+				if (softRequired) {
+					addSoftRequiredStyle(targetField);
+				} else {
+					removeSoftRequiredStyle(targetField);
+				}
+			}
+		});
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static void addSoftRequiredStyleWhen(FieldGroup fieldGroup, Field sourceField, 
+			List<String> targetPropertyIds, final List<Object> sourceValues, Disease disease) {
+		
+		if(sourceField instanceof AbstractField<?>) {
+			((AbstractField) sourceField).setImmediate(true);
+		}
+		
+		// initialize
+		{
+			boolean required = sourceValues.contains(sourceField.getValue());
+			for(Object targetPropertyId : targetPropertyIds) {
+				Field targetField = fieldGroup.getField(targetPropertyId);
+				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
+					if (required) {
+						addSoftRequiredStyle(targetField);
+					} else {
+						removeSoftRequiredStyle(targetField);
+					}
+				}
+			}
+		}
+		
+		sourceField.addValueChangeListener(event -> {
+			boolean required = sourceValues.contains(event.getProperty().getValue());
+			for(Object targetPropertyId : targetPropertyIds) {
+				Field targetField = fieldGroup.getField(targetPropertyId);
+				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
+					if (required) {
+						addSoftRequiredStyle(targetField);
+					} else {
+						removeSoftRequiredStyle(targetField);
+					}
+				}
+			}
+		});
+	}
+	
 }

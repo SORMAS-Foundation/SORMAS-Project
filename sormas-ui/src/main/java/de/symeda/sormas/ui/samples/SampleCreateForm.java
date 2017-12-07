@@ -47,6 +47,8 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 	
 	public SampleCreateForm() {
 		super(SampleDto.class, SampleDto.I18N_PREFIX);
+		
+		hideValidationUntilNextCommit();
 	}
 	
 	@Override
@@ -76,7 +78,7 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL, Arrays.asList(SampleDto.SAMPLE_MATERIAL_TEXT), Arrays.asList(SampleMaterial.OTHER));
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SPECIMEN_CONDITION, Arrays.asList(SampleDto.NO_TEST_POSSIBLE_REASON), Arrays.asList(SpecimenCondition.NOT_ADEQUATE));
 		
-		setRequired(true, SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL, SampleDto.LAB, SampleDto.SHIPMENT_DATE);
+		setRequired(true, SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL, SampleDto.LAB);
 		
 		addValueChangeListener(e -> {
 			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getAssociatedCase().getUuid());

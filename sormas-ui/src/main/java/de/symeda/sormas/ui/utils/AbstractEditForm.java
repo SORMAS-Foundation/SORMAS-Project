@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +50,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	private Class<DTO> type;
 
 	private boolean hideValidationUntilNextCommit = false;
+	private List<Field<?>> customFields = new ArrayList<>();
 	
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix) {
 	
@@ -180,7 +182,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		// TODO find a better way to do this.
 		// Calling it at the end of addFields does not work, because value changes might make certain fields editable again.
 		if (!LoginHelper.hasUserRight(UserRight.EDIT)) {
-			for (Field field : getFieldGroup().getFields()) {
+			for (Field<?> field : getFieldGroup().getFields()) {
 				field.setReadOnly(true);
 			}
 		}
@@ -225,6 +227,17 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 					abstractField.setValidationVisible(true);
 				}
 			}
+			
+			for (Field<?> field : customFields) {
+				if (field instanceof AbstractField) {
+					AbstractField<?> abstractField = (AbstractField<?>)field;
+					abstractField.setValidationVisible(true);
+				}
+			}
+		}
+		
+		for (Field<?> field : customFields) {
+			field.validate();
 		}
 	}
 	
@@ -275,6 +288,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
     	T field = getFieldGroup().getFieldFactory().createField(dataType, fieldType);
 		formatField(field, fieldId);
 		getContent().addComponent(field, fieldId);
+		customFields.add(field);
 		return field;
 	}
 
@@ -352,7 +366,13 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	
 	protected void setRequired(boolean required, String ...fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
-			getField(propertyId).setRequired(required);
+			Field<?> field = getField(propertyId);
+			field.setRequired(required);
+			if (required) {
+				FieldHelper.addSoftRequiredStyle(field);
+			} else {
+				FieldHelper.removeSoftRequiredStyle(field);
+			}
 		}
 	}
 
@@ -383,6 +403,11 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			}
 		}
 		
-		// TODO go through custom fields as well
+		for (Field<?> field : customFields) {
+			if (field instanceof AbstractField) {
+				AbstractField<?> abstractField = (AbstractField<?>)field;
+				abstractField.setValidationVisible(false);
+			}
+		}
 	}
 }

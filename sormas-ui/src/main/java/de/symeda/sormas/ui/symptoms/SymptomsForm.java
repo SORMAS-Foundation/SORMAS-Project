@@ -91,6 +91,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 	public SymptomsForm(Disease disease, SymptomsContext symptomsContext) {
 		super(SymptomsDto.class, SymptomsDto.I18N_PREFIX);
+        hideValidationUntilNextCommit();
 		this.disease = disease;
 		this.symptomsContext = symptomsContext;
 		if (disease == null || symptomsContext == null) {
@@ -290,9 +291,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 	public void initializeSymptomRequirementsForVisit(OptionGroup visitStatus) {
 		FieldHelper.setRequiredWhen(getFieldGroup(), visitStatus, unconditionalSymptomFieldIds, Arrays.asList(VisitStatus.COOPERATIVE), disease);
-		FieldHelper.setSoftRequiredWhen(getFieldGroup(), visitStatus, Arrays.asList(SymptomsDto.TEMPERATURE, SymptomsDto.TEMPERATURE_SOURCE), Arrays.asList(VisitStatus.COOPERATIVE), disease);
-		setSoftRequiredWhenSymptomaticAndCooperative(getFieldGroup(), SymptomsDto.ONSET_DATE, unconditionalSymptomFieldIds, Arrays.asList(SymptomState.YES), visitStatus);
-		setSoftRequiredWhenSymptomaticAndCooperative(getFieldGroup(), SymptomsDto.ONSET_SYMPTOM, unconditionalSymptomFieldIds, Arrays.asList(SymptomState.YES), visitStatus);
+		FieldHelper.addSoftRequiredStyleWhen(getFieldGroup(), visitStatus, Arrays.asList(SymptomsDto.TEMPERATURE, SymptomsDto.TEMPERATURE_SOURCE), Arrays.asList(VisitStatus.COOPERATIVE), disease);
+		addSoftRequiredStyleWhenSymptomaticAndCooperative(getFieldGroup(), SymptomsDto.ONSET_DATE, unconditionalSymptomFieldIds, Arrays.asList(SymptomState.YES), visitStatus);
+		addSoftRequiredStyleWhenSymptomaticAndCooperative(getFieldGroup(), SymptomsDto.ONSET_SYMPTOM, unconditionalSymptomFieldIds, Arrays.asList(SymptomState.YES), visitStatus);
 		getFieldGroup().getField(SymptomsDto.FEVER).addValidator(new Validator() {
 			@Override
 			public void validate(Object value) throws InvalidValueException {
@@ -308,14 +309,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	}	
 
 	public void initializeSymptomRequirementsForCase() {
-		setSoftRequiredWhenSymptomatic(getFieldGroup(), SymptomsDto.ONSET_DATE, unconditionalSymptomFieldIds, Arrays.asList(SymptomState.YES));
-		setSoftRequiredWhenSymptomatic(getFieldGroup(), SymptomsDto.ONSET_SYMPTOM, unconditionalSymptomFieldIds, Arrays.asList(SymptomState.YES));
-		setSoftRequiredWhenSymptomatic(getFieldGroup(), SymptomsDto.PATIENT_ILL_LOCATION, unconditionalSymptomFieldIds, Arrays.asList(SymptomState.YES));
-	}
-
-	private void setSoftRequiredWhenSymptomatic(FieldGroup fieldGroup, Object targetPropertyId, List<String> sourcePropertyIds, 
-			List<Object> sourceValues) {
-		setSoftRequiredWhenSymptomaticAndCooperative(fieldGroup, targetPropertyId, sourcePropertyIds, sourceValues, null);
+		addSoftRequiredStyleWhenSymptomaticAndCooperative(getFieldGroup(), SymptomsDto.ONSET_DATE, unconditionalSymptomFieldIds, Arrays.asList(SymptomState.YES), null);
+		addSoftRequiredStyleWhenSymptomaticAndCooperative(getFieldGroup(), SymptomsDto.ONSET_SYMPTOM, unconditionalSymptomFieldIds, Arrays.asList(SymptomState.YES), null);
+		addSoftRequiredStyleWhenSymptomaticAndCooperative(getFieldGroup(), SymptomsDto.PATIENT_ILL_LOCATION, unconditionalSymptomFieldIds, Arrays.asList(SymptomState.YES), null);
 	}
 
 	/**
@@ -324,7 +320,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	 * be called with visitStatusField set to null in order to ignore the visit status requirement.
 	 */
 	@SuppressWarnings("rawtypes")
-	private void setSoftRequiredWhenSymptomaticAndCooperative(FieldGroup fieldGroup, Object targetPropertyId,
+	private void addSoftRequiredStyleWhenSymptomaticAndCooperative(FieldGroup fieldGroup, Object targetPropertyId,
 			List<String> sourcePropertyIds, List<Object> sourceValues, OptionGroup visitStatusField) {
 
 		for(Object sourcePropertyId : sourcePropertyIds) {
@@ -343,15 +339,15 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		if(visitStatusField != null) {
 			if (isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues) && 
 					visitStatusField.getValue() == VisitStatus.COOPERATIVE) {
-				FieldHelper.makeFieldSoftRequired(targetField);
+				FieldHelper.addSoftRequiredStyle(targetField);
 			} else {
-				FieldHelper.removeSoftRequirement(targetField);
+				FieldHelper.removeSoftRequiredStyle(targetField);
 			}
 		} else {
 			if (isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues)) {
-				FieldHelper.makeFieldSoftRequired(targetField);
+				FieldHelper.addSoftRequiredStyle(targetField);
 			} else {
-				FieldHelper.removeSoftRequirement(targetField);
+				FieldHelper.removeSoftRequiredStyle(targetField);
 			}
 		}
 
@@ -362,15 +358,15 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				if(visitStatusField != null) {
 					if (isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues) &&
 							visitStatusField.getValue() == VisitStatus.COOPERATIVE) {
-						FieldHelper.makeFieldSoftRequired(targetField);
+						FieldHelper.addSoftRequiredStyle(targetField);
 					} else {
-						FieldHelper.removeSoftRequirement(targetField);
+						FieldHelper.removeSoftRequiredStyle(targetField);
 					}
 				} else {
 					if (isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues)) {
-						FieldHelper.makeFieldSoftRequired(targetField);
+						FieldHelper.addSoftRequiredStyle(targetField);
 					} else {
-						FieldHelper.removeSoftRequirement(targetField);
+						FieldHelper.removeSoftRequiredStyle(targetField);
 					}
 				}
 			});
@@ -382,9 +378,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
 					if (isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues) &&
 							visitStatusField.getValue() == VisitStatus.COOPERATIVE) {
-						FieldHelper.makeFieldSoftRequired(targetField);
+						FieldHelper.addSoftRequiredStyle(targetField);
 					} else {
-						FieldHelper.removeSoftRequirement(targetField);
+						FieldHelper.removeSoftRequiredStyle(targetField);
 					}
 				}
 			});

@@ -20,6 +20,8 @@ public class EventParticipantCreateForm extends AbstractEditForm<EventParticipan
 		super(EventParticipantDto.class, EventParticipantDto.I18N_PREFIX);
 		
         setWidth(540, Unit.PIXELS);
+        
+        hideValidationUntilNextCommit();
 	}
 	
 	@Override

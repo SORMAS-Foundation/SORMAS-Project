@@ -33,7 +33,7 @@ public class VisitController {
 	public void editVisit(VisitReferenceDto visitRef, Consumer<VisitReferenceDto> doneConsumer) {
     	VisitDto dto = FacadeProvider.getVisitFacade().getVisitByUuid(visitRef.getUuid());
     	VisitReferenceDto referenceDto = dto.toReference();
-    	VisitEditForm editForm = new VisitEditForm(dto.getDisease(), null);
+    	VisitEditForm editForm = new VisitEditForm(dto.getDisease(), null, false);
         editForm.setValue(dto);
         final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(editForm, editForm.getFieldGroup());
         editView.setWidth(100, Unit.PERCENTAGE);
@@ -72,7 +72,7 @@ public class VisitController {
 
 	public void createVisit(ContactReferenceDto contactRef, Consumer<VisitReferenceDto> doneConsumer) {
 		VisitDto visit = createNewVisit(contactRef);
-    	VisitEditForm createForm = new VisitEditForm(visit.getDisease(), FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid()));
+    	VisitEditForm createForm = new VisitEditForm(visit.getDisease(), FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid()), true);
         createForm.setValue(visit);
         final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(createForm, createForm.getFieldGroup());
         

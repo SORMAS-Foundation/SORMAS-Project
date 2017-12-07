@@ -27,10 +27,14 @@ public class SampleTestEditForm extends AbstractEditForm<SampleTestDto> {
 			LayoutUtil.fluidRowLocs(SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") +
 			LayoutUtil.fluidRowLocs(SampleTestDto.TEST_RESULT_TEXT);
 	
-	public SampleTestEditForm() {
+	public SampleTestEditForm(boolean create) {
 		super(SampleTestDto.class, SampleTestDto.I18N_PREFIX);
 		
         setWidth(600, Unit.PIXELS);
+        
+        if (create) {
+        	hideValidationUntilNextCommit();
+        }
 	}
 	
 	@Override

@@ -31,5 +31,11 @@
         display: none;
       }
     }
+   
+   	&.soft-required {
+  	  .v-filterselect-input {
+		border-color: $v-selection-color;
+	  }
+	}
   }
 }
