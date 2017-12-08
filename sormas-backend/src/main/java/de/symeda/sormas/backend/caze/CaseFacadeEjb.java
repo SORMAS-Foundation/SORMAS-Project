@@ -150,7 +150,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseIndexDto> getIndexList(String userUuid) {
+	public List<CaseIndexDto> getIndexList(String userUuid, UserRole reportingUserRole) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
@@ -160,6 +160,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, District> district = caze.join(Case.DISTRICT, JoinType.LEFT);
 		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Join<Case, User> surveillanceOfficer = caze.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
+		Join<Case, User> reportingUser = caze.join(Case.REPORTING_USER, JoinType.LEFT);
 
 		cq.multiselect(caze.get(Case.CREATION_DATE), caze.get(Case.CHANGE_DATE), caze.get(Case.UUID), 
 				caze.get(Case.EPID_NUMBER), person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME),
@@ -170,6 +171,16 @@ public class CaseFacadeEjb implements CaseFacade {
 			
 		User user = userService.getByUuid(userUuid);		
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		
+		if (reportingUserRole != null) {
+			Predicate userRoleFilter = cb.isMember(reportingUserRole, reportingUser.get(User.USER_ROLES));
+			if (filter != null) {
+				filter = cb.and(filter, userRoleFilter);
+			} else {
+				filter = userRoleFilter;
+			}
+		}
+		
 		if (filter != null) {
 			cq.where(filter);
 		}

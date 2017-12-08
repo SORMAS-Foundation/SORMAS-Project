@@ -132,6 +132,10 @@ public class CaseGrid extends Grid {
 	        getContainer().addContainerFilter(filter);
 		}
 	}
+    
+    public void setReportedByFilter(UserRole reportingUserRole) {
+    	reload(reportingUserRole);
+    }
 
 	public void setClassificationFilter(CaseClassification classficiation) {
 		getContainer().removeContainerFilters(CaseIndexDto.CASE_CLASSIFICATION);
@@ -184,10 +188,10 @@ public class CaseGrid extends Grid {
         return (BeanItemContainer<CaseIndexDto>) container.getWrappedContainer();
     }
     
-    public void reload() {
-    	List<CaseIndexDto> cases = ControllerProvider.getCaseController().getCaseIndexList();
+    public void reload(UserRole reportingUserRole) {
+    	List<CaseIndexDto> cases = ControllerProvider.getCaseController().getCaseIndexList(reportingUserRole);
         getContainer().removeAllItems();
-        getContainer().addAll(cases);    	
+        getContainer().addAll(cases);
     }
 }
 

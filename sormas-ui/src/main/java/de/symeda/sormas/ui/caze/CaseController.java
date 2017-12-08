@@ -152,9 +152,9 @@ public class CaseController {
                 + fragmentParameter, false);
     }
 
-    public List<CaseIndexDto> getCaseIndexList() {
+    public List<CaseIndexDto> getCaseIndexList(UserRole reportingUserRole) {
     	UserDto user = LoginHelper.getCurrentUser();
-    	return FacadeProvider.getCaseFacade().getIndexList(user.getUuid());
+    	return FacadeProvider.getCaseFacade().getIndexList(user.getUuid(), reportingUserRole);
     }
     
     private CaseDataDto findCase(String uuid) {

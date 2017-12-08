@@ -187,6 +187,15 @@ public class CasesView extends AbstractView {
         officerFilter.addValueChangeListener(e->grid.setSurveillanceOfficerFilter(((UserReferenceDto)e.getProperty().getValue())));
         filterLayout.addComponent(officerFilter);
         
+        ComboBox reportedByFilter = new ComboBox();
+        reportedByFilter.setWidth(140, Unit.PIXELS);
+        reportedByFilter.setInputPrompt("Reported By");
+        reportedByFilter.addItems((Object[]) UserRole.values());
+        reportedByFilter.addValueChangeListener(e -> {
+        	grid.setReportedByFilter((UserRole) e.getProperty().getValue());
+        });
+        filterLayout.addComponent(reportedByFilter);
+        
         TextField searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, SEARCH_FIELD));
@@ -198,7 +207,7 @@ public class CasesView extends AbstractView {
 
     @Override
     public void enter(ViewChangeEvent event) {
-    	grid.reload();
+    	grid.reload(null);
     }
 
     public void clearSelection() {
