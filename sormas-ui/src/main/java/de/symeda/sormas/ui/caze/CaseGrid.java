@@ -1,7 +1,9 @@
 package de.symeda.sormas.ui.caze;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
@@ -23,10 +25,12 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.DateFilter;
+import de.symeda.sormas.ui.utils.RoleFilter;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
@@ -160,14 +164,17 @@ public class CaseGrid extends Grid {
     	getContainer().removeContainerFilters(CaseIndexDto.EPID_NUMBER);
     	getContainer().removeContainerFilters(CaseIndexDto.REPORT_DATE);
 
-    	if(text != null && !text.isEmpty()) {
-            SimpleStringFilter uuidFilter = new SimpleStringFilter(CaseIndexDto.UUID, text, true, false);
-            SimpleStringFilter firstNameFilter = new SimpleStringFilter(CaseIndexDto.PERSON_FIRST_NAME, text, true, false);
-            SimpleStringFilter lastNameFilter = new SimpleStringFilter(CaseIndexDto.PERSON_LAST_NAME, text, true, false);
-            SimpleStringFilter epidNumberFilter = new SimpleStringFilter(CaseIndexDto.EPID_NUMBER, text, true, false);
-            DateFilter reportDateFilter = new DateFilter(CaseIndexDto.REPORT_DATE, text);
-            getContainer().addContainerFilter(new Or(
-            		uuidFilter, firstNameFilter, lastNameFilter, epidNumberFilter, reportDateFilter));
+    	if (text != null && !text.isEmpty()) {
+    		List<Filter> orFilters = new ArrayList<Filter>();
+    		String[] words = text.split("\\s+");
+    		for (String word : words) {
+    			orFilters.add(new SimpleStringFilter(CaseIndexDto.UUID, word, true, false));
+    			orFilters.add(new SimpleStringFilter(CaseIndexDto.PERSON_FIRST_NAME, word, true, false));
+    			orFilters.add(new SimpleStringFilter(CaseIndexDto.PERSON_LAST_NAME, word, true, false));
+    			orFilters.add(new SimpleStringFilter(CaseIndexDto.EPID_NUMBER, word, true, false));
+    		}
+    		orFilters.add(new DateFilter(CaseIndexDto.REPORT_DATE, text));
+            getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
 		}
 	}
 	

@@ -7,6 +7,8 @@ import de.symeda.sormas.api.I18nProperties;
 
 /**
  * These are also used as user groups in the server realm
+ * 
+ * TODO (longterm) make entities
  *  
  * @author Martin Wahnschaffe
  */

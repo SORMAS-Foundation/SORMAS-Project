@@ -1,7 +1,9 @@
 package de.symeda.sormas.ui.contact;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
@@ -202,13 +204,16 @@ public class ContactGrid extends Grid {
 		getContainer().removeContainerFilters(ContactIndexDto.CAZE_PERSON);
     	getContainer().removeContainerFilters(ContactIndexDto.CAZE);
 
-    	if(text != null && !text.isEmpty()) {
-            SimpleStringFilter uuidFilter = new SimpleStringFilter(ContactIndexDto.UUID, text, true, false);
-            SimpleStringFilter personFilter = new SimpleStringFilter(ContactIndexDto.PERSON, text, true, false);
-            SimpleStringFilter cazePersonFilter = new SimpleStringFilter(ContactIndexDto.CAZE_PERSON, text, true, false);
-            SimpleStringFilter cazeFilter = new SimpleStringFilter(ContactIndexDto.CAZE, text, true, false);
-            getContainer().addContainerFilter(new Or(
-            		uuidFilter, personFilter, cazePersonFilter, cazeFilter));
+    	if (text != null && !text.isEmpty()) {
+    		List<Filter> orFilters = new ArrayList<Filter>();
+    		String[] words = text.split("\\s+");
+    		for (String word : words) {
+    			orFilters.add(new SimpleStringFilter(ContactIndexDto.UUID, word, true, false));
+    			orFilters.add(new SimpleStringFilter(ContactIndexDto.PERSON, word, true, false));
+    			orFilters.add(new SimpleStringFilter(ContactIndexDto.CAZE_PERSON, word, true, false));
+    			orFilters.add(new SimpleStringFilter(ContactIndexDto.CAZE, word, true, false));
+    		}
+            getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
 		}
 	}
 	
