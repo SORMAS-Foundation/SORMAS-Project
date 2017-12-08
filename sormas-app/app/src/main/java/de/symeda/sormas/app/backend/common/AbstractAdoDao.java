@@ -960,15 +960,16 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         markAsRead((ADO) ado);
     }
 
-    public boolean isAnyADOModified() {
-        List<ADO> ados = queryForAll();
-        for (ADO ado : ados) {
-            if (ado.isModifiedOrChildModified()) {
-                return true;
-            }
-        }
+    public boolean isAnyModified() {
 
-        return false;
+        try {
+            ADO result = queryBuilder().where().eq(AbstractDomainObject.MODIFIED, true)
+                    .queryForFirst();
+            return result != null;
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform isAnyModified");
+            throw new RuntimeException(e);
+        }
     }
 
     /**

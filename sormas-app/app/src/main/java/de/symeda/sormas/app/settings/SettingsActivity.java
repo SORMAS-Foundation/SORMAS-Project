@@ -1,14 +1,11 @@
 package de.symeda.sormas.app.settings;
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,7 +20,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 
 
 public class SettingsActivity extends AbstractEditTabActivity {
@@ -97,45 +94,36 @@ public class SettingsActivity extends AbstractEditTabActivity {
     }
 
     public void logout(View view) {
-        final ProgressDialog progressDialog = ProgressDialog.show(this, getString(R.string.headline_logout),
-                getString(R.string.hint_logout), true);
 
-        new AsyncLogoutTask(new LogoutCallback() {
-            @Override
-            public void call(boolean hasUnmodifiedEntities) {
-                progressDialog.dismiss();
+        if (SynchronizeDataAsync.hasAnyUnsynchronizedData()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
+            builder.setCancelable(true);
+            builder.setMessage(R.string.alert_unsynchronized_changes);
+            builder.setTitle(R.string.alert_title_unsynchronized_changes);
+            builder.setIcon(R.drawable.ic_perm_device_information_black_24dp);
+            AlertDialog dialog = builder.create();
 
-                if (hasUnmodifiedEntities) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
-                    builder.setCancelable(true);
-                    builder.setMessage(R.string.alert_unsynchronized_changes);
-                    builder.setTitle(R.string.alert_title_unsynchronized_changes);
-                    builder.setIcon(R.drawable.ic_perm_device_information_black_24dp);
-                    AlertDialog dialog = builder.create();
+            dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_cancel),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }
+            );
+            dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.action_logout_anyway),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            processLogout();
+                        }
+                    }
+            );
 
-                    dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_cancel),
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            }
-                    );
-                    dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.action_logout_anyway),
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    processLogout();
-                                }
-                            }
-                    );
-
-                    dialog.show();
-                } else {
-                    processLogout();
-                }
-            }
-        }).execute();
+            dialog.show();
+        } else {
+            processLogout();
+        }
     }
 
     public void changePIN(View view) {
@@ -150,27 +138,6 @@ public class SettingsActivity extends AbstractEditTabActivity {
         ConfigProvider.setAccessGranted(false);
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
-    }
-
-    private class AsyncLogoutTask extends AsyncTask<Void, Void, Boolean> {
-        private LogoutCallback callback;
-
-        public AsyncLogoutTask(LogoutCallback callback) {
-            this.callback = callback;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            return DatabaseHelper.getCaseDao().isAnyADOModified() || DatabaseHelper.getContactDao().isAnyADOModified() ||
-                    DatabaseHelper.getEventDao().isAnyADOModified() || DatabaseHelper.getEventParticipantDao().isAnyADOModified() ||
-                    DatabaseHelper.getSampleDao().isAnyADOModified() || DatabaseHelper.getSampleTestDao().isAnyADOModified() ||
-                    DatabaseHelper.getTaskDao().isAnyADOModified() || DatabaseHelper.getVisitDao().isAnyADOModified();
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            callback.call(result);
-        }
     }
 
     private interface LogoutCallback {

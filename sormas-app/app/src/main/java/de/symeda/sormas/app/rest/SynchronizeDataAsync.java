@@ -134,6 +134,15 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
+    public static boolean hasAnyUnsynchronizedData() {
+        return DatabaseHelper.getCaseDao().isAnyModified() || DatabaseHelper.getContactDao().isAnyModified() ||
+                DatabaseHelper.getPersonDao().isAnyModified() ||
+                DatabaseHelper.getEventDao().isAnyModified() || DatabaseHelper.getEventParticipantDao().isAnyModified() ||
+                DatabaseHelper.getSampleDao().isAnyModified() || DatabaseHelper.getSampleTestDao().isAnyModified() ||
+                DatabaseHelper.getTaskDao().isAnyModified() || DatabaseHelper.getVisitDao().isAnyModified() ||
+                DatabaseHelper.getWeeklyReportDao().isAnyModified() || DatabaseHelper.getWeeklyReportEntryDao().isAnyModified();
+    }
+
     private void synchronizeChangedData() throws DaoException, ServerConnectionException, SynchronizationException {
 
         PersonDtoHelper personDtoHelper = new PersonDtoHelper();
