@@ -32,7 +32,8 @@
       }
     }
    
-   	&.soft-required {
+   	&.soft-required,
+   	&.v-required {
   	  .v-filterselect-input {
 		border-color: $v-selection-color;
 	  }

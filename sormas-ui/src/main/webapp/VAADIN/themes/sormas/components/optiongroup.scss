@@ -45,7 +45,8 @@
 	    }
 	  }
 		
-	  &.soft-required {
+	  &.soft-required,
+	  &.v-required {
 	  	.v-radiobutton {
 		  border-color: $v-selection-color;
         }
@@ -86,7 +87,8 @@
  
   .v-select-optiongroup {
   	
- 	&.soft-required {
+ 	&.soft-required,
+ 	&.v-required {
 	  .v-radiobutton {
 	 	& > input {
 	  	  & ~ label:before,

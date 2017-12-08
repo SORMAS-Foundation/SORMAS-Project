@@ -368,11 +368,6 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		for (String propertyId : fieldOrPropertyIds) {
 			Field<?> field = getField(propertyId);
 			field.setRequired(required);
-			if (required) {
-				FieldHelper.addSoftRequiredStyle(field);
-			} else {
-				FieldHelper.removeSoftRequiredStyle(field);
-			}
 		}
 	}
 

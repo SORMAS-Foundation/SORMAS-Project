@@ -13068,7 +13068,7 @@ div.v-layout.v-horizontal.v-widget {
 	display: none;
 }
 
-.sormas .v-filterselect.soft-required .v-filterselect-input {
+.sormas .v-filterselect.soft-required .v-filterselect-input, .sormas .v-filterselect.v-required .v-filterselect-input {
 	border-color: #005A9C;
 }
 
@@ -13101,7 +13101,7 @@ div.v-layout.v-horizontal.v-widget {
 	display: none;
 }
 
-.sormas .v-datefield.soft-required .v-datefield-textfield {
+.sormas .v-datefield.soft-required .v-datefield-textfield, .sormas .v-datefield.v-required .v-datefield-textfield {
 	border-color: #005A9C;
 }
 
@@ -13298,7 +13298,7 @@ div.v-layout.v-horizontal.v-widget {
 	content: none;
 }
 
-.sormas .v-select-optiongroup-horizontal.soft-required .v-radiobutton {
+.sormas .v-select-optiongroup-horizontal.soft-required .v-radiobutton, .sormas .v-select-optiongroup-horizontal.v-required .v-radiobutton {
 	border-color: #005A9C;
 }
 
@@ -13328,7 +13328,7 @@ div.v-layout.v-horizontal.v-widget {
 	color: #FFF;
 }
 
-.sormas .v-select-optiongroup.soft-required .v-radiobutton > input ~ label:before, .sormas .v-select-optiongroup.soft-required .v-radiobutton > input ~ label:after {
+.sormas .v-select-optiongroup.soft-required .v-radiobutton > input ~ label:before, .sormas .v-select-optiongroup.soft-required .v-radiobutton > input ~ label:after, .sormas .v-select-optiongroup.v-required .v-radiobutton > input ~ label:before, .sormas .v-select-optiongroup.v-required .v-radiobutton > input ~ label:after {
 	border-color: #005A9C;
 }
 
@@ -13478,7 +13478,7 @@ div.v-layout.v-horizontal.v-widget {
 	height: inherit;
 }
 
-.sormas .v-textfield.soft-required {
+.sormas .v-textfield.soft-required, .sormas .v-textfield.v-required {
 	border-color: #005A9C;
 }
 
@@ -13669,7 +13669,7 @@ div.v-layout.v-horizontal.v-widget {
 	stroke: #E6E6E6;
 }
 
-.sormas .v-customcomponent.soft-required .v-datefield-textfield, .sormas .v-customcomponent.soft-required .v-filterselect-input {
+.sormas .v-customcomponent.soft-required .v-datefield-textfield, .sormas .v-customcomponent.soft-required .v-filterselect-input, .sormas .v-customcomponent.v-required .v-datefield-textfield, .sormas .v-customcomponent.v-required .v-filterselect-input {
 	border-color: #005A9C;
 }
 
@@ -13677,7 +13677,7 @@ div.v-layout.v-horizontal.v-widget {
 	border-color: #E10002;
 }
 
-.sormas .v-textarea.soft-required {
+.sormas .v-textarea.soft-required, .sormas .v-textarea.v-required {
 	border-color: #005A9C;
 }
 

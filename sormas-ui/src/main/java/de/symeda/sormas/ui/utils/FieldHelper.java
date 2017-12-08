@@ -137,9 +137,6 @@ public final class FieldHelper {
 			for(Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				targetField.setRequired(required);
-				if (required) {
-					addSoftRequiredStyle(targetField);
-				}
 			}
 		}
 		
@@ -148,11 +145,6 @@ public final class FieldHelper {
 			for(Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				targetField.setRequired(required);
-				if (required) {
-					addSoftRequiredStyle(targetField);
-				} else {
-					removeSoftRequiredStyle(targetField);
-				}
 			}
 		});
 	}
@@ -177,7 +169,6 @@ public final class FieldHelper {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
 					targetField.setRequired(required);
-					addSoftRequiredStyle(targetField);
 				}
 			}
 		}
@@ -188,9 +179,6 @@ public final class FieldHelper {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
 					targetField.setRequired(required);
-					addSoftRequiredStyle(targetField);
-				} else {
-					removeSoftRequiredStyle(targetField);
 				}
 			}
 		});

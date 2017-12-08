@@ -15,7 +15,8 @@ $v-textfield-background-color--readonly: $v-app-background-color !default;
       height: inherit;
     }
    
-    &.soft-required {
+    &.soft-required,
+    &.v-required {
   	  border-color: $v-selection-color;
 	}
 

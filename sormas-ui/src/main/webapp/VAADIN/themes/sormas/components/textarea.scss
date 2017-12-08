@@ -2,7 +2,8 @@
 @mixin sormas-textarea {
 	
 	.v-textarea {
-	  &.soft-required {
+	  &.soft-required,
+	  &.v-required {
   	  	border-color: $v-selection-color;
 	  }
 	}
