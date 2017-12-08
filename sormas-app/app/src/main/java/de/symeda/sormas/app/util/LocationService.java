@@ -289,40 +289,47 @@ public final class LocationService {
         return true;
     }
 
+    /**
+     * Shows a dialog to request GPS access from the user and makes sure that this dialog is only
+     * displayed once.
+     * @param callingActivity
+     */
     private void buildAndShowRequestGpsAccessDialog(final Activity callingActivity) {
-        if (requestGpsAccessDialog == null) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(callingActivity);
-            builder.setCancelable(false);
-            builder.setMessage(R.string.alert_gps_permission);
-            builder.setTitle(R.string.alert_title_gps_permission);
-            builder.setIcon(R.drawable.ic_perm_device_information_black_24dp);
-            requestGpsAccessDialog = builder.create();
-
-            requestGpsAccessDialog.setButton(AlertDialog.BUTTON_POSITIVE, callingActivity.getString(R.string.action_close_app),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            requestGpsAccessDialog = null;
-                            Activity finishActivity = callingActivity;
-                            do {
-                                finishActivity.finish();
-                                finishActivity = finishActivity.getParent();
-                            } while (finishActivity != null);
-                        }
-                    }
-            );
-            requestGpsAccessDialog.setButton(AlertDialog.BUTTON_NEGATIVE, callingActivity.getString(R.string.action_allow_gps_access),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions(callingActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 9999);
-                            requestGpsAccessDialog = null;
-                        }
-                    }
-            );
-
-            requestGpsAccessDialog.show();
+        if (requestGpsAccessDialog != null) {
+            return;
         }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(callingActivity);
+        builder.setCancelable(false);
+        builder.setMessage(R.string.alert_gps_permission);
+        builder.setTitle(R.string.alert_title_gps_permission);
+        builder.setIcon(R.drawable.ic_perm_device_information_black_24dp);
+        requestGpsAccessDialog = builder.create();
+
+        requestGpsAccessDialog.setButton(AlertDialog.BUTTON_POSITIVE, callingActivity.getString(R.string.action_close_app),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestGpsAccessDialog = null;
+                        Activity finishActivity = callingActivity;
+                        do {
+                            finishActivity.finish();
+                            finishActivity = finishActivity.getParent();
+                        } while (finishActivity != null);
+                    }
+                }
+        );
+        requestGpsAccessDialog.setButton(AlertDialog.BUTTON_NEGATIVE, callingActivity.getString(R.string.action_allow_gps_access),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityCompat.requestPermissions(callingActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 9999);
+                        requestGpsAccessDialog = null;
+                    }
+                }
+        );
+
+        requestGpsAccessDialog.show();
     }
 
     public AlertDialog buildEnableGpsDialog(final Activity callingActivity) {
