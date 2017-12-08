@@ -157,6 +157,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
         WeeklyReportEntryDtoHelper weeklyReportEntryDtoHelper = new WeeklyReportEntryDtoHelper();
 
+        // order is important, due to dependencies (e.g. case & person)
+
         boolean personsNeedPull = personDtoHelper.pullAndPushEntities();
         boolean eventsNeedPull = eventDtoHelper.pullAndPushEntities();
         boolean eventParticipantsNeedPull = eventParticipantDtoHelper.pullAndPushEntities();
@@ -207,6 +209,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
         WeeklyReportEntryDtoHelper weeklyReportEntryDtoHelper = new WeeklyReportEntryDtoHelper();
 
+        // order is important, due to dependencies (e.g. case & person)
+
         new UserDtoHelper().repullEntities();
         personDtoHelper.repullEntities();
         eventDtoHelper.repullEntities();
@@ -234,6 +238,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
 
         Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalid");
+
+        // order is important, due to dependencies (e.g. case & person)
 
         // weekly reports and entries
         List<String> weeklyReportUuids = executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids());
@@ -267,6 +273,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // persons
         List<String> personUuids = executeUuidCall(RetroProvider.getPersonFacade().pullUuids());
         DatabaseHelper.getPersonDao().deleteInvalid(personUuids);
+
+        // order is important, due to dependencies (e.g. case & person)
 
         new PersonDtoHelper().pullMissing(personUuids);
         new EventDtoHelper().pullMissing(eventUuids);
