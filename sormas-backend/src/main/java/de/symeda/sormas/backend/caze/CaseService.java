@@ -264,6 +264,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		return result;
 	}
 	
+	// TODO use aggregating query instead of a list of DTOs
 	public List<StatisticsCaseDto> getCasesForStatistics(Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<StatisticsCaseDto> cq = cb.createQuery(StatisticsCaseDto.class);

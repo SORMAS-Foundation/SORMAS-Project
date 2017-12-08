@@ -4,8 +4,9 @@ import java.io.Serializable;
 
 import de.symeda.sormas.api.person.Sex;
 
+// TODO use aggregating query instead of a list of DTOs
 public class StatisticsCaseDto implements Serializable {
-
+	
 	private static final long serialVersionUID = -6569825315668163543L;
 
 	private Integer approximateAge;
