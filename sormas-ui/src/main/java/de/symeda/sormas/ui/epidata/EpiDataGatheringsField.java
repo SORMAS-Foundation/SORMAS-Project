@@ -99,7 +99,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 	}
 	
 	@Override
-	protected void editEntry(EpiDataGatheringDto entry, Consumer<EpiDataGatheringDto> commitCallback) {
+	protected void editEntry(EpiDataGatheringDto entry, boolean create, Consumer<EpiDataGatheringDto> commitCallback) {
 		EpiDataGatheringEditForm editForm = new EpiDataGatheringEditForm();
 		editForm.setValue(entry);
 		

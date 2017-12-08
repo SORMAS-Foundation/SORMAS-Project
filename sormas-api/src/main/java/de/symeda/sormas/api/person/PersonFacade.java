@@ -25,8 +25,6 @@ public interface PersonFacade {
     PersonReferenceDto getReferenceByUuid(String uuid);
     
     PersonDto getPersonByUuid(String uuid);
-    
-    PersonReferenceDto savePerson(PersonReferenceDto dto);
 
     PersonDto savePerson(PersonDto dto);
 

@@ -2,12 +2,13 @@ package de.symeda.sormas.api.sample;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
-public class SampleDto extends SampleReferenceDto {
+public class SampleDto extends EntityDto {
 
 	private static final long serialVersionUID = -6975445672442728938L;
 
@@ -219,6 +220,10 @@ public class SampleDto extends SampleReferenceDto {
 	}
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
+	
+	public SampleReferenceDto toReference() {
+		return new SampleReferenceDto(getUuid());
 	}
 	
 }

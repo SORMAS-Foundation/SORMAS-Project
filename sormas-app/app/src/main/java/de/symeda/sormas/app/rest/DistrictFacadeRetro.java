@@ -15,4 +15,6 @@ public interface DistrictFacadeRetro {
     @GET("districts/all/{since}")
     Call<List<DistrictDto>> pullAllSince(@Path("since") long since);
 
+    @GET("districts/uuids")
+    Call<List<String>> pullUuids();
 }

@@ -6,12 +6,12 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.DashboardCase;
-import de.symeda.sormas.api.event.DashboardEvent;
+import de.symeda.sormas.api.caze.DashboardCaseDto;
+import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.sample.DashboardSample;
-import de.symeda.sormas.api.sample.DashboardTestResult;
-import de.symeda.sormas.api.task.DashboardTask;
+import de.symeda.sormas.api.sample.DashboardSampleDto;
+import de.symeda.sormas.api.sample.DashboardTestResultDto;
+import de.symeda.sormas.api.task.DashboardTaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -27,15 +27,15 @@ public class DashboardDataProvider {
 	private EpiWeek fromWeek;
 	private EpiWeek toWeek;
 	
-	private List<DashboardCase> cases = new ArrayList<>();
-	private List<DashboardCase> previousCases = new ArrayList<>();
-	private List<DashboardEvent> events = new ArrayList<>();
-	private List<DashboardEvent> previousEvents = new ArrayList<>();
-	private List<DashboardTestResult> testResults = new ArrayList<>();
-	private List<DashboardTestResult> previousTestResults = new ArrayList<>();
-	private List<DashboardSample> samples = new ArrayList<>();
-	private List<DashboardTask> tasks = new ArrayList<>();
-	private List<DashboardTask> pendingTasks = new ArrayList<>();
+	private List<DashboardCaseDto> cases = new ArrayList<>();
+	private List<DashboardCaseDto> previousCases = new ArrayList<>();
+	private List<DashboardEventDto> events = new ArrayList<>();
+	private List<DashboardEventDto> previousEvents = new ArrayList<>();
+	private List<DashboardTestResultDto> testResults = new ArrayList<>();
+	private List<DashboardTestResultDto> previousTestResults = new ArrayList<>();
+	private List<DashboardSampleDto> samples = new ArrayList<>();
+	private List<DashboardTaskDto> tasks = new ArrayList<>();
+	private List<DashboardTaskDto> pendingTasks = new ArrayList<>();
 	
 	public void refreshData() {
 		// Update the entities lists according to the filters
@@ -80,58 +80,58 @@ public class DashboardDataProvider {
 		setPendingTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(TaskStatus.PENDING, null, null, userUuid));
 	}
 	
-	public List<DashboardCase> getCases() {
+	public List<DashboardCaseDto> getCases() {
 		return cases;
 	}
-	public void setCases(List<DashboardCase> cases) {
+	public void setCases(List<DashboardCaseDto> cases) {
 		this.cases = cases;
 	}
-	public List<DashboardCase> getPreviousCases() {
+	public List<DashboardCaseDto> getPreviousCases() {
 		return previousCases;
 	}
-	public void setPreviousCases(List<DashboardCase> previousCases) {
+	public void setPreviousCases(List<DashboardCaseDto> previousCases) {
 		this.previousCases = previousCases;
 	}
-	public List<DashboardEvent> getEvents() {
+	public List<DashboardEventDto> getEvents() {
 		return events;
 	}
-	public void setEvents(List<DashboardEvent> events) {
+	public void setEvents(List<DashboardEventDto> events) {
 		this.events = events;
 	}
-	public List<DashboardEvent> getPreviousEvents() {
+	public List<DashboardEventDto> getPreviousEvents() {
 		return previousEvents;
 	}
-	public void setPreviousEvents(List<DashboardEvent> previousEvents) {
+	public void setPreviousEvents(List<DashboardEventDto> previousEvents) {
 		this.previousEvents = previousEvents;
 	}
-	public List<DashboardTestResult> getTestResults() {
+	public List<DashboardTestResultDto> getTestResults() {
 		return testResults;
 	}
-	public void setTestResults(List<DashboardTestResult> testResults) {
+	public void setTestResults(List<DashboardTestResultDto> testResults) {
 		this.testResults = testResults;
 	}
-	public List<DashboardTestResult> getPreviousTestResults() {
+	public List<DashboardTestResultDto> getPreviousTestResults() {
 		return previousTestResults;
 	}
-	public void setPreviousTestResults(List<DashboardTestResult> previousTestResults) {
+	public void setPreviousTestResults(List<DashboardTestResultDto> previousTestResults) {
 		this.previousTestResults = previousTestResults;
 	}
-	public List<DashboardSample> getSamples() {
+	public List<DashboardSampleDto> getSamples() {
 		return samples;
 	}
-	public void setSamples(List<DashboardSample> samples) {
+	public void setSamples(List<DashboardSampleDto> samples) {
 		this.samples = samples;
 	}
-	public List<DashboardTask> getTasks() {
+	public List<DashboardTaskDto> getTasks() {
 		return tasks;
 	}
-	public void setTasks(List<DashboardTask> tasks) {
+	public void setTasks(List<DashboardTaskDto> tasks) {
 		this.tasks = tasks;
 	}
-	public List<DashboardTask> getPendingTasks() {
+	public List<DashboardTaskDto> getPendingTasks() {
 		return pendingTasks;
 	}
-	public void setPendingTasks(List<DashboardTask> pendingTasks) {
+	public void setPendingTasks(List<DashboardTaskDto> pendingTasks) {
 		this.pendingTasks = pendingTasks;
 	}
 	public DistrictReferenceDto getDistrict() {

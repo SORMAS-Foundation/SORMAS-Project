@@ -2,12 +2,12 @@ package de.symeda.sormas.api.epidata;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.DataTransferObject;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.Diseases;
 
-public class EpiDataGatheringDto extends DataTransferObject {
+public class EpiDataGatheringDto extends EntityDto {
 
 	private static final long serialVersionUID = 4953376180428831063L;
 

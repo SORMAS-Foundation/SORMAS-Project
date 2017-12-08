@@ -3,10 +3,11 @@ package de.symeda.sormas.api.event;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class EventDto extends EventReferenceDto {
+public class EventDto extends EntityDto {
 
 	private static final long serialVersionUID = 2430932452606853497L;
 	
@@ -202,4 +203,8 @@ public class EventDto extends EventReferenceDto {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 
+	public EventReferenceDto toReference() {
+		return new EventReferenceDto(getUuid());
+	}
+	
 }

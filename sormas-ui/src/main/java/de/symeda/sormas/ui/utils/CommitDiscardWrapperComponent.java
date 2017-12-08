@@ -493,7 +493,7 @@ VerticalLayout implements Buffered {
 						// Alle nochmal
 						for (int i = 0; i < causes.length; i++) {
 							if (!causes[i].isInvisible()) {
-								htmlMsg.append("<li>").append(findHtmlMessage(causes[i])).append("</li>");
+								htmlMsg.append("<li style=\"color: #FFF;\">").append(findHtmlMessage(causes[i])).append("</li>");
 							}
 						}
 						htmlMsg.append("</ul>");

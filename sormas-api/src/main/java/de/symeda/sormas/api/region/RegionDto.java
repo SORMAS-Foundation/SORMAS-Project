@@ -1,6 +1,8 @@
 package de.symeda.sormas.api.region;
 
-public class RegionDto extends RegionReferenceDto {
+import de.symeda.sormas.api.EntityDto;
+
+public class RegionDto extends EntityDto {
 
 	private static final long serialVersionUID = -1610675328037466348L;
 
@@ -42,5 +44,9 @@ public class RegionDto extends RegionReferenceDto {
 	}
 	public void setGrowthRate(Float growthRate) {
 		this.growthRate = growthRate;
+	}
+	
+	public RegionReferenceDto toReference() {
+		return new RegionReferenceDto(getUuid());
 	}
 }

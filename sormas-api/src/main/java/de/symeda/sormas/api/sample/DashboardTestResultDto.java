@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import de.symeda.sormas.api.Disease;
 
-public class DashboardTestResult implements Serializable {
+public class DashboardTestResultDto implements Serializable {
 
 	private static final long serialVersionUID = -6488827968218301232L;
 
@@ -16,7 +16,7 @@ public class DashboardTestResult implements Serializable {
 	private Disease disease;
 	private SampleTestResultType testResult;
 	
-	public DashboardTestResult(Disease disease, SampleTestResultType testResult) {
+	public DashboardTestResultDto(Disease disease, SampleTestResultType testResult) {
 		this.disease = disease;
 		this.testResult = testResult;
 	}

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.DataTransferObject;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public class HospitalizationDto extends DataTransferObject {
+public class HospitalizationDto extends EntityDto {
 
 	private static final long serialVersionUID = 4846215199480684369L;
 	

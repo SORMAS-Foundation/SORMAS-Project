@@ -21,7 +21,7 @@ public class CommunityDao extends AbstractAdoDao<Community> {
 
     @Override
     protected Class<Community> getAdoClass() {
-        throw new UnsupportedOperationException();
+        return Community.class;
     }
 
     @Override

@@ -79,8 +79,7 @@ public class WeeklyReportDtoHelper extends AdoDtoHelper<WeeklyReport, WeeklyRepo
         if (ado == null) {
             return null;
         }
-        WeeklyReportReferenceDto dto = new WeeklyReportReferenceDto();
-        fillReferenceDto(dto, ado);
+        WeeklyReportReferenceDto dto = new WeeklyReportReferenceDto(ado.getUuid());
 
         return dto;
     }

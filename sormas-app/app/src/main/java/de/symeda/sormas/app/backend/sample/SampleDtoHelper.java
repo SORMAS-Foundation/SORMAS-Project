@@ -135,8 +135,7 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         if (ado == null) {
             return null;
         }
-        SampleReferenceDto dto = new SampleReferenceDto();
-        fillReferenceDto(dto, ado);
+        SampleReferenceDto dto = new SampleReferenceDto(ado.getUuid());
 
         return dto;
     }

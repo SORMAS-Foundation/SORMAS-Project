@@ -5,6 +5,7 @@ import java.util.Date;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
+import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.AbstractSelect.NewItemHandler;
 import com.vaadin.ui.ComboBox;
@@ -39,7 +40,7 @@ public class DateTimeField extends CustomField<Date> {
 		timeField = new ComboBox();
 		timeField.addContainerProperty(CAPTION_PROPERTY_ID, String.class, null);
 		timeField.setItemCaptionPropertyId(CAPTION_PROPERTY_ID);
-		
+
 		// fill
 		for (int hours=0; hours<=23; hours++) {
 			for (int minutes = 0; minutes<=59; minutes+=15) {
@@ -69,6 +70,15 @@ public class DateTimeField extends CustomField<Date> {
 		
 		dateField.setReadOnly(isReadOnly());
 		timeField.setReadOnly(isReadOnly());
+		
+		Property.ValueChangeListener validationValueChangeListener = new Property.ValueChangeListener() {
+			@Override
+			public void valueChange(Property.ValueChangeEvent event) {
+				markAsDirty();
+			}
+		};
+		dateField.addValueChangeListener(validationValueChangeListener);
+		timeField.addValueChangeListener(validationValueChangeListener);
 		
 		return layout;
 	}

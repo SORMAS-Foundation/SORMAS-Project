@@ -89,7 +89,7 @@ public class TestEntityCreator {
             throw new RuntimeException(e);
         }
 
-        return DatabaseHelper.getCaseDao().queryForId(caze.getId());
+        return DatabaseHelper.getCaseDao().queryForIdWithEmbedded(caze.getId());
     }
 
     public static Contact createContact() {
@@ -107,7 +107,7 @@ public class TestEntityCreator {
             throw new RuntimeException(e);
         }
 
-        return DatabaseHelper.getContactDao().queryForId(contact.getId());
+        return DatabaseHelper.getContactDao().queryForIdWithEmbedded(contact.getId());
     }
 
     public static Event createEvent() {
@@ -135,7 +135,7 @@ public class TestEntityCreator {
             throw new RuntimeException(e);
         }
 
-        return DatabaseHelper.getEventDao().queryForId(event.getId());
+        return DatabaseHelper.getEventDao().queryForIdWithEmbedded(event.getId());
     }
 
     public static Sample createSample() {
@@ -156,21 +156,14 @@ public class TestEntityCreator {
             throw new RuntimeException(e);
         }
 
-        return DatabaseHelper.getSampleDao().queryForId(sample.getId());
+        return DatabaseHelper.getSampleDao().queryForIdWithEmbedded(sample.getId());
     }
 
-    public static PreviousHospitalization createPreviousHospitalization(Case caze) {
+    public static PreviousHospitalization addPreviousHospitalization(Case caze) {
         PreviousHospitalization prevHosp = DatabaseHelper.getPreviousHospitalizationDao().build();
         prevHosp.setHospitalization(caze.getHospitalization());
-
-        try {
-            DatabaseHelper.getPreviousHospitalizationDao().saveAndSnapshot(prevHosp);
-            DatabaseHelper.getPreviousHospitalizationDao().accept(prevHosp);
-        } catch (DaoException e) {
-            throw new RuntimeException(e);
-        }
-
-        return DatabaseHelper.getPreviousHospitalizationDao().queryForId(prevHosp.getId());
+        caze.getHospitalization().getPreviousHospitalizations().add(prevHosp);
+        return prevHosp;
     }
 
     public static EpiDataBurial createEpiDataBurial(Case caze) {
@@ -184,7 +177,7 @@ public class TestEntityCreator {
             throw new RuntimeException(e);
         }
 
-        return DatabaseHelper.getEpiDataBurialDao().queryForId(burial.getId());
+        return DatabaseHelper.getEpiDataBurialDao().queryForIdWithEmbedded(burial.getId());
     }
 
     public static EpiDataGathering createEpiDataGathering(Case caze) {
@@ -198,7 +191,7 @@ public class TestEntityCreator {
             throw new RuntimeException(e);
         }
 
-        return DatabaseHelper.getEpiDataGatheringDao().queryForId(gathering.getId());
+        return DatabaseHelper.getEpiDataGatheringDao().queryForIdWithEmbedded(gathering.getId());
     }
 
     public static EpiDataTravel createEpiDataTravel(Case caze) {
@@ -212,7 +205,7 @@ public class TestEntityCreator {
             throw new RuntimeException(e);
         }
 
-        return DatabaseHelper.getEpiDataTravelDao().queryForId(travel.getId());
+        return DatabaseHelper.getEpiDataTravelDao().queryForIdWithEmbedded(travel.getId());
     }
 
     public static Visit createVisit(Contact contact) throws DaoException {
@@ -224,7 +217,7 @@ public class TestEntityCreator {
         DatabaseHelper.getVisitDao().saveAndSnapshot(visit);
         DatabaseHelper.getVisitDao().accept(visit);
 
-        return DatabaseHelper.getVisitDao().queryForId(visit.getId());
+        return DatabaseHelper.getVisitDao().queryForIdWithEmbedded(visit.getId());
     }
 
     public static EventParticipant createEventParticipant(Event event) {
@@ -241,7 +234,7 @@ public class TestEntityCreator {
             throw new RuntimeException(e);
         }
 
-        return DatabaseHelper.getEventParticipantDao().queryForId(eventParticipant.getId());
+        return DatabaseHelper.getEventParticipantDao().queryForIdWithEmbedded(eventParticipant.getId());
     }
 
     public static SampleTest createSampleTest(Sample sample) {
@@ -262,7 +255,7 @@ public class TestEntityCreator {
             throw new RuntimeException(e);
         }
 
-        return DatabaseHelper.getSampleTestDao().queryForId(sampleTest.getId());
+        return DatabaseHelper.getSampleTestDao().queryForIdWithEmbedded(sampleTest.getId());
     }
 
     public static Task createCaseTask(Case caze, TaskStatus taskStatus, User user) {
@@ -284,7 +277,7 @@ public class TestEntityCreator {
             throw new RuntimeException(e);
         }
 
-        return DatabaseHelper.getTaskDao().queryForId(task.getId());
+        return DatabaseHelper.getTaskDao().queryForIdWithEmbedded(task.getId());
     }
 
     public static WeeklyReport createWeeklyReport(EpiWeek epiWeek) {

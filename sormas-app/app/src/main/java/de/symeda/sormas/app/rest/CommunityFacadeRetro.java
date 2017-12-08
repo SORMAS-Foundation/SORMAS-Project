@@ -15,4 +15,6 @@ public interface CommunityFacadeRetro {
     @GET("communities/all/{since}")
     Call<List<CommunityDto>> pullAllSince(@Path("since") long since);
 
+    @GET("communities/uuids")
+    Call<List<String>> pullUuids();
 }

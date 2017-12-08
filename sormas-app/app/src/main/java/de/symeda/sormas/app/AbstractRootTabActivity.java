@@ -106,7 +106,13 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity implem
             menu.findItem(R.id.nav_events).setVisible(isCaseSurveillanceOrInformant);
             menu.findItem(R.id.nav_contacts).setVisible(isContactOfficer);
             menu.findItem(R.id.nav_reports).setVisible(isSurveillanceOrInformant);
+
+            // replace empty user sub header with user name and role
+            String username = ConfigProvider.getUsername();
+            String userRole = ConfigProvider.getUser().getUserRole().toString();
+            menu.findItem(R.id.navigation_user_sub_header).setTitle(username + " (" + userRole + ")");
         }
+
     }
 
     @Override

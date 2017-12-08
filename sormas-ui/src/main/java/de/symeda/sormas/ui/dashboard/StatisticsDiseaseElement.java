@@ -18,7 +18,7 @@ public class StatisticsDiseaseElement extends HorizontalLayout {
 		addComponent(captionLabel);
 		
 		Label lineLabel = new Label();
-		CssStyles.style(lineLabel, CssStyles.SEPARATOR_HORIZONTAL_BOTTOM);
+		CssStyles.style(lineLabel, CssStyles.LABEL_BOTTOM_LINE);
 		addComponent(lineLabel);
 		
 		Label countLabel = new Label(Integer.toString(count));

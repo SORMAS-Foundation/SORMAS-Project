@@ -23,7 +23,7 @@ public interface SampleTestFacade {
 
 	List<SampleTestDto> getByUuids(List<String> uuids);
 	
-	List<DashboardTestResult> getNewTestResultsForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	List<DashboardTestResultDto> getNewTestResultsForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
 	void deleteSampleTest(SampleTestReferenceDto sampleTestRef, String userUuid);
 }

@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.event.DashboardEvent;
+import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
@@ -65,12 +65,12 @@ public class EventFacadeEjbTest extends BaseBeanTest {
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		LocationDto eventLocation = new LocationDto();
 		eventLocation.setDistrict(districtFacade.getDistrictReferenceByUuid(rdcf.district.getUuid()));
-		EventDto event = creator.createEvent(EventType.OUTBREAK, EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, DateHelper.subtractDays(new Date(), 1), new Date(), user, user, Disease.EVD, eventLocation);
+		EventDto event = creator.createEvent(EventType.OUTBREAK, EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, eventLocation);
 
-		List<DashboardEvent> dashboardEvents = eventFacade.getNewEventsForDashboard(eventLocation.getDistrict(), event.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
+		List<DashboardEventDto> dashboardEventDtos = eventFacade.getNewEventsForDashboard(eventLocation.getDistrict(), event.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
 
 		// List should have one entry
-		assertEquals(1, dashboardEvents.size());
+		assertEquals(1, dashboardEventDtos.size());
 	}
 
 	@Test
@@ -88,15 +88,15 @@ public class EventFacadeEjbTest extends BaseBeanTest {
 		String adminUuid = admin.getUuid();
 		LocationDto eventLocation = new LocationDto();
 		eventLocation.setDistrict(districtFacade.getDistrictReferenceByUuid(rdcf.district.getUuid()));
-		EventDto event = creator.createEvent(EventType.OUTBREAK, EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, DateHelper.subtractDays(new Date(), 1), new Date(), user, user, Disease.EVD, eventLocation);
+		EventDto event = creator.createEvent(EventType.OUTBREAK, EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, eventLocation);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
-		creator.createEventParticipant(event, eventPerson, "Description");
+		creator.createEventParticipant(event.toReference(), eventPerson, "Description");
 
 		// Database should contain one event and event participant
 		assertEquals(1, eventFacade.getAllEventsAfter(null, userUuid).size());
 		assertEquals(1, eventParticipantFacade.getAllEventParticipantsAfter(null, userUuid).size());
 
-		eventFacade.deleteEvent(event, adminUuid);
+		eventFacade.deleteEvent(event.toReference(), adminUuid);
 
 		// Database should contain no event or associated event participant
 		assertEquals(0, eventFacade.getAllEventsAfter(null, userUuid).size());

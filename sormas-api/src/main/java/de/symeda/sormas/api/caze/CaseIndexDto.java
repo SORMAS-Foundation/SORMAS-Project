@@ -4,10 +4,11 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.utils.DataHelper;
 
-public class CaseIndexDto extends CaseReferenceDto {
+public class CaseIndexDto extends EntityDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
@@ -63,8 +64,6 @@ public class CaseIndexDto extends CaseReferenceDto {
 		this.districtName = districtName;
 		this.healthFacilityUuid = healthFacilityUuid;
 		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
-		
-		setCaption(personFirstName + " " + personLastName + " (" + DataHelper.getShortUuid(getUuid()) + ")");
 	}
 	
 	public String getEpidNumber() {
@@ -150,6 +149,15 @@ public class CaseIndexDto extends CaseReferenceDto {
 	}
 	public void setHealthFacilityUuid(String healthFacilityUuid) {
 		this.healthFacilityUuid = healthFacilityUuid;
+	}
+	
+	public CaseReferenceDto toReference() {
+		return new CaseReferenceDto(getUuid());
+	}
+	
+	@Override
+	public String toString() {
+		return personFirstName + " " + personLastName + " (" + DataHelper.getShortUuid(getUuid()) + ")";
 	}
 	
 }

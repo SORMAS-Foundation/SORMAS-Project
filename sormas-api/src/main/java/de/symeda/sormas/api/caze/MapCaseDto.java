@@ -7,7 +7,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
-public class MapCase implements Serializable {
+public class MapCaseDto implements Serializable {
 
 	private static final long serialVersionUID = -3021332968056368431L;
 
@@ -25,7 +25,7 @@ public class MapCase implements Serializable {
 	private Double addressLat;
 	private Double addressLon;
 
-	public MapCase(String uuid, Date reportDate, CaseClassification caseClassification, Disease disease,
+	public MapCaseDto(String uuid, Date reportDate, CaseClassification caseClassification, Disease disease,
 			String healthFacilityUuid, String personUuid, Double reportLat, Double reportLon,
 			Double addressLat, Double addressLon) {
 		this.uuid = uuid;

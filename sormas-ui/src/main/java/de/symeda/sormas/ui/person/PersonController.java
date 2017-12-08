@@ -32,12 +32,12 @@ public class PersonController {
     }
 
     public void create(String firstName, String lastName, Consumer<PersonReferenceDto> doneConsumer) {
-    	PersonReferenceDto person = createNewPerson();
+    	PersonDto person = createNewPerson();
     	person.setFirstName(firstName);
     	person.setLastName(lastName);
     	
     	person = personFacade.savePerson(person);
-    	doneConsumer.accept(person); 
+    	doneConsumer.accept(person.toReference()); 
     }
     
     public void openEditModal(String personUuid) {
@@ -76,13 +76,13 @@ public class PersonController {
     	}
     }
     
-    private PersonReferenceDto createNewPerson() {
-    	PersonReferenceDto person = new PersonReferenceDto();
+    private PersonDto createNewPerson() {
+    	PersonDto person = new PersonDto();
     	person.setUuid(DataHelper.createUuid());
     	return person;
     }
     
-    public CommitDiscardWrapperComponent<PersonCreateForm> getPersonCreateComponent(PersonReferenceDto person) {
+    public CommitDiscardWrapperComponent<PersonCreateForm> getPersonCreateComponent(PersonDto person) {
     	
     	PersonCreateForm createForm = new PersonCreateForm();
         createForm.setValue(person);
@@ -92,7 +92,7 @@ public class PersonController {
         	@Override
         	public void onCommit() {
         		if (!createForm.getFieldGroup().isModified()) {
-        			PersonReferenceDto dto = createForm.getValue();
+        			PersonDto dto = createForm.getValue();
         			personFacade.savePerson(dto);
         		}
         	}

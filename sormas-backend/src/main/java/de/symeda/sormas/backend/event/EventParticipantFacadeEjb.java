@@ -131,8 +131,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			return null;
 		}
 		
-		EventParticipantDto dto = new EventParticipantDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		EventParticipantReferenceDto dto = new EventParticipantReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
 	
@@ -141,7 +140,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			return null;
 		}
 		EventParticipantDto target = new EventParticipantDto();
-		DtoHelper.fillReferenceDto(target, source);
+		DtoHelper.fillDto(target, source);
 		
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
 		target.setPerson(PersonFacadeEjb.toDto(source.getPerson()));

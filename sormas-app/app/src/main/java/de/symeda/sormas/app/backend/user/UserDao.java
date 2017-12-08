@@ -11,10 +11,6 @@ import java.util.List;
 
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
-import de.symeda.sormas.app.backend.common.DaoException;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.facility.Facility;
-import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 
@@ -29,7 +25,7 @@ public class UserDao extends AbstractAdoDao<User> {
 
     @Override
     protected Class<User> getAdoClass() {
-        throw new UnsupportedOperationException();
+        return User.class;
     }
 
     @Override

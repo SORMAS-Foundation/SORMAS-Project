@@ -15,7 +15,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.task.DashboardTask;
+import de.symeda.sormas.api.task.DashboardTaskDto;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -287,7 +287,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 	
 	@Override
-	public List<DashboardTask> getAllByUserForDashboard(TaskStatus taskStatus, Date from, Date to, String userUuid) {
+	public List<DashboardTaskDto> getAllByUserForDashboard(TaskStatus taskStatus, Date from, Date to, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		
 		return taskService.getAllByUserForDashboard(taskStatus, from, to, user);

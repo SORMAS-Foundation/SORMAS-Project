@@ -2,14 +2,14 @@ package de.symeda.sormas.api.task;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.DataTransferObject;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class TaskDto extends DataTransferObject {
+public class TaskDto extends EntityDto {
 
 	private static final long serialVersionUID = 2439546041916003653L;
 

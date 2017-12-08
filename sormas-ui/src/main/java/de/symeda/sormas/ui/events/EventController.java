@@ -73,7 +73,7 @@ public class EventController {
 	}
 	
 	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent() {
-		EventDataForm eventCreateForm = new EventDataForm();
+		EventDataForm eventCreateForm = new EventDataForm(true);
 		eventCreateForm.setValue(createNewEvent());
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventCreateForm, eventCreateForm.getFieldGroup());
 		
@@ -93,7 +93,7 @@ public class EventController {
 	}
 	
 	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid) {
-		EventDataForm eventEditForm = new EventDataForm();
+		EventDataForm eventEditForm = new EventDataForm(false);
 		EventDto event = findEvent(eventUuid);
 		eventEditForm.setValue(event);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventEditForm, eventEditForm.getFieldGroup());
@@ -114,7 +114,7 @@ public class EventController {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getEventFacade().deleteEvent(event, LoginHelper.getCurrentUserAsReference().getUuid());
+					FacadeProvider.getEventFacade().deleteEvent(event.toReference(), LoginHelper.getCurrentUserAsReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 				}
 			}, I18nProperties.getFieldCaption("Event"));

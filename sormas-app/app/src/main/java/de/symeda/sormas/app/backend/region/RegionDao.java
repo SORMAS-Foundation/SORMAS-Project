@@ -18,7 +18,7 @@ public class RegionDao extends AbstractAdoDao<Region> {
 
     @Override
     protected Class<Region> getAdoClass() {
-        throw new UnsupportedOperationException();
+        return Region.class;
     }
 
     @Override

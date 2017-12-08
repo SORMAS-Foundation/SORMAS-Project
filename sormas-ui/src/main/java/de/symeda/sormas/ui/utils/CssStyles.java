@@ -14,6 +14,8 @@ public final class CssStyles {
 	public static final String H3 = "h3";
 	public static final String H4 = "h4";
 	public static final String H5 = "h5";
+	
+	public static final String VR = "vertical-rule";
 
 	// Vertical space
 	public static final String VSPACE_0 = "vspace-0";
@@ -78,12 +80,7 @@ public final class CssStyles {
 	public static final String LABEL_BAR_TOP_NEUTRAL = "bar-top-neutral";
 	public static final String LABEL_BAR_TOP_POSITIVE = "bar-top-positive";
 	public static final String LABEL_BAR_TOP_MINOR = "bar-top-minor";
-	
-	// Separators
-	public static final String SEPARATOR_HORIZONTAL = "separator-horizontal";
-	public static final String SEPARATOR_HORIZONTAL_BOTTOM = "separator-horizontal-bottom";
-	public static final String SEPARATOR_VERTICAL = "separator-vertical";
-	public static final String SEPARATOR_VERTICAL_BROAD = "separator-vertical-broad";
+	public static final String LABEL_BOTTOM_LINE = "bottom-line";
 	
 	// Button styles
 	public static final String BUTTON_SUBTLE = "subtle";
@@ -108,6 +105,9 @@ public final class CssStyles {
 	 */
 	public static final String FORCE_CAPTION = "force-caption";
 	public static final String CAPTION_HIDDEN = "caption-hidden";
+	
+	public static final String SOFT_REQUIRED = "soft-required";
+	public static final String ERROR_COLOR_PRIMARY = "error-color-primary";
 
 	public static final String ALIGN_CENTER = "align-center";
 	public static final String ALIGN_RIGHT = "align-right";
@@ -125,6 +125,7 @@ public final class CssStyles {
 	public static final String GRID_ROW_STATUS_NOT = "status-not";
 	public static final String GRID_ROW_STATUS_DONE = "status-done";
 	public static final String GRID_ROW_STATUS_PENDING = "status-pending";
+	public static final String GRID_ROW_TITLE = "row-title";
 	
 	@Deprecated
 	public static final String CALLOUT = "callout";
@@ -132,6 +133,12 @@ public final class CssStyles {
 	public static void style(Component component, String... styles) {
 		for (String style : styles)
 			component.addStyleName(style);
+	}
+	
+	public static void style(String style, Component... components) {
+		for (Component component : components) {
+			component.addStyleName(style);
+		}
 	}
 	
 	public static void removeStyles(Component component, String... styles) {

@@ -39,7 +39,7 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
-import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
@@ -91,12 +91,12 @@ public class CaseController {
     	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case");    	
     }
     
-    public void create(PersonDto person, Disease disease) {
+    public void create(PersonReferenceDto person, Disease disease) {
     	CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(person, disease, null);
     	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case"); 
     }
     
-    public void create(PersonDto person, Disease disease, ContactDto contact) {
+    public void create(PersonReferenceDto person, Disease disease, ContactDto contact) {
     	CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(person, disease, contact);
     	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case");
     }
@@ -152,16 +152,16 @@ public class CaseController {
                 + fragmentParameter, false);
     }
 
-    public List<CaseIndexDto> getCaseIndexList() {
+    public List<CaseIndexDto> getCaseIndexList(UserRole reportingUserRole) {
     	UserDto user = LoginHelper.getCurrentUser();
-    	return FacadeProvider.getCaseFacade().getIndexList(user.getUuid());
+    	return FacadeProvider.getCaseFacade().getIndexList(user.getUuid(), reportingUserRole);
     }
     
     private CaseDataDto findCase(String uuid) {
         return cf.getCaseDataByUuid(uuid);
     }
 
-    private CaseDataDto createNewCase(PersonDto person, Disease disease) {
+    private CaseDataDto createNewCase(PersonReferenceDto person, Disease disease) {
     	CaseDataDto caze = new CaseDataDto();
     	caze.setUuid(DataHelper.createUuid());
     	
@@ -186,14 +186,14 @@ public class CaseController {
     	return caze;
     }
     
-    public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(PersonDto person, Disease disease, ContactDto contact) {
+    public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(PersonReferenceDto person, Disease disease, ContactDto contact) {
     	
     	CaseCreateForm createForm = new CaseCreateForm();
     	CaseDataDto caze = createNewCase(person, disease);
         createForm.setValue(caze);
         
         if (person != null) {
-        	createForm.setPerson(person);
+        	createForm.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(person.getUuid()));
         	createForm.setNameReadOnly(true);
         }
         if (contact != null) {
@@ -264,7 +264,7 @@ public class CaseController {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getCaseFacade().deleteCase(caze, LoginHelper.getCurrentUserAsReference().getUuid());
+					FacadeProvider.getCaseFacade().deleteCase(caze.toReference(), LoginHelper.getCurrentUserAsReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
 				}
 			}, I18nProperties.getFieldCaption("Case"));

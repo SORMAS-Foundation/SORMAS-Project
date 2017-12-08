@@ -32,7 +32,8 @@ public class VisitController {
 
 	public void editVisit(VisitReferenceDto visitRef, Consumer<VisitReferenceDto> doneConsumer) {
     	VisitDto dto = FacadeProvider.getVisitFacade().getVisitByUuid(visitRef.getUuid());
-    	VisitEditForm editForm = new VisitEditForm(dto.getDisease(), null);
+    	VisitReferenceDto referenceDto = dto.toReference();
+    	VisitEditForm editForm = new VisitEditForm(dto.getDisease(), null, false);
         editForm.setValue(dto);
         final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(editForm, editForm.getFieldGroup());
         editView.setWidth(100, Unit.PERCENTAGE);
@@ -49,7 +50,7 @@ public class VisitController {
         			VisitDto dto = editForm.getValue();
         			dto = FacadeProvider.getVisitFacade().saveVisit(dto);
         			if (doneConsumer != null) {
-        				doneConsumer.accept(dto);
+        				doneConsumer.accept(referenceDto);
         			}
         		}
         	}
@@ -59,10 +60,10 @@ public class VisitController {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getVisitFacade().deleteVisit(dto, LoginHelper.getCurrentUserAsReference().getUuid());
+					FacadeProvider.getVisitFacade().deleteVisit(referenceDto, LoginHelper.getCurrentUserAsReference().getUuid());
 					UI.getCurrent().removeWindow(window);
         			if (doneConsumer != null) {
-        				doneConsumer.accept(dto);
+        				doneConsumer.accept(referenceDto);
         			}
 				}
 			}, I18nProperties.getFieldCaption("Visit"));
@@ -71,7 +72,7 @@ public class VisitController {
 
 	public void createVisit(ContactReferenceDto contactRef, Consumer<VisitReferenceDto> doneConsumer) {
 		VisitDto visit = createNewVisit(contactRef);
-    	VisitEditForm createForm = new VisitEditForm(visit.getDisease(), FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid()));
+    	VisitEditForm createForm = new VisitEditForm(visit.getDisease(), FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid()), true);
         createForm.setValue(visit);
         final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(createForm, createForm.getFieldGroup());
         
@@ -82,7 +83,7 @@ public class VisitController {
         			VisitDto dto = createForm.getValue();
         			dto = FacadeProvider.getVisitFacade().saveVisit(dto);
         			if (doneConsumer != null) {
-        				doneConsumer.accept(dto);
+        				doneConsumer.accept(dto.toReference());
         			}
         		}
         	}

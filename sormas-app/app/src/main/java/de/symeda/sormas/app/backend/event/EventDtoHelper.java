@@ -122,8 +122,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
         if (ado == null) {
             return null;
         }
-        EventReferenceDto dto = new EventReferenceDto();
-        fillReferenceDto(dto, ado);
+        EventReferenceDto dto = new EventReferenceDto(ado.getUuid());
 
         return dto;
     }

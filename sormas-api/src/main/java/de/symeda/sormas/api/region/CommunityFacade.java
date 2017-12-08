@@ -13,4 +13,7 @@ public interface CommunityFacade {
 	List<CommunityDto> getAllAfter(Date date);
 	
 	CommunityDto getByUuid(String uuid);
-}
+
+	List<String> getAllUuids(String userUuid);
+
+	CommunityReferenceDto getCommunityReferenceByUuid(String uuid);}

@@ -1,5 +1,9 @@
 package de.symeda.auditlog.api;
 
+import javax.persistence.Transient;
+
+import de.symeda.sormas.api.HasUuid;
+
 /**
  * Class for the unique differentiation of different entities, both in terms of the entity type as well as for the differentiation
  * of different instances of the same entity type.
@@ -23,6 +27,17 @@ public class EntityId {
 
 	public String getEntityUuid() {
 		return entityUuid;
+	} 
+
+	/**
+	 * Returns the object ID to differentiate various entity types and instances of the same entity type.
+	 * <p/>
+	 * Uses {@link #getClass()} and {@link #getUuid()} in the default mode.
+	 * @return
+	 */
+	public static EntityId getOidFromHasUuid(HasUuid hasUuid) {
+
+		return new EntityId(hasUuid.getClass(), hasUuid.getUuid());
 	}
 
 	@Override

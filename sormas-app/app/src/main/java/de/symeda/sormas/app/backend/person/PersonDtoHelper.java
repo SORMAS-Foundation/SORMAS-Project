@@ -118,11 +118,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         if (ado == null) {
             return null;
         }
-        PersonReferenceDto dto = new PersonReferenceDto();
-        fillReferenceDto(dto, ado);
-
-        dto.setFirstName(ado.getFirstName());
-        dto.setLastName(ado.getLastName());
+        PersonReferenceDto dto = new PersonReferenceDto(ado.getUuid());
 
         return dto;
     }

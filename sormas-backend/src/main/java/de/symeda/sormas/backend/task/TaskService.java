@@ -14,7 +14,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.task.DashboardTask;
+import de.symeda.sormas.api.task.DashboardTaskDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRole;
@@ -104,9 +104,9 @@ public class TaskService extends AbstractAdoService<Task> {
 		return resultList;	
 	}
 
-	public List<DashboardTask> getAllByUserForDashboard(TaskStatus taskStatus, Date from, Date to, User user) {
+	public List<DashboardTaskDto> getAllByUserForDashboard(TaskStatus taskStatus, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardTask> cq = cb.createQuery(DashboardTask.class);
+		CriteriaQuery<DashboardTaskDto> cq = cb.createQuery(DashboardTaskDto.class);
 		Root<Task> task = cq.from(getElementClass());
 		
 		TaskCriteria taskCriteria = new TaskCriteria().assigneeUserEquals(user);
@@ -119,7 +119,7 @@ public class TaskService extends AbstractAdoService<Task> {
 		
 		Predicate filter = buildCriteriaFilter(taskCriteria, cb, task);
 		
-		List<DashboardTask> result;
+		List<DashboardTaskDto> result;
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(

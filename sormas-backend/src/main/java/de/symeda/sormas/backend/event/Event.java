@@ -156,7 +156,6 @@ public class Event extends AbstractDomainObject {
 	}
 	
 	@Enumerated(EnumType.STRING)
-	@Column(nullable=false)
 	public TypeOfPlace getTypeOfPlace() {
 		return typeOfPlace;
 	}
@@ -165,7 +164,7 @@ public class Event extends AbstractDomainObject {
 		this.typeOfPlace = typeOfPlace;
 	}
 	
-	@Column(length=512, nullable=false)
+	@Column(length=512)
 	public String getSrcFirstName() {
 		return srcFirstName;
 	}
@@ -174,7 +173,7 @@ public class Event extends AbstractDomainObject {
 		this.srcFirstName = srcFirstName;
 	}
 	
-	@Column(length=512, nullable=false)
+	@Column(length=512)
 	public String getSrcLastName() {
 		return srcLastName;
 	}
@@ -183,7 +182,7 @@ public class Event extends AbstractDomainObject {
 		this.srcLastName = srcLastName;
 	}
 	
-	@Column(length=512, nullable=false)
+	@Column(length=512)
 	public String getSrcTelNo() {
 		return srcTelNo;
 	}

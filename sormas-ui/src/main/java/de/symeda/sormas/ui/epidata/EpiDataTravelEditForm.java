@@ -33,7 +33,7 @@ public class EpiDataTravelEditForm extends AbstractEditForm<EpiDataTravelDto> {
 		addField(EpiDataTravelDto.TRAVEL_TYPE, ComboBox.class);
 		addField(EpiDataTravelDto.TRAVEL_DESTINATION, TextField.class);
 		
-		FieldHelper.makeFieldSoftRequired(travelDateFrom, travelDateTo);
+		FieldHelper.addSoftRequiredStyle(travelDateFrom, travelDateTo);
 	}
 	
 	@Override

@@ -3,10 +3,10 @@ package de.symeda.auditlog.api.value.format;
 import java.util.Objects;
 
 import de.symeda.auditlog.api.AuditedAttribute;
-import de.symeda.auditlog.api.HasUuid;
 import de.symeda.auditlog.api.value.DefaultValueContainer;
 import de.symeda.auditlog.api.value.SimpleValueContainer;
 import de.symeda.auditlog.api.value.ValueContainer;
+import de.symeda.sormas.api.HasUuid;
 
 /**
  * Default formatter for {@link AuditedAttribute} that supports the following types:

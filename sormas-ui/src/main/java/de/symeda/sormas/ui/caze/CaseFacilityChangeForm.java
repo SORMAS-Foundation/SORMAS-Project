@@ -16,6 +16,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -106,9 +107,8 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 		
-		region.setRequired(true);
-		district.setRequired(true);
-		facility.setRequired(true);
+		FieldHelper.addSoftRequiredStyle(community, facilityDetails, officer);
+		setRequired(true, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
 		officer.setNullSelectionAllowed(true);
 	}
 	

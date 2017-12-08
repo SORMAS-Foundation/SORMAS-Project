@@ -1,7 +1,10 @@
 package de.symeda.sormas.app.settings;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
@@ -13,9 +16,11 @@ import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.EnterPinActivity;
 import de.symeda.sormas.app.LoginActivity;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 
 
 public class SettingsActivity extends AbstractEditTabActivity {
@@ -89,6 +94,45 @@ public class SettingsActivity extends AbstractEditTabActivity {
     }
 
     public void logout(View view) {
+
+        if (SynchronizeDataAsync.hasAnyUnsynchronizedData()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
+            builder.setCancelable(true);
+            builder.setMessage(R.string.alert_unsynchronized_changes);
+            builder.setTitle(R.string.alert_title_unsynchronized_changes);
+            builder.setIcon(R.drawable.ic_perm_device_information_black_24dp);
+            AlertDialog dialog = builder.create();
+
+            dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_cancel),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }
+            );
+            dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.action_logout_anyway),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            processLogout();
+                        }
+                    }
+            );
+
+            dialog.show();
+        } else {
+            processLogout();
+        }
+    }
+
+    public void changePIN(View view) {
+        Intent intent = new Intent(this, EnterPinActivity.class);
+        intent.putExtra(EnterPinActivity.CALLED_FROM_SETTINGS, true);
+        startActivity(intent);
+    }
+
+    private void processLogout() {
         ConfigProvider.clearUsernameAndPassword();
         ConfigProvider.clearPin();
         ConfigProvider.setAccessGranted(false);
@@ -96,10 +140,8 @@ public class SettingsActivity extends AbstractEditTabActivity {
         startActivity(intent);
     }
 
-    public void changePIN(View view) {
-        Intent intent = new Intent(this, EnterPinActivity.class);
-        intent.putExtra(EnterPinActivity.CALLED_FROM_SETTINGS, true);
-        startActivity(intent);
+    private interface LogoutCallback {
+        void call(boolean hasUnmodifiedEntities);
     }
 
 }

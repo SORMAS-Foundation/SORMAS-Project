@@ -18,8 +18,9 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.DashboardCase;
-import de.symeda.sormas.api.caze.MapCase;
+import de.symeda.sormas.api.caze.DashboardCaseDto;
+import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.caze.StatisticsCaseDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -36,6 +37,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -130,9 +132,9 @@ public class CaseService extends AbstractAdoService<Case> {
 		return resultList;
 	}	
 
-	public List<DashboardCase> getNewCasesForDashboard(District district, Disease disease, Date from, Date to, User user) {
+	public List<DashboardCaseDto> getNewCasesForDashboard(District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardCase> cq = cb.createQuery(DashboardCase.class);
+		CriteriaQuery<DashboardCaseDto> cq = cb.createQuery(DashboardCaseDto.class);
 		Root<Case> caze = cq.from(getElementClass());
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
@@ -171,7 +173,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			}
 		}
 
-		List<DashboardCase> result;
+		List<DashboardCaseDto> result;
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(
@@ -191,9 +193,9 @@ public class CaseService extends AbstractAdoService<Case> {
 		return result;
 	}
 
-	public List<MapCase> getCasesForMap(District district, Disease disease, Date from, Date to, User user) {
+	public List<MapCaseDto> getCasesForMap(District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<MapCase> cq = cb.createQuery(MapCase.class);
+		CriteriaQuery<MapCaseDto> cq = cb.createQuery(MapCaseDto.class);
 		Root<Case> caze = cq.from(getElementClass());
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
@@ -235,7 +237,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			}
 		}
 
-		List<MapCase> result;
+		List<MapCaseDto> result;
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(
@@ -252,9 +254,77 @@ public class CaseService extends AbstractAdoService<Case> {
 					);
 
 			result = em.createQuery(cq).getResultList();
-			for (MapCase mapCase : result) {
-				mapCase.setPerson(personFacade.getReferenceByUuid(mapCase.getPersonUuid()));
+			for (MapCaseDto mapCaseDto : result) {
+				mapCaseDto.setPerson(personFacade.getReferenceByUuid(mapCaseDto.getPersonUuid()));
 			}
+		} else {
+			result = Collections.emptyList();
+		}
+
+		return result;
+	}
+	
+	// TODO use aggregating query instead of a list of DTOs
+	public List<StatisticsCaseDto> getCasesForStatistics(Region region, District district, Disease disease, Date from, Date to, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<StatisticsCaseDto> cq = cb.createQuery(StatisticsCaseDto.class);
+		Root<Case> caze = cq.from(getElementClass());
+		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
+		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);	
+		
+		Predicate filter = createUserFilter(cb, cq, caze, user);
+
+		// Use the onset date if available and the report date otherwise
+		// TODO Add date of outcome to the date filter once it is built in
+		Predicate dateFilter = cb.or(
+				cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), to), 
+				cb.and(
+						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
+						cb.lessThanOrEqualTo(caze.get(Case.REPORT_DATE), to)
+						)
+				);
+		if (filter != null) {
+			filter = cb.and(filter, dateFilter);
+		} else {
+			filter = dateFilter;
+		}
+		
+		if (region != null) {
+			Predicate regionFilter = cb.equal(caze.get(Case.REGION), region);
+			if (filter != null) {
+				filter = cb.and(filter, regionFilter);
+			} else {
+				filter = regionFilter;
+			}
+		}
+
+		if (district != null) {
+			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
+			if (filter != null) {
+				filter = cb.and(filter, districtFilter);
+			} else {
+				filter = districtFilter;
+			}
+		}
+
+		if (disease != null) {
+			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
+			if (filter != null) {
+				filter = cb.and(filter, diseaseFilter);
+			} else {
+				filter = diseaseFilter;
+			}
+		}
+
+		List<StatisticsCaseDto> result;
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(
+					person.get(Person.APPROXIMATE_AGE),
+					person.get(Person.SEX)
+					);
+
+			result = em.createQuery(cq).getResultList();
 		} else {
 			result = Collections.emptyList();
 		}

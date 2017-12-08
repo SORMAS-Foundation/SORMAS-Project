@@ -8,14 +8,28 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.epidata.EpiDataBurialDto;
+import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
@@ -25,17 +39,15 @@ import de.symeda.sormas.app.backend.hospitalization.HospitalizationDao;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.backend.user.User;
 
-import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 /**
  * Created by Mate Strysewske on 14.06.2017.
@@ -63,12 +75,13 @@ public class CaseBackendTest {
     }
 
     @Test
-    public void shouldCreatePreviousHospitalization() {
+    public void shouldCreatePreviousHospitalization() throws DaoException {
         // Assure that there are no previous hospitalizations in the app to start with
         assertThat(DatabaseHelper.getPreviousHospitalizationDao().queryForAll().size(), is(0));
 
         Case caze = TestEntityCreator.createCase();
-        TestEntityCreator.createPreviousHospitalization(caze);
+        TestEntityCreator.addPreviousHospitalization(caze);
+        DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
 
         // Assure that the previous hospitalization has been successfully created
         assertThat(DatabaseHelper.getPreviousHospitalizationDao().queryForAll().size(), is(1));
@@ -284,4 +297,82 @@ public class CaseBackendTest {
         assertEquals(1, previousHospitalizations.size());
     }
 
+    @Test
+    public void shouldeMergeCollectionAsExpected() throws DaoException {
+
+        CaseDao caseDao = DatabaseHelper.getCaseDao();
+        CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
+
+        // create existing data for app
+        Case caze = TestEntityCreator.createCase();
+        TestEntityCreator.addPreviousHospitalization(caze);
+        caseDao.saveAndSnapshot(caze);
+        caseDao.accept(caze);
+        caze = caseDao.queryForIdWithEmbedded(caze.getId());
+
+        // add previous hospitalization on "server-side"
+        CaseDataDto serverCaseDto = caseDtoHelper.adoToDto(caze);
+        serverCaseDto.getHospitalization().getPreviousHospitalizations().get(0).setDescription("Server-side change");
+        PreviousHospitalizationDto previousHospitalizationDto = new PreviousHospitalizationDto();
+        previousHospitalizationDto.setUuid(DataHelper.createUuid());
+        previousHospitalizationDto.setCreationDate(new Date()); // now
+        previousHospitalizationDto.setChangeDate(new Date());
+        serverCaseDto.getHospitalization().getPreviousHospitalizations().add(previousHospitalizationDto);
+
+        // add previous hospitalization on app-side
+        caze.getHospitalization().getPreviousHospitalizations().get(0).setDescription("App-side change");
+        TestEntityCreator.addPreviousHospitalization(caze);
+        caseDao.saveAndSnapshot(caze);
+
+        // merge server case
+        Case serverCase = caseDtoHelper.fillOrCreateFromDto(null, serverCaseDto);
+        DatabaseHelper.getCaseDao().mergeOrCreate(serverCase);
+        Case mergedCase = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(serverCase.getUuid());
+        assertEquals(3, mergedCase.getHospitalization().getPreviousHospitalizations().size());
+
+        caseDao.accept(mergedCase);
+        mergedCase = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(mergedCase.getUuid());
+        assertFalse(mergedCase.isModifiedOrChildModified());
+    }
+
+    @Test
+    public void shouldPullWithCollection() throws DaoException {
+
+        CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
+
+        Person person = TestEntityCreator.createPerson("Some", "Guy");
+        PersonReferenceDto personDto = new PersonDtoHelper().toReferenceDto(person);
+
+        CaseDataDto serverCaseDto = new CaseDataDto();
+        // TODO find a better way to fill DTO with default embedded objects
+        TestDtoCreator.fillNewDto(serverCaseDto);
+        serverCaseDto.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+        serverCaseDto.setInvestigationStatus(InvestigationStatus.PENDING);
+        serverCaseDto.setPerson(personDto);
+
+        SymptomsDto symptomsDto = new SymptomsDto();
+        TestDtoCreator.fillNewDto(symptomsDto);
+        serverCaseDto.setSymptoms(symptomsDto);
+
+        HospitalizationDto hospitalizationDto = new HospitalizationDto();
+        TestDtoCreator.fillNewDto(hospitalizationDto);
+        serverCaseDto.setHospitalization(hospitalizationDto);
+
+        EpiDataDto epiDataDto = new EpiDataDto();
+        TestDtoCreator.fillNewDto(epiDataDto);
+        serverCaseDto.setEpiData(epiDataDto);
+
+        EpiDataBurialDto epiDataBurialDto = new EpiDataBurialDto();
+        TestDtoCreator.fillNewDto(epiDataBurialDto);
+        LocationDto epiDataBurialLocationDto = new LocationDto();
+        TestDtoCreator.fillNewDto(epiDataBurialLocationDto);
+        epiDataBurialDto.setBurialAddress(epiDataBurialLocationDto);
+        epiDataDto.getBurials().add(epiDataBurialDto);
+
+        // merge server case
+        Case serverCase = caseDtoHelper.fillOrCreateFromDto(null, serverCaseDto);
+        DatabaseHelper.getCaseDao().mergeOrCreate(serverCase);
+        Case mergedCase = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(serverCase.getUuid());
+        assertEquals(1, mergedCase.getEpiData().getBurials().size());
+    }
 }

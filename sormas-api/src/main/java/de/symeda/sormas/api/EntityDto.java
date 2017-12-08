@@ -3,7 +3,7 @@ package de.symeda.sormas.api;
 import java.io.Serializable;
 import java.util.Date;
 
-public abstract class DataTransferObject implements Serializable, Cloneable {
+public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 
 	private static final long serialVersionUID = -1L;
 
@@ -15,11 +15,11 @@ public abstract class DataTransferObject implements Serializable, Cloneable {
 	private Date changeDate;
 	private String uuid;
 
-	public DataTransferObject() {
+	public EntityDto() {
 		
 	}
 	
-	public DataTransferObject(Date creationDate, Date changeDate, String uuid) {
+	public EntityDto(Date creationDate, Date changeDate, String uuid) {
 		this.creationDate = creationDate;
 		this.changeDate = changeDate;
 		this.uuid = uuid;
@@ -41,6 +41,7 @@ public abstract class DataTransferObject implements Serializable, Cloneable {
 		this.changeDate = changeDate;
 	}
 	
+	@Override
 	public String getUuid() {
 		return uuid;
 	}
@@ -58,10 +59,10 @@ public abstract class DataTransferObject implements Serializable, Cloneable {
 			return false;
 		}
 
-		if (getUuid() != null && o instanceof DataTransferObject
-				&& ((DataTransferObject) o).getUuid() != null) {
+		if (getUuid() != null && o instanceof HasUuid
+				&& ((HasUuid) o).getUuid() != null) {
 			// this works, because we are using UUIDs
-			DataTransferObject ado = (DataTransferObject) o;
+			HasUuid ado = (HasUuid) o;
 			return getUuid().equals(ado.getUuid());
 		} else {
 			return false;
@@ -77,11 +78,11 @@ public abstract class DataTransferObject implements Serializable, Cloneable {
 	}
 	
 	@Override
-	public DataTransferObject clone() throws CloneNotSupportedException {
+	public EntityDto clone() throws CloneNotSupportedException {
 		if (getUuid() == null) {
 			throw new CloneNotSupportedException("DataTransferObject must have uuid in order to be cloneable");
 		}
-		return (DataTransferObject) super.clone();
+		return (EntityDto) super.clone();
 	}
 }
 

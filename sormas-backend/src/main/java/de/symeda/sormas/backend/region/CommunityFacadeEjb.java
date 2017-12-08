@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.region;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,13 +11,17 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "CommunityFacade")
 public class CommunityFacadeEjb implements CommunityFacade {
 	
 	@EJB
-	private CommunityService service;
+	private CommunityService communityService;
+	@EJB
+	private UserService userService;
 	@EJB
 	private DistrictService districtService;
 
@@ -32,22 +37,38 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	
 	@Override
 	public List<CommunityDto> getAllAfter(Date date) {
-		return service.getAllAfter(date, null).stream()
+		return communityService.getAllAfter(date, null).stream()
 			.map(c -> toDto(c))
 			.collect(Collectors.toList());
 	}
 	
 	@Override
+	public List<String> getAllUuids(String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return communityService.getAllUuids(user);
+	}
+	
+	@Override
 	public CommunityDto getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
+		return toDto(communityService.getByUuid(uuid));
+	}
+	
+	@Override
+	public CommunityReferenceDto getCommunityReferenceByUuid(String uuid) {
+		return toReferenceDto(communityService.getByUuid(uuid));
 	}
 	
 	public static CommunityReferenceDto toReferenceDto(Community entity) {
 		if (entity == null) {
 			return null;
 		}
-		CommunityReferenceDto dto = new CommunityReferenceDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		CommunityReferenceDto dto = new CommunityReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
 	
@@ -56,7 +77,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 			return null;
 		}
 		CommunityDto dto = new CommunityDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		DtoHelper.fillDto(dto, entity);
 		
 		dto.setName(entity.getName());
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));

@@ -182,7 +182,7 @@ public class ContactController {
 			editComponent.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getContactFacade().deleteContact(contact, LoginHelper.getCurrentUserAsReference().getUuid());
+					FacadeProvider.getContactFacade().deleteContact(contact.toReference(), LoginHelper.getCurrentUserAsReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 				}
 			}, I18nProperties.getFieldCaption("Contact"));

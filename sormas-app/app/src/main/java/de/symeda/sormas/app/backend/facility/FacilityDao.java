@@ -6,7 +6,6 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -32,7 +31,7 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
 
     @Override
     protected Class<Facility> getAdoClass() {
-        throw new UnsupportedOperationException();
+        return Facility.class;
     }
 
     @Override

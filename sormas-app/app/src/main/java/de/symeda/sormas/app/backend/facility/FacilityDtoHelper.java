@@ -167,25 +167,31 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
 
         target.setName(source.getName());
 
+        // keep a cache to improve performance
         if (source.getCommunity() != null) {
-            // keep a cache to improve performance
             if (lastCommunity == null || !lastCommunity.getUuid().equals(source.getCommunity().getUuid())) {
                 lastCommunity = DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity());
             }
-            target.setCommunity(lastCommunity);
-            if (lastDistrict == null || !lastDistrict.getId().equals(lastCommunity.getDistrict().getId())) {
-                lastDistrict = DatabaseHelper.getDistrictDao().queryForId(lastCommunity.getDistrict().getId());
-            }
-            target.setDistrict(lastDistrict);
-            if (lastRegion == null || !lastRegion.getId().equals(lastDistrict.getRegion().getId())) {
-                lastRegion = DatabaseHelper.getRegionDao().queryForId(lastDistrict.getRegion().getId());
-            }
-            target.setRegion(lastRegion);
         } else {
-            target.setCommunity(null);
-            target.setDistrict(null);
-            target.setRegion(null);
+            lastCommunity = null;
         }
+        target.setCommunity(lastCommunity);
+        if (source.getDistrict() != null) {
+            if (lastDistrict == null || !lastDistrict.getUuid().equals(source.getDistrict().getUuid())) {
+                lastDistrict = DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict());
+            }
+        } else {
+            lastDistrict = null;
+        }
+        target.setDistrict(lastDistrict);
+        if (source.getRegion() != null) {
+            if (lastRegion == null || !lastRegion.getUuid().equals(source.getRegion().getUuid())) {
+                lastRegion = DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion());
+            }
+        } else {
+            lastRegion = null;
+        }
+        target.setRegion(lastRegion);
 
         target.setCity(source.getCity());
         target.setLatitude(source.getLatitude());
@@ -203,8 +209,7 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
         if (ado == null) {
             return null;
         }
-        FacilityReferenceDto dto = new FacilityReferenceDto();
-        fillReferenceDto(dto, ado);
+        FacilityReferenceDto dto = new FacilityReferenceDto(ado.getUuid());
 
         return dto;
     }

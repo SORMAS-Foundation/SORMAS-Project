@@ -63,6 +63,13 @@ $v-grid-cell-focused-border: none !default;
         color: #C44;
       }
     }
+   
+    .row-title {
+      text-transform: uppercase;
+      font-weight: 600;
+	  min-height: $v-grid-row-height;
+	  font-size: 10px;
+    }
      
     .v-grid-header {
     

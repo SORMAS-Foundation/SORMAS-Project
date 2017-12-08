@@ -2,7 +2,7 @@ package de.symeda.sormas.api.task;
 
 import java.io.Serializable;
 
-public class DashboardTask implements Serializable {
+public class DashboardTaskDto implements Serializable {
 
 	private static final long serialVersionUID = -4719548498678710837L;
 
@@ -14,7 +14,7 @@ public class DashboardTask implements Serializable {
 	private TaskPriority priority;
 	private TaskStatus taskStatus;
 	
-	public DashboardTask(TaskPriority priority, TaskStatus taskStatus) {
+	public DashboardTaskDto(TaskPriority priority, TaskStatus taskStatus) {
 		this.priority = priority;
 		this.taskStatus = taskStatus;
 	}

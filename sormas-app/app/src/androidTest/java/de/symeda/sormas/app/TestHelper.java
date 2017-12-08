@@ -45,6 +45,8 @@ public class TestHelper {
         DatabaseHelper.init(context);
         ConfigProvider.init(context);
 
+        ConfigProvider.setServerRestUrl("http://this-is-a-test-url-that-hopefully-doesnt-exist.com");
+
         insertInfrastructureData();
         insertUsers(setInformantAsActiveUser);
     }
@@ -63,7 +65,6 @@ public class TestHelper {
         DatabaseHelper.getUserDao().create(user);
         if (!setInformantAsActiveUser) {
             ConfigProvider.setUsernameAndPassword("SanaObas", "TestPassword");
-            ConfigProvider.setServerRestUrl("http://this-is-a-test-url-that-hopefully-doesnt-exist.com");
         }
 
         // Create a second user with a specific region and district
@@ -96,7 +97,6 @@ public class TestHelper {
         DatabaseHelper.getUserDao().create(informant);
         if (setInformantAsActiveUser) {
             ConfigProvider.setUsernameAndPassword("InfoUser", "TestPassword");
-            ConfigProvider.setServerRestUrl("http://this-is-a-test-url-that-hopefully-doesnt-exist.com");
         }
     }
 

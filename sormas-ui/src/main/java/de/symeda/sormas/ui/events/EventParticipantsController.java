@@ -90,7 +90,7 @@ public class EventParticipantsController {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getEventParticipantFacade().deleteEventParticipant(editForm.getValue(), LoginHelper.getCurrentUserAsReference().getUuid());
+					FacadeProvider.getEventParticipantFacade().deleteEventParticipant(editForm.getValue().toReference(), LoginHelper.getCurrentUserAsReference().getUuid());
 					UI.getCurrent().removeWindow(window);
 					refreshView();
 				}
@@ -99,10 +99,9 @@ public class EventParticipantsController {
 	}
 	
 	public EventParticipantDto createNewEventParticipant(EventReferenceDto eventRef) {
-		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventRef.getUuid());
 		EventParticipantDto eventParticipant = new EventParticipantDto();
 		eventParticipant.setUuid(DataHelper.createUuid());
-		eventParticipant.setEvent(event);
+		eventParticipant.setEvent(eventRef);
 		return eventParticipant;
 	}
 	

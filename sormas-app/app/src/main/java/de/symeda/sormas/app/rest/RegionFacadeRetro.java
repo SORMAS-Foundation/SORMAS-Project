@@ -15,4 +15,6 @@ public interface RegionFacadeRetro {
     @GET("regions/all/{since}")
     Call<List<RegionDto>> pullAllSince(@Path("since") long since);
 
+    @GET("regions/uuids")
+    Call<List<String>> pullUuids();
 }

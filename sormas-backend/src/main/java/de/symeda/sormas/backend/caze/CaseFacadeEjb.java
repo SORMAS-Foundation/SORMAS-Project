@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.caze;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -20,14 +22,16 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.DashboardCase;
+import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.caze.MapCase;
+import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.caze.StatisticsCaseDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -35,6 +39,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskPriority;
@@ -42,6 +47,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -144,7 +150,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseIndexDto> getIndexList(String userUuid) {
+	public List<CaseIndexDto> getIndexList(String userUuid, UserRole reportingUserRole) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
@@ -154,6 +160,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, District> district = caze.join(Case.DISTRICT, JoinType.LEFT);
 		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Join<Case, User> surveillanceOfficer = caze.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
+		Join<Case, User> reportingUser = caze.join(Case.REPORTING_USER, JoinType.LEFT);
 
 		cq.multiselect(caze.get(Case.CREATION_DATE), caze.get(Case.CHANGE_DATE), caze.get(Case.UUID), 
 				caze.get(Case.EPID_NUMBER), person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME),
@@ -164,6 +171,16 @@ public class CaseFacadeEjb implements CaseFacade {
 			
 		User user = userService.getByUuid(userUuid);		
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
+		
+		if (reportingUserRole != null) {
+			Predicate userRoleFilter = cb.isMember(reportingUserRole, reportingUser.get(User.USER_ROLES));
+			if (filter != null) {
+				filter = cb.and(filter, userRoleFilter);
+			} else {
+				filter = userRoleFilter;
+			}
+		}
+		
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -226,7 +243,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 	
 	@Override
-	public List<DashboardCase> getNewCasesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public List<DashboardCaseDto> getNewCasesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		District district = districtService.getByReferenceDto(districtRef);
 		User user = userService.getByUuid(userUuid);
 		
@@ -234,11 +251,20 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 	
 	@Override
-	public List<MapCase> getCasesForMap(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public List<MapCaseDto> getCasesForMap(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		District district = districtService.getByReferenceDto(districtRef);
 		User user = userService.getByUuid(userUuid);
 		
 		return caseService.getCasesForMap(district, disease, from, to, user);
+	}
+	
+	@Override
+	public List<StatisticsCaseDto> getCasesForStatistics(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+		Region region = regionService.getByReferenceDto(regionRef);
+		District district = districtService.getByReferenceDto(districtRef);
+		User user = userService.getByUuid(userUuid);
+		
+		return caseService.getCasesForStatistics(region, district, disease, from, to, user);
 	}
 
 	@Override
@@ -436,8 +462,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (entity == null) {
 			return null;
 		}
-		CaseReferenceDto dto = new CaseReferenceDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		CaseReferenceDto dto = new CaseReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
 
@@ -446,7 +471,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			return null;
 		}
 		CaseDataDto target = new CaseDataDto();
-		DtoHelper.fillReferenceDto(target, source);
+		DtoHelper.fillDto(target, source);
 
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
@@ -648,7 +673,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 	
 	@Override
-	public Map<DistrictDto, Long> getCaseCountPerDistrict(Date fromDate, Date toDate, Disease disease) {
+	public List<Pair<DistrictDto, BigDecimal>> getCaseMeasurePerDistrict(Date fromDate, Date toDate, Disease disease, CaseMeasure caseMeasure) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> from = cq.from(Case.class);
@@ -686,11 +711,31 @@ public class CaseFacadeEjb implements CaseFacade {
 		
 		cq.groupBy(from.get(Case.DISTRICT));
 		cq.multiselect(from.get(Case.DISTRICT), cb.count(from));
+		if (caseMeasure == CaseMeasure.CASE_COUNT) {
+			cq.orderBy(cb.asc(cb.count(from)));
+		}
 		List<Object[]> results = em.createQuery(cq).getResultList();
-		
-		Map<DistrictDto, Long> resultMap = results.stream().collect(
-				Collectors.toMap(e -> DistrictFacadeEjb.toDto((District)e[0]), e -> (Long)e[1]));
-		return resultMap;
+
+		if (caseMeasure == CaseMeasure.CASE_COUNT) {
+			List<Pair<DistrictDto, BigDecimal>> resultList = results.stream()
+					.map(e -> new Pair<DistrictDto, BigDecimal>(DistrictFacadeEjb.toDto((District)e[0]), new BigDecimal((Long)e[1])))
+					.collect(Collectors.toList());
+			return resultList;
+		} else {
+			List<Pair<DistrictDto, BigDecimal>> resultList = results.stream()
+					.map(e -> new Pair<DistrictDto, BigDecimal>(DistrictFacadeEjb.toDto((District)e[0]), 
+							new BigDecimal((Long)e[1])
+								.divide(new BigDecimal(((District)e[0]).getPopulation())
+								.divide(new BigDecimal(DistrictDto.CASE_INCIDENCE_DIVISOR), 1, RoundingMode.HALF_UP), 1, RoundingMode.HALF_UP)))
+					.sorted(new Comparator<Pair<DistrictDto, BigDecimal>>() {
+						@Override
+						public int compare(Pair<DistrictDto, BigDecimal> o1, Pair<DistrictDto, BigDecimal> o2) {
+							return o1.getElement1().compareTo(o2.getElement1());
+						}
+					})
+					.collect(Collectors.toList());
+			return resultList;
+		}
 	}
 	
 	@LocalBean

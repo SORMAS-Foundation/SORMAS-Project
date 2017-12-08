@@ -29,7 +29,7 @@ public class SampleTestController {
 	}
 	
 	public void create(SampleReferenceDto sampleRef, SampleTestGrid grid) {
-		SampleTestEditForm createForm = new SampleTestEditForm();
+		SampleTestEditForm createForm = new SampleTestEditForm(true);
 		createForm.setValue(createNewSampleTest(sampleRef));
 		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(createForm, createForm.getFieldGroup());
 	
@@ -51,7 +51,7 @@ public class SampleTestController {
 		// get fresh data
 		SampleTestDto newDto = stf.getByUuid(dto.getUuid());
 		
-		SampleTestEditForm form = new SampleTestEditForm();
+		SampleTestEditForm form = new SampleTestEditForm(false);
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(form, form.getFieldGroup());
 
@@ -72,7 +72,7 @@ public class SampleTestController {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getSampleTestFacade().deleteSampleTest(dto, LoginHelper.getCurrentUserAsReference().getUuid());
+					FacadeProvider.getSampleTestFacade().deleteSampleTest(dto.toReference(), LoginHelper.getCurrentUserAsReference().getUuid());
 					UI.getCurrent().removeWindow(popupWindow);
 					grid.reload();
 				}

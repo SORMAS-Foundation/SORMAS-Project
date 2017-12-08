@@ -11,7 +11,7 @@ import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.event.DashboardEvent;
+import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -97,7 +97,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 	
 	@Override
-	public List<DashboardEvent> getNewEventsForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public List<DashboardEventDto> getNewEventsForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		District district = districtService.getByReferenceDto(districtRef);
 		
@@ -189,8 +189,7 @@ public class EventFacadeEjb implements EventFacade {
 			return null;
 		}
 		
-		EventReferenceDto dto = new EventReferenceDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		EventReferenceDto dto = new EventReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
 	
@@ -199,7 +198,7 @@ public class EventFacadeEjb implements EventFacade {
 			return null;
 		}
 		EventDto target = new EventDto();
-		DtoHelper.fillReferenceDto(target, source);
+		DtoHelper.fillDto(target, source);
 		
 		target.setEventType(source.getEventType());
 		target.setEventStatus(source.getEventStatus());

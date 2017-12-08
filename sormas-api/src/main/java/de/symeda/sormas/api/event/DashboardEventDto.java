@@ -8,7 +8,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 
-public class DashboardEvent implements Serializable {
+public class DashboardEventDto implements Serializable {
 
 	private static final long serialVersionUID = -4108181804263076837L;
 
@@ -29,7 +29,7 @@ public class DashboardEvent implements Serializable {
 	private String districtUuid;
 	private DistrictReferenceDto district;
 	
-	public DashboardEvent(String uuid, EventType eventType, EventStatus eventStatus, Disease disease, String diseaseDetails, Date eventDate, Double reportLat, Double reportLon, String districtUuid) {
+	public DashboardEventDto(String uuid, EventType eventType, EventStatus eventStatus, Disease disease, String diseaseDetails, Date eventDate, Double reportLat, Double reportLon, String districtUuid) {
 		this.uuid = uuid;
 		this.eventType = eventType;
 		this.eventStatus = eventStatus;

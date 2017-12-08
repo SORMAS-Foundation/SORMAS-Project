@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.contact.MapContact;
+import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
@@ -121,9 +121,9 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return result;
 	}	
 	
-	public List<MapContact> getContactsForMap(District district, Disease disease, Date fromDate, Date toDate, User user, List<String> caseUuids) {
+	public List<MapContactDto> getContactsForMap(District district, Disease disease, Date fromDate, Date toDate, User user, List<String> caseUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<MapContact> cq = cb.createQuery(MapContact.class);
+		CriteriaQuery<MapContactDto> cq = cb.createQuery(MapContactDto.class);
 		Root<Contact> contact = cq.from(getElementClass());
 		Join<Contact, Person> person = contact.join(Contact.PERSON, JoinType.LEFT);
 		Join<Person, Location> contactPersonAddress = person.join(Person.ADDRESS, JoinType.LEFT);
@@ -173,7 +173,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 			filter = followUpFilter;
 		}
 		
-		List<MapContact> result;
+		List<MapContactDto> result;
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(
@@ -185,19 +185,18 @@ public class ContactService extends AbstractAdoService<Contact> {
 					contactPersonAddress.get(Location.LONGITUDE),
 					symptoms.get(Symptoms.ONSET_DATE),
 					caze.get(Case.REPORT_DATE),
-					person.get(Person.UUID),
-					casePerson.get(Person.UUID)
+					person.get(Person.FIRST_NAME),
+					person.get(Person.LAST_NAME),
+					casePerson.get(Person.FIRST_NAME),
+					casePerson.get(Person.LAST_NAME)
 			);
 			
 			result = em.createQuery(cq).getResultList();
-			for (MapContact mapContact : result) {
-				Visit lastVisit = visitService.getLastVisitByContact(getByUuid(mapContact.getUuid()), VisitStatus.COOPERATIVE);
+			for (MapContactDto mapContactDto : result) {
+				Visit lastVisit = visitService.getLastVisitByContact(getByUuid(mapContactDto.getUuid()), VisitStatus.COOPERATIVE);
 				if (lastVisit != null) {
-					mapContact.setLastVisitDateTime(lastVisit.getVisitDateTime());
+					mapContactDto.setLastVisitDateTime(lastVisit.getVisitDateTime());
 				}
-				
-				mapContact.setPerson(personFacade.getReferenceByUuid(mapContact.getPersonUuid()));
-				mapContact.setCasePerson(personFacade.getReferenceByUuid(mapContact.getCasePersonUuid()));
 			}
 		} else {
 			result = Collections.emptyList();

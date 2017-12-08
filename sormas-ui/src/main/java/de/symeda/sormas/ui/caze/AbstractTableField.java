@@ -196,7 +196,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 				if (event.isDoubleClick() || EDIT_COLUMN_ID.equals(event.getPropertyId())) {
 					final E entry = (E) event.getItemId();
 					if (entry != null) {
-						editEntry(entry, result -> onEntryChanged(result));
+						editEntry(entry, false, result -> onEntryChanged(result));
 					}
 				}
 			}
@@ -230,7 +230,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 	protected void addEntry() {
 		final E entry = createEntry();
 
-		editEntry(entry, new Consumer<E>() {
+		editEntry(entry, true, new Consumer<E>() {
 
 			@Override
 			public void accept(E result) {
@@ -240,7 +240,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 		});
 	}
 
-	protected abstract void editEntry(E entry, Consumer<E> commitCallback);
+	protected abstract void editEntry(E entry, boolean create, Consumer<E> commitCallback);
 
 	/**
 	 * Override in order to do custom sort

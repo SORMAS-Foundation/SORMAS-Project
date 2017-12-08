@@ -21,10 +21,14 @@ public class EpiDataBurialEditForm extends AbstractEditForm<EpiDataBurialDto> {
 			LayoutUtil.fluidRowLocs(EpiDataBurialDto.BURIAL_ILL, EpiDataBurialDto.BURIAL_TOUCHING)
 	;
 	
-	public EpiDataBurialEditForm() {
+	public EpiDataBurialEditForm(boolean create) {
 		super(EpiDataBurialDto.class, EpiDataBurialDto.I18N_PREFIX);
 		
 		setWidth(540, Unit.PIXELS);
+		
+		if (create) {
+			hideValidationUntilNextCommit();
+		}
 	}
 	
 	@Override
@@ -38,12 +42,12 @@ public class EpiDataBurialEditForm extends AbstractEditForm<EpiDataBurialDto> {
 		addField(EpiDataBurialDto.BURIAL_ILL, OptionGroup.class);
 		addField(EpiDataBurialDto.BURIAL_TOUCHING, OptionGroup.class);
 		addField(EpiDataBurialDto.BURIAL_ADDRESS, LocationEditForm.class).setCaption(null);
-		
+
+		FieldHelper.addSoftRequiredStyle(burialDateFrom, burialDateTo);
 		setRequired(true,
 				EpiDataBurialDto.BURIAL_ILL,
 				EpiDataBurialDto.BURIAL_TOUCHING);
 		
-		FieldHelper.makeFieldSoftRequired(burialDateFrom, burialDateTo);
 	}
 	
 	@Override

@@ -16,9 +16,10 @@ import de.symeda.auditlog.api.Auditor;
 import de.symeda.auditlog.api.ChangeEvent;
 import de.symeda.auditlog.api.ChangeType;
 import de.symeda.auditlog.api.Current;
-import de.symeda.auditlog.api.HasUuid;
+import de.symeda.auditlog.api.EntityId;
 import de.symeda.auditlog.api.TransactionId;
 import de.symeda.auditlog.api.UserId;
+import de.symeda.sormas.api.HasUuid;
 
 /**
  * Entity life cycle listener that can detect changes on entities.
@@ -50,7 +51,7 @@ public class DefaultAuditListener implements Serializable, AuditListener {
 	@PreUpdate
 	public void prePersist(HasUuid o) {
 
-		ChangeEvent data = new ChangeEvent(this.auditor.detectChanges(o), o.getOid(), LocalDateTime.now(), userId, transactionId);
+		ChangeEvent data = new ChangeEvent(this.auditor.detectChanges(o), EntityId.getOidFromHasUuid(o), LocalDateTime.now(), userId, transactionId);
 		event.fire(data);
 	}
 
@@ -65,7 +66,7 @@ public class DefaultAuditListener implements Serializable, AuditListener {
 	@PreRemove
 	public void preRemove(HasUuid o) {
 
-		ChangeEvent data = new ChangeEvent(o.getOid(), Collections.emptySortedMap(), ChangeType.DELETE, LocalDateTime.now(), userId, transactionId);
+		ChangeEvent data = new ChangeEvent(EntityId.getOidFromHasUuid(o), Collections.emptySortedMap(), ChangeType.DELETE, LocalDateTime.now(), userId, transactionId);
 		event.fire(data);
 	}
 }

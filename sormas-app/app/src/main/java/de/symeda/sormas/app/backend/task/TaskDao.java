@@ -21,7 +21,6 @@ import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
@@ -38,7 +37,7 @@ public class TaskDao extends AbstractAdoDao<Task> {
 
     @Override
     protected Class<Task> getAdoClass() {
-        throw new UnsupportedOperationException();
+        return Task.class;
     }
 
     @Override

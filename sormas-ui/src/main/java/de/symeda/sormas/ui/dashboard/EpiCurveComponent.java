@@ -16,7 +16,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.DashboardCase;
+import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -88,17 +88,17 @@ public class EpiCurveComponent extends VerticalLayout {
 
 		if (epiCurveMode == EpiCurveMode.CASE_STATUS) {
 			// Adds the number of confirmed, probable and suspect cases for each day as data
-			List<DashboardCase> cases = dashboardDataProvider.getCases();
-			List<DashboardCase> confirmedCases = cases.stream()
+			List<DashboardCaseDto> cases = dashboardDataProvider.getCases();
+			List<DashboardCaseDto> confirmedCases = cases.stream()
 					.filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED)
 					.collect(Collectors.toList());
-			List<DashboardCase> probableCases = cases.stream()
+			List<DashboardCaseDto> probableCases = cases.stream()
 					.filter(c -> c.getCaseClassification() == CaseClassification.PROBABLE)
 					.collect(Collectors.toList());
-			List<DashboardCase> suspectedCases = cases.stream()
+			List<DashboardCaseDto> suspectedCases = cases.stream()
 					.filter(c -> c.getCaseClassification() == CaseClassification.SUSPECT)
 					.collect(Collectors.toList());
-			List<DashboardCase> notYetClassifiedCases = cases.stream()
+			List<DashboardCaseDto> notYetClassifiedCases = cases.stream()
 					.filter(c -> c.getCaseClassification() == CaseClassification.NOT_CLASSIFIED)
 					.collect(Collectors.toList());
 	
@@ -166,11 +166,11 @@ public class EpiCurveComponent extends VerticalLayout {
 			}
 		} else {
 			// Adds the number of alive and dead cases for each day as data
-			List<DashboardCase> cases = dashboardDataProvider.getCases();
-			List<DashboardCase> aliveCases = cases.stream()
+			List<DashboardCaseDto> cases = dashboardDataProvider.getCases();
+			List<DashboardCaseDto> aliveCases = cases.stream()
 					.filter(c -> c.getCasePersonCondition() == PresentCondition.ALIVE)
 					.collect(Collectors.toList());
-			List<DashboardCase> deadCases = cases.stream()
+			List<DashboardCaseDto> deadCases = cases.stream()
 					.filter(c -> c.getCasePersonCondition() == PresentCondition.DEAD)
 					.collect(Collectors.toList());
 			

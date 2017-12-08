@@ -29,8 +29,11 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
     private final ContactDto contact;
     private SymptomsForm symptomsForm;
 
-    public VisitEditForm(Disease disease, ContactDto contact) {
+    public VisitEditForm(Disease disease, ContactDto contact, boolean create) {
         super(VisitDto.class, VisitDto.I18N_PREFIX);
+        if (create) {
+        	hideValidationUntilNextCommit();
+        }
 		this.disease = disease;
 		this.contact = contact;
 		if (disease == null) {

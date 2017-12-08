@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.DataTransferObject;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public class EpiDataDto extends DataTransferObject {
+public class EpiDataDto extends EntityDto {
 
 	private static final long serialVersionUID = 6292411396563549093L;
 	

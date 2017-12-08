@@ -1,18 +1,22 @@
 package de.symeda.sormas.api.caze;
 
-import java.util.Date;
-
 import de.symeda.sormas.api.ReferenceDto;
 
 public class CaseReferenceDto extends ReferenceDto {
 
-	public CaseReferenceDto() { }
+	private static final long serialVersionUID = 5007131477733638086L;
 	
-	public CaseReferenceDto(Date creationDate, Date changeDate, String uuid) {
-		super(creationDate, changeDate, uuid);
+	public CaseReferenceDto() {
+		
+	}
+	
+	public CaseReferenceDto(String uuid) {
+		setUuid(uuid);
+	}
+	
+	public CaseReferenceDto(String uuid, String caption) {
+		setUuid(uuid);
+		setCaption(caption);
 	}
 
-	private static final long serialVersionUID = 5612778605780498593L;
-
-	
 }

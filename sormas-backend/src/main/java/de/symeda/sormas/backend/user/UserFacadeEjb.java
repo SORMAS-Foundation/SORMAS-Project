@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.user;
 
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -102,6 +103,18 @@ public class UserFacadeEjb implements UserFacade {
 			.map(c -> toReferenceDto(c))
 			.collect(Collectors.toList());
 	}
+	
+	@Override
+	public List<String> getAllUuids(String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return userService.getAllUuids(user);
+	}
 
 	@Override
 	public UserDto getByUuid(String uuid) {
@@ -136,7 +149,7 @@ public class UserFacadeEjb implements UserFacade {
 	
 	public static UserDto toDto(User entity) {
 		UserDto dto = new UserDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		DtoHelper.fillDto(dto, entity);
 		
 		dto.setActive(entity.isAktiv());
 		dto.setUserName(entity.getUserName());
@@ -161,8 +174,7 @@ public class UserFacadeEjb implements UserFacade {
 		if (entity == null) {
 			return null;
 		}
-		UserReferenceDto dto = new UserReferenceDto();
-		DtoHelper.fillReferenceDto(dto, entity);
+		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}	
 	

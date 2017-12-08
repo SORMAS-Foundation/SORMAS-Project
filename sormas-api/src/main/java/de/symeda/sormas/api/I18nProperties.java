@@ -12,6 +12,7 @@ public class I18nProperties {
 	private final Properties fieldDescriptionProperties;
 	private final Properties fragmentProperties;
 	private final Properties enumProperties;
+	private final Properties validationErrorProperties;
 
 	private static I18nProperties getInstance() {
 		if (instance == null)
@@ -124,12 +125,42 @@ public class I18nProperties {
 		}
 		return result;
 	}
+	
+	/**
+	 * Uses <param>key</param> as default value
+	 */
+	public static String getValidationError(String key) {
+		return getValidationError(key, getValidationError("default", "%s required"));
+	}
+
+	public static String getValidationError(String key, String defaultValue) {
+		return getInstance().validationErrorProperties.getProperty(key, defaultValue);
+	}
+
+	/**
+	 * Uses <param>key</param> as default value
+	 */
+	public static String getPrefixValidationError(String prefix, String key) {
+		return getPrefixValidationError(prefix, key, getValidationError("default", "%s required"));
+	}
+	
+	public static String getPrefixValidationError(String prefix, String key, String defaultValue) {
+		String result = null;
+		if (prefix != null) {
+			result = getInstance().validationErrorProperties.getProperty(prefix+"."+key);
+		}
+		if (result == null) {
+			result = getValidationError(key, defaultValue);
+		}
+		return result;
+	}
 
 	private I18nProperties() {
 		fieldCaptionProperties = loadProperties("/fieldCaptions.properties");
 		fieldDescriptionProperties = loadProperties("/fieldDescriptions.properties");
 		fragmentProperties = loadProperties("/fragments.properties");
 		enumProperties = loadProperties("/enum.properties");
+		validationErrorProperties = loadProperties("/validationErrors.properties");
 	}
 	
 	public static Properties loadProperties(String fileName) {

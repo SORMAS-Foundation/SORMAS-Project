@@ -104,15 +104,15 @@ public final class RetroProvider {
             httpClient.addInterceptor(additionalInterceptor);
         }
 
-        retrofit = new Retrofit.Builder()
-                .baseUrl(ConfigProvider.getServerRestUrl())
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .client(httpClient.build())
-                .build();
-
         // check rest api version
         Response<String> versionResponse;
         try {
+
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(ConfigProvider.getServerRestUrl())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .client(httpClient.build())
+                    .build();
 
             // make call to get version info
             infoFacadeRetro = retrofit.create(InfoFacadeRetro.class);
@@ -131,6 +131,8 @@ public final class RetroProvider {
             };
             versionResponse = asyncTask.execute().get();
 
+        } catch (IllegalArgumentException e) {
+            throw new ConnectException(e.getMessage());
         } catch (InterruptedException e) {
             throw new ConnectException(e.getMessage());
         } catch (ExecutionException e) {

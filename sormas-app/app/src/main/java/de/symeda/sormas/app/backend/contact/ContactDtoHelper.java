@@ -123,8 +123,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         if (ado == null) {
             return null;
         }
-        ContactReferenceDto dto = new ContactReferenceDto();
-        fillReferenceDto(dto, ado);
+        ContactReferenceDto dto = new ContactReferenceDto(ado.getUuid());
 
         return dto;
     }

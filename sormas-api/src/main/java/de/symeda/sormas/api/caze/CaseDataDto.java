@@ -3,6 +3,7 @@ package de.symeda.sormas.api.caze;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -16,7 +17,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public class CaseDataDto extends CaseReferenceDto {
+public class CaseDataDto extends EntityDto {
 
 	private static final long serialVersionUID = 5007131477733638086L;
 	
@@ -357,6 +358,10 @@ public class CaseDataDto extends CaseReferenceDto {
 
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
+	
+	public CaseReferenceDto toReference() {
+		return new CaseReferenceDto(getUuid());
 	}
 
 }

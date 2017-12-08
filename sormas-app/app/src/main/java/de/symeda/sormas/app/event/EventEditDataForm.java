@@ -77,6 +77,7 @@ public class EventEditDataForm extends FormTab {
         toggleTypeOfPlaceTextField();
 
         EventValidator.setRequiredHintsForEventData(binding);
+        EventValidator.setSoftRequiredHintsForEventData(binding);
 
         binding.eventDisease.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override

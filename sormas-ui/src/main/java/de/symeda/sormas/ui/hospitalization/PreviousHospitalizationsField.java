@@ -103,9 +103,9 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 	}
 
 	@Override
-	protected void editEntry(PreviousHospitalizationDto entry, Consumer<PreviousHospitalizationDto> commitCallback) {
+	protected void editEntry(PreviousHospitalizationDto entry, boolean create, Consumer<PreviousHospitalizationDto> commitCallback) {
 
-		PreviousHospitalizationEditForm editForm = new PreviousHospitalizationEditForm();
+		PreviousHospitalizationEditForm editForm = new PreviousHospitalizationEditForm(create);
 		editForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<PreviousHospitalizationEditForm> editView = new CommitDiscardWrapperComponent<PreviousHospitalizationEditForm>(

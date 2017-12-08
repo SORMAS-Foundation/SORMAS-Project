@@ -159,8 +159,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		if (source == null) {
 			return null;
 		}
-		VisitReferenceDto target = new VisitReferenceDto();
-		DtoHelper.fillReferenceDto(target, source);
+		VisitReferenceDto target = new VisitReferenceDto(source.getUuid(), source.toString());
 		return target;
 	}	
 	
@@ -169,7 +168,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			return null;
 		}
 		VisitDto target = new VisitDto();
-		DtoHelper.fillReferenceDto(target, source);
+		DtoHelper.fillDto(target, source);
 
 		target.setDisease(source.getDisease());
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));

@@ -1,17 +1,12 @@
 package de.symeda.sormas.api.report;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 
-public class WeeklyReportEntryDto extends WeeklyReportEntryReferenceDto {
+public class WeeklyReportEntryDto extends EntityDto {
 
 	private static final long serialVersionUID = 7863410150359837423L;
 
-	private static final String I18N_PREFIX = "WeeklyReportEntry";
-	
-	public static final String WEEKLY_REPORT = "weeklyReport";
-	public static final String DISEASE = "disease";
-	public static final String NUMBER_OF_CASES = "numberOfCases";
-	
 	private WeeklyReportReferenceDto weeklyReport;
 	private Disease disease;
 	private Integer numberOfCases;
@@ -35,6 +30,10 @@ public class WeeklyReportEntryDto extends WeeklyReportEntryReferenceDto {
 	}
 	public void setNumberOfCases(Integer numberOfCases) {
 		this.numberOfCases = numberOfCases;
+	}
+	
+	public WeeklyReportEntryReferenceDto toReference() {
+		return new WeeklyReportEntryReferenceDto(getUuid());
 	}
 	
 }

@@ -17,6 +17,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -135,7 +136,7 @@ public class EventParticipantsGrid extends Grid {
 				if(caseDto != null) {
 					ControllerProvider.getCaseController().navigateToData(findAssociatedCaseId(personDto, eventDto));
 				} else {
-					ControllerProvider.getCaseController().create(personDto, eventDto.getDisease());
+					ControllerProvider.getCaseController().create(personDto.toReference(), eventDto.getDisease());
 				}
 	       	} else if(EDIT_BTN_ID.equals(e.getPropertyId())) {
 	       		ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipantDto);

@@ -11,8 +11,8 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -132,7 +132,7 @@ public class SampleController {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getSampleFacade().deleteSample(dto, LoginHelper.getCurrentUserAsReference().getUuid());
+					FacadeProvider.getSampleFacade().deleteSample(dto.toReference(), LoginHelper.getCurrentUserAsReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 				}
 			}, I18nProperties.getFieldCaption("Sample"));

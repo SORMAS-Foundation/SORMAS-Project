@@ -2,10 +2,11 @@ package de.symeda.sormas.api.sample;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class SampleTestDto extends SampleTestReferenceDto {
+public class SampleTestDto extends EntityDto {
 
 	private static final long serialVersionUID = -5213210080802372054L;
 
@@ -92,6 +93,10 @@ public class SampleTestDto extends SampleTestReferenceDto {
 	}
 	public void setFourFoldIncreaseAntibodyTiter(boolean fourFoldIncreaseAntibodyTiter) {
 		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
+	}
+	
+	public SampleTestReferenceDto toReference() {
+		return new SampleTestReferenceDto(getUuid());
 	}
 	
 }

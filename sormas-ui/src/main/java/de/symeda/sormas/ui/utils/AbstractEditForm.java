@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,7 +9,9 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.DefaultFieldGroupFieldFactory;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitEvent;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitHandler;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.shared.ui.combobox.FilteringMode;
@@ -24,7 +27,7 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.DataTransferObject;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -38,13 +41,16 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.login.LoginHelper;
 
 @SuppressWarnings("serial")
-public abstract class AbstractEditForm <DTO extends DataTransferObject> extends CustomField<DTO> {// implements DtoEditForm<DTO> {
+public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomField<DTO> implements CommitHandler {// implements DtoEditForm<DTO> {
 
 	private final BeanFieldGroup<DTO> fieldGroup;
 	
 	private final String propertyI18nPrefix;
-
+	
 	private Class<DTO> type;
+
+	private boolean hideValidationUntilNextCommit = false;
+	private List<Field<?>> customFields = new ArrayList<>();
 	
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix) {
 	
@@ -57,7 +63,7 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 			protected void configureField(Field<?> field) {
 				field.setBuffered(isBuffered());
 
-				field.setEnabled(isEnabled());
+				field.setEnabled(isEnabled());				
 
 				if (field.getPropertyDataSource().isReadOnly()) {
 					field.setReadOnly(true);
@@ -66,6 +72,8 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 				}
 			}
 		};
+		
+		fieldGroup.addCommitHandler(this);
 		
 		fieldGroup.setFieldFactory(new DefaultFieldGroupFieldFactory() {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -174,7 +182,7 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 		// TODO find a better way to do this.
 		// Calling it at the end of addFields does not work, because value changes might make certain fields editable again.
 		if (!LoginHelper.hasUserRight(UserRight.EDIT)) {
-			for (Field field : getFieldGroup().getFields()) {
+			for (Field<?> field : getFieldGroup().getFields()) {
 				field.setReadOnly(true);
 			}
 		}
@@ -206,11 +214,39 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 	}
 	
 	@Override
-	public void commit() throws SourceException, InvalidValueException {
-		
+	public void preCommit(CommitEvent commitEvent) throws CommitException {
 		if (!LoginHelper.hasUserRight(UserRight.EDIT)) {
 			throw new UnsupportedOperationException("User with role 'National Observer' is not allowed to edit data");
 		}
+		
+		if (hideValidationUntilNextCommit) {
+			hideValidationUntilNextCommit = false;
+			for (Field<?> field : getFieldGroup().getFields()) {
+				if (field instanceof AbstractField) {
+					AbstractField<?> abstractField = (AbstractField<?>)field;
+					abstractField.setValidationVisible(true);
+				}
+			}
+			
+			for (Field<?> field : customFields) {
+				if (field instanceof AbstractField) {
+					AbstractField<?> abstractField = (AbstractField<?>)field;
+					abstractField.setValidationVisible(true);
+				}
+			}
+		}
+		
+		for (Field<?> field : customFields) {
+			field.validate();
+		}
+	}
+	
+	/**
+	 * Attention (!!!!)
+	 * This method is not called when used with CommitDiscardWrapperComponent (uses FieldGroup instead)
+	 */
+	@Override
+	public void commit() throws SourceException, InvalidValueException {
 		
 		try {
 			getFieldGroup().commit();
@@ -224,6 +260,11 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 			}
 		}
 		super.commit();
+	}
+	
+	@Override
+	public void postCommit(CommitEvent commitEvent) throws CommitException {
+		
 	}
 	
 	@Override
@@ -247,6 +288,7 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
     	T field = getFieldGroup().getFieldFactory().createField(dataType, fieldType);
 		formatField(field, fieldId);
 		getContent().addComponent(field, fieldId);
+		customFields.add(field);
 		return field;
 	}
 
@@ -265,12 +307,23 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 	
 	@SuppressWarnings("rawtypes")
 	protected <T extends Field> T formatField(T field, String propertyId) {
-		field.setCaption(I18nProperties.getPrefixFieldCaption(getPropertyI18nPrefix(), propertyId, field.getCaption()));
+		
+		String caption = I18nProperties.getPrefixFieldCaption(getPropertyI18nPrefix(), propertyId, field.getCaption());
+		field.setCaption(caption);
+
 		if (field instanceof AbstractField) {
 			AbstractField abstractField = (AbstractField)field;
 			abstractField.setDescription(I18nProperties.getPrefixFieldDescription(
 					getPropertyI18nPrefix(), propertyId, abstractField.getDescription()));
+			
+			if (hideValidationUntilNextCommit) {
+				abstractField.setValidationVisible(false);
+			}
 		}
+		
+		String validationError = I18nProperties.getPrefixValidationError(getPropertyI18nPrefix(), propertyId);
+		field.setRequiredError(String.format(validationError, caption));
+
 		field.setWidth(100, Unit.PERCENTAGE);
 		return field;
 	}
@@ -313,7 +366,8 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 	
 	protected void setRequired(boolean required, String ...fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
-			getField(propertyId).setRequired(required);
+			Field<?> field = getField(propertyId);
+			field.setRequired(required);
 		}
 	}
 
@@ -331,5 +385,24 @@ public abstract class AbstractEditForm <DTO extends DataTransferObject> extends 
 
 	protected String getPropertyI18nPrefix() {
 		return propertyI18nPrefix;
+	}
+
+	public void hideValidationUntilNextCommit() {
+		
+		this.hideValidationUntilNextCommit  = true;
+		
+		for (Field<?> field : getFieldGroup().getFields()) {
+			if (field instanceof AbstractField) {
+				AbstractField<?> abstractField = (AbstractField<?>)field;
+				abstractField.setValidationVisible(false);
+			}
+		}
+		
+		for (Field<?> field : customFields) {
+			if (field instanceof AbstractField) {
+				AbstractField<?> abstractField = (AbstractField<?>)field;
+				abstractField.setValidationVisible(false);
+			}
+		}
 	}
 }

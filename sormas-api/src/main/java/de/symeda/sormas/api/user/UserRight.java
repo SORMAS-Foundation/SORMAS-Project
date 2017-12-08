@@ -9,7 +9,6 @@ import java.util.Set;
 
 public enum UserRight {
 
-	// TODO split to entities
 	CREATE(
 			ADMIN,
 			NATIONAL_USER,	

@@ -73,11 +73,13 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                     synchronizeChangedData();
                     break;
                 case Complete:
+                    deleteInvalidInfrastructure();
                     pullInfrastructure();
                     pullMissingAndDeleteInvalid();
                     synchronizeChangedData();
                     break;
                 case CompleteAndRepull:
+                    deleteInvalidInfrastructure();
                     pullInfrastructure();
                     repullData();
                     pullMissingAndDeleteInvalid();
@@ -132,6 +134,15 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
+    public static boolean hasAnyUnsynchronizedData() {
+        return DatabaseHelper.getCaseDao().isAnyModified() || DatabaseHelper.getContactDao().isAnyModified() ||
+                DatabaseHelper.getPersonDao().isAnyModified() ||
+                DatabaseHelper.getEventDao().isAnyModified() || DatabaseHelper.getEventParticipantDao().isAnyModified() ||
+                DatabaseHelper.getSampleDao().isAnyModified() || DatabaseHelper.getSampleTestDao().isAnyModified() ||
+                DatabaseHelper.getTaskDao().isAnyModified() || DatabaseHelper.getVisitDao().isAnyModified() ||
+                DatabaseHelper.getWeeklyReportDao().isAnyModified() || DatabaseHelper.getWeeklyReportEntryDao().isAnyModified();
+    }
+
     private void synchronizeChangedData() throws DaoException, ServerConnectionException, SynchronizationException {
 
         PersonDtoHelper personDtoHelper = new PersonDtoHelper();
@@ -145,6 +156,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         TaskDtoHelper taskDtoHelper = new TaskDtoHelper();
         WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
         WeeklyReportEntryDtoHelper weeklyReportEntryDtoHelper = new WeeklyReportEntryDtoHelper();
+
+        // order is important, due to dependencies (e.g. case & person)
 
         boolean personsNeedPull = personDtoHelper.pullAndPushEntities();
         boolean eventsNeedPull = eventDtoHelper.pullAndPushEntities();
@@ -196,6 +209,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
         WeeklyReportEntryDtoHelper weeklyReportEntryDtoHelper = new WeeklyReportEntryDtoHelper();
 
+        // order is important, due to dependencies (e.g. case & person)
+
         new UserDtoHelper().repullEntities();
         personDtoHelper.repullEntities();
         eventDtoHelper.repullEntities();
@@ -224,6 +239,13 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
         Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalid");
 
+        // order is important, due to dependencies (e.g. case & person)
+
+        // weekly reports and entries
+        List<String> weeklyReportUuids = executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids());
+        DatabaseHelper.getWeeklyReportDao().deleteInvalid(weeklyReportUuids);
+        List<String> weeklyReportEntryUuids = executeUuidCall(RetroProvider.getWeeklyReportEntryFacade().pullUuids());
+        DatabaseHelper.getWeeklyReportEntryDao().deleteInvalid(weeklyReportEntryUuids);
         // tasks
         List<String> taskUuids = executeUuidCall(RetroProvider.getTaskFacade().pullUuids());
         DatabaseHelper.getTaskDao().deleteInvalid(taskUuids);
@@ -251,11 +273,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // persons
         List<String> personUuids = executeUuidCall(RetroProvider.getPersonFacade().pullUuids());
         DatabaseHelper.getPersonDao().deleteInvalid(personUuids);
-        // weekly reports and entries
-        List<String> weeklyReportUuids = executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids());
-        DatabaseHelper.getWeeklyReportDao().deleteInvalid(weeklyReportUuids);
-        List<String> weeklyReportEntryUuids = executeUuidCall(RetroProvider.getWeeklyReportEntryFacade().pullUuids());
-        DatabaseHelper.getWeeklyReportEntryDao().deleteInvalid(weeklyReportEntryUuids);
+
+        // order is important, due to dependencies (e.g. case & person)
 
         new PersonDtoHelper().pullMissing(personUuids);
         new EventDtoHelper().pullMissing(eventUuids);
@@ -268,6 +287,28 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new TaskDtoHelper().pullMissing(taskUuids);
         new WeeklyReportDtoHelper().pullMissing(weeklyReportUuids);
         new WeeklyReportEntryDtoHelper().pullMissing(weeklyReportEntryUuids);
+    }
+
+    private void deleteInvalidInfrastructure() throws ServerConnectionException {
+        // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
+
+        Log.d(SynchronizeDataAsync.class.getSimpleName(), "deleteInvalidInfrastructure");
+
+        // users
+        List<String> userUuids = executeUuidCall(RetroProvider.getUserFacade().pullUuids());
+        DatabaseHelper.getUserDao().deleteInvalid(userUuids);
+        // facilities
+        List<String> facilityUuids = executeUuidCall(RetroProvider.getFacilityFacade().pullUuids());
+        DatabaseHelper.getFacilityDao().deleteInvalid(facilityUuids);
+        // communities
+        List<String> communityUuid = executeUuidCall(RetroProvider.getCommunityFacade().pullUuids());
+        DatabaseHelper.getCommunityDao().deleteInvalid(communityUuid);
+        // districts
+        List<String> districtUuids = executeUuidCall(RetroProvider.getDistrictFacade().pullUuids());
+        DatabaseHelper.getDistrictDao().deleteInvalid(districtUuids);
+        // regions
+        List<String> regionUuids = executeUuidCall(RetroProvider.getRegionFacade().pullUuids());
+        DatabaseHelper.getRegionDao().deleteInvalid(regionUuids);
     }
 
     private List<String> executeUuidCall(Call<List<String>> call) throws ServerConnectionException {

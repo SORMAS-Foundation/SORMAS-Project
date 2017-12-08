@@ -96,8 +96,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
         if (ado == null) {
             return null;
         }
-        UserReferenceDto dto = new UserReferenceDto();
-        fillReferenceDto(dto, ado);
+        UserReferenceDto dto = new UserReferenceDto(ado.getUuid());
         return dto;
     }
 }

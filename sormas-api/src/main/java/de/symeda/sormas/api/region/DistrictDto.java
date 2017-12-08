@@ -1,10 +1,13 @@
 package de.symeda.sormas.api.region;
 
-public class DistrictDto extends DistrictReferenceDto {
+import de.symeda.sormas.api.EntityDto;
+
+public class DistrictDto extends EntityDto {
 
 	private static final long serialVersionUID = 8990957700033431836L;
 
 	public static final String I18N_PREFIX = "District";
+	public static final int CASE_INCIDENCE_DIVISOR = 100000;
 
 	private String name;
 	private String epidCode;
@@ -50,5 +53,9 @@ public class DistrictDto extends DistrictReferenceDto {
 	}
 	public void setGrowthRate(Float growthRate) {
 		this.growthRate = growthRate;
+	}
+	
+	public DistrictReferenceDto toReference() {
+		return new DistrictReferenceDto(getUuid());
 	}
 }

@@ -68,7 +68,7 @@ For information on what libs are used see pom.xml in sormas-base project: https:
 * ``cd /root/deploy/sormas/$(date +%F) (just to make sure you're in the right directory)``
 * ``cp apps/*.ear /opt/domains/sormas/autodeploy/``
 * ``cp apps/*.war /opt/domains/sormas/autodeploy/``
-* ``cp android/*.apk /var/www/sormas/downloads/``
+* ``cp android/debug/*.apk /var/www/sormas/downloads/``
 
 #### Final Steps
 
