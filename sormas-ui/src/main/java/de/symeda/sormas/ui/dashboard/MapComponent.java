@@ -626,7 +626,7 @@ public class MapComponent extends VerticalLayout {
 			legendEntry = createMapKeyEntry("mapicons/lowest-region-small.png", districtShapesLowerQuartile.compareTo(BigDecimal.ONE) > 0 ? "1 - " + districtShapesLowerQuartile + " cases" : "1 case");
 			break;
 		case CASE_INCIDENCE:
-			legendEntry = createMapKeyEntry("mapicons/lowest-region-small.png", "<= " + DataHelper.getTruncatedBigDecimal(districtShapesLowerQuartile) + " cases / " + DistrictDto.CASE_MEASURE_DIVISOR);
+			legendEntry = createMapKeyEntry("mapicons/lowest-region-small.png", "<= " + DataHelper.getTruncatedBigDecimal(districtShapesLowerQuartile) + " cases / " + DistrictDto.CASE_INCIDENCE_DIVISOR);
 			break;
 		default: throw new IllegalArgumentException(caseMeasure.toString());
 		}
@@ -645,7 +645,7 @@ public class MapComponent extends VerticalLayout {
 				legendEntry = createMapKeyEntry("mapicons/low-region-small.png", districtShapesMedian.compareTo(districtShapesLowerQuartile.add(BigDecimal.ONE)) > 0 ? districtShapesLowerQuartile.add(BigDecimal.ONE) + " - " + districtShapesMedian + " cases" : districtShapesMedian + " cases");
 				break;
 			case CASE_INCIDENCE:
-				legendEntry = createMapKeyEntry("mapicons/low-region-small.png", DataHelper.getTruncatedBigDecimal(districtShapesLowerQuartile.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP)) + " - " + DataHelper.getTruncatedBigDecimal(districtShapesMedian) + " cases / " + DistrictDto.CASE_MEASURE_DIVISOR);
+				legendEntry = createMapKeyEntry("mapicons/low-region-small.png", DataHelper.getTruncatedBigDecimal(districtShapesLowerQuartile.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP)) + " - " + DataHelper.getTruncatedBigDecimal(districtShapesMedian) + " cases / " + DistrictDto.CASE_INCIDENCE_DIVISOR);
 				break;
 			default: throw new IllegalArgumentException(caseMeasure.toString());
 			}
@@ -665,7 +665,7 @@ public class MapComponent extends VerticalLayout {
 				legendEntry = createMapKeyEntry("mapicons/high-region-small.png", districtShapesUpperQuartile.compareTo(districtShapesMedian.add(BigDecimal.ONE)) > 0 ? districtShapesMedian.add(BigDecimal.ONE) + " - " + districtShapesUpperQuartile + " cases" : districtShapesUpperQuartile + " cases");
 				break;
 			case CASE_INCIDENCE:
-				legendEntry = createMapKeyEntry("mapicons/high-region-small.png", DataHelper.getTruncatedBigDecimal(districtShapesMedian.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP)) + " - " + DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " cases / " + DistrictDto.CASE_MEASURE_DIVISOR);
+				legendEntry = createMapKeyEntry("mapicons/high-region-small.png", DataHelper.getTruncatedBigDecimal(districtShapesMedian.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP)) + " - " + DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " cases / " + DistrictDto.CASE_INCIDENCE_DIVISOR);
 				break;
 			default: throw new IllegalArgumentException(caseMeasure.toString());
 			}	
@@ -684,7 +684,7 @@ public class MapComponent extends VerticalLayout {
 			legendEntry = createMapKeyEntry("mapicons/highest-region-small.png", "> " + districtShapesUpperQuartile + " cases");
 			break;
 		case CASE_INCIDENCE:
-			legendEntry = createMapKeyEntry("mapicons/red-region-small.png", "> " + DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " cases / " + DistrictDto.CASE_MEASURE_DIVISOR);
+			legendEntry = createMapKeyEntry("mapicons/red-region-small.png", "> " + DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " cases / " + DistrictDto.CASE_INCIDENCE_DIVISOR);
 			break;
 		default: throw new IllegalArgumentException(caseMeasure.toString());
 		}
@@ -824,7 +824,7 @@ public class MapComponent extends VerticalLayout {
 					} else {					
 						BigDecimal incidence = districtValue
 								.divide(new BigDecimal(district.getPopulation())
-								.divide(new BigDecimal(DistrictDto.CASE_MEASURE_DIVISOR), 1, RoundingMode.HALF_UP), 1, RoundingMode.HALF_UP);
+								.divide(new BigDecimal(DistrictDto.CASE_INCIDENCE_DIVISOR), 1, RoundingMode.HALF_UP), 1, RoundingMode.HALF_UP);
 						if (incidence.compareTo(BigDecimal.ZERO) == 0) {
 							polygon.setFillOpacity(0);
 						} else if (incidence.compareTo(districtShapesLowerQuartile) <= 0) {

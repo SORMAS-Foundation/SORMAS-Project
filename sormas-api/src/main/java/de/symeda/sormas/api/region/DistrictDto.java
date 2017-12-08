@@ -7,7 +7,7 @@ public class DistrictDto extends EntityDto {
 	private static final long serialVersionUID = 8990957700033431836L;
 
 	public static final String I18N_PREFIX = "District";
-	public static final int CASE_MEASURE_DIVISOR = 100000;
+	public static final int CASE_INCIDENCE_DIVISOR = 100000;
 
 	private String name;
 	private String epidCode;

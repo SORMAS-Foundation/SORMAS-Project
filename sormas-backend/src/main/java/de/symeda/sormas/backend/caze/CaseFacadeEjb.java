@@ -715,7 +715,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					.map(e -> new Pair<DistrictDto, BigDecimal>(DistrictFacadeEjb.toDto((District)e[0]), 
 							new BigDecimal((Long)e[1])
 								.divide(new BigDecimal(((District)e[0]).getPopulation())
-								.divide(new BigDecimal(DistrictDto.CASE_MEASURE_DIVISOR), 1, RoundingMode.HALF_UP), 1, RoundingMode.HALF_UP)))
+								.divide(new BigDecimal(DistrictDto.CASE_INCIDENCE_DIVISOR), 1, RoundingMode.HALF_UP), 1, RoundingMode.HALF_UP)))
 					.sorted(new Comparator<Pair<DistrictDto, BigDecimal>>() {
 						@Override
 						public int compare(Pair<DistrictDto, BigDecimal> o1, Pair<DistrictDto, BigDecimal> o2) {
