@@ -723,10 +723,22 @@ public class CaseFacadeEjb implements CaseFacade {
 			return resultList;
 		} else {
 			List<Pair<DistrictDto, BigDecimal>> resultList = results.stream()
-					.map(e -> new Pair<DistrictDto, BigDecimal>(DistrictFacadeEjb.toDto((District)e[0]), 
-							new BigDecimal((Long)e[1])
-								.divide(new BigDecimal(((District)e[0]).getPopulation())
-								.divide(new BigDecimal(DistrictDto.CASE_INCIDENCE_DIVISOR), 1, RoundingMode.HALF_UP), 1, RoundingMode.HALF_UP)))
+					.map(e -> {
+						District district = (District) e[0];
+						Integer population = district.getPopulation();
+						Long caseCount = (Long) e[1];
+						
+						if (population == null || population <= 0) {
+							// No or negative population - these entries will be cut off in the UI
+							return new Pair<DistrictDto, BigDecimal>(DistrictFacadeEjb.toDto(district), new BigDecimal(0));
+						} else {
+							// Scale of 5 is used because 1 / 100000 = 0.00001 is the lowest possible value for the inner division;
+							// ATTENTION: This will have to be changed when the case incidence divisor is altered to avoid divide by zero errors
+							return new Pair<DistrictDto, BigDecimal>(DistrictFacadeEjb.toDto(district), 
+									new BigDecimal(caseCount).divide(
+											new BigDecimal(population).divide(new BigDecimal(DistrictDto.CASE_INCIDENCE_DIVISOR), 5, RoundingMode.HALF_UP), 1, RoundingMode.HALF_UP));
+						}
+					})
 					.sorted(new Comparator<Pair<DistrictDto, BigDecimal>>() {
 						@Override
 						public int compare(Pair<DistrictDto, BigDecimal> o1, Pair<DistrictDto, BigDecimal> o2) {
