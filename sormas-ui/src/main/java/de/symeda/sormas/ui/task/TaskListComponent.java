@@ -83,7 +83,7 @@ public class TaskListComponent extends VerticalLayout {
     	}
     	topLayout.addComponent(buttonFilterLayout);
     	
-    	if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+    	if (LoginHelper.hasUserRight(UserRight.TASK_CREATE)) {
 	    	createButton = new Button("New task");
 	        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 	        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
@@ -116,7 +116,7 @@ public class TaskListComponent extends VerticalLayout {
     	}
     	topLayout.addComponent(buttonFilterLayout);
     	
-    	if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+    	if (LoginHelper.hasUserRight(UserRight.TASK_CREATE)) {
 	        createButton = new Button("New task");
 	        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 	        createButton.setIcon(FontAwesome.PLUS_CIRCLE);

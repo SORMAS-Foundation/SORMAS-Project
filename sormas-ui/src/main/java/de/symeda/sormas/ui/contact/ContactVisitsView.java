@@ -63,7 +63,7 @@ public class ContactVisitsView extends AbstractContactView {
     	personButton.setStyleName(ValoTheme.BUTTON_LINK);
         topLayout.addComponent(personButton);
         
-    	if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+    	if (LoginHelper.hasUserRight(UserRight.VISIT_CREATE)) {
 	        newButton = new Button("New visit");
 	        newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 	        newButton.setIcon(FontAwesome.PLUS_CIRCLE);

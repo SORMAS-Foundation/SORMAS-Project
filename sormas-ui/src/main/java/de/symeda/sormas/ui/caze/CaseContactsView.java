@@ -72,7 +72,7 @@ public class CaseContactsView extends AbstractCaseView {
 	        topLayout.addComponent(statusButton);
         }
 
-        if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+        if (LoginHelper.hasUserRight(UserRight.CONTACT_CREATE)) {
 	        newButton = new Button("New contact");
 	        newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 	        newButton.setIcon(FontAwesome.PLUS_CIRCLE);

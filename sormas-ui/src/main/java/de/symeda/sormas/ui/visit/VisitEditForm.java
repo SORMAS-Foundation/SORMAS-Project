@@ -9,6 +9,7 @@ import com.vaadin.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
@@ -29,8 +30,8 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
     private final ContactDto contact;
     private SymptomsForm symptomsForm;
 
-    public VisitEditForm(Disease disease, ContactDto contact, boolean create) {
-        super(VisitDto.class, VisitDto.I18N_PREFIX);
+    public VisitEditForm(Disease disease, ContactDto contact, boolean create, UserRight editOrCreateUserRight) {
+        super(VisitDto.class, VisitDto.I18N_PREFIX, editOrCreateUserRight);
         if (create) {
         	hideValidationUntilNextCommit();
         }
@@ -62,7 +63,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
     	addField(VisitDto.VISIT_STATUS, OptionGroup.class);
     	addField(VisitDto.VISIT_REMARKS, TextField.class);
     	
-    	symptomsForm = new SymptomsForm(disease, SymptomsContext.VISIT);
+    	symptomsForm = new SymptomsForm(disease, SymptomsContext.VISIT, UserRight.VISIT_EDIT);
 		getFieldGroup().bind(symptomsForm, VisitDto.SYMPTOMS);
 		getContent().addComponent(symptomsForm, VisitDto.SYMPTOMS);
     	

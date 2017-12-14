@@ -13,12 +13,14 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -42,8 +44,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 					LayoutUtil.fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY)
 					);
     
-    public UserEditForm(boolean create) {
-        super(UserDto.class, UserDto.I18N_PREFIX);
+    public UserEditForm(boolean create, UserRight editOrCreateUserRight) {
+        super(UserDto.class, UserDto.I18N_PREFIX, editOrCreateUserRight);
 
         setWidth(640, Unit.PIXELS);
         
@@ -73,26 +75,20 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
     	ComboBox district = addField(UserDto.DISTRICT, ComboBox.class);
     	region.addValueChangeListener(e -> {
-    		district.removeAllItems();
     		RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
-    		if (regionDto != null) {
-    			district.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()));
-    		}
-    	});
+    		FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+       	});
     	
     	// for informant
     	ComboBox associatedOfficer = addField(UserDto.ASSOCIATED_OFFICER, ComboBox.class);
 
     	ComboBox healthFacility = addField(UserDto.HEALTH_FACILITY, ComboBox.class);
     	district.addValueChangeListener(e -> {
-    		healthFacility.removeAllItems();
-    		associatedOfficer.removeAllItems();
+    		FieldHelper.removeItems(healthFacility);
+    		FieldHelper.removeItems(associatedOfficer);
     		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
-    		if (districtDto != null) {
-    			healthFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, false));
-    	    	associatedOfficer.addItems(FacadeProvider.getUserFacade().getAssignableUsersByDistrict(
-    	    			districtDto, false, UserRole.SURVEILLANCE_OFFICER));
-    		}
+    		FieldHelper.updateItems(healthFacility, districtDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, false) : null);
+    		FieldHelper.updateItems(associatedOfficer, districtDto != null ? FacadeProvider.getUserFacade().getAssignableUsersByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER) : null);
     	});
 
     	ComboBox laboratory = addField(UserDto.LABORATORY, ComboBox.class);

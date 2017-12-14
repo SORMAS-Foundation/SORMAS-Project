@@ -13,7 +13,9 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -46,8 +48,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
     						LayoutUtil.fluidRowLocs(LocationDto.LATITUDE, LocationDto.LONGITUDE, LocationDto.LAT_LON_ACCURACY))
     			);
 
-    public LocationEditForm() {
-    	super(LocationDto.class, LocationDto.I18N_PREFIX);
+    public LocationEditForm(UserRight editOrCreateUserRight) {
+    	super(LocationDto.class, LocationDto.I18N_PREFIX, editOrCreateUserRight);
     }
     
     public void setFieldsRequirement(boolean required, String... fieldIds) {
@@ -69,18 +71,13 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
     	ComboBox community = addField(LocationDto.COMMUNITY, ComboBox.class);
     	
     	region.addValueChangeListener(e -> {
-    		district.removeAllItems();
     		RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
-    		if (regionDto != null) {
-    			district.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()));
-    		}
-    	});
+    		FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+       	});
     	district.addValueChangeListener(e -> {
-    		community.removeAllItems();
+    		FieldHelper.removeItems(community);
     		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
-    		if (districtDto != null) {
-    			community.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()));
-    		}
+    		FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
     	});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
     }

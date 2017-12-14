@@ -8,6 +8,7 @@ import com.vaadin.ui.Window;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.caze.AbstractTableField;
@@ -100,10 +101,10 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 	
 	@Override
 	protected void editEntry(EpiDataGatheringDto entry, boolean create, Consumer<EpiDataGatheringDto> commitCallback) {
-		EpiDataGatheringEditForm editForm = new EpiDataGatheringEditForm();
+		EpiDataGatheringEditForm editForm = new EpiDataGatheringEditForm(UserRight.CASE_EDIT);
 		editForm.setValue(entry);
 		
-		final CommitDiscardWrapperComponent<EpiDataGatheringEditForm> editView = new CommitDiscardWrapperComponent<EpiDataGatheringEditForm>(editForm, editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EpiDataGatheringEditForm> editView = new CommitDiscardWrapperComponent<EpiDataGatheringEditForm>(editForm, editForm.getFieldGroup(), UserRight.CASE_EDIT);
 		editView.getCommitButton().setCaption("done");
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Social event");

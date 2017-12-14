@@ -8,6 +8,7 @@ import com.vaadin.ui.Window;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.caze.AbstractTableField;
@@ -120,10 +121,10 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 	
 	@Override
 	protected void editEntry(EpiDataBurialDto entry, boolean create, Consumer<EpiDataBurialDto> commitCallback) {
-		EpiDataBurialEditForm editForm = new EpiDataBurialEditForm(create);
+		EpiDataBurialEditForm editForm = new EpiDataBurialEditForm(create, UserRight.CASE_EDIT);
 		editForm.setValue(entry);
 		
-		final CommitDiscardWrapperComponent<EpiDataBurialEditForm> editView = new CommitDiscardWrapperComponent<EpiDataBurialEditForm>(editForm, editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EpiDataBurialEditForm> editView = new CommitDiscardWrapperComponent<EpiDataBurialEditForm>(editForm, editForm.getFieldGroup(), UserRight.CASE_EDIT);
 		editView.getCommitButton().setCaption("done");
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Burial");

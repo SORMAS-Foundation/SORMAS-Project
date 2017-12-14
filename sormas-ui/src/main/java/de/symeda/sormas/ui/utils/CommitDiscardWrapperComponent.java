@@ -110,11 +110,11 @@ VerticalLayout implements Buffered {
 
 	}
 
-	public CommitDiscardWrapperComponent(C component, FieldGroup fieldGroup) {
-		setWrappedComponent(component, fieldGroup);
+	public CommitDiscardWrapperComponent(C component, FieldGroup fieldGroup, UserRight editOrCreateUserRight) {
+		setWrappedComponent(component, fieldGroup, editOrCreateUserRight);
 	}
 
-	protected void setWrappedComponent(C component, FieldGroup fieldGroup) {
+	protected void setWrappedComponent(C component, FieldGroup fieldGroup, UserRight editOrCreateUserRight) {
 
 		this.wrappedComponent = component;
 		this.fieldGroup = fieldGroup;
@@ -158,7 +158,7 @@ VerticalLayout implements Buffered {
 
 		applyAutoDisabling();
 
-		if (!LoginHelper.hasUserRight(UserRight.EDIT)) {
+		if (editOrCreateUserRight != null && !LoginHelper.hasUserRight(editOrCreateUserRight)) {
 			getCommitButton().setVisible(false);
 			getDiscardButton().setVisible(false);
 		}

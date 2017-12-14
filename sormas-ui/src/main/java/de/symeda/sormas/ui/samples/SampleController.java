@@ -26,6 +26,7 @@ import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -62,9 +63,9 @@ public class SampleController {
 	}
 
 	public void create(CaseReferenceDto caseRef, SampleGrid grid) {
-		SampleCreateForm createForm = new SampleCreateForm();
+		SampleCreateForm createForm = new SampleCreateForm(UserRight.SAMPLE_CREATE);
 		createForm.setValue(SampleDto.buildSample(LoginHelper.getCurrentUserAsReference(), caseRef));
-		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup(), UserRight.SAMPLE_CREATE);
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -81,10 +82,10 @@ public class SampleController {
 	}
 
 	public void createReferral(SampleDto sample) {
-		SampleCreateForm createForm = new SampleCreateForm();
+		SampleCreateForm createForm = new SampleCreateForm(UserRight.SAMPLE_CREATE);
 		SampleDto referralSample = SampleDto.buildReferralSample(LoginHelper.getCurrentUserAsReference(), sample);
 		createForm.setValue(referralSample);
-		final CommitDiscardWrapperComponent<SampleCreateForm> createView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<SampleCreateForm> createView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup(), UserRight.SAMPLE_CREATE);
 
 		createView.addCommitListener(new CommitListener() {
 			@Override
@@ -103,11 +104,11 @@ public class SampleController {
 	}
 
 	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid) {
-		SampleEditForm form = new SampleEditForm();
+		SampleEditForm form = new SampleEditForm(UserRight.SAMPLE_EDIT);
 		form.setWidth(form.getWidth() * 10/12, Unit.PIXELS);
 		SampleDto dto = sf.getSampleByUuid(sampleUuid);
 		form.setValue(dto);
-		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(form, form.getFieldGroup(), UserRight.SAMPLE_EDIT);
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -142,17 +143,22 @@ public class SampleController {
 		Button referOrLinkToOtherLabButton = new Button();
 		referOrLinkToOtherLabButton.addStyleName(ValoTheme.BUTTON_LINK);
 		if (dto.getReferredTo() == null) {
-			referOrLinkToOtherLabButton.setCaption("Refer to another laboratory");
-			referOrLinkToOtherLabButton.addClickListener(new ClickListener() {
-				private static final long serialVersionUID = 1L;
-				@Override
-				public void buttonClick(ClickEvent event) {
-					form.commit();
-					SampleDto sampleDto = form.getValue();
-					sampleDto = sf.saveSample(sampleDto);
-					createReferral(sampleDto);
-				}
-			});
+			if (LoginHelper.hasUserRight(UserRight.SAMPLE_TRANSFER)) {
+				referOrLinkToOtherLabButton.setCaption("Refer to another laboratory");
+				referOrLinkToOtherLabButton.addClickListener(new ClickListener() {
+					private static final long serialVersionUID = 1L;
+					@Override
+					public void buttonClick(ClickEvent event) {
+						form.commit();
+						SampleDto sampleDto = form.getValue();
+						sampleDto = sf.saveSample(sampleDto);
+						createReferral(sampleDto);
+					}
+				});
+				
+				editView.getButtonsPanel().addComponentAsFirst(referOrLinkToOtherLabButton);
+				editView.getButtonsPanel().setComponentAlignment(referOrLinkToOtherLabButton, Alignment.BOTTOM_LEFT);
+			}
 		} else {
 			SampleDto referredDto = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getReferredTo().getUuid());
 			referOrLinkToOtherLabButton.setCaption("Referred to " + referredDto.getLab().toString());
@@ -163,10 +169,10 @@ public class SampleController {
 					navigateToData(dto.getReferredTo().getUuid());
 				}
 			});
+			
+			editView.getButtonsPanel().addComponentAsFirst(referOrLinkToOtherLabButton);
+			editView.getButtonsPanel().setComponentAlignment(referOrLinkToOtherLabButton, Alignment.BOTTOM_LEFT);
 		}
-
-		editView.getButtonsPanel().addComponentAsFirst(referOrLinkToOtherLabButton);
-		editView.getButtonsPanel().setComponentAlignment(referOrLinkToOtherLabButton, Alignment.BOTTOM_LEFT);
 
 		return editView;
 	}

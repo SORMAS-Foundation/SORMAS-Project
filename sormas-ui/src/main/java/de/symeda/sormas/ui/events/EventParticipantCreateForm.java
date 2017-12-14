@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.events;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -16,8 +17,8 @@ public class EventParticipantCreateForm extends AbstractEditForm<EventParticipan
 			LayoutUtil.fluidRowLocs(EventParticipantDto.INVOLVEMENT_DESCRIPTION) +
 			LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME);
 	
-	public EventParticipantCreateForm() {
-		super(EventParticipantDto.class, EventParticipantDto.I18N_PREFIX);
+	public EventParticipantCreateForm(UserRight editOrCreateUserRight) {
+		super(EventParticipantDto.class, EventParticipantDto.I18N_PREFIX, editOrCreateUserRight);
 		
         setWidth(540, Unit.PIXELS);
         

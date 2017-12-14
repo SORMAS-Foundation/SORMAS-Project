@@ -29,12 +29,14 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class PersonEditForm extends AbstractEditForm<PersonDto> {
@@ -115,8 +117,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, PersonDto.ADDRESS)
 			);
 
-    public PersonEditForm(Disease disease) {
-    	super(PersonDto.class, PersonDto.I18N_PREFIX);
+    public PersonEditForm(Disease disease, UserRight editOrCreateUserRight) {
+    	// TODO add user right parameter
+    	super(PersonDto.class, PersonDto.I18N_PREFIX, editOrCreateUserRight);
     	this.disease = disease;
     }
 
@@ -221,33 +224,26 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     	});
     	
     	facilityRegion.addValueChangeListener(e -> {
-    		facilityDistrict.removeAllItems();
     		RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
-    		if(regionDto != null) {
-    			facilityDistrict.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()));
-    		}
-    	});
+    		FieldHelper.updateItems(facilityDistrict, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+       	});
     	facilityDistrict.addValueChangeListener(e -> {
     		if (facilityCommunity.getValue() == null) {
-    			occupationFacility.removeAllItems();
+    			FieldHelper.removeItems(occupationFacility);
     		}
-    		facilityCommunity.removeAllItems();
+    		FieldHelper.removeItems(facilityCommunity);
     		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
-    		if(districtDto != null) {
-    			facilityCommunity.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()));
-    			occupationFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, false));
-    		}
+    		FieldHelper.updateItems(facilityCommunity, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
+    		FieldHelper.updateItems(occupationFacility, districtDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true) : null);
     	});
     	facilityCommunity.addValueChangeListener(e -> {
     		if(facilityFieldsInitialized || occupationFacility.getValue() == null) {
-	    		occupationFacility.removeAllItems();
-	    		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
-	    		if(communityDto != null) {
-	    			occupationFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, false));
-	    		} else if (facilityDistrict.getValue() != null) {
-	    			occupationFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) facilityDistrict.getValue(), false));
-	    		}
-    		}
+    			FieldHelper.removeItems(occupationFacility);
+        		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
+        		FieldHelper.updateItems(occupationFacility, communityDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true) :
+        			facilityDistrict.getValue() != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) facilityDistrict.getValue(), true) :
+        				null);
+        	}
     	});
 
 		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllAsReference());

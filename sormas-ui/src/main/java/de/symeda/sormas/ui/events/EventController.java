@@ -17,6 +17,7 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
@@ -73,9 +74,9 @@ public class EventController {
 	}
 	
 	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent() {
-		EventDataForm eventCreateForm = new EventDataForm(true);
+		EventDataForm eventCreateForm = new EventDataForm(true, UserRight.EVENT_CREATE);
 		eventCreateForm.setValue(createNewEvent());
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventCreateForm, eventCreateForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventCreateForm, eventCreateForm.getFieldGroup(), UserRight.EVENT_CREATE);
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -93,10 +94,10 @@ public class EventController {
 	}
 	
 	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid) {
-		EventDataForm eventEditForm = new EventDataForm(false);
+		EventDataForm eventEditForm = new EventDataForm(false, UserRight.EVENT_EDIT);
 		EventDto event = findEvent(eventUuid);
 		eventEditForm.setValue(event);
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventEditForm, eventEditForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventEditForm, eventEditForm.getFieldGroup(), UserRight.EVENT_EDIT);
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override

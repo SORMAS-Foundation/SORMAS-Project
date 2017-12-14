@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.person;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -17,8 +18,9 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 					LayoutUtil.fluidRowLocs(PersonDto.UUID, "")
 					);
 
-    public PersonCreateForm() {
-        super(PersonDto.class, PersonDto.I18N_PREFIX);
+    public PersonCreateForm(UserRight editOrCreateUserRight) {
+    	// TODO add user right parameter
+        super(PersonDto.class, PersonDto.I18N_PREFIX, editOrCreateUserRight);
 
         setWidth(540, Unit.PIXELS);
     }

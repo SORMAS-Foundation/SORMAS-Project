@@ -87,6 +87,20 @@
  
   .v-select-optiongroup {
   	
+  	.v-radiobutton {	 
+	  &.v-radiobutton-disabled {
+	  	& > input {
+	  	  & ~ label:before,
+	  	  & ~ label:after {
+	  	  	border-color: $v-focus-color !important;
+	  	  }
+	  	}
+	    label {
+	  	  cursor: default;
+	    }
+	  }
+	}
+  	
  	&.soft-required,
  	&.v-required {
 	  .v-radiobutton {

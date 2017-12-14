@@ -81,7 +81,9 @@ public class CaseController {
     	navigator.addView(CaseDataView.VIEW_NAME, CaseDataView.class);
     	navigator.addView(CasePersonView.VIEW_NAME, CasePersonView.class);
     	navigator.addView(CaseSymptomsView.VIEW_NAME, CaseSymptomsView.class);
-    	navigator.addView(CaseContactsView.VIEW_NAME, CaseContactsView.class);
+    	if (LoginHelper.hasUserRight(UserRight.CONTACT_VIEW)) {
+    		navigator.addView(CaseContactsView.VIEW_NAME, CaseContactsView.class);
+    	}
     	navigator.addView(CaseHospitalizationView.VIEW_NAME, CaseHospitalizationView.class);
     	navigator.addView(EpiDataView.VIEW_NAME, EpiDataView.class);
     }
@@ -188,7 +190,7 @@ public class CaseController {
     
     public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(PersonReferenceDto person, Disease disease, ContactDto contact) {
     	
-    	CaseCreateForm createForm = new CaseCreateForm();
+    	CaseCreateForm createForm = new CaseCreateForm(UserRight.CASE_CREATE);
     	CaseDataDto caze = createNewCase(person, disease);
         createForm.setValue(caze);
         
@@ -199,7 +201,7 @@ public class CaseController {
         if (contact != null) {
         	createForm.setDiseaseReadOnly(true);
         }
-        final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(createForm, createForm.getFieldGroup());
+        final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(createForm, createForm.getFieldGroup(), UserRight.CASE_CREATE);
        
         editView.addCommitListener(new CommitListener() {
         	@Override
@@ -246,9 +248,9 @@ public class CaseController {
 
     public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(final String caseUuid) {
     	CaseDataDto caze = findCase(caseUuid);
-    	CaseDataForm caseEditForm = new CaseDataForm(FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()), caze.getDisease());
+    	CaseDataForm caseEditForm = new CaseDataForm(FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()), caze.getDisease(), UserRight.CASE_EDIT);
         caseEditForm.setValue(caze);
-        final CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(caseEditForm, caseEditForm.getFieldGroup());
+        final CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(caseEditForm, caseEditForm.getFieldGroup(), UserRight.CASE_EDIT);
         
         editView.addCommitListener(new CommitListener() {
         	@Override
@@ -271,7 +273,7 @@ public class CaseController {
 		}
         
         // Initialize 'Move case to another health facility' button
-        if (LoginHelper.hasUserRight(UserRight.CASE_EDIT_FACILITY)) {
+        if (LoginHelper.hasUserRight(UserRight.CASE_MOVE)) {
 	        Button moveCaseButton = new Button();
 	        moveCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
 	        moveCaseButton.setCaption("Move case to another health facility");
@@ -297,10 +299,10 @@ public class CaseController {
     	
         CaseDataDto caseDataDto = findCase(caseUuid);
 
-    	SymptomsForm symptomsForm = new SymptomsForm(caseDataDto.getDisease(), SymptomsContext.CASE);
+    	SymptomsForm symptomsForm = new SymptomsForm(caseDataDto.getDisease(), SymptomsContext.CASE, UserRight.CASE_EDIT);
         symptomsForm.setValue(caseDataDto.getSymptoms());
     	symptomsForm.initializeSymptomRequirementsForCase();
-        final CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(symptomsForm, symptomsForm.getFieldGroup());
+        final CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(symptomsForm, symptomsForm.getFieldGroup(), UserRight.CASE_EDIT);
         
         editView.addCommitListener(new CommitListener() {
         	
@@ -318,10 +320,10 @@ public class CaseController {
 	
 	public CommitDiscardWrapperComponent<CaseHospitalizationForm> getCaseHospitalizationComponent(final String caseUuid) {
 		CaseDataDto caze = findCase(caseUuid);
-		CaseHospitalizationForm hospitalizationForm = new CaseHospitalizationForm(caze);
+		CaseHospitalizationForm hospitalizationForm = new CaseHospitalizationForm(caze, UserRight.CASE_EDIT);
 		hospitalizationForm.setValue(caze.getHospitalization());
 	
-		final CommitDiscardWrapperComponent<CaseHospitalizationForm> editView = new CommitDiscardWrapperComponent<CaseHospitalizationForm>(hospitalizationForm, hospitalizationForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<CaseHospitalizationForm> editView = new CommitDiscardWrapperComponent<CaseHospitalizationForm>(hospitalizationForm, hospitalizationForm.getFieldGroup(), UserRight.CASE_EDIT);
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -340,10 +342,10 @@ public class CaseController {
 	
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid) {
 		CaseDataDto caze = findCase(caseUuid);
-		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease());
+		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), UserRight.CASE_EDIT);
 		epiDataForm.setValue(caze.getEpiData());
 		
-		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(epiDataForm, epiDataForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(epiDataForm, epiDataForm.getFieldGroup(), UserRight.CASE_EDIT);
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -361,9 +363,9 @@ public class CaseController {
 	}
 	
 	public void moveCase(CaseDataDto caze) {
-		CaseFacilityChangeForm facilityChangeForm = new CaseFacilityChangeForm();
+		CaseFacilityChangeForm facilityChangeForm = new CaseFacilityChangeForm(UserRight.CASE_MOVE);
 		facilityChangeForm.setValue(caze);
-		CommitDiscardWrapperComponent<CaseFacilityChangeForm> facilityChangeView = new CommitDiscardWrapperComponent<CaseFacilityChangeForm>(facilityChangeForm, facilityChangeForm.getFieldGroup());
+		CommitDiscardWrapperComponent<CaseFacilityChangeForm> facilityChangeView = new CommitDiscardWrapperComponent<CaseFacilityChangeForm>(facilityChangeForm, facilityChangeForm.getFieldGroup(), UserRight.CASE_MOVE);
 		facilityChangeView.getCommitButton().setCaption("Move case");
 		facilityChangeView.setMargin(true);
 		

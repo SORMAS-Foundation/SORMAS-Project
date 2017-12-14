@@ -44,19 +44,18 @@ import de.symeda.sormas.ui.login.LoginHelper;
 public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomField<DTO> implements CommitHandler {// implements DtoEditForm<DTO> {
 
 	private final BeanFieldGroup<DTO> fieldGroup;
-	
-	private final String propertyI18nPrefix;
-	
-	private Class<DTO> type;
 
+	private final String propertyI18nPrefix;
+
+	private Class<DTO> type;
 	private boolean hideValidationUntilNextCommit = false;
 	private List<Field<?>> customFields = new ArrayList<>();
-	
-	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix) {
-	
+
+	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight) {
+
 		this.type = type;
 		this.propertyI18nPrefix = propertyI18nPrefix;
-		
+
 		fieldGroup = new BeanFieldGroup<DTO>(type) {
 
 			@Override
@@ -72,14 +71,14 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 				}
 			}
 		};
-		
+
 		fieldGroup.addCommitHandler(this);
-		
+
 		fieldGroup.setFieldFactory(new DefaultFieldGroupFieldFactory() {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
 			public <T extends Field> T createField(Class<?> type, Class<T> fieldType) {
-				
+
 				if (type.isEnum()) {
 					if (SymptomState.class.isAssignableFrom(type)) {
 						OptionGroup field = super.createField(type, OptionGroup.class);
@@ -102,7 +101,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 					return (T) createCompatibleSelect((Class<? extends AbstractSelect>) fieldType);
 				} 
 				else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
-					return (T) new LocationEditForm();
+					return (T) new LocationEditForm(editOrCreateUserRight);
 				} 
 				else if (DateTimeField.class.isAssignableFrom(fieldType)) {
 					return (T) new DateTimeField();
@@ -121,7 +120,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 				}
 				else if (fieldType.equals(Field.class)) {
 					// no specific field type defined -> fallbacks
-					
+
 					if (Date.class.isAssignableFrom(type)) {
 						DateField field = super.createField(type, DateField.class);
 						field.setDateFormat(DateHelper.getDateFormat().toPattern());
@@ -131,10 +130,10 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 						return (T) new ComboBox();
 					}
 				}
-				
+
 				return super.createField(type, fieldType);
 			}
-			
+
 			@Override
 			protected <T extends AbstractTextField> T createAbstractTextField(Class<T> fieldType) {
 				T textField = super.createAbstractTextField(fieldType);
@@ -142,16 +141,20 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 				return textField;
 			}
 		});
-		
+
 		setWidth(900, Unit.PIXELS);
 		setHeightUndefined();
-		
+
 		addFields();
+
+		if (editOrCreateUserRight != null && !LoginHelper.hasUserRight(editOrCreateUserRight)) {
+			getFieldGroup().setReadOnly(true);
+		}
 	}
-	
+
 	@Override
 	public CustomLayout initContent() {
-		
+
 		String htmlLayout = createHtmlLayout();
 		CustomLayout layout = new CustomLayout();
 		layout.setTemplateContents(htmlLayout);
@@ -160,32 +163,23 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 
 		return layout;
 	}
-	
+
 	@Override
 	public Class<? extends DTO> getType() {
 		return type;
 	}
-	
+
 	@Override
 	protected CustomLayout getContent() {
 		return (CustomLayout)super.getContent();
 	}
-	
+
 	protected abstract String createHtmlLayout();
 	protected abstract void addFields();	
-	
+
 	@Override
 	public void setValue(DTO newFieldValue) throws com.vaadin.data.Property.ReadOnlyException, ConversionException {
-	
 		super.setValue(newFieldValue);
-		
-		// TODO find a better way to do this.
-		// Calling it at the end of addFields does not work, because value changes might make certain fields editable again.
-		if (!LoginHelper.hasUserRight(UserRight.EDIT)) {
-			for (Field<?> field : getFieldGroup().getFields()) {
-				field.setReadOnly(true);
-			}
-		}
 	}
 
 	@Override
@@ -204,7 +198,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		BeanFieldGroup<DTO> fieldGroup = getFieldGroup();
 		fieldGroup.setItemDataSource(newValue);
 	}
-	
+
 	@Override
 	public boolean isModified() {
 		if (getFieldGroup().isModified()) {
@@ -212,13 +206,9 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		}
 		return super.isModified();
 	}
-	
+
 	@Override
 	public void preCommit(CommitEvent commitEvent) throws CommitException {
-		if (!LoginHelper.hasUserRight(UserRight.EDIT)) {
-			throw new UnsupportedOperationException("User with role 'National Observer' is not allowed to edit data");
-		}
-		
 		if (hideValidationUntilNextCommit) {
 			hideValidationUntilNextCommit = false;
 			for (Field<?> field : getFieldGroup().getFields()) {
@@ -227,7 +217,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 					abstractField.setValidationVisible(true);
 				}
 			}
-			
+
 			for (Field<?> field : customFields) {
 				if (field instanceof AbstractField) {
 					AbstractField<?> abstractField = (AbstractField<?>)field;
@@ -235,19 +225,19 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 				}
 			}
 		}
-		
+
 		for (Field<?> field : customFields) {
 			field.validate();
 		}
 	}
-	
+
 	/**
 	 * Attention (!!!!)
 	 * This method is not called when used with CommitDiscardWrapperComponent (uses FieldGroup instead)
 	 */
 	@Override
 	public void commit() throws SourceException, InvalidValueException {
-		
+
 		try {
 			getFieldGroup().commit();
 		} catch (CommitException e) {
@@ -261,12 +251,12 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		}
 		super.commit();
 	}
-	
+
 	@Override
 	public void postCommit(CommitEvent commitEvent) throws CommitException {
-		
+
 	}
-	
+
 	@Override
 	public void discard() throws SourceException {
 		getFieldGroup().discard();
@@ -277,15 +267,15 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		return this.fieldGroup;
 	}
 
-    protected void addFields(String ...properties) {
-    	for (String property: properties) {
-    		addField(property);
-    	}
-    }
+	protected void addFields(String ...properties) {
+		for (String property: properties) {
+			addField(property);
+		}
+	}
 
 	@SuppressWarnings("rawtypes")
 	protected <T extends Field> T addCustomField(String fieldId, Class<?> dataType, Class<T> fieldType) {
-    	T field = getFieldGroup().getFieldFactory().createField(dataType, fieldType);
+		T field = getFieldGroup().getFieldFactory().createField(dataType, fieldType);
 		formatField(field, fieldId);
 		getContent().addComponent(field, fieldId);
 		customFields.add(field);
@@ -296,18 +286,18 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	protected <T extends Field> T addField(String propertyId) {
 		return (T) addField(propertyId, Field.class);
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	protected <T extends Field> T addField(String propertyId, Class<T> fieldType) {
 		T field = getFieldGroup().buildAndBind(propertyId, (Object)propertyId, fieldType);
 		formatField(field, propertyId);
-		getContent().addComponent(field, propertyId);
-        return field;
+		getContent().addComponent(field, propertyId);		
+		return field;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	protected <T extends Field> T formatField(T field, String propertyId) {
-		
+
 		String caption = I18nProperties.getPrefixFieldCaption(getPropertyI18nPrefix(), propertyId, field.getCaption());
 		field.setCaption(caption);
 
@@ -315,19 +305,20 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			AbstractField abstractField = (AbstractField)field;
 			abstractField.setDescription(I18nProperties.getPrefixFieldDescription(
 					getPropertyI18nPrefix(), propertyId, abstractField.getDescription()));
-			
+
 			if (hideValidationUntilNextCommit) {
 				abstractField.setValidationVisible(false);
 			}
 		}
-		
+
 		String validationError = I18nProperties.getPrefixValidationError(getPropertyI18nPrefix(), propertyId);
 		field.setRequiredError(String.format(validationError, caption));
 
 		field.setWidth(100, Unit.PERCENTAGE);
+
 		return field;
 	}
-	
+
 	protected Field<?> getField(String fieldOrPropertyId) {
 		Field<?> field = getFieldGroup().getField(fieldOrPropertyId);
 		if (field == null) {
@@ -339,31 +330,31 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		}
 		return field;
 	}
-	
+
 	protected void styleAsOptionGroupHorizontal(List<String> fields) {
 		for(String field : fields) {
 			CssStyles.style((OptionGroup)getFieldGroup().getField(field), ValoTheme.OPTIONGROUP_HORIZONTAL);
 		}
 	}
-	
+
 	protected void setReadOnly(boolean readOnly, String ...fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
 			getField(propertyId).setReadOnly(readOnly);
 		}
 	}
-	
+
 	protected void setVisible(boolean visible, String ...fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
 			getField(propertyId).setVisible(visible);
 		}
 	}
-	
+
 	protected void discard(String ...propertyIds) {
 		for (String propertyId : propertyIds) {
 			getField(propertyId).discard();
 		}
 	}
-	
+
 	protected void setRequired(boolean required, String ...fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
 			Field<?> field = getField(propertyId);
@@ -376,7 +367,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			getField(fieldOrPropertyId).addValueChangeListener(listener);
 		}
 	}
-	
+
 	protected void addValidators(String fieldOrPropertyId, Validator... validators) {
 		for (Validator validator : validators) {
 			getField(fieldOrPropertyId).addValidator(validator);
@@ -388,16 +379,16 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	}
 
 	public void hideValidationUntilNextCommit() {
-		
+
 		this.hideValidationUntilNextCommit  = true;
-		
+
 		for (Field<?> field : getFieldGroup().getFields()) {
 			if (field instanceof AbstractField) {
 				AbstractField<?> abstractField = (AbstractField<?>)field;
 				abstractField.setValidationVisible(false);
 			}
 		}
-		
+
 		for (Field<?> field : customFields) {
 			if (field instanceof AbstractField) {
 				AbstractField<?> abstractField = (AbstractField<?>)field;

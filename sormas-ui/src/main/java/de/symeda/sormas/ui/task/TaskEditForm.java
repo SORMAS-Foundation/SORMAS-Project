@@ -11,11 +11,8 @@ import com.vaadin.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
@@ -23,6 +20,7 @@ import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -46,8 +44,11 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			LayoutUtil.fluidRowLocs(TaskDto.TASK_STATUS)
 			;
 
-    public TaskEditForm(boolean create) {
-        super(TaskDto.class, TaskDto.I18N_PREFIX);
+    private UserRight editOrCreateUserRight;
+    
+    public TaskEditForm(boolean create, UserRight editOrCreateUserRight) {
+        super(TaskDto.class, TaskDto.I18N_PREFIX, editOrCreateUserRight);
+        this.editOrCreateUserRight = editOrCreateUserRight;
         addValueChangeListener(e -> {
     		updateByTaskContext();
     		updateByCreatingAndAssignee();
@@ -164,18 +165,20 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				discard(TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
 			}
 			
-			setReadOnly(!(assignee || creator), TaskDto.TASK_STATUS);
-			setReadOnly(!assignee, TaskDto.ASSIGNEE_REPLY);
-			setReadOnly(!creator, TaskDto.TASK_TYPE, TaskDto.PRIORITY, 
-					TaskDto.SUGGESTED_START, TaskDto.DUE_DATE,
-					TaskDto.ASSIGNEE_USER, TaskDto.CREATOR_COMMENT);
-			setReadOnly(!(creator || supervisor), 
-					TaskDto.PRIORITY, TaskDto.SUGGESTED_START, TaskDto.DUE_DATE,
-					TaskDto.ASSIGNEE_USER, TaskDto.CREATOR_COMMENT);
+			if (LoginHelper.hasUserRight(editOrCreateUserRight)) {
+				setReadOnly(!(assignee || creator), TaskDto.TASK_STATUS);
+				setReadOnly(!assignee, TaskDto.ASSIGNEE_REPLY);
+				setReadOnly(!creator, TaskDto.TASK_TYPE, TaskDto.PRIORITY, 
+						TaskDto.SUGGESTED_START, TaskDto.DUE_DATE,
+						TaskDto.ASSIGNEE_USER, TaskDto.CREATOR_COMMENT);
+				setReadOnly(!(creator || supervisor), 
+						TaskDto.PRIORITY, TaskDto.SUGGESTED_START, TaskDto.DUE_DATE,
+						TaskDto.ASSIGNEE_USER, TaskDto.CREATOR_COMMENT);
+			}
 		}
 	}
 
-	private void updateByTaskContext() {
+	private void updateByTaskContext() {		
 		TaskContext taskContext = (TaskContext)getFieldGroup().getField(TaskDto.TASK_CONTEXT).getValue();
 		
 		// Task types depending on task context
@@ -191,28 +194,21 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			case CASE:
 				FieldHelper.setFirstVisibleClearOthers(caseField, eventField, contactField);
 				FieldHelper.setFirstRequired(caseField, eventField, contactField);
-				List<CaseReferenceDto> cases = FacadeProvider.getCaseFacade().getSelectableCases(LoginHelper.getCurrentUserAsReference());
-				FieldHelper.updateItems(caseField, cases);
 				break;
 			case EVENT:
 				FieldHelper.setFirstVisibleClearOthers(eventField, caseField, contactField);
 				FieldHelper.setFirstRequired(eventField, caseField, contactField);
-				List<EventReferenceDto> events = FacadeProvider.getEventFacade().getSelectableEvents(LoginHelper.getCurrentUserAsReference());
-				FieldHelper.updateItems(eventField, events);
 				break;
 			case CONTACT:
 				FieldHelper.setFirstVisibleClearOthers(contactField, caseField, eventField);
 				FieldHelper.setFirstRequired(contactField, caseField, eventField);
-				List<ContactReferenceDto> contacts = FacadeProvider.getContactFacade().getSelectableContacts(LoginHelper.getCurrentUserAsReference());
-				FieldHelper.updateItems(contactField, contacts);
 				break;
 			case GENERAL:
 				FieldHelper.setFirstVisibleClearOthers(null, caseField, contactField, eventField);
 				FieldHelper.setFirstRequired(null, caseField, contactField, eventField);
 				break;
 			}
-		}
-		else {
+		} else {
 			FieldHelper.setFirstVisibleClearOthers(null, caseField, eventField, contactField);
 			FieldHelper.setFirstRequired(null, caseField, eventField, contactField);
 		}

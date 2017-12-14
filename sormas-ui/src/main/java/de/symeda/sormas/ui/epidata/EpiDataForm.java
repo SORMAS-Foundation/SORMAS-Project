@@ -15,8 +15,10 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -66,8 +68,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	
 	private final Disease disease;
 	
-	public EpiDataForm(Disease disease) {
-		super(EpiDataDto.class, EpiDataDto.I18N_PREFIX);
+	public EpiDataForm(Disease disease, UserRight editOrCreateUserRight) {
+		super(EpiDataDto.class, EpiDataDto.I18N_PREFIX, editOrCreateUserRight);
 		this.disease = disease;
 		addFields();
 	}
@@ -195,7 +197,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	
 	private void updateBurialsHint(OptionGroup burialAttendedField, EpiDataBurialsField burialsField) {
 		YesNoUnknown value = (YesNoUnknown) burialAttendedField.getValue();
-		if (value == YesNoUnknown.YES && (burialsField == null || burialsField.getValue() == null || burialsField.getValue().size() == 0)) {
+		if (LoginHelper.hasUserRight(UserRight.CASE_EDIT) && value == YesNoUnknown.YES && (burialsField == null || burialsField.getValue() == null || burialsField.getValue().size() == 0)) {
 			burialAttendedField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
 		} else {
 			burialAttendedField.setComponentError(null);
@@ -204,7 +206,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	
 	private void updateGatheringsHint(OptionGroup gatheringAttendedField, EpiDataGatheringsField gatheringsField) {
 		YesNoUnknown value = (YesNoUnknown) gatheringAttendedField.getValue();
-		if (value == YesNoUnknown.YES && (gatheringsField == null || gatheringsField.getValue() == null || gatheringsField.getValue().size() == 0)) {
+		if (LoginHelper.hasUserRight(UserRight.CASE_EDIT) && value == YesNoUnknown.YES && (gatheringsField == null || gatheringsField.getValue() == null || gatheringsField.getValue().size() == 0)) {
 			gatheringAttendedField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
 		} else {
 			gatheringAttendedField.setComponentError(null);
@@ -213,7 +215,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	
 	private void updateTravelsHint(OptionGroup traveledField, EpiDataTravelsField travelsField) {
 		YesNoUnknown value = (YesNoUnknown) traveledField.getValue();
-		if (value == YesNoUnknown.YES && (travelsField == null || travelsField.getValue() == null || travelsField.getValue().size() == 0)) {
+		if (LoginHelper.hasUserRight(UserRight.CASE_EDIT) && value == YesNoUnknown.YES && (travelsField == null || travelsField.getValue() == null || travelsField.getValue().size() == 0)) {
 			traveledField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
 		} else {
 			traveledField.setComponentError(null);

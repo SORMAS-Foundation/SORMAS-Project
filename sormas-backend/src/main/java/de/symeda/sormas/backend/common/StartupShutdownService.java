@@ -2,7 +2,6 @@ package de.symeda.sormas.backend.common;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -16,11 +15,8 @@ import javax.ejb.TransactionManagementType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -42,8 +38,6 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.InfrastructureDataImporter;
-import de.symeda.sormas.backend.util.InfrastructureDataImporter.FacilityConsumer;
 import de.symeda.sormas.backend.util.MockDataGenerator;
 
 @Singleton(name = "StartupShutdownService")

@@ -18,6 +18,7 @@ import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -103,9 +104,9 @@ public class ContactController {
     
     public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(CaseReferenceDto caze) {
     	
-    	ContactCreateForm createForm = new ContactCreateForm();
+    	ContactCreateForm createForm = new ContactCreateForm(UserRight.CONTACT_CREATE);
         createForm.setValue(createNewContact(caze));
-        final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, createForm.getFieldGroup());
+        final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, createForm.getFieldGroup(), UserRight.CONTACT_CREATE);
         
         createComponent.addCommitListener(new CommitListener() {
         	@Override
@@ -146,11 +147,11 @@ public class ContactController {
 
     public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid) {
     	
-    	ContactDataForm editForm = new ContactDataForm();
+    	ContactDataForm editForm = new ContactDataForm(UserRight.CONTACT_EDIT);
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
     	ContactDto contact = cof.getContactByUuid(contactUuid);
         editForm.setValue(contact);
-        final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(editForm, editForm.getFieldGroup());
+        final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(editForm, editForm.getFieldGroup(), UserRight.CONTACT_EDIT);
         
         editComponent.addCommitListener(new CommitListener() {
         	@Override

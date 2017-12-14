@@ -7,6 +7,7 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -81,10 +82,10 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 	
 	@Override
 	protected void editEntry(EpiDataTravelDto entry, boolean create, Consumer<EpiDataTravelDto> commitCallback) {
-		EpiDataTravelEditForm editForm = new EpiDataTravelEditForm();
+		EpiDataTravelEditForm editForm = new EpiDataTravelEditForm(UserRight.CASE_EDIT);
 		editForm.setValue(entry);
 		
-		final CommitDiscardWrapperComponent<EpiDataTravelEditForm> editView = new CommitDiscardWrapperComponent<EpiDataTravelEditForm>(editForm, editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EpiDataTravelEditForm> editView = new CommitDiscardWrapperComponent<EpiDataTravelEditForm>(editForm, editForm.getFieldGroup(), UserRight.CASE_EDIT);
 		editView.getCommitButton().setCaption("done");
 		
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Travel");

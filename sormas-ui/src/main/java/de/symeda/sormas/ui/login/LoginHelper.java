@@ -14,6 +14,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.ui.utils.UserRightsException;
 
 
 /**
@@ -23,7 +24,11 @@ import de.symeda.sormas.api.user.UserRole;
  */
 public class LoginHelper {
 
-    public static boolean login(String username, String password) {
+    public static boolean login(String username, String password) throws UserRightsException {
+        if (!hasUserRight(UserRight.USE_WEB, username)) {
+        	throw new UserRightsException("You are not allowed to use the SORMAS web application with your current user role. Please use the mobile application instead.");
+        }
+    	
         if (username == null || username.isEmpty())
             return false;
         
@@ -68,6 +73,17 @@ public class LoginHelper {
 				return true;
 			}
 		}
+		return false;
+	}
+	
+	public static boolean hasUserRight(UserRight userRight, String username) {
+		UserDto user = FacadeProvider.getUserFacade().getByUserName(username);
+		for (UserRole userRole : userRight.getUserRoles()) {
+			if (user.getUserRoles().contains(userRole)) {
+				return true;
+			}
+		}
+		
 		return false;
 	}
 	

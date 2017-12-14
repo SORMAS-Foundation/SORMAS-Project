@@ -19,6 +19,7 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -87,8 +88,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private final VerticalLayout statusChangeLayout;
 	private Boolean isCreateForm = null;
 	
-	public EventDataForm(boolean create) {
-		super(EventDto.class, EventDto.I18N_PREFIX);
+	public EventDataForm(boolean create, UserRight editOrCreateUserRight) {
+		super(EventDto.class, EventDto.I18N_PREFIX, editOrCreateUserRight);
+		
 		isCreateForm = create;
 		if (create) {
 			hideValidationUntilNextCommit();
@@ -148,9 +150,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		
 		districtField.addValueChangeListener(e -> {
 			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict((DistrictReferenceDto) districtField.getValue(), false, UserRole.SURVEILLANCE_OFFICER);
-			surveillanceOfficerField.removeAllItems();
-			surveillanceOfficerField.select(0);
-			surveillanceOfficerField.addItems(assignableSurveillanceOfficers);
+			FieldHelper.updateItems(surveillanceOfficerField, assignableSurveillanceOfficers);
 		});
 		
 		FieldHelper.addSoftRequiredStyle(eventDate, typeOfPlace, surveillanceOfficerField, srcFirstName, srcLastName, srcTelNo);

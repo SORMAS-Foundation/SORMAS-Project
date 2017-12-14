@@ -14,6 +14,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -31,8 +32,8 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 					LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.HEALTH_FACILITY_DETAILS)
 			);
 
-	public CaseFacilityChangeForm() {
-		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
+	public CaseFacilityChangeForm(UserRight editOrCreateUserRight) {
+		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, editOrCreateUserRight);
 	}
 	
 	@Override
@@ -46,26 +47,20 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		
 		region.addValueChangeListener(e -> {
-			district.removeAllItems();
-			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
-			if (regionDto != null) {
-				district.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()));
-			}
-		});
+			RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
+    		FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+       	});
 		district.addValueChangeListener(e -> {
 			if (community.getValue() == null) {
-				facility.removeAllItems();
-			}
-			community.removeAllItems();
-			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-			if (districtDto != null) {
-				community.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()));
-				facility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true));
-			}
+    			FieldHelper.removeItems(facility);
+    		}
+    		FieldHelper.removeItems(community);
+    		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
+    		FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
+    		FieldHelper.updateItems(facility, districtDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true) : null);
 			
 			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER);
-			officer.removeAllItems();
-			officer.addItems(assignableSurveillanceOfficers);
+			FieldHelper.updateItems(officer, assignableSurveillanceOfficers);
 			if (assignableSurveillanceOfficers.size() == 1) {
 				officer.setValue(assignableSurveillanceOfficers.get(0));
 			} else {
@@ -73,14 +68,12 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 			}
 		});
 		community.addValueChangeListener(e -> {
-			facility.removeAllItems();
-			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
-			if (communityDto != null) {
-				facility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true));
-			} else if (district.getValue() != null) {
-    			facility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true));
-    		}
-		});
+			FieldHelper.removeItems(facility);
+    		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
+    		FieldHelper.updateItems(facility, communityDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true) :
+    			district.getValue() != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true) :
+    				null);
+    	});
 		facility.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
 				boolean otherHealthFacility = ((FacilityReferenceDto) e.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);

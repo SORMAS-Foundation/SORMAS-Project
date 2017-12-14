@@ -12,13 +12,13 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -36,9 +36,9 @@ public class EventParticipantsController {
 	
 	public void createEventParticipant(EventReferenceDto eventRef, Consumer<EventParticipantReferenceDto> doneConsumer) {
 		EventParticipantDto eventParticipant = createNewEventParticipant(eventRef);
-		EventParticipantCreateForm createForm = new EventParticipantCreateForm();
+		EventParticipantCreateForm createForm = new EventParticipantCreateForm(UserRight.EVENTPARTICIPANT_CREATE);
 		createForm.setValue(eventParticipant);
-		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent = new CommitDiscardWrapperComponent<EventParticipantCreateForm>(createForm, createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent = new CommitDiscardWrapperComponent<EventParticipantCreateForm>(createForm, createForm.getFieldGroup(), UserRight.EVENTPARTICIPANT_CREATE);
 		
 		createComponent.addCommitListener(new CommitListener() {
 			@Override
@@ -64,9 +64,9 @@ public class EventParticipantsController {
 	}
 	
 	public void editEventParticipant(EventParticipantDto eventParticipant) {
-		EventParticipantEditForm editForm = new EventParticipantEditForm(FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()));
+		EventParticipantEditForm editForm = new EventParticipantEditForm(FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()), UserRight.EVENTPARTICIPANT_EDIT);
 		editForm.setValue(eventParticipant);
-		final CommitDiscardWrapperComponent<EventParticipantEditForm> editView = new CommitDiscardWrapperComponent<EventParticipantEditForm>(editForm, editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventParticipantEditForm> editView = new CommitDiscardWrapperComponent<EventParticipantEditForm>(editForm, editForm.getFieldGroup(), UserRight.EVENTPARTICIPANT_EDIT);
 
 		Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit person");
         // visit form is too big for typical screens

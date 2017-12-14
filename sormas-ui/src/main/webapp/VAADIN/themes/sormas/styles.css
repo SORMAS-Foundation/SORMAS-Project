@@ -13328,6 +13328,14 @@ div.v-layout.v-horizontal.v-widget {
 	color: #FFF;
 }
 
+.sormas .v-select-optiongroup .v-radiobutton.v-radiobutton-disabled > input ~ label:before, .sormas .v-select-optiongroup .v-radiobutton.v-radiobutton-disabled > input ~ label:after {
+	border-color: #CDD8EC !important;
+}
+
+.sormas .v-select-optiongroup .v-radiobutton.v-radiobutton-disabled label {
+	cursor: default;
+}
+
 .sormas .v-select-optiongroup.soft-required .v-radiobutton > input ~ label:before, .sormas .v-select-optiongroup.soft-required .v-radiobutton > input ~ label:after, .sormas .v-select-optiongroup.v-required .v-radiobutton > input ~ label:before, .sormas .v-select-optiongroup.v-required .v-radiobutton > input ~ label:after {
 	border-color: #005A9C;
 }

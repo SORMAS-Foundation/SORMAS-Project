@@ -22,6 +22,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -77,10 +78,10 @@ public class UserController {
 
 	public CommitDiscardWrapperComponent<UserEditForm> getUserEditComponent(final String userUuid) {
 
-		UserEditForm userEditForm = new UserEditForm(false);
+		UserEditForm userEditForm = new UserEditForm(false, UserRight.USER_EDIT);
 		UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
 		userEditForm.setValue(userDto);
-		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, userEditForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, userEditForm.getFieldGroup(), UserRight.USER_EDIT);
 
 		// Add reset password button
 		Button resetPasswordButton = createResetPasswordButton(userUuid, editView);        
@@ -113,9 +114,9 @@ public class UserController {
 
 	public CommitDiscardWrapperComponent<UserEditForm> getUserCreateComponent() {
 
-		UserEditForm createForm = new UserEditForm(true);
+		UserEditForm createForm = new UserEditForm(true, UserRight.USER_CREATE);
 		createForm.setValue(createNewUser());
-		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(createForm, createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(createForm, createForm.getFieldGroup(), UserRight.USER_CREATE);
 
 		editView.addCommitListener(new CommitListener() {
 			@Override

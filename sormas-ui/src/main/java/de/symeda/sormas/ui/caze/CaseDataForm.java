@@ -81,8 +81,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private final PersonDto person;
 	private final Disease disease;
 
-	public CaseDataForm(PersonDto person, Disease disease) {
-		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
+	public CaseDataForm(PersonDto person, Disease disease, UserRight editOrCreateUserRight) {
+		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, editOrCreateUserRight);
 		this.person = person;
 		this.disease = disease;
 		addFields();
@@ -135,7 +135,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.REGION,
 				CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 
-		setReadOnly(!LoginHelper.hasUserRight(UserRight.CASE_EDIT_DISEASE), CaseDataDto.DISEASE);
+		setReadOnly(!LoginHelper.hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
 
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
 			boolean visible = DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, (String)propertyId, disease);
@@ -188,8 +188,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		district.addValueChangeListener(e -> {
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getAssignableUsersByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER);
-			surveillanceOfficerField.removeAllItems();
-			surveillanceOfficerField.addItems(assignableSurveillanceOfficers);
+			FieldHelper.updateItems(surveillanceOfficerField, assignableSurveillanceOfficers);
 		});
 
 		facility.addValueChangeListener(e -> {

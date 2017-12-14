@@ -11,7 +11,9 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class EventParticipantsView extends AbstractEventView {
@@ -55,16 +57,18 @@ public class EventParticipantsView extends AbstractEventView {
 		CssStyles.style(header, CssStyles.H2, CssStyles.VSPACE_NONE);
 		topLayout.addComponent(header);
 		
-		addButton = new Button("Add person");
-		addButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		addButton.setIcon(FontAwesome.PLUS_CIRCLE);
-		addButton.addClickListener(e -> {
-			ControllerProvider.getEventParticipantController().createEventParticipant(this.getEventRef(),
-					r -> grid.reload(getEventRef()));
-		});
-		topLayout.addComponent(addButton);
-		topLayout.setComponentAlignment(addButton, Alignment.MIDDLE_RIGHT);
-		topLayout.setExpandRatio(addButton, 1);
+    	if (LoginHelper.hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
+			addButton = new Button("Add person");
+			addButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			addButton.setIcon(FontAwesome.PLUS_CIRCLE);
+			addButton.addClickListener(e -> {
+				ControllerProvider.getEventParticipantController().createEventParticipant(this.getEventRef(),
+						r -> grid.reload(getEventRef()));
+			});
+			topLayout.addComponent(addButton);
+			topLayout.setComponentAlignment(addButton, Alignment.MIDDLE_RIGHT);
+			topLayout.setExpandRatio(addButton, 1);
+    	}
 		
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 		return topLayout;

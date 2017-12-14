@@ -5,6 +5,7 @@ import com.vaadin.ui.TextField;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -18,8 +19,8 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 	
 	private final EventDto event;
 	
-	public EventParticipantEditForm(EventDto event) {
-		super(EventParticipantDto.class, EventParticipantDto.I18N_PREFIX);
+	public EventParticipantEditForm(EventDto event, UserRight editOrCreateUserRight) {
+		super(EventParticipantDto.class, EventParticipantDto.I18N_PREFIX, editOrCreateUserRight);
 		this.event = event;
 		if(event == null) {
 			throw new IllegalArgumentException("Event cannot be null");
@@ -34,7 +35,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 			return;
 		}
     	
-		PersonEditForm pef = new PersonEditForm(null);
+		PersonEditForm pef = new PersonEditForm(null, UserRight.EVENTPARTICIPANT_EDIT);
 		pef.setImmediate(true);
 		getFieldGroup().bind(pef, EventParticipantDto.PERSON);
 		getContent().addComponent(pef, EventParticipantDto.PERSON);

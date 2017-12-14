@@ -11,6 +11,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SampleTestType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -27,8 +28,8 @@ public class SampleTestEditForm extends AbstractEditForm<SampleTestDto> {
 			LayoutUtil.fluidRowLocs(SampleTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") +
 			LayoutUtil.fluidRowLocs(SampleTestDto.TEST_RESULT_TEXT);
 	
-	public SampleTestEditForm(boolean create) {
-		super(SampleTestDto.class, SampleTestDto.I18N_PREFIX);
+	public SampleTestEditForm(boolean create, UserRight editOrCreateUserRight) {
+		super(SampleTestDto.class, SampleTestDto.I18N_PREFIX, editOrCreateUserRight);
 		
         setWidth(600, Unit.PIXELS);
         

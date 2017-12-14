@@ -65,8 +65,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		    						)
 		    		);
 
-    public ContactDataForm() {
-        super(ContactDto.class, ContactDto.I18N_PREFIX);
+    public ContactDataForm(UserRight editOrCreateUserRight) {
+        super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	    	String associatedCaseUuid = findAssociatedCaseUuid(FacadeProvider.getPersonFacade().getPersonByUuid(getValue().getPerson().getUuid()), getValue());
     	    	getContent().removeComponent(TO_CASE_BTN_LOC);
     	    	if (associatedCaseUuid == null) {
-    	    		if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+    	    		if (LoginHelper.hasUserRight(UserRight.CONTACT_CONVERT)) {
 	    		    	Button toCaseButton = new Button("Create a case for this contact person");
 	    				toCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
 	    				
@@ -144,7 +144,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		Field<FollowUpStatus> statusField = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
 		boolean followUpVisible = getValue() != null && statusField.isVisible();
-		if (followUpVisible && LoginHelper.hasUserRight(UserRight.EDIT)) {
+		if (followUpVisible && LoginHelper.hasUserRight(UserRight.CONTACT_EDIT)) {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 				

@@ -7,6 +7,7 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -105,11 +106,11 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 	@Override
 	protected void editEntry(PreviousHospitalizationDto entry, boolean create, Consumer<PreviousHospitalizationDto> commitCallback) {
 
-		PreviousHospitalizationEditForm editForm = new PreviousHospitalizationEditForm(create);
+		PreviousHospitalizationEditForm editForm = new PreviousHospitalizationEditForm(create, UserRight.CASE_EDIT);
 		editForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<PreviousHospitalizationEditForm> editView = new CommitDiscardWrapperComponent<PreviousHospitalizationEditForm>(
-				editForm, editForm.getFieldGroup());
+				editForm, editForm.getFieldGroup(), UserRight.CASE_EDIT);
 		editView.getCommitButton().setCaption("done");
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Previous hospitalization");
