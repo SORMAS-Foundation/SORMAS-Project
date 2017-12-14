@@ -227,14 +227,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 	
 	@Override
-	public List<CaseReferenceDto> getAllCasesAfterAsReference(Date date, String userUuid) {
-
-		User user = userService.getByUuid(userUuid);
-
-		return caseService.getAllAfter(date, user).stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
-	}
-
-	@Override
 	public List<CaseReferenceDto> getSelectableCases(UserReferenceDto userRef) {
 
 		User user = userService.getByReferenceDto(userRef);
@@ -732,11 +724,9 @@ public class CaseFacadeEjb implements CaseFacade {
 							// No or negative population - these entries will be cut off in the UI
 							return new Pair<DistrictDto, BigDecimal>(DistrictFacadeEjb.toDto(district), new BigDecimal(0));
 						} else {
-							// Scale of 5 is used because 1 / 100000 = 0.00001 is the lowest possible value for the inner division;
-							// ATTENTION: This will have to be changed when the case incidence divisor is altered to avoid divide by zero errors
 							return new Pair<DistrictDto, BigDecimal>(DistrictFacadeEjb.toDto(district), 
 									new BigDecimal(caseCount).divide(
-											new BigDecimal(population).divide(new BigDecimal(DistrictDto.CASE_INCIDENCE_DIVISOR), 5, RoundingMode.HALF_UP), 1, RoundingMode.HALF_UP));
+											new BigDecimal((double) population / DistrictDto.CASE_INCIDENCE_DIVISOR), 1, RoundingMode.HALF_UP));
 						}
 					})
 					.sorted(new Comparator<Pair<DistrictDto, BigDecimal>>() {

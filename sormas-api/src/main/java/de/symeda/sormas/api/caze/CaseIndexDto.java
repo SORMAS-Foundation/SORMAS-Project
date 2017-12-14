@@ -6,7 +6,6 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.utils.DataHelper;
 
 public class CaseIndexDto extends EntityDto {
 
@@ -157,7 +156,7 @@ public class CaseIndexDto extends EntityDto {
 	
 	@Override
 	public String toString() {
-		return personFirstName + " " + personLastName + " (" + DataHelper.getShortUuid(getUuid()) + ")";
+		return CaseDataDto.buildCaption(getUuid(), personFirstName, personLastName);
 	}
 	
 }

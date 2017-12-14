@@ -15,12 +15,13 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
+import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -32,7 +33,8 @@ import de.symeda.sormas.ui.utils.BooleanRenderer;
 @SuppressWarnings("serial")
 public class SampleGrid extends Grid {
 	
-	private static final String TEST_STATUS_GEN = "testStatusGen";
+	private static final String TEST_RESULT = "testResult";
+	private static final String LAB_USER = "labUser";
 	private static final String DISEASE_SHORT = "diseaseShort";
 	
 	private CaseReferenceDto caseRef;
@@ -45,16 +47,36 @@ public class SampleGrid extends Grid {
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 		
-		generatedContainer.addGeneratedProperty(TEST_STATUS_GEN, new PropertyValueGenerator<String>() {
+		generatedContainer.addGeneratedProperty(TEST_RESULT, new PropertyValueGenerator<String>() {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				SampleIndexDto sampleIndexDto = (SampleIndexDto) itemId;
-				if(sampleIndexDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
+				SampleTestDto latestSampleTest = FacadeProvider.getSampleTestFacade().getLatestBySample(sampleIndexDto.toReference());
+				
+				if (sampleIndexDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
 					return "Specimen not adequate";
-				} else if(sampleIndexDto.getTestResult() != null) {
-					return sampleIndexDto.getTestResult().toString();
+				} else if (latestSampleTest != null) {
+					return latestSampleTest.getTestResult().toString();
 				} else {
 					return "Pending";
+				}
+			}
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
+		});
+		
+		generatedContainer.addGeneratedProperty(LAB_USER, new PropertyValueGenerator<String>() {
+			@Override
+			public String getValue(Item item, Object itemId, Object propertyId) {
+				SampleIndexDto sampleIndexDto = (SampleIndexDto) itemId;
+				SampleTestDto latestSampleTest = FacadeProvider.getSampleTestFacade().getLatestBySample(sampleIndexDto.toReference());
+				
+				if (latestSampleTest != null) {
+					return latestSampleTest.getLabUser().toString();
+				} else {
+					return "";
 				}
 			}
 			@Override
@@ -79,7 +101,7 @@ public class SampleGrid extends Grid {
 		
 		setColumns(SampleIndexDto.SAMPLE_CODE, SampleIndexDto.LAB_SAMPLE_ID, SampleIndexDto.ASSOCIATED_CASE, DISEASE_SHORT,
 				SampleIndexDto.CASE_DISTRICT, SampleIndexDto.SHIPPED, SampleIndexDto.RECEIVED, SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB,
-				SampleIndexDto.SAMPLE_MATERIAL, SampleIndexDto.LAB_USER, TEST_STATUS_GEN);
+				SampleIndexDto.SAMPLE_MATERIAL, SampleIndexDto.LAB_USER, TEST_RESULT);
 		
 		getColumn(SampleIndexDto.SHIPMENT_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
 		getColumn(SampleIndexDto.RECEIVED_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
@@ -134,14 +156,13 @@ public class SampleGrid extends Grid {
 		getContainer().addContainerFilter(referredFilter);
 	}
 	
-	public void setRegionFilter(RegionReferenceDto region) {
-		getContainer().removeContainerFilters(SampleIndexDto.CASE_REGION);
-		if(region != null) {
-			Equal filter = new Equal(SampleIndexDto.CASE_REGION, region);
+	public void setRegionFilter(String regionUuid) {
+		getContainer().removeContainerFilters(SampleIndexDto.CASE_REGION_UUID);
+		if(regionUuid != null) {
+			Equal filter = new Equal(SampleIndexDto.CASE_REGION_UUID, regionUuid);
 			getContainer().addContainerFilter(filter);
 		}
 	}
-	
 	
 	public void setDistrictFilter(DistrictReferenceDto district) {
 		getContainer().removeContainerFilters(SampleIndexDto.CASE_DISTRICT);
@@ -164,7 +185,9 @@ public class SampleGrid extends Grid {
 		getContainer().removeContainerFilters(SampleIndexDto.UUID);
 		getContainer().removeContainerFilters(SampleIndexDto.ASSOCIATED_CASE);
 		if(text != null && !text.isEmpty()) {
-			Or textFilter = new Or(new SimpleStringFilter(SampleIndexDto.SAMPLE_CODE, text, true, false), new SimpleStringFilter(SampleIndexDto.UUID, text, true, false), new SimpleStringFilter(SampleIndexDto.ASSOCIATED_CASE, text, true, false));
+			Or textFilter = new Or(new SimpleStringFilter(SampleIndexDto.SAMPLE_CODE, text, true, false), 
+					new SimpleStringFilter(SampleIndexDto.UUID, text, true, false), 
+					new SimpleStringFilter(SampleIndexDto.ASSOCIATED_CASE, text, true, false));
 			getContainer().addContainerFilter(textFilter);
 		}
 	}

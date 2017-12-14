@@ -15,6 +15,8 @@ public interface SampleTestFacade {
 	
 	List<SampleTestDto> getAllBySample(SampleReferenceDto sampleRef);
 	
+	SampleTestDto getLatestBySample(SampleReferenceDto sampleRef);
+	
 	SampleTestDto getByUuid(String uuid);
 	
 	SampleTestDto saveSampleTest(SampleTestDto dto);

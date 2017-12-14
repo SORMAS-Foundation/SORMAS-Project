@@ -154,7 +154,7 @@ public class SampleListComponent extends VerticalLayout {
             regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
             regionFilter.addValueChangeListener(e -> {
             	RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
-            	grid.setRegionFilter(region);
+            	grid.setRegionFilter(region.getUuid());
             });
             filterLayout.addComponent(regionFilter);
         }

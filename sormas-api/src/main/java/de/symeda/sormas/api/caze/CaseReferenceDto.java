@@ -19,4 +19,9 @@ public class CaseReferenceDto extends ReferenceDto {
 		setCaption(caption);
 	}
 
+	public CaseReferenceDto(String uuid, String firstName, String lastName) {
+		setUuid(uuid);
+		setCaption(CaseDataDto.buildCaption(uuid, firstName, lastName));
+	}
+	
 }
