@@ -181,12 +181,20 @@ public class User extends AbstractDomainObject {
 	}
 	@Override
 	public String toString() {
-		String result = firstName + " " + lastName.toUpperCase();
-		// TODO we need a main user role
-		if (userRoles.size() > 0) {
-			result += " - " + userRoles.iterator().next().toShortString();					
+		StringBuilder result = new StringBuilder();
+		result.append(getFirstName()).append(" ").append(getLastName().toUpperCase());
+		boolean first = true;
+		for (UserRole userRole : getUserRoles()) {
+			if (first) {
+				result.append(" - ");
+				first = false;
+			} else {
+				result.append(", ");
+			}
+			result.append(userRole.toShortString());
 		}
-		return result;
+		return result.toString();
+
 	}
 	
 	@Transient

@@ -61,7 +61,7 @@ public class EventParticipantNewActivity extends AppCompatActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_eventParticipant) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_eventParticipant));
         }
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

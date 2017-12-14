@@ -93,14 +93,13 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity implem
         User user = ConfigProvider.getUser();
         if (user != null ) {
             Menu menu = navigationView.getMenu();
-            boolean isContactOfficer = user.getUserRole() == UserRole.CONTACT_OFFICER;
+            boolean isContactOfficer = user.hasUserRole(UserRole.CONTACT_OFFICER);
             boolean isSurveillanceOrInformant =
-                    user.getUserRole() == UserRole.SURVEILLANCE_OFFICER
-                            || user.getUserRole() == UserRole.CASE_OFFICER
-                            || user.getUserRole() == UserRole.INFORMANT;
+                    user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)
+                            || user.hasUserRole(UserRole.INFORMANT);
             boolean isCaseSurveillanceOrInformant =
                     isSurveillanceOrInformant
-                            || user.getUserRole() == UserRole.CASE_OFFICER;
+                            || user.hasUserRole(UserRole.CASE_OFFICER);
             menu.findItem(R.id.nav_cases).setVisible(isCaseSurveillanceOrInformant);
             menu.findItem(R.id.nav_samples).setVisible(isCaseSurveillanceOrInformant);
             menu.findItem(R.id.nav_events).setVisible(isCaseSurveillanceOrInformant);
@@ -108,9 +107,8 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity implem
             menu.findItem(R.id.nav_reports).setVisible(isSurveillanceOrInformant);
 
             // replace empty user sub header with user name and role
-            String username = ConfigProvider.getUsername();
-            String userRole = ConfigProvider.getUser().getUserRole().toString();
-            menu.findItem(R.id.navigation_user_sub_header).setTitle(username + " (" + userRole + ")");
+            String username = ConfigProvider.getUser().toString();
+            menu.findItem(R.id.navigation_user_sub_header).setTitle(username);
         }
 
     }
@@ -146,11 +144,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity implem
     @Override
     public void setTitle(CharSequence title) {
         mainViewTitle = title;
-        String userRole = "";
-        if (ConfigProvider.getUser()!=null && ConfigProvider.getUser().getUserRole() !=null) {
-            userRole = " - " + ConfigProvider.getUser().getUserRole().toShortString();
-        }
-        getSupportActionBar().setTitle(mainViewTitle + userRole);
+        getSupportActionBar().setTitle(mainViewTitle);
     }
 
     public void showCasesView() {

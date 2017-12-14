@@ -89,9 +89,7 @@ public class TaskForm extends FormTab {
             binding.taskCreatorUser.setVisibility(View.GONE);
         }
 
-        List<TaskStatus> possibleStatusChanges = TaskHelper.getPossibleStatusChanges(task.getTaskStatus(), ConfigProvider.getUser().getUserRole());
-
-        if (possibleStatusChanges.contains(TaskStatus.NOT_EXECUTABLE)) {
+        if (task.getTaskStatus() == TaskStatus.PENDING) {
             binding.taskNotExecutableBtn.setVisibility(View.VISIBLE);
             binding.taskNotExecutableBtn.setText(TaskStatus.NOT_EXECUTABLE.toString());
             binding.taskNotExecutableBtn.setOnClickListener(new View.OnClickListener() {
@@ -124,7 +122,7 @@ public class TaskForm extends FormTab {
             binding.taskNotExecutableBtn.setVisibility(View.GONE);
         }
 
-        if (possibleStatusChanges.contains(TaskStatus.DONE)) {
+        if (task.getTaskStatus() == TaskStatus.PENDING) {
             binding.taskDoneBtn.setVisibility(View.VISIBLE);
             binding.taskDoneBtn.setText(TaskStatus.DONE.toString());
             binding.taskDoneBtn.setOnClickListener(new View.OnClickListener() {

@@ -94,7 +94,8 @@ public class CasesActivity extends AbstractRootTabActivity {
             case R.id.action_new_case:
                 EpiWeek lastEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
                 User user = ConfigProvider.getUser();
-                if (user.getUserRole() == UserRole.INFORMANT && DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(lastEpiWeek, ConfigProvider.getUser()) == null) {
+                if (user.hasUserRole(UserRole.INFORMANT)
+                        && DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(lastEpiWeek, ConfigProvider.getUser()) == null) {
                     AlertDialog noLastWeeklyReportDialog = buildNoLastWeeklyReportDialog();
                     noLastWeeklyReportDialog.show();
                 } else {

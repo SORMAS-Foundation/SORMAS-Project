@@ -60,7 +60,7 @@ public class CaseEditDataForm extends FormTab {
         // the "Not yet classified" classification is hidden from informants
         FieldHelper.initSpinnerField(binding.caseDataCaseOfficerClassification, CaseClassification.class);
         User user = ConfigProvider.getUser();
-        if (user.getUserRole() == UserRole.INFORMANT) {
+        if (user.hasUserRole(UserRole.INFORMANT)) {
             binding.caseDataCaseOfficerClassification.setVisibility(View.GONE);
             if (binding.getCaze().getCaseClassification() == CaseClassification.NOT_CLASSIFIED) {
                 binding.caseDataCaseClassification.setVisibility(View.GONE);
@@ -141,7 +141,7 @@ public class CaseEditDataForm extends FormTab {
             }
         });
 
-        if (ConfigProvider.getUser().getUserRole() != UserRole.INFORMANT) {
+        if (!ConfigProvider.getUser().hasUserRole(UserRole.INFORMANT)) {
             binding.caseDataEpidNumber.addValueChangedListener(new PropertyField.ValueChangeListener() {
                 @Override
                 public void onChange(PropertyField field) {
@@ -159,7 +159,7 @@ public class CaseEditDataForm extends FormTab {
             binding.caseDataEpidNumber.setEnabled(false);
         }
 
-        if (ConfigProvider.getUser().getUserRole() == UserRole.SURVEILLANCE_OFFICER) {
+        if (ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
             binding.caseDataCaseOfficerClassification.addValueChangedListener(new PropertyField.ValueChangeListener() {
                 @Override
                 public void onChange(PropertyField field) {
@@ -173,7 +173,8 @@ public class CaseEditDataForm extends FormTab {
             });
         }
 
-        if (ConfigProvider.getUser().getUserRole() == UserRole.CASE_OFFICER || ConfigProvider.getUser().getUserRole() == UserRole.SURVEILLANCE_OFFICER) {
+        if (ConfigProvider.getUser().hasUserRole(UserRole.CASE_OFFICER)
+                || ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
             binding.caseDataMove.setVisibility(View.VISIBLE);
             binding.caseDataMove.setPaintFlags(binding.caseDataMove.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             binding.caseDataMove.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));

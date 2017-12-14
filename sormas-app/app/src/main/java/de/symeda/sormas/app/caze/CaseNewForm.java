@@ -194,8 +194,7 @@ public class CaseNewForm extends FormTab {
         binding.caseDataRegion.setEnabled(false);
         binding.caseDataDistrict.setEnabled(false);
         User user = ConfigProvider.getUser();
-        if (user.getUserRole() == UserRole.INFORMANT
-                && user.getHealthFacility() != null) {
+        if (user.hasUserRole(UserRole.INFORMANT)&& user.getHealthFacility() != null) {
             // this is ok, because informants are required to have a community and health facility
             binding.caseDataCommunity.setEnabled(false);
             binding.caseDataHealthFacility.setEnabled(false);

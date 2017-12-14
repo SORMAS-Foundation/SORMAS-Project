@@ -60,7 +60,7 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
         reportDate.setText(DateHelper.formatDate(caze.getReportDate()));
 
         TextView caseStatus = (TextView) convertView.findViewById(R.id.cli_case_satus);
-        if (!(ConfigProvider.getUser().getUserRole() == UserRole.INFORMANT && caze.getCaseClassification() == CaseClassification.NOT_CLASSIFIED)) {
+        if (!(ConfigProvider.getUser().hasUserRole(UserRole.INFORMANT) && caze.getCaseClassification() == CaseClassification.NOT_CLASSIFIED)) {
             caseStatus.setText(caze.getCaseClassification() != null ? caze.getCaseClassification().toString() : null);
         } else {
             caseStatus.setText("");

@@ -218,7 +218,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
      * @return
      */
     public int getNumberOfCasesForEpiWeekAndDisease(EpiWeek epiWeek, Disease disease, User informant) {
-        if (informant.getUserRole() != UserRole.INFORMANT) {
+        if (!informant.hasUserRole(UserRole.INFORMANT)) {
             throw new UnsupportedOperationException("Can only retrieve the number of reported cases by epi week and disease for Informants.");
         }
 

@@ -1,17 +1,28 @@
 package de.symeda.sormas.app.backend.user;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.hospitalization.HospitalizationDao;
+import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -35,7 +46,7 @@ public class User extends AbstractDomainObject {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String HEALTH_FACILITY = "healthFacility";
-	public static final String USER_ROLE = "userRole";
+	public static final String USER_ROLES_JSON = "userRole";
 
 	@Column(nullable = false)
 	private String userName;
@@ -59,11 +70,15 @@ public class User extends AbstractDomainObject {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Facility healthFacility;
 
-	@Enumerated(EnumType.STRING)
-	private UserRole userRole;
 	@ManyToOne(cascade = {})
 	private User associatedOfficer;
-	
+
+	@Column(name = "userRole")
+	private String userRolesJson;
+
+	// initialized from userRolesJson
+	private Set<UserRole> userRoles = null;
+
 	public String getUserName() {
 		return userName;
 	}
@@ -134,30 +149,63 @@ public class User extends AbstractDomainObject {
 		this.healthFacility = healthFacility;
 	}
 
-	@Override
-	public String toString() {
-
-		String result = getFirstName() + " " + getLastName().toUpperCase();
-		if (getUserRole() != null) {
-			result += " - " + getUserRole().toShortString();
-		}
-		return result;
-	}
-
-	public UserRole getUserRole() {
-		return userRole;
-	}
-
-	public void setUserRole(UserRole userRole) {
-		this.userRole = userRole;
-	}
-
 	public User getAssociatedOfficer() {
 		return associatedOfficer;
 	}
 
 	public void setAssociatedOfficer(User associatedOfficer) {
 		this.associatedOfficer = associatedOfficer;
+	}
+
+	public String getUserRolesJson() {
+		return userRolesJson;
+	}
+
+	public void setUserRolesJson(String userRolesJson) {
+		this.userRolesJson = userRolesJson;
+	}
+
+	/**
+	 * NOTE: This is only initialized when the user is retrieved using {@link UserDao}
+	 * @return
+	 */
+	@Transient
+	public Set<UserRole> getUserRoles() {
+		if (userRoles == null) {
+			Gson gson = new Gson();
+			Type type = new TypeToken<Set<UserRole>>() {}.getType();
+			userRoles = gson.fromJson(userRolesJson, type);
+		}
+		return userRoles;
+	}
+
+	public void setUserRoles(Set<UserRole> userRoles) {
+		this.userRoles = userRoles;
+		Gson gson = new Gson();
+		userRolesJson = gson.toJson(userRoles);
+	}
+
+	public boolean hasUserRole(UserRole userRole) {
+		return getUserRoles().contains(userRole);
+	}
+
+
+	@Override
+	public String toString() {
+
+		StringBuilder result = new StringBuilder();
+		result.append(getFirstName()).append(" ").append(getLastName().toUpperCase());
+		boolean first = true;
+		for (UserRole userRole : getUserRoles()) {
+			if (first) {
+				result.append(" - ");
+				first = false;
+			} else {
+				result.append(", ");
+			}
+			result.append(userRole.toShortString());
+		}
+		return result.toString();
 	}
 
 	@Override

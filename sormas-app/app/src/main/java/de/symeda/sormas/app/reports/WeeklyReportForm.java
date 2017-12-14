@@ -103,7 +103,7 @@ public class WeeklyReportForm extends FormTab {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 EpiWeek epiWeek = new EpiWeek((int) binding.weeklyReportYear.getValue(), (int) binding.weeklyReportWeek.getValue());
 
-                if (user.getUserRole() == UserRole.INFORMANT) {
+                if (user.hasUserRole(UserRole.INFORMANT)) {
                     WeeklyReport report = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(epiWeek, user);
 
                     // Epi week shown = this week; table is shown if the report for the last week has been confirmed; no buttons
@@ -235,7 +235,7 @@ public class WeeklyReportForm extends FormTab {
     private void addHeaderRow(User user) {
         TableLayout tableLayout = (TableLayout) getActivity().findViewById(R.id.report_table_layout);
         TableRow row;
-        if (user.getUserRole() == UserRole.INFORMANT) {
+        if (user.hasUserRole(UserRole.INFORMANT)) {
             row = (TableRow) LayoutInflater.from(getContext()).inflate(R.layout.weekly_report_informant_table_header_layout, null);
         } else {
             row = (TableRow) LayoutInflater.from(getContext()).inflate(R.layout.weekly_report_officer_table_header_layout, null);
@@ -285,7 +285,7 @@ public class WeeklyReportForm extends FormTab {
         binding.reportTableLayout.removeAllViews();
         addHeaderRow(user);
         int rowNumber = 1;
-        if (user.getUserRole() == UserRole.INFORMANT) {
+        if (user.hasUserRole(UserRole.INFORMANT)) {
             for (WeeklyReportEntry entry : DatabaseHelper.getWeeklyReportEntryDao().getAllByWeeklyReport(report)) {
                 addInformantTableRow(entry.getDisease(), entry.getNumberOfCases(), rowNumber % 2 == 0);
                 rowNumber++;

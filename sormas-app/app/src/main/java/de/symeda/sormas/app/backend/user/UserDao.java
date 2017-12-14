@@ -3,11 +3,14 @@ package de.symeda.sormas.app.backend.user;
 import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
@@ -35,10 +38,11 @@ public class UserDao extends AbstractAdoDao<User> {
 
     public User getByUsername(String username) {
         List<User> users = queryForEq(User.USER_NAME, username);
-        if (users.size() == 0) {
+        if (users.size() == 1) {
+            User user = users.get(0);
+            return user;
+        } else if (users.size() == 0) {
             return null;
-        } else if (users.size() == 1) {
-            return users.get(0);
         } else {
             throw new RuntimeException("Found multiple users for name " + username);
         }
@@ -50,7 +54,7 @@ public class UserDao extends AbstractAdoDao<User> {
             Where where = builder.where();
             where.and(
                     where.eq(User.REGION + "_id", region.getId()),
-                    where.eq(User.USER_ROLE, role)
+                    where.eq(User.USER_ROLES_JSON, role)
             );
 
             return (List<User>) builder.query();
@@ -66,7 +70,7 @@ public class UserDao extends AbstractAdoDao<User> {
             Where where = builder.where();
             where.and(
                     where.eq(User.DISTRICT + "_id", district.getId()),
-                    where.eq(User.USER_ROLE, role)
+                    where.eq(User.USER_ROLES_JSON, role)
             );
 
             return (List<User>) builder.orderBy(orderBy, true).query();

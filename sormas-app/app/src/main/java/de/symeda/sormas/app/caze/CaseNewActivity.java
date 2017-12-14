@@ -67,7 +67,7 @@ public class CaseNewActivity extends AppCompatActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_case) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_case));
         }
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -193,9 +193,9 @@ public class CaseNewActivity extends AppCompatActivity {
 
         User user = ConfigProvider.getUser();
         caze.setReportingUser(user);
-        if (user.getUserRole() == UserRole.SURVEILLANCE_OFFICER) {
+        if (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
             caze.setSurveillanceOfficer(user);
-        } else if (user.getUserRole() == UserRole.INFORMANT) {
+        } else if (user.hasUserRole(UserRole.INFORMANT)) {
             caze.setSurveillanceOfficer(user.getAssociatedOfficer());
         }
         caze.setReportDate(new Date());
