@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.validation.ValidationException;
 
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -17,6 +18,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRole.UserRoleValidationException;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventService;
@@ -133,7 +135,14 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public UserDto saveUser(UserDto dto) {
+
 		User user = fromDto(dto);
+		
+		try {
+			UserRole.validate(user.getUserRoles());
+		} catch (UserRoleValidationException e) {
+			throw new ValidationException(e);
+		}
 		
 		userService.ensurePersisted(user);
 		

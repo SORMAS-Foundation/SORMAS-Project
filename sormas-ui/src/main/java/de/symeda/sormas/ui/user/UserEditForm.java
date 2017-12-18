@@ -66,7 +66,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	
     	addField(UserDto.ACTIVE, CheckBox.class);
     	addField(UserDto.USER_NAME, TextField.class);
-    	addField(UserDto.USER_ROLES, OptionGroup.class);
+    	addField(UserDto.USER_ROLES, OptionGroup.class).addValidator(new UserRolesValidator());
     	OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
     	userRoles.setMultiSelect(true);
     	userRoles.addItems(UserRole.getAssignableRoles(LoginHelper.getCurrentUserRoles()));

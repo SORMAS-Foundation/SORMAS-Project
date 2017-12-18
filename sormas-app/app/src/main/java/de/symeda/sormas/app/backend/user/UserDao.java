@@ -54,7 +54,7 @@ public class UserDao extends AbstractAdoDao<User> {
             Where where = builder.where();
             where.and(
                     where.eq(User.REGION + "_id", region.getId()),
-                    where.eq(User.USER_ROLES_JSON, role)
+                    where.like(User.USER_ROLES_JSON, "%\"" + role.name() + "\"%")
             );
 
             return (List<User>) builder.query();
@@ -70,7 +70,7 @@ public class UserDao extends AbstractAdoDao<User> {
             Where where = builder.where();
             where.and(
                     where.eq(User.DISTRICT + "_id", district.getId()),
-                    where.eq(User.USER_ROLES_JSON, role)
+                    where.like(User.USER_ROLES_JSON, "%\"" + role.name() + "\"%")
             );
 
             return (List<User>) builder.orderBy(orderBy, true).query();
