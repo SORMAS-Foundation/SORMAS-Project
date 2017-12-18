@@ -111,6 +111,7 @@ For information on what libs are used see pom.xml in sormas-base project: https:
 * Open ``glassfish-config.sh`` (or glassfish-config.bat on windows) in a text editor and change GLASSFISH_HOME, DOMAINS_HOME, PORT_BASE, PORT_ADMIN, DB_PW, DB_PW_AUDIT, MAIL_FROM to appropriate values for your server.
 * Make the file executable: ``chmod +x glassfish-config.sh``
 * Set up a payara domain called "sormas" by executing it: ``./glassfish-config.sh`` Press enter whenever asked for it.
+* Adjust the logging configuration in opt/domains/sormas/config/logback.xml based on your needs 
 * Make sure the domain folder is owned by the glassfish user: ``chown -R glassfish:glassfish opt/domains/sormas/``
 * Copy the startup script to init.d: ``cp payara-sormas /etc/init.d``
 * Add the server startup sequence: ``update-rc.d payara-sormas defaults``

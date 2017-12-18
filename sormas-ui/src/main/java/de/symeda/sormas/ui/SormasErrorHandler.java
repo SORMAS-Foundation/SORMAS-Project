@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.SocketException;
 
 import org.slf4j.Logger;
@@ -8,14 +7,12 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Buffered;
 import com.vaadin.data.Validator;
-import com.vaadin.event.ListenerMethod;
 import com.vaadin.server.AbstractErrorMessage.ContentMode;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorEvent;
 import com.vaadin.server.ErrorHandler;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.ErrorMessage.ErrorLevel;
-import com.vaadin.server.ServerRpcManager;
 import com.vaadin.server.SystemError;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractComponent;
@@ -48,23 +45,21 @@ public class SormasErrorHandler implements ErrorHandler {
                             + " Most likely client (browser) closed socket.");
             return;
         }
-
-    	Throwable cause = findCause(t);
     	
         // log the error
 		logger.error(t.getMessage(), t);
 		
-	    // Finds the original source of the error/exception
+	    // finds the original source of the error/exception
 	    AbstractComponent component = DefaultErrorHandler.findAbstractComponent(event);
 	    if (component != null) {
 	        // Shows the error in AbstractComponent
 	        ErrorMessage errorMessage = getErrorMessageForException(t);
 	        
 	        if (errorMessage instanceof SystemError) {
-        		Notification.show("Es ist ein Fehler aufgetreten", "Der Fehler wurde automatisch dem Support gemeldet.", Notification.Type.ERROR_MESSAGE);
+        		Notification.show("An error has occurred", "The error was automatically reported to support.", Notification.Type.ERROR_MESSAGE);
 	        } else {
 	        	
-	        	//Damit ggf. die Original-Message nicht erscheint
+	        	// to prevent the original message from appearing, if necessary
 	        	if (component instanceof AbstractField<?>) {
 	        		((AbstractField<?>)component).setCurrentBufferedSourceException(null);
 	        	}
@@ -74,37 +69,9 @@ public class SormasErrorHandler implements ErrorHandler {
 	    }
 	}
 
-	/**
-	 * Versucht eine aussagekräftige Exception zu finden
-	 * @param t
-	 * @return
-	 */
-	public static Throwable findCause(Throwable t) {
-
-		Throwable last = null;
-		Throwable current = t;
-		
-		while (current != null) {
-			if (current instanceof ServerRpcManager.RpcInvocationException 
-			 || current instanceof InvocationTargetException 
-			 || current instanceof ListenerMethod.MethodException) {
-
-				last = current;
-				current = last.getCause();
-			} else {
-				return current;
-			}
-		}
-		
-		return last;
-	}
-	
-
 
     /**
-     * Aus AbstractErrorMessage übernommen und gesäubert
-     * @param t
-     * @return
+     * Taken and cleaned from AbstractErrorMessage
      */
     public static ErrorMessage getErrorMessageForException(Throwable t) {
     	
@@ -138,7 +105,7 @@ public class SormasErrorHandler implements ErrorHandler {
         } else {
             String message = t.getMessage();
             if (message == null) {
-            	message = "Es ist ein Fehler aufgetreten"; 
+            	message = "An error has occurred"; 
             }
 			return new SystemError(message);
         }
