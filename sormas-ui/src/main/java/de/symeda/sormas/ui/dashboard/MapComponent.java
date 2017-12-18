@@ -110,6 +110,7 @@ public class MapComponent extends VerticalLayout {
 	private BigDecimal districtShapesUpperQuartile;
 	private ClickListener externalExpandButtonListener;
 	private ClickListener externalCollapseButtonListener;
+	private boolean emptyPopulationDistrictPresent;
 
 	public MapComponent(DashboardDataProvider dashboardDataProvider) {    	
 		this.dashboardDataProvider = dashboardDataProvider;
@@ -688,11 +689,23 @@ public class MapComponent extends VerticalLayout {
 			break;
 		default: throw new IllegalArgumentException(caseMeasure.toString());
 		}
-
+		
 		regionKeyLayout.addComponent(legendEntry);
 		regionKeyLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
 		regionKeyLayout.setExpandRatio(legendEntry, 1);
 
+		if (caseMeasure == CaseMeasure.CASE_INCIDENCE && emptyPopulationDistrictPresent) {
+			spacer = new Label();
+			spacer.setWidth(6, Unit.PIXELS);
+			regionKeyLayout.addComponent(spacer);
+			
+			legendEntry = createMapKeyEntry("mapicons/no-population-region-small.png", "No population data available");
+			
+			regionKeyLayout.addComponent(legendEntry);
+			regionKeyLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+			regionKeyLayout.setExpandRatio(legendEntry, 1);
+		}
+		
 		return regionKeyLayout;
 	}
 
@@ -737,6 +750,8 @@ public class MapComponent extends VerticalLayout {
 			}
 		}
 		districtPolygonsMap.clear();
+		
+		emptyPopulationDistrictPresent = false;
 
 		map.removeStyleName("no-tiles");
 	}
@@ -834,6 +849,7 @@ public class MapComponent extends VerticalLayout {
 				if (caseMeasure == CaseMeasure.CASE_INCIDENCE) {
 					if (district.getPopulation() == null || district.getPopulation() <= 0) {
 						// grey when region has no population data
+						emptyPopulationDistrictPresent = true;
 						polygon.setFillColor("#999999");
 						polygon.setFillOpacity(0.5);
 					}
