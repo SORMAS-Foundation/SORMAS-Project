@@ -45,7 +45,7 @@ For information on what libs are used see pom.xml in sormas-base project: https:
     * ``sudo chown postgres:postgres /root/deploy/sormas/backup``
 * Create a backup of the database
     * ``cd /root/deploy/sormas/backup``
-    * ``sudo -u postgres pg_dump -Fc -b sormas_db >  "sormas_db_"`date +"%Y-%m-%d_%H-%M-%S"`".dump"``
+    * ``pg_dump -Fc -b -h localhost -U sormas_user sormas_db > "sormas_db_"`date +"%Y-%m-%d_%H-%M-%S"`".dump"``
     * ``cd /root/deploy/sormas/$(date +%F)``	
 * Update the database schema
     * ``cd /root/deploy/sormas/$(date +%F)/sql``
