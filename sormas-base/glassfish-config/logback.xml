@@ -57,7 +57,7 @@
             </cyclicBufferTracker>
             <smtpHost>localhost</smtpHost>
             <!-- <to>YOUR SUPPORT EMAIL ADRESS</to>  -->
-            <!-- <from>noreply@YOUR_SERVER_ADRESS</to>  -->
+            <!-- <from>noreply@YOUR_SERVER_ADRESS</from>  -->
             <subject>SORMAS: %logger{20} - %m</subject>
             <layout class="ch.qos.logback.classic.PatternLayout">
                     <pattern>%date %-5level %X{USER} %X{APP} %logger{36} - %msg%n</pattern>
