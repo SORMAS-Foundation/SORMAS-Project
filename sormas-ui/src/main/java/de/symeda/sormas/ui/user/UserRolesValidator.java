@@ -1,34 +1,22 @@
 package de.symeda.sormas.ui.user;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 
-import com.vaadin.data.validator.AbstractValidator;
+import com.vaadin.data.Validator;
 
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRole.UserRoleValidationException;
 
 @SuppressWarnings("serial")
-public final class UserRolesValidator extends AbstractValidator<Set<UserRole>> {
+public final class UserRolesValidator implements Validator {
 	
-	UserRolesValidator() {
-		super("");
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
-	public Class<Set<UserRole>> getType() {
-		return (Class<Set<UserRole>>) new HashSet<UserRole>().getClass();
-	}
-
-	@Override
-	protected boolean isValidValue(Set<UserRole> value) {
+	public void validate(Object value) throws InvalidValueException {
 		try {
-			UserRole.validate(value);
+			UserRole.validate((Collection<UserRole>) value);
 		} catch (UserRoleValidationException e) {
-			setErrorMessage(e.getMessage());
-			return false;
+			throw new InvalidValueException(e.getMessage());
 		}
-		return true;
 	}
 }
