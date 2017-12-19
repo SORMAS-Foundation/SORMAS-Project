@@ -207,7 +207,7 @@ public class CasesView extends AbstractView {
 
     @Override
     public void enter(ViewChangeEvent event) {
-    	grid.reload(null);
+    	grid.reload();
     }
 
     public void clearSelection() {

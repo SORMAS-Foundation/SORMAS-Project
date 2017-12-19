@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.PlagueType;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -322,6 +323,29 @@ public class ContactService extends AbstractAdoService<Contact> {
 		// whoever created it or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), user);
 		filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), user));
+		return filter;
+	}
+	
+	public Predicate buildCriteriaFilter(ContactCriteria contactCriteria, CriteriaBuilder cb, Root<Contact> from) {
+		Predicate filter = null;
+		Join<Contact, Case> caze = from.join(Contact.CAZE, JoinType.LEFT);
+		if (contactCriteria.getReportingUserRole() != null) {
+			filter = and(cb, filter, cb.isMember(
+					contactCriteria.getReportingUserRole(), 
+					from.join(Contact.REPORTING_USER, JoinType.LEFT).get(User.USER_ROLES)));
+		}
+		if (contactCriteria.getCaseDisease() != null) {
+			if (caze == null) {
+				caze = from.join(Contact.CAZE, JoinType.LEFT);
+			}
+			filter = and(cb, filter, cb.equal(caze.get(Case.DISEASE), contactCriteria.getCaseDisease()));
+		}
+		if (contactCriteria.getCaze() != null) {
+			if (caze == null) {
+				caze = from.join(Contact.CAZE, JoinType.LEFT);
+			}
+			filter = and(cb, filter, cb.equal(caze.get(Case.UUID), contactCriteria.getCaze().getUuid()));
+		}
 		return filter;
 	}
 }

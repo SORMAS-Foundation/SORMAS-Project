@@ -16,19 +16,14 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 
 @Remote
 public interface CaseFacade {
 
 	List<CaseDataDto> getAllCasesAfter(Date date, String userUuid);
-	
-	List<CaseDataDto> getAllCasesByDisease(Disease disease, String userUuid);
-	
-	List<CaseDataDto> getAllCasesBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid);
-	
-	List<CaseIndexDto> getIndexList(String userUuid, UserRole reportingUserRole);
+
+	List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria);
 	
 	CaseDataDto getCaseDataByUuid(String uuid);
     

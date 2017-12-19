@@ -135,7 +135,7 @@ public class TaskService extends AbstractAdoService<Task> {
 		return result;
 	}
 
-	private Predicate buildCriteriaFilter(TaskCriteria taskCriteria, CriteriaBuilder cb, Root<Task> from) {
+	public Predicate buildCriteriaFilter(TaskCriteria taskCriteria, CriteriaBuilder cb, Root<Task> from) {
 		Predicate filter = null;
 		if (taskCriteria.getTaskStatuses() != null && taskCriteria.getTaskStatuses().length > 0) {
 			if (taskCriteria.getTaskStatuses().length == 1) {
@@ -176,28 +176,7 @@ public class TaskService extends AbstractAdoService<Task> {
 		}
 		return filter;
 	}
-	
-	/**
-	 * TODO move to CriteriaBuilderHelper
-	 * @param existing nullable
-	 */
-	public static Predicate and(CriteriaBuilder cb, Predicate existing, Predicate additional) {
-		if (existing == null) {
-			return additional;
-		}
-		return cb.and(existing, additional);
-	}
-	
-	/**
-	 * TODO move to CriteriaBuilderHelper
-	 * @param existing nullable
-	 */
-	public static Predicate or(CriteriaBuilder cb, Predicate existing, Predicate additional) {
-		if (existing == null) {
-			return additional;
-		}
-		return cb.or(existing, additional);
-	}
+
 
 	public Task buildTask(User creatorUser) {
 		Task task = new Task();

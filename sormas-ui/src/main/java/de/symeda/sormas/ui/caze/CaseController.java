@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.caze;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
@@ -30,7 +29,6 @@ import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
-import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -154,11 +152,6 @@ public class CaseController {
                 + fragmentParameter, false);
     }
 
-    public List<CaseIndexDto> getCaseIndexList(UserRole reportingUserRole) {
-    	UserDto user = LoginHelper.getCurrentUser();
-    	return FacadeProvider.getCaseFacade().getIndexList(user.getUuid(), reportingUserRole);
-    }
-    
     private CaseDataDto findCase(String uuid) {
         return cf.getCaseDataByUuid(uuid);
     }

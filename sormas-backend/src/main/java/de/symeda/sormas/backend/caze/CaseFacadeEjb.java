@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
@@ -49,6 +50,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -150,7 +152,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseIndexDto> getIndexList(String userUuid, UserRole reportingUserRole) {
+	public List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
@@ -160,7 +162,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, District> district = caze.join(Case.DISTRICT, JoinType.LEFT);
 		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Join<Case, User> surveillanceOfficer = caze.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
-		Join<Case, User> reportingUser = caze.join(Case.REPORTING_USER, JoinType.LEFT);
 
 		cq.multiselect(caze.get(Case.CREATION_DATE), caze.get(Case.CHANGE_DATE), caze.get(Case.UUID), 
 				caze.get(Case.EPID_NUMBER), person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME),
@@ -172,13 +173,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		User user = userService.getByUuid(userUuid);		
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 		
-		if (reportingUserRole != null) {
-			Predicate userRoleFilter = cb.isMember(reportingUserRole, reportingUser.get(User.USER_ROLES));
-			if (filter != null) {
-				filter = cb.and(filter, userRoleFilter);
-			} else {
-				filter = userRoleFilter;
-			}
+		if (caseCriteria != null) {
+			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 		
 		if (filter != null) {
@@ -199,31 +196,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		return caseService.getAllUuids(user);
-	}
-
-	@Override
-	public List<CaseDataDto> getAllCasesByDisease(Disease disease, String userUuid) {
-		User user = userService.getByUuid(userUuid);
-
-		if (user == null) {
-			return Collections.emptyList();
-		}
-
-		return caseService.getAllByDisease( disease, user).stream().map(c -> toDto(c))
-				.collect(Collectors.toList());
-	}
-
-	@Override
-	public List<CaseDataDto> getAllCasesBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid) {
-		User user = userService.getByUuid(userUuid);
-		District district = districtService.getByReferenceDto(districtRef);
-
-		if (user == null) {
-			return Collections.emptyList();
-		}
-
-		return caseService.getAllBetween(fromDate, toDate, district, disease, user).stream().map(c -> toDto(c))
-				.collect(Collectors.toList());
 	}
 	
 	@Override
