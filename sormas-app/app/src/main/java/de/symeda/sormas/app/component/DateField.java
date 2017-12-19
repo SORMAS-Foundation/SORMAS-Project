@@ -170,13 +170,6 @@ public class DateField extends PropertyField<Date> implements DateFieldInterface
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        dateContent.setEnabled(enabled);
-        caption.setEnabled(enabled);
-    }
-
-    @Override
     protected void requestFocusForContentView(View nextView) {
         ((DateField) nextView).dateContent.requestFocus();
     }

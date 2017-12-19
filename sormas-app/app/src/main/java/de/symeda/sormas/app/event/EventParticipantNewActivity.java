@@ -17,6 +17,7 @@ import com.google.android.gms.analytics.Tracker;
 
 import java.util.List;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -34,6 +35,7 @@ import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.validation.EventParticipantValidator;
 
@@ -67,6 +69,7 @@ public class EventParticipantNewActivity extends AppCompatActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
         eventParticipantNewPersonForm = new EventParticipantNewPersonForm();
+        params.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.EVENTPARTICIPANT_CREATE);
         eventParticipantNewPersonForm.setArguments(params);
         ft.add(R.id.fragment_frame, eventParticipantNewPersonForm).commit();
     }

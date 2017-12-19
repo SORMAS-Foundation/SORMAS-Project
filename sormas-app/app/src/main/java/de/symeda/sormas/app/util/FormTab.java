@@ -6,12 +6,22 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.component.LinearControlElementsLayout;
 import de.symeda.sormas.app.component.PropertyField;
 
 public abstract class FormTab extends DialogFragment implements FormFragment {
+
+    public final static String EDIT_OR_CREATE_USER_RIGHT = "editOrCreateUserRight";
+    protected UserRight editOrCreateUserRight;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        manageActivityWriteRights(editOrCreateUserRight);
+    }
 
     protected void deactivateField(View v) {
         v.setEnabled(false);
@@ -62,6 +72,37 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     protected void reloadFragment() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.detach(this).attach(this).commit();
+    }
+
+    /**
+     * Sets all fields to read-only if the user does not have the required user right.
+     *
+     * @param editRight
+     */
+    protected void manageActivityWriteRights(UserRight editRight) {
+        if (editRight == null || UserRightHelper.hasUserRight(editRight)) {
+            return;
+        }
+
+        ViewGroup viewGroup = (ViewGroup) getView();
+        setViewGroupAndChildrenReadOnly(viewGroup);
+    }
+
+    private void setViewGroupAndChildrenReadOnly(ViewGroup viewGroup) {
+        // Control elements, such as filters, should never be read-only
+        if (viewGroup instanceof LinearControlElementsLayout) {
+            return;
+        }
+
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View view = viewGroup.getChildAt(i);
+            if (view != null) {
+                deactivateField(view);
+                if (view instanceof ViewGroup) {
+                    setViewGroupAndChildrenReadOnly((ViewGroup) view);
+                }
+            }
+        }
     }
 
 }

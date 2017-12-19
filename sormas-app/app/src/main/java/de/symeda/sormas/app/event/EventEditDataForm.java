@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -31,6 +32,8 @@ public class EventEditDataForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.event_data_fragment_layout, container, false);
+
+        editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
 
         String eventUuid = null;
         if (getArguments() != null) {
@@ -98,7 +101,6 @@ public class EventEditDataForm extends FormTab {
     public AbstractDomainObject getData() {
         return binding == null ? null : binding.getEvent();
     }
-
 
     private void toggleTypeOfPlaceTextField() {
         TypeOfPlace typeOfPlace = (TypeOfPlace) binding.eventTypeOfPlace.getValue();

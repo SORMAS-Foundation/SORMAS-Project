@@ -17,6 +17,7 @@ import com.google.android.gms.analytics.Tracker;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
@@ -34,6 +35,7 @@ import de.symeda.sormas.app.person.PersonEditForm;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.validation.EventParticipantValidator;
 import de.symeda.sormas.app.validation.PersonValidator;
@@ -217,6 +219,7 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
     private void setAdapter() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         eventParticipantTab = new EventParticipantDataForm();
+        params.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.EVENTPARTICIPANT_EDIT);
         eventParticipantTab.setArguments(params);
         ft.replace(R.id.eventParticipant_fragment, eventParticipantTab);
 
@@ -227,6 +230,7 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
         EventParticipant eventParticipant = dao.queryUuid(eventParticipantUuid);
 
         personEditBundle.putString(Person.UUID, eventParticipant.getPerson().getUuid());
+        personEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.EVENTPARTICIPANT_EDIT);
 
         personEditForm.setArguments(personEditBundle);
         ft.replace(R.id.eventParticipant_person_fragment, personEditForm);

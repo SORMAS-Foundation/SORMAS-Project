@@ -21,6 +21,7 @@ import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
@@ -37,6 +38,7 @@ import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.CaseDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.util.UserRightHelper;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
@@ -51,7 +53,8 @@ public class CaseEditDataForm extends FormTab {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.case_data_fragment_layout, container, false);
 
-        final String caseUuid = (String) getArguments().getString(Case.UUID);
+        editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
+        final String caseUuid = getArguments().getString(Case.UUID);
         final CaseDao caseDao = DatabaseHelper.getCaseDao();
         Case caze = caseDao.queryUuid(caseUuid);
         binding.setCaze(caze);
@@ -173,8 +176,7 @@ public class CaseEditDataForm extends FormTab {
             });
         }
 
-        if (ConfigProvider.getUser().hasUserRole(UserRole.CASE_OFFICER)
-                || ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+        if (UserRightHelper.hasUserRight(UserRight.CASE_MOVE)) {
             binding.caseDataMove.setVisibility(View.VISIBLE);
             binding.caseDataMove.setPaintFlags(binding.caseDataMove.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             binding.caseDataMove.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));

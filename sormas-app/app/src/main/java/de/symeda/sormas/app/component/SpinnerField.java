@@ -199,13 +199,6 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
         addCaptionOnClickListener();
     }
 
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        spinnerElement.setEnabled(enabled);
-        caption.setEnabled(enabled);
-    }
-
     public void setSelectionOnOpen(Object object) {
         for(int i = 0; i < spinnerElement.getAdapter().getCount(); i++) {
             if(object.equals(((Item)spinnerElement.getAdapter().getItem(i)).getValue())) {

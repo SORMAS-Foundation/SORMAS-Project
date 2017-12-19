@@ -14,6 +14,7 @@ import android.view.View;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
@@ -28,6 +29,7 @@ import de.symeda.sormas.app.databinding.SampleDataFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.validation.SampleValidator;
@@ -220,6 +222,11 @@ public class SampleEditActivity extends AbstractSormasActivity {
     private void setAdapter() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         sampleTab = new SampleEditForm();
+        if (params.containsKey(NEW_SAMPLE)) {
+            params.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.SAMPLE_CREATE);
+        } else {
+            params.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.SAMPLE_EDIT);
+        }
         sampleTab.setArguments(params);
         ft.replace(R.id.fragment_frame, sampleTab).commit();
     }

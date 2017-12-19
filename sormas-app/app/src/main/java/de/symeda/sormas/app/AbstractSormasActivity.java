@@ -13,12 +13,14 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.google.android.gms.analytics.Tracker;
 
 import java.lang.ref.WeakReference;
 import java.net.ConnectException;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
@@ -28,6 +30,7 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.SlidingTabLayout;
 import de.symeda.sormas.app.util.SyncCallback;
+import de.symeda.sormas.app.util.UserRightHelper;
 
 public abstract class AbstractSormasActivity extends AppCompatActivity {
 

@@ -18,6 +18,7 @@ import com.google.android.gms.analytics.Tracker;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
@@ -32,6 +33,7 @@ import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SyncCallback;
 
@@ -212,6 +214,7 @@ public class TaskEditActivity extends AbstractSormasActivity {
     private void setAdapter() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         taskForm = new TaskForm();
+        extras.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.TASK_EDIT);
         taskForm.setArguments(extras);
         ft.replace(R.id.fragment_frame, taskForm).commit();
     }

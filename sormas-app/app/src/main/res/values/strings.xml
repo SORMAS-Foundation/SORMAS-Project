@@ -28,6 +28,7 @@
     <string name="action_move">Move</string>
     <string name="action_done">Done</string>
     <string name="action_new_case">New case</string>
+    <string name="action_new_event">New event</string>
     <string name="action_help">Help</string>
     <string name="action_add">Add new entry</string>
     <string name="action_add_list">+ Add new entry</string>

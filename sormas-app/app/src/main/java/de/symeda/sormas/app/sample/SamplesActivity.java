@@ -11,6 +11,7 @@ import android.view.MenuItem;
 
 import java.util.List;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.AbstractRootTabActivity;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;

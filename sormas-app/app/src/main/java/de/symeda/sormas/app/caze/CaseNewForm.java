@@ -16,6 +16,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -47,6 +48,7 @@ public class CaseNewForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Bundle arguments = this.getArguments();
+        editOrCreateUserRight = (UserRight) arguments.get(EDIT_OR_CREATE_USER_RIGHT);
         // If this case is created from a contact, there's already a disease and person available
         if (arguments.containsKey(CaseNewActivity.DISEASE)) {
             person = (Person) arguments.get(CaseNewActivity.PERSON);
@@ -199,8 +201,8 @@ public class CaseNewForm extends FormTab {
             binding.caseDataCommunity.setEnabled(false);
             binding.caseDataHealthFacility.setEnabled(false);
         } else {
-            binding.caseDataCommunity.setEnabled(true);
-            binding.caseDataHealthFacility.setEnabled(true);
+            binding.caseDataCommunity.setEnabled(true, editOrCreateUserRight);
+            binding.caseDataHealthFacility.setEnabled(true, editOrCreateUserRight);
         }
 
         return binding.getRoot();

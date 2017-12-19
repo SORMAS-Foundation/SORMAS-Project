@@ -12,16 +12,19 @@ import android.view.MenuItem;
 
 import java.util.List;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.AbstractRootTabActivity;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDao;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.SyncCallback;
+import de.symeda.sormas.app.util.UserRightHelper;
 
 public class EventsActivity extends AbstractRootTabActivity {
 
@@ -47,7 +50,13 @@ public class EventsActivity extends AbstractRootTabActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.cases_action_bar, menu);
+        inflater.inflate(R.menu.events_action_bar, menu);
+
+        User user = ConfigProvider.getUser();
+        if (user != null ) {
+            menu.findItem(R.id.action_new_event).setVisible(UserRightHelper.hasUserRight(UserRight.EVENT_CREATE));
+        }
+
         return true;
     }
 

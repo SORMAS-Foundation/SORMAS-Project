@@ -19,9 +19,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.util.FormTab;
+import de.symeda.sormas.app.util.UserRightHelper;
 
 /**
  * Created by Mate Strysewske on 28.11.2016.
@@ -129,13 +131,6 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
         caption = (TextView) this.findViewById(R.id.text_caption);
         caption.setText(getCaption());
         addCaptionOnClickListener();
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        textContent.setEnabled(enabled);
-        caption.setEnabled(enabled);
     }
 
     @BindingAdapter("integer")

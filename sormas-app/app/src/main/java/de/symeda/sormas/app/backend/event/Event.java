@@ -48,39 +48,36 @@ public class Event extends AbstractDomainObject {
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable=false)
 	private EventType eventType;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable=false)
 	private EventStatus eventStatus;
 
-	@Column(length=512, nullable=false)
+	@Column(length=512)
 	private String eventDesc;
 
-	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
+	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date eventDate;
 
-	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
+	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date reportDateTime;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User reportingUser;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
 	private Location eventLocation;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable=false)
 	private TypeOfPlace typeOfPlace;
 
-	@Column(length=512, nullable=false)
+	@Column(length=512)
 	private String srcFirstName;
 
-	@Column(length=512, nullable=false)
+	@Column(length=512)
 	private String srcLastName;
 
-	@Column(length=512, nullable=false)
+	@Column(length=512)
 	private String srcTelNo;
 
 	@Column(length=512)

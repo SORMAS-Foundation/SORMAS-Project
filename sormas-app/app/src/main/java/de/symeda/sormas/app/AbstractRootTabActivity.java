@@ -23,6 +23,7 @@ import android.widget.ListView;
 
 import java.net.ConnectException;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
@@ -38,6 +39,7 @@ import de.symeda.sormas.app.sample.SamplesActivity;
 import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.task.TasksActivity;
 import de.symeda.sormas.app.util.SyncCallback;
+import de.symeda.sormas.app.util.UserRightHelper;
 
 public abstract class AbstractRootTabActivity extends AbstractTabActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -93,18 +95,12 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity implem
         User user = ConfigProvider.getUser();
         if (user != null ) {
             Menu menu = navigationView.getMenu();
-            boolean isContactOfficer = user.hasUserRole(UserRole.CONTACT_OFFICER);
-            boolean isSurveillanceOrInformant =
-                    user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)
-                            || user.hasUserRole(UserRole.INFORMANT);
-            boolean isCaseSurveillanceOrInformant =
-                    isSurveillanceOrInformant
-                            || user.hasUserRole(UserRole.CASE_OFFICER);
-            menu.findItem(R.id.nav_cases).setVisible(isCaseSurveillanceOrInformant);
-            menu.findItem(R.id.nav_samples).setVisible(isCaseSurveillanceOrInformant);
-            menu.findItem(R.id.nav_events).setVisible(isCaseSurveillanceOrInformant);
-            menu.findItem(R.id.nav_contacts).setVisible(isContactOfficer);
-            menu.findItem(R.id.nav_reports).setVisible(isSurveillanceOrInformant);
+            menu.findItem(R.id.nav_tasks).setVisible(UserRightHelper.hasUserRight(UserRight.TASK_VIEW));
+            menu.findItem(R.id.nav_cases).setVisible(UserRightHelper.hasUserRight(UserRight.CASE_VIEW));
+            menu.findItem(R.id.nav_samples).setVisible(UserRightHelper.hasUserRight(UserRight.SAMPLE_VIEW));
+            menu.findItem(R.id.nav_events).setVisible(UserRightHelper.hasUserRight(UserRight.EVENT_VIEW));
+            menu.findItem(R.id.nav_contacts).setVisible(UserRightHelper.hasUserRight(UserRight.CONTACT_VIEW));
+            menu.findItem(R.id.nav_reports).setVisible(UserRightHelper.hasUserRight(UserRight.WEEKLYREPORT_VIEW));
 
             // replace empty user sub header with user name and role
             String username = ConfigProvider.getUser().toString();

@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,6 +26,7 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -61,6 +63,7 @@ import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.UserRightHelper;
 import de.symeda.sormas.app.validation.PersonValidator;
 import de.symeda.sormas.app.validation.SymptomsValidator;
 
@@ -196,7 +199,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 break;
 
             case CONTACTS:
-                updateActionBarGroups(menu, false, true, true, true, false);
+                updateActionBarGroups(menu, false, true, true, UserRightHelper.hasUserRight(UserRight.CONTACT_CREATE), false);
                 break;
 
             case TASKS:
@@ -204,7 +207,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 break;
 
             case SAMPLES:
-                updateActionBarGroups(menu, false, true, true, true, false);
+                updateActionBarGroups(menu, false, true, true, UserRightHelper.hasUserRight(UserRight.SAMPLE_CREATE), false);
                 break;
 
             case HOSPITALIZATION:
@@ -355,19 +358,9 @@ public class CaseEditActivity extends AbstractEditTabActivity {
     }
 
     public void setAdapter(Case caze) {
-        List<CaseEditTabs> visibleTabs;
         CaseDataDto caseDataDto = new CaseDataDto();
         new CaseDtoHelper().fillInnerFromAdo(caseDataDto, caze);
-        if (!DiseaseHelper.hasContactFollowUp(caseDataDto)) {
-            visibleTabs = Arrays.asList(CaseEditTabs.CASE_DATA, CaseEditTabs.PATIENT,
-                    CaseEditTabs.HOSPITALIZATION, CaseEditTabs.SYMPTOMS, CaseEditTabs.EPIDATA,
-                    CaseEditTabs.SAMPLES, CaseEditTabs.TASKS);
-        } else {
-            visibleTabs = Arrays.asList(CaseEditTabs.CASE_DATA, CaseEditTabs.PATIENT,
-                    CaseEditTabs.HOSPITALIZATION, CaseEditTabs.SYMPTOMS, CaseEditTabs.EPIDATA,
-                    CaseEditTabs.CONTACTS, CaseEditTabs.SAMPLES, CaseEditTabs.TASKS);
-        }
-
+        List<CaseEditTabs> visibleTabs = buildVisibleTabsList(caseDataDto);
         adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), caze, visibleTabs);
         createTabViews(adapter);
 
@@ -544,6 +537,26 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         );
 
         return dialog;
+    }
+
+    private List<CaseEditTabs> buildVisibleTabsList(CaseDataDto caseDataDto) {
+        List<CaseEditTabs> visibleTabs = new ArrayList<>();
+        visibleTabs.addAll(Arrays.asList(CaseEditTabs.CASE_DATA, CaseEditTabs.PATIENT,
+                CaseEditTabs.HOSPITALIZATION, CaseEditTabs.SYMPTOMS, CaseEditTabs.EPIDATA));
+
+        if (UserRightHelper.hasUserRight(UserRight.CONTACT_VIEW) && DiseaseHelper.hasContactFollowUp(caseDataDto)) {
+            visibleTabs.add(CaseEditTabs.CONTACTS);
+        }
+
+        if (UserRightHelper.hasUserRight(UserRight.SAMPLE_VIEW)) {
+            visibleTabs.add(CaseEditTabs.SAMPLES);
+        }
+
+        if (UserRightHelper.hasUserRight(UserRight.TASK_VIEW)) {
+            visibleTabs.add(CaseEditTabs.TASKS);
+        }
+
+        return visibleTabs;
     }
 
 }

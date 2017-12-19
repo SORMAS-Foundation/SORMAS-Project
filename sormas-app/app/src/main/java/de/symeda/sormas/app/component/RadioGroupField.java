@@ -128,13 +128,6 @@ public class RadioGroupField extends PropertyField<Object> {
         addCaptionOnClickListener();
     }
 
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        radioGroup.setEnabled(enabled);
-        caption.setEnabled(enabled);
-    }
-
     public void addItem(Item item) {
         RadioButton button = new RadioButton(getContext());
         if(item.getValue() != null) {

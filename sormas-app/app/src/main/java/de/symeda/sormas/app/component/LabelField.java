@@ -134,13 +134,6 @@ public class LabelField extends PropertyField<String> {
         addCaptionOnClickListener();
     }
 
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        textContent.setEnabled(enabled);
-        caption.setEnabled(enabled);
-    }
-
     @BindingAdapter("enum")
     public static void setEnumForLabel(LabelField labelField, Enum e) {
         labelField.setValue(e!=null?e.toString():null);

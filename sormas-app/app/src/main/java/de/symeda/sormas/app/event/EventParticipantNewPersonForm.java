@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
@@ -31,6 +32,7 @@ public class EventParticipantNewPersonForm extends FormTab {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.event_participant_new_fragment_layout, container, false);
         binding.setEventParticipant(eventParticipant);
+        editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
 
         EventParticipantValidator.setRequiredHintsForNewEventParticipant(binding);
 
