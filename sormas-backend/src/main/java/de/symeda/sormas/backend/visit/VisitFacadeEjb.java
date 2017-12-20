@@ -17,6 +17,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.Person;
@@ -126,6 +127,13 @@ public class VisitFacadeEjb implements VisitFacade {
 		
 		Visit visit = visitService.getByReferenceDto(visitRef);
 		visitService.delete(visit);
+	}
+	
+	@Override
+	public int getNumberOfVisits(ContactReferenceDto contactRef, VisitStatus visitStatus) {
+		Contact contact = contactService.getByReferenceDto(contactRef);
+		
+		return visitService.getVisitCount(contact, null);
 	}
 
 	public Visit fromDto(@NotNull VisitDto source) {

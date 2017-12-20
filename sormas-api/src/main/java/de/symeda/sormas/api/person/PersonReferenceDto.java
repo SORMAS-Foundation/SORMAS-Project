@@ -19,4 +19,9 @@ public class PersonReferenceDto extends ReferenceDto {
 		setCaption(caption);
 	}
 	
+	public PersonReferenceDto(String uuid, String firstname, String lastName) {
+		setUuid(uuid);
+		setCaption(PersonDto.buildCaption(firstname, lastName));
+	}
+	
 }

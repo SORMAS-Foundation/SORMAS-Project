@@ -1,55 +1,76 @@
 package de.symeda.sormas.api.contact;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class ContactIndexDto extends EntityDto {
+public class ContactIndexDto implements Serializable {
 
-	private static final long serialVersionUID = -7764607075875188799L;
+	private static final long serialVersionUID = 7511900591141885152L;
 
 	public static final String I18N_PREFIX = "Contact";
 	
 	public static final String UUID = "uuid";
 	public static final String PERSON = "person";
 	public static final String CAZE = "caze";
-	public static final String CAZE_DISEASE = "cazeDisease";
-	public static final String CAZE_PERSON = "cazePerson";
-	public static final String CAZE_REGION = "cazeRegion";
-	public static final String CAZE_DISTRICT = "cazeDistrict";
-	public static final String CAZE_HEALTH_FACILITY = "cazeHealthFacility";
+	public static final String CASE_DISEASE = "caseDisease";
+	public static final String CASE_PERSON = "casePerson";
+	public static final String CASE_REGION_UUID = "caseRegionUuid";
+	public static final String CASE_DISTRICT_UUID = "caseDistrictUuid";
+	public static final String CASE_HEALTH_FACILITY_UUID = "caseHealthFacilityUuid";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
-	public static final String CONTACT_OFFICER = "contactOfficer";
+	public static final String CONTACT_OFFICER_UUID = "contactOfficerUuid";
 	public static final String NUMBER_OF_COOPERATIVE_VISITS = "numberOfCooperativeVisits";
 	public static final String NUMBER_OF_MISSED_VISITS = "numberOfMissedVisits";
 
+	private String uuid;
 	private PersonReferenceDto person;
 	private CaseReferenceDto caze;
-	private Disease cazeDisease;
-	private PersonReferenceDto cazePerson;
-	private RegionReferenceDto cazeRegion;
-	private DistrictReferenceDto cazeDistrict;
-	private FacilityReferenceDto cazeHealthFacility;
+	private Disease caseDisease;
+	private String caseDiseaseDetails;
+	private String caseRegionUuid;
+	private String caseDistrictUuid;
+	private String caseHealthFacilityUuid;
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
-	private int numberOfCooperativeVisits;
-	private int numberOfMissedVisits;
-	private UserReferenceDto contactOfficer;
-
+	private String contactOfficerUuid;
+	
+	public ContactIndexDto(String uuid, String personUuid, String personFirstName, String personLastName, String cazeUuid,
+			Disease caseDisease, String caseDiseaseDetails, String casePersonUuid, String caseFirstName, String caseLastName, String caseRegionUuid,
+			String caseDistrictUuid, String caseHealthFacilityUuid, Date lastContactDate, ContactProximity contactProximity,
+			ContactClassification contactClassification, FollowUpStatus followUpStatus, Date followUpUntil, String contactOfficerUuid) {
+		this.uuid = uuid;
+		this.person = new PersonReferenceDto(personUuid, personFirstName, personLastName);
+		this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
+		this.caseDisease = caseDisease;
+		this.caseDiseaseDetails = caseDiseaseDetails;
+		this.caseRegionUuid = caseRegionUuid;
+		this.caseDistrictUuid = caseDistrictUuid;
+		this.caseHealthFacilityUuid = caseHealthFacilityUuid;
+		this.lastContactDate = lastContactDate;
+		this.contactProximity = contactProximity;
+		this.contactClassification = contactClassification;
+		this.followUpStatus = followUpStatus;
+		this.followUpUntil = followUpUntil;
+		this.contactOfficerUuid = contactOfficerUuid;
+	}
+	
+	public String getUuid() {
+		return uuid;
+	}
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
 	public PersonReferenceDto getPerson() {
 		return person;
 	}
@@ -61,6 +82,18 @@ public class ContactIndexDto extends EntityDto {
 	}
 	public void setCaze(CaseReferenceDto caze) {
 		this.caze = caze;
+	}
+	public Disease getCaseDisease() {
+		return caseDisease;
+	}
+	public void setCaseDisease(Disease caseDisease) {
+		this.caseDisease = caseDisease;
+	}
+	public String getCaseDiseaseDetails() {
+		return caseDiseaseDetails;
+	}
+	public void setCaseDiseaseDetails(String caseDiseaseDetails) {
+		this.caseDiseaseDetails = caseDiseaseDetails;
 	}
 	public Date getLastContactDate() {
 		return lastContactDate;
@@ -74,29 +107,11 @@ public class ContactIndexDto extends EntityDto {
 	public void setContactProximity(ContactProximity contactProximity) {
 		this.contactProximity = contactProximity;
 	}
-	public Disease getCazeDisease() {
-		return cazeDisease;
+	public ContactClassification getContactClassification() {
+		return contactClassification;
 	}
-	public void setCazeDisease(Disease cazeDisease) {
-		this.cazeDisease = cazeDisease;
-	}
-	public PersonReferenceDto getCazePerson() {
-		return cazePerson;
-	}
-	public void setCazePerson(PersonReferenceDto cazePerson) {
-		this.cazePerson = cazePerson;
-	}
-	public DistrictReferenceDto getCazeDistrict() {
-		return cazeDistrict;
-	}
-	public void setCazeDistrict(DistrictReferenceDto cazeDistrict) {
-		this.cazeDistrict = cazeDistrict;
-	}
-	public UserReferenceDto getContactOfficer() {
-		return contactOfficer;
-	}
-	public void setContactOfficer(UserReferenceDto contactOfficer) {
-		this.contactOfficer = contactOfficer;
+	public void setContactClassification(ContactClassification contactClassification) {
+		this.contactClassification = contactClassification;
 	}
 	public FollowUpStatus getFollowUpStatus() {
 		return followUpStatus;
@@ -110,35 +125,33 @@ public class ContactIndexDto extends EntityDto {
 	public void setFollowUpUntil(Date followUpUntil) {
 		this.followUpUntil = followUpUntil;
 	}
-	public ContactClassification getContactClassification() {
-		return contactClassification;
+	public String getCaseRegionUuid() {
+		return caseRegionUuid;
 	}
-	public void setContactClassification(ContactClassification contactClassification) {
-		this.contactClassification = contactClassification;
+	public void setCaseRegionUuid(String caseRegionUuid) {
+		this.caseRegionUuid = caseRegionUuid;
 	}
-	public int getNumberOfCooperativeVisits() {
-		return numberOfCooperativeVisits;
+	public String getCaseDistrictUuid() {
+		return caseDistrictUuid;
 	}
-	public void setNumberOfCooperativeVisits(int numberOfCooperativeVisits) {
-		this.numberOfCooperativeVisits = numberOfCooperativeVisits;
+	public void setCaseDistrictUuid(String caseDistrictUuid) {
+		this.caseDistrictUuid = caseDistrictUuid;
 	}
-	public int getNumberOfMissedVisits() {
-		return numberOfMissedVisits;
+	public String getCaseHealthFacilityUuid() {
+		return caseHealthFacilityUuid;
 	}
-	public void setNumberOfMissedVisits(int numberOfMissedVisits) {
-		this.numberOfMissedVisits = numberOfMissedVisits;
+	public void setCaseHealthFacilityUuid(String caseHealthFacilityUuid) {
+		this.caseHealthFacilityUuid = caseHealthFacilityUuid;
 	}
-	public RegionReferenceDto getCazeRegion() {
-		return cazeRegion;
+	public String getContactOfficerUuid() {
+		return contactOfficerUuid;
 	}
-	public void setCazeRegion(RegionReferenceDto cazeRegion) {
-		this.cazeRegion = cazeRegion;
+	public void setContactOfficerUuid(String contactOfficerUuid) {
+		this.contactOfficerUuid = contactOfficerUuid;
 	}
-	public FacilityReferenceDto getCazeHealthFacility() {
-		return cazeHealthFacility;
-	}
-	public void setCazeHealthFacility(FacilityReferenceDto cazeHealthFacility) {
-		this.cazeHealthFacility = cazeHealthFacility;
+
+	public ContactReferenceDto toReference() {
+		return new ContactReferenceDto(uuid);
 	}
 	
 }

@@ -34,17 +34,17 @@ import de.symeda.sormas.backend.util.DateHelper8;
 @Stateless
 @LocalBean
 public class VisitService extends AbstractAdoService<Visit> {
-	
+
 	@EJB
 	ContactService contactService;
-	
+
 	public VisitService() {
 		super(Visit.class);
 	}
-	
+
 	@Override
 	public List<String> getAllUuids(User user) {
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> visitsQuery = cb.createQuery(String.class);
 		Root<Visit> visitRoot = visitsQuery.from(Visit.class);
@@ -55,16 +55,16 @@ public class VisitService extends AbstractAdoService<Visit> {
 		Root<Contact> contactRoot = contactPersonSubquery.from(Contact.class);
 		contactPersonSubquery.where(contactService.createUserFilter(cb, visitsQuery, contactRoot, user));
 		contactPersonSubquery.select(contactRoot.get(Contact.PERSON).get(Person.ID));
-		
+
 		Predicate filter = cb.in(visitRoot.get(Visit.PERSON).get(Person.ID)).value(contactPersonSubquery);
 		visitsQuery.where(filter);
 		visitsQuery.distinct(true);
 		visitsQuery.orderBy(cb.asc(visitRoot.get(AbstractDomainObject.ID)));
-		
+
 		List<String> resultList = em.createQuery(visitsQuery).getResultList();
 		return resultList;	
 	}
-	
+
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
@@ -87,7 +87,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		cq.where(filter);
 		cq.distinct(true);
 		cq.orderBy(cb.asc(visitRoot.get(AbstractDomainObject.ID)));
-		
+
 		List<Visit> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
@@ -101,24 +101,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
 		Root<Visit> from = cq.from(getElementClass());
 
-		// all of the person
-		Predicate filter = cb.equal(from.get(Visit.PERSON), contact.getPerson());
-
-		// only disease relevant
-		filter = cb.and(filter, cb.equal(from.get(Visit.DISEASE), contact.getCaze().getDisease()));
-		
-		// list all visits between contact date ...
-		// IMPORTANT: This is different than the calculation of "follow-up until", where the date of report is used as reference
-		// We also want to have visits that took place before.
-		Date contactReferenceDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
-		Predicate dateStartFilter = cb.greaterThan(from.get(Visit.VISIT_DATE_TIME), DateHelper.subtractDays(contactReferenceDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
-		filter = cb.and(filter, dateStartFilter);
-
-		// .. and follow-up until
-		if (contact.getFollowUpUntil() != null) {
-			Predicate dateFilter = cb.lessThan(from.get(Visit.VISIT_DATE_TIME), DateHelper.addDays(contact.getFollowUpUntil(), VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
-			filter = cb.and(filter, dateFilter);
-		}
+		Predicate filter = buildVisitFilter(contact, null, cb, cq, from);
 
 		cq.where(filter);
 		cq.orderBy(cb.asc(from.get(Visit.VISIT_DATE_TIME)));
@@ -126,35 +109,26 @@ public class VisitService extends AbstractAdoService<Visit> {
 		List<Visit> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
-	
+
+	public int getVisitCount(Contact contact, VisitStatus visitStatus) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Visit> from = cq.from(getElementClass());
+
+		Predicate filter = buildVisitFilter(contact, visitStatus, cb, cq, from);
+
+		cq.select(cb.count(from));
+		cq.where(filter);
+		
+		return em.createQuery(cq).getSingleResult().intValue();
+	}
+
 	public Visit getLastVisitByContact(Contact contact, VisitStatus visitStatus) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
 		Root<Visit> from = cq.from(getElementClass());
 
-		// all of the person
-		Predicate filter = cb.equal(from.get(Visit.PERSON), contact.getPerson());
-
-		// only disease relevant
-		filter = cb.and(filter, cb.equal(from.get(Visit.DISEASE), contact.getCaze().getDisease()));
-		
-		// only visits with the given visit status, if present
-		if (visitStatus != null) {
-			filter = cb.and(filter, cb.equal(from.get(Visit.VISIT_STATUS), visitStatus));
-		}
-		
-		// list all visits between contact date ...
-		// IMPORTANT: This is different than the calculation of "follow-up until", where the date of report is used as reference
-		// We also want to have visits that took place before.
-		Date contactReferenceDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
-		Predicate dateStartFilter = cb.greaterThan(from.get(Visit.VISIT_DATE_TIME), DateHelper.subtractDays(contactReferenceDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
-		filter = cb.and(filter, dateStartFilter);
-
-		// .. and follow-up until
-		if (contact.getFollowUpUntil() != null) {
-			Predicate dateFilter = cb.lessThan(from.get(Visit.VISIT_DATE_TIME), DateHelper.addDays(contact.getFollowUpUntil(), VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
-			filter = cb.and(filter, dateFilter);
-		}
+		Predicate filter = buildVisitFilter(contact, visitStatus, cb, cq, from);
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(from.get(Visit.VISIT_DATE_TIME)));
@@ -162,9 +136,9 @@ public class VisitService extends AbstractAdoService<Visit> {
 		List<Visit> result = em.createQuery(cq).getResultList();
 		return result.size() > 0 ? result.get(0) : null;
 	}
-	
+
 	public Visit getLastVisitByPerson(Person person, Disease disease, LocalDate maxDate) {
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
 		Root<Visit> from = cq.from(getElementClass());
@@ -174,7 +148,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 
 		// only disease relevant
 		filter = cb.and(filter, cb.equal(from.get(Visit.DISEASE), disease));
-		
+
 		// before or equal date
 		Predicate dateFilter = cb.lessThan(from.get(Visit.VISIT_DATE_TIME), DateHelper8.toDate(maxDate.plusDays(1)));
 		filter = cb.and(filter, dateFilter);
@@ -190,7 +164,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 			return null;
 		}
 	}
-	
+
 	public List<Visit> getAllByPerson(Person person) {
 		// TODO get user from session?
 
@@ -206,21 +180,49 @@ public class VisitService extends AbstractAdoService<Visit> {
 		List<Visit> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
-	
+
+	private Predicate buildVisitFilter(Contact contact, VisitStatus visitStatus, CriteriaBuilder cb, CriteriaQuery<?> cq, Root<?> from) {
+		// all of the person
+		Predicate filter = cb.equal(from.get(Visit.PERSON), contact.getPerson());
+
+		// only disease relevant
+		filter = cb.and(filter, cb.equal(from.get(Visit.DISEASE), contact.getCaze().getDisease()));
+
+		// only visits with the given visit status, if present
+		if (visitStatus != null) {
+			filter = cb.and(filter, cb.equal(from.get(Visit.VISIT_STATUS), visitStatus));
+		}
+
+		// list all visits between contact date ...
+		// IMPORTANT: This is different than the calculation of "follow-up until", where the date of report is used as reference
+		// We also want to have visits that took place before.
+		Date contactReferenceDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
+		Predicate dateStartFilter = cb.greaterThan(from.get(Visit.VISIT_DATE_TIME), DateHelper.subtractDays(contactReferenceDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+		filter = cb.and(filter, dateStartFilter);
+
+		// .. and follow-up until
+		if (contact.getFollowUpUntil() != null) {
+			Predicate dateFilter = cb.lessThan(from.get(Visit.VISIT_DATE_TIME), DateHelper.addDays(contact.getFollowUpUntil(), VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+			filter = cb.and(filter, dateFilter);
+		}
+
+		return filter;
+	}
+
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Visit, Visit> from, User user) {
 		// getAllUuids and getAllAfter have custom implementations
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Visit,Visit> visitPath, Date date) {
-		
+
 		Predicate dateFilter = cb.greaterThan(visitPath.get(Visit.CHANGE_DATE), date);
-		
+
 		Join<Visit, Symptoms> symptoms = visitPath.join(Visit.SYMPTOMS, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
-		
+
 		return dateFilter;
 	}
 }

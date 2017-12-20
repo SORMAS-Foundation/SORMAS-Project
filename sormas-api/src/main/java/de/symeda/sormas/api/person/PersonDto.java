@@ -261,11 +261,15 @@ public class PersonDto extends EntityDto {
 	
 	@Override
 	public String toString() {
-		return firstName + " " + lastName.toUpperCase();
+		return buildCaption(firstName, lastName);
 	}
 	
 	public PersonReferenceDto toReference() {
 		return new PersonReferenceDto(getUuid());
+	}
+	
+	public static String buildCaption(String firstName, String lastName) {
+		return firstName + " " + lastName.toUpperCase();
 	}
 
 }

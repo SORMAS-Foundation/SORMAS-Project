@@ -18,6 +18,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedAttribute;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
@@ -181,20 +182,7 @@ public class User extends AbstractDomainObject {
 	}
 	@Override
 	public String toString() {
-		StringBuilder result = new StringBuilder();
-		result.append(getFirstName()).append(" ").append(getLastName().toUpperCase());
-		boolean first = true;
-		for (UserRole userRole : getUserRoles()) {
-			if (first) {
-				result.append(" - ");
-				first = false;
-			} else {
-				result.append(", ");
-			}
-			result.append(userRole.toShortString());
-		}
-		return result.toString();
-
+		return UserDto.buildCaption(firstName, lastName, userRoles);
 	}
 	
 	@Transient

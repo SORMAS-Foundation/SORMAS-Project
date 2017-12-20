@@ -120,12 +120,7 @@ public class UserDto extends EntityDto {
 	
 	@Override
 	public String toString() {
-		String result = firstName + " " + lastName.toUpperCase();
-		// TODO we need a main user role
-		if (userRoles.size() > 0) {
-			result += " - " + userRoles.iterator().next().toShortString();					
-		}
-		return result;
+		return buildCaption(firstName, lastName, userRoles);
 	}
 
 	
@@ -171,5 +166,21 @@ public class UserDto extends EntityDto {
 	
 	public UserReferenceDto toReference() {
 		return new UserReferenceDto(getUuid());
+	}
+	
+	public static String buildCaption(String firstName, String lastName, Set<UserRole> userRoles) {
+		StringBuilder result = new StringBuilder();
+		result.append(firstName).append(" ").append(lastName.toUpperCase());
+		boolean first = true;
+		for (UserRole userRole : userRoles) {
+			if (first) {
+				result.append(" - ");
+				first = false;
+			} else {
+				result.append(", ");
+			}
+			result.append(userRole.toShortString());
+		}
+		return result.toString();
 	}
 }

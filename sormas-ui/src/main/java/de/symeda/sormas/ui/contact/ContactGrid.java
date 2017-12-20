@@ -16,16 +16,12 @@ import com.vaadin.ui.Grid;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -50,9 +46,12 @@ public class ContactGrid extends Grid {
         generatedContainer.addGeneratedProperty(NUMBER_OF_VISITS, new PropertyValueGenerator<String>() {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
-				ContactIndexDto indexDto = (ContactIndexDto)itemId;
+				ContactIndexDto indexDto = (ContactIndexDto) itemId;
+				int numberOfVisits = FacadeProvider.getVisitFacade().getNumberOfVisits(indexDto.toReference(), null);
+				int numberOfCooperativeVisits = FacadeProvider.getVisitFacade().getNumberOfVisits(indexDto.toReference(), VisitStatus.COOPERATIVE);
+				
 				return String.format(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, "numberOfVisitsFormat"),
-						indexDto.getNumberOfCooperativeVisits(), indexDto.getNumberOfMissedVisits());
+						numberOfCooperativeVisits, numberOfVisits - numberOfCooperativeVisits);
 			}
 			@Override
 			public Class<String> getType() {
@@ -77,10 +76,9 @@ public class ContactGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				ContactIndexDto contactIndexDto = (ContactIndexDto) itemId;
-				CaseDataDto contactCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactIndexDto.getCaze().getUuid());
-				return contactCase.getDisease() != Disease.OTHER 
-					? contactCase.getDisease().toShortString()
-					: DataHelper.toStringNullable(contactCase.getDiseaseDetails());
+				return contactIndexDto.getCaseDisease() != Disease.OTHER 
+					? contactIndexDto.getCaseDisease().toShortString()
+					: DataHelper.toStringNullable(contactIndexDto.getCaseDiseaseDetails());
 			}
 			@Override
 			public Class<String> getType() {
@@ -143,41 +141,41 @@ public class ContactGrid extends Grid {
 	
 
     public void setDiseaseFilter(Disease disease) {
-		getContainer().removeContainerFilters(ContactIndexDto.CAZE_DISEASE);
+		getContainer().removeContainerFilters(ContactIndexDto.CASE_DISEASE);
 		if (disease != null) {
-	    	Equal filter = new Equal(ContactIndexDto.CAZE_DISEASE, disease);  
+	    	Equal filter = new Equal(ContactIndexDto.CASE_DISEASE, disease);  
 	        getContainer().addContainerFilter(filter);
 		}
 	}
 
-    public void setRegionFilter(RegionReferenceDto region) {
-		getContainer().removeContainerFilters(ContactIndexDto.CAZE_REGION);
-		if (region != null) {
-	    	Equal filter = new Equal(ContactIndexDto.CAZE_REGION, region);  
+    public void setRegionFilter(String regionUuid) {
+		getContainer().removeContainerFilters(ContactIndexDto.CASE_REGION_UUID);
+		if (regionUuid != null) {
+	    	Equal filter = new Equal(ContactIndexDto.CASE_REGION_UUID, regionUuid);  
 	        getContainer().addContainerFilter(filter);
 		}
 	}
     
-    public void setDistrictFilter(DistrictReferenceDto district) {
-		getContainer().removeContainerFilters(ContactIndexDto.CAZE_DISTRICT);
-		if (district != null) {
-	    	Equal filter = new Equal(ContactIndexDto.CAZE_DISTRICT, district);  
+    public void setDistrictFilter(String districtUuid) {
+		getContainer().removeContainerFilters(ContactIndexDto.CASE_DISTRICT_UUID);
+		if (districtUuid != null) {
+	    	Equal filter = new Equal(ContactIndexDto.CASE_DISTRICT_UUID, districtUuid);  
 	        getContainer().addContainerFilter(filter);
 		}
 	}
     
-    public void setHealthFacilityFilter(FacilityReferenceDto facility) {
-		getContainer().removeContainerFilters(ContactIndexDto.CAZE_HEALTH_FACILITY);
-		if (facility != null) {
-	    	Equal filter = new Equal(ContactIndexDto.CAZE_HEALTH_FACILITY, facility);  
+    public void setHealthFacilityFilter(String facilityUuid) {
+		getContainer().removeContainerFilters(ContactIndexDto.CASE_HEALTH_FACILITY_UUID);
+		if (facilityUuid != null) {
+	    	Equal filter = new Equal(ContactIndexDto.CASE_HEALTH_FACILITY_UUID, facilityUuid);  
 	        getContainer().addContainerFilter(filter);
 		}
 	}
     
-    public void setContactOfficerFilter(UserReferenceDto contactOfficer) {
-		getContainer().removeContainerFilters(ContactIndexDto.CONTACT_OFFICER);
-		if (contactOfficer != null) {
-	    	Equal filter = new Equal(ContactIndexDto.CONTACT_OFFICER, contactOfficer);  
+    public void setContactOfficerFilter(String contactOfficerUuid) {
+		getContainer().removeContainerFilters(ContactIndexDto.CONTACT_OFFICER_UUID);
+		if (contactOfficerUuid != null) {
+	    	Equal filter = new Equal(ContactIndexDto.CONTACT_OFFICER_UUID, contactOfficerUuid);  
 	        getContainer().addContainerFilter(filter);
 		}
 	}
@@ -201,7 +199,7 @@ public class ContactGrid extends Grid {
 	public void filterByText(String text) {
 		getContainer().removeContainerFilters(ContactIndexDto.UUID);
 		getContainer().removeContainerFilters(ContactIndexDto.PERSON);
-		getContainer().removeContainerFilters(ContactIndexDto.CAZE_PERSON);
+//		getContainer().removeContainerFilters(ContactIndexDto.CAZE_PERSON);
     	getContainer().removeContainerFilters(ContactIndexDto.CAZE);
 
     	if (text != null && !text.isEmpty()) {
@@ -210,7 +208,7 @@ public class ContactGrid extends Grid {
     		for (String word : words) {
     			orFilters.add(new SimpleStringFilter(ContactIndexDto.UUID, word, true, false));
     			orFilters.add(new SimpleStringFilter(ContactIndexDto.PERSON, word, true, false));
-    			orFilters.add(new SimpleStringFilter(ContactIndexDto.CAZE_PERSON, word, true, false));
+//    			orFilters.add(new SimpleStringFilter(ContactIndexDto.CAZE_PERSON, word, true, false));
     			orFilters.add(new SimpleStringFilter(ContactIndexDto.CAZE, word, true, false));
     		}
             getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
@@ -225,14 +223,14 @@ public class ContactGrid extends Grid {
     }
     
     public void reload() {
-    	List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexList(LoginHelper.getCurrentUserAsReference().getUuid());
+    	List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexList(LoginHelper.getCurrentUserAsReference().getUuid(), null);
    
     	getContainer().removeAllItems();
         getContainer().addAll(entries);  
     }
     
     public void reload(CaseReferenceDto caseRef) {
-    	List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexListByCase(caseRef);
+    	List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexList(LoginHelper.getCurrentUserAsReference().getUuid(), caseRef);
 
     	getContainer().removeAllItems();
         getContainer().addAll(entries);    	
