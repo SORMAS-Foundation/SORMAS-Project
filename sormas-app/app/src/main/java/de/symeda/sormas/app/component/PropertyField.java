@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.util.UserRightHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 
 /**
  * Created by Martin Wahnschaffe on 08.11.2016.
@@ -85,7 +85,8 @@ public abstract class PropertyField<T> extends LinearLayout {
     public abstract T getValue();
 
     public void setEnabled(boolean enabled, UserRight editOrCreateUserRight) {
-        if (enabled && UserRightHelper.hasUserRight(editOrCreateUserRight)) {
+        User user = ConfigProvider.getUser();
+        if (enabled && user.hasUserRight(editOrCreateUserRight)) {
             super.setEnabled(true);
         } else {
             super.setEnabled(false);

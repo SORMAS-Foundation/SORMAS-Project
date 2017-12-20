@@ -1,12 +1,9 @@
 package de.symeda.sormas.app.caze;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +35,6 @@ import de.symeda.sormas.app.component.FieldHelper;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.databinding.CaseDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.FormTab;
-import de.symeda.sormas.app.util.UserRightHelper;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
@@ -176,7 +172,7 @@ public class CaseEditDataForm extends FormTab {
             });
         }
 
-        if (UserRightHelper.hasUserRight(UserRight.CASE_MOVE)) {
+        if (user.hasUserRight(UserRight.CASE_MOVE)) {
             binding.caseDataMove.setVisibility(View.VISIBLE);
             binding.caseDataMove.setPaintFlags(binding.caseDataMove.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             binding.caseDataMove.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));

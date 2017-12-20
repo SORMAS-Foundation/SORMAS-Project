@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.LinearControlElementsLayout;
 import de.symeda.sormas.app.component.PropertyField;
 
@@ -80,7 +82,8 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
      * @param editRight
      */
     protected void manageActivityWriteRights(UserRight editRight) {
-        if (editRight == null || UserRightHelper.hasUserRight(editRight)) {
+        User user = ConfigProvider.getUser();
+        if (editRight == null || user.hasUserRight(editRight)) {
             return;
         }
 

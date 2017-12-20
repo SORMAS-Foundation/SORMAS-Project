@@ -14,17 +14,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.gms.analytics.Tracker;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -35,20 +31,16 @@ import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.backend.visit.VisitDao;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.databinding.ContactDataFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
 import de.symeda.sormas.app.person.PersonEditForm;
-import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.task.TaskForm;
 import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
-import de.symeda.sormas.app.util.SyncCallback;
-import de.symeda.sormas.app.util.UserRightHelper;
-import de.symeda.sormas.app.validation.ContactValidator;
 import de.symeda.sormas.app.validation.PersonValidator;
 import de.symeda.sormas.app.visit.VisitEditActivity;
 import de.symeda.sormas.app.visit.VisitEditDataForm;
@@ -178,6 +170,7 @@ public class ContactEditActivity extends AbstractEditTabActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        User user = ConfigProvider.getUser();
         ContactEditTabs tab = adapter.getTabForPosition(currentTab);
         switch (tab) {
             // contact data tab
@@ -192,7 +185,7 @@ public class ContactEditActivity extends AbstractEditTabActivity {
 
             // tasks tab
             case VISITS:
-                updateActionBarGroups(menu, false, true, true, UserRightHelper.hasUserRight(UserRight.VISIT_CREATE), false);
+                updateActionBarGroups(menu, false, true, true, user.hasUserRight(UserRight.VISIT_CREATE), false);
                 break;
 
             // tasks tab
@@ -342,11 +335,12 @@ public class ContactEditActivity extends AbstractEditTabActivity {
     }
 
     private List<ContactEditTabs> buildVisibleTabsList() {
+        User user = ConfigProvider.getUser();
         List<ContactEditTabs> visibleTabs = new ArrayList<>();
         visibleTabs.addAll(Arrays.asList(ContactEditTabs.CONTACT_DATA, ContactEditTabs.PERSON,
                 ContactEditTabs.VISITS));
 
-        if (UserRightHelper.hasUserRight(UserRight.TASK_VIEW)) {
+        if (user.hasUserRight(UserRight.TASK_VIEW)) {
             visibleTabs.add(ContactEditTabs.TASKS);
         }
 

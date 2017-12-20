@@ -18,6 +18,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -189,6 +190,15 @@ public class User extends AbstractDomainObject {
 		return getUserRoles().contains(userRole);
 	}
 
+	public boolean hasUserRight(UserRight userRight) {
+		for (UserRole userRole : userRight.getUserRoles()) {
+			if (hasUserRole(userRole)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	@Override
 	public String toString() {

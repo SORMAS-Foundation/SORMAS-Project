@@ -45,9 +45,9 @@ public class MainScreen extends HorizontalLayout {
 			@Override
 			public View getView(String viewName) {
 				try {
-					if (viewName.equals("dashboard") || viewName.equals("tasks") || viewName.equals("cases") ||
-							viewName.equals("contacts") || viewName.equals("events") || viewName.equals("samples") ||
-							viewName.equals("reports") || viewName.equals("statistics") || viewName.equals("users")) {
+					if (viewName.equals(DashboardView.VIEW_NAME) || viewName.equals(TasksView.VIEW_NAME) || viewName.equals(CasesView.VIEW_NAME) ||
+							viewName.equals(ContactsView.VIEW_NAME) || viewName.equals(EventsView.VIEW_NAME) || viewName.equals(SamplesView.VIEW_NAME) ||
+							viewName.equals(ReportsView.VIEW_NAME) || viewName.equals(StatisticsView.VIEW_NAME) || viewName.equals(UsersView.VIEW_NAME)) {
 						return AccessDeniedView.class.newInstance();
 					} else {
 						return ErrorView.class.newInstance();

@@ -1,14 +1,10 @@
 package de.symeda.sormas.app.caze;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,10 +26,6 @@ import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.reports.ReportsActivity;
-import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.util.SyncCallback;
-import de.symeda.sormas.app.util.UserRightHelper;
 
 public class CasesActivity extends AbstractRootTabActivity {
 
@@ -62,7 +54,7 @@ public class CasesActivity extends AbstractRootTabActivity {
 
         User user = ConfigProvider.getUser();
         if (user != null ) {
-            menu.findItem(R.id.action_new_case).setVisible(UserRightHelper.hasUserRight(UserRight.CASE_CREATE));
+            menu.findItem(R.id.action_new_case).setVisible(user.hasUserRight(UserRight.CASE_CREATE));
         }
 
         return true;

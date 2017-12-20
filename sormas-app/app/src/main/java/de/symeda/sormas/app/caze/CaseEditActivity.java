@@ -47,6 +47,7 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDtoHelper;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.FacilityChangeDialogBuilder;
 import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
@@ -63,7 +64,6 @@ import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
-import de.symeda.sormas.app.util.UserRightHelper;
 import de.symeda.sormas.app.validation.PersonValidator;
 import de.symeda.sormas.app.validation.SymptomsValidator;
 
@@ -184,6 +184,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        User user = ConfigProvider.getUser();
         CaseEditTabs tab = adapter.getTabForPosition(currentTab);
         switch (tab) {
             case CASE_DATA:
@@ -199,7 +200,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 break;
 
             case CONTACTS:
-                updateActionBarGroups(menu, false, true, true, UserRightHelper.hasUserRight(UserRight.CONTACT_CREATE), false);
+                updateActionBarGroups(menu, false, true, true, user.hasUserRight(UserRight.CONTACT_CREATE), false);
                 break;
 
             case TASKS:
@@ -207,7 +208,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 break;
 
             case SAMPLES:
-                updateActionBarGroups(menu, false, true, true, UserRightHelper.hasUserRight(UserRight.SAMPLE_CREATE), false);
+                updateActionBarGroups(menu, false, true, true, user.hasUserRight(UserRight.SAMPLE_CREATE), false);
                 break;
 
             case HOSPITALIZATION:
@@ -540,19 +541,20 @@ public class CaseEditActivity extends AbstractEditTabActivity {
     }
 
     private List<CaseEditTabs> buildVisibleTabsList(CaseDataDto caseDataDto) {
+        User user = ConfigProvider.getUser();
         List<CaseEditTabs> visibleTabs = new ArrayList<>();
         visibleTabs.addAll(Arrays.asList(CaseEditTabs.CASE_DATA, CaseEditTabs.PATIENT,
                 CaseEditTabs.HOSPITALIZATION, CaseEditTabs.SYMPTOMS, CaseEditTabs.EPIDATA));
 
-        if (UserRightHelper.hasUserRight(UserRight.CONTACT_VIEW) && DiseaseHelper.hasContactFollowUp(caseDataDto)) {
+        if (user.hasUserRight(UserRight.CONTACT_VIEW) && DiseaseHelper.hasContactFollowUp(caseDataDto)) {
             visibleTabs.add(CaseEditTabs.CONTACTS);
         }
 
-        if (UserRightHelper.hasUserRight(UserRight.SAMPLE_VIEW)) {
+        if (user.hasUserRight(UserRight.SAMPLE_VIEW)) {
             visibleTabs.add(CaseEditTabs.SAMPLES);
         }
 
-        if (UserRightHelper.hasUserRight(UserRight.TASK_VIEW)) {
+        if (user.hasUserRight(UserRight.TASK_VIEW)) {
             visibleTabs.add(CaseEditTabs.TASKS);
         }
 

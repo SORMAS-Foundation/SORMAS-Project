@@ -3,9 +3,7 @@ package de.symeda.sormas.app.event;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,10 +19,6 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.util.SyncCallback;
-import de.symeda.sormas.app.util.UserRightHelper;
 
 public class EventsActivity extends AbstractRootTabActivity {
 
@@ -54,7 +48,7 @@ public class EventsActivity extends AbstractRootTabActivity {
 
         User user = ConfigProvider.getUser();
         if (user != null ) {
-            menu.findItem(R.id.action_new_event).setVisible(UserRightHelper.hasUserRight(UserRight.EVENT_CREATE));
+            menu.findItem(R.id.action_new_event).setVisible(user.hasUserRight(UserRight.EVENT_CREATE));
         }
 
         return true;

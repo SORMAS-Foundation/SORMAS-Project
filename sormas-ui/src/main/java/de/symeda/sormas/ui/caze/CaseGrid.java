@@ -97,7 +97,7 @@ public class CaseGrid extends Grid {
 	}
     
     public void setDiseaseFilter(Disease disease) {
-		caseCriteria.dieasesEquals(disease);
+		caseCriteria.diseaseEquals(disease);
 		reload();
 	}
 

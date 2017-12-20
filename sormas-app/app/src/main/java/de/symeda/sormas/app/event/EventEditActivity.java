@@ -36,6 +36,7 @@ import de.symeda.sormas.app.backend.event.EventParticipantDao;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.databinding.EventDataFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -44,7 +45,6 @@ import de.symeda.sormas.app.task.TaskForm;
 import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
-import de.symeda.sormas.app.util.UserRightHelper;
 import de.symeda.sormas.app.validation.EventValidator;
 
 
@@ -161,6 +161,7 @@ public class EventEditActivity extends AbstractEditTabActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        User user = ConfigProvider.getUser();
         EventEditTabs tab = adapter.getTabForPosition(currentTab);
         switch(tab) {
             // contact data tab
@@ -170,7 +171,7 @@ public class EventEditActivity extends AbstractEditTabActivity {
 
             // person tab
             case EVENT_PERSONS:
-                updateActionBarGroups(menu, false, true, true, UserRightHelper.hasUserRight(UserRight.EVENTPARTICIPANT_CREATE), false);
+                updateActionBarGroups(menu, false, true, true, user.hasUserRight(UserRight.EVENTPARTICIPANT_CREATE), false);
                 break;
 
             // tasks tab
@@ -324,10 +325,11 @@ public class EventEditActivity extends AbstractEditTabActivity {
     }
 
     private List<EventEditTabs> buildVisibleTabsList() {
+        User user = ConfigProvider.getUser();
         List<EventEditTabs> visibleTabs = new ArrayList<>();
         visibleTabs.addAll(Arrays.asList(EventEditTabs.EVENT_DATA, EventEditTabs.EVENT_PERSONS));
 
-        if (UserRightHelper.hasUserRight(UserRight.TASK_VIEW)) {
+        if (user.hasUserRight(UserRight.TASK_VIEW)) {
             visibleTabs.add(EventEditTabs.EVENT_TASKS);
         }
 
