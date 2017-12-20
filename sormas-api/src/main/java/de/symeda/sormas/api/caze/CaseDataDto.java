@@ -366,7 +366,7 @@ public class CaseDataDto extends EntityDto {
 	}
 	
 	public static String buildCaption(String uuid, String firstName, String lastName) {
-		return firstName + " " + lastName.toUpperCase() + " (" + DataHelper.getShortUuid(uuid) + ")";
+		return firstName + " " + lastName != null ? lastName.toUpperCase() : "" + " (" + DataHelper.getShortUuid(uuid) + ")";
 	}
 
 }

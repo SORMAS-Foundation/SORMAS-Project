@@ -173,7 +173,7 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Event, Location> location = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
 		Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
-		Join<Location, Community> community = location.join(Location.COMMUNITY);
+		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 		
 		cq.multiselect(event.get(Event.UUID),
 				event.get(Event.EVENT_TYPE),

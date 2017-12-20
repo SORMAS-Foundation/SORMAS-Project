@@ -25,7 +25,7 @@ public class CaseCriteria implements Serializable {
 		return disease;
 	}
 
-	public CaseCriteria dieasesEquals(Disease disease) {
+	public CaseCriteria diseaseEquals(Disease disease) {
 		this.disease = disease;
 		return this;
 	}

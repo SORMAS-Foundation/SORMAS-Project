@@ -87,7 +87,9 @@ public class LocationDto extends EntityDto {
 	
 	@Override
 	public String toString() {
-		return buildCaption(region.getCaption(), district.getCaption(), community.getCaption(), city, address);
+		return buildCaption(region != null ? region.getCaption() : null, 
+				district != null ? district.getCaption() : null, 
+				community != null ? community.getCaption() : null, city, address);
 	}
 	
 	public boolean isEmptyLocation() {
