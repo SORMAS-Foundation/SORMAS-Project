@@ -122,9 +122,6 @@ public enum UserRole {
 		case LAB_USER:
 			collection.add(LAB_USER);
 			break;
-		case NATIONAL_OBSERVER:
-			collection.add(NATIONAL_OBSERVER);
-			break;
 		default:
 			break;
 		}
