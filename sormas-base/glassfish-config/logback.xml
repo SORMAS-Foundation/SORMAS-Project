@@ -75,10 +75,10 @@
         </encoder>
 	</appender>	
 	
-    <!-- Meldung "Number larger than 32 characters in hex" unterdrücken. -->
+    <!-- Suppress "Number larger than 32 characters in hex". -->
     <logger name="org.wamblee.glassfish.auth.HexEncoder" level="ERROR" />
 
-    <!-- Patientendaten beim Kopieren von DTOs nicht loggen -->
+    <!-- Don't log personal data when copying to/from dto -->
     <logger name="org.apache.commons.beanutils.BeanUtils" level="INFO" />
 
     <root level="debug">
