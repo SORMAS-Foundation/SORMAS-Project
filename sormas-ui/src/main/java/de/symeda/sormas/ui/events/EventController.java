@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.events;
 
 import java.util.Date;
-import java.util.List;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
@@ -15,7 +14,6 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -62,11 +60,6 @@ public class EventController {
 		
 		Page page = SormasUI.get().getPage();
 		page.setUriFragment("!" + EventsView.VIEW_NAME + "/" + fragmentParameter, false);
-	}
-	
-	public List<EventDto> getEventIndexList() {
-    	UserDto user = LoginHelper.getCurrentUser();
-    	return FacadeProvider.getEventFacade().getAllEventsAfter(null, user.getUuid());
 	}
 	
 	private EventDto findEvent(String uuid) {

@@ -32,7 +32,6 @@ public class ContactGrid extends Grid {
 	public static final String NUMBER_OF_VISITS = "numberOfVisits";
 	public static final String NUMBER_OF_PENDING_TASKS = "numberOfPendingTasks";
 	public static final String DISEASE_SHORT = "diseaseShort";
-	//public static final String ASSOCIATED_CASE = "associatedCase";
 	
 	public ContactGrid() {
 		setSizeFull();
@@ -85,35 +84,13 @@ public class ContactGrid extends Grid {
 				return String.class;
 			}
         });
-        
-//        generatedContainer.addGeneratedProperty(ASSOCIATED_CASE, new PropertyValueGenerator<String>() {
-//			@Override
-//			public String getValue(Item item, Object itemId, Object propertyId) {
-//				ContactIndexDto contactIndexDto = (ContactIndexDto) itemId;
-//				PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(contactIndexDto.getPerson().getUuid());
-//				String caseId = findAssociatedCaseId(personDto, contactIndexDto);
-//				if(caseId != null) {
-//					return caseId;
-//				} else {
-//					return "";
-//				}
-//			}
-//			@Override
-//			public Class<String> getType() {
-//				return String.class;
-//			}
-//		});
 
         setColumns(ContactIndexDto.UUID, DISEASE_SHORT, ContactIndexDto.CONTACT_CLASSIFICATION, 
         		ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY,
         		ContactIndexDto.FOLLOW_UP_STATUS, NUMBER_OF_VISITS, NUMBER_OF_PENDING_TASKS);
         getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
         getColumn(ContactIndexDto.UUID).setRenderer(new UuidRenderer());
-        //getColumn(ContactIndexDto.CAZE).setRenderer(new HtmlRenderer(), new HtmlReferenceDtoConverter());
-        //getColumn(ContactIndexDto.LAST_CONTACT_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
-        //getColumn(ContactIndexDto.FOLLOW_UP_UNTIL).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
-		//getColumn(ASSOCIATED_CASE).setRenderer(new CaseUuidRenderer(true));
-        
+
         for (Column column : getColumns()) {
         	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
         			ContactIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
@@ -121,21 +98,7 @@ public class ContactGrid extends Grid {
         
         addItemClickListener(e -> {
 	       	ContactIndexDto contactIndexDto = (ContactIndexDto)e.getItemId();
-//	       	if(ASSOCIATED_CASE.equals(e.getPropertyId())) {
-//	       		PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(contactIndexDto.getPerson().getUuid());
-//				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(findAssociatedCaseId(personDto, contactIndexDto));
-//				if(caseDto != null) {
-//					ControllerProvider.getCaseController().navigateToData(findAssociatedCaseId(personDto, contactIndexDto));
-//				} else {
-//					ControllerProvider.getCaseController().create(personDto, contactIndexDto.getCazeDisease(), FacadeProvider.getContactFacade().getContactByUuid(contactIndexDto.getUuid()));
-//				}
-//	       	} else {
-//	       		if (ContactIndexDto.CAZE.equals(e.getPropertyId())) {
-//	        		ControllerProvider.getCaseController().navigateToData(contactIndexDto.getCaze().getUuid());
-//	        	} else {
-	        		ControllerProvider.getContactController().editData(contactIndexDto.getUuid());
-//	        	}
-//	       	}
+	        ControllerProvider.getContactController().editData(contactIndexDto.getUuid());
 		});	
 	}
 	
@@ -199,7 +162,6 @@ public class ContactGrid extends Grid {
 	public void filterByText(String text) {
 		getContainer().removeContainerFilters(ContactIndexDto.UUID);
 		getContainer().removeContainerFilters(ContactIndexDto.PERSON);
-//		getContainer().removeContainerFilters(ContactIndexDto.CAZE_PERSON);
     	getContainer().removeContainerFilters(ContactIndexDto.CAZE);
 
     	if (text != null && !text.isEmpty()) {
@@ -208,7 +170,6 @@ public class ContactGrid extends Grid {
     		for (String word : words) {
     			orFilters.add(new SimpleStringFilter(ContactIndexDto.UUID, word, true, false));
     			orFilters.add(new SimpleStringFilter(ContactIndexDto.PERSON, word, true, false));
-//    			orFilters.add(new SimpleStringFilter(ContactIndexDto.CAZE_PERSON, word, true, false));
     			orFilters.add(new SimpleStringFilter(ContactIndexDto.CAZE, word, true, false));
     		}
             getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
@@ -235,20 +196,7 @@ public class ContactGrid extends Grid {
     	getContainer().removeAllItems();
         getContainer().addAll(entries);    	
     }
-    
-//    private String findAssociatedCaseId(PersonDto personDto, ContactIndexDto contactIndexDto) {
-//		if(personDto == null || contactIndexDto == null) {
-//			return null;
-//		}
-//		
-//		UserDto user = LoginHelper.getCurrentUser();
-//		CaseDataDto caze = FacadeProvider.getCaseFacade().getByPersonAndDisease(personDto.getUuid(), contactIndexDto.getCazeDisease(), user.getUuid());
-//		if(caze != null) {
-//			return caze.getUuid();
-//		} else {
-//			return null;
-//		}
-//	}
+  
 }
 
 

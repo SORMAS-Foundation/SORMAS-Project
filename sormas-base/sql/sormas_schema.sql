@@ -1887,3 +1887,11 @@ ALTER TABLE events ALTER COLUMN srclastname DROP NOT NULL;
 ALTER TABLE events ALTER COLUMN srctelno DROP NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (77, 'Soft validation for event fields #405');
+
+-- 2017-12-20 Drop not null constraints from events_history table #405
+ALTER TABLE events_history ALTER COLUMN typeofplace DROP NOT NULL;
+ALTER TABLE events_history ALTER COLUMN srcfirstname DROP NOT NULL;
+ALTER TABLE events_history ALTER COLUMN srclastname DROP NOT NULL;
+ALTER TABLE events_history ALTER COLUMN srctelno DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (78, 'Drop not null constraints from events_history table #405');

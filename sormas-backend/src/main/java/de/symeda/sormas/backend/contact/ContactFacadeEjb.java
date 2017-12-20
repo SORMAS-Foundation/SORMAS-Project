@@ -259,6 +259,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
+		cq.orderBy(cb.desc(contact.get(Contact.REPORT_DATE_TIME)));
 		
 		List<ContactIndexDto> resultList = em.createQuery(cq).getResultList();
 		return resultList;

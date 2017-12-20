@@ -13,7 +13,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.task.DashboardTaskDto;
 import de.symeda.sormas.api.task.TaskDto;
@@ -324,7 +324,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 	
 	@Override
-	public long getPendingTaskCountByEvent(EventDto eventDto) {
+	public long getPendingTaskCountByEvent(EventIndexDto eventDto) {
 		if(eventDto == null) {
 			return 0;
 		}

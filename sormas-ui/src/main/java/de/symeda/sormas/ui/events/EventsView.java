@@ -10,7 +10,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.user.UserRight;
@@ -83,14 +83,14 @@ public class EventsView extends AbstractView {
 		
 		ComboBox typeFilter = new ComboBox();
 		typeFilter.setWidth(140, Unit.PIXELS);
-		typeFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(EventDto.I18N_PREFIX, EventDto.EVENT_TYPE));
+		typeFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.EVENT_TYPE));
 		typeFilter.addItems((Object[])EventType.values());
 		typeFilter.addValueChangeListener(e -> grid.setEventTypeFilter(((EventType)e.getProperty().getValue())));
 		filterLayout.addComponent(typeFilter);
 		
 		ComboBox diseaseFilter = new ComboBox();
 		diseaseFilter.setWidth(140, Unit.PIXELS);
-		diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(EventDto.I18N_PREFIX, EventDto.DISEASE));
+		diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.DISEASE));
 		diseaseFilter.addItems((Object[])Disease.values());
 		diseaseFilter.addValueChangeListener(e -> grid.setDiseaseFilter(((Disease)e.getProperty().getValue())));
 		filterLayout.addComponent(diseaseFilter);

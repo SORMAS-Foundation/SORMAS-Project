@@ -87,11 +87,7 @@ public class LocationDto extends EntityDto {
 	
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(address!=null?address + " ":"");
-		sb.append(details!=null?details + " ":"");
-		sb.append(city!=null?city:"");
-		return sb.toString();
+		return buildCaption(region.getCaption(), district.getCaption(), community.getCaption(), city, address);
 	}
 	
 	public boolean isEmptyLocation() {
@@ -105,4 +101,12 @@ public class LocationDto extends EntityDto {
 	public void setLatLonAccuracy(Float latLonAccuracy) {
 		this.latLonAccuracy = latLonAccuracy;
 	}
+	
+	public static String buildCaption(String regionName, String districtName, String communityName, String city, String address) {
+		return regionName + (regionName != null && districtName != null ? ", " : "") + districtName +
+				(communityName != null && (regionName !=  null || districtName != null) ? ", " : "") + communityName + 
+				(regionName != null || districtName != null || communityName != null ? " - " : "") + city + 
+				(regionName != null || districtName != null || communityName != null || city != null ? " (" + address + ")" : address);
+	}
+	
 }

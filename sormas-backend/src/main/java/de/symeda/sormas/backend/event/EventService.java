@@ -139,7 +139,6 @@ public class EventService extends AbstractAdoService<Event> {
 			return null;
 		}
 
-
 		// whoever created the event or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(eventPath.join(Event.REPORTING_USER, JoinType.LEFT), user);
 		filter = cb.or(filter, cb.equal(eventPath.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT), user));

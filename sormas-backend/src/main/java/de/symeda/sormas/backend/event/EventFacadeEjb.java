@@ -8,21 +8,33 @@ import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
+import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationService;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskCriteria;
 import de.symeda.sormas.backend.task.TaskService;
@@ -30,9 +42,13 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "EventFacade")
 public class EventFacadeEjb implements EventFacade {
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	protected EntityManager em;
 
 	@EJB
 	private UserService userService;
@@ -147,6 +163,50 @@ public class EventFacadeEjb implements EventFacade {
 			taskService.delete(task);
 		}
 		eventService.delete(event);
+	}
+	
+	@Override
+	public List<EventIndexDto> getIndexList(String userUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventIndexDto> cq = cb.createQuery(EventIndexDto.class);
+		Root<Event> event = cq.from(Event.class);
+		Join<Event, Location> location = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
+		Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
+		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+		Join<Location, Community> community = location.join(Location.COMMUNITY);
+		
+		cq.multiselect(event.get(Event.UUID),
+				event.get(Event.EVENT_TYPE),
+				event.get(Event.EVENT_STATUS),
+				event.get(Event.DISEASE),
+				event.get(Event.DISEASE_DETAILS),
+				event.get(Event.EVENT_DATE),
+				event.get(Event.EVENT_DESC),
+				location.get(Location.UUID),
+				region.get(Region.NAME),
+				district.get(District.NAME),
+				community.get(Community.NAME),
+				location.get(Location.CITY),
+				location.get(Location.ADDRESS),
+				event.get(Event.SRC_FIRST_NAME),
+				event.get(Event.SRC_LAST_NAME),
+				event.get(Event.SRC_TEL_NO),
+				event.get(Event.REPORT_DATE_TIME)
+		);
+		
+		Predicate filter = null;
+		if (userUuid != null) {
+			User user = userService.getByUuid(userUuid);
+			filter = eventService.createUserFilter(cb, cq, event, user);
+		}
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.desc(event.get(Event.REPORT_DATE_TIME)));
+		
+		List<EventIndexDto> resultList = em.createQuery(cq).getResultList();
+		return resultList;
 	}
 	
 	public Event fromDto(@NotNull EventDto source) {
