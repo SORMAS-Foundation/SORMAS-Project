@@ -1,39 +1,39 @@
 package de.symeda.sormas.api.task;
 
+import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class TaskDto extends EntityDto {
+public class TaskIndexDto implements Serializable {
 
 	private static final long serialVersionUID = 2439546041916003653L;
 
 	public static final String I18N_PREFIX = "Task";
 	
+	public static final String UUID = "uuid";
 	public static final String ASSIGNEE_REPLY = "assigneeReply";
 	public static final String ASSIGNEE_USER = "assigneeUser";
 	public static final String CAZE = "caze";
 	public static final String CONTACT = "contact";
+	public static final String EVENT = "event";
 	public static final String CREATOR_COMMENT = "creatorComment";
 	public static final String CREATOR_USER = "creatorUser";
 	public static final String PRIORITY = "priority";
 	public static final String DUE_DATE = "dueDate";
 	public static final String SUGGESTED_START = "suggestedStart";
-	public static final String EVENT = "event";
-	public static final String PERCEIVED_START = "perceivedStart";
-	public static final String STATUS_CHANGE_DATE = "statusChangeDate";
 	public static final String TASK_CONTEXT = "taskContext";
 	public static final String TASK_STATUS = "taskStatus";
 	public static final String TASK_TYPE = "taskType";
 	public static final String CONTEXT_REFERENCE = "contextReference";
-	public static final String CLOSED_LAT = "closedLat";
-	public static final String CLOSED_LON = "closedLon";
 
+	private String uuid;
 	private TaskContext taskContext;
 	private CaseReferenceDto caze;
 	private EventReferenceDto event;
@@ -44,18 +44,35 @@ public class TaskDto extends EntityDto {
 	private Date dueDate;
 	private Date suggestedStart;
 	private TaskStatus taskStatus;
-	private Date statusChangeDate;
-	private Date perceivedStart;
 	
 	private UserReferenceDto creatorUser;
 	private String creatorComment;
 	private UserReferenceDto assigneeUser;
 	private String assigneeReply;
 	
-	private Double closedLat;
-	private Double closedLon;
-	private Float closedLatLonAccuracy;
 	
+
+	public TaskIndexDto(String uuid, TaskContext taskContext, String caseUuid, String caseFirstName, String caseLastName,
+			String eventUuid, Disease eventDisease, String eventDiseaseDetails, EventType eventType, Date eventDate, 
+			String contactUuid, String contactFirstName, String contactLastName, String contactCaseFirstName, String contactCaseLastName,
+			TaskType taskType, TaskPriority priority, Date dueDate, Date suggestedStart, TaskStatus taskStatus,
+			String creatorUserUuid, String creatorUserFirstName, String creatorUserLastName, String creatorComment,
+			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply) {
+		this.setUuid(uuid);
+		this.taskContext = taskContext;
+		this.caze = new CaseReferenceDto(caseUuid, caseFirstName, caseLastName);
+		this.event = new EventReferenceDto(eventUuid, eventDisease, eventDiseaseDetails, eventType, eventDate);
+		this.contact = new ContactReferenceDto(contactUuid, contactFirstName, contactLastName, contactCaseFirstName, contactCaseLastName);
+		this.taskType = taskType;
+		this.priority = priority;
+		this.dueDate = dueDate;
+		this.suggestedStart = suggestedStart;
+		this.taskStatus = taskStatus;
+		this.creatorUser = new UserReferenceDto(creatorUserUuid, creatorUserFirstName, creatorUserLastName, null);
+		this.creatorComment = creatorComment;
+		this.assigneeUser = new UserReferenceDto(assigneeUserUuid, assigneeUserFirstName, assigneeUserLastName, null);
+		this.assigneeReply = assigneeReply;
+	}
 	public TaskContext getTaskContext() {
 		return taskContext;
 	}
@@ -105,18 +122,6 @@ public class TaskDto extends EntityDto {
 	public void setTaskStatus(TaskStatus taskStatus) {
 		this.taskStatus = taskStatus;
 	}
-	public Date getStatusChangeDate() {
-		return statusChangeDate;
-	}
-	public void setStatusChangeDate(Date statusChangeDate) {
-		this.statusChangeDate = statusChangeDate;
-	}
-	public Date getPerceivedStart() {
-		return perceivedStart;
-	}
-	public void setPerceivedStart(Date perceivedStart) {
-		this.perceivedStart = perceivedStart;
-	}
 	public UserReferenceDto getCreatorUser() {
 		return creatorUser;
 	}
@@ -147,18 +152,6 @@ public class TaskDto extends EntityDto {
 	public void setPriority(TaskPriority priority) {
 		this.priority = priority;
 	}
-	public Double getClosedLat() {
-		return closedLat;
-	}
-	public void setClosedLat(Double closedLat) {
-		this.closedLat = closedLat;
-	}
-	public Double getClosedLon() {
-		return closedLon;
-	}
-	public void setClosedLon(Double closedLon) {
-		this.closedLon = closedLon;
-	}
 	
 	public ReferenceDto getContextReference() {
 		switch (taskContext) {
@@ -174,11 +167,10 @@ public class TaskDto extends EntityDto {
 			throw new IndexOutOfBoundsException(taskContext.toString());
 		}
 	}
-	public Float getClosedLatLonAccuracy() {
-		return closedLatLonAccuracy;
+	public String getUuid() {
+		return uuid;
 	}
-	public void setClosedLatLonAccuracy(Float closedLatLonAccuracy) {
-		this.closedLatLonAccuracy = closedLatLonAccuracy;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
-	
 }

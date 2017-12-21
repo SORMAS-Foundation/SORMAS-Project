@@ -6,6 +6,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 
 public class PersonDto extends EntityDto {
@@ -269,7 +270,7 @@ public class PersonDto extends EntityDto {
 	}
 	
 	public static String buildCaption(String firstName, String lastName) {
-		return firstName + " " + lastName.toUpperCase();
+		return DataHelper.toStringNullable(firstName) + " " + DataHelper.toStringNullable(lastName).toUpperCase();
 	}
 
 }

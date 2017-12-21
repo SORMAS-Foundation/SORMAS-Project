@@ -25,6 +25,7 @@ import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.location.Location;
@@ -36,7 +37,6 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.task.Task;
-import de.symeda.sormas.backend.task.TaskCriteria;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -158,7 +158,7 @@ public class EventFacadeEjb implements EventFacade {
 		for (EventParticipant eventParticipant : eventParticipants) {
 			eventParticipantService.delete(eventParticipant);
 		}
-		List<Task> tasks = taskService.findBy(new TaskCriteria().eventEquals(event));
+		List<Task> tasks = taskService.findBy(new TaskCriteria().eventEquals(eventRef));
 		for (Task task : tasks) {
 			taskService.delete(task);
 		}

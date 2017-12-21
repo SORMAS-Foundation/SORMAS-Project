@@ -1,24 +1,25 @@
-package de.symeda.sormas.backend.task;
+package de.symeda.sormas.api.task;
 
+import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.task.TaskStatus;
-import de.symeda.sormas.api.task.TaskType;
-import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class TaskCriteria {
+public class TaskCriteria implements Serializable {
+
+	private static final long serialVersionUID = -9174165215694877625L;
 
 	private TaskStatus[] taskStatuses;
 	private TaskType taskType;
-	private User assigneeUser;
-	private Case caze;
-	private Contact contact;
-	private Person contactPerson;
-	private Event event;
+	private UserReferenceDto assigneeUser;
+	private CaseReferenceDto caze;
+	private ContactReferenceDto contact;
+	private PersonReferenceDto contactPerson;
+	private EventReferenceDto event;
 	private Date dueDateFrom;
 	private Date dueDateTo;
 	private Date statusChangeDateFrom;
@@ -39,38 +40,38 @@ public class TaskCriteria {
 		this.taskType = taskType;
 		return this;
 	}
-	public User getAssigneeUser() {
+	public UserReferenceDto getAssigneeUser() {
 		return assigneeUser;
 	}
-	public TaskCriteria assigneeUserEquals(User assigneeUser) {
+	public TaskCriteria assigneeUserEquals(UserReferenceDto assigneeUser) {
 		this.assigneeUser = assigneeUser;
 		return this;
 	}
-	public Case getCaze() {
+	public CaseReferenceDto getCaze() {
 		return caze;
 	}
-	public TaskCriteria cazeEquals(Case caze) {
+	public TaskCriteria cazeEquals(CaseReferenceDto caze) {
 		this.caze = caze;
 		return this;
 	}
-	public Contact getContact() {
+	public ContactReferenceDto getContact() {
 		return contact;
 	}
-	public TaskCriteria contactEquals(Contact contact) {
+	public TaskCriteria contactEquals(ContactReferenceDto contact) {
 		this.contact = contact;
 		return this;
 	}
-	public Person getContactPerson() {
+	public PersonReferenceDto getContactPerson() {
 		return contactPerson;
 	}
-	public TaskCriteria contactPersonEquals(Person contactPerson) {
+	public TaskCriteria contactPersonEquals(PersonReferenceDto contactPerson) {
 		this.contactPerson = contactPerson;
 		return this;
 	}
-	public Event getEvent() {
+	public EventReferenceDto getEvent() {
 		return event;
 	}
-	public TaskCriteria eventEquals(Event event) {
+	public TaskCriteria eventEquals(EventReferenceDto event) {
 		this.event = event;
 		return this;
 	}
@@ -95,5 +96,9 @@ public class TaskCriteria {
 		this.statusChangeDateFrom = statusChangeDateFrom;
 		this.statusChangeDateTo = statusChangeDateTo;
 		return this;
+	}
+	
+	public boolean hasContextCriteria() {
+		return getCaze() != null || getEvent() != null || getContact() != null;
 	}
 }

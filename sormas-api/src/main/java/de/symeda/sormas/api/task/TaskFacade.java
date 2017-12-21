@@ -5,11 +5,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 
 @Remote
@@ -25,9 +22,7 @@ public interface TaskFacade {
 	
 	List<TaskDto> getAllByEvent(EventReferenceDto eventRef);
 	
-	List<TaskDto> getAllPendingByCase(CaseDataDto caseDataDto);
-
-	List<TaskDto> getAllPendingByContact(ContactIndexDto contactDto);
+	List<TaskDto> getAllPendingByCase(CaseReferenceDto caseDataDto);
 
 	List<TaskDto> getByUuids(List<String> uuids);
 	
@@ -35,9 +30,9 @@ public interface TaskFacade {
 	
 	long getPendingTaskCountByCase(CaseReferenceDto caseDto);
 	
-	long getPendingTaskCountByContact(ContactIndexDto contactDto);
+	long getPendingTaskCountByContact(ContactReferenceDto contactDto);
 	
-	long getPendingTaskCountByEvent(EventIndexDto eventDto);
+	long getPendingTaskCountByEvent(EventReferenceDto eventDto);
 	
 	long getPendingTaskCount(String userUuid);
 
@@ -46,4 +41,6 @@ public interface TaskFacade {
 	List<String> getAllUuids(String userUuid);
 	
 	void deleteTask(TaskDto taskDto, String userUuid);
+
+	List<TaskIndexDto> getIndexList(String userUuid, TaskCriteria taskCriteria);
 }

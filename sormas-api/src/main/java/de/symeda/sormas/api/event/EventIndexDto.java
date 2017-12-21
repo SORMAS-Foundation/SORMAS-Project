@@ -128,4 +128,7 @@ public class EventIndexDto implements Serializable {
 		this.reportDateTime = reportDateTime;
 	}
 	
+	public EventReferenceDto toReference() {
+		return new EventReferenceDto(getUuid(), getDisease(), getDiseaseDetails(), getEventType(), getEventDate());
+	}
 }

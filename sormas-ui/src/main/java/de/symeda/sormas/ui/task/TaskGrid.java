@@ -17,15 +17,21 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
-import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskCriteria;
+import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.HtmlReferenceDtoConverter;
 import de.symeda.sormas.ui.utils.ShortStringRenderer;
@@ -35,13 +41,13 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class TaskGrid extends Grid implements ItemClickListener {
 
 	private static final String EDIT_BTN_ID = "edit";
-	private TaskContext taskContext;
-	private ReferenceDto entityReference;
+	
+	private final TaskCriteria taskCriteria = new TaskCriteria();
 
 	private final class TaskGridRowStyleGenerator implements RowStyleGenerator {
 		@Override
 		public String getStyle(RowReference row) {
-			TaskDto task = (TaskDto)row.getItemId();
+			TaskIndexDto task = (TaskIndexDto)row.getItemId();
 			if (task != null && task.getTaskStatus() != null) {
 				switch (task.getTaskStatus()) {
 				case REMOVED:
@@ -63,7 +69,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
 	private final class TaskGridCellStyleGenerator implements CellStyleGenerator {
 		@Override
 		public String getStyle(CellReference cell) {
-			if (TaskDto.PRIORITY.equals(cell.getPropertyId())) {
+			if (TaskIndexDto.PRIORITY.equals(cell.getPropertyId())) {
 				TaskPriority priority = (TaskPriority)cell.getProperty().getValue();
 				if (priority != null) {
 				switch (priority) {
@@ -78,7 +84,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
 				}
 				}
 			}
-			else if (TaskDto.DUE_DATE.equals(cell.getPropertyId())) {
+			else if (TaskIndexDto.DUE_DATE.equals(cell.getPropertyId())) {
 				Date dueDate = (Date)cell.getProperty().getValue();
 				if (dueDate != null && dueDate.before(new Date())) {
 					return CssStyles.GRID_CELL_WARNING;
@@ -94,26 +100,26 @@ public class TaskGrid extends Grid implements ItemClickListener {
         setCellStyleGenerator(new TaskGridCellStyleGenerator());
 		setRowStyleGenerator(new TaskGridRowStyleGenerator());
 
-        BeanItemContainer<TaskDto> container = new BeanItemContainer<TaskDto>(TaskDto.class);
+        BeanItemContainer<TaskIndexDto> container = new BeanItemContainer<TaskIndexDto>(TaskIndexDto.class);
 		GeneratedPropertyContainer editContainer = new GeneratedPropertyContainer(container);
         VaadinUiUtil.addIconColumn(editContainer, EDIT_BTN_ID, FontAwesome.PENCIL_SQUARE);
         setContainerDataSource(editContainer);
 
-        setColumns(EDIT_BTN_ID, TaskDto.CONTEXT_REFERENCE, TaskDto.TASK_TYPE,  TaskDto.PRIORITY,
-        		TaskDto.SUGGESTED_START, TaskDto.DUE_DATE, //TaskDto.TASK_CONTEXT, 
-        		TaskDto.ASSIGNEE_USER, TaskDto.ASSIGNEE_REPLY, 
-        		TaskDto.CREATOR_USER, TaskDto.CREATOR_COMMENT, TaskDto.TASK_STATUS);
+        setColumns(EDIT_BTN_ID, TaskIndexDto.CONTEXT_REFERENCE, TaskIndexDto.TASK_TYPE,  TaskIndexDto.PRIORITY,
+        		TaskIndexDto.SUGGESTED_START, TaskIndexDto.DUE_DATE,
+        		TaskIndexDto.ASSIGNEE_USER, TaskIndexDto.ASSIGNEE_REPLY, 
+        		TaskIndexDto.CREATOR_USER, TaskIndexDto.CREATOR_COMMENT, TaskIndexDto.TASK_STATUS);
 
         getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
         getColumn(EDIT_BTN_ID).setWidth(60);
         
-        getColumn(TaskDto.DUE_DATE).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
-        getColumn(TaskDto.SUGGESTED_START).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
-        getColumn(TaskDto.CREATOR_COMMENT).setRenderer(new ShortStringRenderer(50));
+        getColumn(TaskIndexDto.DUE_DATE).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
+        getColumn(TaskIndexDto.SUGGESTED_START).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
+        getColumn(TaskIndexDto.CREATOR_COMMENT).setRenderer(new ShortStringRenderer(50));
         
-        getColumn(TaskDto.CONTEXT_REFERENCE).setRenderer(new HtmlRenderer(), new HtmlReferenceDtoConverter());
+        getColumn(TaskIndexDto.CONTEXT_REFERENCE).setRenderer(new HtmlRenderer(), new HtmlReferenceDtoConverter());
         
-        getColumn(TaskDto.ASSIGNEE_USER).setConverter(new HtmlReferenceDtoConverter() {
+        getColumn(TaskIndexDto.ASSIGNEE_USER).setConverter(new HtmlReferenceDtoConverter() {
         	@Override
         	public String convertToPresentation(ReferenceDto value, Class<? extends String> targetType, Locale locale) throws ConversionException {
         		String html;
@@ -128,7 +134,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
         
         for (Column column : getColumns()) {
         	column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
-        			TaskDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+        			TaskIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         
         setSelectionMode(SelectionMode.NONE);        
@@ -137,16 +143,28 @@ public class TaskGrid extends Grid implements ItemClickListener {
 	
 	public TaskGrid(TaskContext context, ReferenceDto entityRef) {
 		this();
-		removeColumn(TaskDto.CONTEXT_REFERENCE);
+		removeColumn(TaskIndexDto.CONTEXT_REFERENCE);
 		filterTaskStatus(null, false);
-		this.taskContext = context;
-		this.entityReference = entityRef;
+		switch (context) {
+		case CASE:
+			taskCriteria.cazeEquals((CaseReferenceDto) entityRef);
+			break;
+		case CONTACT:
+			taskCriteria.contactEquals((ContactReferenceDto) entityRef);
+			break;
+		case EVENT:
+			taskCriteria.eventEquals((EventReferenceDto) entityRef);
+			break;
+		case GENERAL:
+		default:
+			throw new IndexOutOfBoundsException(context.toString());
+		}
 	}
 	
     public void filterAssignee(UserReferenceDto userDto, boolean reload) {
-		getContainer().removeContainerFilters(TaskDto.ASSIGNEE_USER);
+		getContainer().removeContainerFilters(TaskIndexDto.ASSIGNEE_USER);
 		if (userDto != null) {
-			Filter filter = new Equal(TaskDto.ASSIGNEE_USER, userDto);  
+			Filter filter = new Equal(TaskIndexDto.ASSIGNEE_USER, userDto);  
 	        getContainer().addContainerFilter(filter);
 		}
 		if (reload) {
@@ -155,9 +173,9 @@ public class TaskGrid extends Grid implements ItemClickListener {
 	}
 
     public void filterExcludeAssignee(UserReferenceDto userDto, boolean reload) {
-		getContainer().removeContainerFilters(TaskDto.ASSIGNEE_USER);
+		getContainer().removeContainerFilters(TaskIndexDto.ASSIGNEE_USER);
 		if (userDto != null) {
-	    	Filter filter = new Not(new Equal(TaskDto.ASSIGNEE_USER, userDto));  
+	    	Filter filter = new Not(new Equal(TaskIndexDto.ASSIGNEE_USER, userDto));  
 	        getContainer().addContainerFilter(filter);
 		}
 		if (reload) {
@@ -166,9 +184,9 @@ public class TaskGrid extends Grid implements ItemClickListener {
 	}
 
 	public void filterTaskStatus(TaskStatus statusToFilter, boolean reload) {
-    	getContainer().removeContainerFilters(TaskDto.TASK_STATUS);
+    	getContainer().removeContainerFilters(TaskIndexDto.TASK_STATUS);
     	if (statusToFilter != null) {
-    		Filter filter = new Equal(TaskDto.TASK_STATUS, statusToFilter);  
+    		Filter filter = new Equal(TaskIndexDto.TASK_STATUS, statusToFilter);  
 	        getContainer().addContainerFilter(filter);
     	}
 		if (reload) {
@@ -177,23 +195,19 @@ public class TaskGrid extends Grid implements ItemClickListener {
     }
 
     @SuppressWarnings("unchecked")
-	private BeanItemContainer<TaskDto> getContainer() {
+	private BeanItemContainer<TaskIndexDto> getContainer() {
     	GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
-        return (BeanItemContainer<TaskDto>) container.getWrappedContainer();
+        return (BeanItemContainer<TaskIndexDto>) container.getWrappedContainer();
     }
     
     public void reload() {
-    	List<TaskDto> tasks;
-    	if(taskContext != null && entityReference != null) {
-	    	tasks = ControllerProvider.getTaskController().getTasksByEntity(taskContext, entityReference);
-    	} else {
-    		tasks = ControllerProvider.getTaskController().getAllTasks();
-    	}
+    	List<TaskIndexDto> tasks = FacadeProvider.getTaskFacade().getIndexList(LoginHelper.getCurrentUserAsReference().getUuid(),
+    			taskCriteria);
     	
-    	tasks.sort(new Comparator<TaskDto>() {
+    	tasks.sort(new Comparator<TaskIndexDto>() {
 
 			@Override
-			public int compare(TaskDto o1, TaskDto o2) {
+			public int compare(TaskIndexDto o1, TaskIndexDto o2) {
 				if (o1.getTaskStatus() != o2.getTaskStatus()) {
 					if (o1.getTaskStatus() == TaskStatus.PENDING)
 						return -1;
@@ -215,15 +229,15 @@ public class TaskGrid extends Grid implements ItemClickListener {
         getContainer().removeAllItems();
         getContainer().addAll(tasks); 
         
-        if(entityReference != null) {
+        if (taskCriteria.hasContextCriteria()) {
         	this.setHeightByRows(getContainer().size() < 10 ? (getContainer().size() > 0 ? getContainer().size() : 1) : 10);
         }
     }
 
 	@Override
 	public void itemClick(ItemClickEvent event) {
-		TaskDto task = (TaskDto)event.getItemId();
-		if (TaskDto.CONTEXT_REFERENCE.equals(event.getPropertyId())) {
+		TaskIndexDto task = (TaskIndexDto)event.getItemId();
+		if (TaskIndexDto.CONTEXT_REFERENCE.equals(event.getPropertyId())) {
 			switch (task.getTaskContext()) {
 			case CASE:
 				ControllerProvider.getCaseController().navigateToData(task.getCaze().getUuid());

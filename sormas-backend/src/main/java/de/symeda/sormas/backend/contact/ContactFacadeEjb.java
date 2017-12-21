@@ -38,6 +38,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -54,7 +55,6 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.task.Task;
-import de.symeda.sormas.backend.task.TaskCriteria;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -213,7 +213,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		for (Visit visit : visits) {
 			visitService.delete(visit);
 		}
-		List<Task> tasks = taskService.findBy(new TaskCriteria().contactEquals(contact));
+		List<Task> tasks = taskService.findBy(new TaskCriteria().contactEquals(contactRef));
 		for (Task task : tasks) {
 			taskService.delete(task);
 		}
@@ -377,9 +377,9 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			// find already existing tasks
 			TaskCriteria pendingUserTaskCriteria = new TaskCriteria()
-					.contactEquals(contact)
+					.contactEquals(contact.toReference())
 					.taskTypeEquals(TaskType.CONTACT_FOLLOW_UP)
-					.assigneeUserEquals(assignee)
+					.assigneeUserEquals(assignee.toReference())
 					.taskStatusEquals(TaskStatus.PENDING);
 			List<Task> pendingUserTasks = taskService.findBy(pendingUserTaskCriteria);
 
@@ -389,7 +389,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 
 			TaskCriteria dayTaskCriteria = new TaskCriteria()
-					.contactEquals(contact)
+					.contactEquals(contact.toReference())
 					.taskTypeEquals(TaskType.CONTACT_FOLLOW_UP)
 					.dueDateBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime));
 			List<Task> dayTasks = taskService.findBy(dayTaskCriteria);

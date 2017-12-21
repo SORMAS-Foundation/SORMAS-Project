@@ -1,7 +1,5 @@
 package de.symeda.sormas.backend.task;
 
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -14,7 +12,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.task.DashboardTaskDto;
+import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRole;
@@ -104,37 +102,6 @@ public class TaskService extends AbstractAdoService<Task> {
 		return resultList;	
 	}
 
-	public List<DashboardTaskDto> getAllByUserForDashboard(TaskStatus taskStatus, Date from, Date to, User user) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardTaskDto> cq = cb.createQuery(DashboardTaskDto.class);
-		Root<Task> task = cq.from(getElementClass());
-		
-		TaskCriteria taskCriteria = new TaskCriteria().assigneeUserEquals(user);
-		if (taskStatus != null) {
-			taskCriteria.taskStatusEquals(taskStatus);
-		}
-		if (from != null || to != null) {
-			taskCriteria.statusChangeDateBetween(from, to);
-		}
-		
-		Predicate filter = buildCriteriaFilter(taskCriteria, cb, task);
-		
-		List<DashboardTaskDto> result;
-		if (filter != null) {
-			cq.where(filter);
-			cq.multiselect(
-					task.get(Task.PRIORITY),
-					task.get(Task.TASK_STATUS)
-			);
-			
-			result = em.createQuery(cq).getResultList();
-		} else {
-			result = Collections.emptyList();
-		}
-		
-		return result;
-	}
-
 	public Predicate buildCriteriaFilter(TaskCriteria taskCriteria, CriteriaBuilder cb, Root<Task> from) {
 		Predicate filter = null;
 		if (taskCriteria.getTaskStatuses() != null && taskCriteria.getTaskStatuses().length > 0) {
@@ -152,19 +119,21 @@ public class TaskService extends AbstractAdoService<Task> {
 			filter = and(cb, filter, cb.equal(from.get(Task.TASK_TYPE), taskCriteria.getTaskType()));
 		}
 		if (taskCriteria.getAssigneeUser() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Task.ASSIGNEE_USER), taskCriteria.getAssigneeUser()));
+			filter = and(cb, filter, cb.equal(from.join(Task.ASSIGNEE_USER, JoinType.LEFT).get(User.UUID), taskCriteria.getAssigneeUser().getUuid()));
 		}
 		if (taskCriteria.getCaze() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Task.CAZE), taskCriteria.getCaze()));
+			filter = and(cb, filter, cb.equal(from.join(Task.CAZE, JoinType.LEFT).get(User.UUID), taskCriteria.getCaze().getUuid()));
 		}
 		if (taskCriteria.getContact() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Task.CONTACT), taskCriteria.getContact()));
+			filter = and(cb, filter, cb.equal(from.join(Task.CONTACT, JoinType.LEFT).get(User.UUID), taskCriteria.getContact().getUuid()));
 		}
 		if (taskCriteria.getContactPerson() != null) {
-			filter = and(cb, filter, cb.equal(from.join(Task.CONTACT, JoinType.LEFT).get(Contact.PERSON), taskCriteria.getContactPerson()));
+			filter = and(cb, filter, cb.equal(
+					from.join(Task.CONTACT, JoinType.LEFT).join(Contact.PERSON, JoinType.LEFT).get(User.UUID),
+					taskCriteria.getContactPerson().getUuid()));
 		}
 		if (taskCriteria.getEvent() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Task.EVENT), taskCriteria.getEvent()));
+			filter = and(cb, filter, cb.equal(from.join(Task.EVENT, JoinType.LEFT).get(User.UUID), taskCriteria.getEvent().getUuid()));
 		}
 		if (taskCriteria.getDueDateFrom() != null && taskCriteria.getDueDateTo() != null) {
 			filter = cb.and(filter, cb.greaterThanOrEqualTo(from.get(Task.DUE_DATE), taskCriteria.getDueDateFrom()));

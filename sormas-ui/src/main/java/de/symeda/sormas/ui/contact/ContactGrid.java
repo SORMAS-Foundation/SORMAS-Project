@@ -63,7 +63,7 @@ public class ContactGrid extends Grid {
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				ContactIndexDto contactIndexDto = (ContactIndexDto)itemId;
 				return String.format(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, NUMBER_OF_PENDING_TASKS + "Format"), 
-						FacadeProvider.getTaskFacade().getPendingTaskCountByContact(contactIndexDto));
+						FacadeProvider.getTaskFacade().getPendingTaskCountByContact(contactIndexDto.toReference()));
 			}
 			@Override
 			public Class<String> getType() {

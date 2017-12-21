@@ -18,7 +18,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedAttribute;
-import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
@@ -180,9 +180,14 @@ public class User extends AbstractDomainObject {
 	public void setAssociatedOfficer(User associatedOfficer) {
 		this.associatedOfficer = associatedOfficer;
 	}
+	
 	@Override
 	public String toString() {
-		return UserDto.buildCaption(firstName, lastName, userRoles);
+		return UserReferenceDto.buildCaption(getFirstName(), getLastName(), getUserRoles());
+	}
+	
+	public UserReferenceDto toReference() {
+		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles());
 	}
 	
 	@Transient

@@ -22,6 +22,7 @@ import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportSummaryDto;
 import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -35,7 +36,6 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.task.Task;
-import de.symeda.sormas.backend.task.TaskCriteria;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -259,7 +259,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			} else {
 				TaskCriteria pendingUserTaskCriteria = new TaskCriteria()
 						.taskTypeEquals(TaskType.WEEKLY_REPORT_GENERATION)
-						.assigneeUserEquals(user)
+						.assigneeUserEquals(user.toReference())
 						.taskStatusEquals(TaskStatus.PENDING);
 				List<Task> existingTasks = taskService.findBy(pendingUserTaskCriteria);
 				

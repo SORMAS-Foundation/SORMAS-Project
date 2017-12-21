@@ -42,6 +42,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -82,7 +83,6 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
-import de.symeda.sormas.backend.task.TaskCriteria;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -163,7 +163,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Join<Case, User> surveillanceOfficer = caze.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
 
-		cq.multiselect(caze.get(Case.CREATION_DATE), caze.get(Case.CHANGE_DATE), caze.get(Case.UUID), 
+		cq.multiselect(caze.get(Case.UUID), 
 				caze.get(Case.EPID_NUMBER), person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME),
 				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), caze.get(Case.CASE_CLASSIFICATION),
 				caze.get(Case.INVESTIGATION_STATUS), person.get(Person.PRESENT_CONDITION),
@@ -364,7 +364,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Sample sample : samples) {
 			sampleService.delete(sample);
 		}
-		List<Task> tasks = taskService.findBy(new TaskCriteria().cazeEquals(caze));
+		List<Task> tasks = taskService.findBy(new TaskCriteria().cazeEquals(caseRef));
 		for (Task task : tasks) {
 			taskService.delete(task);
 		}
@@ -486,10 +486,12 @@ public class CaseFacadeEjb implements CaseFacade {
 	 */
 	public void updateCaseInvestigationProcess(Case caze) {
 
+		CaseReferenceDto caseRef = caze.toReference();
+		
 		// any pending case investigation task?
 		long pendingCount = taskService.getCount(new TaskCriteria()
 				.taskTypeEquals(TaskType.CASE_INVESTIGATION)
-				.cazeEquals(caze)
+				.cazeEquals(caseRef)
 				.taskStatusEquals(TaskStatus.PENDING));
 
 		if (pendingCount > 0) {
@@ -502,7 +504,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			// get "case investigation" task created last
 			List<Task> cazeTasks = taskService.findBy(new TaskCriteria()
 					.taskTypeEquals(TaskType.CASE_INVESTIGATION)
-					.cazeEquals(caze));
+					.cazeEquals(caseRef));
 
 			if (cazeTasks.isEmpty()) {
 				// no tasks at all -> create

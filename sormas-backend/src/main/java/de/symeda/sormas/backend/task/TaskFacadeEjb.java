@@ -8,37 +8,51 @@ import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.task.DashboardTaskDto;
+import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
+import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "TaskFacade")
 public class TaskFacadeEjb implements TaskFacade {
+	
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	protected EntityManager em;
 	
 	@EJB
 	private TaskService taskService;
@@ -201,28 +215,66 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 	
 	@Override
+	public List<TaskIndexDto> getIndexList(String userUuid, TaskCriteria taskCriteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<TaskIndexDto> cq = cb.createQuery(TaskIndexDto.class);
+		Root<Task> task = cq.from(Task.class);
+		Join<Task, Case> caze = task.join(Task.CAZE, JoinType.LEFT);
+		Join<Case, Person> cazePerson = caze.join(Case.PERSON, JoinType.LEFT);
+		Join<Task, Event> event = task.join(Task.EVENT, JoinType.LEFT);
+		Join<Task, Contact> contact = task.join(Task.CONTACT, JoinType.LEFT);
+		Join<Contact, Person> contactPerson = contact.join(Contact.PERSON, JoinType.LEFT);
+		Join<Contact, Person> contactCasePerson = contact.join(Contact.CAZE, JoinType.LEFT).join(Case.PERSON, JoinType.LEFT);
+		Join<Task, User> creator = task.join(Task.CREATOR_USER, JoinType.LEFT);
+		Join<Task, User> assignee = task.join(Task.ASSIGNEE_USER, JoinType.LEFT);
+
+		cq.multiselect(task.get(Task.UUID), task.get(Task.TASK_CONTEXT), 
+				caze.get(Case.UUID), cazePerson.get(Person.FIRST_NAME), cazePerson.get(Person.LAST_NAME),
+				event.get(Event.UUID), event.get(Event.DISEASE), event.get(Event.DISEASE_DETAILS), event.get(Event.EVENT_TYPE), event.get(Event.EVENT_DATE),
+				contact.get(Contact.UUID), contactPerson.get(Person.FIRST_NAME), contactPerson.get(Person.LAST_NAME),
+				contactCasePerson.get(Person.FIRST_NAME), contactCasePerson.get(Person.LAST_NAME),
+				task.get(Task.TASK_TYPE), task.get(Task.PRIORITY), 
+				task.get(Task.DUE_DATE), task.get(Task.SUGGESTED_START), task.get(Task.TASK_STATUS),
+				creator.get(User.UUID), creator.get(User.FIRST_NAME), creator.get(User.LAST_NAME), task.get(Task.CREATOR_COMMENT),
+				assignee.get(User.UUID), assignee.get(User.FIRST_NAME), assignee.get(User.LAST_NAME), task.get(Task.ASSIGNEE_REPLY)
+				);
+			
+		User user = userService.getByUuid(userUuid);		
+		Predicate filter = taskService.createUserFilter(cb, cq, task, user);
+
+		if (taskCriteria != null) {
+			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, cb, task);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		}
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		List<TaskIndexDto> resultList = em.createQuery(cq).getResultList();
+		return resultList;
+	}
+	
+	@Override
 	public List<TaskDto> getAllByCase(CaseReferenceDto caseRef) {
 		if(caseRef == null) {
 			return Collections.emptyList();
 		}
 
-		Case caze = caseService.getByUuid(caseRef.getUuid());
-		
-		return taskService.findBy(new TaskCriteria().cazeEquals(caze))
+		return taskService.findBy(new TaskCriteria().cazeEquals(caseRef))
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<TaskDto> getAllByContact(ContactReferenceDto contactRef) {
 		if(contactRef == null) {
 			return Collections.emptyList();
 		}
 
-		Contact contact = contactService.getByUuid(contactRef.getUuid());
-		
-		return taskService.findBy(new TaskCriteria().contactEquals(contact))
+		return taskService.findBy(new TaskCriteria().contactEquals(contactRef))
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
@@ -234,9 +286,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		Event event = eventService.getByUuid(eventRef.getUuid());
-		
-		return taskService.findBy(new TaskCriteria().eventEquals(event))
+		return taskService.findBy(new TaskCriteria().eventEquals(eventRef))
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
@@ -251,36 +301,12 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public List<TaskDto> getAllPendingByCase(CaseDataDto caseDataDto) {
-		if(caseDataDto == null) {
+	public List<TaskDto> getAllPendingByCase(CaseReferenceDto caseRef) {
+		if (caseRef == null) {
 			return Collections.emptyList();
 		}
 		
-		Case caze = caseService.getByUuid(caseDataDto.getUuid());
-		
-		if(caze == null) {
-			return Collections.emptyList();
-		}
-		
-		return taskService.findBy(new TaskCriteria().cazeEquals(caze).taskStatusEquals(TaskStatus.PENDING))
-				.stream()
-				.map(c -> toDto(c))
-				.collect(Collectors.toList());
-	}
-	
-	@Override
-	public List<TaskDto> getAllPendingByContact(ContactIndexDto contactDto) {
-		if(contactDto == null) {
-			return Collections.emptyList();
-		}
-		
-		Contact contact = contactService.getByUuid(contactDto.getUuid());
-		
-		if(contact == null) {
-			return Collections.emptyList();
-		}
-		
-		return taskService.findBy(new TaskCriteria().contactEquals(contact).taskStatusEquals(TaskStatus.PENDING))
+		return taskService.findBy(new TaskCriteria().cazeEquals(caseRef).taskStatusEquals(TaskStatus.PENDING))
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
@@ -288,61 +314,67 @@ public class TaskFacadeEjb implements TaskFacade {
 	
 	@Override
 	public List<DashboardTaskDto> getAllByUserForDashboard(TaskStatus taskStatus, Date from, Date to, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DashboardTaskDto> cq = cb.createQuery(DashboardTaskDto.class);
+		Root<Task> task = cq.from(Task.class);
 		
-		return taskService.getAllByUserForDashboard(taskStatus, from, to, user);
+		TaskCriteria taskCriteria = new TaskCriteria().assigneeUserEquals(new UserReferenceDto(userUuid));
+		if (taskStatus != null) {
+			taskCriteria.taskStatusEquals(taskStatus);
+		}
+		if (from != null || to != null) {
+			taskCriteria.statusChangeDateBetween(from, to);
+		}
+		
+		Predicate filter = taskService.buildCriteriaFilter(taskCriteria, cb, task);
+		
+		List<DashboardTaskDto> result;
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(
+					task.get(Task.PRIORITY),
+					task.get(Task.TASK_STATUS)
+			);
+			
+			result = em.createQuery(cq).getResultList();
+		} else {
+			result = Collections.emptyList();
+		}
+		
+		return result;
 	}
 	
 	@Override
-	public long getPendingTaskCountByCase(CaseReferenceDto caseDto) {
-		if(caseDto == null) {
+	public long getPendingTaskCountByCase(CaseReferenceDto caseRef) {
+		if(caseRef == null) {
 			return 0;
 		}
 		
-		Case caze = caseService.getByUuid(caseDto.getUuid());
-		
-		if(caze == null) {
-			return 0;
-		}
-		
-		return taskService.getCount(new TaskCriteria().cazeEquals(caze).taskStatusEquals(TaskStatus.PENDING));
+		return taskService.getCount(new TaskCriteria().cazeEquals(caseRef).taskStatusEquals(TaskStatus.PENDING));
 	}
 	
 	@Override
-	public long getPendingTaskCountByContact(ContactIndexDto contactDto) {
-		if(contactDto == null) {
+	public long getPendingTaskCountByContact(ContactReferenceDto contactRef) {
+		if(contactRef == null) {
 			return 0;
 		}
 		
-		Contact contact = contactService.getByUuid(contactDto.getUuid());
-		
-		if(contact == null) {
-			return 0;
-		}
-		
-		return taskService.getCount(new TaskCriteria().contactEquals(contact).taskStatusEquals(TaskStatus.PENDING));
+		return taskService.getCount(new TaskCriteria().contactEquals(contactRef).taskStatusEquals(TaskStatus.PENDING));
 	}
 	
 	@Override
-	public long getPendingTaskCountByEvent(EventIndexDto eventDto) {
-		if(eventDto == null) {
+	public long getPendingTaskCountByEvent(EventReferenceDto eventRef) {
+		if(eventRef == null) {
 			return 0;
 		}
 		
-		Event event = eventService.getByUuid(eventDto.getUuid());
-		
-		if(event == null) {
-			return 0;
-		}
-		
-		return taskService.getCount(new TaskCriteria().eventEquals(event).taskStatusEquals(TaskStatus.PENDING));
+		return taskService.getCount(new TaskCriteria().eventEquals(eventRef).taskStatusEquals(TaskStatus.PENDING));
 	}
 	
 	@Override
 	public long getPendingTaskCount(String userUuid) {
-		// TODO cache...
-		User user = userService.getByUuid(userUuid);
-		return taskService.getCount(new TaskCriteria().taskStatusEquals(TaskStatus.PENDING).assigneeUserEquals(user));
+		return taskService.getCount(new TaskCriteria().taskStatusEquals(TaskStatus.PENDING).assigneeUserEquals(new UserReferenceDto(userUuid)));
 	}
 
 	@Override

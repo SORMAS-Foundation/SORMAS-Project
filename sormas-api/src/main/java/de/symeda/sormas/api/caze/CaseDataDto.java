@@ -14,7 +14,6 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -362,11 +361,7 @@ public class CaseDataDto extends EntityDto {
 	}
 	
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(getUuid());
-	}
-	
-	public static String buildCaption(String uuid, String firstName, String lastName) {
-		return firstName + " " + lastName != null ? lastName.toUpperCase() : "" + " (" + DataHelper.getShortUuid(uuid) + ")";
+		return new CaseReferenceDto(getUuid(), CaseReferenceDto.buildCaption(getUuid(), getPerson().getCaption()));
 	}
 
 }

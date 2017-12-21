@@ -1,8 +1,5 @@
 package de.symeda.sormas.ui.task;
 
-import java.util.Collections;
-import java.util.List;
-
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
@@ -16,10 +13,10 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskHelper;
+import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -35,25 +32,6 @@ public class TaskController {
 
 	public TaskController() {
 
-	}
-
-	public List<TaskDto> getAllTasks() {
-		UserDto user = LoginHelper.getCurrentUser();
-		return FacadeProvider.getTaskFacade().getAllAfter(null, user.getUuid());
-	}
-
-	public List<TaskDto> getTasksByEntity(TaskContext context, ReferenceDto entityRef) {
-		switch(context) {
-		case CASE:
-			return FacadeProvider.getTaskFacade().getAllByCase((CaseReferenceDto) entityRef);
-		case CONTACT:
-			return FacadeProvider.getTaskFacade().getAllByContact((ContactReferenceDto) entityRef);
-		case EVENT:
-			return FacadeProvider.getTaskFacade().getAllByEvent((EventReferenceDto) entityRef);
-		case GENERAL:
-			return getAllTasks();
-		}
-		return Collections.emptyList();
 	}
 
 	public void create(TaskContext context, ReferenceDto entityRef, TaskGrid grid) {
@@ -97,7 +75,7 @@ public class TaskController {
 		VaadinUiUtil.showModalPopupWindow(createView, "Create new task");
 	}
 
-	public void edit(TaskDto dto, TaskGrid grid) {
+	public void edit(TaskIndexDto dto, TaskGrid grid) {
 		// get fresh data
 		TaskDto newDto = FacadeProvider.getTaskFacade().getByUuid(dto.getUuid());
 
@@ -130,7 +108,7 @@ public class TaskController {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getTaskFacade().deleteTask(dto, LoginHelper.getCurrentUserAsReference().getUuid());
+					FacadeProvider.getTaskFacade().deleteTask(newDto, LoginHelper.getCurrentUserAsReference().getUuid());
 					UI.getCurrent().removeWindow(popupWindow);
 					grid.reload();
 				}
