@@ -169,7 +169,6 @@ public class SampleIndexDto implements Serializable {
 	}
 	
 	public SampleReferenceDto toReference() {
-		return new SampleReferenceDto(uuid);
+		return new SampleReferenceDto(uuid, getSampleMaterial(), getAssociatedCase().getUuid());
 	}
-
 }

@@ -224,6 +224,5 @@ public class SampleDto extends EntityDto {
 	
 	public SampleReferenceDto toReference() {
 		return new SampleReferenceDto(getUuid());
-	}
-	
+	}	
 }

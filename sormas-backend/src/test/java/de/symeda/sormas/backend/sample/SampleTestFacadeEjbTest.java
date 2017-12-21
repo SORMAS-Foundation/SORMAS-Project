@@ -98,7 +98,7 @@ public class SampleTestFacadeEjbTest extends BaseBeanTest {
 	}
 
 	@Test
-	public void testSampleIndexListCreation() {
+	public void testGetIndexList() {
 		SampleFacade sampleFacade = getBean(SampleFacadeEjb.class);
 
 		TestDataCreator creator = createTestDataCreator();

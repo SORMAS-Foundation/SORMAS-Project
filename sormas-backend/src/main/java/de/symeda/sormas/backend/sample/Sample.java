@@ -16,10 +16,10 @@ import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
@@ -257,9 +257,13 @@ public class Sample extends AbstractDomainObject {
 	
 	@Override
 	public String toString() {
-		String materialString = sampleMaterial == null ? "" : sampleMaterial.toString();
-		String sampleString = materialString.isEmpty() ? "Sample" : "sample";
-		return materialString + " " + sampleString + " for case " + DataHelper.getShortUuid(associatedCase.getUuid());
+		return SampleReferenceDto.buildCaption(getSampleMaterial(), 
+				getAssociatedCase() != null ? getAssociatedCase().getUuid() : null);
+	}
+	
+	public SampleReferenceDto toReference() {
+		return new SampleReferenceDto(getUuid(), getSampleMaterial(), 
+				getAssociatedCase() != null ? getAssociatedCase().getUuid() : null);
 	}
 	
 	public Double getReportLat() {

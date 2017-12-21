@@ -86,6 +86,21 @@ public class TaskFacadeEjbTest extends BaseBeanTest {
 		assertNull(taskFacade.getByUuid(task.getUuid()));
 	}
 	
+	@Test
+	public void testGetIndexList() {
+		TaskFacade taskFacade = getBean(TaskFacadeEjb.class);
+
+		TestDataCreator creator = createTestDataCreator();
+
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
+		TaskDto task = creator.createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, DateHelper.addDays(new Date(), 1), user.toReference());
+		
+		// Database should contain the created task
+		assertNotNull(taskFacade.getIndexList(user.getUuid(), null));
+	}
+	
 	private TestDataCreator createTestDataCreator() {
 		return new TestDataCreator(getBean(UserFacadeEjbLocal.class), getBean(PersonFacadeEjbLocal.class),
 				getBean(CaseFacadeEjbLocal.class), getBean(ContactFacadeEjbLocal.class), getBean(TaskFacadeEjb.class),
