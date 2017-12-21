@@ -13689,6 +13689,14 @@ div.v-layout.v-horizontal.v-widget {
 	border-color: #005A9C;
 }
 
+.sormas .v-textarea.v-readonly {
+	border: none;
+	padding: 0;
+	background: inherit;
+	color: inherit;
+	height: inherit;
+}
+
 .sormas .view-header {
 	border-bottom: 2px solid #CDD8EC;
 	border-bottom-width: 3px;

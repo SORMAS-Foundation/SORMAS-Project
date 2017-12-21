@@ -1,6 +1,17 @@
 package de.symeda.sormas.api.user;
 
-import static de.symeda.sormas.api.user.UserRole.*;
+import static de.symeda.sormas.api.user.UserRole.ADMIN;
+import static de.symeda.sormas.api.user.UserRole.CASE_OFFICER;
+import static de.symeda.sormas.api.user.UserRole.CASE_SUPERVISOR;
+import static de.symeda.sormas.api.user.UserRole.CONTACT_OFFICER;
+import static de.symeda.sormas.api.user.UserRole.CONTACT_SUPERVISOR;
+import static de.symeda.sormas.api.user.UserRole.INFORMANT;
+import static de.symeda.sormas.api.user.UserRole.LAB_USER;
+import static de.symeda.sormas.api.user.UserRole.NATIONAL_OBSERVER;
+import static de.symeda.sormas.api.user.UserRole.NATIONAL_USER;
+import static de.symeda.sormas.api.user.UserRole.RUMOR_MANAGER;
+import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
+import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,22 +20,6 @@ import java.util.Set;
 
 public enum UserRight {
 
-	USE_WEB(
-			ADMIN,
-			NATIONAL_USER,
-			NATIONAL_OBSERVER,
-			SURVEILLANCE_SUPERVISOR,
-			CASE_SUPERVISOR,
-			CONTACT_SUPERVISOR,
-			LAB_USER,
-			RUMOR_MANAGER
-	),
-	USE_MOBILE(
-			SURVEILLANCE_OFFICER,
-			CASE_OFFICER,
-			CONTACT_OFFICER,
-			INFORMANT
-	),
 	CASE_CREATE(
 			ADMIN,
 			NATIONAL_USER,

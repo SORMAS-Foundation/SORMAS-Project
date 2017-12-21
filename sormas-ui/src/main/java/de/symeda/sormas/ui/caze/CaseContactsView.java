@@ -69,6 +69,7 @@ public class CaseContactsView extends AbstractCaseView {
 	    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
 	        topLayout.addComponent(statusButton);
         }
+        topLayout.setExpandRatio(topLayout.getComponent(topLayout.getComponentCount()-1), 1);
 
         if (LoginHelper.hasUserRight(UserRight.CONTACT_CREATE)) {
 	        newButton = new Button("New contact");

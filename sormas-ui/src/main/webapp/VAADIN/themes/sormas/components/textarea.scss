@@ -6,6 +6,14 @@
 	  &.v-required {
   	  	border-color: $v-selection-color;
 	  }
+	  
+      &.v-readonly {
+        border: none;
+        padding: 0;
+        background: inherit;
+        color: inherit;
+        height: inherit;
+      }
 	}
 
 }

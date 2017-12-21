@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.util;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
@@ -10,7 +12,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.component.LinearControlElementsLayout;
 import de.symeda.sormas.app.component.PropertyField;
 
 public abstract class FormTab extends DialogFragment implements FormFragment {
@@ -19,8 +20,8 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     protected UserRight editOrCreateUserRight;
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         manageActivityWriteRights(editOrCreateUserRight);
     }
@@ -67,10 +68,6 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         v.clearFocus();
     }
 
-    protected void activateField(View v) {
-        v.setEnabled(true);
-    }
-
     protected void reloadFragment() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.detach(this).attach(this).commit();
@@ -92,10 +89,6 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
     }
 
     private void setViewGroupAndChildrenReadOnly(ViewGroup viewGroup) {
-        // Control elements, such as filters, should never be read-only
-        if (viewGroup instanceof LinearControlElementsLayout) {
-            return;
-        }
 
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             View view = viewGroup.getChildAt(i);

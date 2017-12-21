@@ -26,15 +26,16 @@ public class LoginHelper {
 
     public static boolean login(String username, String password) throws UserRightsException {
 
-//    	if (!hasUserRight(UserRight.USE_WEB, username)) {
-//        	throw new UserRightsException("You are not allowed to use the SORMAS web application with your current user role. Please use the mobile application instead.");
-//        }
-    	
         if (username == null || username.isEmpty())
             return false;
         
         try {
 			VaadinServletService.getCurrentServletRequest().login(username, password);
+			// check user role
+			if (!VaadinServletService.getCurrentServletRequest().isUserInRole(UserRole._USER)) {
+				VaadinServletService.getCurrentServletRequest().logout();
+				throw new UserRightsException("Your user account does not have access to the web application.");
+			}
 		} catch (ServletException e) {
 			return false;
 		}

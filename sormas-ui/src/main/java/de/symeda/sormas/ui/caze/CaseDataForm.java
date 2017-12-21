@@ -206,11 +206,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					healthFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, NONE_HEALTH_FACILITY_DETAILS));
 				}
 				if (!detailsVisible) {
-					healthFacilityDetails.clear();
+					if (!healthFacilityDetails.isReadOnly()) {
+						healthFacilityDetails.clear();
+					}
 				}
 			} else {
 				healthFacilityDetails.setVisible(false);
-				healthFacilityDetails.clear();
+				if (!healthFacilityDetails.isReadOnly()) {
+					healthFacilityDetails.clear();
+				}
 			}			
 		});
 	}

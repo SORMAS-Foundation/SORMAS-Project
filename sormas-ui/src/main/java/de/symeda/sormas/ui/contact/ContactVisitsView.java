@@ -62,6 +62,8 @@ public class ContactVisitsView extends AbstractContactView {
     	});
     	personButton.setStyleName(ValoTheme.BUTTON_LINK);
         topLayout.addComponent(personButton);
+
+        topLayout.setExpandRatio(topLayout.getComponent(topLayout.getComponentCount()-1), 1);
         
     	if (LoginHelper.hasUserRight(UserRight.VISIT_CREATE)) {
 	        newButton = new Button("New visit");
@@ -73,7 +75,6 @@ public class ContactVisitsView extends AbstractContactView {
 	        });
 	        topLayout.addComponent(newButton);
 	        topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
-	        topLayout.setExpandRatio(newButton, 1);
     	}
     	
         topLayout.addStyleName(CssStyles.VSPACE_3);

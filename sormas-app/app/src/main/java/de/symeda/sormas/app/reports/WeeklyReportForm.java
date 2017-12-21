@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -50,6 +51,7 @@ import de.symeda.sormas.app.util.SyncCallback;
 
 /**
  * Created by Mate Strysewske on 08.09.2017.
+ * TODO actually this is not a form, but a component
  */
 public class WeeklyReportForm extends FormTab {
 
@@ -59,7 +61,9 @@ public class WeeklyReportForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.weekly_report_fragment_layout, container, false);
-        editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
+
+        // report button is bound to UserRight.WEEKLYREPORT_CREATE
+        editOrCreateUserRight = null;
 
         SormasApplication application = (SormasApplication) getActivity().getApplication();
         tracker = application.getDefaultTracker();
@@ -201,37 +205,41 @@ public class WeeklyReportForm extends FormTab {
                 binding.weeklyReportWeek.setValue(epiWeek.getWeek());
             }
         });
-        binding.weeklyReportConfirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                EpiWeek epiWeek = new EpiWeek((int) binding.weeklyReportYear.getValue(), (int) binding.weeklyReportWeek.getValue());
-                try {
-                    DatabaseHelper.getWeeklyReportDao().create(epiWeek);
 
-                    if (RetroProvider.isConnected()) {
-                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, WeeklyReportForm.this.getContext(), new SyncCallback() {
-                            @Override
-                            public void call(boolean syncFailed, String syncFailedMessage) {
-                                if (syncFailed) {
-                                    Snackbar.make(getActivity().findViewById(R.id.base_layout), getActivity().getString(R.string.snackbar_weekly_report_sync_confirmed), Snackbar.LENGTH_LONG).show();
-                                } else {
-                                    Snackbar.make(getActivity().findViewById(R.id.base_layout), getActivity().getString(R.string.snackbar_weekly_report_confirmed), Snackbar.LENGTH_LONG).show();
+        boolean canReport = ConfigProvider.getUser().hasUserRight(UserRight.WEEKLYREPORT_CREATE);
+        if (canReport) {
+            binding.weeklyReportConfirm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    EpiWeek epiWeek = new EpiWeek((int) binding.weeklyReportYear.getValue(), (int) binding.weeklyReportWeek.getValue());
+                    try {
+                        DatabaseHelper.getWeeklyReportDao().create(epiWeek);
+
+                        if (RetroProvider.isConnected()) {
+                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, WeeklyReportForm.this.getContext(), new SyncCallback() {
+                                @Override
+                                public void call(boolean syncFailed, String syncFailedMessage) {
+                                    if (syncFailed) {
+                                        Snackbar.make(getActivity().findViewById(R.id.base_layout), getActivity().getString(R.string.snackbar_weekly_report_sync_confirmed), Snackbar.LENGTH_LONG).show();
+                                    } else {
+                                        Snackbar.make(getActivity().findViewById(R.id.base_layout), getActivity().getString(R.string.snackbar_weekly_report_confirmed), Snackbar.LENGTH_LONG).show();
+                                    }
+                                    reloadFragment();
                                 }
-                                reloadFragment();
-                            }
-                        });
-                    } else {
-                        Snackbar.make(getActivity().findViewById(R.id.base_layout), getActivity().getString(R.string.snackbar_weekly_report_confirmed), Snackbar.LENGTH_LONG).show();
-                        reloadFragment();
+                            });
+                        } else {
+                            Snackbar.make(getActivity().findViewById(R.id.base_layout), getActivity().getString(R.string.snackbar_weekly_report_confirmed), Snackbar.LENGTH_LONG).show();
+                            reloadFragment();
+                        }
+                    } catch (DaoException e) {
+                        Log.e(getClass().getName(), "Error while trying to create weekly report", e);
+                        Log.e(getClass().getName(), "- root cause: ", ErrorReportingHelper.getRootCause(e));
+                        Snackbar.make(getActivity().findViewById(R.id.base_layout), getActivity().getString(R.string.snackbar_weekly_report_error), Snackbar.LENGTH_LONG).show();
+                        ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                     }
-                } catch (DaoException e) {
-                    Log.e(getClass().getName(), "Error while trying to create weekly report", e);
-                    Log.e(getClass().getName(), "- root cause: ", ErrorReportingHelper.getRootCause(e));
-                    Snackbar.make(getActivity().findViewById(R.id.base_layout), getActivity().getString(R.string.snackbar_weekly_report_error), Snackbar.LENGTH_LONG).show();
-                    ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                 }
-            }
-        });
+            });
+        }
     }
 
     private void addHeaderRow(User user) {
@@ -312,6 +320,10 @@ public class WeeklyReportForm extends FormTab {
         binding.reportTableLayout.setVisibility(View.VISIBLE);
         binding.weeklyReportNoReport.setVisibility(View.GONE);
         binding.weeklyReportNoData.setVisibility(View.GONE);
+
+        if (showButtons && !ConfigProvider.getUser().hasUserRight(UserRight.WEEKLYREPORT_CREATE)) {
+            showButtons = false;
+        }
         binding.weeklyReportAddMissing.setVisibility(showButtons ? View.VISIBLE : View.GONE);
         binding.weeklyReportConfirm.setVisibility(showButtons ? View.VISIBLE : View.GONE);
     }

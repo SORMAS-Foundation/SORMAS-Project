@@ -52,6 +52,7 @@
 			<url-pattern>/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
+			<!-- mapped in glassfish-web.xml -->
 			<role-name>USER</role-name>
 		</auth-constraint>
 	</security-constraint>

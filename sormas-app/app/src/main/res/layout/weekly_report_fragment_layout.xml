@@ -21,7 +21,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-            <de.symeda.sormas.app.component.LinearControlElementsLayout
+            <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -65,9 +65,9 @@
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"/>
 
-            </de.symeda.sormas.app.component.LinearControlElementsLayout>
+            </LinearLayout>
 
-            <de.symeda.sormas.app.component.LinearControlElementsLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -105,17 +105,7 @@
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"/>
 
-            </de.symeda.sormas.app.component.LinearControlElementsLayout>
-
-            <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:textAppearance="?android:attr/textAppearanceLarge"-->
-            <!--android:id="@+id/weekly_report_info"-->
-            <!--android:textColor="@android:color/tab_indicator_text"-->
-            <!--android:textSize="@dimen/abc_text_size_medium_material"-->
-            <!--android:paddingTop="15dp"-->
-            <!--android:paddingBottom="30dp"/>-->
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

@@ -96,10 +96,9 @@ public class LoginScreen extends CssLayout {
 	            showNotification(new Notification("Login failed",
 	                    "Please check your username and password and try again.",
 	                    Notification.Type.WARNING_MESSAGE));
-	            //username.focus();
 	        }
     	} catch (UserRightsException e) {
-    		showNotification(new Notification(e.getMessage(), Notification.Type.ERROR_MESSAGE));
+    		showNotification(new Notification("Login failed", e.getMessage(), Notification.Type.WARNING_MESSAGE));
     	}
     }
 
