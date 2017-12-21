@@ -2,7 +2,6 @@ package de.symeda.sormas.api.user;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 
 import de.symeda.sormas.api.I18nProperties;
@@ -144,9 +143,9 @@ public enum UserRole {
 					NATIONAL_USER, NATIONAL_OBSERVER
 					);
 		case NATIONAL_USER:
-			return Arrays.asList(ADMIN, LAB_USER);
+			return Arrays.asList(LAB_USER, ADMIN);
 		case NATIONAL_OBSERVER:
-			return Collections.emptyList();
+			return Arrays.asList(ADMIN);
 		case CASE_SUPERVISOR:
 		case CONTACT_SUPERVISOR:
 		case SURVEILLANCE_SUPERVISOR:
