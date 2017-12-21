@@ -39,8 +39,6 @@ public class CaseContactsView extends AbstractCaseView {
         setSizeFull();
 
         grid = new ContactGrid();
-//        grid.setColumns(ContactIndexDto.UUID, ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY, 
-//        		ContactIndexDto.LAST_CONTACT_DATE, ContactIndexDto.CONTACT_OFFICER, ContactGrid.ASSOCIATED_CASE);
 
         gridLayout = new VerticalLayout();
         gridLayout.addComponent(createTopBar());
@@ -65,8 +63,8 @@ public class CaseContactsView extends AbstractCaseView {
         
         for (ContactClassification status : ContactClassification.values()) {
 	    	Button statusButton = new Button(status.toString(), e -> {
-	    		grid.reload(getCaseRef());
 	    		grid.setClassificationFilter(status);
+	    		grid.reload();
 	    	});
 	    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
 	        topLayout.addComponent(statusButton);
@@ -114,7 +112,7 @@ public class CaseContactsView extends AbstractCaseView {
     }
 	
 	private void update() {
-    	grid.reload(getCaseRef());
+    	grid.setCaseFilter(getCaseRef());
 
     	CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 

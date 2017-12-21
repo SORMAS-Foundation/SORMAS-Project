@@ -18,8 +18,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -32,6 +34,8 @@ public class ContactGrid extends Grid {
 	public static final String NUMBER_OF_VISITS = "numberOfVisits";
 	public static final String NUMBER_OF_PENDING_TASKS = "numberOfPendingTasks";
 	public static final String DISEASE_SHORT = "diseaseShort";
+	
+	private final ContactCriteria contactCriteria = new ContactCriteria();
 	
 	public ContactGrid() {
 		setSizeFull();
@@ -102,15 +106,21 @@ public class ContactGrid extends Grid {
 		});	
 	}
 	
-
-    public void setDiseaseFilter(Disease disease) {
-		getContainer().removeContainerFilters(ContactIndexDto.CASE_DISEASE);
-		if (disease != null) {
-	    	Equal filter = new Equal(ContactIndexDto.CASE_DISEASE, disease);  
-	        getContainer().addContainerFilter(filter);
-		}
+	public void setCaseFilter(CaseReferenceDto caseRef) {
+		contactCriteria.caseEquals(caseRef);
+		reload();
 	}
 
+    public void setDiseaseFilter(Disease disease) {
+		contactCriteria.caseDieasesEquals(disease);
+		reload();
+	}
+
+    public void setReportedByFilter(UserRole reportingUserRole) {
+    	contactCriteria.reportingUserHasRole(reportingUserRole);
+    	reload();
+    }
+    
     public void setRegionFilter(String regionUuid) {
 		getContainer().removeContainerFilters(ContactIndexDto.CASE_REGION_UUID);
 		if (regionUuid != null) {
@@ -184,19 +194,11 @@ public class ContactGrid extends Grid {
     }
     
     public void reload() {
-    	List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexList(LoginHelper.getCurrentUserAsReference().getUuid(), null);
+    	List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexList(LoginHelper.getCurrentUserAsReference().getUuid(), contactCriteria);
    
     	getContainer().removeAllItems();
         getContainer().addAll(entries);  
     }
-    
-    public void reload(CaseReferenceDto caseRef) {
-    	List<ContactIndexDto> entries = FacadeProvider.getContactFacade().getIndexList(LoginHelper.getCurrentUserAsReference().getUuid(), caseRef);
-
-    	getContainer().removeAllItems();
-        getContainer().addAll(entries);    	
-    }
-  
 }
 
 

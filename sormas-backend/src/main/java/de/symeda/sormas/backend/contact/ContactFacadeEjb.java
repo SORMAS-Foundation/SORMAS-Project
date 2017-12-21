@@ -31,6 +31,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
@@ -46,6 +47,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.person.Person;
@@ -221,7 +223,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 	
 	@Override
-	public List<ContactIndexDto> getIndexList(String userUuid, CaseReferenceDto caseRef) {
+	public List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ContactIndexDto> cq = cb.createQuery(ContactIndexDto.class);
 		Root<Contact> contact = cq.from(Contact.class);
@@ -241,21 +243,17 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactOfficer.get(User.UUID));
 		
 		Predicate filter = null;
-		if (userUuid != null && caseRef == null) {
+		if (userUuid != null 
+				&& (contactCriteria == null || contactCriteria.getCaze() == null)) {
 			User user = userService.getByUuid(userUuid);
 			filter = contactService.createUserFilter(cb, cq, contact, user);
 		}
 		
-		if (caseRef != null) {
-			Case caze = caseService.getByReferenceDto(caseRef);
-			Predicate caseFilter = cb.equal(contact.get(Contact.CAZE), caze);
-			if (filter != null) {
-				filter = cb.and(filter, caseFilter);
-			} else {
-				filter = caseFilter;
-			}
+		if (contactCriteria != null) {
+			Predicate criteriaFilter = contactService.buildCriteriaFilter(contactCriteria, cb, contact);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
-		
+
 		if (filter != null) {
 			cq.where(filter);
 		}

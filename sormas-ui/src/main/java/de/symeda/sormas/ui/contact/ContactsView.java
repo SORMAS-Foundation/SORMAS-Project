@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.contact;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -174,6 +175,15 @@ public class ContactsView extends AbstractView {
         followUpStatusFilter.addItems((Object[])FollowUpStatus.values());
         followUpStatusFilter.addValueChangeListener(e -> grid.setFollowUpStatusFilter(((FollowUpStatus)e.getProperty().getValue())));
         filterLayout.addComponent(followUpStatusFilter);
+                
+        ComboBox reportedByFilter = new ComboBox();
+        reportedByFilter.setWidth(140, Unit.PIXELS);
+        reportedByFilter.setInputPrompt("Reported By");
+        reportedByFilter.addItems((Object[]) UserRole.values());
+        reportedByFilter.addValueChangeListener(e -> {
+        	grid.setReportedByFilter((UserRole) e.getProperty().getValue());
+        });
+        filterLayout.addComponent(reportedByFilter);
         
         TextField searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);

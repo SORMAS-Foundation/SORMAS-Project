@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DashboardEventDto;
+import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventIndexDto;
@@ -28,6 +29,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
@@ -166,7 +168,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 	
 	@Override
-	public List<EventIndexDto> getIndexList(String userUuid) {
+	public List<EventIndexDto> getIndexList(String userUuid, EventCriteria eventCriteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventIndexDto> cq = cb.createQuery(EventIndexDto.class);
 		Root<Event> event = cq.from(Event.class);
@@ -198,6 +200,11 @@ public class EventFacadeEjb implements EventFacade {
 		if (userUuid != null) {
 			User user = userService.getByUuid(userUuid);
 			filter = eventService.createUserFilter(cb, cq, event, user);
+		}
+		
+		if (eventCriteria != null) {
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 		
 		if (filter != null) {

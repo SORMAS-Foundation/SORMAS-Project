@@ -32,5 +32,5 @@ public interface EventFacade {
 
 	void deleteEvent(EventReferenceDto eventRef, String userUuid);
 	
-	List<EventIndexDto> getIndexList(String userUuid);
+	List<EventIndexDto> getIndexList(String userUuid, EventCriteria eventCriteria);
 }

@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.events;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -14,6 +15,7 @@ import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -94,45 +96,15 @@ public class EventsView extends AbstractView {
 		diseaseFilter.addItems((Object[])Disease.values());
 		diseaseFilter.addValueChangeListener(e -> grid.setDiseaseFilter(((Disease)e.getProperty().getValue())));
 		filterLayout.addComponent(diseaseFilter);
-		
-		// TODO
-//        UserDto user = LoginHelper.getCurrentUser();
-//
-//        ComboBox regionFilter = new ComboBox();
-//        if (user.getRegion() == null) {
-//            regionFilter.setWidth(140, Unit.PIXELS);
-//            regionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.REGION));
-//            regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
-//            regionFilter.addValueChangeListener(e -> {
-//            	RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
-//            	grid.setRegionFilter(region);
-//            });
-//            filterLayout.addComponent(regionFilter);
-//        }
-//
-//        ComboBox districtFilter = new ComboBox();
-//        districtFilter.setWidth(140, Unit.PIXELS);
-//        districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT));
-//        districtFilter.setDescription("Select a district in the state");
-//        districtFilter.addValueChangeListener(e->grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue())));
-//
-//        if (user.getRegion() != null) {
-//            districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
-//            districtFilter.setEnabled(true);
-//        } else {
-//            regionFilter.addValueChangeListener(e -> {
-//            	RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
-//            	districtFilter.removeAllItems();
-//            	if (region != null) {
-//            		districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(region.getUuid()));
-//                	districtFilter.setEnabled(true);
-//            	} else {
-//                	districtFilter.setEnabled(false);
-//            	}
-//            });
-//            districtFilter.setEnabled(false);
-//        }
-//        filterLayout.addComponent(districtFilter);
+        
+        ComboBox reportedByFilter = new ComboBox();
+        reportedByFilter.setWidth(140, Unit.PIXELS);
+        reportedByFilter.setInputPrompt("Reported By");
+        reportedByFilter.addItems((Object[]) UserRole.values());
+        reportedByFilter.addValueChangeListener(e -> {
+        	grid.setReportedByFilter((UserRole) e.getProperty().getValue());
+        });
+        filterLayout.addComponent(reportedByFilter);
         
 		return filterLayout;
 	}

@@ -16,10 +16,14 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.event.DashboardEventDto;
+import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
@@ -187,5 +191,25 @@ public class EventService extends AbstractAdoService<Event> {
 		dateFilter = cb.or(dateFilter, cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		return dateFilter;
+	}
+	
+	
+	public Predicate buildCriteriaFilter(EventCriteria eventCriteria, CriteriaBuilder cb, Root<Event> from) {
+		Predicate filter = null;
+		if (eventCriteria.getReportingUserRole() != null) {
+			filter = and(cb, filter, cb.isMember(
+					eventCriteria.getReportingUserRole(), 
+					from.join(Event.REPORTING_USER, JoinType.LEFT).get(User.USER_ROLES)));
+		}
+		if (eventCriteria.getDisease() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Event.DISEASE), eventCriteria.getDisease()));
+		}
+		if (eventCriteria.getEventStatus() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Event.EVENT_STATUS), eventCriteria.getEventStatus()));
+		}
+		if (eventCriteria.getEventType() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Event.EVENT_TYPE), eventCriteria.getEventType()));
+		}
+		return filter;
 	}
 }

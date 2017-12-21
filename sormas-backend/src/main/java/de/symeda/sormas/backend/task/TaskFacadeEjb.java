@@ -239,9 +239,13 @@ public class TaskFacadeEjb implements TaskFacade {
 				creator.get(User.UUID), creator.get(User.FIRST_NAME), creator.get(User.LAST_NAME), task.get(Task.CREATOR_COMMENT),
 				assignee.get(User.UUID), assignee.get(User.FIRST_NAME), assignee.get(User.LAST_NAME), task.get(Task.ASSIGNEE_REPLY)
 				);
-			
-		User user = userService.getByUuid(userUuid);		
-		Predicate filter = taskService.createUserFilter(cb, cq, task, user);
+		
+		Predicate filter = null;
+		if (userUuid != null 
+				&& (taskCriteria == null || !taskCriteria.hasContextCriteria())) {
+			User user = userService.getByUuid(userUuid);		
+			filter = taskService.createUserFilter(cb, cq, task, user);
+		}
 
 		if (taskCriteria != null) {
 			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, cb, task);

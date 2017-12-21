@@ -40,5 +40,5 @@ public interface ContactFacade {
 	
 	void deleteContact(ContactReferenceDto contactRef, String userUuid);
 	
-	List<ContactIndexDto> getIndexList(String userUuid, CaseReferenceDto caseRef);
+	List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria);
 }

@@ -26,7 +26,7 @@ public class ReportsPagerAdapter extends FragmentStatePagerAdapter {
             case WEEKLY_REPORT:
                 frag = new WeeklyReportForm();
                 Bundle params = new Bundle();
-                params.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.WEEKLYREPORT_EDIT);
+                params.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.WEEKLYREPORT_CREATE);
                 frag.setArguments(params);
                 break;
         }

@@ -3,10 +3,8 @@ package de.symeda.sormas.ui.events;
 import java.util.List;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.MethodProperty;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.ui.Grid;
@@ -15,10 +13,11 @@ import com.vaadin.ui.renderers.DateRenderer;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -32,6 +31,8 @@ public class EventGrid extends Grid {
 	public static final String PENDING_EVENT_TASKS = "pendingEventTasks";
 	public static final String DISEASE_SHORT = "diseaseShort";
 
+	private final EventCriteria eventCriteria = new EventCriteria();
+	
 	public EventGrid() {
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);
@@ -82,12 +83,12 @@ public class EventGrid extends Grid {
 			}
         });
 		
-		setColumns(EventDto.UUID, EventDto.EVENT_TYPE, DISEASE_SHORT, EventDto.EVENT_STATUS,
-				EventDto.EVENT_DATE, EventDto.EVENT_DESC, EventDto.EVENT_LOCATION, INFORMATION_SOURCE, EventDto.REPORT_DATE_TIME, PENDING_EVENT_TASKS);
+		setColumns(EventIndexDto.UUID, EventIndexDto.EVENT_TYPE, DISEASE_SHORT, EventIndexDto.EVENT_STATUS,
+				EventIndexDto.EVENT_DATE, EventIndexDto.EVENT_DESC, EventIndexDto.EVENT_LOCATION, INFORMATION_SOURCE, EventIndexDto.REPORT_DATE_TIME, PENDING_EVENT_TASKS);
 		
-		getColumn(EventDto.UUID).setRenderer(new UuidRenderer());
-		getColumn(EventDto.EVENT_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
-		getColumn(EventDto.REPORT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
+		getColumn(EventIndexDto.UUID).setRenderer(new UuidRenderer());
+		getColumn(EventIndexDto.EVENT_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
+		getColumn(EventIndexDto.REPORT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
 		
 		for(Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
@@ -99,29 +100,25 @@ public class EventGrid extends Grid {
 	}
 	
 	public void setStatusFilter(EventStatus eventStatus) {
-		getContainer().removeContainerFilters(EventIndexDto.EVENT_STATUS);
-		if(eventStatus != null) {
-			Equal filter = new Equal(EventIndexDto.EVENT_STATUS, eventStatus);
-			getContainer().addContainerFilter(filter);
-		}
+		eventCriteria.eventStatusEquals(eventStatus);
+		reload();
 	}
 	
 	public void setEventTypeFilter(EventType eventType) {
-		getContainer().removeContainerFilters(EventIndexDto.EVENT_TYPE);
-		if(eventType != null) {
-			Equal filter = new Equal(EventIndexDto.EVENT_TYPE, eventType);
-			getContainer().addContainerFilter(filter);
-		}
+		eventCriteria.eventTypeEquals(eventType);
+		reload();
 	}
 	
 	public void setDiseaseFilter(Disease disease) {
-		getContainer().removeContainerFilters(EventIndexDto.DISEASE);
-		if(disease != null) {
-			Equal filter = new Equal(EventIndexDto.DISEASE, disease);
-			getContainer().addContainerFilter(filter);
-		}
+		eventCriteria.diseaseEquals(disease);
+		reload();
 	}
 	
+    public void setReportedByFilter(UserRole reportingUserRole) {
+    	eventCriteria.reportingUserHasRole(reportingUserRole);
+    	reload();
+    }
+    
 	@SuppressWarnings("unchecked")
 	private BeanItemContainer<EventIndexDto> getContainer() {
 		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
@@ -129,28 +126,8 @@ public class EventGrid extends Grid {
 	}
 	
 	public void reload() {
-		List<EventIndexDto> events = FacadeProvider.getEventFacade().getIndexList(LoginHelper.getCurrentUserAsReference().getUuid());
+		List<EventIndexDto> events = FacadeProvider.getEventFacade().getIndexList(LoginHelper.getCurrentUserAsReference().getUuid(), eventCriteria);
 		getContainer().removeAllItems();
 		getContainer().addAll(events);
 	}
-	
-	public void refresh(EventIndexDto event) {
-        // We avoid updating the whole table through the backend here so we can
-        // get a partial update for the grid
-		BeanItem<EventIndexDto> item = getContainer().getItem(event);
-		if(item != null) {
-            // Updated product
-			@SuppressWarnings("rawtypes")
-			MethodProperty p = (MethodProperty) item.getItemProperty(EventIndexDto.UUID);
-			p.fireValueChange();
-		} else {
-            // New product
-			getContainer().addBean(event);
-		}
-	}
-	
-	public void remove(EventIndexDto event) {
-		getContainer().removeItem(event);
-	}
-
 }
