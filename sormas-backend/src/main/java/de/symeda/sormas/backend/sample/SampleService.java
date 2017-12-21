@@ -132,11 +132,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 		Path<Case> casePath = samplePath.get(Sample.ASSOCIATED_CASE);
 		
 		Predicate caseFilter = caseService.createUserFilter(cb, cq, (From<Case,Case>)casePath, user);
-		if (filter != null) {
-			filter = cb.or(filter, caseFilter);
-		} else {
-			filter = caseFilter;
-		}
+		filter = or(cb, filter, caseFilter);
 
 		return filter;
 	}
@@ -150,12 +146,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 		// lab users can see samples assigned to their laboratory
 		if (user.getUserRoles().contains(UserRole.LAB_USER)) {
 			if(user.getLaboratory() != null) {
-				if (filter != null) {
-					filter = cb.or(filter, cb.equal(samplePath.get(Sample.LAB), user.getLaboratory()));
-				} else {
-					filter = cb.equal(samplePath.get(Sample.LAB), user.getLaboratory());
-				}
-			}
+				filter = or(cb, filter, cb.equal(samplePath.get(Sample.LAB), user.getLaboratory()));			}
 		}
 		
 		return filter;
