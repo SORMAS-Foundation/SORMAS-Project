@@ -87,7 +87,15 @@ public class LocationDto extends EntityDto {
 	
 	@Override
 	public String toString() {
-		return buildCaption(region != null ? region.getCaption() : null, 
+		return LocationReferenceDto.buildCaption(
+				region != null ? region.getCaption() : null, 
+				district != null ? district.getCaption() : null, 
+				community != null ? community.getCaption() : null, city, address);
+	}
+	
+	public LocationReferenceDto toReference() {
+		return new LocationReferenceDto(getUuid(), 
+				region != null ? region.getCaption() : null, 
 				district != null ? district.getCaption() : null, 
 				community != null ? community.getCaption() : null, city, address);
 	}
@@ -103,12 +111,4 @@ public class LocationDto extends EntityDto {
 	public void setLatLonAccuracy(Float latLonAccuracy) {
 		this.latLonAccuracy = latLonAccuracy;
 	}
-	
-	public static String buildCaption(String regionName, String districtName, String communityName, String city, String address) {
-		return regionName + (regionName != null && districtName != null ? ", " : "") + districtName +
-				(communityName != null && (regionName !=  null || districtName != null) ? ", " : "") + communityName + 
-				(regionName != null || districtName != null || communityName != null ? " - " : "") + city + 
-				(regionName != null || districtName != null || communityName != null || city != null ? " (" + address + ")" : address);
-	}
-	
 }
