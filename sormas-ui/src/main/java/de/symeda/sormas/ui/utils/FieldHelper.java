@@ -251,6 +251,13 @@ public final class FieldHelper {
 		select.setReadOnly(readOnly);
 	}
 	
+	public static void removeItems(AbstractSelect select) {
+		boolean readOnly = select.isReadOnly();
+		select.setReadOnly(false);
+		select.removeAllItems();
+		select.setReadOnly(readOnly);
+	}
+	
 	public static void addSoftRequiredStyle(Field<?> ...fields) {
 		for (Field<?> field : fields) {
 			if (!field.getStyleName().contains(CssStyles.SOFT_REQUIRED)) {

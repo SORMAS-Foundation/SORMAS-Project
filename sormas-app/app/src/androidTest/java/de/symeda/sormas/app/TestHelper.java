@@ -3,7 +3,9 @@ package de.symeda.sormas.app;
 import android.support.test.InstrumentationRegistry;
 import android.test.RenamingDelegatingContext;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -58,10 +60,12 @@ public class TestHelper {
         user.setAktiv(true);
         user.setFirstName("Sana");
         user.setLastName("Obas");
-        user.setUserRole(UserRole.CASE_OFFICER);
+        user.setUserRoles(new HashSet(Arrays.asList(UserRole.SURVEILLANCE_OFFICER)));
         user.setCreationDate(new Date());
         user.setChangeDate(new Date());
         user.setUuid(USER_UUID);
+        user.setRegion(DatabaseHelper.getRegionDao().queryUuid(REGION_UUID));
+        user.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(DISTRICT_UUID));
         DatabaseHelper.getUserDao().create(user);
         if (!setInformantAsActiveUser) {
             ConfigProvider.setUsernameAndPassword("SanaObas", "TestPassword");
@@ -73,7 +77,7 @@ public class TestHelper {
         secondUser.setAktiv(true);
         secondUser.setFirstName("Sabo");
         secondUser.setLastName("Anas");
-        secondUser.setUserRole(UserRole.SURVEILLANCE_OFFICER);
+        secondUser.setUserRoles(new HashSet(Arrays.asList(UserRole.SURVEILLANCE_OFFICER, UserRole.CASE_OFFICER)));
         secondUser.setCreationDate(new Date());
         secondUser.setChangeDate(new Date());
         secondUser.setUuid(SECOND_USER_UUID);
@@ -87,7 +91,7 @@ public class TestHelper {
         informant.setAktiv(true);
         informant.setFirstName("Info");
         informant.setLastName("User");
-        informant.setUserRole(UserRole.INFORMANT);
+        informant.setUserRoles(new HashSet(Arrays.asList(UserRole.INFORMANT)));
         informant.setCreationDate(new Date());
         informant.setChangeDate(new Date());
         informant.setUuid(INFORMANT_USER_UUID);

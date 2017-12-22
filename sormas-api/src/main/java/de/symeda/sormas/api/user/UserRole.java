@@ -1,9 +1,11 @@
 package de.symeda.sormas.api.user;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.utils.ValidationException;
 
 /**
  * These are also used as user groups in the server realm
@@ -59,7 +61,7 @@ public enum UserRole {
 	public String toShortString() {
 		return I18nProperties.getEnumCaption(this, "Short");
 	}
-	
+
 	public boolean isSupervisor() {
 		return supervisor;
 	}
@@ -119,9 +121,6 @@ public enum UserRole {
 		case LAB_USER:
 			collection.add(LAB_USER);
 			break;
-		case NATIONAL_OBSERVER:
-			collection.add(NATIONAL_OBSERVER);
-			break;
 		default:
 			break;
 		}
@@ -134,7 +133,45 @@ public enum UserRole {
 		}
 		return result;
 	}
-	
+
+	public Collection<UserRole> getCombinableRoles() {
+		switch(this) {
+		case ADMIN:
+			return Arrays.asList(
+					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
+					RUMOR_MANAGER, LAB_USER,
+					NATIONAL_USER, NATIONAL_OBSERVER
+					);
+		case NATIONAL_USER:
+			return Arrays.asList(LAB_USER, ADMIN);
+		case NATIONAL_OBSERVER:
+			return Arrays.asList(ADMIN);
+		case CASE_SUPERVISOR:
+		case CONTACT_SUPERVISOR:
+		case SURVEILLANCE_SUPERVISOR:
+		case RUMOR_MANAGER:
+			return Arrays.asList(
+					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
+					RUMOR_MANAGER, LAB_USER, ADMIN
+					);
+		case LAB_USER:
+			return Arrays.asList(
+					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
+					RUMOR_MANAGER, LAB_USER, NATIONAL_USER, ADMIN
+					);
+		case SURVEILLANCE_OFFICER:
+		case CASE_OFFICER:
+		case CONTACT_OFFICER:
+			return Arrays.asList(
+					SURVEILLANCE_OFFICER, CASE_OFFICER, CONTACT_OFFICER
+					);
+		case INFORMANT:
+			return Arrays.asList(INFORMANT);
+		default:
+			throw new UnsupportedOperationException("getCombinableRoles not implemented for user role: " + this);
+		}
+	}
+
 	public static boolean isSupervisor(Collection<UserRole> roles) {
 		for (UserRole role : roles) {
 			if (role.isSupervisor()) {
@@ -153,11 +190,55 @@ public enum UserRole {
 		return false;
 	}
 	
+	public static boolean isAdmin(Collection<UserRole> roles) {
+		return roles.contains(UserRole.ADMIN);
+	}
+	
 	public static boolean isInformant(Collection<UserRole> roles) {
 		return roles.contains(UserRole.INFORMANT);
 	}
 	
 	public static boolean isLabUser(Collection<UserRole> roles) {
 		return roles.contains(UserRole.LAB_USER);
+	}
+	
+	public static UserRole getFirstDifferentUserRole(Collection<UserRole> roles, UserRole ignoredUserRole, Collection<UserRole> ignoredRoles) {
+		
+		for (UserRole userRole : roles) {
+			if (!ignoredRoles.contains(userRole) && ignoredUserRole != userRole) {
+				return userRole;
+			}
+		}
+		return null;
+	}
+	
+	public static void validate(Collection<UserRole> roles) throws UserRoleValidationException {
+		
+		for (UserRole userRole : roles) {
+			UserRole forbiddenUserRole = getFirstDifferentUserRole(roles, userRole, userRole.getCombinableRoles());
+			if (forbiddenUserRole != null) {
+				throw new UserRoleValidationException(userRole, forbiddenUserRole);
+			}
+		}
+	}
+	
+	@SuppressWarnings("serial")
+	public static class UserRoleValidationException extends ValidationException {
+		private final UserRole checkedUserRole;
+		private final UserRole forbiddenUserRole;
+		
+		public UserRoleValidationException(UserRole checkedUserRole, UserRole forbiddenUserRole) {
+			super(checkedUserRole + " cannot be combined with " + forbiddenUserRole);
+			this.checkedUserRole = checkedUserRole;
+			this.forbiddenUserRole = forbiddenUserRole;
+		}
+
+		public UserRole getCheckedUserRole() {
+			return checkedUserRole;
+		}
+
+		public UserRole getForbiddenUserRole() {
+			return forbiddenUserRole;
+		}
 	}
 }

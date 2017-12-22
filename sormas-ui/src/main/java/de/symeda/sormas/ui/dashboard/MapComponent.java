@@ -55,8 +55,8 @@ import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -110,6 +110,7 @@ public class MapComponent extends VerticalLayout {
 	private BigDecimal districtShapesUpperQuartile;
 	private ClickListener externalExpandButtonListener;
 	private ClickListener externalCollapseButtonListener;
+	private boolean emptyPopulationDistrictPresent;
 
 	public MapComponent(DashboardDataProvider dashboardDataProvider) {    	
 		this.dashboardDataProvider = dashboardDataProvider;
@@ -688,11 +689,23 @@ public class MapComponent extends VerticalLayout {
 			break;
 		default: throw new IllegalArgumentException(caseMeasure.toString());
 		}
-
+		
 		regionKeyLayout.addComponent(legendEntry);
 		regionKeyLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
 		regionKeyLayout.setExpandRatio(legendEntry, 1);
 
+		if (caseMeasure == CaseMeasure.CASE_INCIDENCE && emptyPopulationDistrictPresent) {
+			spacer = new Label();
+			spacer.setWidth(6, Unit.PIXELS);
+			regionKeyLayout.addComponent(spacer);
+			
+			legendEntry = createMapKeyEntry("mapicons/no-population-region-small.png", "No population data available");
+			
+			regionKeyLayout.addComponent(legendEntry);
+			regionKeyLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
+			regionKeyLayout.setExpandRatio(legendEntry, 1);
+		}
+		
 		return regionKeyLayout;
 	}
 
@@ -737,6 +750,8 @@ public class MapComponent extends VerticalLayout {
 			}
 		}
 		districtPolygonsMap.clear();
+		
+		emptyPopulationDistrictPresent = false;
 
 		map.removeStyleName("no-tiles");
 	}
@@ -773,12 +788,28 @@ public class MapComponent extends VerticalLayout {
 			regionPolygonsMap.put(region, regionPolygons);
 		}
 
-		// draw relevant district fills
 		List<Pair<DistrictDto, BigDecimal>> measurePerDistrict = FacadeProvider.getCaseFacade().getCaseMeasurePerDistrict(fromDate, toDate, disease, caseMeasure);
-		districtShapesLowerQuartile = measurePerDistrict.size() > 0 ? measurePerDistrict.get((int) (measurePerDistrict.size()  * 0.25)).getElement1() : null;
-		districtShapesMedian = measurePerDistrict.size() > 0 ? measurePerDistrict.get((int) (measurePerDistrict.size() * 0.5)).getElement1() : null;
-		districtShapesUpperQuartile = measurePerDistrict.size() > 0 ? measurePerDistrict.get((int) (measurePerDistrict.size() * 0.75)).getElement1() : null;
+		if (caseMeasure == CaseMeasure.CASE_COUNT) {
+			districtShapesLowerQuartile = measurePerDistrict.size() > 0 ? 
+					measurePerDistrict.get((int) (measurePerDistrict.size()  * 0.25)).getElement1() : null;
+			districtShapesMedian = measurePerDistrict.size() > 0 ? 
+					measurePerDistrict.get((int) (measurePerDistrict.size() * 0.5)).getElement1() : null;
+			districtShapesUpperQuartile = measurePerDistrict.size() > 0 ? 
+					measurePerDistrict.get((int) (measurePerDistrict.size() * 0.75)).getElement1() : null;
+		} else {
+			// For case incidence, districts without or with a population <= 0 should not be used for the calculation of the quartiles because they will falsify the result
+			List<Pair<DistrictDto, BigDecimal>> measurePerDistrictWithoutMissingPopulations = new ArrayList<>();
+			measurePerDistrictWithoutMissingPopulations.addAll(measurePerDistrict);
+			measurePerDistrictWithoutMissingPopulations.removeIf(d -> d.getElement0().getPopulation() == null || d.getElement0().getPopulation() <= 0);
+			districtShapesLowerQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0 ? 
+					measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size()  * 0.25)).getElement1() : null;
+			districtShapesMedian = measurePerDistrictWithoutMissingPopulations.size() > 0 ? 
+					measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.5)).getElement1() : null;
+			districtShapesUpperQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0 ? 
+					measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.75)).getElement1() : null;
+		}
 
+		// Draw relevant district fills
 		for (Pair<DistrictDto, BigDecimal> districtMeasure : measurePerDistrict) {
 
 			DistrictDto district = districtMeasure.getElement0();
@@ -798,55 +829,32 @@ public class MapComponent extends VerticalLayout {
 						.collect(Collectors.toList()));
 
 				polygon.setStrokeOpacity(0);
-				switch (caseMeasure) {
-				case CASE_COUNT:
-					if (districtValue.compareTo(BigDecimal.ZERO) == 0) {
-						polygon.setFillOpacity(0);
-					} else if (districtValue.compareTo(districtShapesLowerQuartile) <= 0) {
-						polygon.setFillColor("#FEDD6C");
-						polygon.setFillOpacity(0.5);
-					} else if (districtValue.compareTo(districtShapesMedian) <= 0) {
-						polygon.setFillColor("#FDBF44");
-						polygon.setFillOpacity(0.5);
-					} else if (districtValue.compareTo(districtShapesUpperQuartile) <= 0) {
-						polygon.setFillColor("#F47B20");
-						polygon.setFillOpacity(0.5);
-					} else {
-						polygon.setFillColor("#ED1B24");
-						polygon.setFillOpacity(0.5);
-					}
-					break;
-				case CASE_INCIDENCE:
-					if (district.getPopulation() == null) {
+				
+				if (districtValue.compareTo(BigDecimal.ZERO) == 0) {
+					polygon.setFillOpacity(0);
+				} else if (districtValue.compareTo(districtShapesLowerQuartile) <= 0) {
+					polygon.setFillColor("#FEDD6C");
+					polygon.setFillOpacity(0.5);
+				} else if (districtValue.compareTo(districtShapesMedian) <= 0) {
+					polygon.setFillColor("#FDBF44");
+					polygon.setFillOpacity(0.5);
+				} else if (districtValue.compareTo(districtShapesUpperQuartile) <= 0) {
+					polygon.setFillColor("#F47B20");
+					polygon.setFillOpacity(0.5);							
+				} else {
+					polygon.setFillColor("#ED1B24");
+					polygon.setFillOpacity(0.5);
+				}
+				
+				if (caseMeasure == CaseMeasure.CASE_INCIDENCE) {
+					if (district.getPopulation() == null || district.getPopulation() <= 0) {
 						// grey when region has no population data
+						emptyPopulationDistrictPresent = true;
 						polygon.setFillColor("#999999");
 						polygon.setFillOpacity(0.5);
-					} else {					
-						BigDecimal incidence = districtValue
-								.divide(new BigDecimal(district.getPopulation())
-								.divide(new BigDecimal(DistrictDto.CASE_INCIDENCE_DIVISOR), 1, RoundingMode.HALF_UP), 1, RoundingMode.HALF_UP);
-						if (incidence.compareTo(BigDecimal.ZERO) == 0) {
-							polygon.setFillOpacity(0);
-						} else if (incidence.compareTo(districtShapesLowerQuartile) <= 0) {
-							polygon.setFillColor("#FEDD6C");
-							polygon.setFillOpacity(0.5);
-						} else if (incidence.compareTo(districtShapesMedian) <= 0) {
-							polygon.setFillColor("#FDBF44");
-							polygon.setFillOpacity(0.5);
-						} else if (incidence.compareTo(districtShapesUpperQuartile) <= 0) {
-							polygon.setFillColor("#F47B20");
-							polygon.setFillOpacity(0.5);							
-						} else {
-							polygon.setFillColor("#ED1B24");
-							polygon.setFillOpacity(0.5);
-						}
 					}
-					break;
-
-				default:
-					throw new IllegalArgumentException(caseMeasure.toString());
 				}
-
+				
 				districtPolygons[part] = polygon;
 				map.addPolygonOverlay(polygon);
 			}

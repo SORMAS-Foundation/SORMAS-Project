@@ -4,6 +4,7 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextArea;
 
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -18,8 +19,8 @@ public class EpiDataGatheringEditForm extends AbstractEditForm<EpiDataGatheringD
 			LayoutUtil.fluidRowLocs(EpiDataGatheringDto.GATHERING_ADDRESS)
 	;
 	
-	public EpiDataGatheringEditForm() {
-		super(EpiDataGatheringDto.class, EpiDataGatheringDto.I18N_PREFIX);
+	public EpiDataGatheringEditForm(UserRight editOrCreateUserRight) {
+		super(EpiDataGatheringDto.class, EpiDataGatheringDto.I18N_PREFIX, editOrCreateUserRight);
 		
 		setWidth(540, Unit.PIXELS);
 	}	

@@ -542,7 +542,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                     AbstractDomainObject embeddedCurrent = DatabaseHelper.getAdoDao(embeddedSource.getClass()).mergeOrCreateWithCast(embeddedSource);
 
                     if (embeddedCurrent == null) {
-                        throw new IllegalArgumentException("No merge result returned for was created for " + embeddedSource);
+                        throw new IllegalArgumentException("No merge result was created for " + embeddedSource);
                     }
                     // write link for merged embedded
                     property.getWriteMethod().invoke(current, embeddedCurrent);

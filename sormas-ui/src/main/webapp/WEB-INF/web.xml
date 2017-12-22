@@ -15,16 +15,7 @@
         <role-name>SURVEILLANCE_SUPERVISOR</role-name>
     </security-role>
 	<security-role>
-        <role-name>SURVEILLANCE_OFFICER</role-name>
-    </security-role>
-	<security-role>
-        <role-name>INFORMANT</role-name>
-    </security-role>
-	<security-role>
         <role-name>CASE_SUPERVISOR</role-name>
-    </security-role>
-	<security-role>
-        <role-name>CASE_OFFICER</role-name>
     </security-role>
 	<security-role>
         <role-name>CONTACT_SUPERVISOR</role-name>
@@ -45,7 +36,7 @@
         <role-name>NATIONAL_OBSERVER</role-name>
     </security-role>
 
-<!-- 	
+	<!-- security check is done in LoginScreen.login
 	<security-constraint>
 		<display-name>secure all</display-name>
 		<web-resource-collection>
@@ -55,6 +46,5 @@
 		<auth-constraint>
 			<role-name>USER</role-name>
 		</auth-constraint>
-	</security-constraint>
- -->	
+	</security-constraint> -->
 </web-app>

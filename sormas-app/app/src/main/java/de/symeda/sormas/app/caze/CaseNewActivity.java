@@ -20,6 +20,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
@@ -37,6 +38,7 @@ import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.databinding.CaseNewFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.validation.CaseValidator;
 
@@ -67,7 +69,7 @@ public class CaseNewActivity extends AppCompatActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_case) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_case));
         }
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -80,6 +82,7 @@ public class CaseNewActivity extends AppCompatActivity {
             arguments.putSerializable(PERSON, contact.getPerson());
             arguments.putSerializable(DISEASE, contact.getCaze().getDisease());
         }
+        arguments.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.CASE_CREATE);
         caseNewForm.setArguments(arguments);
         ft.add(R.id.fragment_frame, caseNewForm).commit();
     }
@@ -193,9 +196,9 @@ public class CaseNewActivity extends AppCompatActivity {
 
         User user = ConfigProvider.getUser();
         caze.setReportingUser(user);
-        if (user.getUserRole() == UserRole.SURVEILLANCE_OFFICER) {
+        if (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
             caze.setSurveillanceOfficer(user);
-        } else if (user.getUserRole() == UserRole.INFORMANT) {
+        } else if (user.hasUserRole(UserRole.INFORMANT)) {
             caze.setSurveillanceOfficer(user.getAssociatedOfficer());
         }
         caze.setReportDate(new Date());

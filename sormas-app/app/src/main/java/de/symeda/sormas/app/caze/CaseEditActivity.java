@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,6 +26,7 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -45,6 +47,7 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDtoHelper;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.FacilityChangeDialogBuilder;
 import de.symeda.sormas.app.component.HelpDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
@@ -93,8 +96,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-            getSupportActionBar().setTitle(getResources().getText(R.string.headline_case) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_case));
         }
 
         Case initialEntity = null;
@@ -182,6 +184,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        User user = ConfigProvider.getUser();
         CaseEditTabs tab = adapter.getTabForPosition(currentTab);
         switch (tab) {
             case CASE_DATA:
@@ -197,7 +200,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 break;
 
             case CONTACTS:
-                updateActionBarGroups(menu, false, true, true, true, false);
+                updateActionBarGroups(menu, false, true, true, user.hasUserRight(UserRight.CONTACT_CREATE), false);
                 break;
 
             case TASKS:
@@ -205,7 +208,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 break;
 
             case SAMPLES:
-                updateActionBarGroups(menu, false, true, true, true, false);
+                updateActionBarGroups(menu, false, true, true, user.hasUserRight(UserRight.SAMPLE_CREATE), false);
                 break;
 
             case HOSPITALIZATION:
@@ -356,19 +359,9 @@ public class CaseEditActivity extends AbstractEditTabActivity {
     }
 
     public void setAdapter(Case caze) {
-        List<CaseEditTabs> visibleTabs;
         CaseDataDto caseDataDto = new CaseDataDto();
         new CaseDtoHelper().fillInnerFromAdo(caseDataDto, caze);
-        if (!DiseaseHelper.hasContactFollowUp(caseDataDto)) {
-            visibleTabs = Arrays.asList(CaseEditTabs.CASE_DATA, CaseEditTabs.PATIENT,
-                    CaseEditTabs.HOSPITALIZATION, CaseEditTabs.SYMPTOMS, CaseEditTabs.EPIDATA,
-                    CaseEditTabs.SAMPLES, CaseEditTabs.TASKS);
-        } else {
-            visibleTabs = Arrays.asList(CaseEditTabs.CASE_DATA, CaseEditTabs.PATIENT,
-                    CaseEditTabs.HOSPITALIZATION, CaseEditTabs.SYMPTOMS, CaseEditTabs.EPIDATA,
-                    CaseEditTabs.CONTACTS, CaseEditTabs.SAMPLES, CaseEditTabs.TASKS);
-        }
-
+        List<CaseEditTabs> visibleTabs = buildVisibleTabsList(caseDataDto);
         adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), caze, visibleTabs);
         createTabViews(adapter);
 
@@ -545,6 +538,27 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         );
 
         return dialog;
+    }
+
+    private List<CaseEditTabs> buildVisibleTabsList(CaseDataDto caseDataDto) {
+        User user = ConfigProvider.getUser();
+        List<CaseEditTabs> visibleTabs = new ArrayList<>();
+        visibleTabs.addAll(Arrays.asList(CaseEditTabs.CASE_DATA, CaseEditTabs.PATIENT,
+                CaseEditTabs.HOSPITALIZATION, CaseEditTabs.SYMPTOMS, CaseEditTabs.EPIDATA));
+
+        if (user.hasUserRight(UserRight.CONTACT_VIEW) && DiseaseHelper.hasContactFollowUp(caseDataDto)) {
+            visibleTabs.add(CaseEditTabs.CONTACTS);
+        }
+
+        if (user.hasUserRight(UserRight.SAMPLE_VIEW)) {
+            visibleTabs.add(CaseEditTabs.SAMPLES);
+        }
+
+        if (user.hasUserRight(UserRight.TASK_VIEW)) {
+            visibleTabs.add(CaseEditTabs.TASKS);
+        }
+
+        return visibleTabs;
     }
 
 }

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.validation.ValidationException;
 
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -17,6 +18,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRole.UserRoleValidationException;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventService;
@@ -133,7 +135,14 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public UserDto saveUser(UserDto dto) {
+
 		User user = fromDto(dto);
+		
+		try {
+			UserRole.validate(user.getUserRoles());
+		} catch (UserRoleValidationException e) {
+			throw new ValidationException(e);
+		}
 		
 		userService.ensurePersisted(user);
 		
@@ -147,27 +156,30 @@ public class UserFacadeEjb implements UserFacade {
 		return (int) userService.getNumberOfInformantsByFacility(facility);
 	}
 	
-	public static UserDto toDto(User entity) {
-		UserDto dto = new UserDto();
-		DtoHelper.fillDto(dto, entity);
+	public static UserDto toDto(User source) {
+		if (source == null) {
+			return null;
+		}
+		UserDto target = new UserDto();
+		DtoHelper.fillDto(target, source);
 		
-		dto.setActive(entity.isAktiv());
-		dto.setUserName(entity.getUserName());
-		dto.setFirstName(entity.getFirstName());
-		dto.setLastName(entity.getLastName());
-		dto.setUserEmail(entity.getUserEmail());
-		dto.setPhone(entity.getPhone());
-		dto.setAddress(LocationFacadeEjb.toDto(entity.getAddress()));
+		target.setActive(source.isAktiv());
+		target.setUserName(source.getUserName());
+		target.setFirstName(source.getFirstName());
+		target.setLastName(source.getLastName());
+		target.setUserEmail(source.getUserEmail());
+		target.setPhone(source.getPhone());
+		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
 		
-		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
-		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
-		dto.setHealthFacility(FacilityFacadeEjb.toReferenceDto(entity.getHealthFacility()));
-		dto.setAssociatedOfficer(toReferenceDto(entity.getAssociatedOfficer()));
-		dto.setLaboratory(FacilityFacadeEjb.toReferenceDto(entity.getLaboratory()));
+		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
+		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
+		target.setAssociatedOfficer(toReferenceDto(source.getAssociatedOfficer()));
+		target.setLaboratory(FacilityFacadeEjb.toReferenceDto(source.getLaboratory()));
 		
-		entity.getUserRoles().size();
-		dto.setUserRoles(entity.getUserRoles());
-		return dto;
+		source.getUserRoles().size();
+		target.setUserRoles(source.getUserRoles());
+		return target;
 	}
 	
 	public static UserReferenceDto toReferenceDto(User entity) {

@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -33,9 +34,19 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         Fragment frag = null;
         VisitEditTabs tab = VisitEditTabs.values()[position];
+        boolean newVisit = false;
+        if (visitEditBundle.getBoolean(VisitEditDataForm.NEW_VISIT)) {
+            newVisit = true;
+        }
+
         switch (tab) {
             case VISIT_DATA:
                 frag = new VisitEditDataForm();
+                if (newVisit) {
+                    visitEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.VISIT_CREATE);
+                } else {
+                    visitEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.VISIT_EDIT);
+                }
                 frag.setArguments(visitEditBundle);
                 break;
 
@@ -44,12 +55,13 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
 
                 Bundle symptomsEditBundle = new Bundle();
                 // build new symptoms for new visit
-                if(visitEditBundle.getBoolean(VisitEditDataForm.NEW_VISIT)) {
+                if(newVisit) {
                     String keyContactUuid = visitEditBundle.getString(VisitEditDataForm.KEY_CONTACT_UUID);
                     Contact contact = DatabaseHelper.getContactDao().queryUuid(keyContactUuid);
                     symptomsEditBundle.putSerializable(Visit.DISEASE, contact.getCaze().getDisease());
                     symptomsEditBundle.putBoolean(SymptomsEditForm.NEW_SYMPTOMS, true);
                     symptomsEditBundle.putBoolean(SymptomsEditForm.FOR_VISIT, true);
+                    symptomsEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.VISIT_CREATE);
                 }
                 // edit symptoms for given visit
                 else {
@@ -60,6 +72,7 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
                     symptomsEditBundle.putBoolean(SymptomsEditForm.FOR_VISIT, true);
                     symptomsEditBundle.putBoolean(SymptomsEditForm.VISIT_COOPERATIVE,
                             visit.getVisitStatus() == VisitStatus.COOPERATIVE);
+                    symptomsEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.VISIT_EDIT);
                 }
 
                 frag.setArguments(symptomsEditBundle);

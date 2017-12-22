@@ -88,12 +88,6 @@ public class CheckBoxField extends PropertyField<Boolean> {
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        checkBox.setEnabled(enabled);
-    }
-
-    @Override
     protected void requestFocusForContentView(View nextView) {
         ((CheckBoxField) nextView).checkBox.requestFocus();
     }

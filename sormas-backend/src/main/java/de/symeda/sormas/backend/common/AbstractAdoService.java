@@ -227,6 +227,33 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		em.flush();
 	}
 
+	
+	/**
+	 * TODO move to CriteriaBuilderHelper
+	 * @param existing nullable
+	 */
+	public static Predicate and(CriteriaBuilder cb, Predicate existing, Predicate additional) {
+		if (existing == null) {
+			return additional;
+		} else if (additional == null) {
+			return existing;
+		}
+		return cb.and(existing, additional);
+	}
+	
+	/**
+	 * TODO move to CriteriaBuilderHelper
+	 * @param existing nullable
+	 */
+	public static Predicate or(CriteriaBuilder cb, Predicate existing, Predicate additional) {
+		if (existing == null) {
+			return additional;
+		} else if (additional == null) {
+			return existing;
+		}
+		return cb.or(existing, additional);
+	}
+	
 	/**
 	 * @return {@code true}, if the system itself is the executing user.
 	 */

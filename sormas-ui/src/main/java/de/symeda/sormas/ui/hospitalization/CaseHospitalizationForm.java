@@ -12,7 +12,9 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -33,8 +35,8 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 			LayoutUtil.fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS)
 	;		
 	
-	public CaseHospitalizationForm(CaseDataDto caze) {
-		super(HospitalizationDto.class, HospitalizationDto.I18N_PREFIX);
+	public CaseHospitalizationForm(CaseDataDto caze, UserRight editOrCreateUserRight) {
+		super(HospitalizationDto.class, HospitalizationDto.I18N_PREFIX, editOrCreateUserRight);
 		this.caze = caze;
 		addFields();
 	}
@@ -71,7 +73,7 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 	private void updatePrevHospHint(OptionGroup hospitalizedPreviouslyField, PreviousHospitalizationsField previousHospitalizationsField) {
 		YesNoUnknown value = (YesNoUnknown) hospitalizedPreviouslyField.getValue();
 		Collection<PreviousHospitalizationDto> previousHospitalizations = previousHospitalizationsField.getValue();
-		if (value == YesNoUnknown.YES && (previousHospitalizations == null || previousHospitalizations.size() == 0)) {
+		if (LoginHelper.hasUserRight(UserRight.CASE_EDIT) && value == YesNoUnknown.YES && (previousHospitalizations == null || previousHospitalizations.size() == 0)) {
 			hospitalizedPreviouslyField.setComponentError(new UserError("Please add an entry to the list below if there is any data available to you."));
 		} else {
 			hospitalizedPreviouslyField.setComponentError(null);

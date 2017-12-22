@@ -190,6 +190,24 @@ public class ContactFacadeEjbTest extends BaseBeanTest  {
 		assertEquals(0, visitFacade.getAllVisitsAfter(null, userUuid).size());
 	}
 	
+	@Test
+	public void testGetIndexList() {
+		ContactFacade contactFacade = getBean(ContactFacadeEjbLocal.class);
+
+		TestDataCreator creator = createTestDataCreator();
+
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		String userUuid = user.getUuid();
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze.toReference(), new Date(), new Date());
+		
+		// Database should contain one contact, associated visit and task
+		assertEquals(1, contactFacade.getIndexList(userUuid, null).size());
+	}
 	private TestDataCreator createTestDataCreator() {
 		return new TestDataCreator(getBean(UserFacadeEjbLocal.class), getBean(PersonFacadeEjbLocal.class),
 				getBean(CaseFacadeEjbLocal.class), getBean(ContactFacadeEjbLocal.class), getBean(TaskFacadeEjb.class),

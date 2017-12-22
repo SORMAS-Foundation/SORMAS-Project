@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.epidata.AnimalCondition;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
@@ -42,7 +43,9 @@ public class EpiDataForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.case_epidata_fragment_layout, container, false);
+
         View view = binding.getRoot();
+        editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
 
         final Disease disease = (Disease) getArguments().getSerializable(Case.DISEASE);
         final String epiDataUuid = getArguments().getString(EpiData.UUID);

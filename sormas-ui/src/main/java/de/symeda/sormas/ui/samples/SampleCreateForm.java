@@ -15,6 +15,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -45,8 +46,8 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 					)
 			);
 	
-	public SampleCreateForm() {
-		super(SampleDto.class, SampleDto.I18N_PREFIX);
+	public SampleCreateForm(UserRight editOrCreateUserRight) {
+		super(SampleDto.class, SampleDto.I18N_PREFIX, editOrCreateUserRight);
 		
 		hideValidationUntilNextCommit();
 	}

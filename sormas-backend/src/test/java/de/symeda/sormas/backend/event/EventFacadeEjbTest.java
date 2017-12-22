@@ -12,6 +12,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
+import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
@@ -102,6 +103,26 @@ public class EventFacadeEjbTest extends BaseBeanTest {
 		assertEquals(0, eventFacade.getAllEventsAfter(null, userUuid).size());
 		assertEquals(0, eventParticipantFacade.getAllEventParticipantsAfter(null, userUuid).size());
 	}
+	
+	@Test
+	public void testGetIndexList() {
+		EventFacade eventFacade = getBean(EventFacadeEjb.class);
+		DistrictFacade districtFacade = getBean(DistrictFacadeEjbLocal.class);
+
+		TestDataCreator creator = createTestDataCreator();
+
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		LocationDto eventLocation = new LocationDto();
+		eventLocation.setDistrict(districtFacade.getDistrictReferenceByUuid(rdcf.district.getUuid()));
+		EventDto event = creator.createEvent(EventType.OUTBREAK, EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, eventLocation);
+
+		List<EventIndexDto> results = eventFacade.getIndexList(user.getUuid(), null);
+
+		// List should have one entry
+		assertEquals(1, results.size());
+	}
+	
 
 	private TestDataCreator createTestDataCreator() {
 		return new TestDataCreator(getBean(UserFacadeEjbLocal.class), getBean(PersonFacadeEjbLocal.class),

@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.contact;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class ContactReferenceDto extends ReferenceDto {
 
@@ -18,5 +19,19 @@ public class ContactReferenceDto extends ReferenceDto {
 		setUuid(uuid);
 		setCaption(caption);
 	}
+	
+	public ContactReferenceDto(String uuid, String contactFirstName, String contactLastName, String caseFirstName, String caseLastName) {
+		setUuid(uuid);
+		setCaption(buildCaption(contactFirstName, contactLastName, caseFirstName, caseLastName));
+	}
 
+	public static String buildCaption(String contactFirstName, String contactLastName, String caseFirstName, String caseLastName) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(DataHelper.toStringNullable(contactFirstName))
+			.append(" ").append(DataHelper.toStringNullable(contactLastName).toUpperCase())
+			.append(" to case ")
+			.append(DataHelper.toStringNullable(caseFirstName))
+			.append(" ").append(DataHelper.toStringNullable(caseLastName));
+		return builder.toString();
+	}
 }

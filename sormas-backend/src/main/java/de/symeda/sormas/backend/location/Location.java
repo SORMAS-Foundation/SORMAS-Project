@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -104,5 +105,13 @@ public class Location extends AbstractDomainObject {
 	}
 	public void setLatLonAccuracy(Float latLonAccuracy) {
 		this.latLonAccuracy = latLonAccuracy;
+	}
+	
+	@Override
+	public String toString() {
+		return LocationReferenceDto.buildCaption(
+				region != null ? region.getName() : null, 
+				district != null ? district.getName() : null, 
+				community != null ? community.getName() : null, city, address);
 	}
 }

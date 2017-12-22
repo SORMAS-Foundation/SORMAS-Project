@@ -16,10 +16,13 @@ import android.view.View;
 
 import com.google.android.gms.analytics.Tracker;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -33,6 +36,7 @@ import de.symeda.sormas.app.backend.event.EventParticipantDao;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.databinding.EventDataFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -68,13 +72,13 @@ public class EventEditActivity extends AbstractEditTabActivity {
         // Android doesn't call onResume when the tab has no focus which would otherwise lead
         // to certain spinners not displaying their values
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        viewPager.setOffscreenPageLimit(EventEditTabs.values().length);
+        viewPager.setOffscreenPageLimit(0);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getResources().getText(R.string.headline_event) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_event));
         }
 
         Bundle params = getIntent().getExtras();
@@ -157,7 +161,8 @@ public class EventEditActivity extends AbstractEditTabActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        EventEditTabs tab = EventEditTabs.values()[currentTab];
+        User user = ConfigProvider.getUser();
+        EventEditTabs tab = adapter.getTabForPosition(currentTab);
         switch(tab) {
             // contact data tab
             case EVENT_DATA:
@@ -166,7 +171,7 @@ public class EventEditActivity extends AbstractEditTabActivity {
 
             // person tab
             case EVENT_PERSONS:
-                updateActionBarGroups(menu, false, true, true, true, false);
+                updateActionBarGroups(menu, false, true, true, user.hasUserRight(UserRight.EVENTPARTICIPANT_CREATE), false);
                 break;
 
             // tasks tab
@@ -181,8 +186,8 @@ public class EventEditActivity extends AbstractEditTabActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         currentTab = pager.getCurrentItem();
-        EventEditTabs tab = EventEditTabs.values()[currentTab];
-        Event event = (Event) getData(EventEditTabs.EVENT_DATA.ordinal());
+        EventEditTabs tab = adapter.getTabForPosition(currentTab);
+        Event event = (Event) getData(adapter.getPositionOfTab(EventEditTabs.EVENT_DATA));
 
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
@@ -247,13 +252,13 @@ public class EventEditActivity extends AbstractEditTabActivity {
                     // contact data tab
                     case EVENT_DATA:
                         // Validation
-                        EventDataFragmentLayoutBinding binding = ((EventEditDataForm)getTabByPosition(EventEditTabs.EVENT_DATA.ordinal())).getBinding();
+                        EventDataFragmentLayoutBinding binding = ((EventEditDataForm)getTabByPosition(adapter.getPositionOfTab(EventEditTabs.EVENT_DATA))).getBinding();
                         EventValidator.clearErrorsForEventData(binding);
 
                         int validationErrorTab = -1;
 
                         if (!EventValidator.validateEventData(event, binding)) {
-                            validationErrorTab = EventEditTabs.EVENT_DATA.ordinal();
+                            validationErrorTab = adapter.getPositionOfTab(EventEditTabs.EVENT_DATA);
                         }
 
                         if (validationErrorTab >= 0) {
@@ -312,10 +317,23 @@ public class EventEditActivity extends AbstractEditTabActivity {
     }
 
     private void setAdapter() {
-        adapter = new EventEditPagerAdapter(getSupportFragmentManager(), eventUuid);
+        List<EventEditTabs> visibleTabs = buildVisibleTabsList();
+        adapter = new EventEditPagerAdapter(getSupportFragmentManager(), eventUuid, visibleTabs);
         createTabViews(adapter);
 
         pager.setCurrentItem(currentTab);
+    }
+
+    private List<EventEditTabs> buildVisibleTabsList() {
+        User user = ConfigProvider.getUser();
+        List<EventEditTabs> visibleTabs = new ArrayList<>();
+        visibleTabs.addAll(Arrays.asList(EventEditTabs.EVENT_DATA, EventEditTabs.EVENT_PERSONS));
+
+        if (user.hasUserRight(UserRight.TASK_VIEW)) {
+            visibleTabs.add(EventEditTabs.EVENT_TASKS);
+        }
+
+        return visibleTabs;
     }
 
 }

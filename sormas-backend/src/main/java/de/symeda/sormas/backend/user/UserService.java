@@ -191,5 +191,4 @@ public class UserService extends AbstractAdoService<User> {
 			cq.where(filter);
 		}
 	}
-	
 }

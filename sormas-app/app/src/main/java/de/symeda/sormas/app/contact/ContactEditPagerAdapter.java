@@ -5,6 +5,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import java.util.List;
+
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -23,23 +26,26 @@ import de.symeda.sormas.app.visit.VisitsListFragment;
 public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
 
     private Bundle contactEditBundle; // this contactEditBundle contains the uuids
-
+    private List<ContactEditTabs> visibleTabs;
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
-    public ContactEditPagerAdapter(FragmentManager fm, String contactUuid) {
+    public ContactEditPagerAdapter(FragmentManager fm, String contactUuid, List<ContactEditTabs> visibleTabs) {
         super(fm);
         contactEditBundle = new Bundle();
         contactEditBundle.putString(Contact.UUID, contactUuid);
+        this.visibleTabs = visibleTabs;
     }
 
     //This method return the fragment for the every position in the View Pager
     @Override
     public Fragment getItem(int position) {
         Fragment frag = null;
-        ContactEditTabs tab = ContactEditTabs.values()[position];
+        ContactEditTabs tab = visibleTabs.get(position);
+
         switch (tab) {
             case CONTACT_DATA:
                 frag = new ContactEditDataForm();
+                contactEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.CONTACT_EDIT);
                 frag.setArguments(contactEditBundle);
                 break;
 
@@ -50,6 +56,7 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
                 Contact contact = DatabaseHelper.getContactDao().queryUuid(contactEditBundle.getString(Contact.UUID));
                 personEditBundle.putString(Person.UUID, contact.getPerson().getUuid());
                 personEditBundle.putSerializable(Case.DISEASE, contact.getCaze().getDisease());
+                personEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.CONTACT_EDIT);
                 frag.setArguments(personEditBundle);
                 break;
 
@@ -72,12 +79,20 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
     // This method return the titles for the Tabs in the Tab Strip
     @Override
     public CharSequence getPageTitle(int position) {
-        return ContactEditTabs.values()[position].toString();
+        return visibleTabs.get(position).toString();
     }
 
     // This method return the Number of tabs for the tabs Strip
     @Override
     public int getCount() {
-        return ContactEditTabs.values().length;
+        return visibleTabs.size();
+    }
+
+    public ContactEditTabs getTabForPosition(int position) {
+        return visibleTabs.get(position);
+    }
+
+    public int getPositionOfTab(ContactEditTabs tab) {
+        return visibleTabs.indexOf(tab);
     }
 }

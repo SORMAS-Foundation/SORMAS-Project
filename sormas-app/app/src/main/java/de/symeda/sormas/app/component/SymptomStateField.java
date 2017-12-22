@@ -112,14 +112,14 @@ public class SymptomStateField extends PropertyField<SymptomState> {
     }
 
 
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        caption.setEnabled(enabled);
-        for (int i = 0; i < radioGroup.getChildCount(); i++) {
-            radioGroup.getChildAt(i).setEnabled(enabled);
-        }
-    }
+//    @Override
+//    public void setEnabled(boolean enabled) {
+//        super.setEnabled(enabled);
+//        caption.setEnabled(enabled);
+//        for (int i = 0; i < radioGroup.getChildCount(); i++) {
+//            radioGroup.getChildAt(i).setEnabled(enabled);
+//        }
+//    }
 
     @Override
     protected void requestFocusForContentView(View nextView) {

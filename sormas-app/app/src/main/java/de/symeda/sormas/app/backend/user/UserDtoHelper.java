@@ -70,10 +70,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
         target.setUserEmail(source.getUserEmail());
 
         if (source.getUserRoles().size() > 0) {
-            target.setUserRole(source.getUserRoles().iterator().next());
-            if (source.getUserRoles().size() > 1) {
-                Log.e(UserDtoHelper.class.getName(), "User should not have more than one role: " + source.toString());
-            }
+            target.setUserRoles(source.getUserRoles());
         }
 
         target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));

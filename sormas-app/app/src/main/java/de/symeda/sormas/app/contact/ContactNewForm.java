@@ -11,6 +11,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -37,6 +38,7 @@ public class ContactNewForm extends FormTab {
         contact.setReportDateTime(new Date());
 
         binding = DataBindingUtil.inflate(inflater, R.layout.contact_new_fragment_layout, container, false);
+        editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
 
         binding.setContact(contact);
 

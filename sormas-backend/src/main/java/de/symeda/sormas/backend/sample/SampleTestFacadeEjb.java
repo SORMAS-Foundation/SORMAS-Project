@@ -9,6 +9,12 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
@@ -27,9 +33,13 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "SampleTestFacade")
 public class SampleTestFacadeEjb implements SampleTestFacade {
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	protected EntityManager em;
 
 	@EJB
 	private SampleTestService sampleTestService;
@@ -86,6 +96,29 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		return sampleTestService.getAllBySample(sample).stream()
 				.map(s -> toDto(s))
 				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public SampleTestDto getLatestBySample(SampleReferenceDto sampleRef) {
+		if (sampleRef == null) {
+			return null;
+		}
+		
+		Sample sample = sampleService.getByReferenceDto(sampleRef);
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SampleTest> cq = cb.createQuery(SampleTest.class);
+		Root<SampleTest> from = cq.from(SampleTest.class);
+		
+		cq.where(cb.equal(from.get(SampleTest.SAMPLE), sample));
+		cq.orderBy(cb.desc(from.get(SampleTest.TEST_DATE_TIME)));
+		
+		try {
+			SampleTestDto result = toDto(em.createQuery(cq).setMaxResults(1).getSingleResult());
+			return result;
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 	
 	@Override

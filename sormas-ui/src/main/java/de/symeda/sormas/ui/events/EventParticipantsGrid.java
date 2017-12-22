@@ -17,7 +17,6 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.ControllerProvider;

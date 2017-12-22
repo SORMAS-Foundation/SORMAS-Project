@@ -27,6 +27,7 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -89,8 +90,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private List<String> lesionsLocationFieldIds;
 	private List<String> monkeypoxImageFieldIds;
 
-	public SymptomsForm(Disease disease, SymptomsContext symptomsContext) {
-		super(SymptomsDto.class, SymptomsDto.I18N_PREFIX);
+	public SymptomsForm(Disease disease, SymptomsContext symptomsContext, UserRight editOrCreateUserRight) {
+		// TODO add user right parameter
+		super(SymptomsDto.class, SymptomsDto.I18N_PREFIX, editOrCreateUserRight);
         hideValidationUntilNextCommit();
 		this.disease = disease;
 		this.symptomsContext = symptomsContext;

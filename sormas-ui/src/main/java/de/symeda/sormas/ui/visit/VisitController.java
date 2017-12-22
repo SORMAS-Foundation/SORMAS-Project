@@ -14,6 +14,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
@@ -33,9 +34,9 @@ public class VisitController {
 	public void editVisit(VisitReferenceDto visitRef, Consumer<VisitReferenceDto> doneConsumer) {
     	VisitDto dto = FacadeProvider.getVisitFacade().getVisitByUuid(visitRef.getUuid());
     	VisitReferenceDto referenceDto = dto.toReference();
-    	VisitEditForm editForm = new VisitEditForm(dto.getDisease(), null, false);
+    	VisitEditForm editForm = new VisitEditForm(dto.getDisease(), null, false, UserRight.VISIT_EDIT);
         editForm.setValue(dto);
-        final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(editForm, editForm.getFieldGroup());
+        final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(editForm, editForm.getFieldGroup(), UserRight.VISIT_EDIT);
         editView.setWidth(100, Unit.PERCENTAGE);
 
         Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit visit");
@@ -72,9 +73,9 @@ public class VisitController {
 
 	public void createVisit(ContactReferenceDto contactRef, Consumer<VisitReferenceDto> doneConsumer) {
 		VisitDto visit = createNewVisit(contactRef);
-    	VisitEditForm createForm = new VisitEditForm(visit.getDisease(), FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid()), true);
+    	VisitEditForm createForm = new VisitEditForm(visit.getDisease(), FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid()), true, UserRight.VISIT_CREATE);
         createForm.setValue(visit);
-        final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(createForm, createForm.getFieldGroup());
+        final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(createForm, createForm.getFieldGroup(), UserRight.VISIT_CREATE);
         
         editView.addCommitListener(new CommitListener() {
         	@Override

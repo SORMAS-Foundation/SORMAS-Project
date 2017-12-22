@@ -361,7 +361,7 @@ public class CaseDataDto extends EntityDto {
 	}
 	
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(getUuid());
+		return new CaseReferenceDto(getUuid(), CaseReferenceDto.buildCaption(getUuid(), getPerson().getCaption()));
 	}
 
 }

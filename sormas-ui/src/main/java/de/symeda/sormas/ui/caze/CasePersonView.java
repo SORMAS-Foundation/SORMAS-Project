@@ -4,6 +4,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -27,7 +28,7 @@ public class CasePersonView extends AbstractCaseView {
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
     	CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-    	CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = ControllerProvider.getPersonController().getPersonEditComponent(caseData.getPerson().getUuid(), caseData.getDisease());
+    	CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = ControllerProvider.getPersonController().getPersonEditComponent(caseData.getPerson().getUuid(), caseData.getDisease(), UserRight.CASE_EDIT);
     	setSubComponent(personEditComponent);
     }
 }

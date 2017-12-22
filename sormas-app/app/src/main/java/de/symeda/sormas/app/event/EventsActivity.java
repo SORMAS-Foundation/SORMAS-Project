@@ -3,25 +3,22 @@ package de.symeda.sormas.app.event;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import java.util.List;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.AbstractRootTabActivity;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDao;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.util.SyncCallback;
 
 public class EventsActivity extends AbstractRootTabActivity {
 
@@ -31,7 +28,7 @@ public class EventsActivity extends AbstractRootTabActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.cases_activity_layout);
         super.onCreate(savedInstanceState);
-        setTitle(getResources().getString(R.string.main_menu_events) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
+        setTitle(getResources().getString(R.string.main_menu_events));
     }
 
     @Override
@@ -47,7 +44,13 @@ public class EventsActivity extends AbstractRootTabActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.cases_action_bar, menu);
+        inflater.inflate(R.menu.events_action_bar, menu);
+
+        User user = ConfigProvider.getUser();
+        if (user != null ) {
+            menu.findItem(R.id.action_new_event).setVisible(user.hasUserRight(UserRight.EVENT_CREATE));
+        }
+
         return true;
     }
 

@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,7 +24,6 @@ import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.util.SlidingTabLayout;
 import de.symeda.sormas.app.util.SyncCallback;
 
 public abstract class AbstractSormasActivity extends AppCompatActivity {

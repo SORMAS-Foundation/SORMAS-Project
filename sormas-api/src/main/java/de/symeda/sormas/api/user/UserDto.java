@@ -120,12 +120,7 @@ public class UserDto extends EntityDto {
 	
 	@Override
 	public String toString() {
-		String result = firstName + " " + lastName.toUpperCase();
-		// TODO we need a main user role
-		if (userRoles.size() > 0) {
-			result += " - " + userRoles.iterator().next().toShortString();					
-		}
-		return result;
+		return UserReferenceDto.buildCaption(firstName, lastName, userRoles);
 	}
 
 	

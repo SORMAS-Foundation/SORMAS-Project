@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -68,7 +69,7 @@ public class VisitEditActivity extends AbstractEditTabActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getResources().getText(R.string.headline_visit) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_visit));
         }
 
         params = getIntent().getExtras();
@@ -133,7 +134,6 @@ public class VisitEditActivity extends AbstractEditTabActivity {
         inflater.inflate(R.menu.edit_action_bar, menu);
         return true;
     }
-
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {

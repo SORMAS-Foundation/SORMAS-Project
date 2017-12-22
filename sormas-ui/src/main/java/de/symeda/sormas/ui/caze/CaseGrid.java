@@ -18,6 +18,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -29,6 +30,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.DateFilter;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
@@ -37,6 +39,8 @@ public class CaseGrid extends Grid {
 	
 	public static final String DISEASE_SHORT = "diseaseShort";
 	public static final String NUMBER_OF_PENDING_TASKS = "numberOfPendingTasks";
+	
+	private CaseCriteria caseCriteria = new CaseCriteria();
 	
 	public CaseGrid() {
         setSizeFull();
@@ -93,11 +97,8 @@ public class CaseGrid extends Grid {
 	}
     
     public void setDiseaseFilter(Disease disease) {
-		getContainer().removeContainerFilters(CaseIndexDto.DISEASE);
-		if (disease != null) {
-	    	Equal filter = new Equal(CaseIndexDto.DISEASE, disease);  
-	        getContainer().addContainerFilter(filter);
-		}
+		caseCriteria.diseaseEquals(disease);
+		reload();
 	}
 
     public void setRegionFilter(RegionReferenceDto region) {
@@ -133,7 +134,8 @@ public class CaseGrid extends Grid {
 	}
     
     public void setReportedByFilter(UserRole reportingUserRole) {
-    	reload(reportingUserRole);
+    	caseCriteria.reportingUserHasRole(reportingUserRole);
+    	reload();
     }
 
 	public void setClassificationFilter(CaseClassification classficiation) {
@@ -187,9 +189,13 @@ public class CaseGrid extends Grid {
         return (BeanItemContainer<CaseIndexDto>) container.getWrappedContainer();
     }
     
-    public void reload(UserRole reportingUserRole) {
-    	List<CaseIndexDto> cases = ControllerProvider.getCaseController().getCaseIndexList(reportingUserRole);
-        getContainer().removeAllItems();
+    public void reload() {
+    	
+    	List<CaseIndexDto> cases = FacadeProvider.getCaseFacade().getIndexList(
+    			LoginHelper.getCurrentUser().getUuid(), 
+    			caseCriteria);
+
+    	getContainer().removeAllItems();
         getContainer().addAll(cases);
     }
 }

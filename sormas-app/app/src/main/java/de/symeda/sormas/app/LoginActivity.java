@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
 
     private void openStartActivity() {
         Intent intent;
-        if (ConfigProvider.getUser().getUserRole() == UserRole.CONTACT_OFFICER) {
+        if (ConfigProvider.getUser().hasUserRole(UserRole.CONTACT_OFFICER)) {
             intent = new Intent(LoginActivity.this, ContactsActivity.class);
         } else {
             intent = new Intent(LoginActivity.this, CasesActivity.class);

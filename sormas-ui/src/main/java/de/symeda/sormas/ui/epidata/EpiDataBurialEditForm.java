@@ -5,6 +5,7 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -21,8 +22,8 @@ public class EpiDataBurialEditForm extends AbstractEditForm<EpiDataBurialDto> {
 			LayoutUtil.fluidRowLocs(EpiDataBurialDto.BURIAL_ILL, EpiDataBurialDto.BURIAL_TOUCHING)
 	;
 	
-	public EpiDataBurialEditForm(boolean create) {
-		super(EpiDataBurialDto.class, EpiDataBurialDto.I18N_PREFIX);
+	public EpiDataBurialEditForm(boolean create, UserRight editOrCreateUserRight) {
+		super(EpiDataBurialDto.class, EpiDataBurialDto.I18N_PREFIX, editOrCreateUserRight);
 		
 		setWidth(540, Unit.PIXELS);
 		

@@ -19,11 +19,7 @@ public interface ContactFacade {
 	List<ContactDto> getFollowUpBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid);
 	
 	List<ContactDto> getAllByCase(CaseReferenceDto caseRef);
-
-	List<ContactIndexDto> getIndexList(String userUuid);
-
-	List<ContactIndexDto> getIndexListByCase(CaseReferenceDto caseRef);
-
+	
 	ContactDto getContactByUuid(String uuid);
     
 	ContactDto saveContact(ContactDto dto);
@@ -43,4 +39,6 @@ public interface ContactFacade {
 	List<MapContactDto> getContactsForMap(DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, String userUuid, List<MapCaseDto> mapCaseDtos);
 	
 	void deleteContact(ContactReferenceDto contactRef, String userUuid);
+	
+	List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria);
 }

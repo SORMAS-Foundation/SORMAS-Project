@@ -1,43 +1,27 @@
 package de.symeda.sormas.app;
 
-import android.accounts.AuthenticatorException;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
-import java.net.ConnectException;
-
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.CaseNewActivity;
 import de.symeda.sormas.app.caze.CasesActivity;
-import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.contact.ContactsActivity;
 import de.symeda.sormas.app.event.EventsActivity;
 import de.symeda.sormas.app.reports.ReportsActivity;
-import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.sample.SamplesActivity;
 import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.task.TasksActivity;
-import de.symeda.sormas.app.util.SyncCallback;
 
 public abstract class AbstractRootTabActivity extends AbstractTabActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -93,24 +77,16 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity implem
         User user = ConfigProvider.getUser();
         if (user != null ) {
             Menu menu = navigationView.getMenu();
-            boolean isContactOfficer = user.getUserRole() == UserRole.CONTACT_OFFICER;
-            boolean isSurveillanceOrInformant =
-                    user.getUserRole() == UserRole.SURVEILLANCE_OFFICER
-                            || user.getUserRole() == UserRole.CASE_OFFICER
-                            || user.getUserRole() == UserRole.INFORMANT;
-            boolean isCaseSurveillanceOrInformant =
-                    isSurveillanceOrInformant
-                            || user.getUserRole() == UserRole.CASE_OFFICER;
-            menu.findItem(R.id.nav_cases).setVisible(isCaseSurveillanceOrInformant);
-            menu.findItem(R.id.nav_samples).setVisible(isCaseSurveillanceOrInformant);
-            menu.findItem(R.id.nav_events).setVisible(isCaseSurveillanceOrInformant);
-            menu.findItem(R.id.nav_contacts).setVisible(isContactOfficer);
-            menu.findItem(R.id.nav_reports).setVisible(isSurveillanceOrInformant);
+            menu.findItem(R.id.nav_tasks).setVisible(user.hasUserRight(UserRight.TASK_VIEW));
+            menu.findItem(R.id.nav_cases).setVisible(user.hasUserRight(UserRight.CASE_VIEW));
+            menu.findItem(R.id.nav_samples).setVisible(user.hasUserRight(UserRight.SAMPLE_VIEW));
+            menu.findItem(R.id.nav_events).setVisible(user.hasUserRight(UserRight.EVENT_VIEW));
+            menu.findItem(R.id.nav_contacts).setVisible(user.hasUserRight(UserRight.CONTACT_VIEW));
+            menu.findItem(R.id.nav_reports).setVisible(user.hasUserRight(UserRight.WEEKLYREPORT_VIEW));
 
             // replace empty user sub header with user name and role
-            String username = ConfigProvider.getUsername();
-            String userRole = ConfigProvider.getUser().getUserRole().toString();
-            menu.findItem(R.id.navigation_user_sub_header).setTitle(username + " (" + userRole + ")");
+            String username = ConfigProvider.getUser().toString();
+            menu.findItem(R.id.navigation_user_sub_header).setTitle(username);
         }
 
     }
@@ -146,11 +122,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity implem
     @Override
     public void setTitle(CharSequence title) {
         mainViewTitle = title;
-        String userRole = "";
-        if (ConfigProvider.getUser()!=null && ConfigProvider.getUser().getUserRole() !=null) {
-            userRole = " - " + ConfigProvider.getUser().getUserRole().toShortString();
-        }
-        getSupportActionBar().setTitle(mainViewTitle + userRole);
+        getSupportActionBar().setTitle(mainViewTitle);
     }
 
     public void showCasesView() {

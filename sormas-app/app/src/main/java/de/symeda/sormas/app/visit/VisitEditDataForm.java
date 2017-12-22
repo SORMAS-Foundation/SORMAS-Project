@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -27,6 +28,7 @@ public class VisitEditDataForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.visit_data_fragment_layout, container, false);
+        editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
 
         Visit visit;
 

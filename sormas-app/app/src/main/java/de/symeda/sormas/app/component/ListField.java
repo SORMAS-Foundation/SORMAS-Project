@@ -146,13 +146,6 @@ public class ListField<FieldClass extends AbstractDomainObject> extends Property
 
     }
 
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        listView.setEnabled(enabled);
-        caption.setEnabled(enabled);
-    }
-
     public ArrayAdapter getListAdapter() {
         return adapter;
     }

@@ -6,10 +6,13 @@ import com.googlecode.openbeans.Introspector;
 import com.googlecode.openbeans.PropertyDescriptor;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.persistence.Transient;
 
 import de.symeda.sormas.api.utils.DataHelper;
 
@@ -23,6 +26,8 @@ public final class AdoPropertyHelper {
     private static final ConcurrentHashMap<Class<? extends AbstractDomainObject>, PropertyDescriptor[]> propertyDescriptorCache
             = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<PropertyDescriptor, Boolean> propertyHasEmbeddedAnnotationCache
+            = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<PropertyDescriptor, Boolean> propertyHasTransientAnnotationCache
             = new ConcurrentHashMap<>();
 
     public static PropertyDescriptor[] getPropertyDescriptors(Class<? extends AbstractDomainObject> type) {
@@ -44,6 +49,14 @@ public final class AdoPropertyHelper {
             propertyHasEmbeddedAnnotationCache.put(property, property.getPropertyType().isAnnotationPresent(EmbeddedAdo.class));
         }
         return propertyHasEmbeddedAnnotationCache.get(property);
+    }
+
+    public static boolean hasTransientAnnotation(PropertyDescriptor property) {
+        if (!propertyHasTransientAnnotationCache.containsKey(property)) {
+            Method readMethod = property.getReadMethod();
+            propertyHasTransientAnnotationCache.put(property, readMethod != null && readMethod.isAnnotationPresent(Transient.class));
+        }
+        return propertyHasTransientAnnotationCache.get(property);
     }
 
     /**
@@ -167,7 +180,8 @@ public final class AdoPropertyHelper {
                 || AbstractDomainObject.MODIFIED.equals(property.getName())
                 || AbstractDomainObject.LAST_OPENED_DATE.equals(property.getName())
                 || property.getWriteMethod() == null
-                || property.getReadMethod() == null)
+                || property.getReadMethod() == null
+                || hasTransientAnnotation(property))
             return false;
         return true;
     }

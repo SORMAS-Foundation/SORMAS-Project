@@ -21,10 +21,10 @@ import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.epidata.EpiData;
@@ -428,7 +428,11 @@ public class Case extends AbstractDomainObject {
 	
 	@Override
 	public String toString() {
-		return getPerson().toString() + " (" + DataHelper.getShortUuid(getUuid()) + ")";
+		return CaseReferenceDto.buildCaption(getUuid(), person.getFirstName(), person.getLastName());
+	}
+	
+	public CaseReferenceDto toReference() {
+		return new CaseReferenceDto(getUuid(), person.getFirstName(), person.getLastName());
 	}
 	
 	@OneToMany(cascade = {}, mappedBy = Task.CAZE)

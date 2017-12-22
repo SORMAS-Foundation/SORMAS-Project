@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
@@ -41,6 +42,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -49,6 +51,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -80,7 +83,6 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
-import de.symeda.sormas.backend.task.TaskCriteria;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -150,7 +152,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseIndexDto> getIndexList(String userUuid, UserRole reportingUserRole) {
+	public List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
@@ -160,9 +162,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, District> district = caze.join(Case.DISTRICT, JoinType.LEFT);
 		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Join<Case, User> surveillanceOfficer = caze.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
-		Join<Case, User> reportingUser = caze.join(Case.REPORTING_USER, JoinType.LEFT);
 
-		cq.multiselect(caze.get(Case.CREATION_DATE), caze.get(Case.CHANGE_DATE), caze.get(Case.UUID), 
+		cq.multiselect(caze.get(Case.UUID), 
 				caze.get(Case.EPID_NUMBER), person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME),
 				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), caze.get(Case.CASE_CLASSIFICATION),
 				caze.get(Case.INVESTIGATION_STATUS), person.get(Person.PRESENT_CONDITION),
@@ -172,13 +173,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		User user = userService.getByUuid(userUuid);		
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 		
-		if (reportingUserRole != null) {
-			Predicate userRoleFilter = cb.isMember(reportingUserRole, reportingUser.get(User.USER_ROLES));
-			if (filter != null) {
-				filter = cb.and(filter, userRoleFilter);
-			} else {
-				filter = userRoleFilter;
-			}
+		if (caseCriteria != null) {
+			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 		
 		if (filter != null) {
@@ -200,40 +197,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		return caseService.getAllUuids(user);
 	}
-
-	@Override
-	public List<CaseDataDto> getAllCasesByDisease(Disease disease, String userUuid) {
-		User user = userService.getByUuid(userUuid);
-
-		if (user == null) {
-			return Collections.emptyList();
-		}
-
-		return caseService.getAllByDisease( disease, user).stream().map(c -> toDto(c))
-				.collect(Collectors.toList());
-	}
-
-	@Override
-	public List<CaseDataDto> getAllCasesBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid) {
-		User user = userService.getByUuid(userUuid);
-		District district = districtService.getByReferenceDto(districtRef);
-
-		if (user == null) {
-			return Collections.emptyList();
-		}
-
-		return caseService.getAllBetween(fromDate, toDate, district, disease, user).stream().map(c -> toDto(c))
-				.collect(Collectors.toList());
-	}
 	
-	@Override
-	public List<CaseReferenceDto> getAllCasesAfterAsReference(Date date, String userUuid) {
-
-		User user = userService.getByUuid(userUuid);
-
-		return caseService.getAllAfter(date, user).stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
-	}
-
 	@Override
 	public List<CaseReferenceDto> getSelectableCases(UserReferenceDto userRef) {
 
@@ -400,7 +364,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Sample sample : samples) {
 			sampleService.delete(sample);
 		}
-		List<Task> tasks = taskService.findBy(new TaskCriteria().cazeEquals(caze));
+		List<Task> tasks = taskService.findBy(new TaskCriteria().cazeEquals(caseRef));
 		for (Task task : tasks) {
 			taskService.delete(task);
 		}
@@ -522,10 +486,12 @@ public class CaseFacadeEjb implements CaseFacade {
 	 */
 	public void updateCaseInvestigationProcess(Case caze) {
 
+		CaseReferenceDto caseRef = caze.toReference();
+		
 		// any pending case investigation task?
 		long pendingCount = taskService.getCount(new TaskCriteria()
 				.taskTypeEquals(TaskType.CASE_INVESTIGATION)
-				.cazeEquals(caze)
+				.cazeEquals(caseRef)
 				.taskStatusEquals(TaskStatus.PENDING));
 
 		if (pendingCount > 0) {
@@ -538,7 +504,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			// get "case investigation" task created last
 			List<Task> cazeTasks = taskService.findBy(new TaskCriteria()
 					.taskTypeEquals(TaskType.CASE_INVESTIGATION)
-					.cazeEquals(caze));
+					.cazeEquals(caseRef));
 
 			if (cazeTasks.isEmpty()) {
 				// no tasks at all -> create
@@ -723,10 +689,20 @@ public class CaseFacadeEjb implements CaseFacade {
 			return resultList;
 		} else {
 			List<Pair<DistrictDto, BigDecimal>> resultList = results.stream()
-					.map(e -> new Pair<DistrictDto, BigDecimal>(DistrictFacadeEjb.toDto((District)e[0]), 
-							new BigDecimal((Long)e[1])
-								.divide(new BigDecimal(((District)e[0]).getPopulation())
-								.divide(new BigDecimal(DistrictDto.CASE_INCIDENCE_DIVISOR), 1, RoundingMode.HALF_UP), 1, RoundingMode.HALF_UP)))
+					.map(e -> {
+						District district = (District) e[0];
+						Integer population = district.getPopulation();
+						Long caseCount = (Long) e[1];
+						
+						if (population == null || population <= 0) {
+							// No or negative population - these entries will be cut off in the UI
+							return new Pair<DistrictDto, BigDecimal>(DistrictFacadeEjb.toDto(district), new BigDecimal(0));
+						} else {
+							return new Pair<DistrictDto, BigDecimal>(DistrictFacadeEjb.toDto(district), 
+									new BigDecimal(caseCount).divide(
+											new BigDecimal((double) population / DistrictDto.CASE_INCIDENCE_DIVISOR), 1, RoundingMode.HALF_UP));
+						}
+					})
 					.sorted(new Comparator<Pair<DistrictDto, BigDecimal>>() {
 						@Override
 						public int compare(Pair<DistrictDto, BigDecimal> o1, Pair<DistrictDto, BigDecimal> o2) {

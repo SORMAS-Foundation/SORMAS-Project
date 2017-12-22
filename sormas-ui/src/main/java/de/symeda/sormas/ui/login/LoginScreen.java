@@ -12,6 +12,8 @@ import com.vaadin.ui.LoginForm;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.ui.utils.UserRightsException;
+
 /**
  * UI content when the user is not logged in yet.
  */
@@ -87,14 +89,17 @@ public class LoginScreen extends CssLayout {
     }
 
     private void login(String username, String password) {
-        if (LoginHelper.login(username, password)) {
-            loginListener.loginSuccessful();
-        } else {
-            showNotification(new Notification("Login failed",
-                    "Please check your username and password and try again.",
-                    Notification.Type.WARNING_MESSAGE));
-            //username.focus();
-        }
+    	try {
+	        if (LoginHelper.login(username, password)) {
+	            loginListener.loginSuccessful();
+	        } else {
+	            showNotification(new Notification("Login failed",
+	                    "Please check your username and password and try again.",
+	                    Notification.Type.WARNING_MESSAGE));
+	        }
+    	} catch (UserRightsException e) {
+    		showNotification(new Notification("Login failed", e.getMessage(), Notification.Type.WARNING_MESSAGE));
+    	}
     }
 
     private void showNotification(Notification notification) {

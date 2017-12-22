@@ -39,8 +39,6 @@ public class CaseContactsView extends AbstractCaseView {
         setSizeFull();
 
         grid = new ContactGrid();
-//        grid.setColumns(ContactIndexDto.UUID, ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY, 
-//        		ContactIndexDto.LAST_CONTACT_DATE, ContactIndexDto.CONTACT_OFFICER, ContactGrid.ASSOCIATED_CASE);
 
         gridLayout = new VerticalLayout();
         gridLayout.addComponent(createTopBar());
@@ -65,14 +63,15 @@ public class CaseContactsView extends AbstractCaseView {
         
         for (ContactClassification status : ContactClassification.values()) {
 	    	Button statusButton = new Button(status.toString(), e -> {
-	    		grid.reload(getCaseRef());
 	    		grid.setClassificationFilter(status);
+	    		grid.reload();
 	    	});
 	    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
 	        topLayout.addComponent(statusButton);
         }
+        topLayout.setExpandRatio(topLayout.getComponent(topLayout.getComponentCount()-1), 1);
 
-        if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+        if (LoginHelper.hasUserRight(UserRight.CONTACT_CREATE)) {
 	        newButton = new Button("New contact");
 	        newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 	        newButton.setIcon(FontAwesome.PLUS_CIRCLE);
@@ -93,14 +92,20 @@ public class CaseContactsView extends AbstractCaseView {
     	
         districtFilter = new ComboBox();
         districtFilter.setWidth(240, Unit.PIXELS);
-        districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CAZE_DISTRICT));
-        districtFilter.addValueChangeListener(e->grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue())));
+        districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISTRICT_UUID));
+        districtFilter.addValueChangeListener(e -> {
+        	DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
+        	grid.setDistrictFilter(district != null ? district.getUuid() : null);
+        });
         topLayout.addComponent(districtFilter);
 
         officerFilter = new ComboBox();
         officerFilter.setWidth(240, Unit.PIXELS);
-        officerFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER));
-        officerFilter.addValueChangeListener(e->grid.setContactOfficerFilter(((UserReferenceDto)e.getProperty().getValue())));
+        officerFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
+        officerFilter.addValueChangeListener(e -> {
+        	UserReferenceDto officer = (UserReferenceDto) e.getProperty().getValue();
+        	grid.setContactOfficerFilter(officer != null ? officer.getUuid() : null);
+        });
         topLayout.addComponent(officerFilter);
 
         topLayout.setExpandRatio(officerFilter, 1);
@@ -108,7 +113,7 @@ public class CaseContactsView extends AbstractCaseView {
     }
 	
 	private void update() {
-    	grid.reload(getCaseRef());
+    	grid.setCaseFilter(getCaseRef());
 
     	CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 

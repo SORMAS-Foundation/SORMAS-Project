@@ -5,6 +5,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.person.PersonEditForm;
 
@@ -28,6 +29,6 @@ public class ContactPersonView extends AbstractContactView {
     	super.enter(event);
     	ContactDto dto = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
     	CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
-    	setSubComponent(ControllerProvider.getPersonController().getPersonEditComponent(dto.getPerson().getUuid(), caseDto.getDisease()));
+    	setSubComponent(ControllerProvider.getPersonController().getPersonEditComponent(dto.getPerson().getUuid(), caseDto.getDisease(), UserRight.CONTACT_EDIT));
     }
 }

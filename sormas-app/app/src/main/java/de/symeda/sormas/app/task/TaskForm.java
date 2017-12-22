@@ -23,6 +23,7 @@ import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.AbstractSormasActivity;
@@ -64,6 +65,7 @@ public class TaskForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.task_fragment_layout, container, false);
+        editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
 
         SormasApplication application = (SormasApplication) getContext().getApplicationContext();
         tracker = application.getDefaultTracker();
@@ -89,9 +91,7 @@ public class TaskForm extends FormTab {
             binding.taskCreatorUser.setVisibility(View.GONE);
         }
 
-        List<TaskStatus> possibleStatusChanges = TaskHelper.getPossibleStatusChanges(task.getTaskStatus(), ConfigProvider.getUser().getUserRole());
-
-        if (possibleStatusChanges.contains(TaskStatus.NOT_EXECUTABLE)) {
+        if (task.getTaskStatus() == TaskStatus.PENDING) {
             binding.taskNotExecutableBtn.setVisibility(View.VISIBLE);
             binding.taskNotExecutableBtn.setText(TaskStatus.NOT_EXECUTABLE.toString());
             binding.taskNotExecutableBtn.setOnClickListener(new View.OnClickListener() {
@@ -124,7 +124,7 @@ public class TaskForm extends FormTab {
             binding.taskNotExecutableBtn.setVisibility(View.GONE);
         }
 
-        if (possibleStatusChanges.contains(TaskStatus.DONE)) {
+        if (task.getTaskStatus() == TaskStatus.PENDING) {
             binding.taskDoneBtn.setVisibility(View.VISIBLE);
             binding.taskDoneBtn.setText(TaskStatus.DONE.toString());
             binding.taskDoneBtn.setOnClickListener(new View.OnClickListener() {

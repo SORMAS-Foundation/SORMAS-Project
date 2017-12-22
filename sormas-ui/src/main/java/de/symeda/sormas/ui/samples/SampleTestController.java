@@ -10,6 +10,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestFacade;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -29,9 +30,9 @@ public class SampleTestController {
 	}
 	
 	public void create(SampleReferenceDto sampleRef, SampleTestGrid grid) {
-		SampleTestEditForm createForm = new SampleTestEditForm(true);
+		SampleTestEditForm createForm = new SampleTestEditForm(true, UserRight.SAMPLETEST_CREATE);
 		createForm.setValue(createNewSampleTest(sampleRef));
-		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(createForm, createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(createForm, createForm.getFieldGroup(), UserRight.SAMPLETEST_CREATE);
 	
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -51,9 +52,9 @@ public class SampleTestController {
 		// get fresh data
 		SampleTestDto newDto = stf.getByUuid(dto.getUuid());
 		
-		SampleTestEditForm form = new SampleTestEditForm(false);
+		SampleTestEditForm form = new SampleTestEditForm(false, UserRight.SAMPLETEST_EDIT);
 		form.setValue(newDto);
-		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(form, form.getFieldGroup(), UserRight.SAMPLETEST_EDIT);
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Edit sample test result");
 		

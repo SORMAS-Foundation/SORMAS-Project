@@ -87,11 +87,17 @@ public class LocationDto extends EntityDto {
 	
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(address!=null?address + " ":"");
-		sb.append(details!=null?details + " ":"");
-		sb.append(city!=null?city:"");
-		return sb.toString();
+		return LocationReferenceDto.buildCaption(
+				region != null ? region.getCaption() : null, 
+				district != null ? district.getCaption() : null, 
+				community != null ? community.getCaption() : null, city, address);
+	}
+	
+	public LocationReferenceDto toReference() {
+		return new LocationReferenceDto(getUuid(), 
+				region != null ? region.getCaption() : null, 
+				district != null ? district.getCaption() : null, 
+				community != null ? community.getCaption() : null, city, address);
 	}
 	
 	public boolean isEmptyLocation() {

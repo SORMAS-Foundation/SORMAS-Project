@@ -1,12 +1,9 @@
 package de.symeda.sormas.app.caze;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +18,7 @@ import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
@@ -51,7 +49,8 @@ public class CaseEditDataForm extends FormTab {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.case_data_fragment_layout, container, false);
 
-        final String caseUuid = (String) getArguments().getString(Case.UUID);
+        editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
+        final String caseUuid = getArguments().getString(Case.UUID);
         final CaseDao caseDao = DatabaseHelper.getCaseDao();
         Case caze = caseDao.queryUuid(caseUuid);
         binding.setCaze(caze);
@@ -60,7 +59,7 @@ public class CaseEditDataForm extends FormTab {
         // the "Not yet classified" classification is hidden from informants
         FieldHelper.initSpinnerField(binding.caseDataCaseOfficerClassification, CaseClassification.class);
         User user = ConfigProvider.getUser();
-        if (user.getUserRole() == UserRole.INFORMANT) {
+        if (user.hasUserRole(UserRole.INFORMANT)) {
             binding.caseDataCaseOfficerClassification.setVisibility(View.GONE);
             if (binding.getCaze().getCaseClassification() == CaseClassification.NOT_CLASSIFIED) {
                 binding.caseDataCaseClassification.setVisibility(View.GONE);
@@ -141,7 +140,7 @@ public class CaseEditDataForm extends FormTab {
             }
         });
 
-        if (ConfigProvider.getUser().getUserRole() != UserRole.INFORMANT) {
+        if (!ConfigProvider.getUser().hasUserRole(UserRole.INFORMANT)) {
             binding.caseDataEpidNumber.addValueChangedListener(new PropertyField.ValueChangeListener() {
                 @Override
                 public void onChange(PropertyField field) {
@@ -159,7 +158,7 @@ public class CaseEditDataForm extends FormTab {
             binding.caseDataEpidNumber.setEnabled(false);
         }
 
-        if (ConfigProvider.getUser().getUserRole() == UserRole.SURVEILLANCE_OFFICER) {
+        if (ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
             binding.caseDataCaseOfficerClassification.addValueChangedListener(new PropertyField.ValueChangeListener() {
                 @Override
                 public void onChange(PropertyField field) {
@@ -173,7 +172,7 @@ public class CaseEditDataForm extends FormTab {
             });
         }
 
-        if (ConfigProvider.getUser().getUserRole() == UserRole.CASE_OFFICER || ConfigProvider.getUser().getUserRole() == UserRole.SURVEILLANCE_OFFICER) {
+        if (user.hasUserRight(UserRight.CASE_MOVE)) {
             binding.caseDataMove.setVisibility(View.VISIBLE);
             binding.caseDataMove.setPaintFlags(binding.caseDataMove.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             binding.caseDataMove.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));

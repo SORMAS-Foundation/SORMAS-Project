@@ -55,7 +55,7 @@ public class TaskDto extends EntityDto {
 	private Double closedLat;
 	private Double closedLon;
 	private Float closedLatLonAccuracy;
-
+	
 	public TaskContext getTaskContext() {
 		return taskContext;
 	}

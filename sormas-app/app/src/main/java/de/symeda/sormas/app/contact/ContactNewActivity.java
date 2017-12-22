@@ -20,6 +20,7 @@ import java.util.List;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -37,6 +38,7 @@ import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.validation.ContactValidator;
@@ -68,11 +70,15 @@ public class ContactNewActivity extends AppCompatActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_contact) + " - " + ConfigProvider.getUser().getUserRole().toShortString());
+            getSupportActionBar().setTitle(getResources().getText(R.string.headline_new_contact));
         }
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Bundle arguments = new Bundle();
+        arguments.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.CONTACT_CREATE);
         contactNewForm = new ContactNewForm();
+        contactNewForm.setArguments(arguments);
+
         ft.add(R.id.fragment_frame, contactNewForm).commit();
     }
 

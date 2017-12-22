@@ -14,6 +14,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.ui.utils.UserRightsException;
 
 
 /**
@@ -23,12 +24,18 @@ import de.symeda.sormas.api.user.UserRole;
  */
 public class LoginHelper {
 
-    public static boolean login(String username, String password) {
+    public static boolean login(String username, String password) throws UserRightsException {
+
         if (username == null || username.isEmpty())
             return false;
         
         try {
 			VaadinServletService.getCurrentServletRequest().login(username, password);
+			// check user role
+			if (!VaadinServletService.getCurrentServletRequest().isUserInRole(UserRole._USER)) {
+				VaadinServletService.getCurrentServletRequest().logout();
+				throw new UserRightsException("Your user account does not have access to the web application.");
+			}
 		} catch (ServletException e) {
 			return false;
 		}

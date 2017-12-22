@@ -3,10 +3,8 @@ package de.symeda.sormas.ui.events;
 import java.util.List;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.MethodProperty;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.ui.Grid;
@@ -15,12 +13,15 @@ import com.vaadin.ui.renderers.DateRenderer;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
@@ -30,21 +31,23 @@ public class EventGrid extends Grid {
 	public static final String PENDING_EVENT_TASKS = "pendingEventTasks";
 	public static final String DISEASE_SHORT = "diseaseShort";
 
+	private final EventCriteria eventCriteria = new EventCriteria();
+	
 	public EventGrid() {
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);
 		
-		BeanItemContainer<EventDto> container = new BeanItemContainer<EventDto>(EventDto.class);
+		BeanItemContainer<EventIndexDto> container = new BeanItemContainer<EventIndexDto>(EventIndexDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 		
 		generatedContainer.addGeneratedProperty(INFORMATION_SOURCE, new PropertyValueGenerator<String>() {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
-				EventDto eventDto = (EventDto)itemId;
-				return (eventDto.getSrcFirstName() != null ? eventDto.getSrcFirstName() : "") + " " + 
-						(eventDto.getSrcLastName() != null ? eventDto.getSrcLastName() : "") + 
-						(eventDto.getSrcTelNo() != null && !eventDto.getSrcTelNo().isEmpty() ? " (" + eventDto.getSrcTelNo() + ")" : "");
+				EventIndexDto event = (EventIndexDto) itemId;
+				return (event.getSrcFirstName() != null ? event.getSrcFirstName() : "") + " " + 
+						(event.getSrcLastName() != null ? event.getSrcLastName() : "") + 
+						(event.getSrcTelNo() != null && !event.getSrcTelNo().isEmpty() ? " (" + event.getSrcTelNo() + ")" : "");
 			}
 			@Override
 			public Class<String> getType() {
@@ -56,9 +59,9 @@ public class EventGrid extends Grid {
 		generatedContainer.addGeneratedProperty(PENDING_EVENT_TASKS, new PropertyValueGenerator<String>() {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
-				EventDto eventDto = (EventDto)itemId;
-				return String.format(I18nProperties.getPrefixFieldCaption(EventDto.I18N_PREFIX, PENDING_EVENT_TASKS + "Format"),
-						FacadeProvider.getTaskFacade().getPendingTaskCountByEvent(eventDto));
+				EventIndexDto event = (EventIndexDto)itemId;
+				return String.format(I18nProperties.getPrefixFieldCaption(EventIndexDto.I18N_PREFIX, PENDING_EVENT_TASKS + "Format"),
+						FacadeProvider.getTaskFacade().getPendingTaskCountByEvent(event.toReference()));
 			}
 			@Override
 			public Class<String> getType() {
@@ -69,10 +72,10 @@ public class EventGrid extends Grid {
 		generatedContainer.addGeneratedProperty(DISEASE_SHORT, new PropertyValueGenerator<String>() {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
-				EventDto eventDto = (EventDto) itemId;
-				return eventDto.getDisease() != Disease.OTHER 
-						? (eventDto.getDisease() != null ? eventDto.getDisease().toShortString() : "")
-						: DataHelper.toStringNullable(eventDto.getDiseaseDetails());
+				EventIndexDto event = (EventIndexDto) itemId;
+				return event.getDisease() != Disease.OTHER 
+						? (event.getDisease() != null ? event.getDisease().toShortString() : "")
+						: DataHelper.toStringNullable(event.getDiseaseDetails());
 			}
 			@Override
 			public Class<String> getType() {
@@ -80,75 +83,51 @@ public class EventGrid extends Grid {
 			}
         });
 		
-		setColumns(EventDto.UUID, EventDto.EVENT_TYPE, DISEASE_SHORT, EventDto.EVENT_STATUS,
-				EventDto.EVENT_DATE, EventDto.EVENT_DESC, EventDto.EVENT_LOCATION, INFORMATION_SOURCE, EventDto.REPORT_DATE_TIME, PENDING_EVENT_TASKS);
+		setColumns(EventIndexDto.UUID, EventIndexDto.EVENT_TYPE, DISEASE_SHORT, EventIndexDto.EVENT_STATUS,
+				EventIndexDto.EVENT_DATE, EventIndexDto.EVENT_DESC, EventIndexDto.EVENT_LOCATION, INFORMATION_SOURCE, EventIndexDto.REPORT_DATE_TIME, PENDING_EVENT_TASKS);
 		
-		getColumn(EventDto.UUID).setRenderer(new UuidRenderer());
-		getColumn(EventDto.EVENT_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
-		getColumn(EventDto.REPORT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
+		getColumn(EventIndexDto.UUID).setRenderer(new UuidRenderer());
+		getColumn(EventIndexDto.EVENT_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
+		getColumn(EventIndexDto.REPORT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
 		
 		for(Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixFieldCaption(
-					EventDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+					EventIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 		
 		addItemClickListener(e -> ControllerProvider.getEventController().navigateToData(
-				((EventDto)e.getItemId()).getUuid()));
+				((EventIndexDto)e.getItemId()).getUuid()));
 	}
 	
 	public void setStatusFilter(EventStatus eventStatus) {
-		getContainer().removeContainerFilters(EventDto.EVENT_STATUS);
-		if(eventStatus != null) {
-			Equal filter = new Equal(EventDto.EVENT_STATUS, eventStatus);
-			getContainer().addContainerFilter(filter);
-		}
+		eventCriteria.eventStatusEquals(eventStatus);
+		reload();
 	}
 	
 	public void setEventTypeFilter(EventType eventType) {
-		getContainer().removeContainerFilters(EventDto.EVENT_TYPE);
-		if(eventType != null) {
-			Equal filter = new Equal(EventDto.EVENT_TYPE, eventType);
-			getContainer().addContainerFilter(filter);
-		}
+		eventCriteria.eventTypeEquals(eventType);
+		reload();
 	}
 	
 	public void setDiseaseFilter(Disease disease) {
-		getContainer().removeContainerFilters(EventDto.DISEASE);
-		if(disease != null) {
-			Equal filter = new Equal(EventDto.DISEASE, disease);
-			getContainer().addContainerFilter(filter);
-		}
+		eventCriteria.diseaseEquals(disease);
+		reload();
 	}
 	
+    public void setReportedByFilter(UserRole reportingUserRole) {
+    	eventCriteria.reportingUserHasRole(reportingUserRole);
+    	reload();
+    }
+    
 	@SuppressWarnings("unchecked")
-	private BeanItemContainer<EventDto> getContainer() {
+	private BeanItemContainer<EventIndexDto> getContainer() {
 		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
-		return (BeanItemContainer<EventDto>) container.getWrappedContainer();
+		return (BeanItemContainer<EventIndexDto>) container.getWrappedContainer();
 	}
 	
 	public void reload() {
-		List<EventDto> events = ControllerProvider.getEventController().getEventIndexList();
+		List<EventIndexDto> events = FacadeProvider.getEventFacade().getIndexList(LoginHelper.getCurrentUserAsReference().getUuid(), eventCriteria);
 		getContainer().removeAllItems();
 		getContainer().addAll(events);
 	}
-	
-	public void refresh(EventDto event) {
-        // We avoid updating the whole table through the backend here so we can
-        // get a partial update for the grid
-		BeanItem<EventDto> item = getContainer().getItem(event);
-		if(item != null) {
-            // Updated product
-			@SuppressWarnings("rawtypes")
-			MethodProperty p = (MethodProperty) item.getItemProperty(EventDto.UUID);
-			p.fireValueChange();
-		} else {
-            // New product
-			getContainer().addBean(event);
-		}
-	}
-	
-	public void remove(EventDto event) {
-		getContainer().removeItem(event);
-	}
-
 }

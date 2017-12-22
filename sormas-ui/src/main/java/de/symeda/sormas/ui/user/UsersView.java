@@ -57,7 +57,7 @@ public class UsersView extends AbstractView {
         
         addComponent(gridLayout);
         
-    	if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+    	if (LoginHelper.hasUserRight(UserRight.USER_CREATE)) {
 	        createButton = new Button("New user");
 	        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 	        createButton.setIcon(FontAwesome.PLUS_CIRCLE);

@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.AbstractRootTabActivity;
 import de.symeda.sormas.app.R;

@@ -1,14 +1,10 @@
 package de.symeda.sormas.app.caze;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,6 +12,7 @@ import android.view.MenuItem;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -29,9 +26,6 @@ import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.reports.ReportsActivity;
-import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.util.SyncCallback;
 
 public class CasesActivity extends AbstractRootTabActivity {
 
@@ -57,6 +51,12 @@ public class CasesActivity extends AbstractRootTabActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.cases_action_bar, menu);
+
+        User user = ConfigProvider.getUser();
+        if (user != null ) {
+            menu.findItem(R.id.action_new_case).setVisible(user.hasUserRight(UserRight.CASE_CREATE));
+        }
+
         return true;
     }
 
@@ -94,7 +94,8 @@ public class CasesActivity extends AbstractRootTabActivity {
             case R.id.action_new_case:
                 EpiWeek lastEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
                 User user = ConfigProvider.getUser();
-                if (user.getUserRole() == UserRole.INFORMANT && DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(lastEpiWeek, ConfigProvider.getUser()) == null) {
+                if (user.hasUserRole(UserRole.INFORMANT)
+                        && DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(lastEpiWeek, ConfigProvider.getUser()) == null) {
                     AlertDialog noLastWeeklyReportDialog = buildNoLastWeeklyReportDialog();
                     noLastWeeklyReportDialog.show();
                 } else {
@@ -136,4 +137,5 @@ public class CasesActivity extends AbstractRootTabActivity {
 
         return dialog;
     }
+
 }

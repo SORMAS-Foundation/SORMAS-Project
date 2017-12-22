@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.AbstractEditTabActivity;
 import de.symeda.sormas.app.EnterPinActivity;
 import de.symeda.sormas.app.LoginActivity;

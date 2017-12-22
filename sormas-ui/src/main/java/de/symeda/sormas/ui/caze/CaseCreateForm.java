@@ -15,6 +15,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -36,8 +37,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 					LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS)
 					);
 
-    public CaseCreateForm() {
-        super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
+    public CaseCreateForm(UserRight editOrCreateUserRight) {
+        super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, editOrCreateUserRight);
 
         setWidth(540, Unit.PIXELS);		
         
@@ -61,31 +62,24 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     	facilityDetails.setVisible(false);
     	
     	region.addValueChangeListener(e -> {
-    		district.removeAllItems();
     		RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
-    		if (regionDto != null) {
-    			district.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()));
-    		}
+    		FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
        	});
     	district.addValueChangeListener(e -> {
     		if (community.getValue() == null) {
-    			facility.removeAllItems();
+    			FieldHelper.removeItems(facility);
     		}
-    		community.removeAllItems();
+    		FieldHelper.removeItems(community);
     		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
-    		if (districtDto != null) {
-    			community.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()));
-    			facility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true));
-    		}
+    		FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
+    		FieldHelper.updateItems(facility, districtDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true) : null);
     	});
     	community.addValueChangeListener(e -> {
-    		facility.removeAllItems();
+    		FieldHelper.removeItems(facility);
     		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
-    		if (communityDto != null) {
-    			facility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true));
-    		} else if (district.getValue() != null) {
-    			facility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true));
-    		}
+    		FieldHelper.updateItems(facility, communityDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true) :
+    			district.getValue() != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true) :
+    				null);
     	});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 

@@ -13,6 +13,14 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
 
@@ -23,6 +31,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
@@ -30,37 +39,40 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.task.Task;
-import de.symeda.sormas.backend.task.TaskCriteria;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "ContactFacade")
 public class ContactFacadeEjb implements ContactFacade {
 
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	protected EntityManager em;
+	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
@@ -138,31 +150,6 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactIndexDto> getIndexList(String userUuid) {
-
-		User user = userService.getByUuid(userUuid);
-
-		if (user == null) {
-			return Collections.emptyList();
-		}
-
-		return contactService.getAllAfter(null, user).stream()
-				.map(c -> toIndexDto(c))
-				.collect(Collectors.toList());
-	}
-
-	@Override
-	public List<ContactIndexDto> getIndexListByCase(CaseReferenceDto caseRef) {
-
-		Case caze = caseService.getByReferenceDto(caseRef);
-
-		return contactService.getAllByCase(caze).stream()
-				.map(c -> toIndexDto(c))
-				.collect(Collectors.toList());
-	}
-
-
-	@Override
 	public ContactDto getContactByUuid(String uuid) {
 		return toDto(contactService.getByUuid(uuid));
 	}
@@ -228,11 +215,52 @@ public class ContactFacadeEjb implements ContactFacade {
 		for (Visit visit : visits) {
 			visitService.delete(visit);
 		}
-		List<Task> tasks = taskService.findBy(new TaskCriteria().contactEquals(contact));
+		List<Task> tasks = taskService.findBy(new TaskCriteria().contactEquals(contactRef));
 		for (Task task : tasks) {
 			taskService.delete(task);
 		}
 		contactService.delete(contact);
+	}
+	
+	@Override
+	public List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ContactIndexDto> cq = cb.createQuery(ContactIndexDto.class);
+		Root<Contact> contact = cq.from(Contact.class);
+		Join<Contact, Person> contactPerson = contact.join(Contact.PERSON, JoinType.LEFT);
+		Join<Contact, Case> contactCase = contact.join(Contact.CAZE, JoinType.LEFT);
+		Join<Case, Person> contactCasePerson = contactCase.join(Case.PERSON, JoinType.LEFT);
+		Join<Case, Region> contactCaseRegion = contactCase.join(Case.REGION, JoinType.LEFT);
+		Join<Case, District> contactCaseDistrict = contactCase.join(Case.DISTRICT, JoinType.LEFT);
+		Join<Case, Facility> contactCaseFacility = contactCase.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+		Join<Contact, User> contactOfficer = contact.join(Contact.CONTACT_OFFICER, JoinType.LEFT);
+		
+		cq.multiselect(contact.get(Contact.UUID), contactPerson.get(Person.UUID), contactPerson.get(Person.FIRST_NAME), contactPerson.get(Person.LAST_NAME),
+				contactCase.get(Case.UUID), contactCase.get(Case.DISEASE), contactCase.get(Case.DISEASE_DETAILS), contactCasePerson.get(Person.UUID), contactCasePerson.get(Person.FIRST_NAME),
+				contactCasePerson.get(Person.LAST_NAME), contactCaseRegion.get(Region.UUID), contactCaseDistrict.get(District.UUID),
+				contactCaseFacility.get(Facility.UUID), contact.get(Contact.LAST_CONTACT_DATE), contact.get(Contact.CONTACT_PROXIMITY),
+				contact.get(Contact.CONTACT_CLASSIFICATION), contact.get(Contact.FOLLOW_UP_STATUS), contact.get(Contact.FOLLOW_UP_UNTIL),
+				contactOfficer.get(User.UUID));
+		
+		Predicate filter = null;
+		if (userUuid != null 
+				&& (contactCriteria == null || contactCriteria.getCaze() == null)) {
+			User user = userService.getByUuid(userUuid);
+			filter = contactService.createUserFilter(cb, cq, contact, user);
+		}
+		
+		if (contactCriteria != null) {
+			Predicate criteriaFilter = contactService.buildCriteriaFilter(contactCriteria, cb, contact);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.desc(contact.get(Contact.REPORT_DATE_TIME)));
+		
+		List<ContactIndexDto> resultList = em.createQuery(cq).getResultList();
+		return resultList;
 	}
 
 	public Contact fromDto(@NotNull ContactDto source) {
@@ -313,45 +341,6 @@ public class ContactFacadeEjb implements ContactFacade {
 		return target;
 	}
 
-	public ContactIndexDto toIndexDto(Contact source) {
-		if (source == null) {
-			return null;
-		}
-		ContactIndexDto target = new ContactIndexDto();
-		DtoHelper.fillDto(target, source);
-
-		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
-		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
-		target.setCazePerson(PersonFacadeEjb.toReferenceDto(source.getCaze().getPerson()));
-		target.setCazeDisease(source.getCaze().getDisease());
-		target.setCazeRegion(RegionFacadeEjb.toReferenceDto(source.getCaze().getRegion()));
-		target.setCazeDistrict(DistrictFacadeEjb.toReferenceDto(source.getCaze().getDistrict()));
-		target.setCazeHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getCaze().getHealthFacility()));
-
-		target.setLastContactDate(source.getLastContactDate());
-		target.setContactProximity(source.getContactProximity());
-		target.setContactClassification(source.getContactClassification());
-		target.setFollowUpStatus(source.getFollowUpStatus());
-		target.setFollowUpUntil(source.getFollowUpUntil());
-		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
-
-		// TODO optimize performance by using count query
-		List<Visit> visits = visitService.getAllByContact(source);
-		int numberOfCooperativeVisits = 0;
-		int numberOfMissedVisits = 0;
-		for (Visit visit : visits) {
-			if (visit.getVisitStatus() == VisitStatus.COOPERATIVE) {
-				numberOfCooperativeVisits++;
-			} else {
-				numberOfMissedVisits++;
-			}
-		}
-		target.setNumberOfCooperativeVisits(numberOfCooperativeVisits);
-		target.setNumberOfMissedVisits(numberOfMissedVisits);
-
-		return target;
-	}
-
 	@RolesAllowed(UserRole._SYSTEM)
 	public void generateContactFollowUpTasks() {
 
@@ -386,9 +375,9 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			// find already existing tasks
 			TaskCriteria pendingUserTaskCriteria = new TaskCriteria()
-					.contactEquals(contact)
+					.contactEquals(contact.toReference())
 					.taskTypeEquals(TaskType.CONTACT_FOLLOW_UP)
-					.assigneeUserEquals(assignee)
+					.assigneeUserEquals(assignee.toReference())
 					.taskStatusEquals(TaskStatus.PENDING);
 			List<Task> pendingUserTasks = taskService.findBy(pendingUserTaskCriteria);
 
@@ -398,7 +387,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 
 			TaskCriteria dayTaskCriteria = new TaskCriteria()
-					.contactEquals(contact)
+					.contactEquals(contact.toReference())
 					.taskTypeEquals(TaskType.CONTACT_FOLLOW_UP)
 					.dueDateBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime));
 			List<Task> dayTasks = taskService.findBy(dayTaskCriteria);

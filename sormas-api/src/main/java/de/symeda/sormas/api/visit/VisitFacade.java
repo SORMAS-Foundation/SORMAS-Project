@@ -28,4 +28,6 @@ public interface VisitFacade {
 	List<VisitDto> getByUuids(List<String> uuids);
 	
 	void deleteVisit(VisitReferenceDto visitRef, String userUuid);
+	
+	int getNumberOfVisits(ContactReferenceDto contactRef, VisitStatus visitStatus);
 }

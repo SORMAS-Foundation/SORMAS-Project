@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.component;
 
-import android.app.Activity;
 import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
@@ -8,20 +7,16 @@ import android.databinding.InverseBindingListener;
 import android.databinding.InverseBindingMethod;
 import android.databinding.InverseBindingMethods;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.location.Location;
-import de.symeda.sormas.app.util.FormTab;
 
 /**
  * Created by Mate Strysewske on 28.11.2016.
@@ -129,13 +124,6 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
         caption = (TextView) this.findViewById(R.id.text_caption);
         caption.setText(getCaption());
         addCaptionOnClickListener();
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        textContent.setEnabled(enabled);
-        caption.setEnabled(enabled);
     }
 
     @BindingAdapter("integer")

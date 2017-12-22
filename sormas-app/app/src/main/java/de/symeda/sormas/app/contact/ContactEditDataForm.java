@@ -13,6 +13,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.R;
@@ -42,6 +43,8 @@ public class ContactEditDataForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.contact_data_fragment_layout, container, false);
+
+        editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
 
         final String contactUuid = (String) getArguments().getString(Contact.UUID);
         final ContactDao contactDao = DatabaseHelper.getContactDao();

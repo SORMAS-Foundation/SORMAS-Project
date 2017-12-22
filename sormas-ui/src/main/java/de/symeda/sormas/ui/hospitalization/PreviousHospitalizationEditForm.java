@@ -10,6 +10,7 @@ import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -25,8 +26,8 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.DESCRIPTION)
 			;
 
-	public PreviousHospitalizationEditForm(boolean create) {
-		super(PreviousHospitalizationDto.class, PreviousHospitalizationDto.I18N_PREFIX);
+	public PreviousHospitalizationEditForm(boolean create, UserRight editOrCreateUserRight) {
+		super(PreviousHospitalizationDto.class, PreviousHospitalizationDto.I18N_PREFIX, editOrCreateUserRight);
 
 		setWidth(540, Unit.PIXELS);
 		
@@ -51,32 +52,25 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		healthFacility.setImmediate(true);
 
 		facilityRegion.addValueChangeListener(e -> {
-			facilityDistrict.removeAllItems();
 			RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
-			if(regionDto != null) {
-				facilityDistrict.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()));
-			}
-		});
+    		FieldHelper.updateItems(facilityDistrict, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+       	});
 		facilityDistrict.addValueChangeListener(e -> {
 			if (facilityCommunity.getValue() == null) {
-				healthFacility.removeAllItems();
-			}
-			facilityCommunity.removeAllItems();
-			DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
-			if(districtDto != null) {
-				facilityCommunity.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()));
-				healthFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true));
-			}
-		});
-		facilityCommunity.addValueChangeListener(e -> {
-			healthFacility.removeAllItems();
-			CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
-			if(communityDto != null) {
-				healthFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true));
-			} else if (facilityDistrict.getValue() != null) {
-				healthFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) facilityDistrict.getValue(), true));
+    			FieldHelper.removeItems(healthFacility);
     		}
-		});
+    		FieldHelper.removeItems(facilityCommunity);
+    		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
+    		FieldHelper.updateItems(facilityCommunity, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
+    		FieldHelper.updateItems(healthFacility, districtDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true) : null);
+    	});
+		facilityCommunity.addValueChangeListener(e -> {
+			FieldHelper.removeItems(healthFacility);
+    		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
+    		FieldHelper.updateItems(healthFacility, communityDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true) :
+    			facilityDistrict.getValue() != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) facilityDistrict.getValue(), true) :
+    				null);
+    	});
 
 		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 

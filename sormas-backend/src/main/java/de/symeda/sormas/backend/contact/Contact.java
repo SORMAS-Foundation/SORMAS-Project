@@ -16,6 +16,7 @@ import javax.persistence.TemporalType;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactProximity;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.backend.caze.Case;
@@ -177,13 +178,17 @@ public class Contact extends AbstractDomainObject {
 	
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
 		Person contactPerson = getPerson();
 		Person casePerson = getCaze().getPerson();
-		builder.append(contactPerson.getFirstName()).append(" ").append(contactPerson.getLastName().toUpperCase());
-		builder.append(" to case ");
-		builder.append(casePerson.getFirstName()).append(" ").append(casePerson.getLastName().toUpperCase());
-		return builder.toString();
+		return ContactReferenceDto.buildCaption(contactPerson.getFirstName(), contactPerson.getLastName(),
+				casePerson.getFirstName(), casePerson.getLastName());
+	}
+	
+	public ContactReferenceDto toReference() {
+		Person contactPerson = getPerson();
+		Person casePerson = getCaze().getPerson();
+		return new ContactReferenceDto(getUuid(), contactPerson.getFirstName(), contactPerson.getLastName(),
+				casePerson.getFirstName(), casePerson.getLastName());
 	}
 	
 	@OneToMany(cascade = {}, mappedBy = Task.CONTACT)

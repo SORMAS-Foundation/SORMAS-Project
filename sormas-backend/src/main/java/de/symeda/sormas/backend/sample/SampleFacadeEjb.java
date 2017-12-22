@@ -26,7 +26,6 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -36,6 +35,7 @@ import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictService;
@@ -146,17 +146,18 @@ public class SampleFacadeEjb implements SampleFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
 		Root<Sample> sample = cq.from(Sample.class);
-		Join<Sample, Sample> sampleJoin = sample.join(Sample.REFERRED_TO, JoinType.LEFT);
+		Join<Sample, Sample> referredSample = sample.join(Sample.REFERRED_TO, JoinType.LEFT);
 		Join<Sample, Facility> lab = sample.join(Sample.LAB, JoinType.LEFT);
 		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
+		Join<Case, Person> cazePerson = caze.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, Region> caseRegion = caze.join(Case.REGION, JoinType.LEFT);
 		Join<Case, District> caseDistrict = caze.join(Case.DISTRICT, JoinType.LEFT);
 		
-		cq.multiselect(sample.get(Sample.UUID), caze.get(Case.UUID), sample.get(Sample.SAMPLE_CODE), sample.get(Sample.LAB_SAMPLE_ID),
-				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), caseRegion.get(Region.UUID), 
-				caseDistrict.get(District.UUID), sample.get(Sample.SHIPPED), sample.get(Sample.RECEIVED),
-				sampleJoin.get(Sample.UUID), sample.get(Sample.SHIPMENT_DATE), sample.get(Sample.RECEIVED_DATE), 
-				lab.get(Facility.UUID), sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SPECIMEN_CONDITION));
+		cq.multiselect(sample.get(Sample.UUID), caze.get(Case.UUID), cazePerson.get(Person.FIRST_NAME), cazePerson.get(Person.LAST_NAME),
+				sample.get(Sample.SAMPLE_CODE), sample.get(Sample.LAB_SAMPLE_ID), caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), 
+				caseRegion.get(Region.UUID), caseDistrict.get(District.UUID), caseDistrict.get(District.NAME), sample.get(Sample.SHIPPED), 
+				sample.get(Sample.RECEIVED), referredSample.get(Sample.UUID), sample.get(Sample.SHIPMENT_DATE), sample.get(Sample.RECEIVED_DATE), 
+				lab.get(Facility.UUID), lab.get(Facility.NAME), sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SPECIMEN_CONDITION));
 		
 		Predicate filter = null;
 		if (userUuid != null) {
@@ -179,30 +180,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 		
 		List<SampleIndexDto> resultList = em.createQuery(cq).getResultList();
-		for (SampleIndexDto indexDto : resultList) {
-			indexDto.setAssociatedCase(caseFacade.getReferenceByUuid(indexDto.getAssociatedCaseUuid()));
-			indexDto.setCaseRegion(regionFacade.getRegionReferenceByUuid(indexDto.getCaseRegionUuid()));
-			indexDto.setCaseDistrict(districtFacade.getDistrictReferenceByUuid(indexDto.getCaseDistrictUuid()));
-			indexDto.setReferred(getReferenceByUuid(indexDto.getReferredSampleUuid()) != null);
-			indexDto.setLab(facilityFacade.getFacilityReferenceByUuid(indexDto.getLabUuid()));
-			
-			SampleTestDto latestSampleTest = null;
-			for(SampleTestDto sampleTest : sampleTestFacade.getAllBySample(indexDto.toReference())) {
-				if(latestSampleTest == null) {
-					latestSampleTest = sampleTest;
-				} else {
-					if(sampleTest.getTestDateTime().after(latestSampleTest.getTestDateTime())) {
-						latestSampleTest = sampleTest;
-					}
-				}
-			}
-			
-			if(latestSampleTest != null) {
-				indexDto.setLabUser(latestSampleTest.getLabUser());
-				indexDto.setTestResult(latestSampleTest.getTestResult());
-			}
-		}
-		
 		return resultList;	
 	}
 	

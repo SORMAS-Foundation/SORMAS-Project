@@ -13,8 +13,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 
 /**
  * Created by Martin Wahnschaffe on 08.11.2016.
@@ -81,6 +83,24 @@ public abstract class PropertyField<T> extends LinearLayout {
 
     public abstract void setValue(T value);
     public abstract T getValue();
+
+    public void setEnabled(boolean enabled, UserRight editOrCreateUserRight) {
+        User user = ConfigProvider.getUser();
+        if (enabled && user.hasUserRight(editOrCreateUserRight)) {
+            super.setEnabled(true);
+        } else {
+            super.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (enabled) {
+            throw new UnsupportedOperationException("If you want to enable a custom field, call setEnabled(boolean enabled, UserRight editOrCreateUserRight) instead.");
+        } else {
+            super.setEnabled(false);
+        }
+    }
 
     public void addValueChangedListener(ValueChangeListener listener) {
         if (valueChangedListeners == null) {

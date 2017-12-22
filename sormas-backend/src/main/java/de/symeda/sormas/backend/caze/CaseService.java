@@ -18,6 +18,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.StatisticsCaseDto;
@@ -354,6 +355,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			case SURVEILLANCE_SUPERVISOR:
 			case CONTACT_SUPERVISOR:
 			case CASE_SUPERVISOR:
+			case RUMOR_MANAGER:
 				// supervisors see all cases of their region
 				if (user.getRegion() != null) {
 					filter = cb.or(filter, cb.equal(casePath.get(Case.REGION), user.getRegion()));
@@ -434,6 +436,19 @@ public class CaseService extends AbstractAdoService<Case> {
 		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataGatherings.join(EpiDataGathering.GATHERING_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
 
 		return dateFilter;
+	}
+	
+	public Predicate buildCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, Root<Case> from) {
+		Predicate filter = null;
+		if (caseCriteria.getReportingUserRole() != null) {
+			filter = and(cb, filter, cb.isMember(
+					caseCriteria.getReportingUserRole(), 
+					from.join(Case.REPORTING_USER, JoinType.LEFT).get(User.USER_ROLES)));
+		}
+		if (caseCriteria.getDisease() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Case.DISEASE), caseCriteria.getDisease()));
+		}
+		return filter;
 	}
 
 	// TODO #69 create some date filter for finding the right case (this is implemented in CaseDao.java too)

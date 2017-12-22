@@ -20,6 +20,7 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -46,6 +47,7 @@ public class SampleEditForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.sample_data_fragment_layout, container, false);
+        editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
 
         final String sampleUuid = getArguments().getString(SampleEditActivity.KEY_SAMPLE_UUID);
 

@@ -20,6 +20,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -56,8 +57,8 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 					)
 			);
 
-	public SampleEditForm() {
-		super(SampleDto.class, SampleDto.I18N_PREFIX);
+	public SampleEditForm(UserRight editOrCreateUserRight) {
+		super(SampleDto.class, SampleDto.I18N_PREFIX, editOrCreateUserRight);
 	}
 
 	@Override

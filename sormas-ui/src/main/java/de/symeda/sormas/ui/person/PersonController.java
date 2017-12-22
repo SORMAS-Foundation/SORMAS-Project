@@ -12,6 +12,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.events.EventParticipantsView;
@@ -40,8 +41,8 @@ public class PersonController {
     	doneConsumer.accept(person.toReference()); 
     }
     
-    public void openEditModal(String personUuid) {
-		CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = getPersonEditComponent(personUuid, null);
+    public void openEditModal(String personUuid, UserRight editOrCreateUserRight) {
+		CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = getPersonEditComponent(personUuid, null, editOrCreateUserRight);
 		VaadinUiUtil.showModalPopupWindow(personEditComponent, "Edit person");
     }
     
@@ -53,8 +54,9 @@ public class PersonController {
 
     	if (personSelect.hasMatches()) {
     		personSelect.selectBestMatch();
+            // TODO add user right parameter
 	    	final CommitDiscardWrapperComponent<PersonSelectField> selectOrCreateComponent = 
-	    			new CommitDiscardWrapperComponent<PersonSelectField>(personSelect, null);
+	    			new CommitDiscardWrapperComponent<PersonSelectField>(personSelect, null, null);
 	    	
 	    	selectOrCreateComponent.addCommitListener(new CommitListener() {
 	        	@Override
@@ -82,11 +84,11 @@ public class PersonController {
     	return person;
     }
     
-    public CommitDiscardWrapperComponent<PersonCreateForm> getPersonCreateComponent(PersonDto person) {
+    public CommitDiscardWrapperComponent<PersonCreateForm> getPersonCreateComponent(PersonDto person, UserRight editOrCreateUserRight) {
     	
-    	PersonCreateForm createForm = new PersonCreateForm();
+    	PersonCreateForm createForm = new PersonCreateForm(editOrCreateUserRight);
         createForm.setValue(person);
-        final CommitDiscardWrapperComponent<PersonCreateForm> editComponent = new CommitDiscardWrapperComponent<PersonCreateForm>(createForm, createForm.getFieldGroup());
+        final CommitDiscardWrapperComponent<PersonCreateForm> editComponent = new CommitDiscardWrapperComponent<PersonCreateForm>(createForm, createForm.getFieldGroup(), editOrCreateUserRight);
         
         editComponent.addCommitListener(new CommitListener() {
         	@Override
@@ -102,17 +104,17 @@ public class PersonController {
     }  
     
 	
-	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, Disease disease) {
-    	PersonEditForm personEditForm = new PersonEditForm(disease);
+	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, Disease disease, UserRight editOrCreateUserRight) {
+    	PersonEditForm personEditForm = new PersonEditForm(disease, editOrCreateUserRight);
         
         PersonDto personDto = personFacade.getPersonByUuid(personUuid);
         personEditForm.setValue(personDto);
         
-        return getPersonEditView(personEditForm);
+        return getPersonEditView(personEditForm, editOrCreateUserRight);
     }
 	
-	private CommitDiscardWrapperComponent<PersonEditForm> getPersonEditView(PersonEditForm editForm) {
-		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(editForm, editForm.getFieldGroup());
+	private CommitDiscardWrapperComponent<PersonEditForm> getPersonEditView(PersonEditForm editForm, UserRight editOrCreateUserRight) {
+		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(editForm, editForm.getFieldGroup(), editOrCreateUserRight);
         
         editView.addCommitListener(new CommitListener() {
         	

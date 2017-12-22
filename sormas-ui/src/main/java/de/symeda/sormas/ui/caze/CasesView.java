@@ -51,7 +51,7 @@ public class CasesView extends AbstractView {
     public CasesView() {
     	super(VIEW_NAME);
     	
-    	if (LoginHelper.hasUserRight(UserRight.CREATE)) {
+    	if (LoginHelper.hasUserRight(UserRight.CASE_CREATE)) {
 	        createButton = new Button("New case");
 	        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 	        createButton.setIcon(FontAwesome.PLUS_CIRCLE);
@@ -207,7 +207,7 @@ public class CasesView extends AbstractView {
 
     @Override
     public void enter(ViewChangeEvent event) {
-    	grid.reload(null);
+    	grid.reload();
     }
 
     public void clearSelection() {

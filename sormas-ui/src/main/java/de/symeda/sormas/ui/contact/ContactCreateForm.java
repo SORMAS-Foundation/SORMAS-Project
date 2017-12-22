@@ -16,6 +16,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -38,8 +39,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					LayoutUtil.fluidRowLocs(ContactDto.CONTACT_OFFICER, "")
 					);
 
-    public ContactCreateForm() {
-        super(ContactDto.class, ContactDto.I18N_PREFIX);
+    public ContactCreateForm(UserRight editOrCreateUserRight) {
+        super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);
 
 		setWidth(540, Unit.PIXELS);
 		

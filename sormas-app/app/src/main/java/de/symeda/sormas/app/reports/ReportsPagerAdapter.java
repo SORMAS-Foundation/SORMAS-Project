@@ -1,8 +1,12 @@
 package de.symeda.sormas.app.reports;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.app.util.FormTab;
 
 /**
  * Created by Mate Strysewske on 07.09.2017.

@@ -1,19 +1,18 @@
 package de.symeda.sormas.api.caze;
 
-import java.sql.Timestamp;
+import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.utils.DataHelper;
 
-public class CaseIndexDto extends EntityDto {
+public class CaseIndexDto implements Serializable {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
 	public static final String I18N_PREFIX = "CaseData";
 	
+	public static final String UUID = "uuid";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
@@ -29,6 +28,7 @@ public class CaseIndexDto extends EntityDto {
 	public static final String HEALTH_FACILITY_UUID = "healthFacilityUuid";
 	public static final String SURVEILLANCE_OFFICER_UUID = "surveillanceOfficerUuid";
 
+	private String uuid;
 	private String epidNumber;
 	private String personFirstName;
 	private String personLastName;
@@ -44,12 +44,12 @@ public class CaseIndexDto extends EntityDto {
 	private String healthFacilityUuid;
 	private String surveillanceOfficerUuid;
 		
-	public CaseIndexDto(Timestamp creationDate, Timestamp changeDate, String uuid, String epidNumber, String personFirstName, String personLastName, Disease disease,
+	public CaseIndexDto(String uuid, String epidNumber, String personFirstName, String personLastName, Disease disease,
 			String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 			PresentCondition presentCondition, Date reportDate, String regionUuid, 
 			String districtUuid, String districtName, String healthFacilityUuid, String surveillanceOfficerUuid
 			) {
-		super(creationDate, changeDate, uuid);
+		this.setUuid(uuid);
 		this.epidNumber = epidNumber;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
@@ -152,12 +152,20 @@ public class CaseIndexDto extends EntityDto {
 	}
 	
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(getUuid());
+		return new CaseReferenceDto(getUuid(), getPersonFirstName(), getPersonLastName());
 	}
 	
 	@Override
 	public String toString() {
-		return personFirstName + " " + personLastName + " (" + DataHelper.getShortUuid(getUuid()) + ")";
+		return CaseReferenceDto.buildCaption(getUuid(), getPersonFirstName(), getPersonLastName());
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 	
 }

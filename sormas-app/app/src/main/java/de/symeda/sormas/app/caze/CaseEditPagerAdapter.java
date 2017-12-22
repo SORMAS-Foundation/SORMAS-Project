@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import java.util.List;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
@@ -51,6 +52,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
         switch (tab) {
             case CASE_DATA:
                 frag = new CaseEditDataForm();
+                caseEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.CASE_EDIT);
                 frag.setArguments(caseEditBundle);
                 break;
             case PATIENT:
@@ -58,6 +60,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 Bundle personEditBundle = new Bundle();
                 personEditBundle.putString(Person.UUID, caze.getPerson().getUuid());
                 personEditBundle.putSerializable(Case.DISEASE, caze.getDisease());
+                personEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.CASE_EDIT);
                 frag.setArguments(personEditBundle);
                 break;
             case SYMPTOMS:
@@ -65,6 +68,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 Bundle symptomsEditBundle = new Bundle();
                 symptomsEditBundle.putString(Symptoms.UUID, caze.getSymptoms().getUuid());
                 symptomsEditBundle.putSerializable(Case.DISEASE, caze.getDisease());
+                symptomsEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.CASE_EDIT);
                 frag.setArguments(symptomsEditBundle);
                 break;
             case CONTACTS:
@@ -91,6 +95,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 Bundle hospitalizationBundle = new Bundle();
                 hospitalizationBundle.putString(HospitalizationForm.KEY_CASE_UUID, caze.getUuid());
                 hospitalizationBundle.putString(Hospitalization.UUID, caze.getHospitalization().getUuid());
+                hospitalizationBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.CASE_EDIT);
                 frag.setArguments(hospitalizationBundle);
                 break;
             case EPIDATA:
@@ -98,6 +103,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 Bundle epiDataBundle = new Bundle();
                 epiDataBundle.putSerializable(Case.DISEASE, caze.getDisease());
                 epiDataBundle.putString(EpiData.UUID, caze.getEpiData().getUuid());
+                epiDataBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.CASE_EDIT);
                 frag.setArguments(epiDataBundle);
                 break;
         }

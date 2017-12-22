@@ -58,4 +58,5 @@ public class DistrictDto extends EntityDto {
 	public DistrictReferenceDto toReference() {
 		return new DistrictReferenceDto(getUuid());
 	}
+	
 }
