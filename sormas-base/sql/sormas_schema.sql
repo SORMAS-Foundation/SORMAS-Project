@@ -1895,3 +1895,8 @@ ALTER TABLE events_history ALTER COLUMN srclastname DROP NOT NULL;
 ALTER TABLE events_history ALTER COLUMN srctelno DROP NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (78, 'Drop not null constraints from events_history table #405');
+
+-- 2018-01-03 allow sormas user to dump the complete db and execute update script
+ALTER TABLE schema_version OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (79, 'Give sormas_user access to schema_version table');
