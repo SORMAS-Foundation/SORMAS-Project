@@ -469,6 +469,7 @@
 						<password>${github.sormas.password}</password>
 						<scmCommentPrefix>[GITFLOW]</scmCommentPrefix>
 						<pushReleases>true</pushReleases>
+						<useReleaseProfile>false</useReleaseProfile>
 						<noDeploy>true</noDeploy>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
 						<updateDependencies>true</updateDependencies>
