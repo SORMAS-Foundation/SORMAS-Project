@@ -2,7 +2,7 @@
 	<parent>
 		<groupId>de.symeda.sormas</groupId>
 		<artifactId>sormas-base</artifactId>
-		<version>0.12.0</version>
+		<version>0.12.1-SNAPSHOT</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
