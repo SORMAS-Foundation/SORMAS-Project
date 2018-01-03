@@ -75,98 +75,17 @@ public class WeeklyReportForm extends FormTab {
     public void onResume() {
         super.onResume();
 
-        final User user = ConfigProvider.getUser();
-
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
 
+        // init years ...
         final List yearsList = DataUtils.toItems(DateHelper.getYearsToNow());
         yearsList.add(Calendar.getInstance().get(Calendar.YEAR) + 1);
-        final List initialWeeksList = DataUtils.toItems(DateHelper.createIntegerEpiWeeksList(Calendar.getInstance().get(Calendar.YEAR)));
 
         FieldHelper.initSpinnerField(binding.weeklyReportYear, DataUtils.toItems(DateHelper.getYearsToNow()), new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                SpinnerField weekSpinner = binding.weeklyReportWeek;
-                Object selectedValue = binding.weeklyReportYear.getValue();
-                if (weekSpinner != null) {
-                    List<Item> weeksList;
-                    if (selectedValue != null) {
-                        weeksList = DataUtils.toItems(DateHelper.createIntegerEpiWeeksList((int) selectedValue));
-                    } else {
-                        weeksList = Collections.emptyList();
-                    }
-                    weekSpinner.setAdapterAndValue(weekSpinner.getValue(), weeksList);
-                }
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
-
-        FieldHelper.initSpinnerField(binding.weeklyReportWeek, initialWeeksList, new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                EpiWeek epiWeek = new EpiWeek((int) binding.weeklyReportYear.getValue(), (int) binding.weeklyReportWeek.getValue());
-
-                if (user.hasUserRole(UserRole.INFORMANT)) {
-                    WeeklyReport report = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(epiWeek, user);
-
-                    // Epi week shown = this week; table is shown if the report for the last week has been confirmed; no buttons
-                    if (DateHelper.getEpiWeek(new Date()).equals(epiWeek)) {
-                        binding.weeklyReportReportDate.setValue(getActivity().getString(R.string.hint_report_not_yet_submitted));
-
-                        if (DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getPreviousEpiWeek(epiWeek), user) != null) {
-                            setVisibilityForTable(false);
-                            showPendingReport(epiWeek, user);
-                        } else {
-                            setVisibilityForNoReportHint();
-                        }
-                    // Epi week shown = last week; table is shown, buttons are shown if the report has not been confirmed yet
-                    } else if (DateHelper.getPreviousEpiWeek(new Date()).equals(epiWeek)) {
-                        if (report == null) {
-                            setVisibilityForTable(true);
-                            binding.weeklyReportReportDate.setValue(getActivity().getString(R.string.hint_report_not_yet_submitted));
-                            showPendingReport(epiWeek, user);
-                        } else {
-                            setVisibilityForTable(false);
-                            binding.weeklyReportReportDate.setValue(DateHelper.formatShortDate(report.getReportDateTime()));
-                            showWeeklyReport(report, user);
-                        }
-                    // Epi week shown = any other week; table is shown for dates in the past, 'no data' hint is shown for dates in the future
-                    } else {
-                        if (report == null) {
-                            if (DateHelper.isEpiWeekAfter(DateHelper.getEpiWeek(new Date()), epiWeek)) {
-                                setVisibilityForNoData();
-                                binding.weeklyReportReportDate.setValue(null);
-                            } else {
-                                setVisibilityForTable(false);
-                                binding.weeklyReportReportDate.setValue(getActivity().getString(R.string.hint_report_not_submitted));
-                                showPendingReport(epiWeek, user);
-                            }
-                        } else {
-                            setVisibilityForTable(false);
-                            binding.weeklyReportReportDate.setValue(DateHelper.formatShortDate(report.getReportDateTime()));
-                            showWeeklyReport(report, user);
-                        }
-                    }
-
-                    binding.weeklyReportReportDate.setCaption("Confirmation date");
-                    binding.weeklyReportAddMissing.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            ((ReportsActivity) getActivity()).showCaseNewView();
-                        }
-                    });
-                } else {
-                    setVisibilityForTable(false);
-                    binding.weeklyReportReportDate.setCaption("");
-                    binding.weeklyReportReportDate.setValue(null);
-                    showWeeklyReportOverview(epiWeek, user);
-                }
-
-                binding.weeklyReportStart.setValue(DateHelper.formatShortDate(DateHelper.getEpiWeekStart(epiWeek)));
-                binding.weeklyReportEnd.setValue(DateHelper.formatShortDate(DateHelper.getEpiWeekEnd(epiWeek)));
+                updateWeeksList();
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -176,6 +95,20 @@ public class WeeklyReportForm extends FormTab {
         if (binding.weeklyReportYear.getValue() == null) {
             binding.weeklyReportYear.setValue(DateHelper.getPreviousEpiWeek(new Date()).getYear());
         }
+
+        // .. and weeks
+        final List initialWeeksList = DataUtils.toItems(DateHelper.createIntegerEpiWeeksList((int)binding.weeklyReportYear.getValue()));
+
+        FieldHelper.initSpinnerField(binding.weeklyReportWeek, initialWeeksList, new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                updateByEpiWeek();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
         if (binding.weeklyReportWeek.getValue() == null) {
             binding.weeklyReportWeek.setValue(DateHelper.getPreviousEpiWeek(new Date()).getWeek());
         }
@@ -192,6 +125,7 @@ public class WeeklyReportForm extends FormTab {
                 Date now = new Date();
                 EpiWeek epiWeek = DateHelper.getPreviousEpiWeek(now);
                 binding.weeklyReportYear.setValue(epiWeek.getYear());
+                updateWeeksList(); // necessary because weeklyReportYear.onItemSelected is not called immediately
                 binding.weeklyReportWeek.setValue(epiWeek.getWeek());
             }
         });
@@ -202,6 +136,7 @@ public class WeeklyReportForm extends FormTab {
                 Date now = new Date();
                 EpiWeek epiWeek = DateHelper.getEpiWeek(now);
                 binding.weeklyReportYear.setValue(epiWeek.getYear());
+                updateWeeksList(); // necessary because weeklyReportYear.onItemSelected is not called immediately
                 binding.weeklyReportWeek.setValue(epiWeek.getWeek());
             }
         });
@@ -239,6 +174,94 @@ public class WeeklyReportForm extends FormTab {
                     }
                 }
             });
+        }
+    }
+
+    private void updateByEpiWeek() {
+
+        Object selectedWeekValue = binding.weeklyReportWeek.getValue();
+        if (selectedWeekValue != null) {
+
+            EpiWeek epiWeek = new EpiWeek((int) binding.weeklyReportYear.getValue(), (int) binding.weeklyReportWeek.getValue());
+            final User user = ConfigProvider.getUser();
+
+            if (user.hasUserRole(UserRole.INFORMANT)) {
+                WeeklyReport report = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(epiWeek, user);
+
+                // Epi week shown = this week; table is shown if the report for the last week has been confirmed; no buttons
+                if (DateHelper.getEpiWeek(new Date()).equals(epiWeek)) {
+                    binding.weeklyReportReportDate.setValue(getActivity().getString(R.string.hint_report_not_yet_submitted));
+
+                    if (DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(DateHelper.getPreviousEpiWeek(epiWeek), user) != null) {
+                        setVisibilityForTable(false);
+                        showPendingReport(epiWeek, user);
+                    } else {
+                        setVisibilityForNoReportHint();
+                    }
+                    // Epi week shown = last week; table is shown, buttons are shown if the report has not been confirmed yet
+                } else if (DateHelper.getPreviousEpiWeek(new Date()).equals(epiWeek)) {
+                    if (report == null) {
+                        setVisibilityForTable(true);
+                        binding.weeklyReportReportDate.setValue(getActivity().getString(R.string.hint_report_not_yet_submitted));
+                        showPendingReport(epiWeek, user);
+                    } else {
+                        setVisibilityForTable(false);
+                        binding.weeklyReportReportDate.setValue(DateHelper.formatShortDate(report.getReportDateTime()));
+                        showWeeklyReport(report, user);
+                    }
+                    // Epi week shown = any other week; table is shown for dates in the past, 'no data' hint is shown for dates in the future
+                } else {
+                    if (report == null) {
+                        if (DateHelper.isEpiWeekAfter(DateHelper.getEpiWeek(new Date()), epiWeek)) {
+                            setVisibilityForNoData();
+                            binding.weeklyReportReportDate.setValue(null);
+                        } else {
+                            setVisibilityForTable(false);
+                            binding.weeklyReportReportDate.setValue(getActivity().getString(R.string.hint_report_not_submitted));
+                            showPendingReport(epiWeek, user);
+                        }
+                    } else {
+                        setVisibilityForTable(false);
+                        binding.weeklyReportReportDate.setValue(DateHelper.formatShortDate(report.getReportDateTime()));
+                        showWeeklyReport(report, user);
+                    }
+                }
+
+                binding.weeklyReportReportDate.setCaption("Confirmation date");
+                binding.weeklyReportAddMissing.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ((ReportsActivity) getActivity()).showCaseNewView();
+                    }
+                });
+            } else {
+                setVisibilityForTable(false);
+                binding.weeklyReportReportDate.setCaption("");
+                binding.weeklyReportReportDate.setValue(null);
+                showWeeklyReportOverview(epiWeek, user);
+            }
+
+            binding.weeklyReportStart.setValue(DateHelper.formatShortDate(DateHelper.getEpiWeekStart(epiWeek)));
+            binding.weeklyReportEnd.setValue(DateHelper.formatShortDate(DateHelper.getEpiWeekEnd(epiWeek)));
+        } else {
+
+            binding.weeklyReportReportDate.setCaption("");
+            binding.weeklyReportReportDate.setValue(null);
+            binding.weeklyReportStart.setValue(null);
+            binding.weeklyReportEnd.setValue(null);
+        }
+    }
+
+    private void updateWeeksList() {
+        if (binding.weeklyReportWeek != null) {
+            Object selectedYearValue = binding.weeklyReportYear.getValue();
+            List<Item> weeksList;
+            if (selectedYearValue != null) {
+                weeksList = DataUtils.toItems(DateHelper.createIntegerEpiWeeksList((int) selectedYearValue));
+            } else {
+                weeksList = Collections.emptyList();
+            }
+            binding.weeklyReportWeek.setAdapterAndValue(binding.weeklyReportWeek.getValue(), weeksList);
         }
     }
 
