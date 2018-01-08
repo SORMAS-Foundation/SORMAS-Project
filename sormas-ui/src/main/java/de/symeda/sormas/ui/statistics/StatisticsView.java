@@ -42,12 +42,9 @@ public class StatisticsView extends AbstractView {
 	private Disease disease;
 	private Date fromDate;
 	private Date toDate;
-	private int thisYear;
 
 	public StatisticsView() {
 		super(VIEW_NAME);
-
-		thisYear = Calendar.getInstance().get(Calendar.YEAR);
 		
 		ageSexGrid = new StatisticsAgeSexGrid();
 		ageSexGrid.setHeightMode(HeightMode.ROW);
@@ -89,8 +86,8 @@ public class StatisticsView extends AbstractView {
 				fromDate = dateFromFilter.getValue();
 				toDate = dateToFilter.getValue();
 			} else {
-				fromDate = DateHelper.getEpiWeekStart(new EpiWeek(thisYear, (int) weekFromFilter.getValue()));
-				toDate = DateHelper.getEpiWeekEnd(new EpiWeek(thisYear, (int) weekToFilter.getValue()));
+				fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekFromFilter.getValue());
+				toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekToFilter.getValue());
 			}
 			applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
 			refreshStatistics();
@@ -150,43 +147,41 @@ public class StatisticsView extends AbstractView {
 				filterLayout.removeComponent(dateFromFilter);
 				filterLayout.removeComponent(dateToFilter);
 				filterLayout.addComponent(weekFromFilter, filterLayout.getComponentIndex(dateFilterOptionFilter) + 1);
-				weekFromFilter.setValue(DateHelper.getEpiWeek(c.getTime()).getWeek());
+				weekFromFilter.setValue(DateHelper.getEpiWeek(c.getTime()));
 				filterLayout.addComponent(weekToFilter, filterLayout.getComponentIndex(weekFromFilter) + 1);
-				weekToFilter.setValue(DateHelper.getEpiWeek(c.getTime()).getWeek());
+				weekToFilter.setValue(DateHelper.getEpiWeek(c.getTime()));
 			}
 		});
 		filterLayout.addComponent(dateFilterOptionFilter);
 
 		// Epi week filter
-		List<EpiWeek> epiWeekList = DateHelper.createEpiWeekList(c.get(Calendar.YEAR));
+		List<EpiWeek> epiWeekList = DateHelper.createEpiWeekList(c.get(Calendar.YEAR), c.get(Calendar.WEEK_OF_YEAR));
 
 		weekFromFilter.setWidth(200, Unit.PIXELS);
 		for (EpiWeek week : epiWeekList) {
-			weekFromFilter.addItem(week.getWeek());
-			weekFromFilter.setItemCaption(week.getWeek(), week.getWeek() + " (" + DateHelper.formatShortDate(DateHelper.getEpiWeekStart(week)) + " - " + DateHelper.formatShortDate(DateHelper.getEpiWeekEnd(week)) + ")");
+			weekFromFilter.addItem(week);
 		}
 		weekFromFilter.setNullSelectionAllowed(false);
-		weekFromFilter.setValue(DateHelper.getEpiWeek(c.getTime()).getWeek());
+		weekFromFilter.setValue(DateHelper.getEpiWeek(c.getTime()));
 		weekFromFilter.setCaption("From Epi Week");
 		weekFromFilter.addValueChangeListener(e -> {
 			applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		});
 		filterLayout.addComponent(weekFromFilter);
-		fromDate = DateHelper.getEpiWeekStart(new EpiWeek(thisYear, (int) weekFromFilter.getValue()));
+		fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekFromFilter.getValue());
 
 		weekToFilter.setWidth(200, Unit.PIXELS);
 		for (EpiWeek week : epiWeekList) {
-			weekToFilter.addItem(week.getWeek());
-			weekToFilter.setItemCaption(week.getWeek(), week.getWeek() + " (" + DateHelper.formatShortDate(DateHelper.getEpiWeekStart(week)) + " - " + DateHelper.formatShortDate(DateHelper.getEpiWeekEnd(week)) + ")");
+			weekToFilter.addItem(week);
 		}
 		weekToFilter.setNullSelectionAllowed(false);
-		weekToFilter.setValue(DateHelper.getEpiWeek(c.getTime()).getWeek());
+		weekToFilter.setValue(DateHelper.getEpiWeek(c.getTime()));
 		weekToFilter.setCaption("To Epi Week");
 		weekToFilter.addValueChangeListener(e -> {
 			applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		});
 		filterLayout.addComponent(weekToFilter);
-		toDate = DateHelper.getEpiWeekEnd(new EpiWeek(thisYear, (int) weekToFilter.getValue()));
+		toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekToFilter.getValue());
 
 		// Date filter
 		dateFromFilter.setDateFormat(DateHelper.getShortDateFormat().toPattern());
