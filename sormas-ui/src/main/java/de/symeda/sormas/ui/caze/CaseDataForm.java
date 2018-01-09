@@ -33,6 +33,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -60,7 +61,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 							LayoutUtil.loc(CaseDataDto.UUID), 
 							LayoutUtil.fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER)) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION) +
-					LayoutUtil.fluidRowLocs(CaseDataDto.INVESTIGATION_STATUS) +
+					LayoutUtil.fluidRow(
+							LayoutUtil.twoOfThreeCol(LayoutUtil.loc(CaseDataDto.INVESTIGATION_STATUS)),
+							LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CaseDataDto.INVESTIGATED_DATE))
+					) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE) +
 					LayoutUtil.fluidRow("", LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE)) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
@@ -105,6 +109,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
 		addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
+		DateField investigatedDate = addField(CaseDataDto.INVESTIGATED_DATE, DateField.class);
+		investigatedDate.setDateFormat(DateHelper.getDateFormat().toPattern());
 		ComboBox diseaseField = addField(CaseDataDto.DISEASE, ComboBox.class);
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
 		OptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
@@ -129,13 +135,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.SMALLPOX_VACCINATION_DATE, DateField.class);
 
 		setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.DISEASE, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
-		FieldHelper.addSoftRequiredStyle(plagueType, community, surveillanceOfficerField);
+		FieldHelper.addSoftRequiredStyle(investigatedDate, plagueType, community, surveillanceOfficerField);
 
-		setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER,
-				CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.REGION,
+		setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER, CaseDataDto.REGION,
 				CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 
 		setReadOnly(!LoginHelper.hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
+		setReadOnly(!LoginHelper.hasUserRight(UserRight.CASE_INVESTIGATE), CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.INVESTIGATED_DATE);
 
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
 			boolean visible = DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, (String)propertyId, disease);
