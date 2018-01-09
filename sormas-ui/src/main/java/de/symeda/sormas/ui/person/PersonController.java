@@ -42,7 +42,7 @@ public class PersonController {
     }
     
     public void openEditModal(String personUuid, UserRight editOrCreateUserRight) {
-		CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = getPersonEditComponent(personUuid, null, editOrCreateUserRight);
+		CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = getPersonEditComponent(personUuid, null, null, editOrCreateUserRight);
 		VaadinUiUtil.showModalPopupWindow(personEditComponent, "Edit person");
     }
     
@@ -104,8 +104,8 @@ public class PersonController {
     }  
     
 	
-	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, Disease disease, UserRight editOrCreateUserRight) {
-    	PersonEditForm personEditForm = new PersonEditForm(disease, editOrCreateUserRight);
+	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, Disease disease, String diseaseDetails, UserRight editOrCreateUserRight) {
+    	PersonEditForm personEditForm = new PersonEditForm(disease, diseaseDetails, editOrCreateUserRight);
         
         PersonDto personDto = personFacade.getPersonByUuid(personUuid);
         personEditForm.setValue(personDto);

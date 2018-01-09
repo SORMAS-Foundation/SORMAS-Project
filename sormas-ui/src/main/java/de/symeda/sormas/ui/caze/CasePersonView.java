@@ -28,7 +28,7 @@ public class CasePersonView extends AbstractCaseView {
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
     	CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-    	CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = ControllerProvider.getPersonController().getPersonEditComponent(caseData.getPerson().getUuid(), caseData.getDisease(), UserRight.CASE_EDIT);
+    	CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = ControllerProvider.getPersonController().getPersonEditComponent(caseData.getPerson().getUuid(), caseData.getDisease(), caseData.getDiseaseDetails(), UserRight.CASE_EDIT);
     	setSubComponent(personEditComponent);
     }
 }

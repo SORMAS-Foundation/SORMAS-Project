@@ -20,6 +20,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.BurialConductor;
+import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -59,6 +60,9 @@ public class PersonEditForm extends FormTab {
 
     private PersonEditFragmentLayoutBinding binding;
 
+    private Disease disease;
+    private String diseaseDetails;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.person_edit_fragment_layout, container, false);
@@ -69,7 +73,8 @@ public class PersonEditForm extends FormTab {
         Person person = personDao.queryUuid(personUuid);
         binding.setPerson(person);
 
-        final Disease disease = (Disease) getArguments().get(Case.DISEASE);
+        disease = (Disease) getArguments().get(Case.DISEASE);
+        diseaseDetails = getArguments().getString(Case.DISEASE_DETAILS);
 
         // date of birth
         FieldHelper.initSpinnerField(binding.personBirthdateDD, DataUtils.toItems(DateHelper.getDaysInMonth(),true), new AdapterView.OnItemSelectedListener() {
@@ -123,6 +128,8 @@ public class PersonEditForm extends FormTab {
 
         FieldHelper.initSpinnerField(binding.personDeathPlaceType, DeathPlaceType.class);
         FieldHelper.initSpinnerField(binding.personBurialConductor, BurialConductor.class);
+        FieldHelper.initSpinnerField(binding.personCauseOfDeath, CauseOfDeath.class);
+        FieldHelper.initSpinnerField(binding.personCauseOfDeathDisease, Disease.class);
 
         // status of patient
         FieldHelper.initSpinnerField(binding.personPresentCondition, PresentCondition.class, new AdapterView.OnItemSelectedListener() {
@@ -176,7 +183,41 @@ public class PersonEditForm extends FormTab {
         binding.personApproximate1Age.setInputType(InputType.TYPE_CLASS_NUMBER);
         binding.personPhone.setInputType(InputType.TYPE_CLASS_PHONE);
 
+        binding.personCauseOfDeath.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                toggleCauseOfDeathFields(true);
+            }
+        });
+
+        binding.personCauseOfDeathDisease.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                Disease causeOfDeathDisease = (Disease) field.getValue();
+                if (causeOfDeathDisease == Disease.OTHER) {
+                    binding.personCauseOfDeathDiseaseDetails.setVisibility(View.VISIBLE);
+                } else {
+                    binding.personCauseOfDeathDiseaseDetails.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        toggleCauseOfDeathFields(binding.personPresentCondition.getValue() != null &&
+                binding.personPresentCondition.getValue() != PresentCondition.ALIVE);
+
         PersonValidator.setRequiredHintsForPersonData(binding);
+        binding.personPresentCondition.makeFieldSoftRequired();
+        binding.personSex.makeFieldSoftRequired();
+        binding.personDeathDate.makeFieldSoftRequired();
+        binding.personDeathPlaceDescription.makeFieldSoftRequired();
+        binding.personDeathPlaceType.makeFieldSoftRequired();
+        binding.personCauseOfDeath.makeFieldSoftRequired();
+        binding.personCauseOfDeathDetails.makeFieldSoftRequired();
+        binding.personCauseOfDeathDisease.makeFieldSoftRequired();
+        binding.personCauseOfDeathDiseaseDetails.makeFieldSoftRequired();
+        binding.personBurialDate.makeFieldSoftRequired();
+        binding.personBurialPlaceDescription.makeFieldSoftRequired();
+        binding.personBurialConductor.makeFieldSoftRequired();
 
         return binding.getRoot();
     }
@@ -345,6 +386,8 @@ public class PersonEditForm extends FormTab {
         setFieldVisibleOrGone(binding.personBurialConductor, condition != null && PresentCondition.BURIED.equals(condition));
         setFieldVisibleOrGone(binding.personBurialPlaceDescription, condition != null && PresentCondition.BURIED.equals(condition));
 
+        toggleCauseOfDeathFields(condition != null && condition != PresentCondition.ALIVE);
+
         // Make sure that death and burial fields are only shown for EVD
         for (PropertyField<?> field : deathAndBurialFields) {
             String propertyId = field.getPropertyId();
@@ -403,6 +446,42 @@ public class PersonEditForm extends FormTab {
         } else {
             approximateAgeTextField.setEnabled(true, editOrCreateUserRight);
             approximateAgeTypeField.setEnabled(true, editOrCreateUserRight);
+        }
+    }
+
+    private void toggleCauseOfDeathFields(boolean causeOfDeathVisible) {
+        if (!causeOfDeathVisible) {
+            binding.personCauseOfDeath.setVisibility(View.GONE);
+            binding.personCauseOfDeathDetails.setVisibility(View.GONE);
+            binding.personCauseOfDeathDisease.setVisibility(View.GONE);
+            binding.personCauseOfDeathDiseaseDetails.setVisibility(View.GONE);
+        } else {
+            binding.personCauseOfDeath.setVisibility(View.VISIBLE);
+            if (binding.personCauseOfDeath.getValue() == null && disease != null) {
+                binding.personCauseOfDeath.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
+            }
+
+            if (binding.personCauseOfDeath.getValue() == null) {
+                binding.personCauseOfDeathDetails.setVisibility(View.GONE);
+                binding.personCauseOfDeathDisease.setVisibility(View.GONE);
+                binding.personCauseOfDeathDiseaseDetails.setVisibility(View.GONE);
+            } else if (binding.personCauseOfDeath.getValue() == CauseOfDeath.EPIDEMIC_DISEASE) {
+                binding.personCauseOfDeathDetails.setVisibility(View.GONE);
+                binding.personCauseOfDeathDisease.setVisibility(View.VISIBLE);
+                if (binding.personCauseOfDeathDisease.getValue() == Disease.OTHER) {
+                    binding.personCauseOfDeathDiseaseDetails.setVisibility(View.VISIBLE);
+                }
+                if (binding.personCauseOfDeathDisease.getValue() == null) {
+                    binding.personCauseOfDeathDisease.setValue(disease);
+                }
+                if (disease == Disease.OTHER) {
+                    binding.personCauseOfDeathDiseaseDetails.setValue(diseaseDetails);
+                }
+            } else {
+                binding.personCauseOfDeathDetails.setVisibility(View.VISIBLE);
+                binding.personCauseOfDeathDisease.setVisibility(View.GONE);
+                binding.personCauseOfDeathDiseaseDetails.setVisibility(View.GONE);
+            }
         }
     }
 

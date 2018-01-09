@@ -29,6 +29,6 @@ public class ContactPersonView extends AbstractContactView {
     	super.enter(event);
     	ContactDto dto = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
     	CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
-    	setSubComponent(ControllerProvider.getPersonController().getPersonEditComponent(dto.getPerson().getUuid(), caseDto.getDisease(), UserRight.CONTACT_EDIT));
+    	setSubComponent(ControllerProvider.getPersonController().getPersonEditComponent(dto.getPerson().getUuid(), caseDto.getDisease(), caseDto.getDiseaseDetails(), UserRight.CONTACT_EDIT));
     }
 }

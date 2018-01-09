@@ -60,6 +60,7 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 Bundle personEditBundle = new Bundle();
                 personEditBundle.putString(Person.UUID, caze.getPerson().getUuid());
                 personEditBundle.putSerializable(Case.DISEASE, caze.getDisease());
+                personEditBundle.putSerializable(Case.DISEASE_DETAILS, caze.getDiseaseDetails());
                 personEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.CASE_EDIT);
                 frag.setArguments(personEditBundle);
                 break;

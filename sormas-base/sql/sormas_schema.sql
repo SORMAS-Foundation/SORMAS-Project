@@ -1900,3 +1900,11 @@ INSERT INTO schema_version (version_number, comment) VALUES (78, 'Drop not null 
 ALTER TABLE schema_version OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (79, 'Give sormas_user access to schema_version table');
+
+-- 2018-01-09 Cause of death fields
+ALTER TABLE person ADD COLUMN causeofdeath varchar(255);
+ALTER TABLE person ADD COLUMN causeofdeathdetails varchar(512);
+ALTER TABLE person ADD COLUMN causeofdeathdisease varchar(255);
+ALTER TABLE person ADD COLUMN causeofdeathdiseasedetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (80, 'Cause of death fields #439');
