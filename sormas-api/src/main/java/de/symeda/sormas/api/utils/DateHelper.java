@@ -363,6 +363,12 @@ public final class DateHelper {
 		return secondCalendar.getTime().after(calendar.getTime());
 	}
 	
+	/**
+	 * Creates a list of EpiWeeks for the whole given year.
+	 * 
+	 * @param year
+	 * @return
+	 */
 	public static List<EpiWeek> createEpiWeekList(int year) {
         Calendar calendar = getEpiCalendar();
         calendar.set(year, 0, 1);
@@ -373,6 +379,13 @@ public final class DateHelper {
         return epiWeekList;
     }
 	
+	/**
+	 * Creates a list of EpiWeeks, starting with the given week in the given year, going back exactly one year.
+	 * 
+	 * @param year
+	 * @param week
+	 * @return
+	 */
 	public static List<EpiWeek> createEpiWeekList(int year, int week) {
         Calendar calendar = getEpiCalendar();
         calendar.set(Calendar.YEAR, year);
