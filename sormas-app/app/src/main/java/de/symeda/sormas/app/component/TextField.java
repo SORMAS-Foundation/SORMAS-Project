@@ -104,6 +104,16 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
     }
 
     @Override
+    public void setEnabled(boolean enabled) {
+        if (enabled) {
+            throw new UnsupportedOperationException("If you want to enable a custom field, call setEnabled(boolean enabled, UserRight editOrCreateUserRight) instead.");
+        } else {
+            textContent.setEnabled(false);
+            textContent.setFocusable(false);
+        }
+    }
+
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         textContent = (EditText) this.findViewById(R.id.text_input);
@@ -176,5 +186,11 @@ public class TextField extends PropertyField<String> implements TextFieldInterfa
     protected void requestFocusForContentView(View nextView) {
         ((TextField) nextView).textContent.requestFocus();
         ((TextField) nextView).setCursorToRight();
+    }
+
+    @Override
+    protected void setFieldEnabledStatus(boolean enabled) {
+        textContent.setEnabled(enabled);
+        textContent.setFocusable(enabled);
     }
 }

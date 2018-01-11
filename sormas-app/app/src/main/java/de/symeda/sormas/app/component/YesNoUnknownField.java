@@ -120,4 +120,10 @@ public class YesNoUnknownField extends PropertyField<YesNoUnknown> {
         ((YesNoUnknownField) nextView).radioGroup.requestFocus();
     }
 
+    @Override
+    protected void setFieldEnabledStatus(boolean enabled) {
+        radioGroup.setEnabled(enabled);
+        radioGroup.setFocusable(enabled);
+    }
+
 }

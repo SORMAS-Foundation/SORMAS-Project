@@ -58,6 +58,8 @@ public class DateField extends PropertyField<Date> implements DateFieldInterface
     public void setValue(Date value) {
         if(value != null) {
             dateContent.setText(DateHelper.formatDate(value));
+        } else {
+            dateContent.setText(null);
         }
     }
 
@@ -172,6 +174,12 @@ public class DateField extends PropertyField<Date> implements DateFieldInterface
     @Override
     protected void requestFocusForContentView(View nextView) {
         ((DateField) nextView).dateContent.requestFocus();
+    }
+
+    @Override
+    protected void setFieldEnabledStatus(boolean enabled) {
+        dateContent.setEnabled(enabled);
+        dateContent.setFocusable(enabled);
     }
 
 }

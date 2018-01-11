@@ -239,4 +239,11 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
     protected void requestFocusForContentView(View nextView) {
         ((SpinnerField) nextView).spinnerElement.requestFocus();
     }
+
+    @Override
+    protected void setFieldEnabledStatus(boolean enabled) {
+        spinnerElement.setEnabled(enabled);
+        spinnerElement.setFocusable(enabled);
+    }
+
 }

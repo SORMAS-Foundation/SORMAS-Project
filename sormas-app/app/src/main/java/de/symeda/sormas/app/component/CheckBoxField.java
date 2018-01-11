@@ -95,4 +95,10 @@ public class CheckBoxField extends PropertyField<Boolean> {
     public void setAdditionalListener(CompoundButton.OnCheckedChangeListener additionalListener) {
         this.additionalListener = additionalListener;
     }
+
+    @Override
+    protected void setFieldEnabledStatus(boolean enabled) {
+        checkBox.setEnabled(enabled);
+        checkBox.setFocusable(enabled);
+    }
 }

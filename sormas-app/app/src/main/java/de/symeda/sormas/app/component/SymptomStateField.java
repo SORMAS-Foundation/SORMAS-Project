@@ -126,4 +126,10 @@ public class SymptomStateField extends PropertyField<SymptomState> {
         ((SymptomStateField) nextView).radioGroup.requestFocus();
     }
 
+    @Override
+    protected void setFieldEnabledStatus(boolean enabled) {
+        radioGroup.setEnabled(enabled);
+        radioGroup.setFocusable(enabled);
+    }
+
 }
