@@ -127,6 +127,8 @@ public final class CssStyles {
 	public static final String GRID_ROW_STATUS_PENDING = "status-pending";
 	public static final String GRID_ROW_TITLE = "row-title";
 	
+	public static final String LAYOUT_COL_HIDE_INVSIBLE = "hide-invisble";
+	
 	@Deprecated
 	public static final String CALLOUT = "callout";
 

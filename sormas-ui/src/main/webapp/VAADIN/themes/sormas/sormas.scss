@@ -59,6 +59,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 
 @import "global.scss";
 @import "deprecated.scss";
+@import "bootstrap-grid.scss";
 
 @import "components/button.scss";
 @import "components/combobox.scss";
@@ -121,6 +122,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-dashboard-view;
   @include sormas-login-view;
   
+  @include sormas-bootstrap-grid;
   @include sormas-deprecated;
   
   .sormas-content {

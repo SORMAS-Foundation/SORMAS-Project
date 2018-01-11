@@ -21,9 +21,6 @@
         <role-name>CONTACT_SUPERVISOR</role-name>
     </security-role>
 	<security-role>
-        <role-name>CONTACT_OFFICER</role-name>
-    </security-role>
-	<security-role>
         <role-name>RUMOR_MANAGER</role-name>
     </security-role>
 	<security-role>

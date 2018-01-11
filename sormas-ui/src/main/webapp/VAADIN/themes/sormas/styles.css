@@ -13885,6 +13885,10 @@ div.v-layout.v-horizontal.v-widget {
 	text-align: center;
 }
 
+.sormas .row div[location].hide-invisble:empty {
+	display: none;
+}
+
 .sormas .callout {
 	text-align: center;
 	outline: none;

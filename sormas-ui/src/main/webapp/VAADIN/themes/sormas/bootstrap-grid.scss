@@ -1,0 +1,8 @@
+@mixin sormas-bootstrap-grid {
+	
+	.row {
+		div[location].hide-invisble:empty {
+		  display: none;
+		}  
+	}
+}

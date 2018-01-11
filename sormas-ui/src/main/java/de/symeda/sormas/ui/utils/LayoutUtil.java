@@ -169,17 +169,21 @@ public class LayoutUtil {
 	}
 
 	public static FluidColumn fluidColumnCss(String cssClasses, int span, int offset, String content) {
-		return new FluidColumn(cssClasses, span, offset, content);
+		return new FluidColumn(cssClasses, span, offset, null, content);
 	}
 
 	public static FluidColumn fluidColumn(int span, int offset, String content) {
-		return new FluidColumn(null, span, offset, content);
+		return new FluidColumn(null, span, offset, null, content);
 	}
 
 	public static FluidColumn fluidColumnLoc(int span, int offset, String loc) {
-		return fluidColumn(span, offset, loc(loc));
+		return new FluidColumn(null, span, offset, loc, null);
 	}
-	
+
+	public static FluidColumn fluidColumnLocCss(String cssClasses, int span, int offset, String loc) {
+		return new FluidColumn(cssClasses, span, offset, loc, null);
+	}
+
 	public static String div(String... contents) {
 		return divCss(null, contents);
 	}
@@ -231,7 +235,7 @@ public class LayoutUtil {
 		private final String str;
 
 		public FluidColumn(String cssClasses, int span, int offset,
-				String content) {
+				String location, String content) {
 
 			StringBuilder sb = new StringBuilder();
 			sb.append("<div ");
@@ -248,9 +252,15 @@ public class LayoutUtil {
 				}
 				sb.append("'");
 			}
+			if (location != null) {
+				sb.append(" location='").append(location).append("'");
+			}
+			
 			sb.append(">");
 
-			sb.append(content);
+			if (content != null) {
+				sb.append(content);
+			}
 
 			sb.append("</div>");
 
