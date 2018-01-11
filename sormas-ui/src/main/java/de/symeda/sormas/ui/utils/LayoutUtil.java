@@ -68,20 +68,20 @@ public class LayoutUtil {
 		return element("span", cssClasses, content);
 	}
 
-	public static String h1(String cssClasses, String content) {
-		return element("h1", cssClasses, span(content));
+	public static String h1(String content) {
+		return element("h1", null, span(content));
 	}
 
-	public static String h2(String cssClasses, String content) {
-		return element("h2", cssClasses, span(content));
+	public static String h2(String content) {
+		return element("h2", null, span(content));
 	}
 
-	public static String h3(String cssClasses, String content) {
-		return element("h3", cssClasses, span(content));
+	public static String h3(String content) {
+		return element("h3", null, span(content));
 	}
 
-	public static String h4(String cssClasses, String content) {
-		return element("h4", cssClasses, span(content));
+	public static String h4(String content) {
+		return element("h4", null, span(content));
 	}
 
 	public static String strong(String cssClasses, String content) {
@@ -206,28 +206,24 @@ public class LayoutUtil {
 		return sb.toString();
 	}	
 	
-	public static FluidColumn oneOfThreeCol(String content) {
-		return fluidColumnCss(null, 4, 0, content);
+	public static FluidColumn oneOfThreeCol(String loc) {
+		return fluidColumnLoc(4, 0, loc);
 	}
 
-	public static FluidColumn twoOfThreeCol(String content) {
-		return fluidColumnCss(null, 8, 0, content);
+	public static FluidColumn twoOfThreeCol(String loc) {
+		return fluidColumnLoc(8, 0, loc);
 	}
 
-	public static FluidColumn oneOfTwoCol(String content) {
-		return fluidColumnCss(null, 6, 0, content);
+	public static FluidColumn oneOfTwoCol(String loc) {
+		return fluidColumnLoc(6, 0, loc);
 	}
 
-	public static FluidColumn oneOfTwoCol(String cssClasses, String content) {
-		return fluidColumnCss(cssClasses, 6, 0, content);
-	}
-
-	public static FluidColumn oneOfFourCol(String content) {
-		return fluidColumnCss(null, 3, 0, content);
+	public static FluidColumn oneOfFourCol(String loc) {
+		return fluidColumnLoc(3, 0, loc);
 	}
 	
-	public static FluidColumn threeOfFourCol(String content) {
-		return fluidColumnCss(null, 9, 0, content);
+	public static FluidColumn threeOfFourCol(String loc) {
+		return fluidColumnLoc(9, 0, loc);
 	}
 	
 	public static final class FluidColumn {

@@ -142,7 +142,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		
 		for (String epiDataField : epiDataFields) {
 			if (getFieldGroup().getField(epiDataField).isVisible()) {
-				String epiDataCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE_3, "Epidemiological Data") + LayoutUtil.divCss(CssStyles.VSPACE_3, I18nProperties.getFieldCaption("EpiData.epiDataHint"));
+				String epiDataCaptionLayout = LayoutUtil.h3("Epidemiological Data") + LayoutUtil.divCss(CssStyles.VSPACE_3, I18nProperties.getFieldCaption("EpiData.epiDataHint"));
 				Label epiDataCaptionLabel = new Label(epiDataCaptionLayout);
 				epiDataCaptionLabel.setContentMode(ContentMode.HTML);
 				getContent().addComponent(epiDataCaptionLabel, EPI_DATA_CAPTION_LOC);
@@ -155,7 +155,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		
 		for (String animalContact : animalContacts) {
 			if (getFieldGroup().getField(animalContact).isVisible()) {
-				String animalCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE_3, "Animal Contacts") + LayoutUtil.divCss(CssStyles.VSPACE_3, I18nProperties.getFieldCaption("EpiData.animalHint"));
+				String animalCaptionLayout = LayoutUtil.h3("Animal Contacts") + LayoutUtil.divCss(CssStyles.VSPACE_3, I18nProperties.getFieldCaption("EpiData.animalHint"));
 				Label animalCaptionLabel = new Label(animalCaptionLayout);
 				animalCaptionLabel.setContentMode(ContentMode.HTML);
 				getContent().addComponent(animalCaptionLabel, ANIMAL_CAPTION_LOC);
@@ -167,7 +167,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		
 		for (String environmentalExp : environmentalExposures) {
 			if (getFieldGroup().getField(environmentalExp).isVisible()) {
-				String environmentalCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE_3, "Environmental Exposure");
+				String environmentalCaptionLayout = LayoutUtil.h3("Environmental Exposure");
 				Label environmentalCaptionLabel = new Label(environmentalCaptionLayout);
 				environmentalCaptionLabel.setContentMode(ContentMode.HTML);
 				getContent().addComponent(environmentalCaptionLabel, ENVIRONMENTAL_LOC);

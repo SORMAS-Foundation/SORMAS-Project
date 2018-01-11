@@ -36,26 +36,21 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 	private static final String REPORT_INFORMATION_LOC = "reportInformationLoc";
 
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.h3(null, "Laboratory sample") +
+			LayoutUtil.h3("Laboratory sample") +
+			LayoutUtil.locCss(CssStyles.VSPACE_2, REPORT_INFORMATION_LOC) +
 			LayoutUtil.div(
-					LayoutUtil.locCss(CssStyles.VSPACE_2, REPORT_INFORMATION_LOC) +
-					LayoutUtil.div(
-							LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_CODE),
-							LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
-							LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
-							LayoutUtil.fluidRowLocs(SampleDto.SUGGESTED_TYPE_OF_TEST, SampleDto.LAB)
-					),
-					LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.SHIPPED),
-					LayoutUtil.div(
-							LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS)
-					),
-					LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.RECEIVED),
-					LayoutUtil.div(
-							LayoutUtil.fluidRowLocs(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID),
-							LayoutUtil.fluidRowLocs(SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON),
-							LayoutUtil.fluidRowLocs(SampleDto.COMMENT)
-					)
-			);
+					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_CODE),
+					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
+					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
+					LayoutUtil.fluidRowLocs(SampleDto.SUGGESTED_TYPE_OF_TEST, SampleDto.LAB)
+			) +
+			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.SHIPPED) +
+			LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS) +
+			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.RECEIVED) +
+			LayoutUtil.fluidRowLocs(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID) +
+			LayoutUtil.fluidRowLocs(SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON) +
+			LayoutUtil.fluidRowLocs(SampleDto.COMMENT)
+			;
 
 	public SampleEditForm(UserRight editOrCreateUserRight) {
 		super(SampleDto.class, SampleDto.I18N_PREFIX, editOrCreateUserRight);

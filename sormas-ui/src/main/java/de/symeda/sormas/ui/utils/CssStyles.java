@@ -127,6 +127,9 @@ public final class CssStyles {
 	public static final String GRID_ROW_STATUS_PENDING = "status-pending";
 	public static final String GRID_ROW_TITLE = "row-title";
 	
+	/**
+	 * Example: <code>LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE)</code>
+	 */
 	public static final String LAYOUT_COL_HIDE_INVSIBLE = "hide-invisble";
 	
 	@Deprecated

@@ -55,28 +55,26 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.h3(CssStyles.VSPACE_3, "Case data")+
-
-			LayoutUtil.divCss(CssStyles.VSPACE_4,
-					LayoutUtil.fluidRow(
-							LayoutUtil.loc(CaseDataDto.UUID), 
-							LayoutUtil.fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER)) +
-					LayoutUtil.fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION) +
-					LayoutUtil.fluidRow(
-							LayoutUtil.twoOfThreeCol(LayoutUtil.loc(CaseDataDto.INVESTIGATION_STATUS)),
-							LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CaseDataDto.INVESTIGATED_DATE))
-					) +
-					LayoutUtil.fluidRow(
-							LayoutUtil.twoOfThreeCol(LayoutUtil.loc(CaseDataDto.OUTCOME)),
-							LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CaseDataDto.OUTCOME_DATE))
-					) +
-					LayoutUtil.fluidRowLocs(CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE) +
-					LayoutUtil.fluidRow("", LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE)) +
-					LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
-					LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
-					LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS) +
-					LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, "")
-					)+
+			LayoutUtil.h3("Case data")+
+			LayoutUtil.fluidRow(
+					LayoutUtil.oneOfTwoCol(CaseDataDto.UUID), 
+					LayoutUtil.oneOfFourCol(CaseDataDto.REPORT_DATE),
+					LayoutUtil.oneOfFourCol(CaseDataDto.REPORTING_USER)) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION) +
+			LayoutUtil.fluidRow(
+					LayoutUtil.threeOfFourCol(CaseDataDto.INVESTIGATION_STATUS),
+					LayoutUtil.oneOfFourCol(CaseDataDto.INVESTIGATED_DATE)
+			) +
+			LayoutUtil.fluidRow(
+					LayoutUtil.threeOfFourCol(CaseDataDto.OUTCOME),
+					LayoutUtil.oneOfFourCol(CaseDataDto.OUTCOME_DATE)
+			) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE) +
+			// one or the other
+			LayoutUtil.fluidRow("", LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE)) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
+			LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS) +
 			LayoutUtil.loc(MEDICAL_INFORMATION_LOC) +
 			LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "") +
 			LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION, CaseDataDto.MEASLES_DOSES) +
@@ -84,7 +82,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			LayoutUtil.fluidRowLocs(CaseDataDto.YELLOW_FEVER_VACCINATION, CaseDataDto.YELLOW_FEVER_VACCINATION_INFO_SOURCE) +
 			LayoutUtil.fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_DATE) +
 			LayoutUtil.fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_SCAR) +
-			LayoutUtil.fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG);
+			LayoutUtil.fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG) +
+			LayoutUtil.fluidRowLocs("", CaseDataDto.SURVEILLANCE_OFFICER)
+			;
 
 
 	private final PersonDto person;
@@ -189,7 +189,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		for (String medicalInformationField : medicalInformationFields) {
 			if (getFieldGroup().getField(medicalInformationField).isVisible()) {
-				String medicalInformationCaptionLayout = LayoutUtil.h3(CssStyles.VSPACE_3, "Additional medical information");
+				String medicalInformationCaptionLayout = LayoutUtil.h3("Additional medical information");
 				Label medicalInformationCaptionLabel = new Label(medicalInformationCaptionLayout);
 				medicalInformationCaptionLabel.setContentMode(ContentMode.HTML);
 				getContent().addComponent(medicalInformationCaptionLabel, MEDICAL_INFORMATION_LOC);

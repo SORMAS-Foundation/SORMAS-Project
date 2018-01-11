@@ -56,76 +56,39 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private TextField causeOfDeathDetailsField;
 	
     private static final String HTML_LAYOUT = 
-    		LayoutUtil.h3(CssStyles.VSPACE_3, "Person information")+
-    		LayoutUtil.div(
-    				LayoutUtil.fluidRowCss(
-						CssStyles.VSPACE_4,
-						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.FIRST_NAME)),
-						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.LAST_NAME))
-					),
-    				LayoutUtil.fluidRowCss(
-    						CssStyles.VSPACE_4, 
-    						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.NICKNAME)),
-    						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.MOTHERS_MAIDEN_NAME))
-    				),
-    				LayoutUtil.fluidRowCss(
-    						CssStyles.VSPACE_4,
-    						LayoutUtil.oneOfTwoCol(
-    								LayoutUtil.fluidRowCss(null,
-    										LayoutUtil.oneOfThreeCol(LayoutUtil.loc(PersonDto.BIRTH_DATE_YYYY)),
-    										LayoutUtil.oneOfThreeCol(LayoutUtil.loc(PersonDto.BIRTH_DATE_MM)),
-    										LayoutUtil.oneOfThreeCol(LayoutUtil.loc(PersonDto.BIRTH_DATE_DD))
-    								)
-    								
-    						),
-    						LayoutUtil.oneOfTwoCol(LayoutUtil.fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE))
-    				),
-    				LayoutUtil.fluidRowCss(
-    						CssStyles.VSPACE_4,
-    						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.SEX)),
-    						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.PRESENT_CONDITION))
-    				),
-    				LayoutUtil.fluidRow(
-    						LayoutUtil.fluidColumnLoc(3, 0, PersonDto.DEATH_DATE),
-    						LayoutUtil.fluidColumnLoc(3, 0, PersonDto.CAUSE_OF_DEATH),
-    						LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE),
-    						LayoutUtil.fluidColumnLoc(3, 0, PersonDto.CAUSE_OF_DEATH_DETAILS)
-    				),
-    				LayoutUtil.fluidRowCss(
-    						CssStyles.VSPACE_4,
-    						LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.DEATH_PLACE_TYPE)),
-    						LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.DEATH_PLACE_DESCRIPTION))
-    				),
-    				LayoutUtil.fluidRowCss(
-    						CssStyles.VSPACE_4,
-    						LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.BURIAL_DATE)),
-    						LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.BURIAL_CONDUCTOR)),
-    						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.BURIAL_PLACE_DESCRIPTION))
-    				),
-    				LayoutUtil.fluidRowCss(
-						CssStyles.VSPACE_4,
-						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.PHONE)),
-						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.PHONE_OWNER))
-					)) +
-    		LayoutUtil.h3(CssStyles.VSPACE_3, "Occupation")+
-    		LayoutUtil.div(
-    				LayoutUtil.fluidRowCss(
-						CssStyles.VSPACE_4,
-						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.OCCUPATION_TYPE)),
-						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.OCCUPATION_DETAILS))
-					),
-    				LayoutUtil.fluidRowCss(
-    					CssStyles.VSPACE_4,
-    					LayoutUtil.oneOfFourCol(LayoutUtil.loc(FACILITY_REGION)),
-    					LayoutUtil.oneOfFourCol(LayoutUtil.loc(FACILITY_DISTRICT)),
-    					LayoutUtil.oneOfFourCol(LayoutUtil.loc(FACILITY_COMMUNITY)),
-    					LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.OCCUPATION_FACILITY))
-    				)
+    		LayoutUtil.h3("Person information")+
+			LayoutUtil.fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
+			LayoutUtil.fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
+			LayoutUtil.fluidRow(
+					LayoutUtil.fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
+					LayoutUtil.fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE)
+			) +
+			LayoutUtil.fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION) +
+			LayoutUtil.fluidRow(
+					LayoutUtil.oneOfFourCol(PersonDto.DEATH_DATE),
+					LayoutUtil.oneOfFourCol(PersonDto.CAUSE_OF_DEATH),
+					LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE),
+					LayoutUtil.oneOfFourCol(PersonDto.CAUSE_OF_DEATH_DETAILS)
+			) +
+			LayoutUtil.fluidRow(
+					LayoutUtil.oneOfFourCol(PersonDto.DEATH_PLACE_TYPE), 
+					LayoutUtil.oneOfFourCol(PersonDto.DEATH_PLACE_DESCRIPTION)
+			) +
+			LayoutUtil.fluidRow(
+					LayoutUtil.oneOfFourCol(PersonDto.BURIAL_DATE),
+					LayoutUtil.oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
+					LayoutUtil.oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
+			) +
+			LayoutUtil.fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
+    		LayoutUtil.h3("Occupation")+
+    		LayoutUtil.divCss(
+    				CssStyles.VSPACE_3, 
+    				LayoutUtil.fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS),
+    				LayoutUtil.fluidRowLocs(FACILITY_REGION, FACILITY_DISTRICT, FACILITY_COMMUNITY, PersonDto.OCCUPATION_FACILITY)
     		) +
-			LayoutUtil.h3(CssStyles.VSPACE_3, "Permanent residence of person")+
-			LayoutUtil.div(
-					LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, PersonDto.ADDRESS)
-			);
+			LayoutUtil.h3("Permanent residence of person")+
+			LayoutUtil.fluidRowLocs(PersonDto.ADDRESS)
+			;
 
     public PersonEditForm(Disease disease, String diseaseDetails, UserRight editOrCreateUserRight) {
     	super(PersonDto.class, PersonDto.I18N_PREFIX, editOrCreateUserRight);

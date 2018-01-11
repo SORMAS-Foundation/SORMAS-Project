@@ -45,17 +45,16 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String MONKEYPOX_LESIONS_IMG3 = "monkeypoxLesionsImg3";
 	private static final String MONKEYPOX_LESIONS_IMG4 = "monkeypoxLesionsImg4";
 
-	private static final String HTML_LAYOUT = LayoutUtil.h3(CssStyles.VSPACE_3, "Clinical Signs and Symptoms")
-			+ LayoutUtil.divCss(CssStyles.VSPACE_3,
-					LayoutUtil.fluidRowLocs(SymptomsDto.TEMPERATURE, SymptomsDto.TEMPERATURE_SOURCE))
-			+ LayoutUtil.divCss(CssStyles.VSPACE_3,
-					LayoutUtil.fluidRowLocs(SymptomsDto.ONSET_DATE, SymptomsDto.ONSET_SYMPTOM))
-			+ LayoutUtil.fluidRowCss(CssStyles.VSPACE_3,
+	private static final String HTML_LAYOUT = 
+			LayoutUtil.h3("Clinical Signs and Symptoms") +
+			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_3, SymptomsDto.TEMPERATURE, SymptomsDto.TEMPERATURE_SOURCE) +
+			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_3, SymptomsDto.ONSET_DATE, SymptomsDto.ONSET_SYMPTOM) +
+			LayoutUtil.fluidRowCss(CssStyles.VSPACE_3,
 					LayoutUtil.fluidColumn(8, 0,
 							LayoutUtil.div(I18nProperties.getFieldCaption("Symptoms.hint"))),
 					LayoutUtil.fluidColumn(4, 0,
-							LayoutUtil.locCss(CssStyles.ALIGN_RIGHT, BUTTONS_LOC)))
-			+ LayoutUtil.fluidRow(
+							LayoutUtil.locCss(CssStyles.ALIGN_RIGHT, BUTTONS_LOC))) +
+			LayoutUtil.fluidRow(
 					LayoutUtil.fluidColumn(6, 0,
 							LayoutUtil.locsCss(CssStyles.VSPACE_3,
 									SymptomsDto.ABDOMINAL_PAIN, SymptomsDto.HEARINGLOSS, SymptomsDto.ALTERED_CONSCIOUSNESS, SymptomsDto.ANOREXIA_APPETITE_LOSS,

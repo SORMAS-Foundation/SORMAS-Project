@@ -12863,7 +12863,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-widget.v-textfield, .sormas .v-widget.v-textarea, .sormas .v-widget.v-select, .sormas .v-widget.v-datefield, .sormas .v-widget.v-filterselect, .sormas .v-widget.v-select-optiongroup {
-	margin-bottom: 10px;
+	margin-bottom: 16px;
 }
 
 .sormas h1, .sormas .h1 {
@@ -12910,11 +12910,11 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .vspace-2 {
-	margin-bottom: 20px;
+	margin-bottom: 24px;
 }
 
 .sormas .vspace-3 {
-	margin-bottom: 10px;
+	margin-bottom: 16px;
 }
 
 .sormas .vspace-4 {
@@ -12938,11 +12938,11 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .vspace-top-2 {
-	margin-top: 20px;
+	margin-top: 24px;
 }
 
 .sormas .vspace-top-3 {
-	margin-top: 10px;
+	margin-top: 16px;
 }
 
 .sormas .vspace-top-4 {
