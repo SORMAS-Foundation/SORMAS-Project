@@ -29,6 +29,7 @@ import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -170,6 +171,7 @@ public class CaseController {
     	}
     	caze.setInvestigationStatus(InvestigationStatus.PENDING);
     	caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+    	caze.setOutcome(CaseOutcome.NO_OUTCOME);
     	
     	caze.setReportDate(new Date());
     	UserDto user = LoginHelper.getCurrentUser();

@@ -72,6 +72,9 @@ public enum UserRight {
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR
 	),
+	/*
+	 * Edit the classification and outcome of a case
+	 */
 	CASE_CLASSIFY(
 			ADMIN,
 			NATIONAL_USER,

@@ -14,6 +14,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -100,6 +101,14 @@ public class CasesView extends AbstractView {
     	filterLayout.setSizeUndefined();
     	filterLayout.addStyleName(CssStyles.VSPACE_3);
 
+    	ComboBox outcomeFilter = new ComboBox();
+    	outcomeFilter.setWidth(140, Unit.PIXELS);
+    	outcomeFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME));
+    	outcomeFilter.addItems((Object[]) CaseOutcome.values());
+    	outcomeFilter.addValueChangeListener(e -> grid.setOutcomeFilter(((CaseOutcome) e.getProperty().getValue())));
+    	filterLayout.addComponent(outcomeFilter);
+    	outcomeFilter.setValue(CaseOutcome.NO_OUTCOME);
+    	
         ComboBox diseaseFilter = new ComboBox();
         diseaseFilter.setWidth(140, Unit.PIXELS);
         diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));

@@ -17,6 +17,7 @@ import javax.persistence.Enumerated;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -151,6 +152,11 @@ public class Case extends AbstractDomainObject {
 	private Double reportLon;
 	@DatabaseField
 	private Float reportLatLonAccuracy;
+
+	@Enumerated(EnumType.STRING)
+	private CaseOutcome outcome;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date outcomeDate;
 
 	public Person getPerson() {
 		return person;
@@ -389,6 +395,22 @@ public class Case extends AbstractDomainObject {
 
 	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
+	}
+
+	public CaseOutcome getOutcome() {
+		return outcome;
+	}
+
+	public void setOutcome(CaseOutcome outcome) {
+		this.outcome = outcome;
+	}
+
+	public Date getOutcomeDate() {
+		return outcomeDate;
+	}
+
+	public void setOutcomeDate(Date outcomeDate) {
+		this.outcomeDate = outcomeDate;
 	}
 
 	@Override

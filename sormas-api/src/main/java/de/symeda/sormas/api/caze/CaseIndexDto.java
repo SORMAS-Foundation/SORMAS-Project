@@ -27,6 +27,7 @@ public class CaseIndexDto implements Serializable {
 	public static final String DISTRICT_NAME = "districtName";
 	public static final String HEALTH_FACILITY_UUID = "healthFacilityUuid";
 	public static final String SURVEILLANCE_OFFICER_UUID = "surveillanceOfficerUuid";
+	public static final String OUTCOME = "outcome";
 
 	private String uuid;
 	private String epidNumber;
@@ -43,12 +44,12 @@ public class CaseIndexDto implements Serializable {
 	private String districtName;
 	private String healthFacilityUuid;
 	private String surveillanceOfficerUuid;
+	private CaseOutcome outcome;
 		
 	public CaseIndexDto(String uuid, String epidNumber, String personFirstName, String personLastName, Disease disease,
 			String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 			PresentCondition presentCondition, Date reportDate, String regionUuid, 
-			String districtUuid, String districtName, String healthFacilityUuid, String surveillanceOfficerUuid
-			) {
+			String districtUuid, String districtName, String healthFacilityUuid, String surveillanceOfficerUuid, CaseOutcome outcome) {
 		this.setUuid(uuid);
 		this.epidNumber = epidNumber;
 		this.personFirstName = personFirstName;
@@ -64,6 +65,7 @@ public class CaseIndexDto implements Serializable {
 		this.districtName = districtName;
 		this.healthFacilityUuid = healthFacilityUuid;
 		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
+		this.outcome = outcome;
 	}
 	
 	public String getEpidNumber() {
@@ -150,7 +152,13 @@ public class CaseIndexDto implements Serializable {
 	public void setHealthFacilityUuid(String healthFacilityUuid) {
 		this.healthFacilityUuid = healthFacilityUuid;
 	}
-	
+	public CaseOutcome getOutcome() {
+		return outcome;
+	}
+	public void setOutcome(CaseOutcome outcome) {
+		this.outcome = outcome;
+	}
+
 	public CaseReferenceDto toReference() {
 		return new CaseReferenceDto(getUuid(), getPersonFirstName(), getPersonLastName());
 	}

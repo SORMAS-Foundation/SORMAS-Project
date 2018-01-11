@@ -20,6 +20,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -80,7 +81,7 @@ public class CaseGrid extends Grid {
         });
         
         setColumns(CaseIndexDto.UUID, CaseIndexDto.EPID_NUMBER, DISEASE_SHORT, 
-        		CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.INVESTIGATION_STATUS, 
+        		CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.OUTCOME, CaseIndexDto.INVESTIGATION_STATUS, 
         		CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME, 
         		CaseIndexDto.DISTRICT_NAME, CaseIndexDto.REPORT_DATE, NUMBER_OF_PENDING_TASKS);
 
@@ -94,6 +95,16 @@ public class CaseGrid extends Grid {
         
         addItemClickListener(e -> ControllerProvider.getCaseController().navigateToData(
         		((CaseIndexDto)e.getItemId()).getUuid()));
+	}
+	
+	public void setOutcomeFilter(CaseOutcome outcome) {
+		if (outcome == null) {
+			this.getColumn(CaseIndexDto.OUTCOME).setHidden(false);
+		} else if (this.getColumn(CaseIndexDto.OUTCOME) != null) {
+			this.getColumn(CaseIndexDto.OUTCOME).setHidden(true);
+		}
+		caseCriteria.outcomeEquals(outcome);
+		reload();
 	}
     
     public void setDiseaseFilter(Disease disease) {

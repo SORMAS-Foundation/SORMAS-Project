@@ -131,6 +131,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/caseData_outcome"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={caze.outcome}"/>
+
+                <de.symeda.sormas.app.component.DateField
+                    android:id="@+id/caseData_outcomeDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={caze.outcomeDate}"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
                 <de.symeda.sormas.app.component.LabelField
                     android:id="@+id/caseData_reportDate"
                     android:layout_width="match_parent"

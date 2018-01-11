@@ -198,22 +198,12 @@ public class CaseService extends AbstractAdoService<Case> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MapCaseDto> cq = cb.createQuery(MapCaseDto.class);
 		Root<Case> caze = cq.from(getElementClass());
-		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
 		Join<Person, Location> casePersonAddress = person.join(Person.ADDRESS, JoinType.LEFT);
 
 		Predicate filter = createUserFilter(cb, cq, caze, user);
-
-		// Use the onset date if available and the report date otherwise
-		// TODO Add date of outcome to the date filter once it is built in
-		Predicate dateFilter = cb.or(
-				cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), to), 
-				cb.and(
-						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
-						cb.lessThanOrEqualTo(caze.get(Case.REPORT_DATE), to)
-						)
-				);
+		Predicate dateFilter = createActiveCaseFilter(cb, caze, from, to);
 		if (filter != null) {
 			filter = cb.and(filter, dateFilter);
 		} else {
@@ -270,20 +260,10 @@ public class CaseService extends AbstractAdoService<Case> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<StatisticsCaseDto> cq = cb.createQuery(StatisticsCaseDto.class);
 		Root<Case> caze = cq.from(getElementClass());
-		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);	
 		
 		Predicate filter = createUserFilter(cb, cq, caze, user);
-
-		// Use the onset date if available and the report date otherwise
-		// TODO Add date of outcome to the date filter once it is built in
-		Predicate dateFilter = cb.or(
-				cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), to), 
-				cb.and(
-						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
-						cb.lessThanOrEqualTo(caze.get(Case.REPORT_DATE), to)
-						)
-				);
+		Predicate dateFilter = createActiveCaseFilter(cb, caze, from, to);
 		if (filter != null) {
 			filter = cb.and(filter, dateFilter);
 		} else {
@@ -438,6 +418,38 @@ public class CaseService extends AbstractAdoService<Case> {
 		return dateFilter;
 	}
 	
+	/**
+	 * A case is considered active when the time span between onset/report date and outcome date overlaps
+	 * the time span defined by the fromDate and toDate.
+	 */
+	public Predicate createActiveCaseFilter(CriteriaBuilder cb, Root<Case> from, Date fromDate, Date toDate) {
+		Predicate dateFromFilter = null;
+		Predicate dateToFilter = null;
+		if (fromDate != null) {
+			dateFromFilter = cb.or(
+					cb.isNull(from.get(Case.OUTCOME_DATE)),
+					cb.greaterThanOrEqualTo(from.get(Case.OUTCOME_DATE), fromDate)
+			);
+		}
+		if (toDate != null) {
+			// Use the onset date if available and the report date otherwise
+			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS, JoinType.LEFT);
+			dateToFilter = cb.or(
+					cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), toDate), 
+					cb.and(
+							cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
+							cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), toDate)
+					)
+			);
+		}
+			
+		if (dateFromFilter != null && dateToFilter != null) {
+			return cb.and(dateFromFilter, dateToFilter);			
+		} else {
+			return dateFromFilter != null ? dateFromFilter : dateToFilter != null ? dateToFilter : null;
+		}
+	}
+	
 	public Predicate buildCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, Root<Case> from) {
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
@@ -447,6 +459,9 @@ public class CaseService extends AbstractAdoService<Case> {
 		}
 		if (caseCriteria.getDisease() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Case.DISEASE), caseCriteria.getDisease()));
+		}
+		if (caseCriteria.getOutcome() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
 		}
 		return filter;
 	}

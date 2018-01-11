@@ -1901,10 +1901,29 @@ ALTER TABLE schema_version OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (79, 'Give sormas_user access to schema_version table');
 
--- 2018-01-09 Cause of death fields
+-- 2018-01-09 Cause of death fields #439
 ALTER TABLE person ADD COLUMN causeofdeath varchar(255);
 ALTER TABLE person ADD COLUMN causeofdeathdetails varchar(512);
 ALTER TABLE person ADD COLUMN causeofdeathdisease varchar(255);
 ALTER TABLE person ADD COLUMN causeofdeathdiseasedetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (80, 'Cause of death fields #439');
+
+-- 2018-01-10 Case outcome #185
+ALTER TABLE cases ADD COLUMN outcome varchar(255);
+ALTER TABLE cases ADD COLUMN outcomedate timestamp without time zone;
+
+UPDATE cases SET outcome = 'NO_OUTCOME';
+UPDATE cases SET changedate = now();
+
+INSERT INTO schema_version (version_number, comment) VALUES (81, 'Case outcome #185');
+
+-- 2018-01-11 Remove unused case date fields #185
+ALTER TABLE cases DROP COLUMN suspectdate;
+ALTER TABLE cases DROP COLUMN confirmeddate;
+ALTER TABLE cases DROP COLUMN negativedate;
+ALTER TABLE cases DROP COLUMN nocasedate;
+ALTER TABLE cases DROP COLUMN postivedate;
+ALTER TABLE cases DROP COLUMN recovereddate;
+
+INSERT INTO schema_version (version_number, comment) VALUES (82, 'Remove unused case date fields #185');

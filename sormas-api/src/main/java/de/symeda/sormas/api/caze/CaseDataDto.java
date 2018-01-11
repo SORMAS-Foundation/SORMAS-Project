@@ -55,6 +55,8 @@ public class CaseDataDto extends EntityDto {
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
+	public static final String OUTCOME = "outcome";
+	public static final String OUTCOME_DATE = "outcomeDate";
 	
 	private PersonReferenceDto person;
 	private CaseClassification caseClassification;
@@ -103,6 +105,9 @@ public class CaseDataDto extends EntityDto {
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+	
+	private CaseOutcome outcome;
+	private Date outcomeDate;
 
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
@@ -358,6 +363,22 @@ public class CaseDataDto extends EntityDto {
 
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
+	
+	public CaseOutcome getOutcome() {
+		return outcome;
+	}
+	
+	public void setOutcome(CaseOutcome outcome) {
+		this.outcome = outcome;
+	}
+
+	public Date getOutcomeDate() {
+		return outcomeDate;
+	}
+
+	public void setOutcomeDate(Date outcomeDate) {
+		this.outcomeDate = outcomeDate;
 	}
 	
 	public CaseReferenceDto toReference() {

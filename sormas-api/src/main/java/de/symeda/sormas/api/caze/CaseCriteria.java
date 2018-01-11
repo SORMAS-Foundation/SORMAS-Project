@@ -11,6 +11,7 @@ public class CaseCriteria implements Serializable {
 
 	private UserRole reportingUserRole;
 	private Disease disease;
+	private CaseOutcome outcome;
 	
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -21,10 +22,19 @@ public class CaseCriteria implements Serializable {
 		return this;
 	}
 
+	public CaseOutcome getOutcome( ){
+		return outcome;
+	}
+	
 	public Disease getDisease() {
 		return disease;
 	}
 
+	public CaseCriteria outcomeEquals(CaseOutcome outcome) {
+		this.outcome = outcome;
+		return this;
+	}
+	
 	public CaseCriteria diseaseEquals(Disease disease) {
 		this.disease = disease;
 		return this;

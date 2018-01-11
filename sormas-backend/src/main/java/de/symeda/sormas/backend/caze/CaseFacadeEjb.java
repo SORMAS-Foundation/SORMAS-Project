@@ -79,7 +79,6 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
@@ -168,7 +167,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), caze.get(Case.CASE_CLASSIFICATION),
 				caze.get(Case.INVESTIGATION_STATUS), person.get(Person.PRESENT_CONDITION),
 				caze.get(Case.REPORT_DATE), region.get(Region.UUID), district.get(District.UUID), district.get(District.NAME), 
-				facility.get(Facility.UUID), surveillanceOfficer.get(User.UUID));
+				facility.get(Facility.UUID), surveillanceOfficer.get(User.UUID), caze.get(Case.OUTCOME));
 			
 		User user = userService.getByUuid(userUuid);		
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
@@ -418,6 +417,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+		
+		target.setOutcome(source.getOutcome());
+		target.setOutcomeDate(source.getOutcomeDate());
 
 		return target;
 	}
@@ -475,6 +477,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+		
+		target.setOutcome(source.getOutcome());
+		target.setOutcomeDate(source.getOutcomeDate());
 
 		return target;
 	}
@@ -600,24 +605,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				
 		Predicate filter = null;		
 		if (fromDate != null || toDate != null) {
-			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
-			Predicate dateFilter = null;
-			if (fromDate != null) {
-				// TODO Add date of outcome to the date filter once it is built in
-			}
-			if (toDate != null) {
-				// Use the onset date if available and the report date otherwise
-				Predicate subFilter = cb.or(
-						cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), toDate), 
-						cb.and(
-								cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
-								cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), toDate)
-								)
-						);
-				
-				dateFilter = dateFilter != null ? cb.and(dateFilter, subFilter) : subFilter;
-			}
-			filter = dateFilter;
+			filter = caseService.createActiveCaseFilter(cb, from, fromDate, toDate);
 		}
 		
 		if (disease != null) {
@@ -638,6 +626,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		return resultMap;
 	}
 	
+
+	
 	@Override
 	public List<Pair<DistrictDto, BigDecimal>> getCaseMeasurePerDistrict(Date fromDate, Date toDate, Disease disease, CaseMeasure caseMeasure) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -645,25 +635,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> from = cq.from(Case.class);
 		
 		Predicate filter = null;		
-		if (fromDate != null || toDate != null) {
-			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS);
-			Predicate dateFilter = null;
-			if (fromDate != null) {
-				// TODO Add date of outcome to the date filter once it is built in
-			}
-			if (toDate != null) {
-				// Use the onset date if available and the report date otherwise
-				Predicate subFilter = cb.or(
-						cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), toDate), 
-						cb.and(
-								cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
-								cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), toDate)
-								)
-						);
-				
-				dateFilter = dateFilter != null ? cb.and(dateFilter, subFilter) : subFilter;
-			}
-			filter = dateFilter;
+		if (fromDate != null || toDate != null) {			
+			filter = caseService.createActiveCaseFilter(cb, from, fromDate, toDate);
 		}
 		
 		if (disease != null) {

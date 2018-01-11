@@ -23,6 +23,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -64,6 +65,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					LayoutUtil.fluidRow(
 							LayoutUtil.twoOfThreeCol(LayoutUtil.loc(CaseDataDto.INVESTIGATION_STATUS)),
 							LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CaseDataDto.INVESTIGATED_DATE))
+					) +
+					LayoutUtil.fluidRow(
+							LayoutUtil.twoOfThreeCol(LayoutUtil.loc(CaseDataDto.OUTCOME)),
+							LayoutUtil.oneOfThreeCol(LayoutUtil.loc(CaseDataDto.OUTCOME_DATE))
 					) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE) +
 					LayoutUtil.fluidRow("", LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE)) +
@@ -111,6 +116,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
 		DateField investigatedDate = addField(CaseDataDto.INVESTIGATED_DATE, DateField.class);
 		investigatedDate.setDateFormat(DateHelper.getDateFormat().toPattern());
+		addField(CaseDataDto.OUTCOME, OptionGroup.class);
+		DateField outcomeDate = addField(CaseDataDto.OUTCOME_DATE, DateField.class);
+		outcomeDate.setDateFormat(DateHelper.getDateFormat().toPattern());
 		ComboBox diseaseField = addField(CaseDataDto.DISEASE, ComboBox.class);
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
 		OptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
@@ -134,14 +142,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, OptionGroup.class);
 		addField(CaseDataDto.SMALLPOX_VACCINATION_DATE, DateField.class);
 
-		setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.DISEASE, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
-		FieldHelper.addSoftRequiredStyle(investigatedDate, plagueType, community, surveillanceOfficerField);
+		setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.OUTCOME, CaseDataDto.DISEASE, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
+		FieldHelper.addSoftRequiredStyle(investigatedDate, outcomeDate, plagueType, community, surveillanceOfficerField);
 
 		setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER, CaseDataDto.REGION,
 				CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 
 		setReadOnly(!LoginHelper.hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
 		setReadOnly(!LoginHelper.hasUserRight(UserRight.CASE_INVESTIGATE), CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.INVESTIGATED_DATE);
+		setReadOnly(!LoginHelper.hasUserRight(UserRight.CASE_CLASSIFY), CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.OUTCOME, CaseDataDto.OUTCOME_DATE);
 
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
 			boolean visible = DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, (String)propertyId, disease);
@@ -173,7 +182,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_DATE), CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, Arrays.asList(YesNoUnknown.YES), true);
-
+		FieldHelper.setReadOnlyWhen(getFieldGroup(), CaseDataDto.OUTCOME_DATE, CaseDataDto.OUTCOME, Arrays.asList(CaseOutcome.NO_OUTCOME), true);
+		
 		List<String> medicalInformationFields = Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.MEASLES_VACCINATION, 
 				CaseDataDto.YELLOW_FEVER_VACCINATION, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
 
@@ -222,7 +232,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					healthFacilityDetails.clear();
 				}
 			}			
-		});
+		});		
 	}
 
 	@Override 

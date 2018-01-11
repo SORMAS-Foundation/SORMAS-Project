@@ -14,6 +14,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -73,6 +74,8 @@ public class CaseEditDataForm extends FormTab {
         FieldHelper.initSpinnerField(binding.caseDataYellowFeverVaccination, Vaccination.class);
         FieldHelper.initSpinnerField(binding.caseDataYellowFeverVaccinationInfoSource, VaccinationInfoSource.class);
         FieldHelper.initSpinnerField(binding.caseDataPlagueType, PlagueType.class);
+        FieldHelper.initSpinnerField(binding.caseDataOutcome, CaseOutcome.class);
+        binding.caseDataOutcomeDate.initialize(this);
         binding.caseDataSmallpoxVaccinationDate.initialize(this);
 
         boolean showMeaslesVaccination = Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataMeaslesVaccination.getPropertyId(), binding.getCaze().getDisease());
@@ -176,6 +179,30 @@ public class CaseEditDataForm extends FormTab {
             binding.caseDataMove.setVisibility(View.VISIBLE);
             binding.caseDataMove.setPaintFlags(binding.caseDataMove.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             binding.caseDataMove.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+        }
+
+        if (user.hasUserRight(UserRight.CASE_CLASSIFY)) {
+            binding.caseDataOutcome.addValueChangedListener(new PropertyField.ValueChangeListener() {
+                @Override
+                public void onChange(PropertyField field) {
+                    CaseOutcome outcome = (CaseOutcome) field.getValue();
+                    if (outcome == null) {
+                        field.setErrorWithoutFocus(DatabaseHelper.getContext().getResources().getString(R.string.validation_soft_case_outcome));
+                    } else {
+                        field.clearError();
+                    }
+
+                    if (outcome == null || outcome == CaseOutcome.NO_OUTCOME) {
+                        binding.caseDataOutcomeDate.setEnabled(false);
+                        binding.caseDataOutcomeDate.setValue(null);
+                    } else {
+                        binding.caseDataOutcomeDate.setEnabled(true, UserRight.CASE_CLASSIFY);
+                    }
+                }
+            });
+        } else {
+            binding.caseDataOutcome.setEnabled(false);
+            binding.caseDataOutcomeDate.setEnabled(false);
         }
 
         if (binding.getCaze().getDisease() != Disease.OTHER) {
