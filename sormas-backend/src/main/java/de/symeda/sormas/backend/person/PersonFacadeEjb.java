@@ -190,7 +190,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setCauseOfDeath(source.getCauseOfDeath());
 		target.setCauseOfDeathDetails(source.getCauseOfDeathDetails());
 		target.setCauseOfDeathDisease(source.getCauseOfDeathDisease());
-		target.setCauseOfDeathDiseaseDetails(source.getCauseOfDeathDiseaseDetails());
 		target.setDeathDate(source.getDeathDate());
 		target.setDeathPlaceType(source.getDeathPlaceType());
 		target.setDeathPlaceDescription(source.getDeathPlaceDescription());
@@ -279,7 +278,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setCauseOfDeath(source.getCauseOfDeath());
 		target.setCauseOfDeathDetails(source.getCauseOfDeathDetails());
 		target.setCauseOfDeathDisease(source.getCauseOfDeathDisease());
-		target.setCauseOfDeathDiseaseDetails(source.getCauseOfDeathDiseaseDetails());
 		target.setDeathDate(source.getDeathDate());
 		target.setDeathPlaceType(source.getDeathPlaceType());
 		target.setDeathPlaceDescription(source.getDeathPlaceDescription());

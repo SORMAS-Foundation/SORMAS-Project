@@ -66,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                android:nextFocusForward="@+id/person_birthdateDD"
+                android:nextFocusForward="@+id/person_birthdateYYYY"
                 android:value="@={person.mothersMaidenName}"/>
 
             <TextView
@@ -110,7 +110,7 @@
                     android:layout_weight="0.33"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    android:nextFocusForward="@+id/person_approximate1Age"
+                    android:nextFocusForward="@+id/person_sex"
                     android:value="@={person.birthdateDD}"/>
             </LinearLayout>
 
@@ -126,7 +126,6 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    android:nextFocusForward="@+id/person_approximateAgeType"
                     app:integer="@={person.approximateAge}"/>
 
                 <de.symeda.sormas.app.component.SpinnerField
@@ -157,10 +156,10 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                android:nextFocusForward="@+id/person_phone"
                 android:value="@={person.presentCondition}"/>
 
             <LinearLayout
+                android:focusable="false"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -172,44 +171,19 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
+                    android:nextFocusForward="@+id/person_causeOfDeath"
                     android:value="@={person.deathDate}"/>
 
                 <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/person_deathPlaceType"
+                    android:id="@+id/person_causeOfDeath"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    android:nextFocusForward="@+id/person_deathPlaceDescription"
-                    android:value="@={person.deathPlaceType}"/>
-
+                    android:nextFocusForward="@+id/person_causeOfDeathDisease"
+                    android:value="@={person.causeOfDeath}"/>
             </LinearLayout>
-
-            <de.symeda.sormas.app.component.TextField
-                android:id="@+id/person_deathPlaceDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:nextFocusForward="@+id/person_causeOfDeath"
-                android:value="@={person.deathPlaceDescription}"/>
-
-            <de.symeda.sormas.app.component.SpinnerField
-                android:id="@+id/person_causeOfDeath"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:value="@={person.causeOfDeath}"/>
-
-            <de.symeda.sormas.app.component.TextField
-                android:id="@+id/person_causeOfDeathDetails"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:value="@={person.causeOfDeathDetails}"/>
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -226,15 +200,40 @@
                     android:value="@={person.causeOfDeathDisease}"/>
 
                 <de.symeda.sormas.app.component.TextField
-                    android:id="@+id/person_causeOfDeathDiseaseDetails"
+                    android:id="@+id/person_causeOfDeathDetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:value="@={person.causeOfDeathDetails}"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <de.symeda.sormas.app.component.SpinnerField
+                        android:id="@+id/person_deathPlaceType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:paddingTop="@dimen/field_padding"
+                        android:paddingBottom="@dimen/field_padding"
+                        android:nextFocusForward="@+id/person_deathPlaceDescription"
+                        android:value="@={person.deathPlaceType}"/>
+
+                <de.symeda.sormas.app.component.TextField
+                    android:id="@+id/person_deathPlaceDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    android:value="@={person.causeOfDeathDiseaseDetails}"/>
-
+                    android:nextFocusForward="@+id/person_burialDate"
+                    android:value="@={person.deathPlaceDescription}"/>
             </LinearLayout>
+
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -246,6 +245,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="0.5"
+                    android:nextFocusForward="@+id/person_burialConductor"
                     android:value="@={person.burialDate}"/>
 
                 <de.symeda.sormas.app.component.SpinnerField

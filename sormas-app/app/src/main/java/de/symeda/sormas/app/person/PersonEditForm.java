@@ -193,12 +193,7 @@ public class PersonEditForm extends FormTab {
         binding.personCauseOfDeathDisease.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
-                Disease causeOfDeathDisease = (Disease) field.getValue();
-                if (causeOfDeathDisease == Disease.OTHER) {
-                    binding.personCauseOfDeathDiseaseDetails.setVisibility(View.VISIBLE);
-                } else {
-                    binding.personCauseOfDeathDiseaseDetails.setVisibility(View.GONE);
-                }
+                toggleCauseOfDeathFields(true);
             }
         });
 
@@ -214,7 +209,6 @@ public class PersonEditForm extends FormTab {
         binding.personCauseOfDeath.makeFieldSoftRequired();
         binding.personCauseOfDeathDetails.makeFieldSoftRequired();
         binding.personCauseOfDeathDisease.makeFieldSoftRequired();
-        binding.personCauseOfDeathDiseaseDetails.makeFieldSoftRequired();
         binding.personBurialDate.makeFieldSoftRequired();
         binding.personBurialPlaceDescription.makeFieldSoftRequired();
         binding.personBurialConductor.makeFieldSoftRequired();
@@ -454,7 +448,6 @@ public class PersonEditForm extends FormTab {
             binding.personCauseOfDeath.setVisibility(View.GONE);
             binding.personCauseOfDeathDetails.setVisibility(View.GONE);
             binding.personCauseOfDeathDisease.setVisibility(View.GONE);
-            binding.personCauseOfDeathDiseaseDetails.setVisibility(View.GONE);
         } else {
             binding.personCauseOfDeath.setVisibility(View.VISIBLE);
             if (binding.personCauseOfDeath.getValue() == null && disease != null) {
@@ -464,23 +457,22 @@ public class PersonEditForm extends FormTab {
             if (binding.personCauseOfDeath.getValue() == null) {
                 binding.personCauseOfDeathDetails.setVisibility(View.GONE);
                 binding.personCauseOfDeathDisease.setVisibility(View.GONE);
-                binding.personCauseOfDeathDiseaseDetails.setVisibility(View.GONE);
             } else if (binding.personCauseOfDeath.getValue() == CauseOfDeath.EPIDEMIC_DISEASE) {
-                binding.personCauseOfDeathDetails.setVisibility(View.GONE);
                 binding.personCauseOfDeathDisease.setVisibility(View.VISIBLE);
                 if (binding.personCauseOfDeathDisease.getValue() == Disease.OTHER) {
-                    binding.personCauseOfDeathDiseaseDetails.setVisibility(View.VISIBLE);
+                    binding.personCauseOfDeathDetails.setVisibility(View.VISIBLE);
+                } else {
+                    binding.personCauseOfDeathDetails.setVisibility(View.GONE);
                 }
                 if (binding.personCauseOfDeathDisease.getValue() == null) {
                     binding.personCauseOfDeathDisease.setValue(disease);
                 }
                 if (disease == Disease.OTHER) {
-                    binding.personCauseOfDeathDiseaseDetails.setValue(diseaseDetails);
+                    binding.personCauseOfDeathDetails.setValue(diseaseDetails);
                 }
             } else {
-                binding.personCauseOfDeathDetails.setVisibility(View.VISIBLE);
                 binding.personCauseOfDeathDisease.setVisibility(View.GONE);
-                binding.personCauseOfDeathDiseaseDetails.setVisibility(View.GONE);
+                binding.personCauseOfDeathDetails.setVisibility(View.VISIBLE);
             }
         }
     }

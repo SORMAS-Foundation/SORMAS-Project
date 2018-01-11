@@ -1927,3 +1927,7 @@ ALTER TABLE cases DROP COLUMN postivedate;
 ALTER TABLE cases DROP COLUMN recovereddate;
 
 INSERT INTO schema_version (version_number, comment) VALUES (82, 'Remove unused case date fields #185');
+
+ALTER TABLE person DROP COLUMN causeofdeathdiseasedetails;
+
+INSERT INTO schema_version (version_number, comment) VALUES (83, 'Cause of death fields #439');

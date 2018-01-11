@@ -58,7 +58,8 @@ public class Person extends AbstractDomainObject {
 	private CauseOfDeath causeOfDeath;
 	private String causeOfDeathDetails;
 	private Disease causeOfDeathDisease;
-	private String causeOfDeathDiseaseDetails;
+	//@Deprecated
+	//private String causeOfDeathDiseaseDetails;
 	private DeathPlaceType deathPlaceType;
 	private String deathPlaceDescription;
 	private Date burialDate;
@@ -286,13 +287,6 @@ public class Person extends AbstractDomainObject {
 	}
 	public void setCauseOfDeathDisease(Disease causeOfDeathDisease) {
 		this.causeOfDeathDisease = causeOfDeathDisease;
-	}
-	
-	public String getCauseOfDeathDiseaseDetails() {
-		return causeOfDeathDiseaseDetails;
-	}
-	public void setCauseOfDeathDiseaseDetails(String causeOfDeathDiseaseDetails) {
-		this.causeOfDeathDiseaseDetails = causeOfDeathDiseaseDetails;
 	}
 	
 	@Override

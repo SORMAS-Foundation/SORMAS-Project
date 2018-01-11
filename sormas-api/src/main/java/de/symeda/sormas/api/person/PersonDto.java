@@ -28,9 +28,8 @@ public class PersonDto extends EntityDto {
 	public static final String APPROXIMATE_AGE_TYPE = "approximateAgeType";
 	
 	public static final String CAUSE_OF_DEATH = "causeOfDeath";
-	public static final String CAUSE_OF_DEATH_DETAILS = "causeOfDeathDetails";
 	public static final String CAUSE_OF_DEATH_DISEASE = "causeOfDeathDisease";
-	public static final String CAUSE_OF_DEATH_DISEASE_DETAILS = "causeOfDeathDiseaseDetails";
+	public static final String CAUSE_OF_DEATH_DETAILS = "causeOfDeathDetails";
 	public static final String DEATH_DATE = "deathDate";
 	public static final String DEATH_PLACE_TYPE = "deathPlaceType";
 	public static final String DEATH_PLACE_DESCRIPTION = "deathPlaceDescription";
@@ -61,9 +60,8 @@ public class PersonDto extends EntityDto {
 	private ApproximateAgeType approximateAgeType;
 	private Date deathDate;
 	private CauseOfDeath causeOfDeath;
-	private String causeOfDeathDetails;
 	private Disease causeOfDeathDisease;
-	private String causeOfDeathDiseaseDetails;
+	private String causeOfDeathDetails;
 	@Diseases({Disease.EVD,Disease.OTHER})
 	private DeathPlaceType deathPlaceType;
 	@Diseases({Disease.EVD,Disease.OTHER})
@@ -202,14 +200,6 @@ public class PersonDto extends EntityDto {
 
 	public void setCauseOfDeathDisease(Disease causeOfDeathDisease) {
 		this.causeOfDeathDisease = causeOfDeathDisease;
-	}
-
-	public String getCauseOfDeathDiseaseDetails() {
-		return causeOfDeathDiseaseDetails;
-	}
-
-	public void setCauseOfDeathDiseaseDetails(String causeOfDeathDiseaseDetails) {
-		this.causeOfDeathDiseaseDetails = causeOfDeathDiseaseDetails;
 	}
 
 	public Date getDeathDate() {

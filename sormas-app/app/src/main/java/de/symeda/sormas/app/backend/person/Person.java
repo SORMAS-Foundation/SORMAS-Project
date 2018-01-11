@@ -86,8 +86,8 @@ public class Person extends AbstractDomainObject {
 	private String causeOfDeathDetails;
 	@Enumerated(EnumType.STRING)
 	private Disease causeOfDeathDisease;
-	@Column
-	private String causeOfDeathDiseaseDetails;
+	//@Deprecated
+	//private String causeOfDeathDiseaseDetails;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date deathDate;
 	@Enumerated(EnumType.STRING)
@@ -299,13 +299,6 @@ public class Person extends AbstractDomainObject {
 	}
 	public void setCauseOfDeathDisease(Disease causeOfDeathDisease) {
 		this.causeOfDeathDisease = causeOfDeathDisease;
-	}
-
-	public String getCauseOfDeathDiseaseDetails() {
-		return causeOfDeathDiseaseDetails;
-	}
-	public void setCauseOfDeathDiseaseDetails(String causeOfDeathDiseaseDetails) {
-		this.causeOfDeathDiseaseDetails = causeOfDeathDiseaseDetails;
 	}
 
 	@Override

@@ -52,9 +52,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private Disease disease;
 	private String diseaseDetails;
 	private ComboBox causeOfDeathField;
-	private TextField causeOfDeathDetailsField;
 	private ComboBox causeOfDeathDiseaseField;
-	private TextField causeOfDeathDiseaseDetailsField;
+	private TextField causeOfDeathDetailsField;
 	
     private static final String HTML_LAYOUT = 
     		LayoutUtil.h3(CssStyles.VSPACE_3, "Person information")+
@@ -86,20 +85,16 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.SEX)),
     						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.PRESENT_CONDITION))
     				),
-    				LayoutUtil.fluidRowCss(
-    						CssStyles.VSPACE_4,
-							LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.DEATH_DATE)),
-    						LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.DEATH_PLACE_TYPE)),
-    						LayoutUtil.oneOfTwoCol(LayoutUtil.loc(PersonDto.DEATH_PLACE_DESCRIPTION))
+    				LayoutUtil.fluidRow(
+    						LayoutUtil.fluidColumnLoc(3, 0, PersonDto.DEATH_DATE),
+    						LayoutUtil.fluidColumnLoc(3, 0, PersonDto.CAUSE_OF_DEATH),
+    						LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE),
+    						LayoutUtil.fluidColumnLoc(3, 0, PersonDto.CAUSE_OF_DEATH_DETAILS)
     				),
     				LayoutUtil.fluidRowCss(
     						CssStyles.VSPACE_4,
-    						LayoutUtil.fluidRowLocs( 
-    								PersonDto.CAUSE_OF_DEATH, 
-    								PersonDto.CAUSE_OF_DEATH_DETAILS, 
-    								PersonDto.CAUSE_OF_DEATH_DISEASE, 
-    								PersonDto.CAUSE_OF_DEATH_DISEASE_DETAILS
-    						)
+    						LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.DEATH_PLACE_TYPE)),
+    						LayoutUtil.oneOfFourCol(LayoutUtil.loc(PersonDto.DEATH_PLACE_DESCRIPTION))
     				),
     				LayoutUtil.fluidRowCss(
     						CssStyles.VSPACE_4,
@@ -185,9 +180,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     	addField(PersonDto.OCCUPATION_DETAILS, TextField.class);
     	
     	causeOfDeathField = addField(PersonDto.CAUSE_OF_DEATH, ComboBox.class);
-    	causeOfDeathDetailsField = addField(PersonDto.CAUSE_OF_DEATH_DETAILS, TextField.class);
     	causeOfDeathDiseaseField = addField(PersonDto.CAUSE_OF_DEATH_DISEASE, ComboBox.class);
-    	causeOfDeathDiseaseDetailsField = addField(PersonDto.CAUSE_OF_DEATH_DISEASE_DETAILS, TextField.class);
+    	causeOfDeathDetailsField = addField(PersonDto.CAUSE_OF_DEATH_DETAILS, TextField.class);
     	
     	ComboBox facilityRegion = new ComboBox();
     	facilityRegion.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, FACILITY_REGION));
@@ -224,8 +218,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     			PersonDto.BURIAL_CONDUCTOR,
     			PersonDto.CAUSE_OF_DEATH,
     			PersonDto.CAUSE_OF_DEATH_DETAILS,
-    			PersonDto.CAUSE_OF_DEATH_DISEASE,
-    			PersonDto.CAUSE_OF_DEATH_DISEASE_DETAILS);
+    			PersonDto.CAUSE_OF_DEATH_DISEASE);
     	
     	// add some listeners 
     	addFieldListeners(PersonDto.BIRTH_DATE_DD, e -> {
@@ -280,12 +273,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     	});
     	
     	causeOfDeathDiseaseField.addValueChangeListener(e -> {
-    		Disease causeOfDeathDisease = (Disease) e.getProperty().getValue();
-    		causeOfDeathDiseaseDetailsField.setVisible(causeOfDeathDisease == Disease.OTHER);
+    		toggleCauseOfDeathFields(true);
     	});
     	
-    	FieldHelper.addSoftRequiredStyle(presentCondition, sex, deathDate, deathPlaceDesc, deathPlaceType, causeOfDeathField, causeOfDeathDetailsField, 
-    			causeOfDeathDiseaseField, causeOfDeathDiseaseDetailsField, burialDate, burialPlaceDesc, burialConductor);
+    	FieldHelper.addSoftRequiredStyle(presentCondition, sex, deathDate, deathPlaceDesc, deathPlaceType, 
+    			causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField, 
+    			burialDate, burialPlaceDesc, burialConductor);
     	
     	addValueChangeListener(e -> {
     		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
@@ -425,9 +418,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private void toggleCauseOfDeathFields(boolean causeOfDeathVisible) {
 		if (!causeOfDeathVisible) {
 			causeOfDeathField.setVisible(false);
-			causeOfDeathDetailsField.setVisible(false);
 			causeOfDeathDiseaseField.setVisible(false);
-			causeOfDeathDiseaseDetailsField.setVisible(false);
+			causeOfDeathDetailsField.setVisible(false);
 		} else {
 			causeOfDeathField.setVisible(true);
 			if (causeOfDeathField.getValue() == null && disease != null) {
@@ -435,25 +427,24 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			}
 			
 			if (causeOfDeathField.getValue() == null) {
-				causeOfDeathDetailsField.setVisible(false);
 				causeOfDeathDiseaseField.setVisible(false);
-				causeOfDeathDiseaseDetailsField.setVisible(false);
-			} else if (causeOfDeathField.getValue() == CauseOfDeath.EPIDEMIC_DISEASE) {
 				causeOfDeathDetailsField.setVisible(false);
+			} else if (causeOfDeathField.getValue() == CauseOfDeath.EPIDEMIC_DISEASE) {
 				causeOfDeathDiseaseField.setVisible(true);
 				if (causeOfDeathDiseaseField.getValue() == Disease.OTHER) {
-					causeOfDeathDiseaseDetailsField.setVisible(true);
+					causeOfDeathDetailsField.setVisible(true);
+				} else {
+					causeOfDeathDetailsField.setVisible(false);
 				}
 				if (causeOfDeathDiseaseField.getValue() == null) {
 					causeOfDeathDiseaseField.setValue(disease);
 				}
 				if (disease == Disease.OTHER) {
-					causeOfDeathDiseaseDetailsField.setValue(diseaseDetails);
+					causeOfDeathDetailsField.setValue(diseaseDetails);
 				}
 			} else {
-				causeOfDeathDetailsField.setVisible(true);
 				causeOfDeathDiseaseField.setVisible(false);
-				causeOfDeathDiseaseDetailsField.setVisible(false);
+				causeOfDeathDetailsField.setVisible(true);
 			}
 		}
 	}
