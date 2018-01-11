@@ -243,6 +243,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public CaseDataDto saveCase(CaseDataDto dto) {
 		Case currentCaze = caseService.getByUuid(dto.getUuid());
+		InvestigationStatus currentInvestigationStatus = null;
+		if (currentCaze != null) {
+			currentCaze.getInvestigationStatus();
+		}
 		Disease currentDisease = null;
 		if (currentCaze != null) {
 			currentDisease = currentCaze.getDisease();
@@ -264,7 +268,12 @@ public class CaseFacadeEjb implements CaseFacade {
 		Case caze = fromDto(dto);
 
 		caseService.ensurePersisted(caze);
-		updateCaseInvestigationProcess(caze);
+		// Force investigation status change when it was manually set
+		if (currentCaze != null && currentInvestigationStatus != caze.getInvestigationStatus()) {
+			forceInvestigationChange(caze);
+		} else {
+			updateCaseInvestigationProcess(caze);
+		}
 
 		// Update follow-up until and status of all contacts of this case if the
 		// disease has changed
@@ -542,6 +551,47 @@ public class CaseFacadeEjb implements CaseFacade {
 				default:
 					break;
 				}
+			}
+		}
+	}
+	
+	/**
+	 * Sets information associated with the investigation of a case without the usual process in
+	 * updateCaseInvestigationProcess. Either sets or removes the investigation date and updates
+	 * the associated tasks or creates a new one if the investigation status has been changed
+	 * back to "Pending".
+	 */
+	public void forceInvestigationChange(Case caze) {
+		CaseReferenceDto caseRef = caze.toReference();
+		InvestigationStatus investigationStatus = caze.getInvestigationStatus();
+		
+		if (investigationStatus != InvestigationStatus.PENDING) {
+			// Set the investigation date
+			if (caze.getInvestigatedDate() == null) {
+				caze.setInvestigatedDate(new Date());
+			}
+			
+			// Set the task status of all investigation tasks to "Removed"
+			List<Task> pendingTasks = taskService.findBy(new TaskCriteria()
+					.taskTypeEquals(TaskType.CASE_INVESTIGATION)
+					.cazeEquals(caseRef)
+					.taskStatusEquals(TaskStatus.PENDING));
+			for (Task task : pendingTasks) {
+				task.setTaskStatus(TaskStatus.REMOVED);
+				task.setStatusChangeDate(new Date());
+			}
+		} else {
+			// Remove the investigation date
+			caze.setInvestigatedDate(null);
+			
+			// Create a new investigation task if none is present
+			long pendingCount = taskService.getCount(new TaskCriteria()
+					.taskTypeEquals(TaskType.CASE_INVESTIGATION)
+					.cazeEquals(caseRef)
+					.taskStatusEquals(TaskStatus.PENDING));
+			
+			if (pendingCount == 0) {
+				createInvestigationTask(caze);
 			}
 		}
 	}
