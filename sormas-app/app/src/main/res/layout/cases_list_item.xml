@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.7"
             android:paddingTop="@dimen/field_padding"
-            android:paddingBottom="@dimen/field_padding">
+            android:paddingBottom="12dp">
 
             <TextView
                 android:layout_width="match_parent"
@@ -47,8 +47,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:id="@+id/cli_case_outcome"
-                android:paddingLeft="10dp"
-                android:paddingBottom="10dp" />
+                android:paddingLeft="10dp" />
         </LinearLayout>
 
 

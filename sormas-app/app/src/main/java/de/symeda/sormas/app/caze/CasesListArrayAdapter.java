@@ -70,10 +70,8 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
         TextView caseOutcome = (TextView) convertView.findViewById(R.id.cli_case_outcome);
         if (caze.getOutcome() == CaseOutcome.NO_OUTCOME) {
             caseOutcome.setVisibility(View.GONE);
-            caseStatus.setPadding(10, 0, 0, 10);
         } else {
             caseOutcome.setVisibility(View.VISIBLE);
-            caseStatus.setPadding(10, 0, 0, 0);
             caseOutcome.setText(caze.getOutcome().toString());
         }
 

@@ -193,10 +193,10 @@ public class CaseEditDataForm extends FormTab {
                     }
 
                     if (outcome == null || outcome == CaseOutcome.NO_OUTCOME) {
-                        binding.caseDataOutcomeDate.setEnabled(false);
+                        binding.caseDataOutcomeDate.setVisibility(View.INVISIBLE);
                         binding.caseDataOutcomeDate.setValue(null);
                     } else {
-                        binding.caseDataOutcomeDate.setEnabled(true, UserRight.CASE_CLASSIFY);
+                        binding.caseDataOutcomeDate.setVisibility(View.VISIBLE);
                     }
                 }
             });

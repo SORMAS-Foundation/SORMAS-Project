@@ -182,7 +182,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_DATE), CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, Arrays.asList(YesNoUnknown.YES), true);
-		FieldHelper.setReadOnlyWhen(getFieldGroup(), CaseDataDto.OUTCOME_DATE, CaseDataDto.OUTCOME, Arrays.asList(CaseOutcome.NO_OUTCOME), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.OUTCOME_DATE, CaseDataDto.OUTCOME, Arrays.asList(CaseOutcome.DECEASED, CaseOutcome.RECOVERED, CaseOutcome.UNKNOWN), true);
 		
 		List<String> medicalInformationFields = Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.MEASLES_VACCINATION, 
 				CaseDataDto.YELLOW_FEVER_VACCINATION, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
