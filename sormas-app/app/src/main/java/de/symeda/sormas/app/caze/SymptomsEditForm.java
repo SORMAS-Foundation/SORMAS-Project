@@ -12,7 +12,6 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
@@ -53,10 +52,6 @@ public class SymptomsEditForm extends FormTab {
     public static final String NEW_SYMPTOMS = "newSymptoms";
     public static final String FOR_VISIT = "forVisit";
     public static final String VISIT_COOPERATIVE = "visitCooperative";
-    public static final String PERSON_APPROXIMATE_AGE = "personApproximateAge";
-
-    private Disease disease;
-    private int personApproximateAge = Integer.MIN_VALUE;
 
     private CaseSymptomsFragmentLayoutBinding binding;
     private List<SymptomStateField> nonConditionalSymptoms;
@@ -68,6 +63,7 @@ public class SymptomsEditForm extends FormTab {
     private boolean forVisit;
     private boolean visitCooperative;
 
+    private Disease disease;
     private PersonProvider personProvider;
 
     @Override
@@ -96,10 +92,6 @@ public class SymptomsEditForm extends FormTab {
             if (getArguments().getBoolean(VISIT_COOPERATIVE)) {
                 visitCooperative = true;
             }
-        }
-
-        if (getArguments().containsKey(PERSON_APPROXIMATE_AGE)) {
-            personApproximateAge = getArguments().getInt(PERSON_APPROXIMATE_AGE);
         }
 
         binding.setSymptoms(symptoms);
@@ -141,7 +133,7 @@ public class SymptomsEditForm extends FormTab {
         binding.symptomsUnexplainedBleeding.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
-                toggleUnexplainedBleedingFields();
+                updateUnexplainedBleedingFields();
                 if (forVisit) {
                     SymptomsValidator.setRequiredHintsForVisitSymptoms(visitCooperative, binding);
                     SymptomsValidator.setSoftRequiredHintsForVisitSymptoms(visitCooperative, binding);
@@ -199,7 +191,7 @@ public class SymptomsEditForm extends FormTab {
         monkeypoxFields = Arrays.asList(binding.symptomsLesionsResembleImg1, binding.symptomsLesionsResembleImg2, binding.symptomsLesionsResembleImg3, binding.symptomsLesionsResembleImg4);
 
         // set initial UI
-        toggleUnexplainedBleedingFields();
+        updateUnexplainedBleedingFields();
         visibilityOtherHemorrhagicSymptoms();
         visibilityOtherNonHemorrhagicSymptoms();
         visibilityLesionsFields();
@@ -312,15 +304,19 @@ public class SymptomsEditForm extends FormTab {
         return view;
     }
 
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser) {
+            updateBulgingFontanelleVisibility();
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-
-        if (personProvider == null) {
-            throw new RuntimeException("PersonProvider not initialized!");
-        }
-
-        updateBulgingFontanelleVisibility();
 
         // @TODO: Workaround, find a better solution. Remove autofocus on first field.
         getView().requestFocus();
@@ -363,7 +359,7 @@ public class SymptomsEditForm extends FormTab {
         }
     }
 
-    private void toggleUnexplainedBleedingFields() {
+    private void updateUnexplainedBleedingFields() {
         SymptomState unexplainedBleeding = binding.symptomsUnexplainedBleeding.getValue();
         for (SymptomStateField field : conditionalBleedingSymptoms) {
             if (Diseases.DiseasesConfiguration.isDefinedOrMissing(SymptomsDto.class, field.getPropertyId(), disease)) {
@@ -419,32 +415,29 @@ public class SymptomsEditForm extends FormTab {
         SymptomsValidator.setSoftRequiredHintsForVisitSymptoms(cooperative, binding);
     }
 
+    /**
+     * Make bulging fontanelle invisible when the person in question is older than one year
+     */
     public void updateBulgingFontanelleVisibility() {
-        // Make bulging fontanelle invisible when the person in question is older than one year
-        if (binding == null) {
+        if (binding == null || personProvider != null) {
             return;
         }
-
         Person person = personProvider.getPerson();
-        if (person.getApproximateAge() == null || ((person.getApproximateAge() >= 24 && person.getApproximateAgeType() == ApproximateAgeType.MONTHS) ||
-                (person.getApproximateAge() >= 2 && (person.getApproximateAgeType() == null || person.getApproximateAgeType() == ApproximateAgeType.YEARS)))) {
-            binding.symptomsBulgingFontanelle.setVisibility(View.GONE);
+
+        boolean isInfant = person.getApproximateAge() != null
+                && ((person.getApproximateAge() <= 12 && person.getApproximateAgeType() == ApproximateAgeType.MONTHS)
+                || person.getApproximateAge() <= 1);
+        if (isInfant && Diseases.DiseasesConfiguration.isDefinedOrMissing(SymptomsDto.class, binding.symptomsBulgingFontanelle.getPropertyId(), disease)) {
+            binding.symptomsBulgingFontanelle.setVisibility(View.VISIBLE);
         } else {
-            if (Diseases.DiseasesConfiguration.isDefinedOrMissing(SymptomsDto.class, binding.symptomsBulgingFontanelle.getPropertyId(), disease)) {
-                binding.symptomsBulgingFontanelle.setVisibility(View.VISIBLE);
-            }
+            binding.symptomsBulgingFontanelle.setVisibility(View.GONE);
         }
     }
 
     public void setPersonProvider(PersonProvider personProvider) {
-        if (this.personProvider == null) {
+        if (this.personProvider != personProvider) {
             this.personProvider = personProvider;
             updateBulgingFontanelleVisibility();
         }
     }
-
-    public PersonProvider getPersonProvider() {
-        return personProvider;
-    }
-
 }

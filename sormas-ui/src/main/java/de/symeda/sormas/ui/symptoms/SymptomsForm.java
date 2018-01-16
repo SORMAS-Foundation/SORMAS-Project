@@ -185,8 +185,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.LESIONS, 
 				Arrays.asList(SymptomState.YES), true);
 
-		if (person.getApproximateAge() == null || ((person.getApproximateAge() >= 24 && person.getApproximateAgeType() == ApproximateAgeType.MONTHS) ||
-				(person.getApproximateAge() >= 2 && (person.getApproximateAgeType() == null || person.getApproximateAgeType() == ApproximateAgeType.YEARS)))) {
+		boolean isInfant = person.getApproximateAge() != null
+				&& ((person.getApproximateAge() <= 12 && person.getApproximateAgeType() == ApproximateAgeType.MONTHS)
+						|| person.getApproximateAge() <= 1);
+		if (!isInfant) {
 			getFieldGroup().getField(SymptomsDto.BULGING_FONTANELLE).setVisible(false);
 		}
 		

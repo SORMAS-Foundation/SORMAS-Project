@@ -10,9 +10,11 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.caze.SymptomsEditForm;
+import de.symeda.sormas.app.person.PersonProvider;
 import de.symeda.sormas.app.util.FormTab;
 
 /**
@@ -51,32 +53,45 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
                 break;
 
             case SYMPTOMS:
-                frag = new SymptomsEditForm();
+                SymptomsEditForm symptomsEditForm = new SymptomsEditForm();
+                frag = symptomsEditForm;
 
                 Bundle symptomsEditBundle = new Bundle();
+                PersonProvider personProvider;
                 // build new symptoms for new visit
                 if(newVisit) {
                     String keyContactUuid = visitEditBundle.getString(VisitEditDataForm.KEY_CONTACT_UUID);
-                    Contact contact = DatabaseHelper.getContactDao().queryUuid(keyContactUuid);
+                    final Contact contact = DatabaseHelper.getContactDao().queryUuid(keyContactUuid);
                     symptomsEditBundle.putSerializable(Visit.DISEASE, contact.getCaze().getDisease());
                     symptomsEditBundle.putBoolean(SymptomsEditForm.NEW_SYMPTOMS, true);
                     symptomsEditBundle.putBoolean(SymptomsEditForm.FOR_VISIT, true);
-                    symptomsEditBundle.putSerializable(SymptomsEditForm.PERSON_APPROXIMATE_AGE, contact.getPerson().getApproximateAge());
                     symptomsEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.VISIT_CREATE);
+                    personProvider = new PersonProvider() {
+                        @Override
+                        public Person getPerson() {
+                            return contact.getPerson();
+                        }
+                    };
                 }
                 // edit symptoms for given visit
                 else {
                     String visitUuid = visitEditBundle.getString(Visit.UUID);
-                    Visit visit = DatabaseHelper.getVisitDao().queryUuid(visitUuid);
+                    final Visit visit = DatabaseHelper.getVisitDao().queryUuid(visitUuid);
                     symptomsEditBundle.putString(Symptoms.UUID, visit.getSymptoms().getUuid());
                     symptomsEditBundle.putSerializable(Visit.DISEASE, visit.getDisease());
                     symptomsEditBundle.putBoolean(SymptomsEditForm.FOR_VISIT, true);
                     symptomsEditBundle.putBoolean(SymptomsEditForm.VISIT_COOPERATIVE,
                             visit.getVisitStatus() == VisitStatus.COOPERATIVE);
-                    symptomsEditBundle.putSerializable(SymptomsEditForm.PERSON_APPROXIMATE_AGE, visit.getPerson().getApproximateAge());
                     symptomsEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.VISIT_EDIT);
+                    personProvider = new PersonProvider() {
+                        @Override
+                        public Person getPerson() {
+                            return visit.getPerson();
+                        }
+                    };
                 }
 
+                symptomsEditForm.setPersonProvider(personProvider);
                 frag.setArguments(symptomsEditBundle);
                 break;
         }

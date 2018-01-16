@@ -3,6 +3,7 @@ package de.symeda.sormas.app.caze;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Observable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -50,8 +51,6 @@ import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.FacilityChangeDialogBuilder;
 import de.symeda.sormas.app.component.HelpDialog;
-import de.symeda.sormas.app.component.PropertyField;
-import de.symeda.sormas.app.component.TextField;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.contact.ContactsListFragment;
@@ -59,6 +58,7 @@ import de.symeda.sormas.app.databinding.CaseDataFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
 import de.symeda.sormas.app.person.PersonEditForm;
+import de.symeda.sormas.app.person.PersonProvider;
 import de.symeda.sormas.app.sample.SampleEditActivity;
 import de.symeda.sormas.app.sample.SamplesListFragment;
 import de.symeda.sormas.app.task.TaskForm;
@@ -76,7 +76,13 @@ public class CaseEditActivity extends AbstractEditTabActivity {
     private CaseEditPagerAdapter adapter;
     private String caseUuid;
     private String taskUuid;
-    private Toolbar toolbar;
+
+    /**
+     * this will be used to provide the case to the sub forms when they need general information.
+     * E.g. the symptoms form might need to know whether the person is an infant.
+     * TODO should be updated whenever the tab is changed or case is saved
+     */
+    private Case editedCase;
 
     @Override
     public boolean isEditing() {
@@ -94,7 +100,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         // to certain spinners not displaying their values
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setOffscreenPageLimit(0);
-        toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -229,8 +235,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         setCurrentTab(pager.getCurrentItem());
         CaseEditTabs tab = adapter.getTabForPosition(currentTab);
-        final Case caze = (Case) getData(adapter.getPositionOfTab(CaseEditTabs.CASE_DATA));
-        CaseDao caseDao = DatabaseHelper.getCaseDao();
+
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
@@ -261,7 +266,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 switch (tab) {
                     case CONTACTS:
                         ContactDao contactDao = DatabaseHelper.getContactDao();
-                        List<Contact> contacts = contactDao.getByCase(caze);
+                        List<Contact> contacts = contactDao.getByCase(editedCase);
                         for (Contact contactToMark : contacts) {
                             contactDao.markAsRead(contactToMark);
                         }
@@ -274,7 +279,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                         break;
                     case SAMPLES:
                         SampleDao sampleDao = DatabaseHelper.getSampleDao();
-                        List<Sample> samples = sampleDao.queryByCase(caze);
+                        List<Sample> samples = sampleDao.queryByCase(editedCase);
                         for (Sample sampleToMark : samples) {
                             sampleDao.markAsRead(sampleToMark);
                         }
@@ -287,7 +292,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                         break;
                     case TASKS:
                         TaskDao taskDao = DatabaseHelper.getTaskDao();
-                        List<Task> tasks = taskDao.queryByCase(caze);
+                        List<Task> tasks = taskDao.queryByCase(editedCase);
                         for (Task taskToMark : tasks) {
                             taskDao.markAsRead(taskToMark);
                         }
@@ -303,7 +308,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
             // Report problem button
             case R.id.action_report:
-                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName() + ":" + tab.toString(), caze.getUuid());
+                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName() + ":" + tab.toString(), editedCase.getUuid());
                 AlertDialog dialog = userReportDialog.create();
                 dialog.show();
 
@@ -311,30 +316,24 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
             // Save button
             case R.id.action_save:
-                final Case caseBeforeSaving = DatabaseHelper.getCaseDao().queryUuid(caze.getUuid());
+                final Case caseBeforeSaving = DatabaseHelper.getCaseDao().queryUuid(editedCase.getUuid());
                 boolean showPlagueTypeChangeAlert = false;
-                if (caze.getDisease() == Disease.PLAGUE) {
-                    showPlagueTypeChangeAlert = updatePlagueType(caze);
+                if (editedCase.getDisease() == Disease.PLAGUE) {
+                    showPlagueTypeChangeAlert = updatePlagueType(editedCase);
                 }
 
-                if (saveCaseToDatabase(caze)) {
-                    if (caze.getDisease() == Disease.PLAGUE && showPlagueTypeChangeAlert) {
-                        AlertDialog plagueTypeChangeDialog = buildPlagueTypeChangeDialog(caze.getPlagueType(), new Callback() {
+                if (saveCaseToDatabase()) {
+                    if (editedCase.getDisease() == Disease.PLAGUE && showPlagueTypeChangeAlert) {
+                        AlertDialog plagueTypeChangeDialog = buildPlagueTypeChangeDialog(editedCase.getPlagueType(), new Callback() {
                             @Override
                             public void call() {
-                                finalizeSaveProcess(caze, caseBeforeSaving);
+                                finalizeSaveProcess(editedCase, caseBeforeSaving);
                             }
                         });
                         plagueTypeChangeDialog.show();
                     } else {
-                        finalizeSaveProcess(caze, caseBeforeSaving);
+                        finalizeSaveProcess(editedCase, caseBeforeSaving);
                     }
-
-                    // TODO workaround, replace with better solution
-                    SymptomsEditForm symptomsEditForm = (SymptomsEditForm)getTabByPosition(adapter.getPositionOfTab(CaseEditTabs.SYMPTOMS));
-                    symptomsEditForm.getPersonProvider().getPerson().setApproximateAge(caze.getPerson().getApproximateAge());
-                    symptomsEditForm.getPersonProvider().getPerson().setApproximateAgeType(caze.getPerson().getApproximateAgeType());
-                    symptomsEditForm.updateBulgingFontanelleVisibility();
                 }
 
                 return true;
@@ -367,10 +366,19 @@ public class CaseEditActivity extends AbstractEditTabActivity {
     }
 
     public void setAdapter(Case caze) {
+
+        editedCase = caze;
+
         CaseDataDto caseDataDto = new CaseDataDto();
         new CaseDtoHelper().fillInnerFromAdo(caseDataDto, caze);
         List<CaseEditTabs> visibleTabs = buildVisibleTabsList(caseDataDto);
-        adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), caze, visibleTabs);
+
+        adapter = new CaseEditPagerAdapter(getSupportFragmentManager(), new CaseProvider() {
+            @Override
+            public Case getCase() {
+                return editedCase;
+            }
+        }, visibleTabs);
         createTabViews(adapter);
 
         pager.setCurrentItem(currentTab);
@@ -398,7 +406,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
     }
 
     public void moveCase(View v) {
-        if (saveCaseToDatabase((Case) getData(adapter.getPositionOfTab(CaseEditTabs.CASE_DATA)))) {
+        if (saveCaseToDatabase()) {
             final CaseDataFragmentLayoutBinding caseBinding = ((CaseEditDataForm)getTabByPosition(adapter.getPositionOfTab(CaseEditTabs.CASE_DATA))).getBinding();
 
             final Consumer positiveCallback = new Consumer() {
@@ -440,7 +448,11 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         return false;
     }
 
-    private boolean saveCaseToDatabase(Case caze) {
+    private boolean saveCaseToDatabase() {
+
+        // CAZE
+        Case caze = (Case) getData(adapter.getPositionOfTab(CaseEditTabs.CASE_DATA));
+
         // PATIENT
         PersonDao personDao = DatabaseHelper.getPersonDao();
         Person person = (Person) getData(adapter.getPositionOfTab(CaseEditTabs.PATIENT));
@@ -500,6 +512,8 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                 caze.setEpiData(epiData);
             }
             DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
+
+            editedCase = caze;
 
             return true;
         } catch (DaoException e) {

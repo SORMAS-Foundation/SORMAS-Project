@@ -8,5 +8,5 @@ import de.symeda.sormas.app.backend.person.Person;
 
 public interface PersonProvider {
 
-    public Person getPerson();
+    Person getPerson();
 }
