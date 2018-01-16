@@ -44,11 +44,9 @@ public class CaseDataDto extends EntityDto {
 	public static final String HOSPITALIZATION = "hospitalization";
 	public static final String EPI_DATA = "epiData";
 	public static final String PREGNANT = "pregnant";
-	public static final String MEASLES_VACCINATION = "measlesVaccination";
-	public static final String MEASLES_DOSES = "measlesDoses";
-	public static final String MEASLES_VACCINATION_INFO_SOURCE = "measlesVaccinationInfoSource";
-	public static final String YELLOW_FEVER_VACCINATION = "yellowFeverVaccination";
-	public static final String YELLOW_FEVER_VACCINATION_INFO_SOURCE = "yellowFeverVaccinationInfoSource";
+	public static final String VACCINATION = "vaccination";
+	public static final String VACCINATION_DOSES = "vaccinationDoses";
+	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String SMALLPOX_VACCINATION_RECEIVED = "smallpoxVaccinationReceived";
 	public static final String SMALLPOX_VACCINATION_DATE = "smallpoxVaccinationDate";
@@ -79,17 +77,13 @@ public class CaseDataDto extends EntityDto {
 	private SymptomsDto symptoms;
 		
 	private YesNoUnknown pregnant;
-	@Diseases({Disease.MEASLES})
-	private Vaccination measlesVaccination;
-	@Diseases({Disease.MEASLES})
-	private String measlesDoses;
-	@Diseases({Disease.MEASLES})
-	private VaccinationInfoSource measlesVaccinationInfoSource;
-	
-	@Diseases({Disease.YELLOW_FEVER})
-	private Vaccination yellowFeverVaccination;
-	@Diseases({Disease.YELLOW_FEVER})
-	private VaccinationInfoSource yellowFeverVaccinationInfoSource;
+
+	@Diseases({Disease.MEASLES,Disease.YELLOW_FEVER,Disease.CSM,Disease.OTHER})
+	private Vaccination vaccination;
+	@Diseases({Disease.MEASLES,Disease.CSM,Disease.OTHER})
+	private String vaccinationDoses;
+	@Diseases({Disease.MEASLES,Disease.YELLOW_FEVER,Disease.CSM,Disease.OTHER})
+	private VaccinationInfoSource vaccinationInfoSource;
 	@Diseases({Disease.MONKEYPOX})
 	private YesNoUnknown smallpoxVaccinationScar;
 	@Diseases({Disease.MONKEYPOX})
@@ -268,45 +262,29 @@ public class CaseDataDto extends EntityDto {
 	public void setPregnant(YesNoUnknown pregnant) {
 		this.pregnant = pregnant;
 	}
-
-	public Vaccination getMeaslesVaccination() {
-		return measlesVaccination;
-	}
-
-	public void setMeaslesVaccination(Vaccination measlesVaccination) {
-		this.measlesVaccination = measlesVaccination;
-	}
-
-	public String getMeaslesDoses() {
-		return measlesDoses;
-	}
-
-	public void setMeaslesDoses(String measlesDoses) {
-		this.measlesDoses = measlesDoses;
-	}
-
-	public VaccinationInfoSource getMeaslesVaccinationInfoSource() {
-		return measlesVaccinationInfoSource;
-	}
-
-	public void setMeaslesVaccinationInfoSource(VaccinationInfoSource measlesVaccinationInfoSource) {
-		this.measlesVaccinationInfoSource = measlesVaccinationInfoSource;
-	}
 	
-	public Vaccination getYellowFeverVaccination() {
-		return yellowFeverVaccination;
+	public Vaccination getVaccination() {
+		return vaccination;
 	}
 
-	public void setYellowFeverVaccination(Vaccination yellowFeverVaccination) {
-		this.yellowFeverVaccination = yellowFeverVaccination;
+	public void setVaccination(Vaccination vaccination) {
+		this.vaccination = vaccination;
 	}
 
-	public VaccinationInfoSource getYellowFeverVaccinationInfoSource() {
-		return yellowFeverVaccinationInfoSource;
+	public String getVaccinationDoses() {
+		return vaccinationDoses;
 	}
 
-	public void setYellowFeverVaccinationInfoSource(VaccinationInfoSource yellowFeverVaccinationInfoSource) {
-		this.yellowFeverVaccinationInfoSource = yellowFeverVaccinationInfoSource;
+	public void setVaccinationDoses(String vaccinationDoses) {
+		this.vaccinationDoses = vaccinationDoses;
+	}
+
+	public VaccinationInfoSource getVaccinationInfoSource() {
+		return vaccinationInfoSource;
+	}
+
+	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
+		this.vaccinationInfoSource = vaccinationInfoSource;
 	}
 
 	public YesNoUnknown getSmallpoxVaccinationScar() {

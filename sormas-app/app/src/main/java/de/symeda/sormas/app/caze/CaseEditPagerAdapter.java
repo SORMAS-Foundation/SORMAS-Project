@@ -19,6 +19,7 @@ import de.symeda.sormas.app.contact.ContactsListFragment;
 import de.symeda.sormas.app.epidata.EpiDataForm;
 import de.symeda.sormas.app.hospitalization.HospitalizationForm;
 import de.symeda.sormas.app.person.PersonEditForm;
+import de.symeda.sormas.app.person.PersonProvider;
 import de.symeda.sormas.app.sample.SamplesListFragment;
 import de.symeda.sormas.app.task.TasksListFragment;
 import de.symeda.sormas.app.util.FormTab;
@@ -65,11 +66,19 @@ public class CaseEditPagerAdapter extends FragmentStatePagerAdapter {
                 frag.setArguments(personEditBundle);
                 break;
             case SYMPTOMS:
-                frag = new SymptomsEditForm();
+                SymptomsEditForm symptomsEditForm = new SymptomsEditForm();
+                frag = symptomsEditForm;
+                symptomsEditForm.setPersonProvider(new PersonProvider() {
+                    @Override
+                    public Person getPerson() {
+                        return caze.getPerson();
+                    }
+                });
                 Bundle symptomsEditBundle = new Bundle();
                 symptomsEditBundle.putString(Symptoms.UUID, caze.getSymptoms().getUuid());
                 symptomsEditBundle.putSerializable(Case.DISEASE, caze.getDisease());
                 symptomsEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.CASE_EDIT);
+                symptomsEditBundle.putSerializable(SymptomsEditForm.PERSON_APPROXIMATE_AGE, caze.getPerson().getApproximateAge());
                 frag.setArguments(symptomsEditBundle);
                 break;
             case CONTACTS:

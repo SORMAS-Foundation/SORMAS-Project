@@ -69,20 +69,15 @@ public class CaseEditDataForm extends FormTab {
             binding.caseDataCaseClassification.setVisibility(View.GONE);
         }
 
-        FieldHelper.initSpinnerField(binding.caseDataMeaslesVaccination, Vaccination.class);
+        FieldHelper.initSpinnerField(binding.caseDataVaccination, Vaccination.class);
         FieldHelper.initSpinnerField(binding.caseDataVaccinationInfoSource, VaccinationInfoSource.class);
-        FieldHelper.initSpinnerField(binding.caseDataYellowFeverVaccination, Vaccination.class);
-        FieldHelper.initSpinnerField(binding.caseDataYellowFeverVaccinationInfoSource, VaccinationInfoSource.class);
         FieldHelper.initSpinnerField(binding.caseDataPlagueType, PlagueType.class);
         FieldHelper.initSpinnerField(binding.caseDataOutcome, CaseOutcome.class);
         binding.caseDataOutcomeDate.initialize(this);
         binding.caseDataSmallpoxVaccinationDate.initialize(this);
 
-        boolean showMeaslesVaccination = Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataMeaslesVaccination.getPropertyId(), binding.getCaze().getDisease());
-        binding.caseDataMeaslesVaccination.setVisibility(showMeaslesVaccination ? View.VISIBLE : View.GONE);
-
-        boolean showYellowFeverVaccination = Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataYellowFeverVaccination.getPropertyId(), binding.getCaze().getDisease());
-        binding.caseDataYellowFeverVaccination.setVisibility(showYellowFeverVaccination ? View.VISIBLE : View.GONE);
+        boolean showVaccination = Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataVaccination.getPropertyId(), binding.getCaze().getDisease());
+        binding.caseDataVaccination.setVisibility(showVaccination ? View.VISIBLE : View.GONE);
 
         boolean showSmallpoxVaccination = Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataSmallpoxVaccinationReceived.getPropertyId(), binding.getCaze().getDisease());
         binding.caseDataSmallpoxVaccinationReceived.setVisibility(showSmallpoxVaccination ? View.VISIBLE : View.GONE);
@@ -98,25 +93,17 @@ public class CaseEditDataForm extends FormTab {
             binding.caseDataPregnant.setVisibility(View.GONE);
         }
 
-        toggleMeaslesFields();
-        toggleYellowFeverFields();
+        toggleVaccinationFields();
 
-        binding.caseDataMeaslesVaccination.addValueChangedListener(new PropertyField.ValueChangeListener() {
+        binding.caseDataVaccination.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
-                toggleMeaslesFields();
+                toggleVaccinationFields();
             }
         });
 
-        binding.caseDataYellowFeverVaccination.addValueChangedListener(new PropertyField.ValueChangeListener() {
-            @Override
-            public void onChange(PropertyField field) {
-                toggleYellowFeverFields();
-            }
-        });
-
-        if (binding.caseDataPregnant.getVisibility() == View.GONE && binding.caseDataMeaslesVaccination.getVisibility() == View.GONE &&
-                binding.caseDataYellowFeverVaccination.getVisibility() == View.GONE && binding.caseDataSmallpoxVaccinationReceived.getVisibility() == View.GONE) {
+        if (binding.caseDataPregnant.getVisibility() == View.GONE && binding.caseDataVaccination.getVisibility() == View.GONE &&
+                binding.caseDataSmallpoxVaccinationReceived.getVisibility() == View.GONE) {
             binding.caseMedicalInformationHeadline.setVisibility(View.GONE);
         }
 
@@ -226,21 +213,21 @@ public class CaseEditDataForm extends FormTab {
         return binding == null ? null : binding.getCaze();
     }
 
-    private void toggleMeaslesFields() {
-        if (binding.caseDataMeaslesVaccination.getVisibility() != View.VISIBLE || binding.caseDataMeaslesVaccination.getValue() != Vaccination.VACCINATED) {
-            binding.caseDataDoses.setVisibility(View.GONE);
+    private void toggleVaccinationFields() {
+        if (binding.caseDataVaccination.getVisibility() != View.VISIBLE || binding.caseDataVaccination.getValue() != Vaccination.VACCINATED) {
+            binding.caseDataVaccinationDoses.setVisibility(View.GONE);
             binding.caseDataVaccinationInfoSource.setVisibility(View.GONE);
         } else {
-            binding.caseDataDoses.setVisibility(View.VISIBLE);
-            binding.caseDataVaccinationInfoSource.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void toggleYellowFeverFields() {
-        if (binding.caseDataYellowFeverVaccination.getVisibility() != View.VISIBLE || binding.caseDataYellowFeverVaccination.getValue() != Vaccination.VACCINATED) {
-            binding.caseDataYellowFeverVaccinationInfoSource.setVisibility(View.GONE);
-        } else {
-            binding.caseDataYellowFeverVaccinationInfoSource.setVisibility(View.VISIBLE);
+            if (Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataVaccinationDoses.getPropertyId(), binding.getCaze().getDisease())) {
+                binding.caseDataVaccinationDoses.setVisibility(View.VISIBLE);
+            } else {
+                binding.caseDataVaccinationDoses.setVisibility(View.GONE);
+            }
+            if (Diseases.DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, binding.caseDataVaccinationInfoSource.getPropertyId(), binding.getCaze().getDisease())) {
+                binding.caseDataVaccinationInfoSource.setVisibility(View.VISIBLE);
+            } else {
+                binding.caseDataVaccinationInfoSource.setVisibility(View.GONE);
+            }
         }
     }
 

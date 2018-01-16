@@ -45,6 +45,9 @@ public class Hospitalization extends AbstractDomainObject {
     @Enumerated(EnumType.STRING)
     private YesNoUnknown hospitalizedPreviously;
 
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown admittedToHealthFacility;
+
     // just for reference, not persisted in DB
     private List<PreviousHospitalization> previousHospitalizations = new ArrayList<PreviousHospitalization>();
 
@@ -86,6 +89,14 @@ public class Hospitalization extends AbstractDomainObject {
 
     public void setHospitalizedPreviously(YesNoUnknown hospitalizedPreviously) {
         this.hospitalizedPreviously = hospitalizedPreviously;
+    }
+
+    public YesNoUnknown getAdmittedToHealthFacility() {
+        return admittedToHealthFacility;
+    }
+
+    public void setAdmittedToHealthFacility(YesNoUnknown admittedToHealthFacility) {
+        this.admittedToHealthFacility = admittedToHealthFacility;
     }
 
     /**

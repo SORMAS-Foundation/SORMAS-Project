@@ -244,11 +244,9 @@ public class CaseFacadeEjb implements CaseFacade {
 	public CaseDataDto saveCase(CaseDataDto dto) {
 		Case currentCaze = caseService.getByUuid(dto.getUuid());
 		InvestigationStatus currentInvestigationStatus = null;
-		if (currentCaze != null) {
-			currentCaze.getInvestigationStatus();
-		}
 		Disease currentDisease = null;
 		if (currentCaze != null) {
+			currentInvestigationStatus = currentCaze.getInvestigationStatus();
 			currentDisease = currentCaze.getDisease();
 		}
 		
@@ -412,11 +410,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms()));
 
 		target.setPregnant(source.getPregnant());
-		target.setMeaslesVaccination(source.getMeaslesVaccination());
-		target.setMeaslesDoses(source.getMeaslesDoses());
-		target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
-		target.setYellowFeverVaccination(source.getYellowFeverVaccination());
-		target.setYellowFeverVaccinationInfoSource(source.getYellowFeverVaccinationInfoSource());
+		target.setVaccination(source.getVaccination());
+		target.setVaccinationDoses(source.getVaccinationDoses());
+		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
 		target.setSmallpoxVaccinationDate(source.getSmallpoxVaccinationDate());
@@ -472,11 +468,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
 
 		target.setPregnant(source.getPregnant());
-		target.setMeaslesVaccination(source.getMeaslesVaccination());
-		target.setMeaslesDoses(source.getMeaslesDoses());
-		target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
-		target.setYellowFeverVaccination(source.getYellowFeverVaccination());
-		target.setYellowFeverVaccinationInfoSource(source.getYellowFeverVaccinationInfoSource());
+		target.setVaccination(source.getVaccination());
+		target.setVaccinationDoses(source.getVaccinationDoses());
+		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
 		target.setSmallpoxVaccinationDate(source.getSmallpoxVaccinationDate());

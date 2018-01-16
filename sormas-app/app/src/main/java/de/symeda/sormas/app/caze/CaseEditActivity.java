@@ -50,6 +50,8 @@ import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.FacilityChangeDialogBuilder;
 import de.symeda.sormas.app.component.HelpDialog;
+import de.symeda.sormas.app.component.PropertyField;
+import de.symeda.sormas.app.component.TextField;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.contact.ContactNewActivity;
 import de.symeda.sormas.app.contact.ContactsListFragment;
@@ -327,6 +329,12 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                     } else {
                         finalizeSaveProcess(caze, caseBeforeSaving);
                     }
+
+                    // TODO workaround, replace with better solution
+                    SymptomsEditForm symptomsEditForm = (SymptomsEditForm)getTabByPosition(adapter.getPositionOfTab(CaseEditTabs.SYMPTOMS));
+                    symptomsEditForm.getPersonProvider().getPerson().setApproximateAge(caze.getPerson().getApproximateAge());
+                    symptomsEditForm.getPersonProvider().getPerson().setApproximateAgeType(caze.getPerson().getApproximateAgeType());
+                    symptomsEditForm.updateBulgingFontanelleVisibility();
                 }
 
                 return true;

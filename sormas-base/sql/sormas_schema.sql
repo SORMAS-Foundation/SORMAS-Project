@@ -1928,6 +1928,28 @@ ALTER TABLE cases DROP COLUMN recovereddate;
 
 INSERT INTO schema_version (version_number, comment) VALUES (82, 'Remove unused case date fields #185');
 
+-- 2018-01-11 Cause of death fields #439
 ALTER TABLE person DROP COLUMN causeofdeathdiseasedetails;
 
 INSERT INTO schema_version (version_number, comment) VALUES (83, 'Cause of death fields #439');
+
+-- 2018-01-12 New fields for CSM #474
+ALTER TABLE hospitalization ADD COLUMN admittedtohealthfacility varchar(255);
+ALTER TABLE symptoms ADD COLUMN bulgingfontanelle varchar(255);
+ALTER TABLE cases ADD COLUMN vaccination varchar(255);
+ALTER TABLE cases ADD COLUMN vaccinationdoses varchar(512);
+ALTER TABLE cases ADD COLUMN vaccinationinfosource varchar(255);
+
+UPDATE cases SET vaccination = measlesvaccination where measlesvaccination IS NOT NULL;
+UPDATE cases SET vaccination = yellowfevervaccination where yellowfevervaccination IS NOT NULL;
+UPDATE cases SET vaccinationdoses = measlesdoses where measlesdoses IS NOT NULL;
+UPDATE cases SET vaccinationinfosource = measlesvaccinationinfosource where measlesvaccinationinfosource IS NOT NULL;
+UPDATE cases SET vaccinationinfosource = yellowfevervaccinationinfosource where yellowfevervaccinationinfosource IS NOT NULL;
+
+ALTER TABLE cases DROP COLUMN measlesvaccination;
+ALTER TABLE cases DROP COLUMN measlesdoses;
+ALTER TABLE cases DROP COLUMN measlesvaccinationinfosource;
+ALTER TABLE cases DROP COLUMN yellowfevervaccination;
+ALTER TABLE cases DROP COLUMN yellowfevervaccinationinfosource;
+
+INSERT INTO schema_version (version_number, comment) VALUES (84, 'New fields for CSM #474');

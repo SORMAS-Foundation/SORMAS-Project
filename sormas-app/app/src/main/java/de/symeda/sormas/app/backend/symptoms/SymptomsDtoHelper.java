@@ -129,6 +129,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setBlackeningDeathOfTissue(b.getBlackeningDeathOfTissue());
         a.setBuboesGroinArmpitNeck(b.getBuboesGroinArmpitNeck());
         a.setPainfulLymphadenitis(b.getPainfulLymphadenitis());
+        a.setBulgingFontanelle(b.getBulgingFontanelle());
     }
 
     @Override
@@ -220,5 +221,6 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setBlackeningDeathOfTissue(b.getBlackeningDeathOfTissue());
         a.setBuboesGroinArmpitNeck(b.getBuboesGroinArmpitNeck());
         a.setPainfulLymphadenitis(b.getPainfulLymphadenitis());
+        a.setBulgingFontanelle(b.getBulgingFontanelle());
     }
 }

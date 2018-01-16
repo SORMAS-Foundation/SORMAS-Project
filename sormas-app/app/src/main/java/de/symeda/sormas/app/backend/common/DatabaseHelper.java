@@ -76,7 +76,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 117;
+	private static final int DATABASE_VERSION = 118;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -403,6 +403,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					currentVersion = 116;
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN outcome varchar(255);");
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN outcomeDate timestamp without time zone;");
+				case 117:
+					getDao(Hospitalization.class).executeRaw("ALTER TABLE hospitalizations ADD COLUMN admittedToHealthFacility varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN bulgingFontanelle varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccination varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccinationDoses varchar(512);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccinationInfoSource varchar(255);");
+
+					getDao(Case.class).executeRaw("UPDATE cases SET vaccination = measlesVaccination WHERE measlesVaccination IS NOT NULL;");
+					getDao(Case.class).executeRaw("UPDATE cases SET vaccination = yellowFeverVaccination WHERE yellowFeverVaccination IS NOT NULL;");
+					getDao(Case.class).executeRaw("UPDATE cases SET vaccination = measlesDoses WHERE measlesDoses IS NOT NULL;");
+					getDao(Case.class).executeRaw("UPDATE cases SET vaccination = measlesVaccinationInfoSource WHERE measlesVaccinationInfoSource IS NOT NULL;");
+					getDao(Case.class).executeRaw("UPDATE cases SET vaccination = yellowFeverVaccinationInfoSource WHERE yellowFeverVaccinationInfoSource IS NOT NULL;");
 
 					// ATTENTION: break should only be done after last version
 					break;

@@ -19,12 +19,14 @@ public class HospitalizationDto extends EntityDto {
 	public static final String ISOLATION_DATE = "isolationDate";
 	public static final String HOSPITALIZED_PREVIOUSLY = "hospitalizedPreviously";
 	public static final String PREVIOUS_HOSPITALIZATIONS = "previousHospitalizations";
+	public static final String ADMITTED_TO_HEALTH_FACILITY = "admittedToHealthFacility";
 	
 	private Date admissionDate;
 	private Date dischargeDate;
 	private YesNoUnknown isolated;
 	private Date isolationDate;
 	private YesNoUnknown hospitalizedPreviously;
+	private YesNoUnknown admittedToHealthFacility;
 	
 	private List<PreviousHospitalizationDto> previousHospitalizations = new ArrayList<>();
 	
@@ -68,6 +70,13 @@ public class HospitalizationDto extends EntityDto {
 	}
 	public void setPreviousHospitalizations(List<PreviousHospitalizationDto> previousHospitalizations) {
 		this.previousHospitalizations = previousHospitalizations;
+	}
+	
+	public YesNoUnknown getAdmittedToHealthFacility() {
+		return admittedToHealthFacility;
+	}
+	public void setAdmittedToHealthFacility(YesNoUnknown admittedToHealthFacility) {
+		this.admittedToHealthFacility = admittedToHealthFacility;
 	}
 	
 }

@@ -37,7 +37,7 @@ public final class SymptomsHelper {
     			dto.getHiccups(), dto.getBackache(), dto.getJaundice(), dto.getDarkUrine(), dto.getRapidBreathing(), dto.getSwollenGlands(), 
     			dto.getCutaneousEruption(), dto.getLesions(), dto.getLymphadenopathyInguinal(), dto.getLymphadenopathyAxillary(), dto.getLymphadenopathyCervical(), 
     			dto.getChillsSweats(), dto.getBedridden(), dto.getOralUlcers(), dto.getPainfulLymphadenitis(), dto.getBlackeningDeathOfTissue(),
-    			dto.getBuboesGroinArmpitNeck(), dto.getUnexplainedBleeding(), dto.getOtherNonHemorrhagicSymptoms());
+    			dto.getBuboesGroinArmpitNeck(), dto.getBulgingFontanelle(), dto.getUnexplainedBleeding(), dto.getOtherNonHemorrhagicSymptoms());
     	
     	for (SymptomState symptom : unconditionalSymptoms) {
     		if (symptom == SymptomState.YES) {

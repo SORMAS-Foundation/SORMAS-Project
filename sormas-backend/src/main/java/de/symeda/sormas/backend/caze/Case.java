@@ -66,11 +66,9 @@ public class Case extends AbstractDomainObject {
 	public static final String HOSPITALIZATION = "hospitalization";
 	public static final String EPI_DATA = "epiData";
 	public static final String PREGNANT = "pregnant";
-	public static final String MEASLES_VACCINATION = "measlesVaccination";
-	public static final String MEASLES_DOSES = "measlesDoses";
-	public static final String MEASLES_VACCINATION_INFO_SOURCE = "measlesVaccinationInfoSource";
-	public static final String YELLOW_FEVER_VACCINATION = "yellowFeverVaccination";
-	public static final String YELLOW_FEVER_VACCINATION_INFO_SOURCE = "yellowFeverVaccinationInfoSource";
+	public static final String VACCINATION = "vaccination";
+	public static final String VACCINATION_DOSES = "vaccinationDoses";
+	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
@@ -108,13 +106,10 @@ public class Case extends AbstractDomainObject {
 	private Symptoms symptoms;
 	
 	private YesNoUnknown pregnant;
-	private Vaccination measlesVaccination;
-	private String measlesDoses;
-	private VaccinationInfoSource measlesVaccinationInfoSource;
-	
-	private Vaccination yellowFeverVaccination;
-	private VaccinationInfoSource yellowFeverVaccinationInfoSource;
-	
+
+	private Vaccination vaccination;
+	private String vaccinationDoses;
+	private VaccinationInfoSource vaccinationInfoSource;	
 	private YesNoUnknown smallpoxVaccinationScar;
 	private YesNoUnknown smallpoxVaccinationReceived;
 	private Date smallpoxVaccinationDate;
@@ -305,47 +300,31 @@ public class Case extends AbstractDomainObject {
 	public void setPregnant(YesNoUnknown pregnant) {
 		this.pregnant = pregnant;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
-	public Vaccination getMeaslesVaccination() {
-		return measlesVaccination;
+	public Vaccination getVaccination() {
+		return vaccination;
 	}
-	public void setMeaslesVaccination(Vaccination measlesVaccination) {
-		this.measlesVaccination = measlesVaccination;
+	public void setVaccination(Vaccination vaccination) {
+		this.vaccination = vaccination;
 	}
-	
+
 	@Column(length = 512)
-	public String getMeaslesDoses() {
-		return measlesDoses;
+	public String getVaccinationDoses() {
+		return vaccinationDoses;
 	}
-	public void setMeaslesDoses(String measlesDoses) {
-		this.measlesDoses = measlesDoses;
+	public void setVaccinationDoses(String vaccinationDoses) {
+		this.vaccinationDoses = vaccinationDoses;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public VaccinationInfoSource getVaccinationInfoSource() {
+		return vaccinationInfoSource;
+	}
+	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
+		this.vaccinationInfoSource = vaccinationInfoSource;
 	}
 	
-	@Enumerated(EnumType.STRING)
-	public VaccinationInfoSource getMeaslesVaccinationInfoSource() {
-		return measlesVaccinationInfoSource;
-	}
-	public void setMeaslesVaccinationInfoSource(VaccinationInfoSource measlesVaccinationInfoSource) {
-		this.measlesVaccinationInfoSource = measlesVaccinationInfoSource;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public Vaccination getYellowFeverVaccination() {
-		return yellowFeverVaccination;
-	}
-	public void setYellowFeverVaccination(Vaccination yellowFeverVaccination) {
-		this.yellowFeverVaccination = yellowFeverVaccination;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public VaccinationInfoSource getYellowFeverVaccinationInfoSource() {
-		return yellowFeverVaccinationInfoSource;
-	}
-	public void setYellowFeverVaccinationInfoSource(VaccinationInfoSource yellowFeverVaccinationInfoSource) {
-		this.yellowFeverVaccinationInfoSource = yellowFeverVaccinationInfoSource;
-	}
-
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getSmallpoxVaccinationScar() {
 		return smallpoxVaccinationScar;

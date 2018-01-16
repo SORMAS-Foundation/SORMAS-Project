@@ -42,6 +42,12 @@
                 android:paddingBottom="@dimen/field_padding"
                 android:paddingTop="@dimen/field_padding" />
 
+            <de.symeda.sormas.app.component.YesNoUnknownVerticalField
+                android:id="@+id/hospitalization_admittedToHealthFacility"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={hospitalization.admittedToHealthFacility}" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

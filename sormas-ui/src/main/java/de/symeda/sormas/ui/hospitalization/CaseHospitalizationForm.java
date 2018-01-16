@@ -13,6 +13,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -29,6 +30,7 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.h3("Hospitalization data") +
 			LayoutUtil.fluidRowLocs(HEALTH_FACILITY, "") +
+			LayoutUtil.fluidRowLocs(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, "") +
 			LayoutUtil.fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE) +
 			LayoutUtil.fluidRowLocs(HospitalizationDto.ISOLATED, HospitalizationDto.ISOLATION_DATE) +
 			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_TOP_3, HospitalizationDto.HOSPITALIZED_PREVIOUSLY) +
@@ -51,14 +53,18 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 		facilityField.setValue(caze.getHealthFacility().toString());
 		facilityField.setReadOnly(true);
 		
-		addField(HospitalizationDto.ADMISSION_DATE, DateField.class);
-		addField(HospitalizationDto.DISCHARGE_DATE, DateField.class);
+		addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, OptionGroup.class);
+		DateField admissionDate = addField(HospitalizationDto.ADMISSION_DATE, DateField.class);
+		admissionDate.setDateFormat(DateHelper.getShortDateFormat().toPattern());
+		DateField dischargeDate = addField(HospitalizationDto.DISCHARGE_DATE, DateField.class);
+		dischargeDate.setDateFormat(DateHelper.getShortDateFormat().toPattern());
 		addField(HospitalizationDto.ISOLATED, OptionGroup.class);
 		addField(HospitalizationDto.ISOLATION_DATE, DateField.class);
 		OptionGroup hospitalizedPreviouslyField = addField(HospitalizationDto.HOSPITALIZED_PREVIOUSLY, OptionGroup.class);
 		CssStyles.style(hospitalizedPreviouslyField, CssStyles.ERROR_COLOR_PRIMARY);
 		PreviousHospitalizationsField previousHospitalizationsField = addField(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, PreviousHospitalizationsField.class);
 		
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(HospitalizationDto.ISOLATED, HospitalizationDto.DISCHARGE_DATE), HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), HospitalizationDto.ISOLATION_DATE, HospitalizationDto.ISOLATED, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, HospitalizationDto.HOSPITALIZED_PREVIOUSLY, Arrays.asList(YesNoUnknown.YES), true);
 		

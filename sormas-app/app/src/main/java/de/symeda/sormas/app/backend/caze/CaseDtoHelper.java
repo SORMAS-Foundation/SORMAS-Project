@@ -96,11 +96,9 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
         target.setPregnant(source.getPregnant());
-        target.setMeaslesVaccination(source.getMeaslesVaccination());
-        target.setMeaslesDoses(source.getMeaslesDoses());
-        target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
-        target.setYellowFeverVaccination(source.getYellowFeverVaccination());
-        target.setYellowFeverVaccinationInfoSource(source.getYellowFeverVaccinationInfoSource());
+        target.setVaccination(source.getVaccination());
+        target.setVaccinationDoses(source.getVaccinationDoses());
+        target.setVaccinationInfoSource(source.getVaccinationInfoSource());
         target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
         target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
         target.setSmallpoxVaccinationDate(source.getSmallpoxVaccinationDate());
@@ -198,11 +196,9 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         }
 
         target.setPregnant(source.getPregnant());
-        target.setMeaslesVaccination(source.getMeaslesVaccination());
-        target.setMeaslesDoses(source.getMeaslesDoses());
-        target.setMeaslesVaccinationInfoSource(source.getMeaslesVaccinationInfoSource());
-        target.setYellowFeverVaccination(source.getYellowFeverVaccination());
-        target.setYellowFeverVaccinationInfoSource(source.getYellowFeverVaccinationInfoSource());
+        target.setVaccination(source.getVaccination());
+        target.setVaccinationDoses(source.getVaccinationDoses());
+        target.setVaccinationInfoSource(source.getVaccinationInfoSource());
         target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
         target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
         target.setSmallpoxVaccinationDate(source.getSmallpoxVaccinationDate());

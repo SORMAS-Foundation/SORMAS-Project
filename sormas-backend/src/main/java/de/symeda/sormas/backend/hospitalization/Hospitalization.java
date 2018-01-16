@@ -28,12 +28,14 @@ public class Hospitalization extends AbstractDomainObject {
 	public static final String ISOLATION_DATE = "isolationDate";
 	public static final String HOSPITALIZED_PREVIOUSLY = "hospitalizedPreviously";
 	public static final String PREVIOUS_HOSPITALIZATIONS = "previousHospitalizations";
+	public static final String ADMITTED_TO_HEALTH_FACILITY = "admittedToHealthFacility";
 	
 	private Date admissionDate;
 	private Date dischargeDate;
 	private YesNoUnknown isolated;
 	private Date isolationDate;
 	private YesNoUnknown hospitalizedPreviously;
+	private YesNoUnknown admittedToHealthFacility;
 	
 	private Date changeDateOfEmbeddedLists;
 	private List<PreviousHospitalization> previousHospitalizations = new ArrayList<PreviousHospitalization>();
@@ -84,6 +86,14 @@ public class Hospitalization extends AbstractDomainObject {
 	}
 	public void setPreviousHospitalizations(List<PreviousHospitalization> previousHospitalizations) {
 		this.previousHospitalizations = previousHospitalizations;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getAdmittedToHealthFacility() {
+		return admittedToHealthFacility;
+	}
+	public void setAdmittedToHealthFacility(YesNoUnknown admittedToHealthFacility) {
+		this.admittedToHealthFacility = admittedToHealthFacility;
 	}
 	
 	/**

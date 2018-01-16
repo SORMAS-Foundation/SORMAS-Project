@@ -26,6 +26,7 @@ public class SymptomsDto extends EntityDto {
 	public static final String BLACKENING_DEATH_OF_TISSUE = "blackeningDeathOfTissue";
 	public static final String BLOOD_IN_STOOL = "bloodInStool";
 	public static final String BUBOES_GROIN_ARMPIT_NECK = "buboesGroinArmpitNeck";
+	public static final String BULGING_FONTANELLE = "bulgingFontanelle";
 	public static final String CHEST_PAIN = "chestPain";
 	public static final String CHILLS_SWEATS = "chillsSweats";
 	public static final String CONFUSED_DISORIENTED = "confusedDisoriented";
@@ -122,6 +123,8 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState bloodInStool;
 	@Diseases({Disease.PLAGUE,Disease.OTHER})
 	private SymptomState buboesGroinArmpitNeck;
+	@Diseases({Disease.CSM,Disease.OTHER})
+	private SymptomState bulgingFontanelle;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState nausea;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.PLAGUE,Disease.OTHER})
@@ -778,6 +781,12 @@ public class SymptomsDto extends EntityDto {
 	}
 	public void setBuboesGroinArmpitNeck(SymptomState buboesGroinArmpitNeck) {
 		this.buboesGroinArmpitNeck = buboesGroinArmpitNeck;
+	}
+	public SymptomState getBulgingFontanelle() {
+		return bulgingFontanelle;
+	}
+	public void setBulgingFontanelle(SymptomState bulgingFontanelle) {
+		this.bulgingFontanelle = bulgingFontanelle;
 	}
 	public SymptomState getOtherNonHemorrhagicSymptoms() {
 		return otherNonHemorrhagicSymptoms;

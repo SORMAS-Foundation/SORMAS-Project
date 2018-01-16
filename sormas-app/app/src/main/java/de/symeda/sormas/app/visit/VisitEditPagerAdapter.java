@@ -61,6 +61,7 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
                     symptomsEditBundle.putSerializable(Visit.DISEASE, contact.getCaze().getDisease());
                     symptomsEditBundle.putBoolean(SymptomsEditForm.NEW_SYMPTOMS, true);
                     symptomsEditBundle.putBoolean(SymptomsEditForm.FOR_VISIT, true);
+                    symptomsEditBundle.putSerializable(SymptomsEditForm.PERSON_APPROXIMATE_AGE, contact.getPerson().getApproximateAge());
                     symptomsEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.VISIT_CREATE);
                 }
                 // edit symptoms for given visit
@@ -72,6 +73,7 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
                     symptomsEditBundle.putBoolean(SymptomsEditForm.FOR_VISIT, true);
                     symptomsEditBundle.putBoolean(SymptomsEditForm.VISIT_COOPERATIVE,
                             visit.getVisitStatus() == VisitStatus.COOPERATIVE);
+                    symptomsEditBundle.putSerializable(SymptomsEditForm.PERSON_APPROXIMATE_AGE, visit.getPerson().getApproximateAge());
                     symptomsEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.VISIT_EDIT);
                 }
 

@@ -77,9 +77,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS) +
 			LayoutUtil.loc(MEDICAL_INFORMATION_LOC) +
 			LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "") +
-			LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION, CaseDataDto.MEASLES_DOSES) +
-			LayoutUtil.fluidRowLocs(CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE, "") +
-			LayoutUtil.fluidRowLocs(CaseDataDto.YELLOW_FEVER_VACCINATION, CaseDataDto.YELLOW_FEVER_VACCINATION_INFO_SOURCE) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION_INFO_SOURCE, "") +
 			LayoutUtil.fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_DATE) +
 			LayoutUtil.fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_SCAR) +
 			LayoutUtil.fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG) +
@@ -133,11 +132,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		surveillanceOfficerField.setNullSelectionAllowed(true);
 
 		addField(CaseDataDto.PREGNANT, OptionGroup.class);
-		addField(CaseDataDto.MEASLES_VACCINATION, ComboBox.class);
-		addField(CaseDataDto.MEASLES_DOSES, TextField.class);
-		addField(CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE, ComboBox.class);
-		addField(CaseDataDto.YELLOW_FEVER_VACCINATION, ComboBox.class);
-		addField(CaseDataDto.YELLOW_FEVER_VACCINATION_INFO_SOURCE, ComboBox.class);
+		ComboBox vaccination = addField(CaseDataDto.VACCINATION, ComboBox.class);
+		TextField vaccinationDoses = addField(CaseDataDto.VACCINATION_DOSES, TextField.class);
+		ComboBox vaccinationInfoSource = addField(CaseDataDto.VACCINATION_INFO_SOURCE, ComboBox.class);
 		addField(CaseDataDto.SMALLPOX_VACCINATION_SCAR, OptionGroup.class);
 		addField(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, OptionGroup.class);
 		addField(CaseDataDto.SMALLPOX_VACCINATION_DATE, DateField.class);
@@ -159,10 +156,23 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		setVisible(person.getSex() == Sex.FEMALE, CaseDataDto.PREGNANT);
 
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.MEASLES_DOSES, CaseDataDto.MEASLES_VACCINATION_INFO_SOURCE), 
-				CaseDataDto.MEASLES_VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.YELLOW_FEVER_VACCINATION_INFO_SOURCE),
-				CaseDataDto.YELLOW_FEVER_VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
+		if (vaccination.getValue() != Vaccination.VACCINATED) {
+			vaccinationDoses.setVisible(false);
+			vaccinationInfoSource.setVisible(false);
+		}
+		
+		vaccination.addValueChangeListener(e -> {
+			if (e.getProperty().getValue() == Vaccination.VACCINATED) {
+				vaccinationDoses.setVisible(DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, CaseDataDto.VACCINATION_DOSES, disease));
+				vaccinationInfoSource.setVisible(DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, CaseDataDto.VACCINATION_INFO_SOURCE, disease));
+			} else {
+				vaccinationDoses.setVisible(false);
+				vaccinationDoses.clear();
+				vaccinationInfoSource.setVisible(false);
+				vaccinationInfoSource.clear();
+			}
+		});
+
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), CaseDataDto.DISEASE, Arrays.asList(CaseDataDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.PLAGUE_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.PLAGUE), true);
@@ -184,8 +194,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_DATE), CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.OUTCOME_DATE, CaseDataDto.OUTCOME, Arrays.asList(CaseOutcome.DECEASED, CaseOutcome.RECOVERED, CaseOutcome.UNKNOWN), true);
 		
-		List<String> medicalInformationFields = Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.MEASLES_VACCINATION, 
-				CaseDataDto.YELLOW_FEVER_VACCINATION, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
+		List<String> medicalInformationFields = Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.VACCINATION, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
 
 		for (String medicalInformationField : medicalInformationFields) {
 			if (getFieldGroup().getField(medicalInformationField).isVisible()) {
