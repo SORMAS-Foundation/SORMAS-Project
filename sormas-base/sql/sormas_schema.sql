@@ -1953,3 +1953,22 @@ ALTER TABLE cases DROP COLUMN yellowfevervaccination;
 ALTER TABLE cases DROP COLUMN yellowfevervaccinationinfosource;
 
 INSERT INTO schema_version (version_number, comment) VALUES (84, 'New fields for CSM #474');
+
+-- 2018-01-16 Outbreak mode per disease and district #473
+CREATE TABLE outbreak(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	district_id bigint not null,
+	disease varchar(255) not null,
+	reportdate timestamp not null,
+	reportinguser_id bigint not null,
+	primary key(id)
+);
+
+ALTER TABLE outbreak OWNER TO sormas_user;
+ALTER TABLE outbreak ADD CONSTRAINT fk_outbreak_district_id FOREIGN KEY (district_id) REFERENCES district(id);
+ALTER TABLE outbreak ADD CONSTRAINT fk_outbreak_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (85, 'Outbreak mode per disease and district #473');
