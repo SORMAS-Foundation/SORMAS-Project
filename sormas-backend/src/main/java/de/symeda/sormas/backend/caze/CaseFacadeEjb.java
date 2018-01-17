@@ -266,12 +266,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Case caze = fromDto(dto);
 
 		caseService.ensurePersisted(caze);
-		// Update investigation by status when manually set
-		if (currentCaze != null && currentInvestigationStatus != caze.getInvestigationStatus()) {
-			updateInvestigationByStatus(caze);
-		} else {
-			updateInvestigationByTask(caze);
-		}
+		updateInvestigationByStatus(caze, currentInvestigationStatus);
 
 		// Update follow-up until and status of all contacts of this case if the
 		// disease has changed
@@ -487,7 +482,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		return target;
 	}
 
-	public void updateInvestigationByStatus(Case caze) {
+	public void updateInvestigationByStatus(Case caze, InvestigationStatus currentInvestigationStatus) {
 		CaseReferenceDto caseRef = caze.toReference();
 		InvestigationStatus investigationStatus = caze.getInvestigationStatus();
 		
