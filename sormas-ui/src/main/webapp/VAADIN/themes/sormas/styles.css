@@ -13328,6 +13328,16 @@ div.v-layout.v-horizontal.v-widget {
 	color: #FFF;
 }
 
+.sormas .v-select-optiongroup-horizontal.v-select-optiongroup-horizontal-primary .v-radiobutton {
+	border: 2px solid #005A9C;
+	font-size: 13px;
+}
+
+:root .sormas .v-select-optiongroup-horizontal.v-select-optiongroup-horizontal-primary .v-radiobutton > input:checked ~ label {
+	background: #005A9C;
+	color: #FFF;
+}
+
 .sormas .v-select-optiongroup .v-radiobutton.v-radiobutton-disabled > input ~ label:before, .sormas .v-select-optiongroup .v-radiobutton.v-radiobutton-disabled > input ~ label:after {
 	border-color: #CDD8EC !important;
 }

@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.caze;
 
 import com.vaadin.ui.Label;
+import com.vaadin.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
@@ -24,7 +25,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 	}
 
 	@Override
-	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
+	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, OptionGroup viewModeToggle, String params) {
 		
 		caseRef = FacadeProvider.getCaseFacade().getReferenceByUuid(params);
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
@@ -40,6 +41,10 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "contacts"), params);
 		}
 		infoLabel.setValue(caseRef.getCaption());
+		
+		if (FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getDisease(), caze.getDistrict())) {
+			viewModeToggle.setVisible(true);
+		}
 		
 		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(params);
 		infoLabelSub.setValue(caseDto.getDisease() != Disease.OTHER
