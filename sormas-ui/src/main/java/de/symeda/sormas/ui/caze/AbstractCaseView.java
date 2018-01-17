@@ -42,7 +42,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		}
 		infoLabel.setValue(caseRef.getCaption());
 		
-		if (FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getDisease(), caze.getDistrict())) {
+		if (FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getDistrict(), caze.getDisease())) {
 			viewModeToggle.setVisible(true);
 		}
 		
