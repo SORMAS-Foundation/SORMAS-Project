@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.outbreak;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +17,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -54,6 +56,18 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 //				.districtEquals(district).diseaseEquals(disease), null);
 //		return count > 0;
 		return true;
+	}
+	
+	@Override
+	public List<String> getAllUuids(String userUuid) {
+		
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		return outbreakService.getAllUuids(user);
 	}
 	
 	public static OutbreakDto toDto(Outbreak source) {

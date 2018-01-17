@@ -17,4 +17,6 @@ public interface OutbreakFacade {
 	List<OutbreakDto> getAllByRegionAndDisease(RegionReferenceDto region, Disease disease);
 
 	boolean hasOutbreak(DistrictReferenceDto district, Disease disease);
+
+	List<String> getAllUuids(String userUuid);
 }
