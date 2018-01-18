@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.caze;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.ViewMode;
 
 public class CaseSymptomsView extends AbstractCaseView {
 
@@ -17,6 +18,11 @@ public class CaseSymptomsView extends AbstractCaseView {
     @Override
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
-    	setSubComponent(ControllerProvider.getCaseController().getCaseSymptomsEditComponent(getCaseRef().getUuid()));
+    	setSubComponent(ControllerProvider.getCaseController().getCaseSymptomsEditComponent(getCaseRef().getUuid(), getViewMode()));
+    	
+
+    	getViewModeToggle().addValueChangeListener(e -> {
+    		setSubComponent(ControllerProvider.getCaseController().getCaseSymptomsEditComponent(getCaseRef().getUuid(), (ViewMode) e.getProperty().getValue()));
+    	});
     }
 }

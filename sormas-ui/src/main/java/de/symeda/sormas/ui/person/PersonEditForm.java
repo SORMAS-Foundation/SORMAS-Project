@@ -1,11 +1,9 @@
 package de.symeda.sormas.ui.person;
 
 import java.time.Month;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
@@ -29,16 +27,15 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.ViewMode;
 
 public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
@@ -54,6 +51,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private ComboBox causeOfDeathField;
 	private ComboBox causeOfDeathDiseaseField;
 	private TextField causeOfDeathDetailsField;
+	private final ViewMode viewMode;
 	
     private static final String HTML_LAYOUT = 
     		LayoutUtil.h3("Person information")+
@@ -90,20 +88,27 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			LayoutUtil.fluidRowLocs(PersonDto.ADDRESS)
 			;
 
-    public PersonEditForm(Disease disease, String diseaseDetails, UserRight editOrCreateUserRight) {
+    public PersonEditForm(Disease disease, String diseaseDetails, UserRight editOrCreateUserRight, ViewMode viewMode) {
     	super(PersonDto.class, PersonDto.I18N_PREFIX, editOrCreateUserRight);
     	this.disease = disease;
     	this.diseaseDetails = diseaseDetails;
+    	this.viewMode = viewMode;
+		addFields();
     }
 
     @Override
 	protected void addFields() {
+    	if (disease == null || viewMode == null) {
+			return;
+		}
+    	
+		// Add fields
+    	
     	addField(PersonDto.FIRST_NAME, TextField.class);
     	addField(PersonDto.LAST_NAME, TextField.class);
     	ComboBox sex = addField(PersonDto.SEX, ComboBox.class);
     	addField(PersonDto.NICKNAME, TextField.class);
     	addField(PersonDto.MOTHERS_MAIDEN_NAME, TextField.class);
-    	
     	ComboBox presentCondition = addField(PersonDto.PRESENT_CONDITION, ComboBox.class);
     	ComboBox days = addField(PersonDto.BIRTH_DATE_DD, ComboBox.class);
     	// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
@@ -127,25 +132,20 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     	DateField deathDate = addField(PersonDto.DEATH_DATE, DateField.class);
     	addField(PersonDto.APPROXIMATE_AGE, TextField.class);
     	addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
-    	
     	AbstractSelect deathPlaceType = addField(PersonDto.DEATH_PLACE_TYPE, ComboBox.class);
     	deathPlaceType.setNullSelectionAllowed(true);
     	TextField deathPlaceDesc = addField(PersonDto.DEATH_PLACE_DESCRIPTION, TextField.class);
     	DateField burialDate = addField(PersonDto.BURIAL_DATE, DateField.class);
     	TextField burialPlaceDesc = addField(PersonDto.BURIAL_PLACE_DESCRIPTION, TextField.class);
     	ComboBox burialConductor = addField(PersonDto.BURIAL_CONDUCTOR, ComboBox.class);
-    	
     	addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
     	addField(PersonDto.PHONE, TextField.class);
     	addField(PersonDto.PHONE_OWNER, TextField.class);
-
     	addField(PersonDto.OCCUPATION_TYPE, ComboBox.class);
     	addField(PersonDto.OCCUPATION_DETAILS, TextField.class);
-    	
     	causeOfDeathField = addField(PersonDto.CAUSE_OF_DEATH, ComboBox.class);
     	causeOfDeathDiseaseField = addField(PersonDto.CAUSE_OF_DEATH_DISEASE, ComboBox.class);
     	causeOfDeathDetailsField = addField(PersonDto.CAUSE_OF_DEATH_DETAILS, TextField.class);
-    	
     	ComboBox facilityRegion = new ComboBox();
     	facilityRegion.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, FACILITY_REGION));
     	facilityRegion.setImmediate(true);
@@ -164,6 +164,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     	ComboBox occupationFacility = addField(PersonDto.OCCUPATION_FACILITY, ComboBox.class);
     	occupationFacility.setImmediate(true);
     	
+		// Set initial visibilities
+    	
+		initializeVisibilitiesAndAllowedVisibilities(true, disease, true, viewMode, PersonDto.class);		
+		
+		// Set requirements that don't need visibility changes and read only status
+		
     	setRequired(true, 
     			PersonDto.FIRST_NAME, 
     			PersonDto.LAST_NAME);
@@ -182,16 +188,23 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     			PersonDto.CAUSE_OF_DEATH,
     			PersonDto.CAUSE_OF_DEATH_DETAILS,
     			PersonDto.CAUSE_OF_DEATH_DISEASE);
+
+    	FieldHelper.addSoftRequiredStyle(presentCondition, sex, deathDate, deathPlaceDesc, deathPlaceType, 
+    			causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField, 
+    			burialDate, burialPlaceDesc, burialConductor);
     	
-    	// add some listeners 
+    	// Add listeners
+    	
     	addFieldListeners(PersonDto.BIRTH_DATE_DD, e -> {
     		updateApproximateAge();
     		updateReadyOnlyApproximateAge();
     	});
+    	
     	addFieldListeners(PersonDto.BIRTH_DATE_MM, e -> {
     		updateApproximateAge();
     		updateReadyOnlyApproximateAge();
     	});
+    	
     	addFieldListeners(PersonDto.BIRTH_DATE_YYYY, e -> {
     		updateApproximateAge();
     		updateReadyOnlyApproximateAge();
@@ -207,6 +220,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     		RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
     		FieldHelper.updateItems(facilityDistrict, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
        	});
+    	
     	facilityDistrict.addValueChangeListener(e -> {
     		if (facilityCommunity.getValue() == null) {
     			FieldHelper.removeItems(occupationFacility);
@@ -216,6 +230,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     		FieldHelper.updateItems(facilityCommunity, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
     		FieldHelper.updateItems(occupationFacility, districtDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true) : null);
     	});
+    	
     	facilityCommunity.addValueChangeListener(e -> {
     		if(facilityFieldsInitialized || occupationFacility.getValue() == null) {
     			FieldHelper.removeItems(occupationFacility);
@@ -228,7 +243,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 		addFieldListeners(PersonDto.OCCUPATION_FACILITY, e -> fillFacilityFields());
-		
     	addFieldListeners(PersonDto.PRESENT_CONDITION, e -> toogleDeathAndBurialFields());
     	
     	causeOfDeathField.addValueChangeListener(e -> {
@@ -239,17 +253,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     		toggleCauseOfDeathFields(true);
     	});
     	
-    	FieldHelper.addSoftRequiredStyle(presentCondition, sex, deathDate, deathPlaceDesc, deathPlaceType, 
-    			causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField, 
-    			burialDate, burialPlaceDesc, burialConductor);
-    	
     	addValueChangeListener(e -> {
-    		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
-    			boolean visible = DiseasesConfiguration.isDefinedOrMissing(SymptomsDto.class, (String)propertyId, disease);
-    			if (!visible) {
-    				getFieldGroup().getField(propertyId).setVisible(false);
-    			}
-    		}
+//    		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
+//    			boolean visible = DiseasesConfiguration.isDefinedOrMissing(SymptomsDto.class, (String)propertyId, disease);
+//    			if (!visible) {
+//    				getFieldGroup().getField(propertyId).setVisible(false);
+//    			}
+//    		}
     		
     		fillDeathAndBurialFields(deathPlaceType, deathPlaceDesc, burialPlaceDesc);
     	});
@@ -266,6 +276,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		if(getFieldGroup().getField(PersonDto.BIRTH_DATE_YYYY).getValue()!=null) {
 			readonly = true;
 		}
+		
 		getFieldGroup().getField(PersonDto.APPROXIMATE_AGE).setReadOnly(readonly);
 		getFieldGroup().getField(PersonDto.APPROXIMATE_AGE_TYPE).setReadOnly(readonly);
 	}
@@ -329,8 +340,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	}
 	
 	private void toogleDeathAndBurialFields() {
-		List<Object> diseaseSpecificFields = Arrays.asList(PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION, PersonDto.BURIAL_DATE,
-				PersonDto.BURIAL_PLACE_DESCRIPTION, PersonDto.BURIAL_CONDUCTOR);
+//		List<Object> diseaseSpecificFields = Arrays.asList(PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION, PersonDto.BURIAL_DATE,
+//				PersonDto.BURIAL_PLACE_DESCRIPTION, PersonDto.BURIAL_CONDUCTOR);
 		PresentCondition type = (PresentCondition) ((AbstractSelect)getFieldGroup().getField(PersonDto.PRESENT_CONDITION)).getValue();
 		switch (type) {
 		case DEAD:
@@ -368,12 +379,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		}
 		
 		// Make sure that disease specific fields are only shown when required
-		for (Object propertyId : diseaseSpecificFields) {
-			boolean visible = DiseasesConfiguration.isDefinedOrMissing(PersonDto.class, (String)propertyId, disease);
-			if (!visible) {
-				getFieldGroup().getField(propertyId).setVisible(false);
-			}
-		}
+//		for (Object propertyId : diseaseSpecificFields) {
+//			boolean visible = DiseasesConfiguration.isDefinedOrMissing(PersonDto.class, (String)propertyId, disease);
+//			if (!visible) {
+//				getFieldGroup().getField(propertyId).setVisible(false);
+//			}
+//		}
 	
 		fillDeathAndBurialFields((AbstractSelect)getField(PersonDto.DEATH_PLACE_TYPE), (TextField)getField(PersonDto.DEATH_PLACE_DESCRIPTION), (TextField)getField(PersonDto.BURIAL_PLACE_DESCRIPTION));
 	}
@@ -384,7 +395,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			causeOfDeathDiseaseField.setVisible(false);
 			causeOfDeathDetailsField.setVisible(false);
 		} else {
-			causeOfDeathField.setVisible(true);
+			if (isVisibleAllowed(causeOfDeathField)) {
+				causeOfDeathField.setVisible(true);
+			}
 			if (causeOfDeathField.getValue() == null && disease != null) {
 				causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
 			}
@@ -393,9 +406,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				causeOfDeathDiseaseField.setVisible(false);
 				causeOfDeathDetailsField.setVisible(false);
 			} else if (causeOfDeathField.getValue() == CauseOfDeath.EPIDEMIC_DISEASE) {
-				causeOfDeathDiseaseField.setVisible(true);
+				if (isVisibleAllowed(causeOfDeathDiseaseField)) {
+					causeOfDeathDiseaseField.setVisible(true);
+				}
 				if (causeOfDeathDiseaseField.getValue() == Disease.OTHER) {
-					causeOfDeathDetailsField.setVisible(true);
+					if (isVisibleAllowed(causeOfDeathDetailsField)) {
+						causeOfDeathDetailsField.setVisible(true);
+					}
 				} else {
 					causeOfDeathDetailsField.setVisible(false);
 				}
@@ -407,7 +424,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				}
 			} else {
 				causeOfDeathDiseaseField.setVisible(false);
-				causeOfDeathDetailsField.setVisible(true);
+				if (isVisibleAllowed(causeOfDeathDetailsField)) {
+					causeOfDeathDetailsField.setVisible(true);
+				}
 			}
 		}
 	}

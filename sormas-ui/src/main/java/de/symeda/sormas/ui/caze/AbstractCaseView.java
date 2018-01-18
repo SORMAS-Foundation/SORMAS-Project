@@ -14,11 +14,14 @@ import de.symeda.sormas.ui.SubNavigationMenu;
 import de.symeda.sormas.ui.epidata.EpiDataView;
 import de.symeda.sormas.ui.hospitalization.CaseHospitalizationView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
+import de.symeda.sormas.ui.utils.ViewMode;
 
 @SuppressWarnings("serial")
 public abstract class AbstractCaseView extends AbstractSubNavigationView {
 
 	private CaseReferenceDto caseRef;
+	private ViewMode viewMode;
+	private OptionGroup viewModeToggle;
 	
 	protected AbstractCaseView(String viewName) {
 		super(viewName);
@@ -26,6 +29,10 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 
 	@Override
 	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, OptionGroup viewModeToggle, String params) {
+		
+		if (this.viewModeToggle == null) {
+			this.viewModeToggle = viewModeToggle;
+		}
 		
 		caseRef = FacadeProvider.getCaseFacade().getReferenceByUuid(params);
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
@@ -44,6 +51,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		
 		if (FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getDistrict(), caze.getDisease())) {
 			viewModeToggle.setVisible(true);
+			viewMode = (ViewMode) viewModeToggle.getValue();
 		}
 		
 		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(params);
@@ -54,6 +62,18 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 
 	public CaseReferenceDto getCaseRef() {
 		return caseRef;
+	}
+	
+	public ViewMode getViewMode() {
+		return viewMode;
+	}
+	
+	public void setViewMode(ViewMode viewMode) {
+		this.viewMode = viewMode;
+	}
+	
+	public OptionGroup getViewModeToggle() {
+		return viewModeToggle;
 	}
 
 }

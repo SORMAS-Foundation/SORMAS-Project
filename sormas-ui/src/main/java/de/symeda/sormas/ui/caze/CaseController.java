@@ -63,6 +63,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ViewMode;
 
 public class CaseController {
 
@@ -242,9 +243,9 @@ public class CaseController {
         return editView;
     }
 
-    public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(final String caseUuid) {
+    public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(final String caseUuid, final ViewMode viewMode) {
     	CaseDataDto caze = findCase(caseUuid);
-    	CaseDataForm caseEditForm = new CaseDataForm(FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()), caze.getDisease(), UserRight.CASE_EDIT);
+    	CaseDataForm caseEditForm = new CaseDataForm(FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()), caze.getDisease(), UserRight.CASE_EDIT, viewMode);
         caseEditForm.setValue(caze);
         final CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(caseEditForm, caseEditForm.getFieldGroup(), UserRight.CASE_EDIT);
         
@@ -291,12 +292,12 @@ public class CaseController {
         return editView;
     }
 
-	public CommitDiscardWrapperComponent<SymptomsForm> getCaseSymptomsEditComponent(final String caseUuid) {
+	public CommitDiscardWrapperComponent<SymptomsForm> getCaseSymptomsEditComponent(final String caseUuid, ViewMode viewMode) {
     	
         CaseDataDto caseDataDto = findCase(caseUuid);
         PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
 
-    	SymptomsForm symptomsForm = new SymptomsForm(caseDataDto.getDisease(), person, SymptomsContext.CASE, UserRight.CASE_EDIT);
+    	SymptomsForm symptomsForm = new SymptomsForm(caseDataDto.getDisease(), person, SymptomsContext.CASE, UserRight.CASE_EDIT, viewMode);
         symptomsForm.setValue(caseDataDto.getSymptoms());
     	symptomsForm.initializeSymptomRequirementsForCase();
         final CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(symptomsForm, symptomsForm.getFieldGroup(), UserRight.CASE_EDIT);
@@ -315,9 +316,9 @@ public class CaseController {
         return editView;
     }    
 	
-	public CommitDiscardWrapperComponent<CaseHospitalizationForm> getCaseHospitalizationComponent(final String caseUuid) {
+	public CommitDiscardWrapperComponent<CaseHospitalizationForm> getCaseHospitalizationComponent(final String caseUuid, ViewMode viewMode) {
 		CaseDataDto caze = findCase(caseUuid);
-		CaseHospitalizationForm hospitalizationForm = new CaseHospitalizationForm(caze, UserRight.CASE_EDIT);
+		CaseHospitalizationForm hospitalizationForm = new CaseHospitalizationForm(caze, UserRight.CASE_EDIT, viewMode);
 		hospitalizationForm.setValue(caze.getHospitalization());
 	
 		final CommitDiscardWrapperComponent<CaseHospitalizationForm> editView = new CommitDiscardWrapperComponent<CaseHospitalizationForm>(hospitalizationForm, hospitalizationForm.getFieldGroup(), UserRight.CASE_EDIT);

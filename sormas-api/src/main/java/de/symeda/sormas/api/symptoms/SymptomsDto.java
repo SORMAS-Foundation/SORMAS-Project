@@ -2,9 +2,10 @@ package de.symeda.sormas.api.symptoms;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.Outbreaks;
 
 public class SymptomsDto extends EntityDto {
 
@@ -104,18 +105,24 @@ public class SymptomsDto extends EntityDto {
 	public static final String SYMPTOMATIC = "symptomatic";
 
 	private Boolean symptomatic;
+	@Outbreaks
 	private Date onsetDate;
 	private String onsetSymptom;
 	
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private Float temperature;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private TemperatureSource temperatureSource;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState fever;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState vomiting;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState diarrhea;
 	@Diseases({Disease.PLAGUE,Disease.OTHER})
 	private SymptomState blackeningDeathOfTissue;
@@ -124,16 +131,21 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.PLAGUE,Disease.OTHER})
 	private SymptomState buboesGroinArmpitNeck;
 	@Diseases({Disease.CSM,Disease.OTHER})
+	@Outbreaks
 	private SymptomState bulgingFontanelle;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState nausea;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState abdominalPain;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState headache;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState musclePain;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState fatigueWeakness;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState unexplainedBleeding;
@@ -166,8 +178,10 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.PLAGUE,Disease.OTHER})
 	private String otherHemorrhagicSymptomsText;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.DENGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState skinRash;
 	@Diseases({Disease.CSM,Disease.OTHER})
+	@Outbreaks
 	private SymptomState neckStiffness;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState soreThroat;
@@ -180,14 +194,18 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState chestPain;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState confusedDisoriented;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
+	@Outbreaks
 	private SymptomState seizures;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.OTHER})
+	@Outbreaks
 	private SymptomState alteredConsciousness;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState conjunctivitis;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.OTHER})
+	@Outbreaks
 	private SymptomState eyePainLightSensitive;
 	@Diseases({Disease.MEASLES,Disease.OTHER})
 	private SymptomState kopliksSpots;
@@ -200,12 +218,15 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.OTHER})
 	private SymptomState dehydration;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.CSM,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.OTHER})
+	@Outbreaks
 	private SymptomState anorexiaAppetiteLoss;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.CSM,Disease.CHOLERA,Disease.OTHER})
 	private SymptomState refusalFeedorDrink;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.DENGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState jointPain;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState shock;
 	@Diseases({Disease.EVD,Disease.OTHER})
 	private SymptomState hiccups;
@@ -270,8 +291,10 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState oralUlcers;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState otherNonHemorrhagicSymptoms;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private String otherNonHemorrhagicSymptomsText;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private String symptomsComments;

@@ -8,6 +8,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.Outbreaks;
 
 public class PersonDto extends EntityDto {
 
@@ -48,15 +49,23 @@ public class PersonDto extends EntityDto {
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
 	public static final String OCCUPATION_FACILITY = "occupationFacility";
 	
+	@Outbreaks
 	private Sex sex;
+	@Outbreaks
 	private String firstName;
+	@Outbreaks
 	private String lastName;
 		
 	private PresentCondition presentCondition;
+	@Outbreaks
 	private Integer birthdateDD;
+	@Outbreaks
 	private Integer birthdateMM;
+	@Outbreaks
 	private Integer birthdateYYYY;
+	@Outbreaks
 	private Integer approximateAge;
+	@Outbreaks
 	private ApproximateAgeType approximateAgeType;
 	private Date deathDate;
 	private CauseOfDeath causeOfDeath;

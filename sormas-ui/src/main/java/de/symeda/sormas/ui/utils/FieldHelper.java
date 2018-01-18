@@ -45,7 +45,7 @@ public final class FieldHelper {
 				}
 			}
 		}
-		
+
 		sourceField.addValueChangeListener(event -> {
 			boolean readOnly = sourceValues.contains(event.getProperty().getValue());
 			for (Object targetPropertyId : targetPropertyIds) {
@@ -68,12 +68,12 @@ public final class FieldHelper {
 			Object sourcePropertyId, List<Object> sourceValues, boolean clearOnHidden) {
 		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnHidden, null, null);
 	}
-	
+
 	public static void setVisibleWhen(FieldGroup fieldGroup, List<String> targetPropertyIds, 
 			Object sourcePropertyId, List<Object> sourceValues, boolean clearOnHidden) {
 		setVisibleWhen(fieldGroup, targetPropertyIds, sourcePropertyId, sourceValues, clearOnHidden, null, null);
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public static void setVisibleWhen(FieldGroup fieldGroup, String targetPropertyId, 
 			Object sourcePropertyId, List<Object> sourceValues, boolean clearOnHidden, Class fieldClass, Disease disease) {
@@ -88,49 +88,49 @@ public final class FieldHelper {
 		if (sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);
 		}
-		
+
 		// initialize
 		{
 			boolean visible = sourceValues.contains(sourceField.getValue());
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
-					if(fieldClass == null || disease == null || Diseases.DiseasesConfiguration.isDefined(fieldClass, (String) targetPropertyId, disease)) {
+//				if(fieldClass == null || disease == null || Diseases.DiseasesConfiguration.isDefined(fieldClass, (String) targetPropertyId, disease)) {
 					targetField.setVisible(visible);
 					if (!visible && clearOnHidden && targetField.getValue() != null) {
 						targetField.clear();
 					}
-				}
+//				}
 			}
 		}
-		
+
 		sourceField.addValueChangeListener(event -> {
 			boolean visible = sourceValues.contains(event.getProperty().getValue());
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
-					if(fieldClass == null || disease == null || Diseases.DiseasesConfiguration.isDefined(fieldClass, (String) targetPropertyId, disease)) {
+//				if(fieldClass == null || disease == null || Diseases.DiseasesConfiguration.isDefined(fieldClass, (String) targetPropertyId, disease)) {
 					targetField.setVisible(visible);
 					if (!visible && clearOnHidden && targetField.getValue() != null) {
 						targetField.clear();
 					}
-				}
+//				}
 			}
 		});
 	}
-	
+
 	public static void setRequiredWhen(FieldGroup fieldGroup, Object sourcePropertyId,
 			List<String> targetPropertyIds, final List<Object> sourceValues) {
-		
+
 		setRequiredWhen(fieldGroup, fieldGroup.getField(sourcePropertyId), targetPropertyIds, sourceValues);
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField,
 			List<String> targetPropertyIds, final List<Object> sourceValues) {
-		
+
 		if(sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);
 		}
-		
+
 		// initialize
 		{
 			boolean required = sourceValues.contains(sourceField.getValue());
@@ -139,7 +139,7 @@ public final class FieldHelper {
 				targetField.setRequired(required);
 			}
 		}
-		
+
 		sourceField.addValueChangeListener(event -> {
 			boolean required = sourceValues.contains(event.getProperty().getValue());
 			for(Object targetPropertyId : targetPropertyIds) {
@@ -148,7 +148,7 @@ public final class FieldHelper {
 			}
 		});
 	}
-	
+
 	/**
 	 * Sets the target fields to required when the sourceField has a value that's contained
 	 * in the sourceValues list; the disease is needed to make sure that no fields are set
@@ -157,11 +157,11 @@ public final class FieldHelper {
 	@SuppressWarnings("rawtypes")
 	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField, 
 			List<String> targetPropertyIds, final List<Object> sourceValues, Disease disease) {
-		
+
 		if(sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);
 		}
-		
+
 		// initialize
 		{
 			boolean required = sourceValues.contains(sourceField.getValue());
@@ -172,7 +172,7 @@ public final class FieldHelper {
 				}
 			}
 		}
-		
+
 		sourceField.addValueChangeListener(event -> {
 			boolean required = sourceValues.contains(event.getProperty().getValue());
 			for(Object targetPropertyId : targetPropertyIds) {
@@ -183,7 +183,7 @@ public final class FieldHelper {
 			}
 		});
 	}
-	
+
 	/**
 	 * Sets the target fields to enabled when the source field has a value that's contained
 	 * in the sourceValues list.
@@ -191,11 +191,11 @@ public final class FieldHelper {
 	@SuppressWarnings("rawtypes")
 	public static void setEnabledWhen(FieldGroup fieldGroup, Field sourceField, final List<Object> sourceValues,
 			List<Object> targetPropertyIds, boolean clearOnDisabled) {
-		
+
 		if (sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);
 		}
-		
+
 		// initialize
 		{
 			boolean enabled = sourceValues.contains(sourceField.getValue());
@@ -207,7 +207,7 @@ public final class FieldHelper {
 				}
 			}
 		}
-		
+
 		sourceField.addValueChangeListener(event -> {
 			boolean enabled = sourceValues.contains(event.getProperty().getValue());
 			for (Object targetPropertyId : targetPropertyIds) {
@@ -229,7 +229,7 @@ public final class FieldHelper {
 			other.setValue(null);
 		}
 	}
-	
+
 	public static void setFirstRequired(Field<?> first, Field<?> ...others) {
 		if (first != null) {
 			first.setRequired(true);
@@ -250,14 +250,14 @@ public final class FieldHelper {
 		select.setValue(value);
 		select.setReadOnly(readOnly);
 	}
-	
+
 	public static void removeItems(AbstractSelect select) {
 		boolean readOnly = select.isReadOnly();
 		select.setReadOnly(false);
 		select.removeAllItems();
 		select.setReadOnly(readOnly);
 	}
-	
+
 	public static void addSoftRequiredStyle(Field<?> ...fields) {
 		for (Field<?> field : fields) {
 			if (!field.getStyleName().contains(CssStyles.SOFT_REQUIRED)) {
@@ -265,10 +265,10 @@ public final class FieldHelper {
 			}
 		}
 	}
-	
+
 	public static void removeSoftRequiredStyle(Field<?> ...fields) {
 		for (Field<?> field : fields) {
-	    	CssStyles.removeStyles(field, CssStyles.SOFT_REQUIRED);
+			CssStyles.removeStyles(field, CssStyles.SOFT_REQUIRED);
 		}
 	}
 
@@ -277,7 +277,7 @@ public final class FieldHelper {
 		if(sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);
 		}
-		
+
 		// initialize
 		{
 			boolean softRequired = sourceValues.contains(sourceField.getValue());
@@ -289,7 +289,7 @@ public final class FieldHelper {
 				}
 			}
 		}
-		
+
 		sourceField.addValueChangeListener(event -> {
 			boolean softRequired = sourceValues.contains(event.getProperty().getValue());
 			for(Field<?> targetField : targetFields) {
@@ -301,15 +301,15 @@ public final class FieldHelper {
 			}
 		});
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public static void addSoftRequiredStyleWhen(FieldGroup fieldGroup, Field sourceField, 
 			List<String> targetPropertyIds, final List<Object> sourceValues, Disease disease) {
-		
+
 		if(sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);
 		}
-		
+
 		// initialize
 		{
 			boolean required = sourceValues.contains(sourceField.getValue());
@@ -324,7 +324,7 @@ public final class FieldHelper {
 				}
 			}
 		}
-		
+
 		sourceField.addValueChangeListener(event -> {
 			boolean required = sourceValues.contains(event.getProperty().getValue());
 			for(Object targetPropertyId : targetPropertyIds) {
@@ -339,5 +339,5 @@ public final class FieldHelper {
 			}
 		});
 	}
-	
+
 }

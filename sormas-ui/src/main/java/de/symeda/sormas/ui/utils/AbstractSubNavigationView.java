@@ -7,13 +7,11 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.ui.SubNavigationMenu;
 
 @SuppressWarnings("serial")
 public abstract class AbstractSubNavigationView extends AbstractView {
-
-	private static final String OUTBREAK_VIEW_MODE = "Outbreak View";
-	private static final String NORMAL_VIEW_MODE = "Normal View";
 	
     private SubNavigationMenu subNavigationMenu;
     private Label infoLabel;
@@ -31,9 +29,10 @@ public abstract class AbstractSubNavigationView extends AbstractView {
         
         viewModeToggle = new OptionGroup();
         CssStyles.style(viewModeToggle, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY, CssStyles.VSPACE_TOP_3, CssStyles.HSPACE_RIGHT_3);
-        viewModeToggle.addItem(OUTBREAK_VIEW_MODE);
-        viewModeToggle.addItem(NORMAL_VIEW_MODE);
-        viewModeToggle.setValue(OUTBREAK_VIEW_MODE);
+        viewModeToggle.addItems((Object[]) ViewMode.values());
+        viewModeToggle.setItemCaption(ViewMode.OUTBREAK, I18nProperties.getEnumCaption(ViewMode.OUTBREAK));
+        viewModeToggle.setItemCaption(ViewMode.NORMAL, I18nProperties.getEnumCaption(ViewMode.NORMAL));
+        viewModeToggle.setValue(ViewMode.OUTBREAK);
         // View mode toggle is hidden by default
         viewModeToggle.setVisible(false);
         addHeaderComponent(viewModeToggle);
@@ -64,7 +63,8 @@ public abstract class AbstractSubNavigationView extends AbstractView {
     	}
     	subComponent = newComponent;
     	if (subComponent != null) {
-	    	addComponent(subComponent);
+    		// Make sure that the sub component is always the first component below the navigation
+	    	addComponent(subComponent, 2);
 	    	setExpandRatio(subComponent, 1);
     	}
     }

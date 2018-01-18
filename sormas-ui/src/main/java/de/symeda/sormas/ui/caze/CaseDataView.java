@@ -7,6 +7,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.samples.SampleListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.ViewMode;
 
 /**
  * CaseDataView for reading and editing the case data fields.
@@ -28,7 +29,7 @@ public class CaseDataView extends AbstractCaseView {
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
     	setHeightUndefined();
-    	CommitDiscardWrapperComponent<CaseDataForm> caseDataEditComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid());
+    	CommitDiscardWrapperComponent<CaseDataForm> caseDataEditComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), getViewMode());
     	setSubComponent(caseDataEditComponent);
     	
     	TaskListComponent taskListComponent = new TaskListComponent(TaskContext.CASE, getCaseRef());
@@ -38,5 +39,9 @@ public class CaseDataView extends AbstractCaseView {
     	SampleListComponent sampleListComponent = new SampleListComponent(getCaseRef());
     	addComponent(sampleListComponent);
     	sampleListComponent.reload();
+    	
+    	getViewModeToggle().addValueChangeListener(e -> {
+    		setSubComponent(ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), (ViewMode) e.getProperty().getValue()));
+    	});
     }
 }

@@ -15,6 +15,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class CaseDataDto extends EntityDto {
@@ -57,6 +58,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String OUTCOME_DATE = "outcomeDate";
 	
 	private PersonReferenceDto person;
+	@Outbreaks
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
 	private Disease disease;
@@ -68,10 +70,15 @@ public class CaseDataDto extends EntityDto {
 	private HospitalizationDto hospitalization;
 	private EpiDataDto epiData;
 	
+	@Outbreaks
 	private RegionReferenceDto region;
+	@Outbreaks
 	private DistrictReferenceDto district;
+	@Outbreaks
 	private CommunityReferenceDto community;
+	@Outbreaks
 	private FacilityReferenceDto healthFacility;
+	@Outbreaks
 	private String healthFacilityDetails;
 
 	private SymptomsDto symptoms;
@@ -79,8 +86,10 @@ public class CaseDataDto extends EntityDto {
 	private YesNoUnknown pregnant;
 
 	@Diseases({Disease.MEASLES,Disease.YELLOW_FEVER,Disease.CSM,Disease.OTHER})
+	@Outbreaks
 	private Vaccination vaccination;
 	@Diseases({Disease.MEASLES,Disease.CSM,Disease.OTHER})
+	@Outbreaks
 	private String vaccinationDoses;
 	@Diseases({Disease.MEASLES,Disease.YELLOW_FEVER,Disease.CSM,Disease.OTHER})
 	private VaccinationInfoSource vaccinationInfoSource;
@@ -91,6 +100,7 @@ public class CaseDataDto extends EntityDto {
 	@Diseases({Disease.MONKEYPOX})
 	private Date smallpoxVaccinationDate;
 	
+	@Outbreaks
 	private String epidNumber;
 
 	private UserReferenceDto surveillanceOfficer;
@@ -99,7 +109,8 @@ public class CaseDataDto extends EntityDto {
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
-	
+
+	@Outbreaks
 	private CaseOutcome outcome;
 	private Date outcomeDate;
 

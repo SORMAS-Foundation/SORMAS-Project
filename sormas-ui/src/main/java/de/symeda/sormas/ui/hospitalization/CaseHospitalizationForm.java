@@ -20,12 +20,14 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.ViewMode;
 
 @SuppressWarnings("serial")
 public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 	
 	private static final String HEALTH_FACILITY = "healthFacility";	
 	private final CaseDataDto caze;
+	private final ViewMode viewMode;
 	
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.h3("Hospitalization data") +
@@ -37,15 +39,16 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 			LayoutUtil.fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS)
 	;		
 	
-	public CaseHospitalizationForm(CaseDataDto caze, UserRight editOrCreateUserRight) {
+	public CaseHospitalizationForm(CaseDataDto caze, UserRight editOrCreateUserRight, ViewMode viewMode) {
 		super(HospitalizationDto.class, HospitalizationDto.I18N_PREFIX, editOrCreateUserRight);
 		this.caze = caze;
+		this.viewMode = viewMode;
 		addFields();
 	}
 	
 	@Override
 	protected void addFields() {
-		if (caze == null) {
+		if (caze == null || viewMode == null) {
 			return;
 		}
 		
@@ -63,10 +66,21 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 		OptionGroup hospitalizedPreviouslyField = addField(HospitalizationDto.HOSPITALIZED_PREVIOUSLY, OptionGroup.class);
 		CssStyles.style(hospitalizedPreviouslyField, CssStyles.ERROR_COLOR_PRIMARY);
 		PreviousHospitalizationsField previousHospitalizationsField = addField(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, PreviousHospitalizationsField.class);
+
+		initializeVisibilitiesAndAllowedVisibilities(false, null, true, viewMode, HospitalizationDto.class);
 		
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(HospitalizationDto.ISOLATED, HospitalizationDto.DISCHARGE_DATE), HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, Arrays.asList(YesNoUnknown.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), HospitalizationDto.ISOLATION_DATE, HospitalizationDto.ISOLATED, Arrays.asList(YesNoUnknown.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, HospitalizationDto.HOSPITALIZED_PREVIOUSLY, Arrays.asList(YesNoUnknown.YES), true);
+		if (isVisibleAllowed(HospitalizationDto.ISOLATED)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), HospitalizationDto.ISOLATED, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, Arrays.asList(YesNoUnknown.YES), true);
+		}
+		if (isVisibleAllowed(HospitalizationDto.DISCHARGE_DATE)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, Arrays.asList(YesNoUnknown.YES), true);
+		}
+		if (isVisibleAllowed(HospitalizationDto.ISOLATION_DATE)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), HospitalizationDto.ISOLATION_DATE, HospitalizationDto.ISOLATED, Arrays.asList(YesNoUnknown.YES), true);
+		}
+		if (isVisibleAllowed(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, HospitalizationDto.HOSPITALIZED_PREVIOUSLY, Arrays.asList(YesNoUnknown.YES), true);
+		}
 		
 		hospitalizedPreviouslyField.addValueChangeListener(e -> {
 			updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField);
