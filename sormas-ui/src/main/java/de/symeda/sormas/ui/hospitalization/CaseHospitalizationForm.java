@@ -67,7 +67,7 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 		CssStyles.style(hospitalizedPreviouslyField, CssStyles.ERROR_COLOR_PRIMARY);
 		PreviousHospitalizationsField previousHospitalizationsField = addField(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, PreviousHospitalizationsField.class);
 
-		initializeVisibilitiesAndAllowedVisibilities(false, null, true, viewMode, HospitalizationDto.class);
+		initializeVisibilitiesAndAllowedVisibilities(null, viewMode);
 		
 		if (isVisibleAllowed(HospitalizationDto.ISOLATED)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), HospitalizationDto.ISOLATED, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, Arrays.asList(YesNoUnknown.YES), true);

@@ -55,7 +55,8 @@ public class PersonDto extends EntityDto {
 	private String firstName;
 	@Outbreaks
 	private String lastName;
-		
+
+	@Outbreaks
 	private PresentCondition presentCondition;
 	@Outbreaks
 	private Integer birthdateDD;

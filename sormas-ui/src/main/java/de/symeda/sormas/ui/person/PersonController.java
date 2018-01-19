@@ -42,11 +42,6 @@ public class PersonController {
     	doneConsumer.accept(person.toReference()); 
     }
     
-//    public void openEditModal(String personUuid, UserRight editOrCreateUserRight) {
-//		CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = getPersonEditComponent(personUuid, null, null, editOrCreateUserRight);
-//		VaadinUiUtil.showModalPopupWindow(personEditComponent, "Edit person");
-//    }
-    
     public void selectOrCreatePerson(String firstName, String lastName, Consumer<PersonReferenceDto> resultConsumer) {
     	PersonSelectField personSelect = new PersonSelectField();
     	personSelect.setFirstName(firstName);

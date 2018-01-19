@@ -152,7 +152,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		// Set initial visibilities
 		
-		initializeVisibilitiesAndAllowedVisibilities(true, disease, true, viewMode, SymptomsDto.class);
+		initializeVisibilitiesAndAllowedVisibilities(disease, viewMode);
 		
 		// Initialize lists
 

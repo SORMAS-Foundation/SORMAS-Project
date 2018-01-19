@@ -17,7 +17,7 @@ public class EpiDataView extends AbstractCaseView {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
-		setSubComponent(ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid()));
+		setSubComponent(ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), getViewMode()));
 	}
 
 }

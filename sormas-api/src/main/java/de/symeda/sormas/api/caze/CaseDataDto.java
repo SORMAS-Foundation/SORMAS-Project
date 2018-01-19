@@ -40,7 +40,6 @@ public class CaseDataDto extends EntityDto {
 	public static final String REPORT_DATE = "reportDate";
 	public static final String INVESTIGATED_DATE = "investigatedDate";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
-	public static final String CASE_OFFICER = "caseOfficer";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String HOSPITALIZATION = "hospitalization";
 	public static final String EPI_DATA = "epiData";
@@ -60,13 +59,21 @@ public class CaseDataDto extends EntityDto {
 	private PersonReferenceDto person;
 	@Outbreaks
 	private CaseClassification caseClassification;
+	@Outbreaks
 	private InvestigationStatus investigationStatus;
+	@Outbreaks
 	private Disease disease;
+	@Outbreaks
 	private String diseaseDetails;
+	@Outbreaks
 	private PlagueType plagueType;
+	@Outbreaks
 	private UserReferenceDto reportingUser;
+	@Outbreaks
 	private Date reportDate;
+	@Outbreaks
 	private Date investigatedDate;
+	
 	private HospitalizationDto hospitalization;
 	private EpiDataDto epiData;
 	
@@ -103,7 +110,9 @@ public class CaseDataDto extends EntityDto {
 	@Outbreaks
 	private String epidNumber;
 
+	@Outbreaks
 	private UserReferenceDto surveillanceOfficer;
+	@Deprecated
 	private UserReferenceDto caseOfficer;
 	
 	private Double reportLat;
@@ -112,6 +121,7 @@ public class CaseDataDto extends EntityDto {
 
 	@Outbreaks
 	private CaseOutcome outcome;
+	@Outbreaks
 	private Date outcomeDate;
 
 	public CaseClassification getCaseClassification() {
@@ -202,10 +212,12 @@ public class CaseDataDto extends EntityDto {
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
 
+	@Deprecated
 	public UserReferenceDto getCaseOfficer() {
 		return caseOfficer;
 	}
 
+	@Deprecated
 	public void setCaseOfficer(UserReferenceDto caseOfficer) {
 		this.caseOfficer = caseOfficer;
 	}

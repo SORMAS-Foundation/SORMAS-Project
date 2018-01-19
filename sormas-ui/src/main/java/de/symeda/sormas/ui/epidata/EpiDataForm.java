@@ -16,13 +16,13 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.ViewMode;
 
 @SuppressWarnings("serial")
 public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
@@ -67,10 +67,12 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	;
 	
 	private final Disease disease;
+	private final ViewMode viewMode;
 	
-	public EpiDataForm(Disease disease, UserRight editOrCreateUserRight) {
+	public EpiDataForm(Disease disease, UserRight editOrCreateUserRight, ViewMode viewMode) {
 		super(EpiDataDto.class, EpiDataDto.I18N_PREFIX, editOrCreateUserRight);
 		this.disease = disease;
+		this.viewMode = viewMode;
 		addFields();
 	}
 	
@@ -118,10 +120,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		addField(EpiDataDto.PLACE_OF_LAST_EXPOSURE, TextField.class);
 		addField(EpiDataDto.ANIMAL_CONDITION, OptionGroup.class);
 
-		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
-			boolean visible = DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, (String)propertyId, disease);
-			getFieldGroup().getField(propertyId).setVisible(visible);
-		}
+		initializeVisibilitiesAndAllowedVisibilities(disease, viewMode);
 		
 		styleAsOptionGroupHorizontal(Arrays.asList(EpiDataDto.RODENTS, EpiDataDto.BATS, EpiDataDto.PRIMATES, EpiDataDto.SWINE, EpiDataDto.CATTLE,
 				EpiDataDto.OTHER_ANIMALS, EpiDataDto.BIRDS, EpiDataDto.POULTRY_EAT, EpiDataDto.WILDBIRDS));

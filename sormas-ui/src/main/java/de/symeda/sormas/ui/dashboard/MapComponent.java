@@ -169,7 +169,7 @@ public class MapComponent extends VerticalLayout {
 					layout.setMargin(true);
 					window.setCaption("Cases in " + markerCaseFacilities.get(clickedMarker).toString());
 				} else if (caze != null) {
-					ControllerProvider.getCaseController().navigateToData(caze.getUuid());
+					ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
 				} else if (contact != null) {
 					ControllerProvider.getContactController().navigateToData(contact.getUuid());
 				} else if (event != null) {

@@ -52,10 +52,9 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	
 	@Override
 	public boolean hasOutbreak(DistrictReferenceDto district, Disease disease) {
-//		Long count = outbreakService.countByCriteria(new OutbreakCriteria()
-//				.districtEquals(district).diseaseEquals(disease), null);
-//		return count > 0;
-		return true;
+		Long count = outbreakService.countByCriteria(new OutbreakCriteria()
+				.districtEquals(district).diseaseEquals(disease), null);
+		return count > 0;
 	}
 	
 	@Override

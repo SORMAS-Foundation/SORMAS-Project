@@ -10,6 +10,7 @@ import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -44,7 +45,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String FACILITY_REGION = "facilityRegion";
 	private static final String FACILITY_DISTRICT = "facilityDistrict";
 	private static final String FACILITY_COMMUNITY = "facilityCommunity";
+	
+	private static final String OCCUPATION_HEADER = "occupationHeader";
+	private static final String ADDRESS_HEADER = "addressHeader";
     
+	private Label occupationHeader = new Label(LayoutUtil.h3("Occupation"));
+	private Label addressHeader = new Label(LayoutUtil.h3("Permanent residence of person"));
+	
 	private boolean facilityFieldsInitialized = false;
 	private Disease disease;
 	private String diseaseDetails;
@@ -78,13 +85,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					LayoutUtil.oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
 			) +
 			LayoutUtil.fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
-    		LayoutUtil.h3("Occupation")+
+    		LayoutUtil.loc(OCCUPATION_HEADER) +
     		LayoutUtil.divCss(
     				CssStyles.VSPACE_3, 
     				LayoutUtil.fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS),
     				LayoutUtil.fluidRowLocs(FACILITY_REGION, FACILITY_DISTRICT, FACILITY_COMMUNITY, PersonDto.OCCUPATION_FACILITY)
     		) +
-			LayoutUtil.h3("Permanent residence of person")+
+    		LayoutUtil.loc(ADDRESS_HEADER) +
 			LayoutUtil.fluidRowLocs(PersonDto.ADDRESS)
 			;
 
@@ -93,6 +100,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     	this.disease = disease;
     	this.diseaseDetails = diseaseDetails;
     	this.viewMode = viewMode;
+    	
+    	getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
+    	getContent().addComponent(addressHeader, ADDRESS_HEADER);
+    	
 		addFields();
     }
 
@@ -163,11 +174,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     	getContent().addComponent(facilityCommunity, FACILITY_COMMUNITY);
     	ComboBox occupationFacility = addField(PersonDto.OCCUPATION_FACILITY, ComboBox.class);
     	occupationFacility.setImmediate(true);
-    	
-		// Set initial visibilities
-    	
-		initializeVisibilitiesAndAllowedVisibilities(true, disease, true, viewMode, PersonDto.class);		
-		
+    		
 		// Set requirements that don't need visibility changes and read only status
 		
     	setRequired(true, 
@@ -192,7 +199,16 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     	FieldHelper.addSoftRequiredStyle(presentCondition, sex, deathDate, deathPlaceDesc, deathPlaceType, 
     			causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField, 
     			burialDate, burialPlaceDesc, burialConductor);
+
+    	// Set initial visibilities
     	
+		initializeVisibilitiesAndAllowedVisibilities(disease, viewMode);
+		
+		if (!getField(PersonDto.OCCUPATION_TYPE).isVisible())
+			occupationHeader.setVisible(false);
+		if (!getField(PersonDto.ADDRESS).isVisible())
+			addressHeader.setVisible(false);
+
     	// Add listeners
     	
     	addFieldListeners(PersonDto.BIRTH_DATE_DD, e -> {
@@ -254,13 +270,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
     	});
     	
     	addValueChangeListener(e -> {
-//    		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
-//    			boolean visible = DiseasesConfiguration.isDefinedOrMissing(SymptomsDto.class, (String)propertyId, disease);
-//    			if (!visible) {
-//    				getFieldGroup().getField(propertyId).setVisible(false);
-//    			}
-//    		}
-    		
     		fillDeathAndBurialFields(deathPlaceType, deathPlaceDesc, burialPlaceDesc);
     	});
     	

@@ -29,6 +29,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
         viewHeader.setWidth(100, Unit.PERCENTAGE);
         viewHeader.setHeightUndefined();
         viewHeader.setMargin(new MarginInfo(false, true));
+        viewHeader.setSpacing(true);
         CssStyles.style(viewHeader, "view-header");
 
         VerticalLayout viewTitleLayout = new VerticalLayout();

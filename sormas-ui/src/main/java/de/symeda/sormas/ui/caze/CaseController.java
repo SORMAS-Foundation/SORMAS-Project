@@ -6,19 +6,17 @@ import java.util.Date;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
-import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
@@ -61,7 +59,6 @@ import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
-import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -104,8 +101,21 @@ public class CaseController {
     	VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case");
     }
     
-    public void navigateToData(String caseUuid) {
-   		String navigationState = CaseDataView.VIEW_NAME + "/" + caseUuid;
+    public void navigateToIndex() {
+    	String navigationState = CasesView.VIEW_NAME;
+    	SormasUI.get().getNavigator().navigateTo(navigationState);
+    }
+
+    public void navigateToCase(String caseUuid) {
+    	navigateToView(CaseDataView.VIEW_NAME, caseUuid, null);
+    }
+    
+    public void navigateToView(String viewName, String caseUuid, ViewMode viewMode) {
+   		String navigationState = viewName + "/" + caseUuid;
+   		if (viewMode == ViewMode.FULL) {
+   			// pass full view mode as param so it's also used for other views when switching
+   			navigationState	+= "/" + AbstractCaseView.VIEW_MODE_URL_PREFIX + "=" + viewMode.toString();
+   		}
    		SormasUI.get().getNavigator().navigateTo(navigationState);	
     }
     
@@ -113,32 +123,7 @@ public class CaseController {
     	Link link = new Link(caption, new ExternalResource("#!" + CaseDataView.VIEW_NAME + "/" + caseUuid));
     	return link;
     }
-
-    public void navigateToSymptoms(String caseUuid) {
-   		String navigationState = CaseSymptomsView.VIEW_NAME + "/" + caseUuid;
-   		SormasUI.get().getNavigator().navigateTo(navigationState);	
-    }
-
-    public void navigateToPerson(String caseUuid) {
-   		String navigationState = CasePersonView.VIEW_NAME + "/" + caseUuid;
-   		SormasUI.get().getNavigator().navigateTo(navigationState);	
-    }
-
-    public void navigateToHospitalization(String caseUuid) {
-    	String navigationState = CaseHospitalizationView.VIEW_NAME + "/" + caseUuid;
-    	SormasUI.get().getNavigator().navigateTo(navigationState);
-    }
     
-    public void navigateToEpiData(String caseUuid) {
-    	String navigationState = EpiDataView.VIEW_NAME + "/" + caseUuid;
-    	SormasUI.get().getNavigator().navigateTo(navigationState);
-    }
-    
-    public void navigateToIndex() {
-    	String navigationState = CasesView.VIEW_NAME;
-    	SormasUI.get().getNavigator().navigateTo(navigationState);
-    }
-
     /**
      * Update the fragment without causing navigator to change view
      */
@@ -223,7 +208,7 @@ public class CaseController {
         				dto.setPerson(person);
         				cf.saveCase(dto);        				
 	        			Notification.show("New case created", Type.ASSISTIVE_NOTIFICATION);
-	        			navigateToPerson(dto.getUuid());
+	        			navigateToView(CasePersonView.VIEW_NAME, dto.getUuid(), null);
         			} else {
 	        			ControllerProvider.getPersonController().selectOrCreatePerson(
 	        					createForm.getPersonFirstName(), createForm.getPersonLastName(), 
@@ -232,7 +217,7 @@ public class CaseController {
 		        						dto.setPerson(person);
 		        						cf.saveCase(dto);
 		        	        			Notification.show("New case created", Type.ASSISTIVE_NOTIFICATION);
-		        	        			navigateToPerson(dto.getUuid());
+		        	        			navigateToView(CasePersonView.VIEW_NAME, dto.getUuid(), null);
 	        						}
 	        					});
 					}
@@ -253,8 +238,10 @@ public class CaseController {
         	@Override
         	public void onCommit() {
         		if (!caseEditForm.getFieldGroup().isModified()) {
-        			final CaseDataDto cazeDto = caseEditForm.getValue();   
-        			saveCase(cazeDto);
+        			CaseDataDto cazeDto = caseEditForm.getValue();   
+        			cf.saveCase(cazeDto);
+        			Notification.show("Case data saved", Type.WARNING_MESSAGE);
+        			navigateToView(CaseDataView.VIEW_NAME, caseUuid, viewMode);
         		}
         	}
         });
@@ -304,11 +291,41 @@ public class CaseController {
         
         editView.addCommitListener(new CommitListener() {
         	
-        	@Override
+        	@SuppressWarnings("serial")
+			@Override
         	public void onCommit() {
         		if (!symptomsForm.getFieldGroup().isModified()) {
-        			SymptomsDto dto = symptomsForm.getValue();
-        			saveSymptoms(dto, caseUuid);
+
+        			SymptomsDto symptomsDto = symptomsForm.getValue();
+        			sf.saveSymptoms(symptomsDto);
+
+        			// for plague we may have to change the type based on symptoms
+        			CaseDataDto caseDataDto = findCase(caseUuid);		
+        			if (caseDataDto.getDisease() == Disease.PLAGUE) {
+        				PlagueType plagueType = DiseaseHelper.getPlagueTypeForSymptoms(symptomsDto);
+        				if (plagueType != caseDataDto.getPlagueType() && plagueType != null) {
+
+							caseDataDto.setPlagueType(plagueType);
+							cf.saveCase(caseDataDto);
+
+        					// confirm plaque type
+        					Window window = VaadinUiUtil.showSimplePopupWindow("Case plague type",
+        							"The symptoms selected match the clinical criteria for " + plagueType.toString() + ". "
+        							+ "The plague type will be set to " + plagueType.toString() + " for this case.");
+        					
+        					window.addCloseListener(new CloseListener() {
+								@Override
+								public void windowClose(CloseEvent e) {
+									Notification.show("Case symptoms saved", Type.WARNING_MESSAGE);
+				        			navigateToView(CaseSymptomsView.VIEW_NAME, caseUuid, viewMode);
+								}
+							});
+        					return;
+        				}
+        			}
+        			
+        			Notification.show("Case symptoms saved", Type.WARNING_MESSAGE);
+        			navigateToView(CaseSymptomsView.VIEW_NAME, caseUuid, viewMode);
         		}
         	}
         });
@@ -330,7 +347,7 @@ public class CaseController {
 					HospitalizationDto dto = hospitalizationForm.getValue();
 					hf.saveHospitalization(dto);
 					Notification.show("Case hospitalization saved", Type.WARNING_MESSAGE);
-					navigateToHospitalization(caseUuid);
+					navigateToView(CaseHospitalizationView.VIEW_NAME, caseUuid, viewMode);
 				}
 			}
 		});
@@ -338,9 +355,9 @@ public class CaseController {
 		return editView;
 	}
 	
-	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid) {
+	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid, ViewMode viewMode) {
 		CaseDataDto caze = findCase(caseUuid);
-		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), UserRight.CASE_EDIT);
+		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), UserRight.CASE_EDIT, viewMode);
 		epiDataForm.setValue(caze.getEpiData());
 		
 		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(epiDataForm, epiDataForm.getFieldGroup(), UserRight.CASE_EDIT);
@@ -352,7 +369,7 @@ public class CaseController {
 					EpiDataDto dto = epiDataForm.getValue();
 					edf.saveEpiData(dto);
 					Notification.show("Case epidemiological data saved", Type.WARNING_MESSAGE);
-					navigateToEpiData(caseUuid);
+					navigateToView(EpiDataView.VIEW_NAME, caseUuid, viewMode);
 				}
 			}
 		});
@@ -378,7 +395,7 @@ public class CaseController {
 					cf.moveCase(cf.getReferenceByUuid(dto.getUuid()), dto.getCommunity(), dto.getHealthFacility(), dto.getHealthFacilityDetails(), dto.getSurveillanceOfficer());
 					popupWindow.close();
 					Notification.show("Case has been moved to the new facility", Type.WARNING_MESSAGE);
-					navigateToData(caze.getUuid());
+					navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null);
 				}
 			}
 		});
@@ -389,69 +406,6 @@ public class CaseController {
 			popupWindow.close();
 		});
 		facilityChangeView.getButtonsPanel().replaceComponent(facilityChangeView.getDiscardButton(), cancelButton);
-	}
-	
-	private void saveCase(CaseDataDto cazeDto) {
-		cazeDto = cf.saveCase(cazeDto);
-		Notification.show("Case data saved", Type.WARNING_MESSAGE);
-		navigateToData(cazeDto.getUuid());
-	}
-	
-	private void saveSymptoms(SymptomsDto symptomsDto, String caseUuid) {
-		sf.saveSymptoms(symptomsDto);
-		
-		CaseDataDto caseDataDto = findCase(caseUuid);		
-		if (caseDataDto.getDisease() == Disease.PLAGUE) {
-			PlagueType plagueType = DiseaseHelper.getPlagueTypeForSymptoms(caseDataDto.getSymptoms());
-			if (plagueType != caseDataDto.getPlagueType() && plagueType != null) {
-				openPlagueTypeChangeLayout(plagueType, caseDataDto);
-				return;
-			}
-		}
-		
-		Notification.show("Case symptoms saved", Type.WARNING_MESSAGE);
-		navigateToSymptoms(caseUuid);
-	}
-	
-	private void openPlagueTypeChangeLayout(PlagueType plagueType, CaseDataDto caseDto) {
-		ConfirmationComponent plagueTypeChangeComponent = new ConfirmationComponent(false) {
-			private static final long serialVersionUID = 1L;
-			@Override
-			protected void onConfirm() {
-			}
-			@Override
-			protected void onCancel() {
-			}
-		};
-		plagueTypeChangeComponent.getConfirmButton().setCaption("Confirm");
-		plagueTypeChangeComponent.removeComponent(plagueTypeChangeComponent.getCancelButton());
-
-		VerticalLayout layout = new VerticalLayout();	
-		layout.setMargin(true);
-		Label description = new Label("The symptoms selected match the clinical criteria for " + plagueType.toString() + ". "
-				+ "The plague type has been set to " + plagueType.toString() + " for this case.");
-		description.setContentMode(ContentMode.HTML);
-		description.setWidth(100, Unit.PERCENTAGE);
-		layout.addComponent(description);
-		layout.addComponent(plagueTypeChangeComponent);
-		layout.setComponentAlignment(plagueTypeChangeComponent, Alignment.BOTTOM_RIGHT);
-		layout.setSizeUndefined();
-		layout.setSpacing(true);
-		
-		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
-		popupWindow.setSizeUndefined();
-		popupWindow.setCaption("Confirm Plague Type Change");
-		plagueTypeChangeComponent.getConfirmButton().addClickListener(new ClickListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void buttonClick(ClickEvent event) {
-				popupWindow.close();
-				caseDto.setPlagueType(plagueType);
-				cf.saveCase(caseDto);
-				Notification.show("Case symptoms saved", Type.WARNING_MESSAGE);
-				navigateToSymptoms(caseDto.getUuid());
-			}
-		});
 	}
 	
 }

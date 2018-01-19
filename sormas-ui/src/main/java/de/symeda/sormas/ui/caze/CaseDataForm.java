@@ -140,7 +140,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		// Set initial visibilities
 		
-		initializeVisibilitiesAndAllowedVisibilities(true, disease, true, viewMode, CaseDataDto.class);
+		initializeVisibilitiesAndAllowedVisibilities(disease, viewMode);
 		
 		// Set requirements that don't need visibility changes and read only status
 		

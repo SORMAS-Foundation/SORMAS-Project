@@ -407,23 +407,23 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	 * Sets the initial visibilities based on annotations and builds a list of all fields in a form that are allowed to be visible - 
 	 * this is either because the @Diseases and @Outbreaks annotations are not relevant or at least one of these annotations are present on the respective field.
 	 * 
-	 * @param useDiseaseConfiguration	True if the @Diseases annotation should be taken into account
-	 * @param useOutbreakConfiguration	True if the @Outbreaks annotation should be taken into account
+	 * @param disease	Not null if the @Diseases annotation should be taken into account
+	 * @param viewMode	Not null if the @Outbreaks annotation should be taken into account
 	 */
-	protected void initializeVisibilitiesAndAllowedVisibilities(boolean useDiseaseConfiguration, Disease disease, boolean useOutbreakConfiguration, ViewMode viewMode, Class<DTO> dtoClass) {
+	protected void initializeVisibilitiesAndAllowedVisibilities(Disease disease, ViewMode viewMode) {
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
 			Field<?> field = getFieldGroup().getField(propertyId);
 			boolean diseaseVisibility = true;
 			boolean outbreakVisibility = true;
 			
-			if (useDiseaseConfiguration) {
-				if (!Diseases.DiseasesConfiguration.isDefinedOrMissing(dtoClass, (String) propertyId, disease)) {
+			if (disease != null) {
+				if (!Diseases.DiseasesConfiguration.isDefinedOrMissing(getType(), (String) propertyId, disease)) {
 					diseaseVisibility = false;
 				}
 			}
 			
-			if (useOutbreakConfiguration && viewMode == ViewMode.OUTBREAK) {
-				if (!Outbreaks.OutbreaksConfiguration.isDefined(dtoClass, (String) propertyId)) {
+			if (viewMode != null && viewMode == ViewMode.OUTBREAK) {
+				if (!Outbreaks.OutbreaksConfiguration.isDefined(getType(), (String) propertyId)) {
 					outbreakVisibility = false;
 				}
 			}
