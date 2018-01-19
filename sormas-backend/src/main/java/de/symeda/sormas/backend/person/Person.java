@@ -13,8 +13,10 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
+import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -52,7 +54,12 @@ public class Person extends AbstractDomainObject {
 	private String mothersMaidenName;
 	private Integer approximateAge;
 	private ApproximateAgeType approximateAgeType;
-	
+
+	private CauseOfDeath causeOfDeath;
+	private String causeOfDeathDetails;
+	private Disease causeOfDeathDisease;
+	//@Deprecated
+	//private String causeOfDeathDiseaseDetails;
 	private DeathPlaceType deathPlaceType;
 	private String deathPlaceDescription;
 	private Date burialDate;
@@ -257,6 +264,29 @@ public class Person extends AbstractDomainObject {
 	}
 	public void setOccupationFacility(Facility occupationFacility) {
 		this.occupationFacility = occupationFacility;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public CauseOfDeath getCauseOfDeath() {
+		return causeOfDeath;
+	}
+	public void setCauseOfDeath(CauseOfDeath causeOfDeath) {
+		this.causeOfDeath = causeOfDeath;
+	}
+	
+	public String getCauseOfDeathDetails() {
+		return causeOfDeathDetails;
+	}
+	public void setCauseOfDeathDetails(String causeOfDeathDetails) {
+		this.causeOfDeathDetails = causeOfDeathDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Disease getCauseOfDeathDisease() {
+		return causeOfDeathDisease;
+	}
+	public void setCauseOfDeathDisease(Disease causeOfDeathDisease) {
+		this.causeOfDeathDisease = causeOfDeathDisease;
 	}
 	
 	@Override

@@ -219,4 +219,12 @@ public class ListField<FieldClass extends AbstractDomainObject> extends Property
         ((ListField) nextView).listView.requestFocus();
     }
 
+    @Override
+    protected void setFieldEnabledStatus(boolean enabled) {
+        addBtn.setEnabled(enabled);
+        addBtn.setFocusable(enabled);
+        listView.setEnabled(enabled);
+        listView.setFocusable(enabled);
+    }
+
 }

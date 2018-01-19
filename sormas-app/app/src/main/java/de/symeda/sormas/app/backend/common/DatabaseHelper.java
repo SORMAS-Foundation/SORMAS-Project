@@ -39,6 +39,8 @@ import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalizationDao;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDao;
+import de.symeda.sormas.app.backend.outbreak.Outbreak;
+import de.symeda.sormas.app.backend.outbreak.OutbreakDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.region.Community;
@@ -76,7 +78,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 115;
+	private static final int DATABASE_VERSION = 119;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -129,6 +131,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, WeeklyReport.class);
 			TableUtils.clearTable(connectionSource, WeeklyReportEntry.class);
 			TableUtils.clearTable(connectionSource, Location.class);
+			TableUtils.clearTable(connectionSource, Outbreak.class);
 			TableUtils.clearTable(connectionSource, SyncLog.class);
 
 			if (clearInfrastructure) {
@@ -185,6 +188,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, SyncLog.class);
 			TableUtils.createTable(connectionSource, WeeklyReport.class);
 			TableUtils.createTable(connectionSource, WeeklyReportEntry.class);
+			TableUtils.createTable(connectionSource, Outbreak.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't build database", e);
 			throw new RuntimeException(e);
@@ -393,6 +397,42 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"SELECT disease, diseaseDetails, eventDate, eventDesc, eventLocation_id, eventStatus, eventType, reportDateTime, reportLat, reportLatLonAccuracy, reportLon, reportingUser_id, srcEmail, srcFirstName, srcLastName, srcTelNo, surveillanceOfficer_id, typeOfPlace, typeOfPlaceText, changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid " +
 							"FROM tmp_events;");
 					getDao(Event.class).executeRaw("DROP TABLE tmp_events;");
+				case 115:
+					currentVersion = 115;
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN causeOfDeath varchar(255);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN causeOfDeathDetails varchar(512);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN causeOfDeathDisease varchar(255);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN causeOfDeathDiseaseDetails varchar(512);");
+				case 116:
+					currentVersion = 116;
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN outcome varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN outcomeDate timestamp without time zone;");
+				case 117:
+					getDao(Hospitalization.class).executeRaw("ALTER TABLE hospitalizations ADD COLUMN admittedToHealthFacility varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN bulgingFontanelle varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccination varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccinationDoses varchar(512);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccinationInfoSource varchar(255);");
+
+					getDao(Case.class).executeRaw("UPDATE cases SET vaccination = measlesVaccination WHERE measlesVaccination IS NOT NULL;");
+					getDao(Case.class).executeRaw("UPDATE cases SET vaccination = yellowFeverVaccination WHERE yellowFeverVaccination IS NOT NULL;");
+					getDao(Case.class).executeRaw("UPDATE cases SET vaccination = measlesDoses WHERE measlesDoses IS NOT NULL;");
+					getDao(Case.class).executeRaw("UPDATE cases SET vaccination = measlesVaccinationInfoSource WHERE measlesVaccinationInfoSource IS NOT NULL;");
+					getDao(Case.class).executeRaw("UPDATE cases SET vaccination = yellowFeverVaccinationInfoSource WHERE yellowFeverVaccinationInfoSource IS NOT NULL;");
+				case 118:
+					getDao(Outbreak.class).executeRaw("CREATE TABLE outbreak(" +
+							"id integer primary key autoincrement," +
+							"uuid varchar(36) not null unique," +
+							"changeDate timestamp not null," +
+							"creationDate timestamp not null," +
+							"district_id bigint REFERENCES district(id)," +
+							"disease varchar(255)," +
+							"reportDate timestamp," +
+							"reportingUser_id bigint REFERENCES users(id)," +
+							"lastOpenedDate timestamp," +
+							"localChangeDate timestamp not null," +
+							"modified integer," +
+							"snapshot integer");
 
 					// ATTENTION: break should only be done after last version
 					break;
@@ -433,6 +473,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, SyncLog.class, true);
 			TableUtils.dropTable(connectionSource, WeeklyReport.class, true);
 			TableUtils.dropTable(connectionSource, WeeklyReportEntry.class, true);
+			TableUtils.dropTable(connectionSource, Outbreak.class, true);
 
             if (oldVersion < 30) {
                 TableUtils.dropTable(connectionSource, Config.class, true);
@@ -504,6 +545,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new WeeklyReportDao((Dao<WeeklyReport, Long>) innerDao);
 				} else if (type.equals(WeeklyReportEntry.class)) {
 					dao = (AbstractAdoDao<ADO>) new WeeklyReportEntryDao((Dao<WeeklyReportEntry, Long>) innerDao);
+				} else if (type.equals(Outbreak.class)) {
+					dao = (AbstractAdoDao<ADO>) new OutbreakDao((Dao<Outbreak, Long>) innerDao);
 				} else {
 					throw new UnsupportedOperationException(type.toString());
 				}
@@ -655,6 +698,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static WeeklyReportEntryDao getWeeklyReportEntryDao() {
 		return (WeeklyReportEntryDao) getAdoDao(WeeklyReportEntry.class);
+	}
+
+	public static OutbreakDao getOutbreakDao() {
+		return (OutbreakDao) getAdoDao(Outbreak.class);
 	}
 
 	/**

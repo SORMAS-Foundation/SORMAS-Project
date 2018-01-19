@@ -205,6 +205,8 @@ public class Symptoms extends AbstractDomainObject {
     @Enumerated(EnumType.STRING)
     private SymptomState blackeningDeathOfTissue;
 	@Enumerated(EnumType.STRING)
+	private SymptomState bulgingFontanelle;
+	@Enumerated(EnumType.STRING)
 	private SymptomState otherHemorrhagicSymptoms;
 	@Column(length = 255)
 	private String otherHemorrhagicSymptomsText;
@@ -861,7 +863,15 @@ public class Symptoms extends AbstractDomainObject {
         this.blackeningDeathOfTissue = blackeningDeathOfTissue;
     }
 
-    public String getPatientIllLocation() {
+	public SymptomState getBulgingFontanelle() {
+		return bulgingFontanelle;
+	}
+
+	public void setBulgingFontanelle(SymptomState bulgingFontanelle) {
+		this.bulgingFontanelle = bulgingFontanelle;
+	}
+
+	public String getPatientIllLocation() {
 		return patientIllLocation;
 	}
 

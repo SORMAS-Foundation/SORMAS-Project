@@ -3,6 +3,8 @@ package de.symeda.sormas.api;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.utils.Outbreaks;
+
 public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 
 	private static final long serialVersionUID = -1L;
@@ -13,6 +15,7 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 
 	private Date creationDate;
 	private Date changeDate;
+	@Outbreaks
 	private String uuid;
 
 	public EntityDto() {

@@ -17,7 +17,6 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -29,13 +28,15 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 
     private static final String HTML_LAYOUT = 
-			LayoutUtil.divCss(CssStyles.VSPACE_2,
-					LayoutUtil.fluidRow(LayoutUtil.loc(CaseDataDto.DISEASE), LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE)),
-					LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME),
-					LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT),
-					LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY),
-					LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS)
-					);
+			LayoutUtil.fluidRow(
+					LayoutUtil.loc(CaseDataDto.DISEASE), 
+					// one or the other
+					LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE)) +
+			LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
+			LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS)
+			;
 
     public CaseCreateForm(UserRight editOrCreateUserRight) {
         super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, editOrCreateUserRight);

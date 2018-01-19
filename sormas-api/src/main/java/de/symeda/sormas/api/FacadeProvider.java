@@ -10,6 +10,7 @@ import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
+import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
@@ -125,6 +126,10 @@ public class FacadeProvider {
 	
 	public static GeoShapeProvider getGeoShapeProvider() {
 		return get().lookupEjbRemote(GeoShapeProvider.class);
+	}
+	
+	public static OutbreakFacade getOutbreakFacade() {
+		return get().lookupEjbRemote(OutbreakFacade.class);
 	}
 	
 

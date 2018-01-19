@@ -12863,7 +12863,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .v-widget.v-textfield, .sormas .v-widget.v-textarea, .sormas .v-widget.v-select, .sormas .v-widget.v-datefield, .sormas .v-widget.v-filterselect, .sormas .v-widget.v-select-optiongroup {
-	margin-bottom: 10px;
+	margin-bottom: 16px;
 }
 
 .sormas h1, .sormas .h1 {
@@ -12910,11 +12910,11 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .vspace-2 {
-	margin-bottom: 20px;
+	margin-bottom: 24px;
 }
 
 .sormas .vspace-3 {
-	margin-bottom: 10px;
+	margin-bottom: 16px;
 }
 
 .sormas .vspace-4 {
@@ -12938,11 +12938,11 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .sormas .vspace-top-2 {
-	margin-top: 20px;
+	margin-top: 24px;
 }
 
 .sormas .vspace-top-3 {
-	margin-top: 10px;
+	margin-top: 16px;
 }
 
 .sormas .vspace-top-4 {
@@ -13324,6 +13324,16 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 :root .sormas .v-select-optiongroup-horizontal.v-select-optiongroup-horizontal-subtle .v-radiobutton > input:checked ~ label {
+	background: #005A9C;
+	color: #FFF;
+}
+
+.sormas .v-select-optiongroup-horizontal.v-select-optiongroup-horizontal-primary .v-radiobutton {
+	border: 2px solid #005A9C;
+	font-size: 13px;
+}
+
+:root .sormas .v-select-optiongroup-horizontal.v-select-optiongroup-horizontal-primary .v-radiobutton > input:checked ~ label {
 	background: #005A9C;
 	color: #FFF;
 }
@@ -13883,6 +13893,10 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-ui[width-range~="0-800px"] .login-screen .login-form .buttons .v-button {
 	display: block;
 	text-align: center;
+}
+
+.sormas .row div[location].hide-invisble:empty {
+	display: none;
 }
 
 .sormas .callout {

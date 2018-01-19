@@ -118,6 +118,14 @@ public class HospitalizationForm extends FormTab {
             }
         });
 
+        binding.hospitalizationAdmittedToHealthFacility.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                binding.hospitalizationIsolated.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.hospitalizationDischargeDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+            }
+        });
+
         return view;
     }
 

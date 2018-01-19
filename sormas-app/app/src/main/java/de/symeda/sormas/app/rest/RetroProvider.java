@@ -65,6 +65,7 @@ public final class RetroProvider {
     private EventParticipantFacadeRetro eventParticipantFacadeRetro;
     private WeeklyReportFacadeRetro weeklyReportFacadeRetro;
     private WeeklyReportEntryFacadeRetro weeklyReportEntryFacadeRetro;
+    private OutbreakFacadeRetro outbreakFacadeRetro;
 
     private RetroProvider(Context context, Interceptor... additionalInterceptors) throws ApiVersionException, ConnectException, AuthenticatorException {
 
@@ -373,6 +374,17 @@ public final class RetroProvider {
             }
         }
         return instance.weeklyReportEntryFacadeRetro;
+    }
+
+    public static OutbreakFacadeRetro getOutbreakFacade() {
+        if (instance.outbreakFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.outbreakFacadeRetro == null) {
+                    instance.outbreakFacadeRetro = instance.retrofit.create(OutbreakFacadeRetro.class);
+                }
+            }
+        }
+        return instance.outbreakFacadeRetro;
     }
 
     public static class ApiVersionException extends Exception {

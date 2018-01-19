@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>0.12.1</version>
+	<version>0.13.0</version>
 
 	<prerequisites>
 		<maven>3.0</maven>

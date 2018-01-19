@@ -15,6 +15,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class CaseDataDto extends EntityDto {
@@ -39,55 +40,66 @@ public class CaseDataDto extends EntityDto {
 	public static final String REPORT_DATE = "reportDate";
 	public static final String INVESTIGATED_DATE = "investigatedDate";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
-	public static final String CASE_OFFICER = "caseOfficer";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String HOSPITALIZATION = "hospitalization";
 	public static final String EPI_DATA = "epiData";
 	public static final String PREGNANT = "pregnant";
-	public static final String MEASLES_VACCINATION = "measlesVaccination";
-	public static final String MEASLES_DOSES = "measlesDoses";
-	public static final String MEASLES_VACCINATION_INFO_SOURCE = "measlesVaccinationInfoSource";
-	public static final String YELLOW_FEVER_VACCINATION = "yellowFeverVaccination";
-	public static final String YELLOW_FEVER_VACCINATION_INFO_SOURCE = "yellowFeverVaccinationInfoSource";
+	public static final String VACCINATION = "vaccination";
+	public static final String VACCINATION_DOSES = "vaccinationDoses";
+	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String SMALLPOX_VACCINATION_RECEIVED = "smallpoxVaccinationReceived";
 	public static final String SMALLPOX_VACCINATION_DATE = "smallpoxVaccinationDate";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
+	public static final String OUTCOME = "outcome";
+	public static final String OUTCOME_DATE = "outcomeDate";
 	
 	private PersonReferenceDto person;
+	@Outbreaks
 	private CaseClassification caseClassification;
+	@Outbreaks
 	private InvestigationStatus investigationStatus;
+	@Outbreaks
 	private Disease disease;
+	@Outbreaks
 	private String diseaseDetails;
+	@Outbreaks
 	private PlagueType plagueType;
+	@Outbreaks
 	private UserReferenceDto reportingUser;
+	@Outbreaks
 	private Date reportDate;
+	@Outbreaks
 	private Date investigatedDate;
+	
 	private HospitalizationDto hospitalization;
 	private EpiDataDto epiData;
 	
+	@Outbreaks
 	private RegionReferenceDto region;
+	@Outbreaks
 	private DistrictReferenceDto district;
+	@Outbreaks
 	private CommunityReferenceDto community;
+	@Outbreaks
 	private FacilityReferenceDto healthFacility;
+	@Outbreaks
 	private String healthFacilityDetails;
 
 	private SymptomsDto symptoms;
 		
 	private YesNoUnknown pregnant;
-	@Diseases({Disease.MEASLES})
-	private Vaccination measlesVaccination;
-	@Diseases({Disease.MEASLES})
-	private String measlesDoses;
-	@Diseases({Disease.MEASLES})
-	private VaccinationInfoSource measlesVaccinationInfoSource;
-	
-	@Diseases({Disease.YELLOW_FEVER})
-	private Vaccination yellowFeverVaccination;
-	@Diseases({Disease.YELLOW_FEVER})
-	private VaccinationInfoSource yellowFeverVaccinationInfoSource;
+
+	@Diseases({Disease.MEASLES,Disease.YELLOW_FEVER,Disease.CSM,Disease.OTHER})
+	@Outbreaks
+	private Vaccination vaccination;
+	@Diseases({Disease.MEASLES,Disease.CSM,Disease.OTHER})
+	@Outbreaks
+	private String vaccinationDoses;
+	@Diseases({Disease.MEASLES,Disease.YELLOW_FEVER,Disease.CSM,Disease.OTHER})
+	private VaccinationInfoSource vaccinationInfoSource;
 	@Diseases({Disease.MONKEYPOX})
 	private YesNoUnknown smallpoxVaccinationScar;
 	@Diseases({Disease.MONKEYPOX})
@@ -95,14 +107,22 @@ public class CaseDataDto extends EntityDto {
 	@Diseases({Disease.MONKEYPOX})
 	private Date smallpoxVaccinationDate;
 	
+	@Outbreaks
 	private String epidNumber;
 
+	@Outbreaks
 	private UserReferenceDto surveillanceOfficer;
+	@Deprecated
 	private UserReferenceDto caseOfficer;
 	
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+
+	@Outbreaks
+	private CaseOutcome outcome;
+	@Outbreaks
+	private Date outcomeDate;
 
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
@@ -192,10 +212,12 @@ public class CaseDataDto extends EntityDto {
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
 
+	@Deprecated
 	public UserReferenceDto getCaseOfficer() {
 		return caseOfficer;
 	}
 
+	@Deprecated
 	public void setCaseOfficer(UserReferenceDto caseOfficer) {
 		this.caseOfficer = caseOfficer;
 	}
@@ -263,45 +285,29 @@ public class CaseDataDto extends EntityDto {
 	public void setPregnant(YesNoUnknown pregnant) {
 		this.pregnant = pregnant;
 	}
-
-	public Vaccination getMeaslesVaccination() {
-		return measlesVaccination;
-	}
-
-	public void setMeaslesVaccination(Vaccination measlesVaccination) {
-		this.measlesVaccination = measlesVaccination;
-	}
-
-	public String getMeaslesDoses() {
-		return measlesDoses;
-	}
-
-	public void setMeaslesDoses(String measlesDoses) {
-		this.measlesDoses = measlesDoses;
-	}
-
-	public VaccinationInfoSource getMeaslesVaccinationInfoSource() {
-		return measlesVaccinationInfoSource;
-	}
-
-	public void setMeaslesVaccinationInfoSource(VaccinationInfoSource measlesVaccinationInfoSource) {
-		this.measlesVaccinationInfoSource = measlesVaccinationInfoSource;
-	}
 	
-	public Vaccination getYellowFeverVaccination() {
-		return yellowFeverVaccination;
+	public Vaccination getVaccination() {
+		return vaccination;
 	}
 
-	public void setYellowFeverVaccination(Vaccination yellowFeverVaccination) {
-		this.yellowFeverVaccination = yellowFeverVaccination;
+	public void setVaccination(Vaccination vaccination) {
+		this.vaccination = vaccination;
 	}
 
-	public VaccinationInfoSource getYellowFeverVaccinationInfoSource() {
-		return yellowFeverVaccinationInfoSource;
+	public String getVaccinationDoses() {
+		return vaccinationDoses;
 	}
 
-	public void setYellowFeverVaccinationInfoSource(VaccinationInfoSource yellowFeverVaccinationInfoSource) {
-		this.yellowFeverVaccinationInfoSource = yellowFeverVaccinationInfoSource;
+	public void setVaccinationDoses(String vaccinationDoses) {
+		this.vaccinationDoses = vaccinationDoses;
+	}
+
+	public VaccinationInfoSource getVaccinationInfoSource() {
+		return vaccinationInfoSource;
+	}
+
+	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
+		this.vaccinationInfoSource = vaccinationInfoSource;
 	}
 
 	public YesNoUnknown getSmallpoxVaccinationScar() {
@@ -358,6 +364,22 @@ public class CaseDataDto extends EntityDto {
 
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
+	
+	public CaseOutcome getOutcome() {
+		return outcome;
+	}
+	
+	public void setOutcome(CaseOutcome outcome) {
+		this.outcome = outcome;
+	}
+
+	public Date getOutcomeDate() {
+		return outcomeDate;
+	}
+
+	public void setOutcomeDate(Date outcomeDate) {
+		this.outcomeDate = outcomeDate;
 	}
 	
 	public CaseReferenceDto toReference() {

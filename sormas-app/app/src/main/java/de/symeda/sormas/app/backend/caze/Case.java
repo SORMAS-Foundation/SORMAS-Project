@@ -17,6 +17,7 @@ import javax.persistence.Enumerated;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -45,6 +46,7 @@ public class Case extends AbstractDomainObject {
 
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String PERSON = "person_id";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String SYMPTOMS = "symptoms";
@@ -108,19 +110,20 @@ public class Case extends AbstractDomainObject {
 	private YesNoUnknown pregnant;
 
 	@Enumerated(EnumType.STRING)
-	private Vaccination measlesVaccination;
+	private Vaccination vaccination;
 
 	@Column(length=512)
-	private String measlesDoses;
+	private String vaccinationDoses;
 
 	@Enumerated(EnumType.STRING)
-	private VaccinationInfoSource measlesVaccinationInfoSource;
+	private VaccinationInfoSource vaccinationInfoSource;
 
-	@Enumerated(EnumType.STRING)
-	private Vaccination yellowFeverVaccination;
-
-	@Enumerated(EnumType.STRING)
-	private VaccinationInfoSource yellowFeverVaccinationInfoSource;
+	//@Deprecated
+	//private Vaccination measlesVaccination;
+	//private String measlesDoses;
+	//private VaccinationInfoSource measlesVaccinationInfoSource;
+	//private Vaccination yellowFeverVaccination;
+	//private VaccinationInfoSource yellowFeverVaccinationInfoSource;
 
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown smallpoxVaccinationScar;
@@ -150,6 +153,11 @@ public class Case extends AbstractDomainObject {
 	private Double reportLon;
 	@DatabaseField
 	private Float reportLatLonAccuracy;
+
+	@Enumerated(EnumType.STRING)
+	private CaseOutcome outcome;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date outcomeDate;
 
 	public Person getPerson() {
 		return person;
@@ -286,44 +294,28 @@ public class Case extends AbstractDomainObject {
 		this.pregnant = pregnant;
 	}
 
-	public Vaccination getMeaslesVaccination() {
-		return measlesVaccination;
+	public Vaccination getVaccination() {
+		return vaccination;
 	}
 
-	public void setMeaslesVaccination(Vaccination measlesVaccination) {
-		this.measlesVaccination = measlesVaccination;
+	public void setVaccination(Vaccination vaccination) {
+		this.vaccination = vaccination;
 	}
 
-	public String getMeaslesDoses() {
-		return measlesDoses;
+	public String getVaccinationDoses() {
+		return vaccinationDoses;
 	}
 
-	public void setMeaslesDoses(String measlesDoses) {
-		this.measlesDoses = measlesDoses;
+	public void setVaccinationDoses(String vaccinationDoses) {
+		this.vaccinationDoses = vaccinationDoses;
 	}
 
-	public VaccinationInfoSource getMeaslesVaccinationInfoSource() {
-		return measlesVaccinationInfoSource;
+	public VaccinationInfoSource getVaccinationInfoSource() {
+		return vaccinationInfoSource;
 	}
 
-	public void setMeaslesVaccinationInfoSource(VaccinationInfoSource measlesVaccinationInfoSource) {
-		this.measlesVaccinationInfoSource = measlesVaccinationInfoSource;
-	}
-
-	public Vaccination getYellowFeverVaccination() {
-		return yellowFeverVaccination;
-	}
-
-	public void setYellowFeverVaccination(Vaccination yellowFeverVaccination) {
-		this.yellowFeverVaccination = yellowFeverVaccination;
-	}
-
-	public VaccinationInfoSource getYellowFeverVaccinationInfoSource() {
-		return yellowFeverVaccinationInfoSource;
-	}
-
-	public void setYellowFeverVaccinationInfoSource(VaccinationInfoSource yellowFeverVaccinationInfoSource) {
-		this.yellowFeverVaccinationInfoSource = yellowFeverVaccinationInfoSource;
+	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
+		this.vaccinationInfoSource = vaccinationInfoSource;
 	}
 
 	public YesNoUnknown getSmallpoxVaccinationScar() {
@@ -388,6 +380,22 @@ public class Case extends AbstractDomainObject {
 
 	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
+	}
+
+	public CaseOutcome getOutcome() {
+		return outcome;
+	}
+
+	public void setOutcome(CaseOutcome outcome) {
+		this.outcome = outcome;
+	}
+
+	public Date getOutcomeDate() {
+		return outcomeDate;
+	}
+
+	public void setOutcomeDate(Date outcomeDate) {
+		this.outcomeDate = outcomeDate;
 	}
 
 	@Override

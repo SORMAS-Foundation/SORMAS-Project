@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -64,6 +65,14 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
             caseStatus.setText(caze.getCaseClassification() != null ? caze.getCaseClassification().toString() : null);
         } else {
             caseStatus.setText("");
+        }
+
+        TextView caseOutcome = (TextView) convertView.findViewById(R.id.cli_case_outcome);
+        if (caze.getOutcome() == CaseOutcome.NO_OUTCOME) {
+            caseOutcome.setVisibility(View.GONE);
+        } else {
+            caseOutcome.setVisibility(View.VISIBLE);
+            caseOutcome.setText(caze.getOutcome().toString());
         }
 
         TextView person = (TextView) convertView.findViewById(R.id.cli_person);

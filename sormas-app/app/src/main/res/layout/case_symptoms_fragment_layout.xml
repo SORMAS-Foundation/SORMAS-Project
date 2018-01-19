@@ -147,6 +147,12 @@
                 android:value="@={symptoms.buboesGroinArmpitNeck}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_bulgingFontanelle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.bulgingFontanelle}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_chestPain"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

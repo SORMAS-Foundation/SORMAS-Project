@@ -133,7 +133,7 @@ public class EventParticipantsGrid extends Grid {
 				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipantDto.getEvent().getUuid());
 				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(findAssociatedCaseId(personDto, eventDto));
 				if(caseDto != null) {
-					ControllerProvider.getCaseController().navigateToData(findAssociatedCaseId(personDto, eventDto));
+					ControllerProvider.getCaseController().navigateToCase(findAssociatedCaseId(personDto, eventDto));
 				} else {
 					ControllerProvider.getCaseController().create(personDto.toReference(), eventDto.getDisease());
 				}

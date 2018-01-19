@@ -54,10 +54,19 @@ public class EpiCurveComponent extends VerticalLayout {
 
 	public void clearAndFillEpiCurveChart() {
 		StringBuilder hcjs = new StringBuilder();
-		hcjs.append("var options = {"
-				+ "chart: { type: 'column', backgroundColor: '#CDD8EC' },"//, events: { addSeries: function(event) {" + chartLoadFunction + "} } },"
-				+ "credits: { enabled: false },"
-				+ "title: { text: '' },");
+		hcjs.append(
+				"var options = {"
+				+ "chart:{ "
+				+ " type: 'column', "
+				+ " backgroundColor: 'transparent' "
+				+ "},"
+				+ "credits:{ enabled: false },"
+				+ "exporting:{ "
+				+ " enabled: true,"
+				+ " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }"
+				+ "},"
+				+ "title:{ text: '' },"
+				);
 
 		// Creates and sets the labels for each day on the x-axis
 		List<Date> filteredDates = buildListOfFilteredDates();

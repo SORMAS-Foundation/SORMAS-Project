@@ -86,11 +86,7 @@ public abstract class PropertyField<T> extends LinearLayout {
 
     public void setEnabled(boolean enabled, UserRight editOrCreateUserRight) {
         User user = ConfigProvider.getUser();
-        if (enabled && user.hasUserRight(editOrCreateUserRight)) {
-            super.setEnabled(true);
-        } else {
-            super.setEnabled(false);
-        }
+        setFieldEnabledStatus(enabled && user.hasUserRight(editOrCreateUserRight));
     }
 
     @Override
@@ -98,9 +94,17 @@ public abstract class PropertyField<T> extends LinearLayout {
         if (enabled) {
             throw new UnsupportedOperationException("If you want to enable a custom field, call setEnabled(boolean enabled, UserRight editOrCreateUserRight) instead.");
         } else {
-            super.setEnabled(false);
+            setFieldEnabledStatus(false);
         }
     }
+
+    /**
+     * Child classes need to override this method in order to set the enabled status at their
+     * encapsulated elements, e.g. an EditText for the TextField class. This method should never be
+     * called outside of the setEnabled methods in this class because it could bypass the
+     * mechanism that makes sure that fields cannot be set to enabled without the needed rights.
+     */
+    protected abstract void setFieldEnabledStatus(boolean enabled);
 
     public void addValueChangedListener(ValueChangeListener listener) {
         if (valueChangedListeners == null) {

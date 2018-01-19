@@ -22,6 +22,7 @@ public final class DateHelper {
 	private static final SimpleDateFormat SHORT_DATE_TIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 	private static final SimpleDateFormat DATABASE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	private static final SimpleDateFormat DATE_WITHOUT_YEAR_FORMAT = new SimpleDateFormat("dd/MM");
 	
 	public static String formatTime(Date date) {
 		if (date != null) {
@@ -90,6 +91,14 @@ public final class DateHelper {
 	public static String formatDateForDatabase(Date date) {
 		if (date != null) {
 			return clone(DATABASE_DATE_FORMAT).format(date);
+		} else {
+			return "";
+		}
+	}
+	
+	public static String formatDateWithoutYear(Date date) {
+		if (date != null) {
+			return clone(DATE_WITHOUT_YEAR_FORMAT).format(date);
 		} else {
 			return "";
 		}
@@ -354,6 +363,12 @@ public final class DateHelper {
 		return secondCalendar.getTime().after(calendar.getTime());
 	}
 	
+	/**
+	 * Creates a list of EpiWeeks for the whole given year.
+	 * 
+	 * @param year
+	 * @return
+	 */
 	public static List<EpiWeek> createEpiWeekList(int year) {
         Calendar calendar = getEpiCalendar();
         calendar.set(year, 0, 1);
@@ -361,6 +376,33 @@ public final class DateHelper {
         for (int week = 1; week <= calendar.getActualMaximum(Calendar.WEEK_OF_YEAR); week++) {
             epiWeekList.add(new EpiWeek(year, week));
         }
+        return epiWeekList;
+    }
+	
+	/**
+	 * Creates a list of EpiWeeks, starting with the given week in the given year, going back exactly one year.
+	 * 
+	 * @param year
+	 * @param week
+	 * @return
+	 */
+	public static List<EpiWeek> createEpiWeekList(int year, int week) {
+        Calendar calendar = getEpiCalendar();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.WEEK_OF_YEAR, week);
+        
+        Calendar lastYearCalendar = getEpiCalendar();
+        lastYearCalendar.set(Calendar.YEAR, year - 1);
+        lastYearCalendar.set(Calendar.WEEK_OF_YEAR, week);
+        
+        List<EpiWeek> epiWeekList = new ArrayList<>();
+        for (int epiWeek = lastYearCalendar.get(Calendar.WEEK_OF_YEAR); epiWeek <= lastYearCalendar.getActualMaximum(Calendar.WEEK_OF_YEAR); epiWeek++) {
+        	epiWeekList.add(new EpiWeek(year - 1, epiWeek));
+        }
+        for (int epiWeek = 1; epiWeek <= calendar.get(Calendar.WEEK_OF_YEAR); epiWeek++) {
+        	epiWeekList.add(new EpiWeek(year, epiWeek));
+        }
+        
         return epiWeekList;
     }
 	

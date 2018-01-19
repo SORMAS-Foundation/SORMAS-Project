@@ -98,7 +98,7 @@ public class CasePopupGrid extends Grid {
         
         addItemClickListener(e -> {
         	window.close();
-        	ControllerProvider.getCaseController().navigateToData(
+        	ControllerProvider.getCaseController().navigateToCase(
         		((CaseDataDto)e.getItemId()).getUuid());
         });
         

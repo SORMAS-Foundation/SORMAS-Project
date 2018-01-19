@@ -122,6 +122,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setBlackeningDeathOfTissue(source.getBlackeningDeathOfTissue());
 		target.setBuboesGroinArmpitNeck(source.getBuboesGroinArmpitNeck());
 		target.setPatientIllLocation(source.getPatientIllLocation());
+		target.setBulgingFontanelle(source.getBulgingFontanelle());
 		
 		return symptoms;
 	}
@@ -226,6 +227,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setBlackeningDeathOfTissue(source.getBlackeningDeathOfTissue());
 		target.setBuboesGroinArmpitNeck(source.getBuboesGroinArmpitNeck());
 		target.setPatientIllLocation(source.getPatientIllLocation());
+		target.setBulgingFontanelle(source.getBulgingFontanelle());
 		
 		return target;
 	}

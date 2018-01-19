@@ -21,6 +21,10 @@ All commands mentioned are linux commands.
 * Copy/upload to /root/deploy/sormas/$(date +%F)
 * ``cd /root/deploy/sormas/$(date +%F)``
 
+#### Maintainance Mode
+* a2dissite your.sormas.server.url.conf
+* service apache2 reload
+
 #### Undeployment
 .. while server domain is running
 * ``rm /opt/domains/sormas/autodeploy/*.war``
@@ -53,14 +57,14 @@ For information on what libs are used see pom.xml in sormas-base project: https:
     * confirm schema update by pressing enter when asked
 * Alternative: Manual database update
     * Find out current schema version of database:
-        * ``sudo -u postgres psql sormas_db``
+        * ``psql -U sormas_user -h localhost -W sormas_db``
         * ``SELECT * from schema_version ORDER BY version_number DESC LIMIT 1;``
         * ``\q``
     * Edit sql/sormas_schema.sql
         * ``Remove everything until after the INSERT with the read schema version``
         * ``Surround the remaining with BEGIN; and COMMIT;``
-    * Update the Database schema: ``sudo -u postgres psql sormas_db < sql/sormas_schema.sql``
-* If something goes wrong, restorte the database using ``sudo -u postgres pg_restore -Fc -d sormas_db < sormas_db_....``
+    * Update the Database schema: ``psql -U sormas_user -W sormas_db < sql/sormas_schema.sql``
+* If something goes wrong, restorte the database using ``pg_restore -U sormas_user -Fc -d sormas_db < sormas_db_....``
 
 #### Web Applications
 * ``service payara-sormas start``
@@ -72,6 +76,8 @@ For information on what libs are used see pom.xml in sormas-base project: https:
 #### Final Steps
 
 * Wait until the deployment is done (see log):  ``tail -f /var/log/glassfish/sormas/server.log``
+* a2ensite your.sormas.server.url.conf
+* service apache2 reload
 * Try to login at https://localhost:6081/sormas-ui (or the webadress of the server). 
   If it doesn't work: restart the server
 * Update the mobile app with the new apk file 

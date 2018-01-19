@@ -11,13 +11,12 @@ public class CaseHospitalizationView extends AbstractCaseView {
 	public static final String VIEW_NAME = "cases/hospitalization";
 	
 	public CaseHospitalizationView() {
-		super(VIEW_NAME);
+		super(VIEW_NAME); 	
 	}
 	
 	@Override
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
-		setSubComponent(ControllerProvider.getCaseController().getCaseHospitalizationComponent(getCaseRef().getUuid()));
+		setSubComponent(ControllerProvider.getCaseController().getCaseHospitalizationComponent(getCaseRef().getUuid(), getViewMode()));
 	}
-
 }

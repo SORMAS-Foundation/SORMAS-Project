@@ -17,6 +17,6 @@ public class CaseSymptomsView extends AbstractCaseView {
     @Override
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
-    	setSubComponent(ControllerProvider.getCaseController().getCaseSymptomsEditComponent(getCaseRef().getUuid()));
+    	setSubComponent(ControllerProvider.getCaseController().getCaseSymptomsEditComponent(getCaseRef().getUuid(), getViewMode()));
     }
 }

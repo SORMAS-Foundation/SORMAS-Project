@@ -69,6 +69,9 @@ public class DateTimeField extends PropertyField<Date> implements DateFieldInter
         if(value != null) {
             dateContent.setText(DateHelper.formatDate(value));
             timeContent.setText(DateHelper.formatTime(value));
+        } else {
+            dateContent.setText(null);
+            timeContent.setText(null);
         }
     }
 
@@ -243,6 +246,14 @@ public class DateTimeField extends PropertyField<Date> implements DateFieldInter
     @Override
     protected void requestFocusForContentView(View nextView) {
         ((DateTimeField) nextView).dateContent.requestFocus();
+    }
+
+    @Override
+    protected void setFieldEnabledStatus(boolean enabled) {
+        dateContent.setEnabled(enabled);
+        dateContent.setFocusable(enabled);
+        timeContent.setEnabled(enabled);
+        timeContent.setFocusable(enabled);
     }
 
 }

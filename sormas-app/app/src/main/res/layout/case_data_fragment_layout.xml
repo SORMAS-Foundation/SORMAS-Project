@@ -131,6 +131,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <de.symeda.sormas.app.component.SpinnerField
+                    android:id="@+id/caseData_outcome"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={caze.outcome}"/>
+
+                <de.symeda.sormas.app.component.DateField
+                    android:id="@+id/caseData_outcomeDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={caze.outcomeDate}"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
                 <de.symeda.sormas.app.component.LabelField
                     android:id="@+id/caseData_reportDate"
                     android:layout_width="match_parent"
@@ -240,21 +265,21 @@
                 android:value="@={caze.pregnant}"/>
 
             <de.symeda.sormas.app.component.SpinnerField
-                android:id="@+id/caseData_measlesVaccination"
+                android:id="@+id/caseData_vaccination"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                android:value="@={caze.measlesVaccination}"/>
+                android:value="@={caze.vaccination}"/>
 
             <de.symeda.sormas.app.component.TextField
-                android:id="@+id/caseData_doses"
+                android:id="@+id/caseData_vaccinationDoses"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
                 android:nextFocusForward="@+id/caseData_vaccinationInfoSource"
-                android:value="@={caze.measlesDoses}"/>
+                android:value="@={caze.vaccinationDoses}"/>
 
             <de.symeda.sormas.app.component.SpinnerField
                 android:id="@+id/caseData_vaccinationInfoSource"
@@ -262,23 +287,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                android:value="@={caze.measlesVaccinationInfoSource}"/>
-
-            <de.symeda.sormas.app.component.SpinnerField
-                android:id="@+id/caseData_yellowFeverVaccination"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:value="@={caze.yellowFeverVaccination}"/>
-
-            <de.symeda.sormas.app.component.SpinnerField
-                android:id="@+id/caseData_yellowFeverVaccinationInfoSource"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:value="@={caze.yellowFeverVaccinationInfoSource}"/>
+                android:value="@={caze.vaccinationInfoSource}"/>
 
             <de.symeda.sormas.app.component.YesNoUnknownField
                 android:id="@+id/caseData_smallpoxVaccinationReceived"

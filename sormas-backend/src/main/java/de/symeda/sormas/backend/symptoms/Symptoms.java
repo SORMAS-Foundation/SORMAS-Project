@@ -108,6 +108,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState painfulLymphadenitis;
 	private SymptomState blackeningDeathOfTissue;
 	private SymptomState buboesGroinArmpitNeck;
+	private SymptomState bulgingFontanelle;
 	private String otherNonHemorrhagicSymptomsText;
 	private String symptomsComments;
 	
@@ -874,6 +875,15 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setBuboesGroinArmpitNeck(SymptomState buboesGroinArmpitNeck) {
 		this.buboesGroinArmpitNeck = buboesGroinArmpitNeck;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getBulgingFontanelle() {
+		return bulgingFontanelle;
+	}
+
+	public void setBulgingFontanelle(SymptomState bulgingFontanelle) {
+		this.bulgingFontanelle = bulgingFontanelle;
 	}
 
 	@Column(length = 255)

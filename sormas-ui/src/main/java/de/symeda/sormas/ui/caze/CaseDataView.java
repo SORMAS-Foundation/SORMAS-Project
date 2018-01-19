@@ -28,7 +28,7 @@ public class CaseDataView extends AbstractCaseView {
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
     	setHeightUndefined();
-    	CommitDiscardWrapperComponent<CaseDataForm> caseDataEditComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid());
+    	CommitDiscardWrapperComponent<CaseDataForm> caseDataEditComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), getViewMode());
     	setSubComponent(caseDataEditComponent);
     	
     	TaskListComponent taskListComponent = new TaskListComponent(TaskContext.CASE, getCaseRef());

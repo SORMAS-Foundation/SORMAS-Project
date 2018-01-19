@@ -21,6 +21,7 @@ import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
+import de.symeda.sormas.app.backend.outbreak.OutbreakDtoHelper;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
@@ -159,6 +160,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
         // order is important, due to dependencies (e.g. case & person)
 
+        new OutbreakDtoHelper().pullEntities(false);
+
         boolean personsNeedPull = personDtoHelper.pullAndPushEntities();
         boolean eventsNeedPull = eventDtoHelper.pullAndPushEntities();
         boolean eventParticipantsNeedPull = eventParticipantDtoHelper.pullAndPushEntities();
@@ -212,6 +215,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // order is important, due to dependencies (e.g. case & person)
 
         new UserDtoHelper().repullEntities();
+        new OutbreakDtoHelper().repullEntities();
         personDtoHelper.repullEntities();
         eventDtoHelper.repullEntities();
         eventParticipantDtoHelper.repullEntities();
@@ -273,6 +277,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // persons
         List<String> personUuids = executeUuidCall(RetroProvider.getPersonFacade().pullUuids());
         DatabaseHelper.getPersonDao().deleteInvalid(personUuids);
+        // outbreak
+        List<String> outbreakUuids = executeUuidCall(RetroProvider.getOutbreakFacade().pullUuids());
+        DatabaseHelper.getOutbreakDao().deleteInvalid(outbreakUuids);
 
         // order is important, due to dependencies (e.g. case & person)
 

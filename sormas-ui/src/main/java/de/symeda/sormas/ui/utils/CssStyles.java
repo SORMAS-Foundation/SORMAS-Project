@@ -113,6 +113,7 @@ public final class CssStyles {
 	public static final String ALIGN_RIGHT = "align-right";
 
 	public static final String OPTIONGROUP_HORIZONTAL_SUBTLE = "horizontal-subtle";
+	public static final String OPTIONGROUP_HORIZONTAL_PRIMARY = "horizontal-primary";
 	public static final String OPTIONGROUP_CAPTION_INLINE = "caption-inline";
 
 	public static final String GRID_CELL_PRIORITY_HIGH = "priority-high";
@@ -126,6 +127,11 @@ public final class CssStyles {
 	public static final String GRID_ROW_STATUS_DONE = "status-done";
 	public static final String GRID_ROW_STATUS_PENDING = "status-pending";
 	public static final String GRID_ROW_TITLE = "row-title";
+	
+	/**
+	 * Example: <code>LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE)</code>
+	 */
+	public static final String LAYOUT_COL_HIDE_INVSIBLE = "hide-invisble";
 	
 	@Deprecated
 	public static final String CALLOUT = "callout";

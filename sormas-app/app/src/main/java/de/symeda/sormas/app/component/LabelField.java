@@ -295,4 +295,10 @@ public class LabelField extends PropertyField<String> {
         ((LabelField) nextView).textContent.requestFocus();
     }
 
+    @Override
+    protected void setFieldEnabledStatus(boolean enabled) {
+        textContent.setEnabled(enabled);
+        textContent.setFocusable(enabled);
+    }
+
 }

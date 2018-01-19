@@ -23,7 +23,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -34,56 +33,34 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private static final String STATUS_CHANGE = "statusChange";
 	
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.h3(CssStyles.VSPACE_3, "Event data") +
-			LayoutUtil.divCss(CssStyles.VSPACE_2,
-					LayoutUtil.fluidRowCss(CssStyles.VSPACE_4,
-							LayoutUtil.fluidColumn(12, 0,
-									LayoutUtil.fluidRowLocs(EventDto.UUID, EventDto.EVENT_TYPE)
-							)
-					) +
-					LayoutUtil.fluidRowCss(CssStyles.VSPACE_4,
-							LayoutUtil.fluidColumn(12, 0,
-									LayoutUtil.fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS)
-							)
-					) +
-					LayoutUtil.fluidRowCss(CssStyles.VSPACE_4,
-							LayoutUtil.fluidColumnCss(null, 4, 0,
-									LayoutUtil.fluidRowLocs(EventDto.EVENT_DATE)),
-							LayoutUtil.fluidColumnCss(null, 8, 0,
-									LayoutUtil.fluidRowLocs(EventDto.EVENT_STATUS))
-					) +
-					LayoutUtil.fluidRowCss(CssStyles.VSPACE_4,
-							LayoutUtil.fluidColumn(12, 0, 
-									LayoutUtil.fluidRowLocs(EventDto.EVENT_DESC))
+			LayoutUtil.h3("Event data") +
+			LayoutUtil.fluidRow(
+					LayoutUtil.oneOfTwoCol(EventDto.UUID),
+					LayoutUtil.oneOfFourCol(EventDto.REPORT_DATE_TIME),
+					LayoutUtil.oneOfFourCol(EventDto.REPORTING_USER)) +
+			LayoutUtil.fluidRow(
+					LayoutUtil.oneOfTwoCol(EventDto.EVENT_TYPE),
+					LayoutUtil.oneOfFourCol(EventDto.DISEASE),
+					LayoutUtil.oneOfFourCol(EventDto.DISEASE_DETAILS)) +
+			LayoutUtil.fluidRow(
+					LayoutUtil.oneOfFourCol(EventDto.EVENT_DATE),
+					LayoutUtil.threeOfFourCol(EventDto.EVENT_STATUS)) +
+			LayoutUtil.fluidRowLocs(EventDto.EVENT_DESC) +
+			LayoutUtil.h3("Source of information") +
+			LayoutUtil.fluidRowLocs(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME) +
+			LayoutUtil.fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) +
+			LayoutUtil.h3("Location") +
+			LayoutUtil.fluidRow(
+					LayoutUtil.fluidColumn(8, 0, 
+							LayoutUtil.fluidRowLocs(EventDto.EVENT_LOCATION)
+					),
+					LayoutUtil.fluidColumn(4, 0,
+							LayoutUtil.fluidRowLocs(EventDto.TYPE_OF_PLACE) +
+							LayoutUtil.fluidRowLocs(EventDto.TYPE_OF_PLACE_TEXT)
 					)
 			) +
-			LayoutUtil.h3(CssStyles.VSPACE_3, "Source of information") +
-			LayoutUtil.divCss(CssStyles.VSPACE_2,
-					LayoutUtil.fluidRowCss(CssStyles.VSPACE_4, 
-							LayoutUtil.fluidColumn(12, 0, 
-									LayoutUtil.fluidRowLocs(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME) +
-									LayoutUtil.fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL)
-							)
-					)
-					
-			) +
-			LayoutUtil.h3(CssStyles.VSPACE_3, "Location") +
-			LayoutUtil.divCss(CssStyles.VSPACE_2,
-					LayoutUtil.fluidRowCss(CssStyles.VSPACE_4, 
-							LayoutUtil.fluidColumn(8, 0, 
-									LayoutUtil.fluidRowLocs(EventDto.EVENT_LOCATION)
-							),
-							LayoutUtil.fluidColumn(4, 0,
-									LayoutUtil.fluidRowLocs(EventDto.TYPE_OF_PLACE) +
-									LayoutUtil.fluidRowLocs(EventDto.TYPE_OF_PLACE_TEXT)
-							)
-					)
-			) +
-			LayoutUtil.fluidRowCss(CssStyles.VSPACE_4,
-					LayoutUtil.fluidColumn(12,  0,
-							LayoutUtil.fluidRowLocs(EventDto.SURVEILLANCE_OFFICER, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER)
-					)
-			);
+			LayoutUtil.fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER)
+			;
 	
 	private final VerticalLayout statusChangeLayout;
 	private Boolean isCreateForm = null;

@@ -35,7 +35,7 @@ public abstract class FormTab extends DialogFragment implements FormFragment {
         if (visible) {
             v.setVisibility(View.VISIBLE);
         } else {
-            v.setVisibility(View.INVISIBLE);
+            v.setVisibility(View.GONE);
             v.clearFocus();
         }
     }

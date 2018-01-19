@@ -1900,3 +1900,75 @@ INSERT INTO schema_version (version_number, comment) VALUES (78, 'Drop not null 
 ALTER TABLE schema_version OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (79, 'Give sormas_user access to schema_version table');
+
+-- 2018-01-09 Cause of death fields #439
+ALTER TABLE person ADD COLUMN causeofdeath varchar(255);
+ALTER TABLE person ADD COLUMN causeofdeathdetails varchar(512);
+ALTER TABLE person ADD COLUMN causeofdeathdisease varchar(255);
+ALTER TABLE person ADD COLUMN causeofdeathdiseasedetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (80, 'Cause of death fields #439');
+
+-- 2018-01-10 Case outcome #185
+ALTER TABLE cases ADD COLUMN outcome varchar(255);
+ALTER TABLE cases ADD COLUMN outcomedate timestamp without time zone;
+
+UPDATE cases SET outcome = 'NO_OUTCOME';
+UPDATE cases SET changedate = now();
+
+INSERT INTO schema_version (version_number, comment) VALUES (81, 'Case outcome #185');
+
+-- 2018-01-11 Remove unused case date fields #185
+ALTER TABLE cases DROP COLUMN suspectdate;
+ALTER TABLE cases DROP COLUMN confirmeddate;
+ALTER TABLE cases DROP COLUMN negativedate;
+ALTER TABLE cases DROP COLUMN nocasedate;
+ALTER TABLE cases DROP COLUMN postivedate;
+ALTER TABLE cases DROP COLUMN recovereddate;
+
+INSERT INTO schema_version (version_number, comment) VALUES (82, 'Remove unused case date fields #185');
+
+-- 2018-01-11 Cause of death fields #439
+ALTER TABLE person DROP COLUMN causeofdeathdiseasedetails;
+
+INSERT INTO schema_version (version_number, comment) VALUES (83, 'Cause of death fields #439');
+
+-- 2018-01-12 New fields for CSM #474
+ALTER TABLE hospitalization ADD COLUMN admittedtohealthfacility varchar(255);
+ALTER TABLE symptoms ADD COLUMN bulgingfontanelle varchar(255);
+ALTER TABLE cases ADD COLUMN vaccination varchar(255);
+ALTER TABLE cases ADD COLUMN vaccinationdoses varchar(512);
+ALTER TABLE cases ADD COLUMN vaccinationinfosource varchar(255);
+
+UPDATE cases SET vaccination = measlesvaccination where measlesvaccination IS NOT NULL;
+UPDATE cases SET vaccination = yellowfevervaccination where yellowfevervaccination IS NOT NULL;
+UPDATE cases SET vaccinationdoses = measlesdoses where measlesdoses IS NOT NULL;
+UPDATE cases SET vaccinationinfosource = measlesvaccinationinfosource where measlesvaccinationinfosource IS NOT NULL;
+UPDATE cases SET vaccinationinfosource = yellowfevervaccinationinfosource where yellowfevervaccinationinfosource IS NOT NULL;
+
+ALTER TABLE cases DROP COLUMN measlesvaccination;
+ALTER TABLE cases DROP COLUMN measlesdoses;
+ALTER TABLE cases DROP COLUMN measlesvaccinationinfosource;
+ALTER TABLE cases DROP COLUMN yellowfevervaccination;
+ALTER TABLE cases DROP COLUMN yellowfevervaccinationinfosource;
+
+INSERT INTO schema_version (version_number, comment) VALUES (84, 'New fields for CSM #474');
+
+-- 2018-01-16 Outbreak mode per disease and district #473
+CREATE TABLE outbreak(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	district_id bigint not null,
+	disease varchar(255) not null,
+	reportdate timestamp not null,
+	reportinguser_id bigint not null,
+	primary key(id)
+);
+
+ALTER TABLE outbreak OWNER TO sormas_user;
+ALTER TABLE outbreak ADD CONSTRAINT fk_outbreak_district_id FOREIGN KEY (district_id) REFERENCES district(id);
+ALTER TABLE outbreak ADD CONSTRAINT fk_outbreak_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (85, 'Outbreak mode per disease and district #473');

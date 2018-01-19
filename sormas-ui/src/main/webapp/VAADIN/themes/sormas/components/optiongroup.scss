@@ -83,6 +83,19 @@
 	  	  }
 		}
   	  }
+  	 
+  	  &.v-select-optiongroup-horizontal-primary {
+  	  	.v-radiobutton {
+  	  	  border: $v-border-subtle;
+  	  	  font-size: 13px;
+  	  	  :root & > input {
+  	  	  	&:checked ~ label {
+  	  	  	  background: $v-selection-color;
+  	  	  	  color: #FFF;
+  	  	  	}
+  	  	  }
+  	  	}
+  	  }
   }
  
   .v-select-optiongroup {

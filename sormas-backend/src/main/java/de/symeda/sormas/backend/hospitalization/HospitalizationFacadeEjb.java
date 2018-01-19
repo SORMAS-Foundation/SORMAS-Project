@@ -78,6 +78,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setHospitalizedPreviously(source.getHospitalizedPreviously());
 		target.setIsolated(source.getIsolated());
 		target.setIsolationDate(source.getIsolationDate());
+		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
 		
 		// It would be better to merge with the existing hospitalizations
 		List<PreviousHospitalization> previousHospitalizations = new ArrayList<>();
@@ -141,6 +142,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setHospitalizedPreviously(source.getHospitalizedPreviously());
 		target.setIsolated(source.getIsolated());
 		target.setIsolationDate(source.getIsolationDate());
+		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
 		
 		List<PreviousHospitalizationDto> previousHospitalizations = new ArrayList<>();
 		for (PreviousHospitalization prevDto : source.getPreviousHospitalizations()) {

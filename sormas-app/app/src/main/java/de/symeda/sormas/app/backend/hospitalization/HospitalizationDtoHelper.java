@@ -54,6 +54,7 @@ public class HospitalizationDtoHelper extends AdoDtoHelper<Hospitalization, Hosp
         a.setHospitalizedPreviously(b.getHospitalizedPreviously());
         a.setIsolated(b.getIsolated());
         a.setIsolationDate(b.getIsolationDate());
+        a.setAdmittedToHealthFacility(b.getAdmittedToHealthFacility());
 
         // It would be better to merge with the existing hospitalizations
         List<PreviousHospitalization> previousHospitalizations = new ArrayList<>();
@@ -75,6 +76,7 @@ public class HospitalizationDtoHelper extends AdoDtoHelper<Hospitalization, Hosp
         a.setHospitalizedPreviously(b.getHospitalizedPreviously());
         a.setIsolated(b.getIsolated());
         a.setIsolationDate(b.getIsolationDate());
+        a.setAdmittedToHealthFacility(b.getAdmittedToHealthFacility());
 
         List<PreviousHospitalizationDto> previousHospitalizationDtos = new ArrayList<>();
         for (PreviousHospitalization prevHosp : b.getPreviousHospitalizations()) {

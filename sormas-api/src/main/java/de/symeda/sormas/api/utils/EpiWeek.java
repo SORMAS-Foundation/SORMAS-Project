@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.utils;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @SuppressWarnings("serial")
 public class EpiWeek implements Serializable {
@@ -37,6 +38,14 @@ public class EpiWeek implements Serializable {
 		return true;
 	}
 	
-	
+	@Override
+	public int hashCode() {
+		return Objects.hash(year, week);
+	}
+
+	@Override
+	public String toString() {
+		return week + "/" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this)) + " - " + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekEnd(this)) + ")";
+	}
 
 }

@@ -47,23 +47,19 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
 	
     private static final String HTML_LAYOUT = 
-    		LayoutUtil.h3(CssStyles.VSPACE_3, "Contact data")+
-			
-			LayoutUtil.divCss(CssStyles.VSPACE_2, 
-		    		LayoutUtil.fluidRowCss(CssStyles.VSPACE_4,
-		    						LayoutUtil.fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION) +
-		    						LayoutUtil.locCss(CssStyles.VSPACE_3, TO_CASE_BTN_LOC) +
-		    						LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.UUID) +
-		    						LayoutUtil.fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
-		    						LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY, "") +
-		    						LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
-				    				LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
-				    				LayoutUtil.h3(CssStyles.VSPACE_3, "Follow-up status") +
-				    				LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
-				    				LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
-				    				LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_UNTIL, ContactDto.CONTACT_OFFICER)
-		    						)
-		    		);
+    		LayoutUtil.h3("Contact data")+
+			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION) +
+			LayoutUtil.locCss(CssStyles.VSPACE_3, TO_CASE_BTN_LOC) +
+			LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.UUID) +
+			LayoutUtil.fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
+			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY, "") +
+			LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
+			LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
+			LayoutUtil.h3("Follow-up status") +
+			LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
+			LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
+			LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_UNTIL, ContactDto.CONTACT_OFFICER)
+		    ;
 
     public ContactDataForm(UserRight editOrCreateUserRight) {
         super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);

@@ -163,6 +163,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	 */
 	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ADO,ADO> from, User user);
 
+	// TODO rename to createChangeDateFilter
 	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ADO,ADO> from, Date date) {		
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
 		return dateFilter;

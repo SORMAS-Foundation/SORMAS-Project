@@ -147,4 +147,10 @@ public class RadioGroupField extends PropertyField<Object> {
         ((RadioGroupField) nextView).radioGroup.requestFocus();
     }
 
+    @Override
+    protected void setFieldEnabledStatus(boolean enabled) {
+        radioGroup.setEnabled(enabled);
+        radioGroup.setFocusable(enabled);
+    }
+
 }

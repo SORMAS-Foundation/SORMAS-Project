@@ -97,14 +97,12 @@ public class DashboardView extends AbstractView {
 
 	// Others
 	private DashboardDataProvider dashboardDataProvider;
-	private int thisYear;
 
 	public DashboardView() {
 		super(VIEW_NAME);		
 		addStyleName(DashboardCssStyles.DASHBOARD_SCREEN);		
 
 		dashboardDataProvider = new DashboardDataProvider();
-		thisYear = Calendar.getInstance().get(Calendar.YEAR);
 
 		dashboardLayout = new VerticalLayout();
 		dashboardLayout.setSpacing(false);
@@ -176,9 +174,9 @@ public class DashboardView extends AbstractView {
 					toDate = dateToFilter.getValue();
 					dashboardDataProvider.setToDate(toDate);
 				} else {
-					fromWeek = new EpiWeek(thisYear, (int) weekFromFilter.getValue());
+					fromWeek = (EpiWeek) weekFromFilter.getValue();
 					dashboardDataProvider.setFromWeek(fromWeek);
-					toWeek = new EpiWeek(thisYear, (int) weekToFilter.getValue());
+					toWeek = (EpiWeek) weekToFilter.getValue();
 					dashboardDataProvider.setToWeek(toWeek);
 				}
 				applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -231,9 +229,9 @@ public class DashboardView extends AbstractView {
 				filterLayout.removeComponent(dateFromFilter);
 				filterLayout.removeComponent(dateToFilter);
 				filterLayout.addComponent(weekFromFilter, filterLayout.getComponentIndex(dateFilterOptionFilter) + 1);
-				weekFromFilter.setValue(DateHelper.getEpiWeek(c.getTime()).getWeek());
+				weekFromFilter.setValue(DateHelper.getEpiWeek(c.getTime()));
 				filterLayout.addComponent(weekToFilter, filterLayout.getComponentIndex(weekFromFilter) + 1);
-				weekToFilter.setValue(DateHelper.getEpiWeek(c.getTime()).getWeek());
+				weekToFilter.setValue(DateHelper.getEpiWeek(c.getTime()));
 			}
 		});
 		filterLayout.addComponent(dateFilterOptionFilter);
@@ -241,36 +239,34 @@ public class DashboardView extends AbstractView {
 		dashboardDataProvider.setDateFilterOption(dateFilterOption);
 
 		// Epi week filter
-		List<EpiWeek> epiWeekList = DateHelper.createEpiWeekList(c.get(Calendar.YEAR));
+		List<EpiWeek> epiWeekList = DateHelper.createEpiWeekList(c.get(Calendar.YEAR), c.get(Calendar.WEEK_OF_YEAR));
 		
 		weekFromFilter.setWidth(200, Unit.PIXELS);
 		for (EpiWeek week : epiWeekList) {
-			weekFromFilter.addItem(week.getWeek());
-			weekFromFilter.setItemCaption(week.getWeek(), week.getWeek() + " (" + DateHelper.formatShortDate(DateHelper.getEpiWeekStart(week)) + " - " + DateHelper.formatShortDate(DateHelper.getEpiWeekEnd(week)) + ")");
+			weekFromFilter.addItem(week);
 		}
 		weekFromFilter.setNullSelectionAllowed(false);
-		weekFromFilter.setValue(DateHelper.getEpiWeek(c.getTime()).getWeek());
+		weekFromFilter.setValue(DateHelper.getEpiWeek(c.getTime()));
 		weekFromFilter.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, FROM_WEEK));
 		weekFromFilter.addValueChangeListener(e -> {
 			applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		});
 		filterLayout.addComponent(weekFromFilter);
-		setFromWeek((int) weekFromFilter.getValue());
-
+		dashboardDataProvider.setFromWeek((EpiWeek) weekFromFilter.getValue());
+		
 		weekToFilter.setWidth(200, Unit.PIXELS);
 		for (EpiWeek week : epiWeekList) {
-			weekToFilter.addItem(week.getWeek());
-			weekToFilter.setItemCaption(week.getWeek(), week.getWeek() + " (" + DateHelper.formatShortDate(DateHelper.getEpiWeekStart(week)) + " - " + DateHelper.formatShortDate(DateHelper.getEpiWeekEnd(week)) + ")");
+			weekToFilter.addItem(week);
 		}
 		weekToFilter.setNullSelectionAllowed(false);
-		weekToFilter.setValue(DateHelper.getEpiWeek(c.getTime()).getWeek());
+		weekToFilter.setValue(DateHelper.getEpiWeek(c.getTime()));
 		weekToFilter.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, TO_WEEK));
 		weekToFilter.addValueChangeListener(e -> {
 			applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		});
 		filterLayout.addComponent(weekToFilter);
-		setToWeek((int) weekToFilter.getValue());
-
+		dashboardDataProvider.setToWeek((EpiWeek) weekToFilter.getValue());
+		
 		// Date filter
 		dateFromFilter.setDateFormat(DateHelper.getShortDateFormat().toPattern());
 		dateFromFilter.setWidth(200, Unit.PIXELS);
@@ -394,16 +390,6 @@ public class DashboardView extends AbstractView {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		refreshDashboard();
-	}
-
-	private void setFromWeek(int week) {
-		fromWeek = new EpiWeek(thisYear, week);
-		dashboardDataProvider.setFromWeek(fromWeek);
-	}
-
-	private void setToWeek(int week) {
-		toWeek = new EpiWeek(thisYear, week);
-		dashboardDataProvider.setToWeek(toWeek);
 	}
 
 }

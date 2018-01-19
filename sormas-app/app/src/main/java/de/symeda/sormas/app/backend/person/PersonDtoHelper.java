@@ -74,6 +74,9 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         target.setBurialDate(source.getBurialDate());
         target.setBurialPlaceDescription(source.getBurialPlaceDescription());
         target.setBurialConductor(source.getBurialConductor());
+        target.setCauseOfDeath(source.getCauseOfDeath());
+        target.setCauseOfDeathDisease(source.getCauseOfDeathDisease());
+        target.setCauseOfDeathDetails(source.getCauseOfDeathDetails());
     }
 
     @Override
@@ -100,6 +103,9 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         target.setPhone(source.getPhone());
         target.setPhoneOwner(source.getPhoneOwner());
 
+        target.setCauseOfDeath(source.getCauseOfDeath());
+        target.setCauseOfDeathDisease(source.getCauseOfDeathDisease());
+        target.setCauseOfDeathDetails(source.getCauseOfDeathDetails());
 
         Location address = DatabaseHelper.getLocationDao().queryForId(source.getAddress().getId());
         target.setAddress(locationHelper.adoToDto(address));

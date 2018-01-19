@@ -65,6 +65,9 @@ public enum UserRight {
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR
 	),
+	/*
+	 * Edit the investigation status - either by setting a respective task to done or by manually changing it in the case
+	 */
 	CASE_INVESTIGATE(
 			ADMIN,
 			NATIONAL_USER,
@@ -72,6 +75,9 @@ public enum UserRight {
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR
 	),
+	/*
+	 * Edit the classification and outcome of a case
+	 */
 	CASE_CLASSIFY(
 			ADMIN,
 			NATIONAL_USER,

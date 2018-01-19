@@ -27,7 +27,7 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
  * 
  * Based on https://github.com/xylo/highcharts-vaadin7 (Apache 2.0 license)
  */
-@JavaScript({"jquery-min.js", "highcharts.js", "highcharts-connector.js"})
+@JavaScript({"jquery-min.js", "highcharts.js", "highcharts-connector.js", "highcharts-exporting.js"})
 public class HighChart extends AbstractJavaScriptComponent {
 	private static final long serialVersionUID = 7738496276049495017L;
 

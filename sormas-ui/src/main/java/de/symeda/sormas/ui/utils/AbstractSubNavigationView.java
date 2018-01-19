@@ -10,12 +10,13 @@ import de.symeda.sormas.ui.SubNavigationMenu;
 
 @SuppressWarnings("serial")
 public abstract class AbstractSubNavigationView extends AbstractView {
+	
+    private String params;
 
     private SubNavigationMenu subNavigationMenu;
     private Label infoLabel;
     private Label infoLabelSub;
     private Component subComponent;
-    private String params;
 
     protected AbstractSubNavigationView(String viewName) {
         super(viewName);
@@ -50,7 +51,8 @@ public abstract class AbstractSubNavigationView extends AbstractView {
     	}
     	subComponent = newComponent;
     	if (subComponent != null) {
-	    	addComponent(subComponent);
+    		// Make sure that the sub component is always the first component below the navigation
+	    	addComponent(subComponent, 2);
 	    	setExpandRatio(subComponent, 1);
     	}
     }

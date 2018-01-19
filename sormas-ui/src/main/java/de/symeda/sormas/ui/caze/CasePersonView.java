@@ -8,6 +8,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 
 /**
  * View for reading and editing the patient information fields.
@@ -28,7 +29,13 @@ public class CasePersonView extends AbstractCaseView {
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
     	CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-    	CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = ControllerProvider.getPersonController().getPersonEditComponent(caseData.getPerson().getUuid(), caseData.getDisease(), UserRight.CASE_EDIT);
+    	CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = ControllerProvider.getPersonController().getPersonEditComponent(caseData.getPerson().getUuid(), caseData.getDisease(), caseData.getDiseaseDetails(), UserRight.CASE_EDIT, getViewMode());
+    	personEditComponent.addCommitListener(new CommitListener() {
+			@Override
+			public void onCommit() {
+    	   		reloadView();
+			}
+		});
     	setSubComponent(personEditComponent);
     }
 }

@@ -187,6 +187,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setBirthdateYYYY(source.getBirthdateYYYY());
 		target.setApproximateAge(source.getApproximateAge());
 		target.setApproximateAgeType(source.getApproximateAgeType());
+		target.setCauseOfDeath(source.getCauseOfDeath());
+		target.setCauseOfDeathDetails(source.getCauseOfDeathDetails());
+		target.setCauseOfDeathDisease(source.getCauseOfDeathDisease());
 		target.setDeathDate(source.getDeathDate());
 		target.setDeathPlaceType(source.getDeathPlaceType());
 		target.setDeathPlaceDescription(source.getDeathPlaceDescription());
@@ -271,7 +274,10 @@ public class PersonFacadeEjb implements PersonFacade {
 			target.setApproximateAge(source.getApproximateAge());
 			target.setApproximateAgeType(source.getApproximateAgeType());
 		}
-		
+
+		target.setCauseOfDeath(source.getCauseOfDeath());
+		target.setCauseOfDeathDetails(source.getCauseOfDeathDetails());
+		target.setCauseOfDeathDisease(source.getCauseOfDeathDisease());
 		target.setDeathDate(source.getDeathDate());
 		target.setDeathPlaceType(source.getDeathPlaceType());
 		target.setDeathPlaceDescription(source.getDeathPlaceDescription());

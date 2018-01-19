@@ -41,6 +41,7 @@ $v-gradient: false;
 
 $v-border: 2px solid $v-focus-color;
 $v-border-subtle: 2px solid $v-selection-color;
+$v-border-primary: 2px solid $v-primary-color;
 $v-caption-font-weight: 600 !default; 
 
 $v-layout-margin-top: round($v-unit-size / 1.5) !default;
@@ -59,6 +60,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 
 @import "global.scss";
 @import "deprecated.scss";
+@import "bootstrap-grid.scss";
 
 @import "components/button.scss";
 @import "components/combobox.scss";
@@ -121,6 +123,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-dashboard-view;
   @include sormas-login-view;
   
+  @include sormas-bootstrap-grid;
   @include sormas-deprecated;
   
   .sormas-content {

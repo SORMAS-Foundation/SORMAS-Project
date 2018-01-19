@@ -19,6 +19,7 @@ import de.symeda.sormas.ui.events.EventParticipantsView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ViewMode;
 
 public class PersonController {
 
@@ -39,11 +40,6 @@ public class PersonController {
     	
     	person = personFacade.savePerson(person);
     	doneConsumer.accept(person.toReference()); 
-    }
-    
-    public void openEditModal(String personUuid, UserRight editOrCreateUserRight) {
-		CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = getPersonEditComponent(personUuid, null, editOrCreateUserRight);
-		VaadinUiUtil.showModalPopupWindow(personEditComponent, "Edit person");
     }
     
     public void selectOrCreatePerson(String firstName, String lastName, Consumer<PersonReferenceDto> resultConsumer) {
@@ -104,8 +100,8 @@ public class PersonController {
     }  
     
 	
-	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, Disease disease, UserRight editOrCreateUserRight) {
-    	PersonEditForm personEditForm = new PersonEditForm(disease, editOrCreateUserRight);
+	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, Disease disease, String diseaseDetails, UserRight editOrCreateUserRight, final ViewMode viewMode) {
+    	PersonEditForm personEditForm = new PersonEditForm(disease, diseaseDetails, editOrCreateUserRight, viewMode);
         
         PersonDto personDto = personFacade.getPersonByUuid(personUuid);
         personEditForm.setValue(personDto);
