@@ -242,19 +242,17 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public CaseDataDto saveCase(CaseDataDto dto) {
-		Case currentCaze = caseService.getByUuid(dto.getUuid());
-		InvestigationStatus currentInvestigationStatus = null;
-		Disease currentDisease = null;
-		if (currentCaze != null) {
-			currentInvestigationStatus = currentCaze.getInvestigationStatus();
-			currentDisease = currentCaze.getDisease();
+		Case existingCaze = caseService.getByUuid(dto.getUuid());
+		Disease existingDisease = null;
+		if (existingCaze != null) {
+			existingDisease = existingCaze.getDisease();
 		}
 
 		// If the case is new and the geo coordinates of the case's health facility are null, set its coordinates to the
 		// case's report coordinates, if available
 		FacilityReferenceDto facilityRef = dto.getHealthFacility();
 		Facility facility = facilityService.getByReferenceDto(facilityRef);
-		if (currentCaze == null && facility != null && facility.getUuid() != FacilityDto.OTHER_FACILITY_UUID && facility.getUuid() != FacilityDto.NONE_FACILITY_UUID
+		if (existingCaze == null && facility != null && facility.getUuid() != FacilityDto.OTHER_FACILITY_UUID && facility.getUuid() != FacilityDto.NONE_FACILITY_UUID
 				&& (facility.getLatitude() == null || facility.getLongitude() == null)) {
 			if (dto.getReportLat() != null && dto.getReportLon() != null) {
 				facility.setLatitude(dto.getReportLat());
@@ -266,18 +264,18 @@ public class CaseFacadeEjb implements CaseFacade {
 		Case caze = fromDto(dto);
 
 		caseService.ensurePersisted(caze);
-		updateInvestigationByStatus(caze, currentInvestigationStatus);
+		updateInvestigationByStatus(caze);
 
 		// Update follow-up until and status of all contacts of this case if the
 		// disease has changed
-		if (currentDisease != null && caze.getDisease() != currentDisease) {
+		if (existingDisease != null && caze.getDisease() != existingDisease) {
 			for (ContactDto contact : contactFacade.getAllByCase(getReferenceByUuid(caze.getUuid()))) {
 				contactFacade.updateFollowUpUntilAndStatus(contact);
 			}
 		}
 
 		// Create a task to search for other cases for new Plague cases
-		if (currentCaze == null && dto.getDisease() == Disease.PLAGUE) {
+		if (existingCaze == null && dto.getDisease() == Disease.PLAGUE) {
 			createActiveSearchForOtherCasesTask(caze);
 		}
 
@@ -482,7 +480,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		return target;
 	}
 
-	public void updateInvestigationByStatus(Case caze, InvestigationStatus currentInvestigationStatus) {
+	public void updateInvestigationByStatus(Case caze) {
 		CaseReferenceDto caseRef = caze.toReference();
 		InvestigationStatus investigationStatus = caze.getInvestigationStatus();
 		
