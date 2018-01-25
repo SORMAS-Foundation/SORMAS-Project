@@ -62,16 +62,15 @@ public class ReportsView extends AbstractView {
 		yearFilter.select(year);
 		yearFilter.setCaption("Year");
 		yearFilter.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
+		yearFilter.addValueChangeListener(e -> {
+			updateEpiWeeks((int)e.getProperty().getValue(), (int)epiWeekFilter.getValue());
+			reloadGrid();
+		});
 		filterLayout.addComponent(yearFilter);
 		
 		epiWeekFilter = new ComboBox();
 		epiWeekFilter.setWidth(200, Unit.PIXELS);
-		List<EpiWeek> epiWeekList = DateHelper.createEpiWeekList(year);
-		for (EpiWeek epiWeek : epiWeekList) {
-			epiWeekFilter.addItem(epiWeek.getWeek());
-			epiWeekFilter.setItemCaption(epiWeek.getWeek(), epiWeek.getWeek() + " (" + DateHelper.formatShortDate(DateHelper.getEpiWeekStart(epiWeek)) + " - " + DateHelper.formatShortDate(DateHelper.getEpiWeekEnd(epiWeek)) + ")");
-		}
-		epiWeekFilter.select(week);
+		updateEpiWeeks(year, week);
 		epiWeekFilter.setCaption("Epi Week");
 		epiWeekFilter.addValueChangeListener(e -> {
 			reloadGrid();
@@ -97,6 +96,15 @@ public class ReportsView extends AbstractView {
 		filterLayout.addComponent(thisWeekButton);
 		
 		return filterLayout;
+	}
+
+	private void updateEpiWeeks(int year, int week) {
+		List<EpiWeek> epiWeekList = DateHelper.createEpiWeekList(year);
+		for (EpiWeek epiWeek : epiWeekList) {
+			epiWeekFilter.addItem(epiWeek.getWeek());
+			epiWeekFilter.setItemCaption(epiWeek.getWeek(), epiWeek.getWeek() + " (" + DateHelper.formatShortDate(DateHelper.getEpiWeekStart(epiWeek)) + " - " + DateHelper.formatShortDate(DateHelper.getEpiWeekEnd(epiWeek)) + ")");
+		}
+		epiWeekFilter.select(week);
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.ComboBox;
@@ -49,8 +50,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String OCCUPATION_HEADER = "occupationHeader";
 	private static final String ADDRESS_HEADER = "addressHeader";
     
-	private Label occupationHeader = new Label(LayoutUtil.h3("Occupation"));
-	private Label addressHeader = new Label(LayoutUtil.h3("Permanent residence of person"));
+	private Label occupationHeader = new Label(LayoutUtil.h3("Occupation"), ContentMode.HTML);
+	private Label addressHeader = new Label(LayoutUtil.h3("Permanent residence of person"), ContentMode.HTML);
 	
 	private boolean facilityFieldsInitialized = false;
 	private Disease disease;
