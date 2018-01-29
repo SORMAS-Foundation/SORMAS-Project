@@ -24,6 +24,8 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.outbreak.OutbreakDto;
+import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -80,6 +82,7 @@ public class TestDataCreator extends BaseBeanTest {
 	private final DistrictFacade districtFacade;
 	private final CommunityFacade communityFacade;
 	private final FacilityFacade facilityFacade;
+	private final OutbreakFacade outbreakFacade;
 	
 	private final RegionService regionService;
 	private final DistrictService districtService;
@@ -90,7 +93,8 @@ public class TestDataCreator extends BaseBeanTest {
 			ContactFacade contactFacade, TaskFacade taskFacade, VisitFacade visitFacade, WeeklyReportFacade weeklyReportFacade,
 			EventFacade eventFacade, EventParticipantFacade eventParticipantFacade, SampleFacade sampleFacade, SampleTestFacade sampleTestFacade, RegionFacade regionFacade, 
 			DistrictFacade districtFacade, CommunityFacade communityFacade, FacilityFacade facilityFacade, RegionService regionService,
-			DistrictService districtService, CommunityService communityService, FacilityService facilityService) {
+			DistrictService districtService, CommunityService communityService, FacilityService facilityService,
+			OutbreakFacade outbreakFacade) {
 		this.userFacade = userFacade;
 		this.personFacade = personFacade;
 		this.caseFacade = caseFacade;
@@ -110,6 +114,7 @@ public class TestDataCreator extends BaseBeanTest {
 		this.districtService = districtService;
 		this.communityService = communityService;
 		this.facilityService = facilityService;
+		this.outbreakFacade = outbreakFacade;
 	}
 	
 	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName, String lastName, UserRole... roles) {
@@ -285,6 +290,19 @@ public class TestDataCreator extends BaseBeanTest {
 		sampleTest = sampleTestFacade.saveSampleTest(sampleTest);
 		
 		return sampleTest;
+	}
+	
+	public OutbreakDto createOutbreak(RDCF rdcf, Disease disease, UserReferenceDto user) {
+		OutbreakDto outbreak = new OutbreakDto();
+		outbreak.setUuid(DataHelper.createUuid());
+		outbreak.setDistrict(districtFacade.getDistrictReferenceByUuid(rdcf.district.getUuid()));
+		outbreak.setDisease(disease);
+		outbreak.setReportingUser(user);
+		outbreak.setReportDate(new Date());
+		
+		outbreak = outbreakFacade.saveOutbreak(outbreak);
+		
+		return outbreak;
 	}
 	
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {

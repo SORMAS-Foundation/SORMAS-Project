@@ -13017,6 +13017,10 @@ div.v-layout.v-horizontal.v-widget {
 	border-right: 1px solid #CDD8EC;
 }
 
+.sormas .text-bold {
+	font-weight: bold;
+}
+
 .sormas .align-right {
 	text-align: right;
 }
@@ -13037,6 +13041,22 @@ div.v-layout.v-horizontal.v-widget {
 
 .sormas .v-button-border-neutral {
 	border-color: #000000;
+}
+
+.sormas .v-button-critical {
+	background-color: #FF0000;
+	border-color: #EF0000;
+}
+
+.sormas .v-button-important {
+	background-color: #FF8C00;
+	border-color: #EF8C00;
+}
+
+.sormas .v-button-neutral {
+	background-color: #FFFFFF;
+	border-color: #000000;
+	color: #000000;
 }
 
 .sormas .v-filterselect [class$="input"] {
@@ -13145,6 +13165,38 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-grid .v-grid-row .v-grid-cell.warning {
 	color: #E10002;
 	font-weight: 600;
+}
+
+.sormas .v-grid .v-grid-row .v-grid-cell.status-important {
+	background-color: rgba(255, 140, 0, 0.4);
+	border-radius: 8px;
+	font-weight: bold;
+}
+
+.sormas .v-grid .v-grid-row .v-grid-cell.status-critical {
+	background-color: rgba(255, 0, 0, 0.4);
+	border-radius: 8px;
+	font-weight: bold;
+}
+
+.sormas .v-grid .v-grid-row .v-grid-cell.status-important-user-region {
+	background-color: rgba(255, 140, 0, 0.4);
+	border-radius: 8px;
+	border: 1px solid #000000;
+	font-weight: bold;
+}
+
+.sormas .v-grid .v-grid-row .v-grid-cell.status-critical-user-region {
+	background-color: rgba(255, 0, 0, 0.4);
+	border-radius: 8px;
+	border: 1px solid #000000;
+	font-weight: bold;
+}
+
+.sormas .v-grid .v-grid-row .v-grid-cell.user-region {
+	border: 1px solid #000000;
+	border-radius: 8px;
+	font-weight: bold;
 }
 
 .sormas .v-grid .v-grid-row.status-discarded .v-grid-cell {
@@ -13336,6 +13388,10 @@ div.v-layout.v-horizontal.v-widget {
 :root .sormas .v-select-optiongroup-horizontal.v-select-optiongroup-horizontal-primary .v-radiobutton > input:checked ~ label {
 	background: #005A9C;
 	color: #FFF;
+}
+
+:root .sormas .v-select-optiongroup-horizontal.v-select-optiongroup-horizontal-switch .v-radiobutton:first-child > input:checked ~ label {
+	background: rgba(255, 0, 0, 0.4);
 }
 
 .sormas .v-select-optiongroup .v-radiobutton.v-radiobutton-disabled > input ~ label:before, .sormas .v-select-optiongroup .v-radiobutton.v-radiobutton-disabled > input ~ label:after {
@@ -13893,6 +13949,25 @@ div.v-layout.v-horizontal.v-widget {
 .sormas .v-ui[width-range~="0-800px"] .login-screen .login-form .buttons .v-button {
 	display: block;
 	text-align: center;
+}
+
+.sormas .configuration-view .v-label.v-label-severity-indicator {
+	border: 2px solid #CDD8EC;
+	border-radius: 4px;
+	padding: 4px 8px 4px 8px;
+	margin-top: 2px;
+	height: 32px;
+	line-height: 20px;
+	font-size: 11px;
+	text-transform: uppercase;
+}
+
+.sormas .configuration-view .v-label.v-label-severity-indicator.severity-critical {
+	background: rgba(255, 0, 0, 0.4);
+}
+
+.sormas .configuration-view .v-label.v-label-severity-indicator.severity-important {
+	background: rgba(255, 140, 0, 0.4);
 }
 
 .sormas .row div[location].hide-invisble:empty {

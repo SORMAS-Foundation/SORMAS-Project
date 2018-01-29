@@ -38,6 +38,16 @@ public class DistrictService extends AbstractAdoService<District> {
 		return em.createQuery(cq).getResultList();
 	}
 	
+	public int getCountByRegion(Region region) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<District> from = cq.from(getElementClass());
+		cq.select(cb.count(from));
+		cq.where(cb.equal(from.get(District.REGION), region));
+		
+		return em.createQuery(cq).getSingleResult().intValue();
+	}
+	
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<District, District> from, User user) {
 		// no fitler by user needed

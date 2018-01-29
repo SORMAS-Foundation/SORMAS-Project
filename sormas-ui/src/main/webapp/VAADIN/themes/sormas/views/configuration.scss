@@ -1,0 +1,31 @@
+
+@mixin sormas-configuration-view {
+
+  .configuration-view {
+  	
+  	.v-label {
+  		
+  	  &.v-label-severity-indicator {
+	  	border: $v-border;
+	  	border-radius: 4px;
+	    padding: 4px 8px 4px 8px;
+	    margin-top: 2px;
+	    height: 32px;
+	    line-height: 20px;
+	  	font-size: 11px;
+	  	text-transform: uppercase;
+	  	
+	  	&.severity-critical {
+	  	  background: $s-critical-color-transparent;
+	  	}
+	  
+	  	&.severity-important {
+	  	  background: $s-important-color-transparent;
+	  	}
+	  }
+	 
+  	}
+  
+  }
+ 
+}

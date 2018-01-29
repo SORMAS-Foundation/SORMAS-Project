@@ -15,4 +15,19 @@
   	border-color: #000000;
   }
  
+  .v-button-critical {
+  	background-color: $s-critical-color;
+  	border-color: $s-critical-color-shade;
+  }
+ 
+  .v-button-important {
+  	background-color: $s-important-color;
+  	border-color: $s-important-color-shade;
+  }
+ 
+  .v-button-neutral {
+  	background-color: #FFFFFF;
+  	border-color: #000000;
+  	color: #000000;
+  }
 }

@@ -9,6 +9,8 @@ import javax.ejb.Remote;
 public interface DistrictFacade {
 
     List<DistrictReferenceDto> getAllByRegion(String regionUuid);
+	
+	int getCountByRegion(String regionUuid);
 
 	List<DistrictDto> getAllAfter(Date date);
 	

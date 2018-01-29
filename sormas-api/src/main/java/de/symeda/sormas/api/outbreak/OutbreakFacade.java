@@ -15,8 +15,14 @@ public interface OutbreakFacade {
 	List<OutbreakDto> getAllAfter(Date date);
 	
 	List<OutbreakDto> getAllByRegionAndDisease(RegionReferenceDto region, Disease disease);
+	
+	OutbreakDto getByDistrictAndDisease(DistrictReferenceDto district, Disease disease);
 
 	boolean hasOutbreak(DistrictReferenceDto district, Disease disease);
 
 	List<String> getAllUuids(String userUuid);
+	
+	OutbreakDto saveOutbreak(OutbreakDto outbreakDto);
+	
+	void deleteOutbreak(OutbreakDto outbreakDto);
 }

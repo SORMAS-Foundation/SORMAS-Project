@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.outbreak;
 
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +17,7 @@ import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
+import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -29,6 +31,8 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	private OutbreakService outbreakService;
 	@EJB
 	private RegionService regionService;
+	@EJB
+	private DistrictService districtService;
 	@EJB
 	private UserService userService;
 
@@ -51,6 +55,17 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	}
 	
 	@Override
+	public OutbreakDto getByDistrictAndDisease(DistrictReferenceDto districtRef, Disease disease) {
+		List<Outbreak> result = outbreakService.queryByCriteria(new OutbreakCriteria()
+				.districtEquals(districtRef).diseaseEquals(disease), null, Outbreak.DISTRICT, true);
+		
+		return result.stream()
+				.map(OutbreakFacadeEjb::toDto)
+				.findFirst()
+				.orElse(null);
+	}
+	
+	@Override
 	public boolean hasOutbreak(DistrictReferenceDto district, Disease disease) {
 		Long count = outbreakService.countByCriteria(new OutbreakCriteria()
 				.districtEquals(district).diseaseEquals(disease), null);
@@ -67,6 +82,41 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		}
 		
 		return outbreakService.getAllUuids(user);
+	}
+	
+	public OutbreakDto saveOutbreak(OutbreakDto outbreakDto) {
+		Outbreak outbreak = fromDto(outbreakDto);
+		outbreakService.ensurePersisted(outbreak);
+		
+		return toDto(outbreak);
+	}
+	
+	public void deleteOutbreak(OutbreakDto outbreakDto) {
+		Outbreak outbreak = outbreakService.getByUuid(outbreakDto.getUuid());
+		outbreakService.delete(outbreak);
+	}
+	
+	public Outbreak fromDto(OutbreakDto source) {
+		if (source == null) {
+			return null;
+		}
+		
+		Outbreak target = outbreakService.getByUuid(source.getUuid());
+		if (target == null) {
+			target = new Outbreak();
+			target.setUuid(source.getUuid());
+			if (source.getCreationDate() != null) {
+				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
+			}
+		}
+		DtoHelper.validateDto(source, target);
+		
+		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
+		target.setDisease(source.getDisease());
+		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
+		target.setReportDate(source.getReportDate());
+		
+		return target;
 	}
 	
 	public static OutbreakDto toDto(Outbreak source) {

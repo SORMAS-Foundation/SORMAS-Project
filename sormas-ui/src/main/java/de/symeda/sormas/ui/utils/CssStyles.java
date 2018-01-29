@@ -114,19 +114,28 @@ public final class CssStyles {
 
 	public static final String OPTIONGROUP_HORIZONTAL_SUBTLE = "horizontal-subtle";
 	public static final String OPTIONGROUP_HORIZONTAL_PRIMARY = "horizontal-primary";
+	public static final String OPTIONGROUP_HORIZONTAL_SWITCH = "horizontal-switch";
 	public static final String OPTIONGROUP_CAPTION_INLINE = "caption-inline";
 
 	public static final String GRID_CELL_PRIORITY_HIGH = "priority-high";
 	public static final String GRID_CELL_PRIORITY_NORMAL = "priority-normal";
 	public static final String GRID_CELL_PRIORITY_LOW = "priority-low";
-
 	public static final String GRID_CELL_WARNING = "warning";
-
+	public static final String GRID_CELL_STATUS_IMPORTANT = "status-important";
+	public static final String GRID_CELL_STATUS_IMPORTANT_USER_REGION = "status-important-user-region";
+	public static final String GRID_CELL_STATUS_CRITICAL = "status-critical";
+	public static final String GRID_CELL_STATUS_CRITICAL_USER_REGION = "status-critical-user-region";
+	public static final String GRID_CELL_USER_REGION = "user-region";
+	
 	public static final String GRID_ROW_STATUS_DISCARDED = "status-discarded";
 	public static final String GRID_ROW_STATUS_NOT = "status-not";
 	public static final String GRID_ROW_STATUS_DONE = "status-done";
 	public static final String GRID_ROW_STATUS_PENDING = "status-pending";
 	public static final String GRID_ROW_TITLE = "row-title";
+	
+	public static final String CONFIGURATION_SEVERITY_INDICATOR = "severity-indicator";
+	public static final String CONFIGURATION_SEVERITY_INDICATOR_SEVERITY_CRITICAL = "severity-critical";
+	public static final String CONFIGURATION_SEVERITY_INDICATOR_SEVERITY_IMPORTANT = "severity-important";
 	
 	/**
 	 * Example: <code>LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE)</code>

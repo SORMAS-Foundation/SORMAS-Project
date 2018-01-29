@@ -1972,3 +1972,16 @@ ALTER TABLE outbreak ADD CONSTRAINT fk_outbreak_district_id FOREIGN KEY (distric
 ALTER TABLE outbreak ADD CONSTRAINT fk_outbreak_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (85, 'Outbreak mode per disease and district #473');
+
+-- 2018-01-29 Outbreak history table #473
+
+ALTER TABLE outbreak ADD COLUMN sys_period tstzrange;
+UPDATE outbreak SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE outbreak ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE outbreak_history (LIKE outbreak);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON outbreak
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'outbreak_history', true);
+ALTER TABLE outbreak_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (86, 'Outbreak history table #473');
