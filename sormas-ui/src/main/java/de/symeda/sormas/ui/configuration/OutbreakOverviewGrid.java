@@ -52,7 +52,36 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 			getColumn(disease).setRenderer(new HtmlRenderer());
 		}
 
+		setCellDescriptionGenerator(cell -> getCellDescription(cell));
 		addItemClickListener(this);
+	}
+	
+	private String getCellDescription(CellReference cell) {
+		Item item = cell.getItem();
+		
+		if (cell.getPropertyId() == REGION) {
+			return "";
+		}
+		
+		Set<DistrictReferenceDto> affectedDistricts = ((DiseaseOutbreakInformation) item.getItemProperty((Disease) cell.getPropertyId()).getValue()).getAffectedDistricts();
+		
+		if (affectedDistricts.isEmpty()) {
+			return "No outbreak";
+		}
+
+		StringBuilder affectedDistrictsStringBuilder = new StringBuilder();
+		affectedDistrictsStringBuilder.append("Affected districts: ");
+		
+		int index = 0;
+		for (DistrictReferenceDto affectedDistrict : affectedDistricts) {
+			affectedDistrictsStringBuilder.append(affectedDistrict.toString());
+			if (index < affectedDistricts.size() - 1) {
+				affectedDistrictsStringBuilder.append(", ");
+			}
+			index++;
+		}
+		
+		return affectedDistrictsStringBuilder.toString();
 	}
 
 	public void reload() {
@@ -109,9 +138,9 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 	}
 
 	private void openOutbreakConfigurationWindow(Disease disease, DiseaseOutbreakInformation diseaseOutbreakInformation) {
-		OutbreakConfigurationForm configurationForm = new OutbreakConfigurationForm(disease, diseaseOutbreakInformation);
+		OutbreakConfigurationForm configurationForm = new OutbreakConfigurationForm(diseaseOutbreakInformation);
 		final CommitDiscardWrapperComponent<OutbreakConfigurationForm> configurationComponent = new CommitDiscardWrapperComponent<OutbreakConfigurationForm>(configurationForm, null, null);
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(configurationComponent, "Outbreak Configuration");
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(configurationComponent, disease.toShortString() + " Outbreak in " + diseaseOutbreakInformation.getRegion().toString());
 
 		configurationComponent.addCommitListener(new CommitListener() {
 			@Override

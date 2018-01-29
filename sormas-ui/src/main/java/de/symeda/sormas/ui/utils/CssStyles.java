@@ -87,6 +87,16 @@ public final class CssStyles {
 	public static final String BUTTON_BORDER_NEUTRAL = "border-neutral";
 	public static final String LINK_ACTIVE = "active";
 	
+	// Styles for divs
+	public static final String DIV_BUTTON = "v-button";
+	public static final String DIV_BUTTON_PRIMARY = "v-button-primary";
+	public static final String DIV_BUTTON_NEUTRAL = "v-button-neutral";
+	public static final String DIV_BUTTON_CRITICAL = "v-button-critical";
+	public static final String DIV_BUTTON_IMPORTANT = "v-button-important";
+	public static final String DIV_LABEL = "v-label";
+	public static final String DIV_LABEL_CRITICAL = "v-label-color-critical";
+	public static final String DIV_LABEL_IMPORTANT = "v-label-color-important";
+	
 	// SVG fill and stroke styles
 	public static final String SVG_FILL_BACKGROUND = "svg-fill-background";
 	public static final String SVG_FILL_CRITICAL = "svg-fill-critical";

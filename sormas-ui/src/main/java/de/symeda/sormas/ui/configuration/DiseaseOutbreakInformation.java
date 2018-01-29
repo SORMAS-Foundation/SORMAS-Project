@@ -7,6 +7,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 public class DiseaseOutbreakInformation {
 	
@@ -54,10 +55,10 @@ public class DiseaseOutbreakInformation {
 				(LoginHelper.hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED) && LoginHelper.getCurrentUser().getRegion().equals(region));
 		boolean moreThanHalfOfDistricts = affectedDistricts.size( )>= totalDistricts / 2.0f;
 		
-		return affectedDistricts.isEmpty() ? styleAsButton ? "<div class=\"v-button v-button-primary v-button-neutral\">No</div>" : "No" : 
-			styleAsButton ? "<div class=\"v-button v-button-primary " + (moreThanHalfOfDistricts ? "v-button-critical" : 
-				"v-button-important") + "\">" + affectedDistricts.size() + "/" + totalDistricts + "</div>" : 
-				"<div class=\"v-label " + (moreThanHalfOfDistricts ? "v-label-color-critical" : "v-label-color-important") 
+		return affectedDistricts.isEmpty() ? styleAsButton ? "<div class=\"" + CssStyles.DIV_BUTTON + " " + CssStyles.DIV_BUTTON_PRIMARY + " " + CssStyles.DIV_BUTTON_NEUTRAL + "\">No</div>" : "No" : 
+			styleAsButton ? "<div class=\"" + CssStyles.DIV_BUTTON + " " + CssStyles.DIV_BUTTON_PRIMARY + " " + (moreThanHalfOfDistricts ? CssStyles.DIV_BUTTON_CRITICAL : 
+				CssStyles.DIV_BUTTON_IMPORTANT) + "\">" + affectedDistricts.size() + "/" + totalDistricts + "</div>" : 
+				"<div class=\"" + CssStyles.DIV_LABEL + " " + (moreThanHalfOfDistricts ? CssStyles.DIV_LABEL_CRITICAL : CssStyles.DIV_LABEL_IMPORTANT) 
 				+ "\">" + affectedDistricts.size() + "/" + totalDistricts + "</div>";
 	}
 

@@ -11,7 +11,6 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -28,7 +27,6 @@ public class OutbreakConfigurationForm extends VerticalLayout {
 	private final Set<DistrictReferenceDto> affectedDistricts;
 	private int totalDistricts;
 	private RegionReferenceDto region;
-	private final Disease disease;
 
 	// Outbreak toggles
 	private OptionGroup[] outbreakToggles;
@@ -36,14 +34,13 @@ public class OutbreakConfigurationForm extends VerticalLayout {
 	// UI elements
 	private Label affectedDistrictsNumberLabel;
 
-	public OutbreakConfigurationForm(Disease disease, DiseaseOutbreakInformation diseaseOutbreakInformation) {
+	public OutbreakConfigurationForm(DiseaseOutbreakInformation diseaseOutbreakInformation) {
 		setStyleName("configuration-view");
 
 		// Copy the set of affected districts because the CommitDiscardWrapperComponent is not reset when discarding this form
 		affectedDistricts = new HashSet<>(diseaseOutbreakInformation.getAffectedDistricts());
 		this.totalDistricts = diseaseOutbreakInformation.getTotalDistricts();
 		this.region = diseaseOutbreakInformation.getRegion();
-		this.disease = disease;
 		outbreakToggles = new OptionGroup[diseaseOutbreakInformation.getTotalDistricts()];
 		setWidth(860, Unit.PIXELS);
 
@@ -59,31 +56,23 @@ public class OutbreakConfigurationForm extends VerticalLayout {
 		CssStyles.style(headerLayout, CssStyles.VSPACE_2);
 
 		// Headline and info text
-		VerticalLayout headlineLayout = new VerticalLayout();
-		headlineLayout.setWidthUndefined();
-		{
-			Label headlineLabel = new Label("Outbreak of " + disease.toShortString() + " in " + region.toString());
-			CssStyles.style(headlineLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-			headlineLayout.addComponent(headlineLabel);
-
-			Label infoTextLabel = new Label("Define which LGAs currently are affected by an outbreak.");
-			headlineLayout.addComponent(infoTextLabel);
-		}
-		headerLayout.addComponent(headlineLayout);
+		Label infoTextLabel = new Label("Define which LGAs currently are affected by an outbreak.");
+		infoTextLabel.setWidthUndefined();
+		CssStyles.style(infoTextLabel, CssStyles.VSPACE_TOP_4);
+		headerLayout.addComponent(infoTextLabel);
 
 		// Number of affected districts and options to toggle outbreak mode for all districts	
 		HorizontalLayout allDistrictsLayout = new HorizontalLayout();
 		allDistrictsLayout.setWidthUndefined();
 		allDistrictsLayout.setSpacing(true);
-		CssStyles.style(allDistrictsLayout, CssStyles.VSPACE_TOP_5);
 		{
 			Label allDistrictsLabel = new Label("Set status of all LGAs:");
 			allDistrictsLabel.setWidthUndefined();
+			CssStyles.style(allDistrictsLabel, CssStyles.VSPACE_TOP_4);
 			allDistrictsLayout.addComponent(allDistrictsLabel);
-			allDistrictsLayout.setComponentAlignment(allDistrictsLabel, Alignment.MIDDLE_RIGHT);
 
 			OptionGroup outbreakToggle = new OptionGroup();
-			CssStyles.style(outbreakToggle, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_SWITCH, CssStyles.FORCE_CAPTION);
+			CssStyles.style(outbreakToggle, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_SWITCH);
 			outbreakToggle.addItem(OUTBREAK);
 			outbreakToggle.addItem(NORMAL);
 
@@ -101,17 +90,15 @@ public class OutbreakConfigurationForm extends VerticalLayout {
 
 			outbreakToggle.setWidthUndefined();
 			allDistrictsLayout.addComponent(outbreakToggle);
-			allDistrictsLayout.setComponentAlignment(outbreakToggle, Alignment.MIDDLE_RIGHT);
 
 			affectedDistrictsNumberLabel = new Label();
 			affectedDistrictsNumberLabel.setWidthUndefined();
 			allDistrictsLayout.addComponent(affectedDistrictsNumberLabel);
-			allDistrictsLayout.setComponentAlignment(affectedDistrictsNumberLabel, Alignment.MIDDLE_RIGHT);
 		}
 		headerLayout.addComponent(allDistrictsLayout);
-		headerLayout.setComponentAlignment(allDistrictsLayout, Alignment.MIDDLE_RIGHT);
+		headerLayout.setComponentAlignment(allDistrictsLayout, Alignment.TOP_RIGHT);
 
-		headerLayout.setExpandRatio(headlineLayout, 1);
+		headerLayout.setExpandRatio(infoTextLabel, 1);
 
 		return headerLayout;
 	}
