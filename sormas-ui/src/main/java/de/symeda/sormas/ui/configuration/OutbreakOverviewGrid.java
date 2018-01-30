@@ -1,20 +1,14 @@
 package de.symeda.sormas.ui.configuration;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
-import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.Disease;
@@ -24,11 +18,9 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.StringToAnythingConverter;
 
 @SuppressWarnings("serial")
 public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
@@ -48,7 +40,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		for (Disease disease : Disease.values()) {
 			addColumn(disease, DiseaseOutbreakInformation.class);
 			getColumn(disease).setHeaderCaption(disease.toShortString());
-			getColumn(disease).setConverter(new StringToDiseaseOutbreakInformationConverter());
+			getColumn(disease).setConverter(new StringToAnythingConverter<DiseaseOutbreakInformation>(DiseaseOutbreakInformation.class));
 			getColumn(disease).setRenderer(new HtmlRenderer());
 		}
 
@@ -127,75 +119,16 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		// a) the user is allowed to configure all existing outbreaks or
 		// b) the user is allowed to configure outbreaks in his assigned region and has clicked the respective row
 		if (LoginHelper.hasUserRight(UserRight.OUTBREAK_CONFIGURE_ALL)) {
-			openOutbreakConfigurationWindow((Disease) event.getPropertyId(), (DiseaseOutbreakInformation) clickedItem.getItemProperty((Disease) event.getPropertyId()).getValue());
+			ControllerProvider.getOutbreakController().openOutbreakConfigurationWindow((Disease) event.getPropertyId(), (DiseaseOutbreakInformation) clickedItem.getItemProperty((Disease) event.getPropertyId()).getValue());
 		} else if (LoginHelper.hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED)) {
 			if (user.getRegion().equals(clickedItem.getItemProperty(REGION).getValue())) {
-				openOutbreakConfigurationWindow((Disease) event.getPropertyId(), (DiseaseOutbreakInformation) clickedItem.getItemProperty((Disease) event.getPropertyId()).getValue());
+				ControllerProvider.getOutbreakController().openOutbreakConfigurationWindow((Disease) event.getPropertyId(), (DiseaseOutbreakInformation) clickedItem.getItemProperty((Disease) event.getPropertyId()).getValue());
 			}
 		} else {
 			return;
 		}
 	}
 
-	private void openOutbreakConfigurationWindow(Disease disease, DiseaseOutbreakInformation diseaseOutbreakInformation) {
-		OutbreakConfigurationForm configurationForm = new OutbreakConfigurationForm(diseaseOutbreakInformation);
-		final CommitDiscardWrapperComponent<OutbreakConfigurationForm> configurationComponent = new CommitDiscardWrapperComponent<OutbreakConfigurationForm>(configurationForm, null, null);
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(configurationComponent, disease.toShortString() + " Outbreak in " + diseaseOutbreakInformation.getRegion().toString());
-
-		configurationComponent.addCommitListener(new CommitListener() {
-			@Override
-			public void onCommit() {
-				Set<DistrictReferenceDto> updatedAffectedDistricts = configurationForm.getAffectedDistricts();
-								
-				// Add an outbreak for every newly affected district
-				for (DistrictReferenceDto affectedDistrict : updatedAffectedDistricts) {
-					if (!diseaseOutbreakInformation.getAffectedDistricts().contains(affectedDistrict)) {
-						OutbreakDto outbreak = new OutbreakDto();
-						outbreak.setDistrict(affectedDistrict);
-						outbreak.setDisease(disease);
-						outbreak.setReportingUser(LoginHelper.getCurrentUserAsReference());
-						outbreak.setReportDate(new Date());
-						
-						FacadeProvider.getOutbreakFacade().saveOutbreak(outbreak);
-					}
-				}
-				
-				// Remove outbreaks for districts that are not affected anymore
-				for (DistrictReferenceDto prevAffectedDistrict : diseaseOutbreakInformation.getAffectedDistricts()) {
-					if (!updatedAffectedDistricts.contains(prevAffectedDistrict)) {
-						FacadeProvider.getOutbreakFacade().deleteOutbreak(FacadeProvider.getOutbreakFacade().getByDistrictAndDisease(prevAffectedDistrict, disease));
-					}
-				}
-				
-				popupWindow.close();
-				Notification.show("Outbreak information saved", Type.WARNING_MESSAGE);
-				reload();
-			}
-		});
-
-		configurationComponent.addDiscardListener(new DiscardListener() {
-			@Override
-			public void onDiscard() {
-				popupWindow.close();
-			}
-		});
-	}
-
-	private class StringToDiseaseOutbreakInformationConverter implements Converter<String, DiseaseOutbreakInformation> {
-		@Override
-		public DiseaseOutbreakInformation convertToModel(String value, Class<? extends DiseaseOutbreakInformation> targetType, Locale locale) throws ConversionException {
-			throw new ConversionException("Can't convert a DiseaseOutbreakInformation object to a String.");
-		}
-		@Override
-		public String convertToPresentation(DiseaseOutbreakInformation value, Class<? extends String> targetType, Locale locale) throws ConversionException {
-			return value.toString();
-		}
-		public Class<DiseaseOutbreakInformation> getModelType() {
-			return DiseaseOutbreakInformation.class;
-		}
-		public Class<String> getPresentationType() {
-			return String.class;
-		}
-	}
+	
 
 }

@@ -13390,7 +13390,7 @@ div.v-layout.v-horizontal.v-widget {
 	color: #FFF;
 }
 
-:root .sormas .v-select-optiongroup-horizontal.v-select-optiongroup-horizontal-switch .v-radiobutton:first-child > input:checked ~ label {
+:root .sormas .v-select-optiongroup-horizontal.v-select-optiongroup-horizontal-switch-critical .v-radiobutton:first-child > input:checked ~ label {
 	background: rgba(255, 0, 0, 0.4);
 }
 

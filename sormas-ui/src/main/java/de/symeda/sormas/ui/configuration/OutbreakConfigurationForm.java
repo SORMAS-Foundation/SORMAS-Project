@@ -72,7 +72,7 @@ public class OutbreakConfigurationForm extends VerticalLayout {
 			allDistrictsLayout.addComponent(allDistrictsLabel);
 
 			OptionGroup outbreakToggle = new OptionGroup();
-			CssStyles.style(outbreakToggle, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_SWITCH);
+			CssStyles.style(outbreakToggle, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_SWITCH_CRITICAL);
 			outbreakToggle.addItem(OUTBREAK);
 			outbreakToggle.addItem(NORMAL);
 
@@ -152,7 +152,7 @@ public class OutbreakConfigurationForm extends VerticalLayout {
 
 	private OptionGroup createOutbreakToggle(DistrictReferenceDto district) {
 		OptionGroup outbreakToggle = new OptionGroup();
-		CssStyles.style(outbreakToggle, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_SWITCH, CssStyles.OPTIONGROUP_CAPTION_INLINE);
+		CssStyles.style(outbreakToggle, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_SWITCH_CRITICAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
 		outbreakToggle.setCaption(district.toString());
 		outbreakToggle.addItem(OUTBREAK);
 		outbreakToggle.addItem(NORMAL);

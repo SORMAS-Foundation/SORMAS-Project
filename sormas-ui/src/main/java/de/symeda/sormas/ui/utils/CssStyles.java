@@ -124,7 +124,7 @@ public final class CssStyles {
 
 	public static final String OPTIONGROUP_HORIZONTAL_SUBTLE = "horizontal-subtle";
 	public static final String OPTIONGROUP_HORIZONTAL_PRIMARY = "horizontal-primary";
-	public static final String OPTIONGROUP_HORIZONTAL_SWITCH = "horizontal-switch";
+	public static final String OPTIONGROUP_HORIZONTAL_SWITCH_CRITICAL = "horizontal-switch-critical";
 	public static final String OPTIONGROUP_CAPTION_INLINE = "caption-inline";
 
 	public static final String GRID_CELL_PRIORITY_HIGH = "priority-high";
