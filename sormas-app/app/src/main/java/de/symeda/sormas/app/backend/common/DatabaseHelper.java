@@ -432,7 +432,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"lastOpenedDate timestamp," +
 							"localChangeDate timestamp not null," +
 							"modified integer," +
-							"snapshot integer");
+							"snapshot integer);");
 
 					// ATTENTION: break should only be done after last version
 					break;
