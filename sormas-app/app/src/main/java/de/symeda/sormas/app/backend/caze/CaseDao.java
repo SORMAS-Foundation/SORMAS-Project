@@ -21,6 +21,9 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -111,6 +114,10 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         caze.setReportDate(new Date());
         caze.setReportingUser(ConfigProvider.getUser());
+
+        caze.setInvestigationStatus(InvestigationStatus.PENDING);
+        caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+        caze.setOutcome(CaseOutcome.NO_OUTCOME);
 
         // Symptoms
         caze.setSymptoms(DatabaseHelper.getSymptomsDao().build());

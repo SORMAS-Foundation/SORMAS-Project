@@ -823,7 +823,9 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 // get embedded
                 AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(ado);
                 // delete it
-                DatabaseHelper.getAdoDao(embeddedAdo.getClass()).deleteCascadeWithCast(embeddedAdo);
+                if (embeddedAdo != null) { // data might be invalid and embedded missing
+                    DatabaseHelper.getAdoDao(embeddedAdo.getClass()).deleteCascadeWithCast(embeddedAdo);
+                }
             }
 
         } catch (IllegalAccessException e) {

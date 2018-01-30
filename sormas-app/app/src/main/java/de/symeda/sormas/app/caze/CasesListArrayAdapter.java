@@ -62,13 +62,13 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
 
         TextView caseStatus = (TextView) convertView.findViewById(R.id.cli_case_satus);
         if (!(ConfigProvider.getUser().hasUserRole(UserRole.INFORMANT) && caze.getCaseClassification() == CaseClassification.NOT_CLASSIFIED)) {
-            caseStatus.setText(caze.getCaseClassification() != null ? caze.getCaseClassification().toString() : null);
+            caseStatus.setText(caze.getCaseClassification() != null ? caze.getCaseClassification().toString() : "");
         } else {
             caseStatus.setText("");
         }
 
         TextView caseOutcome = (TextView) convertView.findViewById(R.id.cli_case_outcome);
-        if (caze.getOutcome() == CaseOutcome.NO_OUTCOME) {
+        if (caze.getOutcome() == null || caze.getOutcome() == CaseOutcome.NO_OUTCOME) {
             caseOutcome.setVisibility(View.GONE);
         } else {
             caseOutcome.setVisibility(View.VISIBLE);
