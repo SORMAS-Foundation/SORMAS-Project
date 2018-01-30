@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.mail.MessagingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -24,6 +25,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
@@ -52,6 +54,8 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.ConfigService;
+import de.symeda.sormas.backend.common.EmailService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -129,6 +133,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	private EpiDataFacadeEjbLocal epiDataFacade;
 	@EJB
 	private ContactFacadeEjbLocal contactFacade;
+	@EJB
+	private ConfigService configService;
+	@EJB
+	private EmailService emailService;
 
 	@Override
 	public List<CaseDataDto> getAllCasesAfter(Date date, String userUuid) {
@@ -243,8 +251,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public CaseDataDto saveCase(CaseDataDto dto) {
 		Case existingCaze = caseService.getByUuid(dto.getUuid());
+		InvestigationStatus existingInvestigationStatus = null;
 		Disease existingDisease = null;
 		if (existingCaze != null) {
+			existingInvestigationStatus = existingCaze.getInvestigationStatus();
 			existingDisease = existingCaze.getDisease();
 		}
 
@@ -265,6 +275,15 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		caseService.ensurePersisted(caze);
 		updateInvestigationByStatus(caze);
+		// Send an email when the case classification has changed
+		if (existingInvestigationStatus != caze.getInvestigationStatus()) {
+			String emailContent = "Test";
+			try {
+				emailService.sendEmail(configService.getEmailRecipient(), "Test", emailContent);
+			} catch (MessagingException e) {
+//				throw new EmailDeliveryFailedException("Could not send email due to an unexpected error.", e);
+			}
+		}
 
 		// Update follow-up until and status of all contacts of this case if the
 		// disease has changed
