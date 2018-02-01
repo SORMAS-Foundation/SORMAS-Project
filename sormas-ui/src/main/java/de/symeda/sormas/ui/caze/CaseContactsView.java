@@ -121,7 +121,7 @@ public class CaseContactsView extends AbstractCaseView {
         districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(caseDto.getRegion().getUuid()));
 
         officerFilter.removeAllItems();
-    	officerFilter.addItems(FacadeProvider.getUserFacade().getAssignableUsersByRegion(caseDto.getRegion(), UserRole.CONTACT_OFFICER));
+    	officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(caseDto.getRegion(), UserRole.CONTACT_OFFICER));
 	}
 
     @Override

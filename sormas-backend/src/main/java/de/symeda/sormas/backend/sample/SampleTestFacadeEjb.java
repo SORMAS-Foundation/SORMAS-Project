@@ -17,14 +17,25 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestFacade;
 import de.symeda.sormas.api.sample.SampleTestReferenceDto;
+import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.common.EmailDeliveryFailedException;
+import de.symeda.sormas.backend.common.MessageType;
+import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.region.District;
@@ -51,6 +62,10 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	private FacilityService facilityService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private MessagingService messagingService;
+
+	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
 	
 	@Override
 	public List<String> getAllUuids(String userUuid) {
@@ -136,6 +151,40 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	
 	@Override
 	public SampleTestDto saveSampleTest(SampleTestDto dto) {
+		// Send an email to all responsible supervisors when a new non-pending sample test is created or the status of a formerly pending test result has changed
+		SampleTest existingSampleTest = sampleTestService.getByUuid(dto.getUuid());
+		if (existingSampleTest == null && dto.getTestResult() != SampleTestResultType.PENDING) {
+			Case existingSampleCase = sampleService.getByUuid(dto.getSample().getUuid()).getAssociatedCase();
+			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(existingSampleCase.getRegion(), 
+					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
+			
+			for (User recipient : messageRecipients) {
+				try {
+					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_LAB_RESULT_ARRIVED), 
+							String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_RESULT_ARRIVED), DataHelper.getShortUuid(existingSampleCase.getUuid())), 
+							MessageType.EMAIL);
+				} catch (EmailDeliveryFailedException e) {
+					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the arrival of a lab result. "
+							+ "Failed to send email to user with UUID %s.", recipient.getUuid()));
+				}
+			}
+		} else if (existingSampleTest.getTestResult() == SampleTestResultType.PENDING && dto.getTestResult() != SampleTestResultType.PENDING) {
+			Case existingSampleCase = sampleService.getByUuid(dto.getSample().getUuid()).getAssociatedCase();
+			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(existingSampleCase.getRegion(), 
+					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
+			
+			for (User recipient : messageRecipients) {
+				try {
+					messagingService.sendMessage(recipient, MessagingService.SUBJECT_LAB_RESULT_SPECIFIED, 
+							String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_RESULT_SPECIFIED), DataHelper.getShortUuid(existingSampleCase.getUuid())), 
+							MessageType.EMAIL);
+				} catch (EmailDeliveryFailedException e) {
+					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the specification of a lab result. "
+							+ "Failed to send email to user with UUID %s.", recipient.getUuid()));
+				}
+			}
+		}
+		
 		SampleTest sampleTest = fromDto(dto);
 		sampleTestService.ensurePersisted(sampleTest);
 		

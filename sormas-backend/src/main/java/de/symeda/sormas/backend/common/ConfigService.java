@@ -20,7 +20,6 @@ public class ConfigService {
 	
 	private static final String EMAIL_SENDER_ADDRESS = "email.sender.address";
 	private static final String EMAIL_SENDER_NAME = "email.sender.name";
-	private static final String EMAIL_RECIPIENT = "email.recipient";
 	
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ConfigService.class);
@@ -52,10 +51,6 @@ public class ConfigService {
 	
 	public String getEmailSenderName() {
 		return getProperty(EMAIL_SENDER_NAME, "SORMAS Support");
-	}
-	
-	public String getEmailRecipient() {
-		return getProperty(EMAIL_RECIPIENT, "norecipient@example.com");
 	}
 
 	private String getProperty(String name, String defaultValue){

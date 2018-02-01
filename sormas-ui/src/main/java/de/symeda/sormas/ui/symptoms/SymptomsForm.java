@@ -109,7 +109,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 	@Override
 	protected void addFields() {
-		if (disease == null || symptomsContext == null || person == null || viewMode == null) {
+		if (disease == null || symptomsContext == null) {
 			// workaround to stop initialization until disease is set 
 			return;
 		}
@@ -202,7 +202,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.LESIONS, 
 				Arrays.asList(SymptomState.YES), true);
 
-		boolean isInfant = person.getApproximateAge() != null
+		boolean isInfant = person != null && person.getApproximateAge() != null
 				&& ((person.getApproximateAge() <= 12 && person.getApproximateAgeType() == ApproximateAgeType.MONTHS)
 						|| person.getApproximateAge() <= 1);
 		if (!isInfant) {

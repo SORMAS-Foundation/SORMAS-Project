@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.mail.MessagingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -23,8 +22,12 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -51,11 +54,14 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.ConfigService;
-import de.symeda.sormas.backend.common.EmailService;
+import de.symeda.sormas.backend.common.EmailDeliveryFailedException;
+import de.symeda.sormas.backend.common.MessageType;
+import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -136,8 +142,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	@EJB
 	private ConfigService configService;
 	@EJB
-	private EmailService emailService;
+	private MessagingService messagingService;
 
+	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
+	
 	@Override
 	public List<CaseDataDto> getAllCasesAfter(Date date, String userUuid) {
 
@@ -251,10 +259,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public CaseDataDto saveCase(CaseDataDto dto) {
 		Case existingCaze = caseService.getByUuid(dto.getUuid());
-		InvestigationStatus existingInvestigationStatus = null;
+		CaseClassification existingCaseClassification = null;
 		Disease existingDisease = null;
 		if (existingCaze != null) {
-			existingInvestigationStatus = existingCaze.getInvestigationStatus();
+			existingCaseClassification = existingCaze.getCaseClassification();
 			existingDisease = existingCaze.getDisease();
 		}
 
@@ -275,13 +283,20 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		caseService.ensurePersisted(caze);
 		updateInvestigationByStatus(caze);
-		// Send an email when the case classification has changed
-		if (existingInvestigationStatus != caze.getInvestigationStatus()) {
-			String emailContent = "Test";
-			try {
-				emailService.sendEmail(configService.getEmailRecipient(), "Test", emailContent);
-			} catch (MessagingException e) {
-//				throw new EmailDeliveryFailedException("Could not send email due to an unexpected error.", e);
+		
+		// Send an email to all responsible supervisors when the case classification has changed
+		if (existingCaze != null && existingCaseClassification != caze.getCaseClassification()) {
+			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(caze.getRegion(), 
+					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+			for (User recipient : messageRecipients) {
+				try {
+					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_CASE_CLASSIFICATION_CHANGED), 
+							String.format(I18nProperties.getMessage(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED), DataHelper.getShortUuid(caze.getUuid()), caze.getCaseClassification().toString()), 
+							MessageType.EMAIL);
+				} catch (EmailDeliveryFailedException e) {
+					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the change of a case classification. "
+							+ "Failed to send email to user with UUID %s.", recipient.getUuid()));
+				}
 			}
 		}
 

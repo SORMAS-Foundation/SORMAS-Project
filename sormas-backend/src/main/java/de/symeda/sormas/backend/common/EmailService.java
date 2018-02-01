@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class EmailService {
 
-	private static final Logger logger = LoggerFactory.getLogger(ConfigService.class);
+	private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
 	
 	@Resource(name = "mail/MailSession")
 	private Session mailSession;
@@ -61,10 +61,8 @@ public class EmailService {
 		try {
 			sendEmail(recipient, subject, content);
 		} catch (MessagingException e) {
-			logger.error("Error Sending Email for " + recipient, e);
+			logger.error("Error sending email for " + recipient, e);
 		}
 	}
-	
-	
 	
 }

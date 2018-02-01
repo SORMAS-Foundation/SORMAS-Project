@@ -144,6 +144,7 @@ public class CaseController {
         return cf.getCaseDataByUuid(uuid);
     }
 
+    // TODO unify this in API project
     private CaseDataDto createNewCase(PersonReferenceDto person, Disease disease) {
     	CaseDataDto caze = new CaseDataDto();
     	caze.setUuid(DataHelper.createUuid());

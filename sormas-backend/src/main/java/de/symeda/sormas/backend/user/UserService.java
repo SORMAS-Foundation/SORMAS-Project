@@ -79,7 +79,7 @@ public class UserService extends AbstractAdoService<User> {
 		}
 		
 		if (filter != null) {
-			cq.where(filter);
+			cq.where(filter).distinct(true);
 		}
 		
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
