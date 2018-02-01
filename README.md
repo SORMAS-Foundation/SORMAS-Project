@@ -87,6 +87,7 @@ For information on what libs are used see pom.xml in sormas-base project: https:
 ### Postgres Database
 
 * Install PostgreSQL (currently 9.5 or 9.6) on your system
+* **set max_prepared_transactions = 64 (at least) in postgresql.conf**
 * Install the "temporal tables" addon for Postgres (https://github.com/arkhipov/temporal_tables)
     * Windows: Download latest version for your postgres version: https://github.com/arkhipov/temporal_tables/releases/latest Then you must copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.	
     * Linux (see https://github.com/arkhipov/temporal_tables#installation):
