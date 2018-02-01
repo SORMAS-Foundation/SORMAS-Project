@@ -102,7 +102,7 @@
   	  	  &:first-child {
   	  	  	:root & > input {
   	  	  	  &:checked ~ label {
-  	  	  	  	background: $s-critical-color-transparent;
+  	  	  	  	background: lighten($s-critical-color, 25%);
   	  	  	  }
   	  	    }
   	  	  }

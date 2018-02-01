@@ -7,17 +7,12 @@
 
 $v-luminance-threshold: 180 !default;
 
-$s-warning-color: #E10002;
+$s-default-color: #6691C4;
 $s-primary-color: #005A9C;
 $s-secondary-color: #6591C4;
-$s-default-color: #6691C4;
-
 $s-critical-color: #FF0000;
-$s-critical-color-transparent: rgba(255, 0, 0, 0.4);
-$s-critical-color-shade: #EF0000;
 $s-important-color: #FF8C00;
-$s-important-color-transparent: rgba(255, 140, 0, 0.4);
-$s-important-color-shade: #EF8C00;
+$s-warning-color: $s-important-color;
 $s-relevant-color: #FFD700;
 $s-neutral-color: #00BFFF;
 $s-positive-color: #32CD32;
@@ -29,7 +24,7 @@ $v-app-background-color: $v-background-color !default;
 $v-font-color: #394C5B !default;
 $v-selection-color: $s-primary-color !default;
 $v-focus-color: #CDD8EC !default;
-$v-error-indicator-color: $s-warning-color !default;
+$v-error-indicator-color: $s-critical-color !default;
 $v-friendly-color: $s-default-color !default;
 
 $v-font-family: "Open Sans", sans-serif, "Source Sans Pro";

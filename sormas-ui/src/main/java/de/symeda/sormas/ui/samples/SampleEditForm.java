@@ -38,7 +38,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.h3("Laboratory sample") +
 			LayoutUtil.locCss(CssStyles.VSPACE_2, REPORT_INFORMATION_LOC) +
-			LayoutUtil.div(
+			LayoutUtil.divs(
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_CODE),
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),

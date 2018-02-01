@@ -17,7 +17,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
-public class OutbreakConfigurationForm extends VerticalLayout {
+public class OutbreakRegionConfigurationForm extends VerticalLayout {
 
 	// Outbreak mode statics
 	private final static String OUTBREAK = "outbreak";
@@ -34,14 +34,14 @@ public class OutbreakConfigurationForm extends VerticalLayout {
 	// UI elements
 	private Label affectedDistrictsNumberLabel;
 
-	public OutbreakConfigurationForm(DiseaseOutbreakInformation diseaseOutbreakInformation) {
+	public OutbreakRegionConfigurationForm(OutbreakRegionConfiguration regionOutbreakConfiguration) {
 		setStyleName("configuration-view");
 
 		// Copy the set of affected districts because the CommitDiscardWrapperComponent is not reset when discarding this form
-		affectedDistricts = new HashSet<>(diseaseOutbreakInformation.getAffectedDistricts());
-		this.totalDistricts = diseaseOutbreakInformation.getTotalDistricts();
-		this.region = diseaseOutbreakInformation.getRegion();
-		outbreakToggles = new OptionGroup[diseaseOutbreakInformation.getTotalDistricts()];
+		affectedDistricts = new HashSet<>(regionOutbreakConfiguration.getAffectedDistricts());
+		this.totalDistricts = regionOutbreakConfiguration.getTotalDistricts();
+		this.region = regionOutbreakConfiguration.getRegion();
+		outbreakToggles = new OptionGroup[regionOutbreakConfiguration.getTotalDistricts()];
 		setWidth(860, Unit.PIXELS);
 
 		addComponent(createHeader());
@@ -179,13 +179,14 @@ public class OutbreakConfigurationForm extends VerticalLayout {
 	private void updateAffectedDistrictsNumberLabel() {		
 		affectedDistrictsNumberLabel.setValue(affectedDistricts.size() + "/" + totalDistricts + " Affected LGAs");
 		
-		CssStyles.removeStyles(affectedDistrictsNumberLabel, CssStyles.CONFIGURATION_SEVERITY_INDICATOR_SEVERITY_CRITICAL, CssStyles.CONFIGURATION_SEVERITY_INDICATOR_SEVERITY_IMPORTANT);
+		CssStyles.removeStyles(affectedDistrictsNumberLabel, 
+				CssStyles.LABEL_CONFIGURATION_SEVERITY_INDICATOR, CssStyles.LABEL_CRITICAL, CssStyles.LABEL_WARNING);
 		if (affectedDistricts.size() == 0) {
-			CssStyles.style(affectedDistrictsNumberLabel, CssStyles.CONFIGURATION_SEVERITY_INDICATOR);
+			CssStyles.style(affectedDistrictsNumberLabel, CssStyles.LABEL_CONFIGURATION_SEVERITY_INDICATOR);
 		} else if (affectedDistricts.size() >= totalDistricts / 2.0f) {
-			CssStyles.style(affectedDistrictsNumberLabel, CssStyles.CONFIGURATION_SEVERITY_INDICATOR, CssStyles.CONFIGURATION_SEVERITY_INDICATOR_SEVERITY_CRITICAL);
+			CssStyles.style(affectedDistrictsNumberLabel, CssStyles.LABEL_CONFIGURATION_SEVERITY_INDICATOR, CssStyles.LABEL_CRITICAL);
 		} else {
-			CssStyles.style(affectedDistrictsNumberLabel, CssStyles.CONFIGURATION_SEVERITY_INDICATOR, CssStyles.CONFIGURATION_SEVERITY_INDICATOR_SEVERITY_IMPORTANT);
+			CssStyles.style(affectedDistrictsNumberLabel, CssStyles.LABEL_CONFIGURATION_SEVERITY_INDICATOR, CssStyles.LABEL_WARNING);
 		}
 	}
 	

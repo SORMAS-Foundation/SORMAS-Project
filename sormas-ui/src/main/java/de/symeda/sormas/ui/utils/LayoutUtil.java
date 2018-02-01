@@ -35,7 +35,7 @@ public class LayoutUtil {
 	}
 
 	public static String locsCss(String css, String... locations) {
-		return divCss(css, locs(locations));
+		return divsCss(css, locs(locations));
 	}
 
 	/**
@@ -59,6 +59,36 @@ public class LayoutUtil {
 
 		return sb.toString();
 	}
+	
+	public static String div(String content) {
+		return divCss(null, content);
+	}
+	
+	public static String divCss(String cssClasses, String content) {
+		return element("div", cssClasses, content);
+	}	
+	
+	public static String divs(String... contents) {
+		return divsCss(null, contents);
+	}
+	
+	public static String divsCss(String cssClasses, String... contents) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<div ");
+
+		if (cssClasses != null) {
+			sb.append("class='").append(cssClasses).append("' ");
+		}
+
+		sb.append(">");
+
+		for (String content : contents) {
+			sb.append(element("div", null, content));
+		}
+
+		sb.append("</div>");
+		return sb.toString();
+	}	
 
 	public static String span(String content) {
 		return element("span", null, content);
@@ -180,31 +210,14 @@ public class LayoutUtil {
 		return new FluidColumn(null, span, offset, loc, null);
 	}
 
+	public static FluidColumn fluidColumnLoc(int span, int offset, int spanSmall, int offsetSmall, String loc) {
+		return new FluidColumn(null, span, offset, spanSmall, offsetSmall, loc, null);
+	}
+
 	public static FluidColumn fluidColumnLocCss(String cssClasses, int span, int offset, String loc) {
 		return new FluidColumn(cssClasses, span, offset, loc, null);
 	}
 
-	public static String div(String... contents) {
-		return divCss(null, contents);
-	}
-	
-	public static String divCss(String cssClasses, String... contents) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("<div ");
-
-		if (cssClasses != null) {
-			sb.append("class='").append(cssClasses).append("' ");
-		}
-
-		sb.append(">");
-
-		for (String content : contents) {
-			sb.append(element("div", null, content));
-		}
-
-		sb.append("</div>");
-		return sb.toString();
-	}	
 	
 	public static FluidColumn oneOfThreeCol(String loc) {
 		return fluidColumnLoc(4, 0, loc);
@@ -229,6 +242,41 @@ public class LayoutUtil {
 	public static final class FluidColumn {
 
 		private final String str;
+		
+		public FluidColumn(String cssClasses, int span, int offset,
+				int spanSmall, int offsetSmall, String location, String content) {
+
+			StringBuilder sb = new StringBuilder();
+			sb.append("<div ");
+			if (cssClasses != null || span > 0 || offset > 0) {
+				sb.append(" class='");
+				if (span > 0) {
+					sb.append("col-lg-").append(span).append(' ');
+					sb.append("col-xs-").append(spanSmall).append(' ');
+				}
+				if (offset > 0) {
+					sb.append("col-lg-offset-").append(offset).append(' ');
+					sb.append("col-xs-offset-").append(offsetSmall).append(' ');
+				}
+				if (cssClasses != null) {
+					sb.append(cssClasses);
+				}
+				sb.append("'");
+			}
+			if (location != null) {
+				sb.append(" location='").append(location).append("'");
+			}
+			
+			sb.append(">");
+
+			if (content != null) {
+				sb.append(content);
+			}
+
+			sb.append("</div>");
+
+			str = sb.toString();
+		}
 
 		public FluidColumn(String cssClasses, int span, int offset,
 				String location, String content) {
@@ -239,9 +287,11 @@ public class LayoutUtil {
 				sb.append(" class='");
 				if (span > 0) {
 					sb.append("col-xs-").append(span).append(' ');
+					sb.append("col-md-").append(span).append(' ');
 				}
 				if (offset > 0) {
 					sb.append("col-xs-offset-").append(offset).append(' ');
+					sb.append("col-md-offset-").append(offset).append(' ');
 				}
 				if (cssClasses != null) {
 					sb.append(cssClasses);

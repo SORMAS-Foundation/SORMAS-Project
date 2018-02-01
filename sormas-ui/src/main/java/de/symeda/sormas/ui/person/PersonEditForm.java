@@ -87,7 +87,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			) +
 			LayoutUtil.fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
     		LayoutUtil.loc(OCCUPATION_HEADER) +
-    		LayoutUtil.divCss(
+    		LayoutUtil.divsCss(
     				CssStyles.VSPACE_3, 
     				LayoutUtil.fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS),
     				LayoutUtil.fluidRowLocs(FACILITY_REGION, FACILITY_DISTRICT, FACILITY_COMMUNITY, PersonDto.OCCUPATION_FACILITY)

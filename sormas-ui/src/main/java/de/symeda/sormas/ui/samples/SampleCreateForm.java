@@ -27,19 +27,19 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 	
 	private static final String HTML_LAYOUT =
-			LayoutUtil.div(
-					LayoutUtil.div(
+			LayoutUtil.divs(
+					LayoutUtil.divs(
 						LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_CODE),
 						LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
 						LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
 						LayoutUtil.fluidRowLocs(SampleDto.SUGGESTED_TYPE_OF_TEST, SampleDto.LAB)
 					),
 					LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.SHIPPED),
-					LayoutUtil.div(
+					LayoutUtil.divs(
 							LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS)
 					),
 					LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.RECEIVED),
-					LayoutUtil.div(
+					LayoutUtil.divs(
 							LayoutUtil.fluidRowLocs(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID),
 							LayoutUtil.fluidRowLocs(SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON),
 							LayoutUtil.fluidRowLocs(SampleDto.COMMENT)

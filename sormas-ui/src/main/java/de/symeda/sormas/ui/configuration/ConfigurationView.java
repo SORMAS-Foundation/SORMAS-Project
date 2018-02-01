@@ -21,7 +21,7 @@ public class ConfigurationView extends AbstractView {
 
 		Label infoTextLabel = new Label("Click on a button to define which LGAs of the state "
 				+ "currently have an outbreak of a specific disease.");
-		CssStyles.style(infoTextLabel, CssStyles.SIZE_MEDIUM);
+		CssStyles.style(infoTextLabel, CssStyles.LABEL_MEDIUM);
 		
 		grid = new OutbreakOverviewGrid();
 		

@@ -5,6 +5,7 @@
   	
   	.v-label {
   		
+  	  // TODO replace with a component
   	  &.v-label-severity-indicator {
 	  	border: $v-border;
 	  	border-radius: 4px;
@@ -14,17 +15,16 @@
 	  	font-size: 11px;
 	  	text-transform: uppercase;
 	  	
-	  	&.severity-critical {
-	  	  background: $s-critical-color-transparent;
+	  	&.critical {
+	  	  color:  darken($s-critical-color, 25%);
+	  	  background: lighten($s-critical-color, 25%);
 	  	}
 	  
-	  	&.severity-important {
-	  	  background: $s-important-color-transparent;
+	  	&.warning {
+	  	  color:  darken($s-warning-color, 25%);
+	      background: lighten($s-warning-color, 25%)
 	  	}
-	  }
-	 
-  	}
-  
-  }
- 
+	  }	 
+  	}  
+  } 
 }

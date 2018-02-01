@@ -2,10 +2,12 @@ package de.symeda.sormas.ui.configuration;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
+import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Grid;
@@ -20,7 +22,8 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
-import de.symeda.sormas.ui.utils.StringToAnythingConverter;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
 public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
@@ -38,13 +41,73 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 
 		addColumn(REGION, RegionReferenceDto.class);
 		for (Disease disease : Disease.values()) {
-			addColumn(disease, DiseaseOutbreakInformation.class);
+			addColumn(disease, OutbreakRegionConfiguration.class);
 			getColumn(disease).setHeaderCaption(disease.toShortString());
-			getColumn(disease).setConverter(new StringToAnythingConverter<DiseaseOutbreakInformation>(DiseaseOutbreakInformation.class));
+			getColumn(disease).setConverter(new Converter<String,OutbreakRegionConfiguration>() {
+
+				@Override
+				public OutbreakRegionConfiguration convertToModel(String value,
+						Class<? extends OutbreakRegionConfiguration> targetType, Locale locale)
+						throws ConversionException {
+			        throw new UnsupportedOperationException("Can only convert from OutbreakRegionConfiguration to String");
+				}
+
+				@Override
+				public String convertToPresentation(OutbreakRegionConfiguration value,
+						Class<? extends String> targetType, Locale locale) throws ConversionException {
+	        		
+	        		boolean styleAsButton = LoginHelper.hasUserRight(UserRight.OUTBREAK_CONFIGURE_ALL) || 
+	        				(LoginHelper.hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED) && LoginHelper.getCurrentUser().getRegion().equals(value.getRegion()));
+	        		boolean moreThanHalfOfDistricts = value.getAffectedDistricts().size( )>= value.getTotalDistricts() / 2.0f;
+
+        			String styles;
+	        		if (styleAsButton) {
+	        			if (moreThanHalfOfDistricts) {
+	        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_BUTTON, CssStyles.BUTTON_CRITICAL);
+	        			} else if (!value.getAffectedDistricts().isEmpty()) {
+	        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_BUTTON, CssStyles.BUTTON_WARNING);
+	        			} else {
+	        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_BUTTON);
+	        			}
+	        			
+	        		} else {
+	        			if (moreThanHalfOfDistricts) {
+	        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_LABEL, CssStyles.LABEL_CRITICAL);
+	        			} else if (!value.getAffectedDistricts().isEmpty()) {
+	        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_LABEL, CssStyles.LABEL_WARNING);
+	        			} else {
+	        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_LABEL);
+	        			}
+	        		}
+        			return LayoutUtil.divCss(styles, value.toString());
+				}
+
+				@Override
+				public Class<OutbreakRegionConfiguration> getModelType() {
+					return OutbreakRegionConfiguration.class;
+				}
+
+				@Override
+				public Class<String> getPresentationType() {
+					return String.class;
+				}
+				
+			});
 			getColumn(disease).setRenderer(new HtmlRenderer());
 		}
 
 		setCellDescriptionGenerator(cell -> getCellDescription(cell));
+
+		setCellStyleGenerator(new CellStyleGenerator() {
+			@Override
+			public String getStyle(CellReference cell) {
+				if (cell.getProperty().getValue() instanceof OutbreakRegionConfiguration) {
+					return CssStyles.ALIGN_CENTER;
+				} 
+				return null;
+			}
+		});
+		
 		addItemClickListener(this);
 	}
 	
@@ -55,7 +118,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 			return "";
 		}
 		
-		Set<DistrictReferenceDto> affectedDistricts = ((DiseaseOutbreakInformation) item.getItemProperty((Disease) cell.getPropertyId()).getValue()).getAffectedDistricts();
+		Set<DistrictReferenceDto> affectedDistricts = ((OutbreakRegionConfiguration) item.getItemProperty((Disease) cell.getPropertyId()).getValue()).getAffectedDistricts();
 		
 		if (affectedDistricts.isEmpty()) {
 			return "No outbreak";
@@ -79,7 +142,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 	public void reload() {
 		Container.Indexed container = getContainerDataSource();
 		container.removeAllItems();
-
+		
 		// Initially set all columns to their default value
 		for (RegionReferenceDto region : FacadeProvider.getRegionFacade().getAllAsReference()) {
 			addItem(region);
@@ -93,7 +156,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 			RegionReferenceDto outbreakRegion = FacadeProvider.getDistrictFacade().getDistrictByUuid(outbreakDistrict.getUuid()).getRegion();
 			Disease outbreakDisease = outbreak.getDisease();
 			
-			((DiseaseOutbreakInformation) container.getItem(outbreakRegion).getItemProperty(outbreakDisease).getValue()).getAffectedDistricts().add(outbreakDistrict);
+			((OutbreakRegionConfiguration) container.getItem(outbreakRegion).getItemProperty(outbreakDisease).getValue()).getAffectedDistricts().add(outbreakDistrict);
 		}
 	}
 
@@ -103,7 +166,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		Item item = getContainerDataSource().addItem(region);
 		item.getItemProperty(REGION).setValue(region);
 		for (Disease disease : Disease.values()) {
-			item.getItemProperty(disease).setValue(new DiseaseOutbreakInformation(totalDistricts, region, new HashSet<>()));
+			item.getItemProperty(disease).setValue(new OutbreakRegionConfiguration(disease, region, totalDistricts, new HashSet<>()));
 		}
 	}
 
@@ -119,10 +182,10 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		// a) the user is allowed to configure all existing outbreaks or
 		// b) the user is allowed to configure outbreaks in his assigned region and has clicked the respective row
 		if (LoginHelper.hasUserRight(UserRight.OUTBREAK_CONFIGURE_ALL)) {
-			ControllerProvider.getOutbreakController().openOutbreakConfigurationWindow((Disease) event.getPropertyId(), (DiseaseOutbreakInformation) clickedItem.getItemProperty((Disease) event.getPropertyId()).getValue());
+			ControllerProvider.getOutbreakController().openOutbreakConfigurationWindow((Disease) event.getPropertyId(), (OutbreakRegionConfiguration) clickedItem.getItemProperty((Disease) event.getPropertyId()).getValue());
 		} else if (LoginHelper.hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED)) {
 			if (user.getRegion().equals(clickedItem.getItemProperty(REGION).getValue())) {
-				ControllerProvider.getOutbreakController().openOutbreakConfigurationWindow((Disease) event.getPropertyId(), (DiseaseOutbreakInformation) clickedItem.getItemProperty((Disease) event.getPropertyId()).getValue());
+				ControllerProvider.getOutbreakController().openOutbreakConfigurationWindow((Disease) event.getPropertyId(), (OutbreakRegionConfiguration) clickedItem.getItemProperty((Disease) event.getPropertyId()).getValue());
 			}
 		} else {
 			return;

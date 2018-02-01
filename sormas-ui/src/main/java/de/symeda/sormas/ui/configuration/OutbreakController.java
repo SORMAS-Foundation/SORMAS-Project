@@ -20,9 +20,9 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class OutbreakController {
 	
-	public void openOutbreakConfigurationWindow(Disease disease, DiseaseOutbreakInformation diseaseOutbreakInformation) {
-		OutbreakConfigurationForm configurationForm = new OutbreakConfigurationForm(diseaseOutbreakInformation);
-		final CommitDiscardWrapperComponent<OutbreakConfigurationForm> configurationComponent = new CommitDiscardWrapperComponent<OutbreakConfigurationForm>(configurationForm, null, null);
+	public void openOutbreakConfigurationWindow(Disease disease, OutbreakRegionConfiguration diseaseOutbreakInformation) {
+		OutbreakRegionConfigurationForm configurationForm = new OutbreakRegionConfigurationForm(diseaseOutbreakInformation);
+		final CommitDiscardWrapperComponent<OutbreakRegionConfigurationForm> configurationComponent = new CommitDiscardWrapperComponent<OutbreakRegionConfigurationForm>(configurationForm, null, null);
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(configurationComponent, disease.toShortString() + " Outbreak in " + diseaseOutbreakInformation.getRegion().toString());
 
 		configurationComponent.addCommitListener(new CommitListener() {

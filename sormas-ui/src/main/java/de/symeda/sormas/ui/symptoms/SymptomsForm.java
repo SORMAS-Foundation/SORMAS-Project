@@ -53,7 +53,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_3, SymptomsDto.ONSET_DATE, SymptomsDto.ONSET_SYMPTOM) +
 			LayoutUtil.fluidRowCss(CssStyles.VSPACE_3,
 					LayoutUtil.fluidColumn(8, 0,
-							LayoutUtil.div(I18nProperties.getFieldCaption("Symptoms.hint"))),
+							LayoutUtil.divs(I18nProperties.getFieldCaption("Symptoms.hint"))),
 					LayoutUtil.fluidColumn(4, 0,
 							LayoutUtil.locCss(CssStyles.ALIGN_RIGHT, BUTTONS_LOC))) +
 			LayoutUtil.fluidRow(

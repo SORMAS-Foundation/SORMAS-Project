@@ -51,27 +51,29 @@ public final class CssStyles {
 	public static final String HSPACE_RIGHT_5 = "hspace-right-5";
 	public static final String HSPACE_RIGHT_NONE = "hspace-right-none";
 
+	public static final String VAADIN_LABEL = "v-label";
 	// Font colors
-	public static final String COLOR_PRIMARY = "color-primary";
-	public static final String COLOR_SECONDARY = "color-secondary";
-	public static final String COLOR_CRITICAL = "color-critical";
-	public static final String COLOR_IMPORTANT = "color-important";
-	public static final String COLOR_RELEVANT = "color-relevant";
-	public static final String COLOR_NEUTRAL = "color-neutral";
-	public static final String COLOR_POSITIVE = "color-positive";
-	public static final String COLOR_MINOR = "color-minor";
+	public static final String LABEL_PRIMARY = "primary";
+	public static final String LABEL_SECONDARY = "secondary";
+	public static final String LABEL_CRITICAL = "critical";
+	public static final String LABEL_WARNING = "warning";
+	public static final String LABEL_IMPORTANT = "important";
+	public static final String LABEL_RELEVANT = "relevant";
+	public static final String LABEL_NEUTRAL = "neutral";
+	public static final String LABEL_POSITIVE = "positive";
+	public static final String LABEL_MINOR = "minor";
 	
 	// Font sizes
-	public static final String SIZE_SMALL = "size-small";
-	public static final String SIZE_MEDIUM = "size-medium";
-	public static final String SIZE_LARGE = "size-large";
-	public static final String SIZE_XLARGE = "size-xlarge";
-	public static final String SIZE_XXLARGE = "size-xxlarge";
-	public static final String SIZE_XXXLARGE = "size-xxxlarge";
+	public static final String LABEL_SMALL = "small";
+	public static final String LABEL_MEDIUM = "medium";
+	public static final String LABEL_LARGE = "large";
+	public static final String LABEL_XLARGE = "xlarge";
+	public static final String LABEL_XXLARGE = "xxlarge";
+	public static final String LABEL_XXXLARGE = "xxxlarge";
 	
 	// Font styles
-	public static final String TEXT_BOLD = "text-bold";
-	public static final String TEXT_UPPERCASE = "text-uppercase";
+	public static final String LABEL_BOLD = "bold";
+	public static final String LABEL_UPPERCASE = "text-uppercase";
 	
 	// Label styles
 	public static final String LABEL_BAR_TOP_CRITICAL = "bar-top-critical";
@@ -83,19 +85,12 @@ public final class CssStyles {
 	public static final String LABEL_BOTTOM_LINE = "bottom-line";
 	
 	// Button styles
+	public static final String VAADIN_BUTTON = "v-button";
+	public static final String BUTTON_CRITICAL = "critical";
+	public static final String BUTTON_WARNING = "warning";
 	public static final String BUTTON_SUBTLE = "subtle";
 	public static final String BUTTON_BORDER_NEUTRAL = "border-neutral";
 	public static final String LINK_ACTIVE = "active";
-	
-	// Styles for divs
-	public static final String DIV_BUTTON = "v-button";
-	public static final String DIV_BUTTON_PRIMARY = "v-button-primary";
-	public static final String DIV_BUTTON_NEUTRAL = "v-button-neutral";
-	public static final String DIV_BUTTON_CRITICAL = "v-button-critical";
-	public static final String DIV_BUTTON_IMPORTANT = "v-button-important";
-	public static final String DIV_LABEL = "v-label";
-	public static final String DIV_LABEL_CRITICAL = "v-label-color-critical";
-	public static final String DIV_LABEL_IMPORTANT = "v-label-color-important";
 	
 	// SVG fill and stroke styles
 	public static final String SVG_FILL_BACKGROUND = "svg-fill-background";
@@ -131,11 +126,6 @@ public final class CssStyles {
 	public static final String GRID_CELL_PRIORITY_NORMAL = "priority-normal";
 	public static final String GRID_CELL_PRIORITY_LOW = "priority-low";
 	public static final String GRID_CELL_WARNING = "warning";
-	public static final String GRID_CELL_STATUS_IMPORTANT = "status-important";
-	public static final String GRID_CELL_STATUS_IMPORTANT_USER_REGION = "status-important-user-region";
-	public static final String GRID_CELL_STATUS_CRITICAL = "status-critical";
-	public static final String GRID_CELL_STATUS_CRITICAL_USER_REGION = "status-critical-user-region";
-	public static final String GRID_CELL_USER_REGION = "user-region";
 	
 	public static final String GRID_ROW_STATUS_DISCARDED = "status-discarded";
 	public static final String GRID_ROW_STATUS_NOT = "status-not";
@@ -143,9 +133,7 @@ public final class CssStyles {
 	public static final String GRID_ROW_STATUS_PENDING = "status-pending";
 	public static final String GRID_ROW_TITLE = "row-title";
 	
-	public static final String CONFIGURATION_SEVERITY_INDICATOR = "severity-indicator";
-	public static final String CONFIGURATION_SEVERITY_INDICATOR_SEVERITY_CRITICAL = "severity-critical";
-	public static final String CONFIGURATION_SEVERITY_INDICATOR_SEVERITY_IMPORTANT = "severity-important";
+	public static final String LABEL_CONFIGURATION_SEVERITY_INDICATOR = "severity-indicator";
 	
 	/**
 	 * Example: <code>LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE)</code>
@@ -154,6 +142,15 @@ public final class CssStyles {
 	
 	@Deprecated
 	public static final String CALLOUT = "callout";
+	
+	public static String buildVaadinStyle(String primaryStyle, String... styles) {
+		StringBuilder styleBuilder = new StringBuilder();
+		styleBuilder.append(primaryStyle);
+		for (String style : styles) {
+			styleBuilder.append(" ").append(primaryStyle).append("-").append(style);
+		}
+		return styleBuilder.toString();
+	}
 
 	public static void style(Component component, String... styles) {
 		for (String style : styles)

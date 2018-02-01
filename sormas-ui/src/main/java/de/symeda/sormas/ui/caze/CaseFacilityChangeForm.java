@@ -26,7 +26,7 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 	
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.div(
+			LayoutUtil.divs(
 					LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
 					LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.HEALTH_FACILITY_DETAILS)

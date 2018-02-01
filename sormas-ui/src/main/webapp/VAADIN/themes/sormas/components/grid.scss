@@ -50,34 +50,6 @@ $v-grid-cell-focused-border: none !default;
           color: $s-warning-color;
           font-weight: 600;
         }
-       
-        &.status-important {
-          background-color: $s-important-color-transparent;
-          border-radius: 8px;
-          font-weight: bold;
-        }
-       	&.status-critical {
-       	  background-color: $s-critical-color-transparent;
-          border-radius: 8px;
-          font-weight: bold;
-       	}
-       	&.status-important-user-region {
-          background-color: $s-important-color-transparent;
-          border-radius: 8px;
-       	  border: 1px solid #000000;
-          font-weight: bold;
-      	}
-       	&.status-critical-user-region {
-       	  background-color: $s-critical-color-transparent;
-          border-radius: 8px;
-       	  border: 1px solid #000000;
-          font-weight: bold;
-       	}
-       	&.user-region {
-       	  border: 1px solid #000000;
-       	  border-radius: 8px;
-       	  font-weight: bold;
-       	}
       }
     	
       &.status-discarded .v-grid-cell {
