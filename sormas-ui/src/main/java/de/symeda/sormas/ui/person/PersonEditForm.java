@@ -110,7 +110,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
     @Override
 	protected void addFields() {
-    	if (disease == null || viewMode == null) {
+    	if (disease == null) {
 			return;
 		}
     	
