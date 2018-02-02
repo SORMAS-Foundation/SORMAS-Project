@@ -24,12 +24,16 @@ public class MessagingService {
 	public static final String SUBJECT_LAB_RESULT_ARRIVED = "labResultArrivedSubject";
 	public static final String SUBJECT_LAB_RESULT_SPECIFIED = "labResultSpecifiedSubject";
 	public static final String SUBJECT_CONTACT_SYMPTOMATIC = "contactSymptomaticSubject";
+	public static final String SUBJECT_TASK_NEW = "taskNewSubject";
+	public static final String SUBJECT_TASK_DUE = "taskDueSubject";
 	
 	// Message contents (via properties file)
 	public static final String CONTENT_CASE_CLASSIFICATION_CHANGED = "caseClassificationChanged";
 	public static final String CONTENT_LAB_RESULT_ARRIVED = "labResultArrived";
 	public static final String CONTENT_LAB_RESULT_SPECIFIED = "labResultSpecified";
 	public static final String CONTENT_CONTACT_SYMPTOMATIC = "contactSymptomatic";
+	public static final String CONTENT_TASK_NEW = "taskNew";
+	public static final String CONTENT_TASK_DUE = "taskDue";
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessagingService.class);
 	

@@ -66,32 +66,32 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	private MessagingService messagingService;
 
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
-	
+
 	@Override
 	public List<String> getAllUuids(String userUuid) {
-		
+
 		User user = userService.getByUuid(userUuid);
-		
+
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		
+
 		return sampleTestService.getAllUuids(user);
 	}	
-	
+
 	@Override
 	public List<SampleTestDto> getAllAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+
 		if(user == null) {
 			return Collections.emptyList();
 		}
-		
+
 		return sampleTestService.getAllAfter(date, user).stream()
 				.map(e -> toDto(e))
 				.collect(Collectors.toList());
 	}
-		
+
 	@Override
 	public List<SampleTestDto> getByUuids(List<String> uuids) {
 		return sampleTestService.getByUuids(uuids)
@@ -99,35 +99,35 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<SampleTestDto> getAllBySample(SampleReferenceDto sampleRef) {
 		if(sampleRef == null) {
 			return Collections.emptyList();
 		}
-		
+
 		Sample sample = sampleService.getByUuid(sampleRef.getUuid());
-		
+
 		return sampleTestService.getAllBySample(sample).stream()
 				.map(s -> toDto(s))
 				.collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public SampleTestDto getLatestBySample(SampleReferenceDto sampleRef) {
 		if (sampleRef == null) {
 			return null;
 		}
-		
+
 		Sample sample = sampleService.getByReferenceDto(sampleRef);
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleTest> cq = cb.createQuery(SampleTest.class);
 		Root<SampleTest> from = cq.from(SampleTest.class);
-		
+
 		cq.where(cb.equal(from.get(SampleTest.SAMPLE), sample));
 		cq.orderBy(cb.desc(from.get(SampleTest.TEST_DATE_TIME)));
-		
+
 		try {
 			SampleTestDto result = toDto(em.createQuery(cq).setMaxResults(1).getSingleResult());
 			return result;
@@ -135,75 +135,44 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public List<DashboardTestResultDto> getNewTestResultsForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		District district = districtService.getByReferenceDto(districtRef);
-		
+
 		return sampleTestService.getNewTestResultsForDashboard(district, disease, from, to, user);
 	}
-	
+
 	@Override
 	public SampleTestDto getByUuid(String uuid) {
 		return toDto(sampleTestService.getByUuid(uuid));
 	}
-	
+
 	@Override
 	public SampleTestDto saveSampleTest(SampleTestDto dto) {
-		// Send an email to all responsible supervisors when a new non-pending sample test is created or the status of a formerly pending test result has changed
-		SampleTest existingSampleTest = sampleTestService.getByUuid(dto.getUuid());
-		if (existingSampleTest == null && dto.getTestResult() != SampleTestResultType.PENDING) {
-			Case existingSampleCase = sampleService.getByUuid(dto.getSample().getUuid()).getAssociatedCase();
-			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(existingSampleCase.getRegion(), 
-					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
-			
-			for (User recipient : messageRecipients) {
-				try {
-					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_LAB_RESULT_ARRIVED), 
-							String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_RESULT_ARRIVED), DataHelper.getShortUuid(existingSampleCase.getUuid())), 
-							MessageType.EMAIL);
-				} catch (EmailDeliveryFailedException e) {
-					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the arrival of a lab result. "
-							+ "Failed to send email to user with UUID %s.", recipient.getUuid()));
-				}
-			}
-		} else if (existingSampleTest.getTestResult() == SampleTestResultType.PENDING && dto.getTestResult() != SampleTestResultType.PENDING) {
-			Case existingSampleCase = sampleService.getByUuid(dto.getSample().getUuid()).getAssociatedCase();
-			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(existingSampleCase.getRegion(), 
-					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
-			
-			for (User recipient : messageRecipients) {
-				try {
-					messagingService.sendMessage(recipient, MessagingService.SUBJECT_LAB_RESULT_SPECIFIED, 
-							String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_RESULT_SPECIFIED), DataHelper.getShortUuid(existingSampleCase.getUuid())), 
-							MessageType.EMAIL);
-				} catch (EmailDeliveryFailedException e) {
-					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the specification of a lab result. "
-							+ "Failed to send email to user with UUID %s.", recipient.getUuid()));
-				}
-			}
-		}
-		
+		SampleTestDto existingSampleTest = toDto(sampleTestService.getByUuid(dto.getUuid()));		
 		SampleTest sampleTest = fromDto(dto);
 		sampleTestService.ensurePersisted(sampleTest);
-		
+
+		onSampleTestChanged(existingSampleTest, sampleTest);
+
 		return toDto(sampleTest);
 	}
-	
+
 	@Override
 	public void deleteSampleTest(SampleTestReferenceDto sampleTestRef, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
 			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
 		}
-		
+
 		SampleTest sampleTest = sampleTestService.getByReferenceDto(sampleTestRef);
 		sampleTestService.delete(sampleTest);
 	}
-	
+
 	public SampleTest fromDto(@NotNull SampleTestDto source) {
-		
+
 		SampleTest target = sampleTestService.getByUuid(source.getUuid());
 		if(target == null) {
 			target = new SampleTest();
@@ -213,7 +182,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 			}
 		}
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		target.setTestType(source.getTestType());
 		target.setTestTypeText(source.getTestTypeText());
@@ -224,17 +193,17 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		target.setTestResultText(source.getTestResultText());
 		target.setTestResultVerified(source.isTestResultVerified());
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
-		
+
 		return target;
 	}
-	
+
 	public SampleTestDto toDto(SampleTest source) {
 		if(source == null) {
 			return null;
 		}
 		SampleTestDto target = new SampleTestDto();
 		DtoHelper.fillDto(target, source);
-		
+
 		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
 		target.setTestType(source.getTestType());
 		target.setTestTypeText(source.getTestTypeText());
@@ -245,10 +214,45 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		target.setTestResultText(source.getTestResultText());
 		target.setTestResultVerified(source.isTestResultVerified());
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
-		
+
 		return target;
 	}
-	
+
+	private void onSampleTestChanged(SampleTestDto existingSampleTest, SampleTest newSampleTest) {
+		// Send an email to all responsible supervisors when a new non-pending sample test is created or the status of a formerly pending test result has changed
+		if (existingSampleTest == null && newSampleTest.getTestResult() != SampleTestResultType.PENDING) {
+			Case existingSampleCase = sampleService.getByUuid(newSampleTest.getSample().getUuid()).getAssociatedCase();
+			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(existingSampleCase.getRegion(), 
+					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
+
+			for (User recipient : messageRecipients) {
+				try {
+					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_LAB_RESULT_ARRIVED), 
+							String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_RESULT_ARRIVED), DataHelper.getShortUuid(newSampleTest.getUuid())), 
+							MessageType.EMAIL);
+				} catch (EmailDeliveryFailedException e) {
+					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the arrival of a lab result. "
+							+ "Failed to send email to user with UUID %s.", recipient.getUuid()));
+				}
+			}
+		} else if (existingSampleTest.getTestResult() == SampleTestResultType.PENDING && newSampleTest.getTestResult() != SampleTestResultType.PENDING) {
+			Case existingSampleCase = sampleService.getByUuid(newSampleTest.getSample().getUuid()).getAssociatedCase();
+			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(existingSampleCase.getRegion(), 
+					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
+
+			for (User recipient : messageRecipients) {
+				try {
+					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_LAB_RESULT_SPECIFIED), 
+							String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_RESULT_SPECIFIED), DataHelper.getShortUuid(newSampleTest.getUuid())), 
+							MessageType.EMAIL);
+				} catch (EmailDeliveryFailedException e) {
+					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the specification of a lab result. "
+							+ "Failed to send email to user with UUID %s.", recipient.getUuid()));
+				}
+			}
+		}
+	}
+
 	@LocalBean
 	@Stateless
 	public static class SampleTestFacadeEjbLocal extends SampleTestFacadeEjb {

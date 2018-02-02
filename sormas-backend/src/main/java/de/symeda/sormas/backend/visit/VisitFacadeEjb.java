@@ -127,38 +127,14 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	@Override
 	public VisitDto saveVisit(VisitDto dto) {
-		Visit existingVisit = visitService.getByUuid(dto.getUuid());
-		boolean previousSymptomaticStatus = existingVisit != null && Boolean.TRUE.equals(existingVisit.getSymptoms().getSymptomatic());
+		VisitDto existingVisit = toDto(visitService.getByUuid(dto.getUuid()));
+		
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 		Visit entity = fromDto(dto);
 		visitService.ensurePersisted(entity);
-		
-		// Send an email to all responsible supervisors when the contact has become symptomatic
-		if (previousSymptomaticStatus == false && Boolean.TRUE.equals(dto.getSymptoms().getSymptomatic())) {
-			Set<Contact> contacts = new HashSet<>(contactService.getAllByVisit(visitService.getByUuid(dto.getUuid())));
-			for (Contact contact : contacts) {
-				Case contactCase = contact.getCaze();
-				// Skip if there is already a symptomatic visit for this contact
-				if (visitService.getSymptomaticCountByContact(contact) > 1) {
-					continue;
-				}
-				
-				List<User> messageRecipients = userService.getAllByRegionAndUserRoles(contactCase.getRegion(), 
-						UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
-				for (User recipient : messageRecipients) {
-					try { 
-						messagingService.sendMessage(recipient, MessagingService.SUBJECT_CONTACT_SYMPTOMATIC, 
-								String.format(I18nProperties.getMessage(MessagingService.CONTENT_CONTACT_SYMPTOMATIC), DataHelper.getShortUuid(contact.getUuid()), DataHelper.getShortUuid(contactCase.getUuid())), 
-								MessageType.EMAIL);
-					} catch (EmailDeliveryFailedException e) {
-						logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic. "
-								+ "Failed to send email to user with UUID %s.", recipient.getUuid()));
-					}
-				}
-			}
-		}
-		
-		contactService.updateFollowUpUntilAndStatusByVisit(entity);
+
+		onVisitChanged(existingVisit, entity);
+
 		return toDto(entity);
 	}
 
@@ -236,4 +212,35 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		return target;
 	}
+
+	private void onVisitChanged(VisitDto existingVisit, Visit newVisit) {
+		// Send an email to all responsible supervisors when the contact has become symptomatic
+		boolean previousSymptomaticStatus = existingVisit != null && Boolean.TRUE.equals(existingVisit.getSymptoms().getSymptomatic());
+		if (previousSymptomaticStatus == false && Boolean.TRUE.equals(newVisit.getSymptoms().getSymptomatic())) {
+			Set<Contact> contacts = new HashSet<>(contactService.getAllByVisit(visitService.getByUuid(newVisit.getUuid())));
+			for (Contact contact : contacts) {
+				Case contactCase = contact.getCaze();
+				// Skip if there is already a symptomatic visit for this contact
+				if (visitService.getSymptomaticCountByContact(contact) > 1) {
+					continue;
+				}
+
+				List<User> messageRecipients = userService.getAllByRegionAndUserRoles(contactCase.getRegion(), 
+						UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+				for (User recipient : messageRecipients) {
+					try { 
+						messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_CONTACT_SYMPTOMATIC), 
+								String.format(I18nProperties.getMessage(MessagingService.CONTENT_CONTACT_SYMPTOMATIC), DataHelper.getShortUuid(contact.getUuid()), DataHelper.getShortUuid(contactCase.getUuid())), 
+								MessageType.EMAIL);
+					} catch (EmailDeliveryFailedException e) {
+						logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic. "
+								+ "Failed to send email to user with UUID %s.", recipient.getUuid()));
+					}
+				}
+			}
+		}
+
+		contactService.updateFollowUpUntilAndStatusByVisit(newVisit);
+	}
+
 }
