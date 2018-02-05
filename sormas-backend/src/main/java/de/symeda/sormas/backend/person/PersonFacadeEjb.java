@@ -90,6 +90,35 @@ public class PersonFacadeEjb implements PersonFacade {
 			.collect(Collectors.toList());
 	}
 	
+	// multiselect does not work for person, because getting all persons requires multiple querries and we currently don't have an abstraction for this
+//	@Override
+//	public List<PersonIndexDto> getIndexList(UserReferenceDto userRef) {
+//
+//		User user = userService.getByReferenceDto(userRef);
+//		if (user == null) {
+//			return Collections.emptyList();
+//		}
+//		
+//		CriteriaBuilder cb = em.getCriteriaBuilder();
+//		CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
+//		Root<Person> person = cq.from(Person.class);
+//
+//		cq.multiselect(person.get(Person.UUID), 
+//				person.get(Person.SEX), person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME),
+//				person.get(Person.PRESENT_CONDITION), person.get(Person.BIRTHDATE_DD), person.get(Person.BIRTHDATE_MM),
+//				person.get(Person.BIRTHDATE_YYYY), person.get(Person.APPROXIMATE_AGE), person.get(Person.APPROXIMATE_AGE_TYPE),
+//				person.get(Person.DEATH_DATE));
+//
+//		Predicate filter = personService.createUserFilter(cb, cq, person, user);
+//
+//		if (filter != null) {
+//			cq.where(filter);
+//		}
+//
+//		List<PersonIndexDto> resultList = em.createQuery(cq).getResultList();
+//		return resultList;
+//	}
+	
 	@Override
 	public List<PersonReferenceDto> getPersonReferencesAfter(Date date, UserReferenceDto userRef) {
 		
@@ -219,30 +248,10 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	public static PersonIndexDto toIndexDto(Person entity) {
-		PersonIndexDto dto = new PersonIndexDto();
-		DtoHelper.fillDto(dto, entity);
-
-		dto.setFirstName(entity.getFirstName());
-		dto.setLastName(entity.getLastName());
-		dto.setSex(entity.getSex());
-		dto.setPresentCondition(entity.getPresentCondition());
 		
-		if (entity.getBirthdateYYYY() != null) {
-			Calendar birthdate = new GregorianCalendar();
-			birthdate.set(entity.getBirthdateYYYY(), entity.getBirthdateMM()!=null?entity.getBirthdateMM()-1:0, entity.getBirthdateDD()!=null?entity.getBirthdateDD():1);
-			
-			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper.getApproximateAge(
-					birthdate.getTime(),
-					entity.getDeathDate()
-					);
-			dto.setApproximateAge(pair.getElement0());
-			dto.setApproximateAgeType(pair.getElement1());
-		}
-		else {
-			dto.setApproximateAge(entity.getApproximateAge());
-			dto.setApproximateAgeType(entity.getApproximateAgeType());
-		}
-
+		PersonIndexDto dto = new PersonIndexDto(entity.getUuid(), entity.getSex(), entity.getFirstName(), entity.getLastName(), 
+				entity.getPresentCondition(), entity.getBirthdateDD(), entity.getBirthdateMM(), entity.getBirthdateYYYY(),
+				entity.getApproximateAge(), entity.getApproximateAgeType(), entity.getDeathDate());
 		return dto;
 	}
 	

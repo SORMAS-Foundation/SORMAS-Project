@@ -10,10 +10,10 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.PersonIndexDto;
 
 @SuppressWarnings("serial")
-public class PersonSelectField extends CustomField<PersonReferenceDto> {
+public class PersonSelectField extends CustomField<PersonIndexDto> {
 
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
@@ -95,7 +95,7 @@ public class PersonSelectField extends CustomField<PersonReferenceDto> {
 	
 	public void selectBestMatch() {
 		if (personGrid.getContainerDataSource().size() == 1) {
-			setInternalValue((PersonReferenceDto)personGrid.getContainerDataSource().firstItemId());
+			setInternalValue((PersonIndexDto)personGrid.getContainerDataSource().firstItemId());
 		}
 		else {
 			setInternalValue(null);
@@ -103,12 +103,12 @@ public class PersonSelectField extends CustomField<PersonReferenceDto> {
 	}
 	
 	@Override
-	public Class<? extends PersonReferenceDto> getType() {
-		return PersonReferenceDto.class;
+	public Class<? extends PersonIndexDto> getType() {
+		return PersonIndexDto.class;
 	}
 	
 	@Override
-	protected void setInternalValue(PersonReferenceDto newValue) {
+	protected void setInternalValue(PersonIndexDto newValue) {
 		super.setInternalValue(newValue);
 		
 		if (newValue == null) {
@@ -124,10 +124,10 @@ public class PersonSelectField extends CustomField<PersonReferenceDto> {
 	}
 	
 	@Override
-	protected PersonReferenceDto getInternalValue() {
+	protected PersonIndexDto getInternalValue() {
 		
 		if (personGrid != null) {
-			PersonReferenceDto value = (PersonReferenceDto)personGrid.getSelectedRow();
+			PersonIndexDto value = (PersonIndexDto)personGrid.getSelectedRow();
 			return value;
 		}
 		
