@@ -556,7 +556,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
                     Object sourceFieldValue = property.getReadMethod().invoke(source);
 
-                    if (current.isModified()) {
+                    if (current.isModified() && snapshot != null) {
                         // did the server send changes?
                         Object snapshotFieldValue = property.getReadMethod().invoke(snapshot);
                         if (DataHelper.equal(snapshotFieldValue, sourceFieldValue)) {
