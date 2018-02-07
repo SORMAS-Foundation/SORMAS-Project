@@ -228,14 +228,16 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 			for (User recipient : messageRecipients) {
 				try {
 					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_LAB_RESULT_ARRIVED), 
-							String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_RESULT_ARRIVED), DataHelper.getShortUuid(newSampleTest.getUuid())), 
+							String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_RESULT_ARRIVED), 
+									newSampleTest.getTestResult().toString(), DataHelper.getShortUuid(newSampleTest.getUuid())), 
 							MessageType.EMAIL);
 				} catch (EmailDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the arrival of a lab result. "
 							+ "Failed to send email to user with UUID %s.", recipient.getUuid()));
 				}
 			}
-		} else if (existingSampleTest.getTestResult() == SampleTestResultType.PENDING && newSampleTest.getTestResult() != SampleTestResultType.PENDING) {
+		} else if (existingSampleTest != null && existingSampleTest.getTestResult() == SampleTestResultType.PENDING && 
+				newSampleTest.getTestResult() != SampleTestResultType.PENDING) {
 			Case existingSampleCase = sampleService.getByUuid(newSampleTest.getSample().getUuid()).getAssociatedCase();
 			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(existingSampleCase.getRegion(), 
 					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
@@ -243,7 +245,8 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 			for (User recipient : messageRecipients) {
 				try {
 					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_LAB_RESULT_SPECIFIED), 
-							String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_RESULT_SPECIFIED), DataHelper.getShortUuid(newSampleTest.getUuid())), 
+							String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_RESULT_SPECIFIED), 
+									DataHelper.getShortUuid(newSampleTest.getUuid()), newSampleTest.getTestResult().toString()), 
 							MessageType.EMAIL);
 				} catch (EmailDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the specification of a lab result. "

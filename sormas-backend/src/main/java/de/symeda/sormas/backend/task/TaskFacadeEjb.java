@@ -26,6 +26,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.task.DashboardTaskDto;
+import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -34,11 +35,13 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CronService;
 import de.symeda.sormas.backend.common.EmailDeliveryFailedException;
 import de.symeda.sormas.backend.common.MessageType;
@@ -415,16 +418,24 @@ public class TaskFacadeEjb implements TaskFacade {
 		Calendar calendar = Calendar.getInstance();
 		Date now = new Date();
 		calendar.setTime(now);
-		calendar.add(Calendar.MINUTE, CronService.REPEATEDLY_PER_HOUR_INTERVAL);
+		calendar.add(Calendar.MINUTE, CronService.REPEATEDLY_PER_HOUR_INTERVAL * -1);
 		Date before = calendar.getTime();
 
-		List<Task> startingTasks = taskService.findBy(new TaskCriteria().taskStatusEquals(TaskStatus.PENDING).startDateBetween(now, before));
+		List<Task> startingTasks = taskService.findBy(new TaskCriteria().taskStatusEquals(TaskStatus.PENDING).startDateBetween(before, now));
 		for (Task task : startingTasks) {
+			TaskContext context = task.getTaskContext();
+			AbstractDomainObject associatedEntity = context == TaskContext.CASE ? task.getCaze() : 
+					context == TaskContext.CONTACT ? task.getContact() : 
+					context == TaskContext.EVENT ? task.getEvent() : null;
 			if (task.getAssigneeUser().isSupervisor() || task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER)) {
 				try {
-					messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), I18nProperties.getMessage(MessagingService.SUBJECT_TASK_NEW), 
-							String.format(I18nProperties.getMessage(MessagingService.CONTENT_TASK_NEW), task.getTaskType().toString()), 
-							MessageType.EMAIL);
+					String subject = I18nProperties.getMessage(MessagingService.SUBJECT_TASK_START);
+					String content = context == TaskContext.GENERAL ? 
+								String.format(I18nProperties.getMessage(MessagingService.CONTENT_TASK_START_GENERAL), task.getTaskType().toString()) :
+								String.format(I18nProperties.getMessage(MessagingService.CONTENT_TASK_START_SPECIFIC), task.getTaskType().toString(), 
+								context.toString() + " " + DataHelper.getShortUuid(associatedEntity.getUuid()));
+
+					messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL);
 				} catch (EmailDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a starting task. "
 							+ "Failed to send email to user with UUID %s.", task.getAssigneeUser().getUuid()));
@@ -432,15 +443,23 @@ public class TaskFacadeEjb implements TaskFacade {
 			}
 		}
 
-		List<Task> dueTasks = taskService.findBy(new TaskCriteria().taskStatusEquals(TaskStatus.PENDING).dueDateBetween(now, before));
+		List<Task> dueTasks = taskService.findBy(new TaskCriteria().taskStatusEquals(TaskStatus.PENDING).dueDateBetween(before, now));
 		for (Task task : dueTasks) {
+			TaskContext context = task.getTaskContext();
+			AbstractDomainObject associatedEntity = context == TaskContext.CASE ? task.getCaze() : 
+					context == TaskContext.CONTACT ? task.getContact() : 
+					context == TaskContext.EVENT ? task.getEvent() : null;
 			if (task.getAssigneeUser().isSupervisor() || task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER)) {
 				try {
-					messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), I18nProperties.getMessage(MessagingService.SUBJECT_TASK_DUE), 
-							String.format(I18nProperties.getMessage(MessagingService.CONTENT_TASK_DUE), task.getTaskType().toString()), 
-							MessageType.EMAIL);
+					String subject = I18nProperties.getMessage(MessagingService.SUBJECT_TASK_DUE);
+					String content = context == TaskContext.GENERAL ? 
+								String.format(I18nProperties.getMessage(MessagingService.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString()) :
+								String.format(I18nProperties.getMessage(MessagingService.CONTENT_TASK_DUE_SPECIFIC), task.getTaskType().toString(), 
+								context.toString() + " " + DataHelper.getShortUuid(associatedEntity.getUuid()));
+
+					messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL);
 				} catch (EmailDeliveryFailedException e) {
-					logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a due task. "
+						logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a due task. "
 							+ "Failed to send email to user with UUID %s.", task.getAssigneeUser().getUuid()));
 				}
 			}

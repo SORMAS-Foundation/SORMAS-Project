@@ -14,7 +14,6 @@ import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeE
 @RunAs(UserRole._SYSTEM)
 public class CronService {
 
-	// Adjust this when changing the minute value of the runRepeatedlyPerHour method
 	public static final int REPEATEDLY_PER_HOUR_INTERVAL = 10;
 	
 	@EJB
@@ -30,7 +29,7 @@ public class CronService {
 		weeklyReportFacade.generateSubmitWeeklyReportTasks();
     }
 	
-	@Schedule(hour = "*/1", minute = "*/10", second = "0", persistent = false)
+	@Schedule(hour = "*", minute = "*/" + REPEATEDLY_PER_HOUR_INTERVAL, second = "0", persistent = false)
 	public void runRepeatedlyPerHour() {
 		taskFacade.sendNewAndDueTaskMessages();
 	}
