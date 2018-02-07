@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 
 import javax.annotation.Resource;
 import javax.ejb.Asynchronous;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.mail.Message;
@@ -18,6 +17,9 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.FacadeProvider;
+
 @Stateless(name = "EmailService")
 @LocalBean
 public class EmailService {
@@ -27,17 +29,15 @@ public class EmailService {
 	@Resource(name = "mail/MailSession")
 	private Session mailSession;
 	
-	@EJB
-	private ConfigService config;
-	
 	public void sendEmail(String recipient, String subject, String content) throws AddressException, MessagingException {
 		 
 		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
  
 		MimeMessage message = new MimeMessage(mailSession);
  
-		String senderAddress = config.getEmailSenderAddress();
-		String senderName = config.getEmailSenderName();
+		ConfigFacade configFacade = FacadeProvider.getConfigFacade();
+		String senderAddress = configFacade.getEmailSenderAddress();
+		String senderName = configFacade.getEmailSenderName();
  
 		try {
 			InternetAddress fromAddress = new InternetAddress(senderAddress, senderName);

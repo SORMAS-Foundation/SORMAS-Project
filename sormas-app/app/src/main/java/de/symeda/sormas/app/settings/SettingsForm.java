@@ -15,6 +15,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.component.UpdateAppDialog;
 import de.symeda.sormas.app.databinding.SettingsFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -65,7 +66,9 @@ public class SettingsForm extends FormTab {
             } catch (AuthenticatorException e) {
                 Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             } catch (RetroProvider.ApiVersionException e) {
-                Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                UpdateAppDialog updateAppDialog = new UpdateAppDialog(this.getActivity(), e.getAppUrl());
+                updateAppDialog.show();
+                return;
             } catch (ConnectException e) {
                 Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             }

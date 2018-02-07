@@ -21,6 +21,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.component.SyncLogDialog;
+import de.symeda.sormas.app.component.UpdateAppDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
@@ -117,10 +118,13 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
                 }
                 // switch to LoginActivity is done below
             } catch (RetroProvider.ApiVersionException e) {
-                if (showResultSnackbar) {
-                    Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                    errorMessage = e.getMessage();
-                }
+//                if (showResultSnackbar) {
+//                    Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
+//                    errorMessage = e.getMessage();
+                    UpdateAppDialog updateAppDialog = new UpdateAppDialog(this, e.getAppUrl());
+                    updateAppDialog.show();
+                    return;
+//                }
             } catch (ConnectException e) {
                 if (showResultSnackbar) {
                     Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();

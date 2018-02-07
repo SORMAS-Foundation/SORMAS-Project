@@ -17,7 +17,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.backend.common.ConfigService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import info.novatec.beantest.api.BeanProviderHelper;
@@ -27,14 +27,13 @@ public class GeoShapeProviderEjbTest {
     private static BeanProviderHelper bm;
     
     @BeforeClass
-    public static void initilaize() {
+    public static void initialize() {
         bm = BeanProviderHelper.getInstance();
         
-		ConfigService configService = getBean(ConfigService.class);
 		RegionService regionService = getBean(RegionService.class);
 		DistrictService districtService = getBean(DistrictService.class);
 
-		String countryName = configService.getCountryName();
+		String countryName = getBean(ConfigFacadeEjbLocal.class).getCountryName();
 		List<Region> regions = regionService.getAll();
 
 		regionService.importRegions(countryName, regions);

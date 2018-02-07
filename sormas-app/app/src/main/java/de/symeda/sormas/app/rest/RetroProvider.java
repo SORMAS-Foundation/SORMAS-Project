@@ -145,7 +145,37 @@ public final class RetroProvider {
             String serverApiVersion = versionResponse.body();
             String appApiVersion = InfoProvider.getVersion();
             if (!serverApiVersion.equals(appApiVersion)) {
-                throw new ApiVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'");
+                Response<String> appUrlResponse;
+                try {
+                    // make call to get app url
+                    AsyncTask<Void, Void, Response<String>> asyncTask = new AsyncTask<Void, Void, Response<String>>() {
+
+                        @Override
+                        protected Response<String> doInBackground(Void... params) {
+                            Call<String> versionCall = infoFacadeRetro.getAppUrl();
+                            try {
+                                return versionCall.execute();
+                            } catch (IOException e) {
+                                // wrap the exception message inside a response object
+                                return Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
+                            }
+                        }
+                    };
+                    appUrlResponse = asyncTask.execute().get();
+
+                } catch (IllegalArgumentException e) {
+                    throw new ConnectException(e.getMessage());
+                } catch (InterruptedException e) {
+                    throw new ConnectException(e.getMessage());
+                } catch (ExecutionException e) {
+                    throw new ConnectException(e.getMessage());
+                }
+
+                if (appUrlResponse.isSuccessful()) {
+                    throw new ApiVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'", appUrlResponse.body());
+                } else {
+                    throw new ApiVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'");
+                }
             }
         }
         else {
@@ -388,17 +418,25 @@ public final class RetroProvider {
     }
 
     public static class ApiVersionException extends Exception {
+        private String appUrl;
         public ApiVersionException() {
             super();
         }
         public ApiVersionException(String message) {
             super(message);
         }
+        public ApiVersionException(String message, String appUrl) {
+            super(message);
+            this.appUrl = appUrl;
+        }
         public ApiVersionException(String message, Throwable cause) {
             super(message, cause);
         }
         public ApiVersionException(Throwable cause) {
             super(cause);
+        }
+        public String getAppUrl() {
+            return appUrl;
         }
     }
 }

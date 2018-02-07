@@ -27,11 +27,11 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.backend.common.ConfigService;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 
@@ -39,9 +39,6 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 	final static Logger logger = LoggerFactory.getLogger(GeoShapeProviderEjb.class);
-
-	@EJB
-	private ConfigService configService;
 
 	@EJB
 	private RegionFacadeEjbLocal regionFacade;
@@ -130,7 +127,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		regionMultiPolygons = new HashMap<>();
 
 		// load shapefile
-		String countryName = configService.getCountryName();
+		String countryName = FacadeProvider.getConfigFacade().getCountryName();
 		String filepath = "shapefiles/" + countryName + "/regions.shp";
 		URL filepathUrl = getClass().getClassLoader().getResource(filepath);
 		if (filepathUrl == null || !filepath.endsWith(".shp")) {
@@ -212,7 +209,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		districtMultiPolygons = new HashMap<>();
 
 		// load shapefile
-		String countryName = configService.getCountryName();
+		String countryName = FacadeProvider.getConfigFacade().getCountryName();
 		String filepath = "shapefiles/" + countryName + "/districts.shp";
 		URL filepathUrl = getClass().getClassLoader().getResource(filepath);
 		if (filepathUrl == null || !filepath.endsWith(".shp")) {

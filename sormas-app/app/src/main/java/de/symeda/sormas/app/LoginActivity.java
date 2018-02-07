@@ -14,6 +14,7 @@ import java.net.ConnectException;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CasesActivity;
+import de.symeda.sormas.app.component.UpdateAppDialog;
 import de.symeda.sormas.app.contact.ContactsActivity;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -65,7 +66,9 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                 // clearing login data is done below
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             } catch (RetroProvider.ApiVersionException e) {
-                Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                UpdateAppDialog updateAppDialog = new UpdateAppDialog(this, e.getAppUrl());
+                updateAppDialog.show();
+                return;
             } catch (ConnectException e) {
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             }
@@ -120,7 +123,9 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                 ConfigProvider.clearUsernameAndPassword();
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             } catch (RetroProvider.ApiVersionException e) {
-                Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                UpdateAppDialog updateAppDialog = new UpdateAppDialog(this, e.getAppUrl());
+                updateAppDialog.show();
+                return;
             } catch (ConnectException e) {
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             }

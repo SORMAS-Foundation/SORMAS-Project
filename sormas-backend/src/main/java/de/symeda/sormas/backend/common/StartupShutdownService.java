@@ -15,6 +15,7 @@ import javax.ejb.TransactionManagementType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -48,8 +49,6 @@ public class StartupShutdownService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
-	private ConfigService configService;
-	@EJB
 	private UserService userService;
 	@EJB
 	private CaseService caseService;
@@ -71,7 +70,7 @@ public class StartupShutdownService {
 	@PostConstruct
 	public void startup() {
 		
-		String countryName = configService.getCountryName();
+		String countryName = FacadeProvider.getConfigFacade().getCountryName();
 		
 		importAdministrativeDivisions(countryName);
 		

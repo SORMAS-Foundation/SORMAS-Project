@@ -49,6 +49,8 @@
     <string name="action_submit">Submit</string>
     <string name="action_loadMore">Load more</string>
     <string name="action_ok">Ok</string>
+    <string name="action_download">Download</string>
+    <string name="action_share_problem">Share Problem</string>
     <string name="action_forgot_PIN">Forgot PIN?</string>
     <string name="action_change_PIN">Change PIN</string>
     <string name="action_back_to_settings">Back to settings</string>
@@ -64,6 +66,7 @@
     <string name="action_open_reports">Open Reports</string>
     <string name="action_confirm">Confirm</string>
     <string name="action_logout_anyway">Logout anyway</string>
+    <string name="action_retry">Retry</string>
 
     <!-- field -->
     <string name="field_yes_no_yes">Yes</string>
@@ -127,6 +130,8 @@
     <string name="headline_gathering">Social event</string>
     <string name="headline_travel">Travel</string>
     <string name="headline_user_report">Report a problem</string>
+    <string name="headline_update_app">App update required</string>
+    <string name="headline_report_sent">Report successfully sent</string>
     <string name="headline_sync_log">Synchronization Conflicts</string>
     <string name="headline_synchronization">Synchronization</string>
     <string name="headline_contact_synchronization">Contact Synchronization</string>
@@ -207,6 +212,10 @@
     <string name="hint_report_not_yet_submitted">Not yet submitted</string>
     <string name="hint_report_not_submitted">No report submitted</string>
 
+    <string name="message_app_update_required">The SORMAS app needs to be updated. Please click the \'Download\' button if you have a constant internet connection or \'Close SORMAS\' to execute the update later.</string>
+    <string name="message_app_update_not_possible">The SORMAS app needs to be updated, but the updated version could not be retrieved. Please click the \'Share Problem\' button to notify a supervisor about this issue.</string>
+    <string name="message_report_sent">The error report has been sent. Please wait for your supervisor to contact you. You can now close the app or retry to retrieve the updated version.</string>
+
     <string name="sync_error">Synchronization failed. Please try again later.</string>
     <string name="server_connection_error">Could not connect to SORMAS server. Synchronization canceled. Try again later.</string>
 
@@ -254,6 +263,7 @@
     <string name="snackbar_select_create_person">Please select a person or click \'Create\' to create a new one.</string>
     <string name="snackbar_person_first_last_name">Please enter a first and last name for the new person.</string>
     <string name="snackbar_report_sent">Problem report successfully sent.</string>
+    <string name="snackbar_no_app_url_report_sent">Problem report successfully sent. Please wait until your supervisor contacts you. You can now close the app.</string>
     <string name="snackbar_task_status">Task status could not be edited because of an internal error.</string>
     <string name="snackbar_task_reply">An assignee reply is required when setting the task status to not executable.</string>
     <string name="snackbar_task_case_classification">Please specify the classification of the case associated with this task before you mark it as Done.</string>

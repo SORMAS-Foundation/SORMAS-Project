@@ -6,8 +6,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import de.symeda.sormas.api.utils.InfoProvider;
-
+import de.symeda.sormas.api.FacadeProvider;
 
 @Path("/info")
 @Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
@@ -17,6 +16,13 @@ public class InfoResource {
 	@GET
 	@Path("/version")
 	public String getVersion() {	
-		return InfoProvider.getVersion();
+		//return InfoProvider.getVersion();
+		return "12314";
+	}
+	
+	@GET
+	@Path("/appurl")
+	public String getAppUrl() {
+		return FacadeProvider.getConfigFacade().getAppUrl();
 	}
 }

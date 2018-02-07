@@ -19,4 +19,5 @@ public final class InfoProvider {
 			throw new RuntimeException(e);
 		}
 	}
+	
 }
