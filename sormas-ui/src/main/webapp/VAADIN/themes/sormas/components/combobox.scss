@@ -39,4 +39,21 @@
 	  }
 	}
   }
+  
+  .v-filterselect-suggestpopup {
+    div[class*="page"] {
+      @include opacity(.9);
+      @include transform( scale(1.2) );
+    }
+    
+    &:hover div[class*="page"] {
+      @include transform( scale(1.4) );
+    }    
+    
+    [class$="status"] {
+      color: $v-font-color;
+      font-size: $v-font-size;
+      font-weight: bold;
+    }
+  }
 }

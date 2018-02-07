@@ -40,7 +40,7 @@ public class StatisticsSubComponent extends VerticalLayout {
 			labelAndTotalLayout.addComponent(headlineLabel);
 			
 			countLabel = new Label();
-			CssStyles.style(countLabel, CssStyles.COLOR_PRIMARY, CssStyles.SIZE_XXXLARGE, CssStyles.TEXT_BOLD, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+			CssStyles.style(countLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE, CssStyles.LABEL_BOLD, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 			labelAndTotalLayout.addComponent(countLabel);
 			
 		}
@@ -54,6 +54,7 @@ public class StatisticsSubComponent extends VerticalLayout {
 		}
 
 		addComponent(headerLayout);
+		setExpandRatio(headerLayout, 0);
 	}
 	
 	public void addCountLayout() {
@@ -63,6 +64,7 @@ public class StatisticsSubComponent extends VerticalLayout {
 		CssStyles.style(countLayout, CssStyles.VSPACE_4);
 		
 		addComponent(countLayout);
+		setExpandRatio(countLayout, 0);
 	}
 	
 	public void addComponentToCountLayout(AbstractComponent countElement) {
@@ -76,6 +78,7 @@ public class StatisticsSubComponent extends VerticalLayout {
 			contentLayout.setSpacing(false);
 			initializeContentLayout();
 			addComponent(contentLayout);
+			setExpandRatio(contentLayout, 1);
 		}
 	}
 	
@@ -85,7 +88,8 @@ public class StatisticsSubComponent extends VerticalLayout {
 			contentLayout.setSpacing(true);
 			initializeContentLayout();
 			addComponent(contentLayout);
-			
+			setExpandRatio(contentLayout, 1);
+
 			leftContentColumnLayout = new VerticalLayout();
 			leftContentColumnLayout.setWidth(100, Unit.PERCENTAGE);
 			leftContentColumnLayout.setHeightUndefined();

@@ -44,11 +44,12 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -261,6 +262,14 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		List<ContactIndexDto> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+	
+	@Override
+	public List<ContactReferenceDto> getAllByVisit(VisitReferenceDto visitRef) {
+		Visit visit = visitService.getByReferenceDto(visitRef);
+		return contactService.getAllByVisit(visit).stream()
+				.map(c -> toReferenceDto(c))
+				.collect(Collectors.toList());
 	}
 
 	public Contact fromDto(@NotNull ContactDto source) {

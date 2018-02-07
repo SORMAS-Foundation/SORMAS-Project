@@ -17,7 +17,10 @@ import org.slf4j.LoggerFactory;
 public class ConfigService {
 
 	private static final String COUNTRY_NAME = "country.name";
-
+	
+	private static final String EMAIL_SENDER_ADDRESS = "email.sender.address";
+	private static final String EMAIL_SENDER_NAME = "email.sender.name";
+	
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ConfigService.class);
 
@@ -40,6 +43,14 @@ public class ConfigService {
 	
 	public String getCountryName() {
 		return getProperty(COUNTRY_NAME, "nigeria");
+	}
+	
+	public String getEmailSenderAddress() {
+		return getProperty(EMAIL_SENDER_ADDRESS, "noreply@sormas.org");
+	}
+	
+	public String getEmailSenderName() {
+		return getProperty(EMAIL_SENDER_NAME, "SORMAS Support");
 	}
 
 	private String getProperty(String name, String defaultValue){

@@ -22,6 +22,8 @@ public class TaskCriteria implements Serializable {
 	private EventReferenceDto event;
 	private Date dueDateFrom;
 	private Date dueDateTo;
+	private Date startDateFrom;
+	private Date startDateTo;
 	private Date statusChangeDateFrom;
 	private Date statusChangeDateTo;
 	
@@ -84,6 +86,17 @@ public class TaskCriteria implements Serializable {
 	public TaskCriteria dueDateBetween(Date dueDateFrom, Date dueDateTo) {
 		this.dueDateFrom = dueDateFrom;
 		this.dueDateTo = dueDateTo;
+		return this;
+	}
+	public Date getStartDateFrom() {
+		return startDateFrom;
+	}
+	public Date getStartDateTo() {
+		return startDateTo;
+	}
+	public TaskCriteria startDateBetween(Date startDateFrom, Date startDateTo) {
+		this.startDateFrom = startDateFrom;
+		this.startDateTo = startDateTo;
 		return this;
 	}
 	public Date getStatusChangeDateFrom() {

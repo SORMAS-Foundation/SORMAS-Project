@@ -43,4 +43,6 @@ public interface TaskFacade {
 	void deleteTask(TaskDto taskDto, String userUuid);
 
 	List<TaskIndexDto> getIndexList(String userUuid, TaskCriteria taskCriteria);
+	
+	void sendNewAndDueTaskMessages();
 }

@@ -19,11 +19,11 @@ public class StatisticsPercentageElement extends VerticalLayout {
 		
 		Label captionLabel = new Label(caption);
 		captionLabel.setWidthUndefined();
-		CssStyles.style(captionLabel, CssStyles.COLOR_SECONDARY, CssStyles.TEXT_BOLD);
+		CssStyles.style(captionLabel, CssStyles.LABEL_SECONDARY, CssStyles.LABEL_BOLD);
 		captionAndValueLayout.addComponent(captionLabel);
 		
 		percentageLabel = new Label();
-		CssStyles.style(percentageLabel, CssStyles.COLOR_PRIMARY, CssStyles.TEXT_BOLD);
+		CssStyles.style(percentageLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD);
 		percentageLabel.setWidthUndefined();
 		captionAndValueLayout.addComponent(percentageLabel);
 		

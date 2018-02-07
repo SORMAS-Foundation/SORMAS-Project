@@ -56,7 +56,7 @@ public class UserFacadeEjb implements UserFacade {
 	private EventService eventService;
 	
 	@Override
-	public List<UserReferenceDto> getAssignableUsersByRegion(RegionReferenceDto regionRef, UserRole ...assignableRoles) {
+	public List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole ...assignableRoles) {
 		Region region = regionService.getByReferenceDto(regionRef);
 		
 		return userService.getAllByRegionAndUserRoles(region, assignableRoles).stream()

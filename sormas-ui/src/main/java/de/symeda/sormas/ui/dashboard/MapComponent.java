@@ -399,7 +399,7 @@ public class MapComponent extends VerticalLayout {
 
 					Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 					infoLabel.setDescription("If cases are shown by home address and there are no GPS coordinates available for it, the coordinates of the location where the case has been reported are used instead.");
-					CssStyles.style(infoLabel, CssStyles.SIZE_MEDIUM, CssStyles.COLOR_SECONDARY, CssStyles.HSPACE_LEFT_3);
+					CssStyles.style(infoLabel, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_SECONDARY, CssStyles.HSPACE_LEFT_3);
 					infoLabel.setHeightUndefined();
 					showCasesLayout.addComponent(infoLabel);
 					showCasesLayout.setComponentAlignment(infoLabel, Alignment.TOP_CENTER);

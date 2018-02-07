@@ -15,3 +15,4 @@ deploy
 /sormas-ui/bin
 
 /sormas-ui/src/main/webapp/VAADIN/themes/sormas/addons.scss
+/sormas-ui/src/main/webapp/VAADIN/themes/sormas/styles.css

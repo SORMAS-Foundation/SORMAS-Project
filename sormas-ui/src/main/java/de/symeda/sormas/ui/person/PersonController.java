@@ -11,6 +11,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -57,10 +58,10 @@ public class PersonController {
 	    	selectOrCreateComponent.addCommitListener(new CommitListener() {
 	        	@Override
 	        	public void onCommit() {
-	        		PersonReferenceDto person = personSelect.getValue();
+	        		PersonIndexDto person = personSelect.getValue();
 	        		if (person != null) {
 	        			if (resultConsumer != null) {
-	        				resultConsumer.accept(person);
+	        				resultConsumer.accept(person.toReference());
 	        			}
 	        		} else {	
 	        			create(personSelect.getFirstName(), personSelect.getLastName(), resultConsumer);

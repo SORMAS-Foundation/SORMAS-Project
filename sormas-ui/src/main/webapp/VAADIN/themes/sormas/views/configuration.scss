@@ -1,0 +1,30 @@
+
+@mixin sormas-configuration-view {
+
+  .configuration-view {
+  	
+  	.v-label {
+  		
+  	  // TODO replace with a component
+  	  &.v-label-severity-indicator {
+	  	border: $v-border;
+	  	border-radius: 4px;
+	    padding: 4px 8px 4px 8px;
+	    height: 32px;
+	    line-height: 20px;
+	  	font-size: 11px;
+	  	text-transform: uppercase;
+	  	
+	  	&.critical {
+	  	  color:  darken($s-critical-color, 25%);
+	  	  background: lighten($s-critical-color, 25%);
+	  	}
+	  
+	  	&.warning {
+	  	  color:  darken($s-warning-color, 25%);
+	      background: lighten($s-warning-color, 25%)
+	  	}
+	  }	 
+  	}  
+  } 
+}

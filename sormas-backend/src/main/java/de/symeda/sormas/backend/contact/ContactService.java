@@ -24,6 +24,8 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -296,6 +298,33 @@ public class ContactService extends AbstractAdoService<Contact> {
 			updateFollowUpUntilAndStatus(contact);
 		}
 	}	
+	
+	public List<Contact> getAllByVisit(Visit visit) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
+		Root<Contact> from = cq.from(getElementClass());
+		Join<Contact, Case> caze = from.join(Contact.CAZE, JoinType.LEFT);
+		
+		Predicate filter = cb.equal(from.get(Contact.PERSON), visit.getPerson());
+		filter = cb.and(filter, cb.equal(caze.get(Case.DISEASE), visit.getDisease()));
+		
+		Predicate dateStartFilter = cb.or(
+				cb.and(
+						cb.isNotNull(from.get(Contact.LAST_CONTACT_DATE)), 
+						cb.lessThan(from.get(Contact.LAST_CONTACT_DATE), DateHelper.addDays(visit.getVisitDateTime(), VisitDto.ALLOWED_CONTACT_DATE_OFFSET))
+				), 
+				cb.lessThan(from.get(Contact.REPORT_DATE_TIME), DateHelper.addDays(visit.getVisitDateTime(), VisitDto.ALLOWED_CONTACT_DATE_OFFSET)));
+		
+		Predicate dateEndFilter = cb.greaterThan(from.get(Contact.FOLLOW_UP_UNTIL), DateHelper.subtractDays(visit.getVisitDateTime(), VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+		
+		filter = cb.and(filter, dateStartFilter);
+		filter = cb.and(filter, dateEndFilter);
+		
+		cq.where(filter);
+
+		List<Contact> resultList = em.createQuery(cq).getResultList();
+		return resultList;
+	}
 
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md

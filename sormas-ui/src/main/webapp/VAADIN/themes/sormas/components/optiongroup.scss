@@ -96,6 +96,18 @@
   	  	  }
   	  	}
   	  }
+  	 
+  	  &.v-select-optiongroup-horizontal-switch-critical {
+  	  	.v-radiobutton {
+  	  	  &:first-child {
+  	  	  	:root & > input {
+  	  	  	  &:checked ~ label {
+  	  	  	  	background: lighten($s-critical-color, 25%);
+  	  	  	  }
+  	  	    }
+  	  	  }
+  	  	}
+  	  }
   }
  
   .v-select-optiongroup {

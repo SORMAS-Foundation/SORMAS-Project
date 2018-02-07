@@ -62,6 +62,13 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		return districtService.getAllUuids(user);
 	}
 	
+	@Override	
+	public int getCountByRegion(String regionUuid) {
+		Region region = regionService.getByUuid(regionUuid);
+		
+		return districtService.getCountByRegion(region);
+	}
+	
 	@Override
 	public DistrictDto getDistrictByUuid(String uuid) {
 		return toDto(districtService.getByUuid(uuid));

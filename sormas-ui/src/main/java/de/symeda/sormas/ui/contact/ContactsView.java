@@ -161,7 +161,7 @@ public class ContactsView extends AbstractView {
         officerFilter.setWidth(140, Unit.PIXELS);
         officerFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
         if (user.getRegion() != null) {
-        	officerFilter.addItems(FacadeProvider.getUserFacade().getAssignableUsersByRegion(user.getRegion(), UserRole.CONTACT_OFFICER));
+        	officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.CONTACT_OFFICER));
         }
         officerFilter.addValueChangeListener(e -> {
         	UserReferenceDto officer = (UserReferenceDto) e.getProperty().getValue();

@@ -37,10 +37,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	}
 
 	private static final String HTML_LAYOUT = 
-    		LayoutUtil.div(
+    		LayoutUtil.divs(
     				LayoutUtil.fluidRow(
     						LayoutUtil.loc(LocationDto.ADDRESS), 
-    						LayoutUtil.div(
+    						LayoutUtil.divs(
     								LayoutUtil.fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT),
     								LayoutUtil.fluidRowLocs(LocationDto.COMMUNITY, LocationDto.CITY))),
     				LayoutUtil.fluidRow(

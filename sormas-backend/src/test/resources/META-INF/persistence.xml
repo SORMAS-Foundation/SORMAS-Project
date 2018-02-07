@@ -31,6 +31,7 @@
 		<class>de.symeda.sormas.backend.epidata.EpiDataTravel</class>
 		<class>de.symeda.sormas.backend.report.WeeklyReport</class>
 		<class>de.symeda.sormas.backend.report.WeeklyReportEntry</class>
+		<class>de.symeda.sormas.backend.outbreak.Outbreak</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

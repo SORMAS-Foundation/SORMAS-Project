@@ -10,6 +10,7 @@ import com.vaadin.ui.HorizontalLayout;
 
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.caze.CasesView;
+import de.symeda.sormas.ui.configuration.ConfigurationView;
 import de.symeda.sormas.ui.contact.ContactsView;
 import de.symeda.sormas.ui.dashboard.DashboardView;
 import de.symeda.sormas.ui.events.EventsView;
@@ -45,9 +46,11 @@ public class MainScreen extends HorizontalLayout {
 			@Override
 			public View getView(String viewName) {
 				try {
+					// Add new views to this clause to make sure that the right error page is shown
 					if (viewName.equals(DashboardView.VIEW_NAME) || viewName.equals(TasksView.VIEW_NAME) || viewName.equals(CasesView.VIEW_NAME) ||
 							viewName.equals(ContactsView.VIEW_NAME) || viewName.equals(EventsView.VIEW_NAME) || viewName.equals(SamplesView.VIEW_NAME) ||
-							viewName.equals(ReportsView.VIEW_NAME) || viewName.equals(StatisticsView.VIEW_NAME) || viewName.equals(UsersView.VIEW_NAME)) {
+							viewName.equals(ReportsView.VIEW_NAME) || viewName.equals(StatisticsView.VIEW_NAME) || viewName.equals(UsersView.VIEW_NAME) ||
+							viewName.equals(ConfigurationView.VIEW_NAME)) {
 						return AccessDeniedView.class.newInstance();
 					} else {
 						return ErrorView.class.newInstance();
@@ -86,6 +89,9 @@ public class MainScreen extends HorizontalLayout {
         menu.addView(StatisticsView.class, StatisticsView.VIEW_NAME, "Statistics", FontAwesome.BAR_CHART);
         if (LoginHelper.hasUserRight(UserRight.USER_VIEW)) {
         	menu.addView(UsersView.class, UsersView.VIEW_NAME, "Users", FontAwesome.USERS);
+        }
+        if (LoginHelper.hasUserRight(UserRight.CONFIGURATION_ACCESS)) {
+        	menu.addView(ConfigurationView.class, ConfigurationView.VIEW_NAME, "Configuration", FontAwesome.COGS);
         }
         menu.addView(AboutView.class, AboutView.VIEW_NAME, "About", FontAwesome.INFO_CIRCLE);
         

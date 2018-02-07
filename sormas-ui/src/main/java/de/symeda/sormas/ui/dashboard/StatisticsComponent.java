@@ -13,6 +13,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -34,16 +35,24 @@ import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.ui.dashboard.SvgCircleElement.SvgCircleElementPart;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
 public class StatisticsComponent extends VerticalLayout {
 
+	private static final String TASKS_LOC = "tasks";
+	private static final String CASES_LOC = "cases";
+	private static final String EVENTS_LOC = "events";
+	private static final String TESTS_LOC = "tests";
+	
 	private final DashboardDataProvider dashboardDataProvider;
-	private HorizontalLayout subComponentsLayout;
+	
+	private CustomLayout subComponentsLayout;
 	private StatisticsSubComponent myTasksComponent;
 	private StatisticsSubComponent newCasesComponent;
 	private StatisticsSubComponent newEventsComponent;
 	private StatisticsSubComponent newTestResultsComponent;
+	
 	private Button showMoreButton;
 	private Button showLessButton;
 
@@ -101,13 +110,20 @@ public class StatisticsComponent extends VerticalLayout {
 		this.setWidth(100, Unit.PERCENTAGE);
 		this.setMargin(true);
 
-		subComponentsLayout = new HorizontalLayout();
+		subComponentsLayout = new CustomLayout();
+		subComponentsLayout.setTemplateContents(
+				LayoutUtil.fluidRow(
+						LayoutUtil.fluidColumnLoc(3, 0, 6, 0, TASKS_LOC), 
+						LayoutUtil.fluidColumnLoc(3, 0, 6, 0, CASES_LOC),
+						LayoutUtil.fluidColumnLoc(3, 0, 6, 0, EVENTS_LOC),
+						LayoutUtil.fluidColumnLoc(3, 0, 6, 0, TESTS_LOC)));
 		subComponentsLayout.setWidth(100, Unit.PERCENTAGE);
-		CssStyles.style(subComponentsLayout, CssStyles.VSPACE_NONE);
+
 		addMyTasksComponent();
 		addNewCasesComponent();
 		addNewEventsComponent();
 		addNewTestResultsComponent();
+		
 		addComponent(subComponentsLayout);
 		if (Disease.values().length > 6) {
 			addShowMoreAndLessButtons();
@@ -127,10 +143,24 @@ public class StatisticsComponent extends VerticalLayout {
 			}
 		}
 
+		int visibleDiseases = currentDisease == null ? (isFullMode() ? Disease.values().length : 6) : 0; 
 		updateMyTasksComponent();
-		updateNewCasesComponent(currentDisease == null ? calculateAmountOfDisplayedDiseases() : 0);
-		updateNewEventsComponent(currentDisease == null ? calculateAmountOfDisplayedDiseases() : 0);
-		updateNewTestResultsComponent(currentDisease == null ? calculateAmountOfDisplayedDiseases() : 0);
+		updateNewCasesComponent(visibleDiseases);
+		updateNewEventsComponent(visibleDiseases);
+		updateNewTestResultsComponent(visibleDiseases);
+		
+		// fixed height makes sure they stack correct when screen gets smaller
+		if (isFullMode()) {
+			myTasksComponent.setHeight(480, Unit.PIXELS);
+			newCasesComponent.setHeight(480, Unit.PIXELS);
+			newEventsComponent.setHeight(480, Unit.PIXELS);
+			newTestResultsComponent.setHeight(480, Unit.PIXELS);
+		} else {
+			myTasksComponent.setHeight(340, Unit.PIXELS);
+			newCasesComponent.setHeight(340, Unit.PIXELS);
+			newEventsComponent.setHeight(340, Unit.PIXELS);
+			newTestResultsComponent.setHeight(340, Unit.PIXELS);
+		}
 	}
 
 	private void addShowMoreAndLessButtons() {
@@ -197,8 +227,7 @@ public class StatisticsComponent extends VerticalLayout {
 		taskStatusCircleGraph = new SvgCircleElement(false);
 		myTasksComponent.addComponentToRightContentColumn(taskStatusCircleGraph);
 
-		subComponentsLayout.addComponent(myTasksComponent);
-		subComponentsLayout.setExpandRatio(myTasksComponent, 0.25f);
+		subComponentsLayout.addComponent(myTasksComponent, TASKS_LOC);
 	}
 
 	private void updateMyTasksComponent() {
@@ -264,16 +293,15 @@ public class StatisticsComponent extends VerticalLayout {
 
 		// Content
 		newCasesComponent.addContent();
-		caseInvestigationStatusDone = new StatisticsGrowthElement("Investigated", CssStyles.COLOR_SECONDARY, Alignment.MIDDLE_LEFT);
-		caseInvestigationStatusDiscarded = new StatisticsGrowthElement("Discarded", CssStyles.COLOR_SECONDARY, Alignment.MIDDLE_LEFT);
-		caseFatalities = new StatisticsGrowthElement("Fatalities", CssStyles.COLOR_CRITICAL, Alignment.MIDDLE_RIGHT);
+		caseInvestigationStatusDone = new StatisticsGrowthElement("Investigated", CssStyles.LABEL_SECONDARY, Alignment.MIDDLE_LEFT);
+		caseInvestigationStatusDiscarded = new StatisticsGrowthElement("Discarded", CssStyles.LABEL_SECONDARY, Alignment.MIDDLE_LEFT);
+		caseFatalities = new StatisticsGrowthElement("Fatalities", CssStyles.LABEL_CRITICAL, Alignment.MIDDLE_RIGHT);
 		caseFatalityRateLabel = new Label();
-		CssStyles.style(caseFatalityRateLabel, CssStyles.SIZE_LARGE, CssStyles.COLOR_PRIMARY, CssStyles.TEXT_UPPERCASE, CssStyles.TEXT_BOLD);
+		CssStyles.style(caseFatalityRateLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.LABEL_BOLD);
 		caseFatalityRateCaption = new Label("Case Fatality Rate");
-		CssStyles.style(caseFatalityRateCaption, CssStyles.SIZE_MEDIUM, CssStyles.COLOR_CRITICAL, CssStyles.TEXT_UPPERCASE, CssStyles.TEXT_BOLD);
+		CssStyles.style(caseFatalityRateCaption, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_CRITICAL, CssStyles.LABEL_UPPERCASE, CssStyles.LABEL_BOLD);
 
-		subComponentsLayout.addComponent(newCasesComponent);
-		subComponentsLayout.setExpandRatio(newCasesComponent, 0.25f);
+		subComponentsLayout.addComponent(newCasesComponent, CASES_LOC);
 	}
 
 	private void updateNewCasesComponent(int amountOfDisplayedDiseases) {
@@ -384,8 +412,7 @@ public class StatisticsComponent extends VerticalLayout {
 		eventStatusPossiblePercentage = new StatisticsPercentageElement("Possible", CssStyles.SVG_FILL_IMPORTANT);
 		eventStatusNotAnEventPercentage = new StatisticsPercentageElement("Not An Event", CssStyles.SVG_FILL_MINOR);
 
-		subComponentsLayout.addComponent(newEventsComponent);
-		subComponentsLayout.setExpandRatio(newEventsComponent, 0.25f);
+		subComponentsLayout.addComponent(newEventsComponent, EVENTS_LOC);
 	}
 
 	private void updateNewEventsComponent(int amountOfDisplayedDiseases) {
@@ -410,12 +437,12 @@ public class StatisticsComponent extends VerticalLayout {
 				newEventsComponent.addComponentToLeftContentColumn(eventTypeRumorCircleGraph);
 				Label rumorCircleLabel = new Label("Rumor");
 				rumorCircleLabel.setWidth(100, Unit.PERCENTAGE);
-				CssStyles.style(rumorCircleLabel, CssStyles.COLOR_SECONDARY, CssStyles.SIZE_MEDIUM, CssStyles.TEXT_BOLD, CssStyles.TEXT_UPPERCASE, CssStyles.VSPACE_3, CssStyles.ALIGN_CENTER);
+				CssStyles.style(rumorCircleLabel, CssStyles.LABEL_SECONDARY, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_3, CssStyles.ALIGN_CENTER);
 				newEventsComponent.addComponentToLeftContentColumn(rumorCircleLabel);
 				newEventsComponent.addComponentToLeftContentColumn(eventTypeOutbreakCircleGraph);
 				Label outbreakCircleLabel = new Label("Outbreak");
 				outbreakCircleLabel.setWidth(100, Unit.PERCENTAGE);
-				CssStyles.style(outbreakCircleLabel, CssStyles.COLOR_SECONDARY, CssStyles.SIZE_MEDIUM, CssStyles.TEXT_BOLD, CssStyles.TEXT_UPPERCASE, CssStyles.VSPACE_3, CssStyles.ALIGN_CENTER);
+				CssStyles.style(outbreakCircleLabel, CssStyles.LABEL_SECONDARY, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_3, CssStyles.ALIGN_CENTER);
 				newEventsComponent.addComponentToLeftContentColumn(outbreakCircleLabel);
 				newEventsComponent.addComponentToRightContentColumn(eventStatusConfirmedPercentage);
 				newEventsComponent.addComponentToRightContentColumn(eventStatusPossiblePercentage);
@@ -499,8 +526,7 @@ public class StatisticsComponent extends VerticalLayout {
 		testResultPendingPercentage = new StatisticsPercentageElement("Pending", CssStyles.SVG_FILL_IMPORTANT);
 		testResultIndeterminatePercentage = new StatisticsPercentageElement("Indeterminate", CssStyles.SVG_FILL_MINOR);
 
-		subComponentsLayout.addComponent(newTestResultsComponent);
-		subComponentsLayout.setExpandRatio(newTestResultsComponent, 0.25f);
+		subComponentsLayout.addComponent(newTestResultsComponent, TESTS_LOC);
 	}
 
 	private void updateNewTestResultsComponent(int amountOfDisplayedDiseases) {
@@ -526,12 +552,12 @@ public class StatisticsComponent extends VerticalLayout {
 				newTestResultsComponent.addComponentToLeftContentColumn(testResultShippedCircleGraph);
 				Label shippedCircleLabel = new Label("Shipped");
 				shippedCircleLabel.setWidth(100, Unit.PERCENTAGE);
-				CssStyles.style(shippedCircleLabel, CssStyles.COLOR_SECONDARY, CssStyles.SIZE_MEDIUM, CssStyles.TEXT_BOLD, CssStyles.TEXT_UPPERCASE, CssStyles.VSPACE_3, CssStyles.ALIGN_CENTER);
+				CssStyles.style(shippedCircleLabel, CssStyles.LABEL_SECONDARY, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_3, CssStyles.ALIGN_CENTER);
 				newTestResultsComponent.addComponentToLeftContentColumn(shippedCircleLabel);
 				newTestResultsComponent.addComponentToLeftContentColumn(testResultReceivedCircleGraph);
 				Label receivedCircleLabel = new Label("Received");
 				receivedCircleLabel.setWidth(100, Unit.PERCENTAGE);
-				CssStyles.style(receivedCircleLabel, CssStyles.COLOR_SECONDARY, CssStyles.SIZE_MEDIUM, CssStyles.TEXT_BOLD, CssStyles.TEXT_UPPERCASE, CssStyles.VSPACE_3, CssStyles.ALIGN_CENTER);
+				CssStyles.style(receivedCircleLabel, CssStyles.LABEL_SECONDARY, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_3, CssStyles.ALIGN_CENTER);
 				newTestResultsComponent.addComponentToLeftContentColumn(receivedCircleLabel);
 				newTestResultsComponent.addComponentToRightContentColumn(testResultPositivePercentage);
 				newTestResultsComponent.addComponentToRightContentColumn(testResultNegativePercentage);
@@ -605,8 +631,8 @@ public class StatisticsComponent extends VerticalLayout {
 		return sortedDiseaseList;
 	}
 
-	private int calculateAmountOfDisplayedDiseases() {
-		return showMoreButton.isVisible() ? 6 : showLessButton.isVisible() ? Disease.values().length : 0;
+	private boolean isFullMode() {
+		return showLessButton.isVisible();
 	}
 
 }

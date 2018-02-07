@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>0.13.1</version>
+	<version>0.14.0</version>
 
 	<prerequisites>
 		<maven>3.0</maven>
@@ -469,6 +469,7 @@
 						<password>${github.sormas.password}</password>
 						<scmCommentPrefix>[GITFLOW]</scmCommentPrefix>
 						<pushReleases>true</pushReleases>
+						<pushHotfixes>true</pushHotfixes>
 						<useReleaseProfile>false</useReleaseProfile>
 						<noDeploy>true</noDeploy>
 						<autoVersionSubmodules>true</autoVersionSubmodules>

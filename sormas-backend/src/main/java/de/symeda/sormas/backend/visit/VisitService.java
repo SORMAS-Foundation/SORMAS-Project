@@ -122,6 +122,21 @@ public class VisitService extends AbstractAdoService<Visit> {
 		
 		return em.createQuery(cq).getSingleResult().intValue();
 	}
+	
+	public int getSymptomaticCountByContact(Contact contact) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Visit> from = cq.from(getElementClass());
+		Join<Visit, Symptoms> symptoms = from.join(Visit.SYMPTOMS, JoinType.LEFT);
+		
+		Predicate filter = buildVisitFilter(contact, null, cb, cq, from);
+		filter = cb.and(filter, cb.equal(symptoms.get(Symptoms.SYMPTOMATIC), true));
+		
+		cq.select(cb.count(from));
+		cq.where(filter);
+		
+		return em.createQuery(cq).getSingleResult().intValue();
+	}
 
 	public Visit getLastVisitByContact(Contact contact, VisitStatus visitStatus) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -181,6 +196,9 @@ public class VisitService extends AbstractAdoService<Visit> {
 		return resultList;
 	}
 
+	/**
+	 * The logic to calculate the listed visits needs to match the ContactService.getAllByVisit method.
+	 */
 	private Predicate buildVisitFilter(Contact contact, VisitStatus visitStatus, CriteriaBuilder cb, CriteriaQuery<?> cq, Root<?> from) {
 		// all of the person
 		Predicate filter = cb.equal(from.get(Visit.PERSON), contact.getPerson());

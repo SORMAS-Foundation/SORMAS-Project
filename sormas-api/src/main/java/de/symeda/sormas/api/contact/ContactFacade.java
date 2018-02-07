@@ -10,6 +10,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.visit.VisitReferenceDto;
 
 @Remote
 public interface ContactFacade {
@@ -41,4 +42,6 @@ public interface ContactFacade {
 	void deleteContact(ContactReferenceDto contactRef, String userUuid);
 	
 	List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria);
+	
+	List<ContactReferenceDto> getAllByVisit(VisitReferenceDto visitRef);
 }

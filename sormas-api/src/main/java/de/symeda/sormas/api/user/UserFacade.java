@@ -30,7 +30,7 @@ public interface UserFacade {
 
 	List<UserReferenceDto> getAllAfterAsReference(Date date);
 
-	List<UserReferenceDto> getAssignableUsersByRegion(RegionReferenceDto regionRef, UserRole... assignableRoles);
+	List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles);
 	
 	/**
 	 * 

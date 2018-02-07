@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui;
 
 import de.symeda.sormas.ui.caze.CaseController;
+import de.symeda.sormas.ui.configuration.OutbreakController;
 import de.symeda.sormas.ui.contact.ContactController;
 import de.symeda.sormas.ui.events.EventController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
@@ -27,6 +28,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final TaskController taskController;
 	private final SampleController sampleController;
 	private final SampleTestController sampleTestController;
+	private final OutbreakController outbreakController;
 
 	public ControllerProvider() {
 		super();
@@ -41,6 +43,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		taskController = new TaskController();
 		sampleController = new SampleController();
 		sampleTestController = new SampleTestController();
+		outbreakController = new OutbreakController();
 	}
 
 	protected static ControllerProvider get() {
@@ -85,6 +88,10 @@ public class ControllerProvider extends BaseControllerProvider {
 	
 	public static SampleTestController getSampleTestController() {
 		return get().sampleTestController;
+	}
+	
+	public static OutbreakController getOutbreakController() {
+		return get().outbreakController;
 	}
 
 }

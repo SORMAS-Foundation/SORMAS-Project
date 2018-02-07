@@ -50,7 +50,7 @@ public class CaseIndexDto implements Serializable {
 			String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 			PresentCondition presentCondition, Date reportDate, String regionUuid, 
 			String districtUuid, String districtName, String healthFacilityUuid, String surveillanceOfficerUuid, CaseOutcome outcome) {
-		this.setUuid(uuid);
+		this.uuid = uuid;
 		this.epidNumber = epidNumber;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;

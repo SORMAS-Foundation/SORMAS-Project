@@ -21,7 +21,8 @@ public class Symptoms extends AbstractDomainObject {
 	private static final long serialVersionUID = 1467852910743225822L;
 	
 	public static final String ONSET_DATE = "onsetDate";
-
+	public static final String SYMPTOMATIC = "symptomatic";
+	
 	private Date onsetDate;
 	private String onsetSymptom;
 	private Boolean symptomatic;

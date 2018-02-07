@@ -5,14 +5,25 @@
     text-transform: uppercase;
     border-color: $v-selection-color;
     box-shadow: none;
-  }
+    
   
-  .v-button-subtle {
-  	background-color: inherit;
-  }
+    &.v-button-subtle {
+  	  background-color: inherit;
+    }
  
-  .v-button-border-neutral {
-  	border-color: #000000;
-  }
+    &.v-button-border-neutral {
+  	  border-color: #000000;
+    }
  
+    &.v-button-danger,
+    &.v-button-critical {
+      @include valo-button-style($background-color: $s-critical-color);
+      border-color: darken($s-critical-color, 25%)
+    }
+ 
+    &.v-button-warning {
+      @include valo-button-style($background-color: $s-warning-color);
+      border-color: darken($s-warning-color, 25%)
+    }
+  }
 }

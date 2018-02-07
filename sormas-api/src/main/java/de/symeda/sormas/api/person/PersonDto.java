@@ -305,7 +305,7 @@ public class PersonDto extends EntityDto {
 	}
 	
 	public PersonReferenceDto toReference() {
-		return new PersonReferenceDto(getUuid());
+		return new PersonReferenceDto(getUuid(), firstName, lastName);
 	}
 	
 	public static String buildCaption(String firstName, String lastName) {

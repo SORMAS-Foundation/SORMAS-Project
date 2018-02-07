@@ -15,7 +15,6 @@ import javax.ejb.TransactionManagementType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -78,7 +77,7 @@ public class StartupShutdownService {
 		
 		facilityService.importFacilities(countryName);
 
-		initUserMockData();
+		initDefaultUsers();
 		
 		// TODO enable/disable via config?
 		fixMissingEntities();
@@ -104,7 +103,7 @@ public class StartupShutdownService {
 	}
 
 
-	private void initUserMockData() {
+	private void initDefaultUsers() {
 		if (userService.getAll().isEmpty()) {
 	
 			Region region = regionService.getAll().get(0);
@@ -118,6 +117,8 @@ public class StartupShutdownService {
 	
 			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Sunkanmi",
 					"Sesay", "Sunkanmi");
+			surveillanceSupervisor.getUserRoles().add(UserRole.CONTACT_SUPERVISOR);
+			surveillanceSupervisor.getUserRoles().add(UserRole.CASE_SUPERVISOR);
 			surveillanceSupervisor.setRegion(region);
 			userService.persist(surveillanceSupervisor);
 	
@@ -133,13 +134,6 @@ public class StartupShutdownService {
 			informant.setHealthFacility(facility);
 			informant.setAssociatedOfficer(surveillanceOfficer);
 			userService.persist(informant);
-		}
-	
-		User supervisor = userService.getByUserName(UserHelper.getSuggestedUsername("Sunkanmi", "Sesay"));
-		if (!supervisor.getUserRoles().contains(UserRole.CONTACT_SUPERVISOR)
-				|| !supervisor.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
-			supervisor.getUserRoles().add(UserRole.CONTACT_SUPERVISOR);
-			supervisor.getUserRoles().add(UserRole.CASE_SUPERVISOR);
 		}
 	}
 
