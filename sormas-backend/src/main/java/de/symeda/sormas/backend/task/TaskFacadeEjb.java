@@ -83,7 +83,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	@EJB
 	private MessagingService messagingService;
 
-	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
+	private static final Logger logger = LoggerFactory.getLogger(TaskFacadeEjb.class);
 
 	public Task fromDto(TaskDto source) {		
 		if (source == null) {

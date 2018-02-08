@@ -58,7 +58,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	@EJB
 	private MessagingService messagingService;
 
-	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
+	private static final Logger logger = LoggerFactory.getLogger(VisitFacadeEjb.class);
 
 
 	@Override
