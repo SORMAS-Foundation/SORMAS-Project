@@ -1,0 +1,23 @@
+ext {
+    loadKeystoreProperties = {
+
+        // Initialize a new Properties() object called keystoreProperties.
+        def keystoreProperties = new Properties()
+
+        try {
+            // Create a variable called keystorePropertiesFile, and initialize it to your
+            // keystore.properties file, in the rootProject folder.
+            def keystorePropertiesFile = rootProject.file("keystore.properties")
+            // Load your keystore.properties file into the keystoreProperties object.
+            keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+        } catch(e) {
+            println "[WARNING] Could not access keystore.properties. Using dummy values."
+            keystoreProperties.setProperty("storeFile", "sormas-keystore.jks");
+            keystoreProperties.setProperty("storePassword", "");
+            keystoreProperties.setProperty("keyAlias", "sormas-app");
+            keystoreProperties.setProperty("keyPassword", "");
+        }
+
+        keystoreProperties
+    }
+}

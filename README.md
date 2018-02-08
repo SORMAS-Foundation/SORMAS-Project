@@ -71,7 +71,7 @@ For information on what libs are used see pom.xml in sormas-base project: https:
 * ``cd /root/deploy/sormas/$(date +%F) (just to make sure you're in the right directory)``
 * ``cp apps/*.ear /opt/domains/sormas/autodeploy/``
 * ``cp apps/*.war /opt/domains/sormas/autodeploy/``
-* ``cp android/debug/*.apk /var/www/sormas/downloads/``
+* ``cp android/release/*.apk /var/www/sormas/downloads/``
 
 #### Final Steps
 
@@ -182,7 +182,7 @@ Here are some things that you should do to configure the apache server as proxy:
 * Provide the android apk
 
         Options -Indexes
-        Alias "/download/app-debug.apk" "/var/www/sormas/downloads/app-debug.apk"
+        Alias "/download/sormas-release.apk" "/var/www/sormas/downloads/sormas-release.apk"
 
 
 ## Development Environment
@@ -197,6 +197,7 @@ Here are some things that you should do to configure the apache server as proxy:
 - Make a copy of "build.properties.example" contained in "sormas-base", rename it to "build.properties" and set "glassfish.domain.root" to the location of the sormas domain located in the "glassfish/domains" folder inside your payara installation
 - Install the latest Android Studio version (to avoid any errors, make sure to start the installation with admin rights and choose a path for the Android SDK that contains no whitespaces)
 - Open Android Studio and import the "sormas-app" project from Eclipse
+- Create a keystore.properties file in sormas-app (see keystore.properties.example for reference).
 - Drag the "build.xml" file contained in "sormas-base" into the Ant view in Eclipse and execute the "install [default]", "deploy-serverlibs" and "deploy-bundles" scripts
 - Build the Android Studio project by executing the gradle build (this may be done automatically)
 - Start the Glassfish server and deploy "sormas-ear", "sormas-rest" and "sormas-ui" by dragging the respective projects onto it
