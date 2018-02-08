@@ -14,6 +14,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -29,6 +30,7 @@ public class CaseContactsView extends AbstractCaseView {
 	public static final String VIEW_NAME = "cases/contacts";
 
 	private ContactGrid grid;    
+	private ComboBox classificationFilter;
 	private ComboBox districtFilter;
 	private ComboBox officerFilter;
     private Button newButton;
@@ -57,13 +59,13 @@ public class CaseContactsView extends AbstractCaseView {
     	topLayout.setSpacing(true);
     	topLayout.setWidth("100%");
     	
-    	Button statusAll = new Button("all", e -> grid.setClassificationFilter(null));
+    	Button statusAll = new Button("all", e -> grid.setStatusFilter(null));
         statusAll.setStyleName(ValoTheme.BUTTON_LINK);
         topLayout.addComponent(statusAll);
         
-        for (ContactClassification status : ContactClassification.values()) {
+        for (ContactStatus status : ContactStatus.values()) {
 	    	Button statusButton = new Button(status.toString(), e -> {
-	    		grid.setClassificationFilter(status);
+	    		grid.setStatusFilter(status);
 	    		grid.reload();
 	    	});
 	    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
@@ -89,6 +91,15 @@ public class CaseContactsView extends AbstractCaseView {
     	HorizontalLayout topLayout = new HorizontalLayout();
     	topLayout.setSpacing(true);
     	topLayout.setWidth(100, Unit.PERCENTAGE);
+    	
+    	classificationFilter = new ComboBox();
+    	classificationFilter.setWidth(240, Unit.PIXELS);
+    	classificationFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
+    	classificationFilter.addValueChangeListener(e -> {
+        	ContactClassification classification = (ContactClassification) e.getProperty().getValue();
+        	grid.setClassificationFilter(classification);
+        });
+        topLayout.addComponent(classificationFilter);
     	
         districtFilter = new ComboBox();
         districtFilter.setWidth(240, Unit.PIXELS);
@@ -117,6 +128,9 @@ public class CaseContactsView extends AbstractCaseView {
 
     	CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 
+    	classificationFilter.removeAllItems();
+    	classificationFilter.addItems((Object[]) ContactClassification.values());
+    	
     	districtFilter.removeAllItems();
         districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(caseDto.getRegion().getUuid()));
 

@@ -26,7 +26,6 @@ import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.EmailDeliveryFailedException;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;

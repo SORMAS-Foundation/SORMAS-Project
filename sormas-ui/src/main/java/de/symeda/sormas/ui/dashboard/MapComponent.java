@@ -1009,10 +1009,10 @@ public class MapComponent extends VerticalLayout {
 			}
 
 			// Don't show a marker for contacts that are filtered out
-			if (!showUnconfirmedContacts && contact.getContactClassification() == ContactClassification.POSSIBLE) {
+			if (!showUnconfirmedContacts && contact.getContactClassification() == ContactClassification.UNCONFIRMED) {
 				continue;
 			}
-			if (!showConfirmedContacts && contact.getContactClassification() != ContactClassification.POSSIBLE) {
+			if (!showConfirmedContacts && contact.getContactClassification() != ContactClassification.UNCONFIRMED) {
 				continue;
 			}
 

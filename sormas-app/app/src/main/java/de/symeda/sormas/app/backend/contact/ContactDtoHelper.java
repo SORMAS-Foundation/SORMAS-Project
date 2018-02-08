@@ -63,6 +63,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         target.setLastContactDate(source.getLastContactDate());
         target.setContactProximity(source.getContactProximity());
         target.setContactClassification(source.getContactClassification());
+        target.setContactStatus(source.getContactStatus());
         target.setRelationToCase(source.getRelationToCase());
         target.setFollowUpStatus(source.getFollowUpStatus());
         target.setFollowUpComment(source.getFollowUpComment());
@@ -102,6 +103,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         target.setLastContactDate(source.getLastContactDate());
         target.setContactProximity(source.getContactProximity());
         target.setContactClassification(source.getContactClassification());
+        target.setContactStatus(source.getContactStatus());
         target.setRelationToCase(source.getRelationToCase());
         target.setFollowUpStatus(source.getFollowUpStatus());
         target.setFollowUpComment(source.getFollowUpComment());

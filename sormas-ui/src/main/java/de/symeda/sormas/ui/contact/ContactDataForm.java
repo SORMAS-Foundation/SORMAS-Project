@@ -48,7 +48,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	
     private static final String HTML_LAYOUT = 
     		LayoutUtil.h3("Contact data")+
-			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION) +
+			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS) +
 			LayoutUtil.locCss(CssStyles.VSPACE_3, TO_CASE_BTN_LOC) +
 			LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.UUID) +
 			LayoutUtil.fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
@@ -68,6 +68,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     @Override
 	protected void addFields() {
     	addField(ContactDto.CONTACT_CLASSIFICATION, OptionGroup.class);
+    	addField(ContactDto.CONTACT_STATUS, OptionGroup.class);
     	addField(ContactDto.UUID, TextField.class);
     	addField(ContactDto.REPORTING_USER, ComboBox.class);
     	DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
@@ -128,7 +129,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
         	}
     	});
     	
-    	setRequired(true, ContactDto.CONTACT_CLASSIFICATION);
+    	setRequired(true, ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS);
     	FieldHelper.addSoftRequiredStyle(lastContactDate, contactProximity, relationToCase);
 	}
     

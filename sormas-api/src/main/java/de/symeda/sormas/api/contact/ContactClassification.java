@@ -3,11 +3,9 @@ package de.symeda.sormas.api.contact;
 import de.symeda.sormas.api.I18nProperties;
 
 public enum ContactClassification {
-	POSSIBLE,
+	UNCONFIRMED,
 	CONFIRMED,
-	NO_CONTACT,
-	CONVERTED, // to case
-	DROPPED, // case disproved
+	NO_CONTACT
 	;
 	
 	public String toString() {

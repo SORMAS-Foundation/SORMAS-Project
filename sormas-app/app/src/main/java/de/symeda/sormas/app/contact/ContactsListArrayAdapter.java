@@ -66,6 +66,8 @@ public class ContactsListArrayAdapter extends ArrayAdapter<Contact> {
         TextView information = (TextView) convertView.findViewById(R.id.contact_information_li);
         StringBuilder sb = new StringBuilder();
         sb.append(contact.getContactClassification());
+        sb.append(", ");
+        sb.append(contact.getContactStatus());
         if (contact.getContactProximity() != null) {
             sb.append(", " + contact.getContactProximity());
         }

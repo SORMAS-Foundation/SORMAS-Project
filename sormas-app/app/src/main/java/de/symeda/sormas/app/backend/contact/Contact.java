@@ -14,6 +14,7 @@ import javax.persistence.Enumerated;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -64,6 +65,9 @@ public class Contact extends AbstractDomainObject {
 
 	@Enumerated(EnumType.STRING)
 	private ContactClassification contactClassification;
+
+	@Enumerated(EnumType.STRING)
+	private ContactStatus contactStatus;
 
 	@Enumerated(EnumType.STRING)
 	private FollowUpStatus followUpStatus;
@@ -160,6 +164,13 @@ public class Contact extends AbstractDomainObject {
 	}
 	public void setContactClassification(ContactClassification contactClassification) {
 		this.contactClassification = contactClassification;
+	}
+
+	public ContactStatus getContactStatus() {
+		return contactStatus;
+	}
+	public void setContactStatus(ContactStatus contactStatus) {
+		this.contactStatus = contactStatus;
 	}
 
 	public String getDescription() {

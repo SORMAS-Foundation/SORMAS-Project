@@ -18,6 +18,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -38,6 +39,7 @@ public class Contact extends AbstractDomainObject {
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
+	public static final String CONTACT_STATUS = "contactStatus";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
 	public static final String FOLLOW_UP_COMMENT = "followUpComment";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
@@ -55,6 +57,7 @@ public class Contact extends AbstractDomainObject {
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
+	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
 	private String followUpComment;
 	private Date followUpUntil;
@@ -166,7 +169,16 @@ public class Contact extends AbstractDomainObject {
 	public void setContactClassification(ContactClassification contactClassification) {
 		this.contactClassification = contactClassification;
 	}	
-	
+
+	@Enumerated(EnumType.STRING)
+	public ContactStatus getContactStatus() {
+		return contactStatus;
+	}
+
+	public void setContactStatus(ContactStatus contactStatus) {
+		this.contactStatus = contactStatus;
+	}
+
 	@Enumerated(EnumType.STRING)
 	public ContactRelation getRelationToCase() {
 		return relationToCase;

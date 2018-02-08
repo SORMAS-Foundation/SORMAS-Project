@@ -19,6 +19,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
@@ -126,7 +127,8 @@ public class ContactNewActivity extends AppCompatActivity {
             case R.id.action_save:
                 final Contact contact = contactNewForm.getData();
 
-                contact.setContactClassification(ContactClassification.POSSIBLE);
+                contact.setContactClassification(ContactClassification.UNCONFIRMED);
+                contact.setContactStatus(ContactStatus.ACTIVE);
                 contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
                 contact.setReportingUser(ConfigProvider.getUser());
                 contact.setReportDateTime(new Date());

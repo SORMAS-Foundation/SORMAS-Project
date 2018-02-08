@@ -240,7 +240,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactCase.get(Case.UUID), contactCase.get(Case.DISEASE), contactCase.get(Case.DISEASE_DETAILS), contactCasePerson.get(Person.UUID), contactCasePerson.get(Person.FIRST_NAME),
 				contactCasePerson.get(Person.LAST_NAME), contactCaseRegion.get(Region.UUID), contactCaseDistrict.get(District.UUID),
 				contactCaseFacility.get(Facility.UUID), contact.get(Contact.LAST_CONTACT_DATE), contact.get(Contact.CONTACT_PROXIMITY),
-				contact.get(Contact.CONTACT_CLASSIFICATION), contact.get(Contact.FOLLOW_UP_STATUS), contact.get(Contact.FOLLOW_UP_UNTIL),
+				contact.get(Contact.CONTACT_CLASSIFICATION), contact.get(Contact.CONTACT_STATUS), contact.get(Contact.FOLLOW_UP_STATUS), contact.get(Contact.FOLLOW_UP_UNTIL),
 				contactOfficer.get(User.UUID));
 		
 		Predicate filter = null;
@@ -298,6 +298,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setContactProximity(source.getContactProximity());
 		target.setContactClassification(source.getContactClassification());
+		target.setContactStatus(source.getContactStatus());
 		target.setFollowUpStatus(source.getFollowUpStatus());
 		target.setFollowUpComment(source.getFollowUpComment());
 		target.setFollowUpUntil(source.getFollowUpUntil());
@@ -336,6 +337,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setLastContactDate(source.getLastContactDate());
 		target.setContactProximity(source.getContactProximity());
 		target.setContactClassification(source.getContactClassification());
+		target.setContactStatus(source.getContactStatus());
 		target.setFollowUpStatus(source.getFollowUpStatus());
 		target.setFollowUpComment(source.getFollowUpComment());
 		target.setFollowUpUntil(source.getFollowUpUntil());

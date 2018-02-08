@@ -1985,3 +1985,16 @@ FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'outbreak_history', true
 ALTER TABLE outbreak_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (86, 'Outbreak history table #473');
+
+-- 2018-02-08 Split contact classification into classification and status #454
+
+ALTER TABLE contact ADD COLUMN contactstatus varchar(255);
+
+UPDATE contact SET contactclassification = 'UNCONFIRMED' where contactclassification = 'POSSIBLE';
+UPDATE contact SET contactstatus = 'DROPPED' where contactclassification = 'DROPPED';
+UPDATE contact SET contactstatus = 'DROPPED' where contactclassification = 'NO_CONTACT';
+UPDATE contact SET contactstatus = 'CONVERTED' where contactclassification = 'CONVERTED';
+UPDATE contact SET contactstatus = 'ACTIVE' where contactclassification = 'UNCONFIRMED' or contactclassification = 'CONFIRMED';
+UPDATE contact SET contactclassification = 'CONFIRMED' where contactclassification = 'CONVERTED' or contactclassification = 'DROPPED';
+
+INSERT INTO schema_version (version_number, comment) VALUES (87, 'Split contact classification into classification and status #454');

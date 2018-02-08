@@ -29,9 +29,9 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -202,7 +202,7 @@ public class CaseController {
         			
         			if (contact != null) {
         				// automatically change the contact classification to "converted"
-						contact.setContactClassification(ContactClassification.CONVERTED);
+						contact.setContactStatus(ContactStatus.CONVERTED);
 						conf.saveContact(contact);
 
 						// use the person of the contact we are creating a case for

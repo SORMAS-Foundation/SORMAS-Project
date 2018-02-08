@@ -16,6 +16,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -97,7 +98,8 @@ public class ContactController {
     	contact.setReportDateTime(new Date());
     	UserReferenceDto userReference = LoginHelper.getCurrentUserAsReference();
     	contact.setReportingUser(userReference);
-    	contact.setContactClassification(ContactClassification.POSSIBLE);
+    	contact.setContactClassification(ContactClassification.UNCONFIRMED);
+    	contact.setContactStatus(ContactStatus.ACTIVE);
     	
     	return contact;
     }
