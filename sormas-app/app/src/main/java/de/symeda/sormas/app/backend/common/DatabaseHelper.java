@@ -78,7 +78,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 120;
+	private static final int DATABASE_VERSION = 121;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -441,6 +441,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Contact.class).executeRaw("UPDATE contacts SET contactStatus = 'CONVERTED' where contactClassification = 'CONVERTED';");
 					getDao(Contact.class).executeRaw("UPDATE contacts SET contactStatus = 'ACTIVE' where contactClassification = 'UNCONFIRMED' or contactClassification = 'CONFIRMED';");
 					getDao(Contact.class).executeRaw("UPDATE contacts SET contactClassification = 'CONFIRMED' where contactClassification = 'CONVERTED' or contactClassification = 'DROPPED';");
+				case 120:
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccinationDate timestamp;");
+					getDao(Case.class).executeRaw("UPDATE cases SET vaccinationDate = smallpoxVaccinationDate;");
 
 					// ATTENTION: break should only be done after last version
 					break;

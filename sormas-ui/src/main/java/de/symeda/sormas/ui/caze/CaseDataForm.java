@@ -76,10 +76,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			LayoutUtil.loc(MEDICAL_INFORMATION_LOC) +
 			LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "") +
 			LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES) +
-			LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION_INFO_SOURCE, "") +
-			LayoutUtil.fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_DATE) +
-			LayoutUtil.fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_SCAR) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_SCAR) +
 			LayoutUtil.fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION_DATE, CaseDataDto.VACCINATION_INFO_SOURCE) +
 			LayoutUtil.fluidRowLocs("", CaseDataDto.SURVEILLANCE_OFFICER)
 			;
 
@@ -136,7 +135,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.VACCINATION_INFO_SOURCE, ComboBox.class);
 		addField(CaseDataDto.SMALLPOX_VACCINATION_SCAR, OptionGroup.class);
 		addField(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, OptionGroup.class);
-		addField(CaseDataDto.SMALLPOX_VACCINATION_DATE, DateField.class);
+		DateField vaccinationDate = addField(CaseDataDto.VACCINATION_DATE, DateField.class);
+		vaccinationDate.setDateFormat(DateHelper.getDateFormat().toPattern());
 
 		// Set initial visibilities
 		
@@ -151,11 +151,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		setReadOnly(!LoginHelper.hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
 		setReadOnly(!LoginHelper.hasUserRight(UserRight.CASE_INVESTIGATE), CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.INVESTIGATED_DATE);
 		setReadOnly(!LoginHelper.hasUserRight(UserRight.CASE_CLASSIFY), CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.OUTCOME, CaseDataDto.OUTCOME_DATE);
-
-//		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
-//			boolean visible = DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, (String)propertyId, disease);
-//			getFieldGroup().getField(propertyId).setVisible(visible);
-//		}
 
 		// Set conditional visibilities - ALWAYS call isVisibleAllowed before dynamically setting the visibility
 		
@@ -178,28 +173,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		if (isVisibleAllowed(CaseDataDto.SMALLPOX_VACCINATION_SCAR)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, Arrays.asList(YesNoUnknown.YES), true);
 		}
-		if (isVisibleAllowed(CaseDataDto.SMALLPOX_VACCINATION_DATE)) {
-			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.SMALLPOX_VACCINATION_DATE, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, Arrays.asList(YesNoUnknown.YES), true);
+		if (isVisibleAllowed(CaseDataDto.VACCINATION_DATE)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.VACCINATION_DATE, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, Arrays.asList(YesNoUnknown.YES), true);
+			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.VACCINATION_DATE, CaseDataDto.VACCINATION, Arrays.asList(Vaccination.VACCINATED), true);
 		}
 		if (isVisibleAllowed(CaseDataDto.OUTCOME_DATE)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.OUTCOME_DATE, CaseDataDto.OUTCOME, Arrays.asList(CaseOutcome.DECEASED, CaseOutcome.RECOVERED, CaseOutcome.UNKNOWN), true);
 		}
-		
-//		if (vaccination.getValue() != Vaccination.VACCINATED) {
-//			vaccinationDoses.setVisible(false);
-//			vaccinationInfoSource.setVisible(false);
-//		}
-//		vaccination.addValueChangeListener(e -> {
-//			if (e.getProperty().getValue() == Vaccination.VACCINATED) {
-//				vaccinationDoses.setVisible(DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, CaseDataDto.VACCINATION_DOSES, disease));
-//				vaccinationInfoSource.setVisible(DiseasesConfiguration.isDefinedOrMissing(CaseDataDto.class, CaseDataDto.VACCINATION_INFO_SOURCE, disease));
-//			} else {
-//				vaccinationDoses.setVisible(false);
-//				vaccinationDoses.clear();
-//				vaccinationInfoSource.setVisible(false);
-//				vaccinationInfoSource.clear();
-//			}
-//		});
 
 		// Other initializations
 		

@@ -112,9 +112,9 @@ public class Case extends AbstractDomainObject {
 	private Vaccination vaccination;
 	private String vaccinationDoses;
 	private VaccinationInfoSource vaccinationInfoSource;	
+	private Date vaccinationDate;
 	private YesNoUnknown smallpoxVaccinationScar;
 	private YesNoUnknown smallpoxVaccinationReceived;
-	private Date smallpoxVaccinationDate;
 	
 	private String epidNumber;
 	
@@ -352,11 +352,11 @@ public class Case extends AbstractDomainObject {
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
-	public Date getSmallpoxVaccinationDate() {
-		return smallpoxVaccinationDate;
+	public Date getVaccinationDate() {
+		return vaccinationDate;
 	}
-	public void setSmallpoxVaccinationDate(Date smallpoxVaccinationDate) {
-		this.smallpoxVaccinationDate = smallpoxVaccinationDate;
+	public void setVaccinationDate(Date vaccinationDate) {
+		this.vaccinationDate = vaccinationDate;
 	}
 	
 	@Column(length = 512)

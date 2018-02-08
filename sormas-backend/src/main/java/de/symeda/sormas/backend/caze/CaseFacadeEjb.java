@@ -408,7 +408,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
-		target.setSmallpoxVaccinationDate(source.getSmallpoxVaccinationDate());
+		target.setVaccinationDate(source.getVaccinationDate());
 
 		target.setEpidNumber(source.getEpidNumber());
 
@@ -467,7 +467,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
-		target.setSmallpoxVaccinationDate(source.getSmallpoxVaccinationDate());
+		target.setVaccinationDate(source.getVaccinationDate());
 
 		target.setEpidNumber(source.getEpidNumber());
 

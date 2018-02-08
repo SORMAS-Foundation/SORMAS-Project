@@ -2004,3 +2004,9 @@ INSERT INTO schema_version (version_number, comment) VALUES (87, 'Split contact 
 ALTER TABLE cases ADD COLUMN receptiondate timestamp without time zone;
 
 INSERT INTO schema_version (version_number, comment) VALUES (88, 'Date of reception #438');
+
+-- 2018-02-08 Date of vaccination for all diseases #486
+
+ALTER TABLE cases RENAME COLUMN smallpoxvaccinationdate TO vaccinationdate;
+
+INSERT INTO schema_version (version_number, comment) VALUES (89, 'Date of vaccination for all diseases #486');
