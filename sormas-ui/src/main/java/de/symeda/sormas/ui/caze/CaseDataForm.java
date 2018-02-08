@@ -56,10 +56,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.h3("Case data")+
-			LayoutUtil.fluidRow(
-					LayoutUtil.oneOfTwoCol(CaseDataDto.UUID), 
-					LayoutUtil.oneOfFourCol(CaseDataDto.REPORT_DATE),
-					LayoutUtil.oneOfFourCol(CaseDataDto.REPORTING_USER)) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.UUID, CaseDataDto.EPID_NUMBER) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER, CaseDataDto.RECEPTION_DATE) +
 			LayoutUtil.fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION) +
 			LayoutUtil.fluidRow(
 					LayoutUtil.threeOfFourCol(CaseDataDto.INVESTIGATION_STATUS),
@@ -69,7 +67,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					LayoutUtil.threeOfFourCol(CaseDataDto.OUTCOME),
 					LayoutUtil.oneOfFourCol(CaseDataDto.OUTCOME_DATE)
 			) +
-			LayoutUtil.fluidRowLocs(CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.DISEASE, "") +
 			// one or the other
 			LayoutUtil.fluidRow("", LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE)) +
 			LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
@@ -107,6 +105,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// Add fields
 		
 		addFields(CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER);
+		DateField receptionDate = addField(CaseDataDto.RECEPTION_DATE, DateField.class);
+		receptionDate.setDateFormat(DateHelper.getDateFormat().toPattern());
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
 		epidField.addValidator(new RegexpValidator(DataHelper.getEpidNumberRegexp(), true, 
 				"The EPID number does not match the required pattern. You may still save the case and enter the correct number later."));

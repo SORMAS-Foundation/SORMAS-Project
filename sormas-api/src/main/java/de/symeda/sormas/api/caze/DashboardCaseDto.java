@@ -14,14 +14,17 @@ public class DashboardCaseDto implements Serializable {
 	
 	private Date reportDate;
 	private Date onsetDate;
+	private Date receptionDate;
 	private CaseClassification caseClassification;
 	private Disease disease;
 	private InvestigationStatus investigationStatus;
 	private PresentCondition casePersonCondition;
 	
-	public DashboardCaseDto(Date reportDate, Date onsetDate, CaseClassification caseClassification, Disease disease, InvestigationStatus investigationStatus, PresentCondition casePersonCondition) {
+	public DashboardCaseDto(Date reportDate, Date onsetDate, Date receptionDate, CaseClassification caseClassification, Disease disease, 
+			InvestigationStatus investigationStatus, PresentCondition casePersonCondition) {
 		this.reportDate = reportDate;
 		this.onsetDate = onsetDate;
+		this.receptionDate = receptionDate;
 		this.caseClassification = caseClassification;
 		this.disease = disease;
 		this.investigationStatus = investigationStatus;
@@ -39,6 +42,12 @@ public class DashboardCaseDto implements Serializable {
 	}
 	public void setOnsetDate(Date onsetDate) {
 		this.onsetDate = onsetDate;
+	}
+	public Date getReceptionDate() {
+		return receptionDate;
+	}
+	public void setReceptionDate(Date receptionDate) {
+		this.receptionDate = receptionDate;
 	}
 	public CaseClassification getCaseClassification() {
 		return caseClassification;

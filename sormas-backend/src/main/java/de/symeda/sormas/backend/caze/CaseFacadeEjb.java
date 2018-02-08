@@ -384,6 +384,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPlagueType(source.getPlagueType());
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
+		target.setInvestigatedDate(source.getInvestigatedDate());
+		target.setReceptionDate(source.getReceptionDate());
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
 		target.setCaseClassification(source.getCaseClassification());
 		target.setInvestigationStatus(source.getInvestigationStatus());
@@ -453,6 +455,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setReportDate(source.getReportDate());
 		target.setInvestigatedDate(source.getInvestigatedDate());
+		target.setReceptionDate(source.getReceptionDate());
 
 		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
 		target.setCaseOfficer(UserFacadeEjb.toReferenceDto(source.getCaseOfficer()));

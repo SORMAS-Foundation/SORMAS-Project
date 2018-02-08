@@ -120,22 +120,26 @@ public class EpiCurveComponent extends VerticalLayout {
 				Date date = filteredDates.get(i);
 				int confirmedCasesAtDate = (int) confirmedCases.stream()
 						.filter(c -> c.getOnsetDate() != null ? DateHelper.isSameDay(c.getOnsetDate(), date) : 
-							DateHelper.isSameDay(c.getReportDate(), date))
+							c.getReceptionDate() != null ? DateHelper.isSameDay(c.getReceptionDate(),  date) :
+								DateHelper.isSameDay(c.getReportDate(), date))
 						.count();
 				confirmedNumbers[i] = confirmedCasesAtDate;
 				int probableCasesAtDate = (int) probableCases.stream()
 						.filter(c -> c.getOnsetDate() != null ? DateHelper.isSameDay(c.getOnsetDate(), date) : 
-							DateHelper.isSameDay(c.getReportDate(), date))
+							c.getReceptionDate() != null ? DateHelper.isSameDay(c.getReceptionDate(),  date) :
+								DateHelper.isSameDay(c.getReportDate(), date))
 						.count();
 				probableNumbers[i] = probableCasesAtDate;
 				int suspectCasesAtDate = (int) suspectedCases.stream()
 						.filter(c -> c.getOnsetDate() != null ? DateHelper.isSameDay(c.getOnsetDate(), date) : 
-							DateHelper.isSameDay(c.getReportDate(), date))
+							c.getReceptionDate() != null ? DateHelper.isSameDay(c.getReceptionDate(),  date) :
+								DateHelper.isSameDay(c.getReportDate(), date))
 						.count();
 				suspectNumbers[i] = suspectCasesAtDate;
 				int notYetClassifiedCasesAtDate = (int) notYetClassifiedCases.stream()
 						.filter(c -> c.getOnsetDate() != null ? DateHelper.isSameDay(c.getOnsetDate(), date) : 
-							DateHelper.isSameDay(c.getReportDate(), date))
+							c.getReceptionDate() != null ? DateHelper.isSameDay(c.getReceptionDate(),  date) :
+								DateHelper.isSameDay(c.getReportDate(), date))
 						.count();
 				notYetClassifiedNumbers[i] = notYetClassifiedCasesAtDate;
 			}
@@ -190,12 +194,14 @@ public class EpiCurveComponent extends VerticalLayout {
 				Date date = filteredDates.get(i);
 				int aliveCasesAtDate = (int) aliveCases.stream()
 						.filter(c -> c.getOnsetDate() != null ? DateHelper.isSameDay(c.getOnsetDate(), date) : 
-							DateHelper.isSameDay(c.getReportDate(), date))
+							c.getReceptionDate() != null ? DateHelper.isSameDay(c.getReceptionDate(),  date) :
+								DateHelper.isSameDay(c.getReportDate(), date))
 						.count();
 				aliveNumbers[i] = aliveCasesAtDate;
 				int deadCasesAtDate = (int) deadCases.stream()
 						.filter(c -> c.getOnsetDate() != null ? DateHelper.isSameDay(c.getOnsetDate(), date) : 
-							DateHelper.isSameDay(c.getReportDate(), date))
+							c.getReceptionDate() != null ? DateHelper.isSameDay(c.getReceptionDate(),  date) :
+								DateHelper.isSameDay(c.getReportDate(), date))
 						.count();
 				deadNumbers[i] = deadCasesAtDate;
 			}

@@ -1998,3 +1998,9 @@ UPDATE contact SET contactstatus = 'ACTIVE' where contactclassification = 'UNCON
 UPDATE contact SET contactclassification = 'CONFIRMED' where contactclassification = 'CONVERTED' or contactclassification = 'DROPPED';
 
 INSERT INTO schema_version (version_number, comment) VALUES (87, 'Split contact classification into classification and status #454');
+
+-- 2018-02-08 Date of reception #438
+
+ALTER TABLE cases ADD COLUMN receptiondate timestamp without time zone;
+
+INSERT INTO schema_version (version_number, comment) VALUES (88, 'Date of reception #438');
