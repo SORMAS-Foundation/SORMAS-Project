@@ -8,6 +8,7 @@ import javax.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.user.User;
 
 /**
@@ -51,10 +52,10 @@ public class MessagingService {
 		String emailAddress = recipient.getUserEmail();
 		String phoneNumber = recipient.getPhone();
 
-		if (messageType == MessageType.EMAIL && emailAddress == null) {
+		if (messageType == MessageType.EMAIL && DataHelper.isNullOrEmpty(emailAddress)) {
 			logger.info(String.format("Tried to send an email to a user without an email address (UUID: %s).", recipient.getUuid()));
 			return false;
-		} else if (messageType == MessageType.SMS && phoneNumber == null) {
+		} else if (messageType == MessageType.SMS && DataHelper.isNullOrEmpty(phoneNumber)) {
 			logger.info(String.format("Tried to send an SMS to a user without a phone number (UUID: %s).", recipient.getUuid()));
 			return false;
 		} else {
