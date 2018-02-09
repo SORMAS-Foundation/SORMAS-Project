@@ -60,23 +60,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <de.symeda.sormas.app.component.LabelField
+                <de.symeda.sormas.app.component.SpinnerField
                     android:id="@+id/contact_contactClassification"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    app:toString="@{contact.contactClassification}"/>
+                    android:value="@={contact.contactClassification}"/>
 
-                <de.symeda.sormas.app.component.LabelField
+                <de.symeda.sormas.app.component.SpinnerField
                     android:id="@+id/contact_contactStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    app:toString="@{contact.contactStatus}"/>
+                    android:value="@={contact.contactStatus}"/>
 
             </LinearLayout>
 

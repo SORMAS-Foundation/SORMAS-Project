@@ -10,9 +10,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
@@ -54,6 +56,8 @@ public class ContactEditDataForm extends FormTab {
         binding.contactLastContactDate.initialize(this);
         binding.contactContactProximity.initialize(ContactProximity.class);
 
+        FieldHelper.initSpinnerField(binding.contactContactClassification, ContactClassification.class);
+        FieldHelper.initSpinnerField(binding.contactContactStatus, ContactStatus.class);
         FieldHelper.initSpinnerField(binding.contactRelationToCase, ContactRelation.class);
 
         final Case associatedCase = findAssociatedCase(binding.getContact().getPerson(), binding.getContact().getCaze().getDisease());
