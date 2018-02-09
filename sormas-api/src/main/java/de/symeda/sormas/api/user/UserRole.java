@@ -2,6 +2,7 @@ package de.symeda.sormas.api.user;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 import de.symeda.sormas.api.I18nProperties;
@@ -28,6 +29,7 @@ public enum UserRole {
 	RUMOR_MANAGER(true, false),	
 	LAB_USER(false, false),
 	NATIONAL_OBSERVER(false, false),
+	STATE_OBSERVER(false, false)
 	;
 	
 	public static final String _SYSTEM = "SYSTEM";
@@ -104,6 +106,7 @@ public enum UserRole {
 			collection.add(SURVEILLANCE_OFFICER);
 			collection.add(LAB_USER);
 			collection.add(NATIONAL_OBSERVER);
+			collection.add(STATE_OBSERVER);
 			break;
 		case SURVEILLANCE_SUPERVISOR:
 			collection.add(SURVEILLANCE_OFFICER);
@@ -146,6 +149,8 @@ public enum UserRole {
 			return Arrays.asList(LAB_USER, ADMIN);
 		case NATIONAL_OBSERVER:
 			return Arrays.asList(ADMIN);
+		case STATE_OBSERVER:
+			return Collections.emptyList();
 		case CASE_SUPERVISOR:
 		case CONTACT_SUPERVISOR:
 		case SURVEILLANCE_SUPERVISOR:

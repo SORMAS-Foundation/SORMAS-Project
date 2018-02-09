@@ -154,6 +154,7 @@ public class EventService extends AbstractAdoService<Event> {
 			case CONTACT_SUPERVISOR:
 			case CASE_SUPERVISOR:
 			case RUMOR_MANAGER:
+			case STATE_OBSERVER:
 				// supervisors see all events of their region
 				if (user.getRegion() != null) {
 					filter = cb.or(filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.REGION), user.getRegion()));

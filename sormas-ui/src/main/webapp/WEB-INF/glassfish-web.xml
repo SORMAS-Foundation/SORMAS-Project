@@ -15,6 +15,7 @@
         <group-name>LAB_USER</group-name>
         <group-name>NATIONAL_USER</group-name>
         <group-name>NATIONAL_OBSERVER</group-name>
+        <group-name>STATE_OBSERVER</group-name>
     </security-role-mapping>
     <security-role-mapping>
         <role-name>ADMIN</role-name>
@@ -47,5 +48,9 @@
     <security-role-mapping>
         <role-name>NATIONAL_OBSERVER</role-name>
         <group-name>NATIONAL_OBSERVER</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>STATE_OBSERVER</role-name>
+        <group-name>STATE_OBSERVER</group-name>
     </security-role-mapping>
 </glassfish-web-app>

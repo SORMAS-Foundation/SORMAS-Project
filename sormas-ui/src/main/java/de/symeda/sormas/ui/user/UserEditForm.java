@@ -107,6 +107,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	boolean isOfficer = UserRole.isOfficer(userRoles);
     	boolean isSupervisor = UserRole.isSupervisor(userRoles);
     	boolean isLabUser = UserRole.isLabUser(userRoles);
+    	boolean isStateObserver = userRoles.contains(UserRole.STATE_OBSERVER);
     	
     	// associated officer
     	ComboBox associatedOfficer = (ComboBox)getFieldGroup().getField(UserDto.ASSOCIATED_OFFICER);
@@ -133,7 +134,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	}
     	
     	ComboBox region = (ComboBox)getFieldGroup().getField(UserDto.REGION);
-    	boolean useRegion = isSupervisor || isInformant || isOfficer;
+    	boolean useRegion = isSupervisor || isInformant || isOfficer || isStateObserver;
     	region.setVisible(useRegion);
     	setRequired(useRegion, UserDto.REGION);
     	if (!useRegion) {

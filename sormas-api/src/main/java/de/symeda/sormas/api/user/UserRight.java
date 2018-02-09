@@ -8,6 +8,7 @@ import static de.symeda.sormas.api.user.UserRole.CONTACT_SUPERVISOR;
 import static de.symeda.sormas.api.user.UserRole.INFORMANT;
 import static de.symeda.sormas.api.user.UserRole.LAB_USER;
 import static de.symeda.sormas.api.user.UserRole.NATIONAL_OBSERVER;
+import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.NATIONAL_USER;
 import static de.symeda.sormas.api.user.UserRole.RUMOR_MANAGER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
@@ -36,6 +37,7 @@ public enum UserRight {
 			ADMIN,
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
@@ -109,6 +111,7 @@ public enum UserRight {
 			ADMIN,
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
@@ -165,6 +168,7 @@ public enum UserRight {
 			ADMIN,
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
@@ -224,6 +228,7 @@ public enum UserRight {
 			ADMIN,
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
@@ -266,6 +271,7 @@ public enum UserRight {
 			ADMIN,
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
@@ -304,6 +310,7 @@ public enum UserRight {
 			ADMIN,
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
@@ -341,6 +348,7 @@ public enum UserRight {
 			ADMIN,
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
 			SURVEILLANCE_SUPERVISOR
 	),
 	OUTBREAK_CONFIGURE_ALL(

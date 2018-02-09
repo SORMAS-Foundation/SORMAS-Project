@@ -342,6 +342,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			case CONTACT_SUPERVISOR:
 			case CASE_SUPERVISOR:
 			case RUMOR_MANAGER:
+			case STATE_OBSERVER:
 				// supervisors see all cases of their region
 				if (user.getRegion() != null) {
 					filter = cb.or(filter, cb.equal(casePath.get(Case.REGION), user.getRegion()));
