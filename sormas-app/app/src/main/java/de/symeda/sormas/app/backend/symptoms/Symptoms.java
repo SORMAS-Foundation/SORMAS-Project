@@ -150,7 +150,8 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState rapidBreathing;
 	@Enumerated(EnumType.STRING)
 	private SymptomState swollenGlands;
-	@Enumerated(EnumType.STRING)
+	@Column
+	@Deprecated
 	private SymptomState cutaneousEruption;
 	@Enumerated(EnumType.STRING)
 	private SymptomState lesions;
@@ -186,6 +187,8 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState lesionsResembleImg3;
 	@Enumerated(EnumType.STRING)
 	private SymptomState lesionsResembleImg4;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date lesionsOnsetDate;
 	@Enumerated(EnumType.STRING)
 	private SymptomState lymphadenopathyInguinal;
 	@Enumerated(EnumType.STRING)
@@ -647,14 +650,6 @@ public class Symptoms extends AbstractDomainObject {
 		this.swollenGlands = swollenGlands;
 	}
 
-	public SymptomState getCutaneousEruption() {
-		return cutaneousEruption;
-	}
-
-	public void setCutaneousEruption(SymptomState cutaneousEruption) {
-		this.cutaneousEruption = cutaneousEruption;
-	}
-
 	public SymptomState getLesions() {
 		return lesions;
 	}
@@ -789,6 +784,14 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setLesionsResembleImg4(SymptomState lesionsResembleImg4) {
 		this.lesionsResembleImg4 = lesionsResembleImg4;
+	}
+
+	public Date getLesionsOnsetDate() {
+		return lesionsOnsetDate;
+	}
+
+	public void setLesionsOnsetDate(Date lesionsOnsetDate) {
+		this.lesionsOnsetDate = lesionsOnsetDate;
 	}
 
 	public SymptomState getLymphadenopathyInguinal() {

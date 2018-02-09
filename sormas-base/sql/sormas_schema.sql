@@ -2010,3 +2010,38 @@ INSERT INTO schema_version (version_number, comment) VALUES (88, 'Date of recept
 ALTER TABLE cases RENAME COLUMN smallpoxvaccinationdate TO vaccinationdate;
 
 INSERT INTO schema_version (version_number, comment) VALUES (89, 'Date of vaccination for all diseases #486');
+
+-- 2018-02-09 Monkeypox field changes #401
+
+ALTER TABLE symptoms DROP COLUMN cutaneouseruption;
+ALTER TABLE symptoms ADD COLUMN lesionsonsetdate timestamp;
+ALTER TABLE symptoms_history DROP COLUMN cutaneouseruption;
+ALTER TABLE symptoms_history ADD COLUMN lesionsonsetdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (90, 'Monkeypox field changes #401');
+
+-- 2018-02-09 History table updates
+
+ALTER TABLE cases_history DROP COLUMN suspectdate;
+ALTER TABLE cases_history DROP COLUMN confirmeddate;
+ALTER TABLE cases_history DROP COLUMN negativedate;
+ALTER TABLE cases_history DROP COLUMN nocasedate;
+ALTER TABLE cases_history DROP COLUMN postivedate;
+ALTER TABLE cases_history DROP COLUMN recovereddate;
+ALTER TABLE symptoms_history ADD COLUMN bulgingfontanelle varchar(255);
+ALTER TABLE cases_history ADD COLUMN vaccination varchar(255);
+ALTER TABLE cases_history ADD COLUMN vaccinationdoses varchar(512);
+ALTER TABLE cases_history ADD COLUMN vaccinationinfosource varchar(255);
+ALTER TABLE cases_history DROP COLUMN measlesvaccination;
+ALTER TABLE cases_history DROP COLUMN measlesdoses;
+ALTER TABLE cases_history DROP COLUMN measlesvaccinationinfosource;
+ALTER TABLE contact_history ADD COLUMN contactstatus varchar(255);
+ALTER TABLE cases_history ADD COLUMN receptiondate timestamp without time zone;
+ALTER TABLE cases_history RENAME COLUMN smallpoxvaccinationdate TO vaccinationdate;
+ALTER TABLE cases_history ADD COLUMN outcome varchar(255);
+ALTER TABLE cases_history ADD COLUMN outcomedate timestamp without time zone;
+ALTER TABLE person_history ADD COLUMN causeofdeath varchar(255);
+ALTER TABLE person_history ADD COLUMN causeofdeathdetails varchar(512);
+ALTER TABLE person_history ADD COLUMN causeofdeathdisease varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (91, 'History table updates');

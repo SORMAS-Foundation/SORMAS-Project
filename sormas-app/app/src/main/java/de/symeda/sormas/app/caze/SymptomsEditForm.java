@@ -107,7 +107,7 @@ public class SymptomsEditForm extends FormTab {
                 binding.symptomsRefusalFeedorDrink, binding.symptomsJointPain, binding.symptomsShock,
                 binding.symptomsHiccups, binding.symptomsBackache, binding.symptomsJaundice, binding.symptomsBulgingFontanelle,
                 binding.symptomsDarkUrine, binding.symptomsRapidBreathing, binding.symptomsSwollenGlands,
-                binding.symptomsOtherNonHemorrhagicSymptoms, binding.symptomsCutaneousEruption, binding.symptomsLesions, binding.symptomsLymphadenopathyAxillary,
+                binding.symptomsOtherNonHemorrhagicSymptoms, binding.symptomsLesions, binding.symptomsLymphadenopathyAxillary,
                 binding.symptomsLymphadenopathyCervical, binding.symptomsLymphadenopathyInguinal, binding.symptomsChillsSweats, binding.symptomsBedridden,
                 binding.symptomsOralUlcers, binding.symptomsBlackeningDeathOfTissue, binding.symptomsBuboesGroinArmpitNeck, binding.symptomsPainfulLymphadenitis);
 
@@ -118,6 +118,8 @@ public class SymptomsEditForm extends FormTab {
                 binding.symptomsOtherHemorrhagicSymptoms);
 
         binding.symptomsOnsetDate.initialize(this);
+        binding.symptomsLesionsOnsetDate.initialize(this);
+        binding.symptomsLesionsOnsetDate.makeFieldSoftRequired();
 
         List<Item> temperature = new ArrayList<>();
         temperature.add(new Item("",null));
@@ -348,6 +350,8 @@ public class SymptomsEditForm extends FormTab {
             for (PropertyField field : lesionsLocationFields) {
                 field.setValue(false);
             }
+
+            binding.symptomsLesionsOnsetDate.setValue(null);
         }
         if (disease == Disease.MONKEYPOX) {
             binding.symptomsMonkeypoxLayout.setVisibility(symptomState == SymptomState.YES ? View.VISIBLE : View.GONE);

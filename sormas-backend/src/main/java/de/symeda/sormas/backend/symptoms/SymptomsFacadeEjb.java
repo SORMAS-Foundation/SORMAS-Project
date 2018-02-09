@@ -94,7 +94,6 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setStomachBleeding(source.getStomachBleeding());
 		target.setRapidBreathing(source.getRapidBreathing());
 		target.setSwollenGlands(source.getSwollenGlands());
-		target.setCutaneousEruption(source.getCutaneousEruption());
 		target.setLesions(source.getLesions());
 		target.setLesionsSameState(source.getLesionsSameState());
 		target.setLesionsSameSize(source.getLesionsSameSize());
@@ -111,6 +110,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setLesionsResembleImg2(source.getLesionsResembleImg2());
 		target.setLesionsResembleImg3(source.getLesionsResembleImg3());
 		target.setLesionsResembleImg4(source.getLesionsResembleImg4());
+		target.setLesionsOnsetDate(source.getLesionsOnsetDate());
 		target.setLymphadenopathyInguinal(source.getLymphadenopathyInguinal());
 		target.setLymphadenopathyAxillary(source.getLymphadenopathyAxillary());
 		target.setLymphadenopathyCervical(source.getLymphadenopathyCervical());
@@ -199,7 +199,6 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setStomachBleeding(source.getStomachBleeding());
 		target.setRapidBreathing(source.getRapidBreathing());
 		target.setSwollenGlands(source.getSwollenGlands());
-		target.setCutaneousEruption(source.getCutaneousEruption());
 		target.setLesions(source.getLesions());
 		target.setLesionsSameState(source.getLesionsSameState());
 		target.setLesionsSameSize(source.getLesionsSameSize());
@@ -216,6 +215,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setLesionsResembleImg2(source.getLesionsResembleImg2());
 		target.setLesionsResembleImg3(source.getLesionsResembleImg3());
 		target.setLesionsResembleImg4(source.getLesionsResembleImg4());
+		target.setLesionsOnsetDate(source.getLesionsOnsetDate());
 		target.setLymphadenopathyInguinal(source.getLymphadenopathyInguinal());
 		target.setLymphadenopathyAxillary(source.getLymphadenopathyAxillary());
 		target.setLymphadenopathyCervical(source.getLymphadenopathyCervical());

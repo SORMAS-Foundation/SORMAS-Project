@@ -258,7 +258,7 @@ public final class SymptomsValidator {
                 binding.symptomsLymphadenopathyAxillary, binding.symptomsLesions, binding.symptomsKopliksSpots, binding.symptomsJointPain, binding.symptomsJaundice,
                 binding.symptomsBedridden, binding.symptomsHiccups, binding.symptomsHeadache, binding.symptomsFever, binding.symptomsFatigueWeakness,
                 binding.symptomsEyePainLightSensitive, binding.symptomsDifficultyBreathing, binding.symptomsDiarrhea, binding.symptomsDehydration,
-                binding.symptomsDarkUrine, binding.symptomsCutaneousEruption, binding.symptomsCough, binding.symptomsSeizures, binding.symptomsConjunctivitis,
+                binding.symptomsDarkUrine, binding.symptomsCough, binding.symptomsSeizures, binding.symptomsConjunctivitis,
                 binding.symptomsConfusedDisoriented, binding.symptomsChillsSweats, binding.symptomsChestPain, binding.symptomsBuboesGroinArmpitNeck,
                 binding.symptomsBloodInStool, binding.symptomsBlackeningDeathOfTissue, binding.symptomsBackache, binding.symptomsAnorexiaAppetiteLoss,
                 binding.symptomsAlteredConsciousness, binding.symptomsHearingloss, binding.symptomsAbdominalPain, binding.symptomsBulgingFontanelle);

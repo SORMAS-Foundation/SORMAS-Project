@@ -101,7 +101,6 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setStomachBleeding(b.getStomachBleeding());
         a.setRapidBreathing(b.getRapidBreathing());
         a.setSwollenGlands(b.getSwollenGlands());
-        a.setCutaneousEruption(b.getCutaneousEruption());
         a.setLesions(b.getLesions());
         a.setLesionsSameState(b.getLesionsSameState());
         a.setLesionsSameSize(b.getLesionsSameSize());
@@ -119,6 +118,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setLesionsResembleImg2(b.getLesionsResembleImg2());
         a.setLesionsResembleImg3(b.getLesionsResembleImg3());
         a.setLesionsResembleImg4(b.getLesionsResembleImg4());
+        a.setLesionsOnsetDate(b.getLesionsOnsetDate());
         a.setLymphadenopathyAxillary(b.getLymphadenopathyAxillary());
         a.setLymphadenopathyCervical(b.getLymphadenopathyCervical());
         a.setLymphadenopathyInguinal(b.getLymphadenopathyInguinal());
@@ -193,7 +193,6 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setStomachBleeding(b.getStomachBleeding());
         a.setRapidBreathing(b.getRapidBreathing());
         a.setSwollenGlands(b.getSwollenGlands());
-        a.setCutaneousEruption(b.getCutaneousEruption());
         a.setLesions(b.getLesions());
         a.setLesionsSameState(b.getLesionsSameState());
         a.setLesionsSameSize(b.getLesionsSameSize());
@@ -211,6 +210,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setLesionsResembleImg2(b.getLesionsResembleImg2());
         a.setLesionsResembleImg3(b.getLesionsResembleImg3());
         a.setLesionsResembleImg4(b.getLesionsResembleImg4());
+        a.setLesionsOnsetDate(b.getLesionsOnsetDate());
         a.setLymphadenopathyAxillary(b.getLymphadenopathyAxillary());
         a.setLymphadenopathyCervical(b.getLymphadenopathyCervical());
         a.setLymphadenopathyInguinal(b.getLymphadenopathyInguinal());
