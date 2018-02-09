@@ -3,16 +3,17 @@ package de.symeda.sormas.ui.dashboard;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -116,30 +117,28 @@ public class EpiCurveComponent extends VerticalLayout {
 			int[] suspectNumbers = new int[newLabels.size()];
 			int[] notYetClassifiedNumbers = new int[newLabels.size()];
 	
+			
 			for (int i = 0; i < filteredDates.size(); i++) {
 				Date date = filteredDates.get(i);
+				
+				Predicate<DashboardCaseDto> countFilter = c -> c.getOnsetDate() != null ? DateHelper.isSameDay(c.getOnsetDate(), date) : 
+					c.getReceptionDate() != null ? DateHelper.isSameDay(c.getReceptionDate(),  date) :
+						DateHelper.isSameDay(c.getReportDate(), date);
+					
 				int confirmedCasesAtDate = (int) confirmedCases.stream()
-						.filter(c -> c.getOnsetDate() != null ? DateHelper.isSameDay(c.getOnsetDate(), date) : 
-							c.getReceptionDate() != null ? DateHelper.isSameDay(c.getReceptionDate(),  date) :
-								DateHelper.isSameDay(c.getReportDate(), date))
+						.filter(countFilter)
 						.count();
 				confirmedNumbers[i] = confirmedCasesAtDate;
 				int probableCasesAtDate = (int) probableCases.stream()
-						.filter(c -> c.getOnsetDate() != null ? DateHelper.isSameDay(c.getOnsetDate(), date) : 
-							c.getReceptionDate() != null ? DateHelper.isSameDay(c.getReceptionDate(),  date) :
-								DateHelper.isSameDay(c.getReportDate(), date))
+						.filter(countFilter)
 						.count();
 				probableNumbers[i] = probableCasesAtDate;
 				int suspectCasesAtDate = (int) suspectedCases.stream()
-						.filter(c -> c.getOnsetDate() != null ? DateHelper.isSameDay(c.getOnsetDate(), date) : 
-							c.getReceptionDate() != null ? DateHelper.isSameDay(c.getReceptionDate(),  date) :
-								DateHelper.isSameDay(c.getReportDate(), date))
+						.filter(countFilter)
 						.count();
 				suspectNumbers[i] = suspectCasesAtDate;
 				int notYetClassifiedCasesAtDate = (int) notYetClassifiedCases.stream()
-						.filter(c -> c.getOnsetDate() != null ? DateHelper.isSameDay(c.getOnsetDate(), date) : 
-							c.getReceptionDate() != null ? DateHelper.isSameDay(c.getReceptionDate(),  date) :
-								DateHelper.isSameDay(c.getReportDate(), date))
+						.filter(countFilter)
 						.count();
 				notYetClassifiedNumbers[i] = notYetClassifiedCasesAtDate;
 			}
@@ -192,16 +191,17 @@ public class EpiCurveComponent extends VerticalLayout {
 			
 			for (int i = 0; i < filteredDates.size(); i++) {
 				Date date = filteredDates.get(i);
+
+				Predicate<DashboardCaseDto> countFilter = c -> c.getOnsetDate() != null ? DateHelper.isSameDay(c.getOnsetDate(), date) : 
+					c.getReceptionDate() != null ? DateHelper.isSameDay(c.getReceptionDate(),  date) :
+						DateHelper.isSameDay(c.getReportDate(), date);
+				
 				int aliveCasesAtDate = (int) aliveCases.stream()
-						.filter(c -> c.getOnsetDate() != null ? DateHelper.isSameDay(c.getOnsetDate(), date) : 
-							c.getReceptionDate() != null ? DateHelper.isSameDay(c.getReceptionDate(),  date) :
-								DateHelper.isSameDay(c.getReportDate(), date))
+						.filter(countFilter)
 						.count();
 				aliveNumbers[i] = aliveCasesAtDate;
 				int deadCasesAtDate = (int) deadCases.stream()
-						.filter(c -> c.getOnsetDate() != null ? DateHelper.isSameDay(c.getOnsetDate(), date) : 
-							c.getReceptionDate() != null ? DateHelper.isSameDay(c.getReceptionDate(),  date) :
-								DateHelper.isSameDay(c.getReportDate(), date))
+						.filter(countFilter)
 						.count();
 				deadNumbers[i] = deadCasesAtDate;
 			}
