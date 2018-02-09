@@ -21,6 +21,9 @@ All commands mentioned are linux commands.
 * Copy/upload to /root/deploy/sormas/$(date +%F)
 * ``cd /root/deploy/sormas/$(date +%F)``
 
+#### Version specifics
+* 0.15.0: update the glassfish config with the new apk filename: sormas-release.apk
+
 #### Maintainance Mode
 * a2dissite your.sormas.server.url.conf
 * service apache2 reload
