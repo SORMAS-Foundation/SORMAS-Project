@@ -22,6 +22,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
@@ -31,6 +32,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -142,7 +144,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 	
 	@Override
-	public List<SampleIndexDto> getIndexList(String userUuid, CaseReferenceDto caseRef) {
+	public List<SampleIndexDto> getIndexList(String userUuid, CaseReferenceDto caseRef, SampleCriteria sampleCriteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
 		Root<Sample> sample = cq.from(Sample.class);
@@ -155,7 +157,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		
 		cq.multiselect(sample.get(Sample.UUID), caze.get(Case.UUID), cazePerson.get(Person.FIRST_NAME), cazePerson.get(Person.LAST_NAME),
 				sample.get(Sample.SAMPLE_CODE), sample.get(Sample.LAB_SAMPLE_ID), caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), 
-				caseRegion.get(Region.UUID), caseDistrict.get(District.UUID), caseDistrict.get(District.NAME), sample.get(Sample.SHIPPED), 
+				caseRegion.get(Region.UUID), caseDistrict.get(District.UUID), caseDistrict.get(District.NAME), caze.get(Case.CASE_CLASSIFICATION), sample.get(Sample.SHIPPED), 
 				sample.get(Sample.RECEIVED), referredSample.get(Sample.UUID), sample.get(Sample.SHIPMENT_DATE), sample.get(Sample.RECEIVED_DATE), 
 				lab.get(Facility.UUID), lab.get(Facility.NAME), sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SPECIMEN_CONDITION));
 		
@@ -173,6 +175,11 @@ public class SampleFacadeEjb implements SampleFacade {
 			} else {
 				filter = caseFilter;
 			}
+		}
+		
+		if (sampleCriteria != null) {
+			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, sample);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 		
 		if (filter != null) {

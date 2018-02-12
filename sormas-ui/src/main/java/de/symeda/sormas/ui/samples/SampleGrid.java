@@ -17,9 +17,12 @@ import com.vaadin.ui.renderers.DateRenderer;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
@@ -32,12 +35,15 @@ import de.symeda.sormas.ui.utils.BooleanRenderer;
 
 @SuppressWarnings("serial")
 public class SampleGrid extends Grid {
+
+	public static final String SPECIMEN_NOT_ADEQUATE = "Specimen not adequate";
 	
 	private static final String TEST_RESULT = "testResult";
 	private static final String LAB_USER = "labUser";
 	private static final String DISEASE_SHORT = "diseaseShort";
 	
 	private CaseReferenceDto caseRef;
+	private SampleCriteria sampleCriteria = new SampleCriteria();
 	
 	public SampleGrid() {
 		setSizeFull();
@@ -54,7 +60,7 @@ public class SampleGrid extends Grid {
 				SampleTestDto latestSampleTest = FacadeProvider.getSampleTestFacade().getLatestBySample(sampleIndexDto.toReference());
 				
 				if (sampleIndexDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
-					return "Specimen not adequate";
+					return SPECIMEN_NOT_ADEQUATE;
 				} else if (latestSampleTest != null) {
 					return latestSampleTest.getTestResult().toString();
 				} else {
@@ -156,28 +162,28 @@ public class SampleGrid extends Grid {
 		getContainer().addContainerFilter(referredFilter);
 	}
 	
-	public void setRegionFilter(String regionUuid) {
-		getContainer().removeContainerFilters(SampleIndexDto.CASE_REGION_UUID);
-		if(regionUuid != null) {
-			Equal filter = new Equal(SampleIndexDto.CASE_REGION_UUID, regionUuid);
-			getContainer().addContainerFilter(filter);
-		}
+	public void setRegionFilter(RegionReferenceDto region) {
+		sampleCriteria.caseRegionEquals(region);
+		reload();
 	}
 	
 	public void setDistrictFilter(DistrictReferenceDto district) {
-		getContainer().removeContainerFilters(SampleIndexDto.CASE_DISTRICT);
-		if(district != null) {
-			Equal filter = new Equal(SampleIndexDto.CASE_DISTRICT, district);
-			getContainer().addContainerFilter(filter);
-		}
+		sampleCriteria.caseDistrictEquals(district);
+		reload();
 	}
 	
 	public void setLabFilter(FacilityReferenceDto lab) {
-		getContainer().removeContainerFilters(SampleIndexDto.LAB);
-		if(lab != null) {
-			Equal filter = new Equal(SampleIndexDto.LAB, lab);
-			getContainer().addContainerFilter(filter);
-		}
+		sampleCriteria.labEquals(lab);
+		reload();
+	}
+	
+	public void setTestResultFilter(String testResult) {
+		// TODO Add criteria logic
+	}
+	
+	public void setCaseClassificationFilter(CaseClassification caseClassification) {
+		sampleCriteria.caseClassificationEquals(caseClassification);
+		reload();
 	}
 	
 	public void filterByText(String text) {
@@ -199,12 +205,8 @@ public class SampleGrid extends Grid {
 	}
 	
 	public void reload() {
-		List<SampleIndexDto> samples;
-		if(caseRef != null) {
-			samples = ControllerProvider.getSampleController().getSamplesByCase(caseRef);
-		} else {
-			samples = ControllerProvider.getSampleController().getAllSamples();
-		}
+		List<SampleIndexDto> samples = FacadeProvider.getSampleFacade().getIndexList(
+				LoginHelper.getCurrentUser().getUuid(), caseRef, sampleCriteria);
 		
 		getContainer().removeAllItems();
 		getContainer().addAll(samples);

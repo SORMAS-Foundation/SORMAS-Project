@@ -19,11 +19,14 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -147,6 +150,29 @@ public class SampleService extends AbstractAdoService<Sample> {
 		if (user.getUserRoles().contains(UserRole.LAB_USER)) {
 			if(user.getLaboratory() != null) {
 				filter = or(cb, filter, cb.equal(samplePath.get(Sample.LAB), user.getLaboratory()));			}
+		}
+		
+		return filter;
+	}
+	
+	public Predicate buildCriteriaFilter(SampleCriteria sampleCriteria, CriteriaBuilder cb, Root<Sample> from) {
+		Predicate filter = null;
+		Join<Sample, Case> caze = from.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
+		Join<Case, Region> region = caze.join(Case.REGION, JoinType.LEFT);
+		Join<Case, District> district = caze.join(Case.DISTRICT, JoinType.LEFT);
+		Join<Sample, Facility> lab = from.join(Sample.LAB, JoinType.LEFT);
+		
+		if (sampleCriteria.getCaseRegion() != null) {
+			filter = and(cb, filter, cb.equal(region.get(Region.UUID), sampleCriteria.getCaseRegion().getUuid()));
+		}
+		if (sampleCriteria.getCaseDistrict() != null) {
+			filter = and(cb, filter, cb.equal(district.get(District.UUID), sampleCriteria.getCaseDistrict().getUuid()));
+		}
+		if (sampleCriteria.getLab() != null) {
+			filter = and(cb, filter, cb.equal(lab.get(Facility.UUID), sampleCriteria.getLab().getUuid()));
+		}
+		if (sampleCriteria.getCaseClassification() != null) {
+			filter = and(cb, filter, cb.equal(caze.get(Case.CASE_CLASSIFICATION), sampleCriteria.getCaseClassification()));
 		}
 		
 		return filter;

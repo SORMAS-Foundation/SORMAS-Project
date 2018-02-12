@@ -16,7 +16,7 @@ public interface SampleFacade {
 	
 	List<SampleDto> getAllByCase(CaseReferenceDto caseRef);
 	
-	List<SampleIndexDto> getIndexList(String userUuid, CaseReferenceDto caseRef);
+	List<SampleIndexDto> getIndexList(String userUuid, CaseReferenceDto caseRef, SampleCriteria sampleCriteria);
 	
 	SampleDto getSampleByUuid(String uuid);
 	

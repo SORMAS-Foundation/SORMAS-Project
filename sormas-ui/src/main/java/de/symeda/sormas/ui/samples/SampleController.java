@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.samples;
 
-import java.util.List;
-
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -22,10 +20,8 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleFacade;
-import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.task.TaskContext;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -42,15 +38,6 @@ public class SampleController {
 	private SampleFacade sf = FacadeProvider.getSampleFacade();
 
 	public SampleController() { }
-
-	public List<SampleIndexDto> getAllSamples() {
-		UserDto user = LoginHelper.getCurrentUser();
-		return FacadeProvider.getSampleFacade().getIndexList(user.getUuid(), null);
-	}
-
-	public List<SampleIndexDto> getSamplesByCase(CaseReferenceDto caseRef) {
-		return FacadeProvider.getSampleFacade().getIndexList(null, caseRef);
-	}
 
 	public void registerViews(Navigator navigator) {
 		navigator.addView(SamplesView.VIEW_NAME, SamplesView.class);

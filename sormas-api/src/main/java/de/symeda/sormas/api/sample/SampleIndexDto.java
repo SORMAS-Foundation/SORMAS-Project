@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -22,6 +23,7 @@ public class SampleIndexDto implements Serializable {
 	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String CASE_REGION_UUID = "caseRegionUuid";
 	public static final String CASE_DISTRICT = "caseDistrict";
+	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String SHIPMENT_DATE = "shipmentDate";
 	public static final String RECEIVED_DATE = "receivedDate";
 	public static final String LAB = "lab";
@@ -40,6 +42,7 @@ public class SampleIndexDto implements Serializable {
 	private String diseaseDetails;
 	private String caseRegionUuid;
 	private DistrictReferenceDto caseDistrict;
+	private CaseClassification caseClassification;
 	private boolean shipped;
 	private boolean received;
 	private boolean referred;
@@ -51,8 +54,8 @@ public class SampleIndexDto implements Serializable {
 	
 	public SampleIndexDto(String uuid, String associatedCaseUuid, String associatedCaseFirstName, String associatedCaseLastName,
 			String sampleCode, String labSampleId, Disease disease, String diseaseDetails, String caseRegionUuid, 
-			String caseDistrictUuid, String caseDistrictName, boolean shipped, boolean received, String referredSampleUuid, Date shipmenteDate,
-			Date receivedDate, String labUuid, String labName, SampleMaterial sampleMaterial, SpecimenCondition specimenCondition) {
+			String caseDistrictUuid, String caseDistrictName, CaseClassification caseClassification, boolean shipped, boolean received, String referredSampleUuid, 
+			Date shipmenteDate, Date receivedDate, String labUuid, String labName, SampleMaterial sampleMaterial, SpecimenCondition specimenCondition) {
 		this.uuid = uuid;
 		this.associatedCase = new CaseReferenceDto(associatedCaseUuid, associatedCaseFirstName, associatedCaseLastName);
 		this.sampleCode = sampleCode;
@@ -61,6 +64,7 @@ public class SampleIndexDto implements Serializable {
 		this.diseaseDetails = diseaseDetails;
 		this.caseRegionUuid = caseRegionUuid;
 		this.caseDistrict = new DistrictReferenceDto(caseDistrictUuid, caseDistrictName);
+		this.caseClassification = caseClassification;
 		this.shipped = shipped;
 		this.received = received;
 		this.referred = referredSampleUuid != null;
@@ -112,6 +116,12 @@ public class SampleIndexDto implements Serializable {
 	}
 	public void setCaseDistrict(DistrictReferenceDto caseDistrict) {
 		this.caseDistrict = caseDistrict;
+	}
+	public CaseClassification getCaseClassification() {
+		return caseClassification;
+	}
+	public void setCaseClassification(CaseClassification caseClassification) {
+		this.caseClassification = caseClassification;
 	}
 	public Date getShipmentDate() {
 		return shipmentDate;

@@ -111,7 +111,7 @@ public class SampleTestFacadeEjbTest extends BaseBeanTest {
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 
-		List<SampleIndexDto> sampleIndexDtos = sampleFacade.getIndexList(user.getUuid(), null);
+		List<SampleIndexDto> sampleIndexDtos = sampleFacade.getIndexList(user.getUuid(), null, null);
 		
 		// List should have one entry
 		assertEquals(1, sampleIndexDtos.size());
