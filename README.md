@@ -187,6 +187,10 @@ Here are some things that you should do to configure the apache server as proxy:
         Options -Indexes
         Alias "/download/sormas-release.apk" "/var/www/sormas/downloads/sormas-release.apk"
 
+* In case you need to update the site config while the server is running, use the following command to publish the changes without the need for a reload:
+
+	apache2ctl graceful
+
 
 ## Development Environment
 - Install the latest Eclipse version, Git for Windows and (optional) a Git client such as TortoiseGit if you don't want to handle version control from the command line/separately for the Eclipse and Android Studio projects
