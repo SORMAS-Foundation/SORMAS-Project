@@ -189,7 +189,7 @@ Here are some things that you should do to configure the apache server as proxy:
 
 * In case you need to update the site config while the server is running, use the following command to publish the changes without the need for a reload:
 
-	apache2ctl graceful
+        apache2ctl graceful
 
 
 ## Development Environment
