@@ -100,6 +100,14 @@ public class UserFacadeEjb implements UserFacade {
 	}
 	
 	@Override
+	public List<UserDto> getByUuids(List<String> uuids) {
+		return userService.getByUuids(uuids)
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
 	public List<UserReferenceDto> getAllAfterAsReference(Date date) {
 		return userService.getAllAfter(date, null).stream()
 			.map(c -> toReferenceDto(c))

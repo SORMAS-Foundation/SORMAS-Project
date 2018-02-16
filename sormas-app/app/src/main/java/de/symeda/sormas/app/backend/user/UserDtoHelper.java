@@ -38,7 +38,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 
     @Override
     protected Call<List<UserDto>> pullByUuids(List<String> uuids) {
-        throw new UnsupportedOperationException("Not relevant - all user's are pulled anyway");
+        return RetroProvider.getUserFacade().pullByUuids(uuids);
     }
 
     @Override
