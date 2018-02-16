@@ -293,7 +293,7 @@ public class Sample extends AbstractDomainObject {
 	 * @see SampleService#updateMainSampleTest
 	 */
 	@OneToOne(cascade = {})
-	@JoinColumn(nullable = false)
+	@JoinColumn(nullable = true)
 	public SampleTest getMainSampleTest() {
 		return mainSampleTest;
 	}

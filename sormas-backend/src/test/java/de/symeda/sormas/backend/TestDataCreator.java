@@ -7,114 +7,49 @@ import java.util.HashSet;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
-import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.CommunityFacade;
-import de.symeda.sormas.api.region.DistrictFacade;
-import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.report.WeeklyReportDto;
-import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
-import de.symeda.sormas.api.sample.SampleTestFacade;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
-import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
-import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionService;
-import info.novatec.beantest.api.BaseBeanTest;
 
-public class TestDataCreator extends BaseBeanTest {
+public class TestDataCreator {
 	
-	private final UserFacade userFacade;
-	private final PersonFacade personFacade;
-	private final CaseFacade caseFacade;
-	private final ContactFacade contactFacade;
-	private final TaskFacade taskFacade;
-	private final VisitFacade visitFacade;
-	private final WeeklyReportFacade weeklyReportFacade;
-	private final EventFacade eventFacade;
-	private final EventParticipantFacade eventParticipantFacade;
-	private final SampleFacade sampleFacade;
-	private final SampleTestFacade sampleTestFacade;
-	private final RegionFacade regionFacade;
-	private final DistrictFacade districtFacade;
-	private final CommunityFacade communityFacade;
-	private final FacilityFacade facilityFacade;
-	private final OutbreakFacade outbreakFacade;
-	
-	private final RegionService regionService;
-	private final DistrictService districtService;
-	private final CommunityService communityService;
-	private final FacilityService facilityService;
+	private final AbstractBeanTest beanTest;
 
-	public TestDataCreator(UserFacade userFacade, PersonFacade personFacade, CaseFacade caseFacade,
-			ContactFacade contactFacade, TaskFacade taskFacade, VisitFacade visitFacade, WeeklyReportFacade weeklyReportFacade,
-			EventFacade eventFacade, EventParticipantFacade eventParticipantFacade, SampleFacade sampleFacade, SampleTestFacade sampleTestFacade, RegionFacade regionFacade, 
-			DistrictFacade districtFacade, CommunityFacade communityFacade, FacilityFacade facilityFacade, RegionService regionService,
-			DistrictService districtService, CommunityService communityService, FacilityService facilityService,
-			OutbreakFacade outbreakFacade) {
-		this.userFacade = userFacade;
-		this.personFacade = personFacade;
-		this.caseFacade = caseFacade;
-		this.contactFacade = contactFacade;
-		this.taskFacade = taskFacade;
-		this.visitFacade = visitFacade;
-		this.weeklyReportFacade = weeklyReportFacade;
-		this.eventFacade = eventFacade;
-		this.eventParticipantFacade = eventParticipantFacade;
-		this.sampleFacade = sampleFacade;
-		this.sampleTestFacade = sampleTestFacade;
-		this.regionFacade = regionFacade;
-		this.districtFacade = districtFacade;
-		this.communityFacade = communityFacade;
-		this.facilityFacade = facilityFacade;
-		this.regionService = regionService;
-		this.districtService = districtService;
-		this.communityService = communityService;
-		this.facilityService = facilityService;
-		this.outbreakFacade = outbreakFacade;
+	public TestDataCreator(AbstractBeanTest beanTest) {
+		this.beanTest = beanTest;
 	}
 	
 	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName, String lastName, UserRole... roles) {
@@ -124,10 +59,10 @@ public class TestDataCreator extends BaseBeanTest {
 		user.setLastName(lastName);
 		user.setUserName(firstName + lastName);
 		user.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
-		user.setRegion(regionFacade.getRegionReferenceByUuid(regionUuid));
-		user.setDistrict(districtFacade.getDistrictReferenceByUuid(districtUuid));
-		user.setHealthFacility(facilityFacade.getFacilityReferenceByUuid(facilityUuid));
-		user = userFacade.saveUser(user);
+		user.setRegion(beanTest.getRegionFacade().getRegionReferenceByUuid(regionUuid));
+		user.setDistrict(beanTest.getDistrictFacade().getDistrictReferenceByUuid(districtUuid));
+		user.setHealthFacility(beanTest.getFacilityFacade().getFacilityReferenceByUuid(facilityUuid));
+		user = beanTest.getUserFacade().saveUser(user);
 		
 		return user;
 	}
@@ -137,7 +72,7 @@ public class TestDataCreator extends BaseBeanTest {
 		cazePerson.setUuid(DataHelper.createUuid());
 		cazePerson.setFirstName(firstName);
 		cazePerson.setLastName(lastName);
-		cazePerson = personFacade.savePerson(cazePerson);
+		cazePerson = beanTest.getPersonFacade().savePerson(cazePerson);
 		
 		return cazePerson;
 	}
@@ -152,12 +87,12 @@ public class TestDataCreator extends BaseBeanTest {
 		caze.setDisease(disease);
 		caze.setCaseClassification(caseClassification);
 		caze.setInvestigationStatus(investigationStatus);
-		caze.setRegion(regionFacade.getRegionReferenceByUuid(rdcf.region.getUuid()));
-		caze.setDistrict(districtFacade.getDistrictReferenceByUuid(rdcf.district.getUuid()));
-		caze.setCommunity(communityFacade.getCommunityReferenceByUuid(rdcf.community.getUuid()));
-		caze.setHealthFacility(facilityFacade.getFacilityReferenceByUuid(rdcf.facility.getUuid()));		
+		caze.setRegion(beanTest.getRegionFacade().getRegionReferenceByUuid(rdcf.region.getUuid()));
+		caze.setDistrict(beanTest.getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
+		caze.setCommunity(beanTest.getCommunityFacade().getCommunityReferenceByUuid(rdcf.community.getUuid()));
+		caze.setHealthFacility(beanTest.getFacilityFacade().getFacilityReferenceByUuid(rdcf.facility.getUuid()));		
 		
-		caze = caseFacade.saveCase(caze);
+		caze = beanTest.getCaseFacade().saveCase(caze);
 		
 		return caze;
 	}
@@ -173,7 +108,7 @@ public class TestDataCreator extends BaseBeanTest {
 		contact.setReportDateTime(reportDateTime);
 		contact.setLastContactDate(lastContactDate);
 		
-		contact = contactFacade.saveContact(contact);
+		contact = beanTest.getContactFacade().saveContact(contact);
 		
 		return contact;
 	}
@@ -194,7 +129,7 @@ public class TestDataCreator extends BaseBeanTest {
 		task.setDueDate(dueDate);
 		task.setAssigneeUser(assigneeUser);
 		
-		task = taskFacade.saveTask(task);
+		task = beanTest.getTaskFacade().saveTask(task);
 		
 		return task;
 	}
@@ -207,7 +142,7 @@ public class TestDataCreator extends BaseBeanTest {
 		visit.setVisitDateTime(visitDateTime);
 		visit.setVisitStatus(visitStatus);
 		
-		visit = visitFacade.saveVisit(visit);
+		visit = beanTest.getVisitFacade().saveVisit(visit);
 		
 		return visit;
 	}
@@ -215,14 +150,14 @@ public class TestDataCreator extends BaseBeanTest {
 	public WeeklyReportDto createWeeklyReport(String facilityUuid, UserReferenceDto informant, Date reportDateTime, int epiWeek, int year, int numberOfCases) {
 		WeeklyReportDto report = new WeeklyReportDto();
 		report.setUuid(DataHelper.createUuid());
-		report.setHealthFacility(facilityFacade.getFacilityReferenceByUuid(facilityUuid));
+		report.setHealthFacility(beanTest.getFacilityFacade().getFacilityReferenceByUuid(facilityUuid));
 		report.setInformant(informant);
 		report.setReportDateTime(reportDateTime);
 		report.setEpiWeek(epiWeek);
 		report.setYear(year);
 		report.setTotalNumberOfCases(numberOfCases);
 		
-		report = weeklyReportFacade.saveWeeklyReport(report);
+		report = beanTest.getWeeklyReportFacade().saveWeeklyReport(report);
 		
 		return report;
 	}
@@ -244,7 +179,7 @@ public class TestDataCreator extends BaseBeanTest {
 		event.setDisease(disease);
 		event.setEventLocation(eventLocation);
 		
-		event = eventFacade.saveEvent(event);
+		event = beanTest.getEventFacade().saveEvent(event);
 		
 		return event;
 	}
@@ -255,7 +190,7 @@ public class TestDataCreator extends BaseBeanTest {
 		eventParticipant.setPerson(eventPerson);
 		eventParticipant.setInvolvementDescription(involvementDescription);
 		
-		eventParticipant = eventParticipantFacade.saveEventParticipant(eventParticipant);
+		eventParticipant = beanTest.getEventParticipantFacade().saveEventParticipant(eventParticipant);
 		
 		return eventParticipant;
 	}
@@ -268,9 +203,9 @@ public class TestDataCreator extends BaseBeanTest {
 		sample.setReportDateTime(reportDateTime);
 		sample.setReportingUser(reportingUser);
 		sample.setSampleMaterial(sampleMaterial);
-		sample.setLab(facilityFacade.getFacilityReferenceByUuid(lab.getUuid()));
+		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
 		
-		sample = sampleFacade.saveSample(sample);
+		sample = beanTest.getSampleFacade().saveSample(sample);
 		
 		return sample;
 	}
@@ -281,13 +216,13 @@ public class TestDataCreator extends BaseBeanTest {
 		sampleTest.setSample(sample);
 		sampleTest.setTestType(testType);
 		sampleTest.setTestDateTime(testDateTime);
-		sampleTest.setLab(facilityFacade.getFacilityReferenceByUuid(lab.getUuid()));
+		sampleTest.setLab(lab != null ? beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()) : null);
 		sampleTest.setLabUser(labUser);
 		sampleTest.setTestResult(testResult);
 		sampleTest.setTestResultText(testResultText);
 		sampleTest.setTestResultVerified(verified);
 		
-		sampleTest = sampleTestFacade.saveSampleTest(sampleTest);
+		sampleTest = beanTest.getSampleTestFacade().saveSampleTest(sampleTest);
 		
 		return sampleTest;
 	}
@@ -295,12 +230,12 @@ public class TestDataCreator extends BaseBeanTest {
 	public OutbreakDto createOutbreak(RDCF rdcf, Disease disease, UserReferenceDto user) {
 		OutbreakDto outbreak = new OutbreakDto();
 		outbreak.setUuid(DataHelper.createUuid());
-		outbreak.setDistrict(districtFacade.getDistrictReferenceByUuid(rdcf.district.getUuid()));
+		outbreak.setDistrict(beanTest.getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
 		outbreak.setDisease(disease);
 		outbreak.setReportingUser(user);
 		outbreak.setReportDate(new Date());
 		
-		outbreak = outbreakFacade.saveOutbreak(outbreak);
+		outbreak = beanTest.getOutbreakFacade().saveOutbreak(outbreak);
 		
 		return outbreak;
 	}
@@ -318,7 +253,7 @@ public class TestDataCreator extends BaseBeanTest {
 		Region region = new Region();
 		region.setUuid(DataHelper.createUuid());
 		region.setName(regionName);
-		regionService.persist(region);
+		beanTest.getRegionService().persist(region);
 		
 		return region;
 	}
@@ -328,7 +263,7 @@ public class TestDataCreator extends BaseBeanTest {
 		district.setUuid(DataHelper.createUuid());
 		district.setName(districtName);
 		district.setRegion(region);
-		districtService.persist(district);
+		beanTest.getDistrictService().persist(district);
 		
 		return district;
 	}
@@ -338,7 +273,7 @@ public class TestDataCreator extends BaseBeanTest {
 		community.setUuid(DataHelper.createUuid());
 		community.setName(communityName);
 		community.setDistrict(district);
-		communityService.persist(community);
+		beanTest.getCommunityService().persist(community);
 		
 		return community;
 	}
@@ -351,7 +286,7 @@ public class TestDataCreator extends BaseBeanTest {
 		facility.setCommunity(community);
 		facility.setDistrict(district);
 		facility.setRegion(region);
-		facilityService.persist(facility);
+		beanTest.getFacilityService().persist(facility);
 		
 		return facility;
 	}
