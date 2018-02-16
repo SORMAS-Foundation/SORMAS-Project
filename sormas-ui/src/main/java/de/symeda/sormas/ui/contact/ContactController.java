@@ -14,7 +14,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.person.PersonDto;
@@ -32,8 +31,6 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class ContactController {
 
-	private ContactFacade cof = FacadeProvider.getContactFacade();
-	
     public ContactController() {
     	
     }
@@ -48,6 +45,7 @@ public class ContactController {
     public void create() {
     	create(null);
     }
+    
     public void create(CaseReferenceDto caze) {
     	CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(caze);
     	VaadinUiUtil.showModalPopupWindow(createComponent, "Create new contact");    	
@@ -135,7 +133,7 @@ public class ContactController {
         								FacadeProvider.getPersonFacade().savePerson(personDto);
         							}
         							
-	        						cof.saveContact(dto);
+	        						FacadeProvider.getContactFacade().saveContact(dto);
 	        	        			Notification.show("New contact created", Type.WARNING_MESSAGE);
 	        	        			editData(dto.getUuid());
         						}
@@ -151,7 +149,7 @@ public class ContactController {
     	
     	ContactDataForm editForm = new ContactDataForm(UserRight.CONTACT_EDIT);
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
-    	ContactDto contact = cof.getContactByUuid(contactUuid);
+    	ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
         editForm.setValue(contact);
         final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(editForm, editForm.getFieldGroup(), UserRight.CONTACT_EDIT);
         
@@ -174,7 +172,7 @@ public class ContactController {
         				FacadeProvider.getPersonFacade().savePerson(person);
         			}
         			
-        			dto = cof.saveContact(dto);
+        			dto = FacadeProvider.getContactFacade().saveContact(dto);
         			Notification.show("Contact data saved", Type.WARNING_MESSAGE);
         			editData(dto.getUuid());
         		}

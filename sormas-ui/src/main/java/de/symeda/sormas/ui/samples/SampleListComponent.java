@@ -19,8 +19,11 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
+import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -78,7 +81,7 @@ public class SampleListComponent extends VerticalLayout {
 
 		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
 		{
-			Button statusAll = new Button("all", e -> grid.clearShipmentFilters());
+			Button statusAll = new Button("all", e -> grid.clearShipmentFilters(true));
 			statusAll.setStyleName(ValoTheme.BUTTON_LINK);
 			buttonFilterLayout.addComponent(statusAll);
 			
@@ -109,7 +112,7 @@ public class SampleListComponent extends VerticalLayout {
 
 		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
 		{
-			Button statusAll = new Button("all", e -> grid.clearShipmentFilters());
+			Button statusAll = new Button("all", e -> grid.clearShipmentFilters(true));
 			statusAll.setStyleName(ValoTheme.BUTTON_LINK);
 			buttonFilterLayout.addComponent(statusAll);
 
@@ -148,6 +151,27 @@ public class SampleListComponent extends VerticalLayout {
 		filterLayout.addStyleName(CssStyles.VSPACE_3);
 
         UserDto user = LoginHelper.getCurrentUser();
+        
+        ComboBox testResultFilter = new ComboBox();
+        testResultFilter.setWidth(140, Unit.PIXELS);
+        testResultFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleTestDto.I18N_PREFIX, SampleTestDto.TEST_RESULT));
+        testResultFilter.addItems((Object[])SampleTestResultType.values());
+        testResultFilter.addValueChangeListener(e->grid.setTestResultFilter(((SampleTestResultType)e.getProperty().getValue())));
+        filterLayout.addComponent(testResultFilter);        
+
+        ComboBox specimenConditionFilter = new ComboBox();
+        specimenConditionFilter.setWidth(140, Unit.PIXELS);
+        specimenConditionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleDto.I18N_PREFIX, SampleDto.SPECIMEN_CONDITION));
+        specimenConditionFilter.addItems((Object[])SpecimenCondition.values());
+        specimenConditionFilter.addValueChangeListener(e->grid.setSpecimenConditionFilter(((SpecimenCondition)e.getProperty().getValue())));
+        filterLayout.addComponent(specimenConditionFilter);        
+
+        ComboBox classificationFilter = new ComboBox();
+        classificationFilter.setWidth(140, Unit.PIXELS);
+        classificationFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
+        classificationFilter.addItems((Object[])CaseClassification.values());
+        classificationFilter.addValueChangeListener(e->grid.setCaseClassificationFilter(((CaseClassification)e.getProperty().getValue())));
+        filterLayout.addComponent(classificationFilter);        
 
         ComboBox regionFilter = new ComboBox();
         if (user.getRegion() == null) {
@@ -186,29 +210,12 @@ public class SampleListComponent extends VerticalLayout {
         filterLayout.addComponent(districtFilter);
 
 		ComboBox labFilter = new ComboBox();
-		labFilter.setWidth(200, Unit.PIXELS);
+		labFilter.setWidth(140, Unit.PIXELS);
 		labFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.LAB));
 		labFilter.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
 		labFilter.addValueChangeListener(e->grid.setLabFilter(((FacilityReferenceDto)e.getProperty().getValue())));
 		filterLayout.addComponent(labFilter);
 
-		ComboBox testResultFilter = new ComboBox();
-		testResultFilter.setWidth(200, Unit.PIXELS);
-		testResultFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.TEST_RESULT));
-		for (SampleTestResultType testResultType : SampleTestResultType.values()) {
-			testResultFilter.addItem(testResultType.toString());
-		}
-		testResultFilter.addItem(SampleGrid.SPECIMEN_NOT_ADEQUATE);
-		testResultFilter.addValueChangeListener(e -> grid.setTestResultFilter((String) e.getProperty().getValue()));
-		filterLayout.addComponent(testResultFilter);
-		
-		ComboBox caseClassificationFilter = new ComboBox();
-		caseClassificationFilter.setWidth(200, Unit.PIXELS);
-		caseClassificationFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.CASE_CLASSIFICATION));
-		caseClassificationFilter.addItems((Object[]) CaseClassification.values());
-		caseClassificationFilter.addValueChangeListener(e -> grid.setCaseClassificationFilter((CaseClassification) e.getProperty().getValue()));
-		filterLayout.addComponent(caseClassificationFilter);
-		
 		TextField searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleIndexDto.I18N_PREFIX, SEARCH_FIELD));

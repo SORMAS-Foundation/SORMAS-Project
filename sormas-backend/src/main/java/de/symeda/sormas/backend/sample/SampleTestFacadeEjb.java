@@ -10,11 +10,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -113,29 +109,6 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	}
 
 	@Override
-	public SampleTestDto getLatestBySample(SampleReferenceDto sampleRef) {
-		if (sampleRef == null) {
-			return null;
-		}
-
-		Sample sample = sampleService.getByReferenceDto(sampleRef);
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<SampleTest> cq = cb.createQuery(SampleTest.class);
-		Root<SampleTest> from = cq.from(SampleTest.class);
-
-		cq.where(cb.equal(from.get(SampleTest.SAMPLE), sample));
-		cq.orderBy(cb.desc(from.get(SampleTest.TEST_DATE_TIME)));
-
-		try {
-			SampleTestDto result = toDto(em.createQuery(cq).setMaxResults(1).getSingleResult());
-			return result;
-		} catch (NoResultException e) {
-			return null;
-		}
-	}
-
-	@Override
 	public List<DashboardTestResultDto> getNewTestResultsForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		District district = districtService.getByReferenceDto(districtRef);
@@ -153,6 +126,8 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		SampleTestDto existingSampleTest = toDto(sampleTestService.getByUuid(dto.getUuid()));		
 		SampleTest sampleTest = fromDto(dto);
 		sampleTestService.ensurePersisted(sampleTest);
+		
+		sampleService.updateMainSampleTest(sampleTest.getSample());
 
 		onSampleTestChanged(existingSampleTest, sampleTest);
 
@@ -218,6 +193,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	}
 
 	private void onSampleTestChanged(SampleTestDto existingSampleTest, SampleTest newSampleTest) {
+		
 		// Send an email to all responsible supervisors when a new non-pending sample test is created or the status of a formerly pending test result has changed
 		if (existingSampleTest == null && newSampleTest.getTestResult() != SampleTestResultType.PENDING) {
 			Case existingSampleCase = sampleService.getByUuid(newSampleTest.getSample().getUuid()).getAssociatedCase();

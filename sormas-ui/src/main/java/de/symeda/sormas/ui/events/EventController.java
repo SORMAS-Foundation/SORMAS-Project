@@ -11,7 +11,6 @@ import com.vaadin.ui.UI;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -27,8 +26,6 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class EventController {
 	
-	private EventFacade ef = FacadeProvider.getEventFacade();
-
 	public void registerViews(Navigator navigator) {
 		navigator.addView(EventsView.VIEW_NAME, EventsView.class);
 		navigator.addView(EventDataView.VIEW_NAME, EventDataView.class);
@@ -63,7 +60,7 @@ public class EventController {
 	}
 	
 	private EventDto findEvent(String uuid) {
-		return ef.getEventByUuid(uuid);
+		return FacadeProvider.getEventFacade().getEventByUuid(uuid);
 	}
 	
 	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent() {
@@ -76,7 +73,7 @@ public class EventController {
 			public void onCommit() {
 				if(!eventCreateForm.getFieldGroup().isModified()) {
 					EventDto dto = eventCreateForm.getValue();
-					ef.saveEvent(dto);
+					FacadeProvider.getEventFacade().saveEvent(dto);
 					Notification.show("New event created", Type.WARNING_MESSAGE);
 					navigateToParticipants(dto.getUuid());
 				}
@@ -97,7 +94,7 @@ public class EventController {
 			public void onCommit() {
 				if(!eventEditForm.getFieldGroup().isModified()) {
 					EventDto eventDto = eventEditForm.getValue();
-					eventDto = ef.saveEvent(eventDto);
+					eventDto = FacadeProvider.getEventFacade().saveEvent(eventDto);
 					Notification.show("Event data saved", Type.WARNING_MESSAGE);
 					navigateToData(eventDto.getUuid());
 				}

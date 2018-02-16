@@ -51,6 +51,7 @@ public class Sample extends AbstractDomainObject {
 	public static final String SHIPPED = "shipped";
 	public static final String RECEIVED = "received";
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
+	public static final String MAIN_SAMPLE_TEST = "mainSampleTest";
 	
 	private Case associatedCase;
 	private String sampleCode;
@@ -79,6 +80,7 @@ public class Sample extends AbstractDomainObject {
 	private boolean received;
 	
 	private List<SampleTest> sampleTests;
+	private SampleTest mainSampleTest; 
 	
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -283,6 +285,21 @@ public class Sample extends AbstractDomainObject {
 	}
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
+	
+	/**
+	 * The representative test.
+	 * Be default this should be set to the last done test.
+	 * @see SampleService#updateMainSampleTest
+	 */
+	@OneToOne(cascade = {})
+	@JoinColumn(nullable = false)
+	public SampleTest getMainSampleTest() {
+		return mainSampleTest;
+	}
+	
+	public void setMainSampleTest(SampleTest mainSampleTest) {
+		this.mainSampleTest = mainSampleTest;
 	}
 	
 	

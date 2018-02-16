@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -31,8 +32,8 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -144,22 +145,30 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 	
 	@Override
-	public List<SampleIndexDto> getIndexList(String userUuid, CaseReferenceDto caseRef, SampleCriteria sampleCriteria) {
+	public List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
 		Root<Sample> sample = cq.from(Sample.class);
+
 		Join<Sample, Sample> referredSample = sample.join(Sample.REFERRED_TO, JoinType.LEFT);
+		Join<Sample, SampleTest> mainTest = sample.join(Sample.MAIN_SAMPLE_TEST, JoinType.LEFT);
+		Join<SampleTest, User> mainTestLabUser = mainTest.join(SampleTest.LAB_USER, JoinType.LEFT);
 		Join<Sample, Facility> lab = sample.join(Sample.LAB, JoinType.LEFT);
 		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 		Join<Case, Person> cazePerson = caze.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, Region> caseRegion = caze.join(Case.REGION, JoinType.LEFT);
 		Join<Case, District> caseDistrict = caze.join(Case.DISTRICT, JoinType.LEFT);
 		
-		cq.multiselect(sample.get(Sample.UUID), caze.get(Case.UUID), cazePerson.get(Person.FIRST_NAME), cazePerson.get(Person.LAST_NAME),
-				sample.get(Sample.SAMPLE_CODE), sample.get(Sample.LAB_SAMPLE_ID), caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), 
-				caseRegion.get(Region.UUID), caseDistrict.get(District.UUID), caseDistrict.get(District.NAME), caze.get(Case.CASE_CLASSIFICATION), sample.get(Sample.SHIPPED), 
-				sample.get(Sample.RECEIVED), referredSample.get(Sample.UUID), sample.get(Sample.SHIPMENT_DATE), sample.get(Sample.RECEIVED_DATE), 
-				lab.get(Facility.UUID), lab.get(Facility.NAME), sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SPECIMEN_CONDITION));
+		cq.multiselect(sample.get(Sample.UUID), 
+				sample.get(Sample.SAMPLE_CODE), sample.get(Sample.LAB_SAMPLE_ID),
+				sample.get(Sample.SHIPPED), sample.get(Sample.SHIPMENT_DATE), sample.get(Sample.RECEIVED), sample.get(Sample.RECEIVED_DATE), 
+				sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SPECIMEN_CONDITION), 
+				lab.get(Facility.UUID), lab.get(Facility.NAME), referredSample.get(Sample.UUID), 
+				caze.get(Case.UUID), cazePerson.get(Person.FIRST_NAME), cazePerson.get(Person.LAST_NAME),
+				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), 
+				caseRegion.get(Region.UUID), caseDistrict.get(District.UUID), caseDistrict.get(District.NAME), 
+				mainTest.get(SampleTest.TEST_RESULT), mainTestLabUser.get(User.FIRST_NAME), mainTestLabUser.get(User.LAST_NAME));
 		
 		Predicate filter = null;
 		if (userUuid != null) {
@@ -167,26 +176,17 @@ public class SampleFacadeEjb implements SampleFacade {
 			filter = sampleService.createUserFilter(cb, cq, sample, user);
 		}
 			
-		if (caseRef != null) {
-			Case sampleCase = caseService.getByReferenceDto(caseRef);
-			Predicate caseFilter = cb.equal(sample.get(Sample.ASSOCIATED_CASE), sampleCase);
-			if (filter != null) {
-				filter = cb.and(filter, caseFilter);
-			} else {
-				filter = caseFilter;
-			}
-		}
-		
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, sample);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
-		}
+		}		
 		
 		if (filter != null) {
 			cq.where(filter);
 		}
 		
 		List<SampleIndexDto> resultList = em.createQuery(cq).getResultList();
+		
 		return resultList;	
 	}
 	
@@ -301,4 +301,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		return dto;
 	}
 	
+	@LocalBean
+	@Stateless
+	public static class SampleFacadeEjbLocal extends SampleFacadeEjb {
+	}
 }

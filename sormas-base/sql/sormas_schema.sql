@@ -2045,3 +2045,15 @@ ALTER TABLE person_history ADD COLUMN causeofdeathdetails varchar(512);
 ALTER TABLE person_history ADD COLUMN causeofdeathdisease varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (91, 'History table updates');
+
+-- 2018-02-13 Test result filter under Samples Directory #482
+
+ALTER TABLE samples ADD COLUMN mainsampletest_id bigint;
+ALTER TABLE samples ADD CONSTRAINT fk_samples_mainsampletest_id FOREIGN KEY (mainsampletest_id) REFERENCES sampletest (id);
+-- set to latest test, see https://www.periscopedata.com/blog/4-ways-to-join-only-the-first-row-in-sql
+UPDATE samples SET mainsampletest_id=(SELECT DISTINCT ON (sample_id) id FROM sampletest WHERE sampletest.sample_id = samples.id ORDER BY sample_id, testdatetime DESC);
+ALTER TABLE samples_history ADD COLUMN mainsampletest_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (92, 'Test result filter under Samples Directory #482');
+
+  

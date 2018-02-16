@@ -26,23 +26,18 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
-import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -64,12 +59,6 @@ import de.symeda.sormas.ui.utils.ViewMode;
 
 public class CaseController {
 
-	private CaseFacade cf = FacadeProvider.getCaseFacade();
-	private SymptomsFacade sf = FacadeProvider.getSymptomsFacade();
-	private HospitalizationFacade hf = FacadeProvider.getHospitalizationFacade();
-	private EpiDataFacade edf = FacadeProvider.getEpiDataFacade();
-	private ContactFacade conf = FacadeProvider.getContactFacade();
-	
     public CaseController() {
     	
     }
@@ -141,7 +130,7 @@ public class CaseController {
     }
 
     private CaseDataDto findCase(String uuid) {
-        return cf.getCaseDataByUuid(uuid);
+        return FacadeProvider.getCaseFacade().getCaseDataByUuid(uuid);
     }
 
     // TODO unify this in API project
@@ -203,11 +192,11 @@ public class CaseController {
         			if (contact != null) {
         				// automatically change the contact classification to "converted"
 						contact.setContactStatus(ContactStatus.CONVERTED);
-						conf.saveContact(contact);
+						FacadeProvider.getContactFacade().saveContact(contact);
 
 						// use the person of the contact we are creating a case for
         				dto.setPerson(person);
-        				cf.saveCase(dto);        				
+        				FacadeProvider.getCaseFacade().saveCase(dto);        				
 	        			Notification.show("New case created", Type.ASSISTIVE_NOTIFICATION);
 	        			navigateToView(CasePersonView.VIEW_NAME, dto.getUuid(), null);
         			} else {
@@ -216,7 +205,7 @@ public class CaseController {
 	        					person -> {
 	        						if (person != null) {
 		        						dto.setPerson(person);
-		        						cf.saveCase(dto);
+		        						FacadeProvider.getCaseFacade().saveCase(dto);
 		        	        			Notification.show("New case created", Type.ASSISTIVE_NOTIFICATION);
 		        	        			navigateToView(CasePersonView.VIEW_NAME, dto.getUuid(), null);
 	        						}
@@ -240,7 +229,7 @@ public class CaseController {
         	public void onCommit() {
         		if (!caseEditForm.getFieldGroup().isModified()) {
         			CaseDataDto cazeDto = caseEditForm.getValue();   
-        			cf.saveCase(cazeDto);
+        			FacadeProvider.getCaseFacade().saveCase(cazeDto);
         			Notification.show("Case data saved", Type.WARNING_MESSAGE);
         			navigateToView(CaseDataView.VIEW_NAME, caseUuid, viewMode);
         		}
@@ -268,7 +257,7 @@ public class CaseController {
 				public void buttonClick(ClickEvent event) {
 					caseEditForm.commit();
 					CaseDataDto cazeDto = caseEditForm.getValue();
-					cazeDto = cf.saveCase(cazeDto);
+					cazeDto = FacadeProvider.getCaseFacade().saveCase(cazeDto);
 					moveCase(cazeDto);
 				}
 			});
@@ -298,7 +287,7 @@ public class CaseController {
         		if (!symptomsForm.getFieldGroup().isModified()) {
 
         			SymptomsDto symptomsDto = symptomsForm.getValue();
-        			sf.saveSymptoms(symptomsDto);
+        			FacadeProvider.getSymptomsFacade().saveSymptoms(symptomsDto);
 
         			// for plague we may have to change the type based on symptoms
         			CaseDataDto caseDataDto = findCase(caseUuid);		
@@ -307,7 +296,7 @@ public class CaseController {
         				if (plagueType != caseDataDto.getPlagueType() && plagueType != null) {
 
 							caseDataDto.setPlagueType(plagueType);
-							cf.saveCase(caseDataDto);
+							FacadeProvider.getCaseFacade().saveCase(caseDataDto);
 
         					// confirm plaque type
         					Window window = VaadinUiUtil.showSimplePopupWindow("Case plague type",
@@ -346,7 +335,7 @@ public class CaseController {
 			public void onCommit() {
 				if (!hospitalizationForm.getFieldGroup().isModified()) {
 					HospitalizationDto dto = hospitalizationForm.getValue();
-					hf.saveHospitalization(dto);
+					 FacadeProvider.getHospitalizationFacade().saveHospitalization(dto);
 					Notification.show("Case hospitalization saved", Type.WARNING_MESSAGE);
 					navigateToView(CaseHospitalizationView.VIEW_NAME, caseUuid, viewMode);
 				}
@@ -368,7 +357,7 @@ public class CaseController {
 			public void onCommit() {
 				if (!epiDataForm.getFieldGroup().isModified()) {
 					EpiDataDto dto = epiDataForm.getValue();
-					edf.saveEpiData(dto);
+					FacadeProvider.getEpiDataFacade().saveEpiData(dto);
 					Notification.show("Case epidemiological data saved", Type.WARNING_MESSAGE);
 					navigateToView(EpiDataView.VIEW_NAME, caseUuid, viewMode);
 				}
@@ -393,7 +382,7 @@ public class CaseController {
 			public void onCommit() {
 				if (!facilityChangeForm.getFieldGroup().isModified()) {
 					CaseDataDto dto = facilityChangeForm.getValue();
-					cf.moveCase(cf.getReferenceByUuid(dto.getUuid()), dto.getCommunity(), dto.getHealthFacility(), dto.getHealthFacilityDetails(), dto.getSurveillanceOfficer());
+					FacadeProvider.getCaseFacade().moveCase(FacadeProvider.getCaseFacade().getReferenceByUuid(dto.getUuid()), dto.getCommunity(), dto.getHealthFacility(), dto.getHealthFacilityDetails(), dto.getSurveillanceOfficer());
 					popupWindow.close();
 					Notification.show("Case has been moved to the new facility", Type.WARNING_MESSAGE);
 					navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null);
