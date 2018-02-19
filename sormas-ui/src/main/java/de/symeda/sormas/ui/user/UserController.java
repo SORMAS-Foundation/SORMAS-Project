@@ -78,7 +78,7 @@ public class UserController {
 		UserEditForm userEditForm = new UserEditForm(false, UserRight.USER_EDIT);
 		UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
 		userEditForm.setValue(userDto);
-		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, userEditForm.getFieldGroup(), UserRight.USER_EDIT);
+		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, userEditForm.getFieldGroup());
 
 		// Add reset password button
 		Button resetPasswordButton = createResetPasswordButton(userUuid, editView);        
@@ -113,7 +113,7 @@ public class UserController {
 
 		UserEditForm createForm = new UserEditForm(true, UserRight.USER_CREATE);
 		createForm.setValue(createNewUser());
-		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(createForm, createForm.getFieldGroup(), UserRight.USER_CREATE);
+		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(createForm, createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override

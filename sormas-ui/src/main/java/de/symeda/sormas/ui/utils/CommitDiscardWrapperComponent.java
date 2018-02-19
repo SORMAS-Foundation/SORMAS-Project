@@ -36,9 +36,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.login.LoginHelper;
-
 
 public class CommitDiscardWrapperComponent<C extends Component> extends
 VerticalLayout implements Buffered {
@@ -110,11 +107,11 @@ VerticalLayout implements Buffered {
 
 	}
 
-	public CommitDiscardWrapperComponent(C component, FieldGroup fieldGroup, UserRight editOrCreateUserRight) {
-		setWrappedComponent(component, fieldGroup, editOrCreateUserRight);
+	public CommitDiscardWrapperComponent(C component, FieldGroup fieldGroup) {
+		setWrappedComponent(component, fieldGroup);
 	}
 
-	protected void setWrappedComponent(C component, FieldGroup fieldGroup, UserRight editOrCreateUserRight) {
+	protected void setWrappedComponent(C component, FieldGroup fieldGroup) {
 
 		this.wrappedComponent = component;
 		this.fieldGroup = fieldGroup;
@@ -158,9 +155,8 @@ VerticalLayout implements Buffered {
 
 		applyAutoDisabling();
 
-		if (editOrCreateUserRight != null && !LoginHelper.hasUserRight(editOrCreateUserRight)) {
-			getCommitButton().setVisible(false);
-			getDiscardButton().setVisible(false);
+		if (fieldGroup != null && fieldGroup.isReadOnly()) {
+			setReadOnly(true);
 		}
 	}
 
@@ -252,7 +248,7 @@ VerticalLayout implements Buffered {
 	}
 
 	/**
-	 * Ob die Buttons per ENTER und ESC bedient werden können
+	 * Whether the buttons can be operated by ENTER and ESC
 	 * 
 	 * @param shortcutsEnabled
 	 */

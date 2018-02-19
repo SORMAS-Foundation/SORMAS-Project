@@ -53,7 +53,7 @@ public class PersonController {
     		personSelect.selectBestMatch();
             // TODO add user right parameter
 	    	final CommitDiscardWrapperComponent<PersonSelectField> selectOrCreateComponent = 
-	    			new CommitDiscardWrapperComponent<PersonSelectField>(personSelect, null, null);
+	    			new CommitDiscardWrapperComponent<PersonSelectField>(personSelect, null);
 	    	
 	    	selectOrCreateComponent.addCommitListener(new CommitListener() {
 	        	@Override
@@ -85,7 +85,7 @@ public class PersonController {
     	
     	PersonCreateForm createForm = new PersonCreateForm(editOrCreateUserRight);
         createForm.setValue(person);
-        final CommitDiscardWrapperComponent<PersonCreateForm> editComponent = new CommitDiscardWrapperComponent<PersonCreateForm>(createForm, createForm.getFieldGroup(), editOrCreateUserRight);
+        final CommitDiscardWrapperComponent<PersonCreateForm> editComponent = new CommitDiscardWrapperComponent<PersonCreateForm>(createForm, createForm.getFieldGroup());
         
         editComponent.addCommitListener(new CommitListener() {
         	@Override
@@ -111,7 +111,7 @@ public class PersonController {
     }
 	
 	private CommitDiscardWrapperComponent<PersonEditForm> getPersonEditView(PersonEditForm editForm, UserRight editOrCreateUserRight) {
-		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(editForm, editForm.getFieldGroup(), editOrCreateUserRight);
+		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(editForm, editForm.getFieldGroup());
         
         editView.addCommitListener(new CommitListener() {
         	

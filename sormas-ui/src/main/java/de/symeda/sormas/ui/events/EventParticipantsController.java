@@ -38,7 +38,7 @@ public class EventParticipantsController {
 		EventParticipantDto eventParticipant = createNewEventParticipant(eventRef);
 		EventParticipantCreateForm createForm = new EventParticipantCreateForm(UserRight.EVENTPARTICIPANT_CREATE);
 		createForm.setValue(eventParticipant);
-		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent = new CommitDiscardWrapperComponent<EventParticipantCreateForm>(createForm, createForm.getFieldGroup(), UserRight.EVENTPARTICIPANT_CREATE);
+		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent = new CommitDiscardWrapperComponent<EventParticipantCreateForm>(createForm, createForm.getFieldGroup());
 		
 		createComponent.addCommitListener(new CommitListener() {
 			@Override
@@ -66,7 +66,7 @@ public class EventParticipantsController {
 	public void editEventParticipant(EventParticipantDto eventParticipant) {
 		EventParticipantEditForm editForm = new EventParticipantEditForm(FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()), UserRight.EVENTPARTICIPANT_EDIT);
 		editForm.setValue(eventParticipant);
-		final CommitDiscardWrapperComponent<EventParticipantEditForm> editView = new CommitDiscardWrapperComponent<EventParticipantEditForm>(editForm, editForm.getFieldGroup(), UserRight.EVENTPARTICIPANT_EDIT);
+		final CommitDiscardWrapperComponent<EventParticipantEditForm> editView = new CommitDiscardWrapperComponent<EventParticipantEditForm>(editForm, editForm.getFieldGroup());
 
 		Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit person");
         // visit form is too big for typical screens

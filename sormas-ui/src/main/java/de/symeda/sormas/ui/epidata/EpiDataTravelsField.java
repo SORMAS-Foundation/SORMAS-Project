@@ -85,7 +85,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 		EpiDataTravelEditForm editForm = new EpiDataTravelEditForm(UserRight.CASE_EDIT);
 		editForm.setValue(entry);
 		
-		final CommitDiscardWrapperComponent<EpiDataTravelEditForm> editView = new CommitDiscardWrapperComponent<EpiDataTravelEditForm>(editForm, editForm.getFieldGroup(), UserRight.CASE_EDIT);
+		final CommitDiscardWrapperComponent<EpiDataTravelEditForm> editView = new CommitDiscardWrapperComponent<EpiDataTravelEditForm>(editForm, editForm.getFieldGroup());
 		editView.getCommitButton().setCaption("done");
 		
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Travel");

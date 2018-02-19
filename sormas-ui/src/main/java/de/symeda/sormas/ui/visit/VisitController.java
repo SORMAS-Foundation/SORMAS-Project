@@ -36,7 +36,7 @@ public class VisitController {
     	VisitReferenceDto referenceDto = dto.toReference();
     	VisitEditForm editForm = new VisitEditForm(dto.getDisease(), null, false, UserRight.VISIT_EDIT);
         editForm.setValue(dto);
-        final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(editForm, editForm.getFieldGroup(), UserRight.VISIT_EDIT);
+        final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(editForm, editForm.getFieldGroup());
         editView.setWidth(100, Unit.PERCENTAGE);
 
         Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit visit");
@@ -75,7 +75,7 @@ public class VisitController {
 		VisitDto visit = createNewVisit(contactRef);
     	VisitEditForm createForm = new VisitEditForm(visit.getDisease(), FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid()), true, UserRight.VISIT_CREATE);
         createForm.setValue(visit);
-        final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(createForm, createForm.getFieldGroup(), UserRight.VISIT_CREATE);
+        final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(createForm, createForm.getFieldGroup());
         
         editView.addCommitListener(new CommitListener() {
         	@Override

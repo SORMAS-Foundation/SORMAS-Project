@@ -49,7 +49,7 @@ public class SampleController {
 	public void create(CaseReferenceDto caseRef, SampleGrid grid) {
 		SampleCreateForm createForm = new SampleCreateForm(UserRight.SAMPLE_CREATE);
 		createForm.setValue(SampleDto.buildSample(LoginHelper.getCurrentUserAsReference(), caseRef));
-		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup(), UserRight.SAMPLE_CREATE);
+		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -69,7 +69,7 @@ public class SampleController {
 		SampleCreateForm createForm = new SampleCreateForm(UserRight.SAMPLE_CREATE);
 		SampleDto referralSample = SampleDto.buildReferralSample(LoginHelper.getCurrentUserAsReference(), sample);
 		createForm.setValue(referralSample);
-		final CommitDiscardWrapperComponent<SampleCreateForm> createView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup(), UserRight.SAMPLE_CREATE);
+		final CommitDiscardWrapperComponent<SampleCreateForm> createView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup());
 
 		createView.addCommitListener(new CommitListener() {
 			@Override
@@ -92,7 +92,7 @@ public class SampleController {
 		form.setWidth(form.getWidth() * 10/12, Unit.PIXELS);
 		SampleDto dto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid);
 		form.setValue(dto);
-		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(form, form.getFieldGroup(), UserRight.SAMPLE_EDIT);
+		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(form, form.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override

@@ -106,7 +106,7 @@ public class ContactController {
     	
     	ContactCreateForm createForm = new ContactCreateForm(UserRight.CONTACT_CREATE);
         createForm.setValue(createNewContact(caze));
-        final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, createForm.getFieldGroup(), UserRight.CONTACT_CREATE);
+        final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, createForm.getFieldGroup());
         
         createComponent.addCommitListener(new CommitListener() {
         	@Override
@@ -151,7 +151,7 @@ public class ContactController {
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
     	ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
         editForm.setValue(contact);
-        final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(editForm, editForm.getFieldGroup(), UserRight.CONTACT_EDIT);
+        final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(editForm, editForm.getFieldGroup());
         
         editComponent.addCommitListener(new CommitListener() {
         	@Override

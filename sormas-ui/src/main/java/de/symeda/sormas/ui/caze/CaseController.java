@@ -173,7 +173,7 @@ public class CaseController {
         if (contact != null) {
         	createForm.setDiseaseReadOnly(true);
         }
-        final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(createForm, createForm.getFieldGroup(), UserRight.CASE_CREATE);
+        final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(createForm, createForm.getFieldGroup());
        
         editView.addCommitListener(new CommitListener() {
         	@Override
@@ -222,7 +222,7 @@ public class CaseController {
     	CaseDataDto caze = findCase(caseUuid);
     	CaseDataForm caseEditForm = new CaseDataForm(FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()), caze.getDisease(), UserRight.CASE_EDIT, viewMode);
         caseEditForm.setValue(caze);
-        final CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(caseEditForm, caseEditForm.getFieldGroup(), UserRight.CASE_EDIT);
+        final CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(caseEditForm, caseEditForm.getFieldGroup());
         
         editView.addCommitListener(new CommitListener() {
         	@Override
@@ -277,7 +277,7 @@ public class CaseController {
     	SymptomsForm symptomsForm = new SymptomsForm(caseDataDto.getDisease(), person, SymptomsContext.CASE, UserRight.CASE_EDIT, viewMode);
         symptomsForm.setValue(caseDataDto.getSymptoms());
     	symptomsForm.initializeSymptomRequirementsForCase();
-        final CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(symptomsForm, symptomsForm.getFieldGroup(), UserRight.CASE_EDIT);
+        final CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(symptomsForm, symptomsForm.getFieldGroup());
         
         editView.addCommitListener(new CommitListener() {
         	
@@ -328,7 +328,7 @@ public class CaseController {
 		CaseHospitalizationForm hospitalizationForm = new CaseHospitalizationForm(caze, UserRight.CASE_EDIT, viewMode);
 		hospitalizationForm.setValue(caze.getHospitalization());
 	
-		final CommitDiscardWrapperComponent<CaseHospitalizationForm> editView = new CommitDiscardWrapperComponent<CaseHospitalizationForm>(hospitalizationForm, hospitalizationForm.getFieldGroup(), UserRight.CASE_EDIT);
+		final CommitDiscardWrapperComponent<CaseHospitalizationForm> editView = new CommitDiscardWrapperComponent<CaseHospitalizationForm>(hospitalizationForm, hospitalizationForm.getFieldGroup());
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -350,7 +350,7 @@ public class CaseController {
 		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), UserRight.CASE_EDIT, viewMode);
 		epiDataForm.setValue(caze.getEpiData());
 		
-		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(epiDataForm, epiDataForm.getFieldGroup(), UserRight.CASE_EDIT);
+		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(epiDataForm, epiDataForm.getFieldGroup());
 		
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -370,7 +370,7 @@ public class CaseController {
 	public void moveCase(CaseDataDto caze) {
 		CaseFacilityChangeForm facilityChangeForm = new CaseFacilityChangeForm(UserRight.CASE_MOVE);
 		facilityChangeForm.setValue(caze);
-		CommitDiscardWrapperComponent<CaseFacilityChangeForm> facilityChangeView = new CommitDiscardWrapperComponent<CaseFacilityChangeForm>(facilityChangeForm, facilityChangeForm.getFieldGroup(), UserRight.CASE_MOVE);
+		CommitDiscardWrapperComponent<CaseFacilityChangeForm> facilityChangeView = new CommitDiscardWrapperComponent<CaseFacilityChangeForm>(facilityChangeForm, facilityChangeForm.getFieldGroup());
 		facilityChangeView.getCommitButton().setCaption("Move case");
 		facilityChangeView.setMargin(true);
 		

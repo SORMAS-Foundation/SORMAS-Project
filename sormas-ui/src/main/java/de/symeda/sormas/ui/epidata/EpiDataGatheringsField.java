@@ -104,7 +104,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 		EpiDataGatheringEditForm editForm = new EpiDataGatheringEditForm(UserRight.CASE_EDIT);
 		editForm.setValue(entry);
 		
-		final CommitDiscardWrapperComponent<EpiDataGatheringEditForm> editView = new CommitDiscardWrapperComponent<EpiDataGatheringEditForm>(editForm, editForm.getFieldGroup(), UserRight.CASE_EDIT);
+		final CommitDiscardWrapperComponent<EpiDataGatheringEditForm> editView = new CommitDiscardWrapperComponent<EpiDataGatheringEditForm>(editForm, editForm.getFieldGroup());
 		editView.getCommitButton().setCaption("done");
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Social event");
