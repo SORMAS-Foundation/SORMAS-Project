@@ -64,8 +64,8 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 
 			@Override
 			protected void configureField(Field<?> field) {
-				field.setBuffered(isBuffered());
 
+				field.setBuffered(isBuffered());
 				field.setEnabled(isEnabled());				
 
 				if (field.getPropertyDataSource().isReadOnly()) {
