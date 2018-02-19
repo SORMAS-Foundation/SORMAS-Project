@@ -35,7 +35,7 @@ import de.symeda.sormas.ui.utils.BooleanRenderer;
 @SuppressWarnings("serial")
 public class SampleGrid extends Grid {
 	
-	private static final String TEST_RESULT_AND_SPECIMENT = "testResultAndSpecimen";
+	private static final String TEST_RESULT_AND_SPECIMEN = "testResultAndSpecimen";
 	private static final String DISEASE_SHORT = "diseaseShort";
 	
 	private SampleCriteria sampleCriteria = new SampleCriteria();
@@ -48,7 +48,7 @@ public class SampleGrid extends Grid {
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 		
-		generatedContainer.addGeneratedProperty(TEST_RESULT_AND_SPECIMENT, new PropertyValueGenerator<String>() {
+		generatedContainer.addGeneratedProperty(TEST_RESULT_AND_SPECIMEN, new PropertyValueGenerator<String>() {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				SampleIndexDto sampleIndexDto = (SampleIndexDto) itemId;
@@ -83,7 +83,7 @@ public class SampleGrid extends Grid {
 		
 		setColumns(SampleIndexDto.SAMPLE_CODE, SampleIndexDto.LAB_SAMPLE_ID, SampleIndexDto.ASSOCIATED_CASE, DISEASE_SHORT,
 				SampleIndexDto.CASE_DISTRICT, SampleIndexDto.SHIPPED, SampleIndexDto.RECEIVED, SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB,
-				SampleIndexDto.SAMPLE_MATERIAL, SampleIndexDto.SAMPLE_TEST_LAB_USER_NAME, TEST_RESULT_AND_SPECIMENT);
+				SampleIndexDto.SAMPLE_MATERIAL, SampleIndexDto.SAMPLE_TEST_LAB_USER_NAME, TEST_RESULT_AND_SPECIMEN);
 		
 		getColumn(SampleIndexDto.SHIPMENT_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));
 		getColumn(SampleIndexDto.RECEIVED_DATE).setRenderer(new DateRenderer(DateHelper.getDateFormat()));

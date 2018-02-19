@@ -15,8 +15,6 @@ public class SampleIndexDto implements Serializable {
 
 	public static final String I18N_PREFIX = "Sample";
 	
-	public static final String SQL_MAPPING_NAME = "SampleIndex";
-	
 	public static final String UUID = "uuid";
 	public static final String ASSOCIATED_CASE = "associatedCase";
 	public static final String DISEASE = "disease";
