@@ -54,7 +54,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
     		@Override
     		public void valueChange(ValueChangeEvent event) {
     	   		viewMode = (ViewMode)event.getProperty().getValue();
-    	   		reloadView();
+   	   			reloadView();
     		}
     	};        
         viewModeToggle.addValueChangeListener(viewModeToggleListener);
@@ -107,12 +107,11 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		menu.removeAllViews();
 		menu.addView(CasesView.VIEW_NAME, "Cases list");
 		menu.addView(CaseDataView.VIEW_NAME, I18nProperties.getFieldCaption(CaseDataDto.I18N_PREFIX), params);
-		menu.addView(CasePersonView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON), params);
-		menu.addView(CaseHospitalizationView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "hospitalization"), params);
-		menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
 		if (viewMode != ViewMode.OUTBREAK) {
-			// TODO this is a hack - look into the actual field configuration instead
-			menu.addView(EpiDataView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "epiData"), params);
+			menu.addView(CasePersonView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON), params);
+			menu.addView(CaseHospitalizationView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION), params);
+			menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
+			menu.addView(EpiDataView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), params);
 		}
 		if (DiseaseHelper.hasContactFollowUp(caze)) {
 			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "contacts"), params);

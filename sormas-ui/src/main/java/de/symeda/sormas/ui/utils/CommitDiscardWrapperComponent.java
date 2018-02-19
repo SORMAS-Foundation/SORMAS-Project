@@ -419,7 +419,9 @@ VerticalLayout implements Buffered {
 			// validate all fields first, so commit will likely work for all fieldGroups
 			// this is basically only needed when we have multiple field groups
 			getFieldsStream().forEach(field -> {
-				field.validate();
+				if (!field.isInvalidCommitted()) {
+					field.validate();
+				}
 			});
 			
 			try {

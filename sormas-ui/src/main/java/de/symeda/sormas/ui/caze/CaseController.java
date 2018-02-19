@@ -10,6 +10,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -27,6 +28,7 @@ import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -51,6 +53,7 @@ import de.symeda.sormas.ui.hospitalization.CaseHospitalizationForm;
 import de.symeda.sormas.ui.hospitalization.CaseHospitalizationView;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
+import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
@@ -100,6 +103,7 @@ public class CaseController {
     }
     
     public void navigateToView(String viewName, String caseUuid, ViewMode viewMode) {
+    	
    		String navigationState = viewName + "/" + caseUuid;
    		if (viewMode == ViewMode.FULL) {
    			// pass full view mode as param so it's also used for other views when switching
@@ -218,11 +222,40 @@ public class CaseController {
         return editView;
     }
 
-    public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(final String caseUuid, final ViewMode viewMode) {
+    public CommitDiscardWrapperComponent<? extends Component> getCaseFullEditComponent(final String caseUuid, final ViewMode viewMode) {
+		
+		CommitDiscardWrapperComponent<CaseDataForm> caseDataEditComponent = getCaseDataEditComponent(caseUuid, viewMode);
+		CommitDiscardWrapperComponent<CaseHospitalizationForm> caseHospitalizationComponent = getCaseHospitalizationComponent(caseUuid, viewMode);
+		CommitDiscardWrapperComponent<SymptomsForm> caseSymptomsEditComponent = getCaseSymptomsEditComponent(caseUuid, viewMode);
+		CommitDiscardWrapperComponent<EpiDataForm> caseEpiDataComponent = getCaseEpiDataComponent(caseUuid, viewMode);
+		
+		CommitDiscardWrapperComponent<? extends Component> editView = AbstractEditForm.buildCommitDiscardWrapper(
+				caseDataEditComponent.getWrappedComponent(), 
+				caseHospitalizationComponent.getWrappedComponent(),
+				caseSymptomsEditComponent.getWrappedComponent(),
+				caseEpiDataComponent.getWrappedComponent());
+		
+		editView.addCommitListener(new CommitListener() {
+			@Override
+			public void onCommit() {
+				caseDataEditComponent.commit();
+				caseHospitalizationComponent.commit();
+				caseSymptomsEditComponent.commit();
+				caseEpiDataComponent.commit();
+				navigateToView(CaseDataView.VIEW_NAME, caseUuid, viewMode);
+			}
+		});
+
+        appendSpecialCommands(new CaseReferenceDto(caseUuid), editView);
+
+		return editView;
+	}
+
+	public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(final String caseUuid, final ViewMode viewMode) {
     	CaseDataDto caze = findCase(caseUuid);
     	CaseDataForm caseEditForm = new CaseDataForm(FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()), caze.getDisease(), UserRight.CASE_EDIT, viewMode);
         caseEditForm.setValue(caze);
-        final CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(caseEditForm, caseEditForm.getFieldGroup());
+        CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(caseEditForm, caseEditForm.getFieldGroup());
         
         editView.addCommitListener(new CommitListener() {
         	@Override
@@ -236,11 +269,17 @@ public class CaseController {
         	}
         });
         
-        if (LoginHelper.getCurrentUserRoles().contains(UserRole.ADMIN)) {
+        appendSpecialCommands(caze.toReference(), editView);
+        
+        return editView;
+    }
+
+	private void appendSpecialCommands(CaseReferenceDto cazeRef, CommitDiscardWrapperComponent<? extends Component> editView) {
+		if (LoginHelper.getCurrentUserRoles().contains(UserRole.ADMIN)) {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getCaseFacade().deleteCase(caze.toReference(), LoginHelper.getCurrentUserAsReference().getUuid());
+					FacadeProvider.getCaseFacade().deleteCase(cazeRef, LoginHelper.getCurrentUserAsReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
 				}
 			}, I18nProperties.getFieldCaption("Case"));
@@ -255,9 +294,8 @@ public class CaseController {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void buttonClick(ClickEvent event) {
-					caseEditForm.commit();
-					CaseDataDto cazeDto = caseEditForm.getValue();
-					cazeDto = FacadeProvider.getCaseFacade().saveCase(cazeDto);
+					editView.commit();
+					CaseDataDto cazeDto = findCase(cazeRef.getUuid());
 					moveCase(cazeDto);
 				}
 			});
@@ -265,9 +303,29 @@ public class CaseController {
 	        editView.getButtonsPanel().addComponentAsFirst(moveCaseButton);
 	        editView.getButtonsPanel().setComponentAlignment(moveCaseButton, Alignment.BOTTOM_LEFT);
         }
-        
-        return editView;
-    }
+	}
+
+    public CommitDiscardWrapperComponent<CaseHospitalizationForm> getCaseHospitalizationComponent(final String caseUuid, ViewMode viewMode) {
+		CaseDataDto caze = findCase(caseUuid);
+		CaseHospitalizationForm hospitalizationForm = new CaseHospitalizationForm(caze, UserRight.CASE_EDIT, viewMode);
+		hospitalizationForm.setValue(caze.getHospitalization());
+	
+		final CommitDiscardWrapperComponent<CaseHospitalizationForm> editView = new CommitDiscardWrapperComponent<CaseHospitalizationForm>(hospitalizationForm, hospitalizationForm.getFieldGroup());
+		
+		editView.addCommitListener(new CommitListener() {
+			@Override
+			public void onCommit() {
+				if (!hospitalizationForm.getFieldGroup().isModified()) {
+					HospitalizationDto dto = hospitalizationForm.getValue();
+					 FacadeProvider.getHospitalizationFacade().saveHospitalization(dto);
+					Notification.show("Case hospitalization saved", Type.WARNING_MESSAGE);
+					navigateToView(CaseHospitalizationView.VIEW_NAME, caseUuid, viewMode);
+				}
+			}
+		});
+		
+		return editView;
+	}
 
 	public CommitDiscardWrapperComponent<SymptomsForm> getCaseSymptomsEditComponent(final String caseUuid, ViewMode viewMode) {
     	
@@ -277,7 +335,7 @@ public class CaseController {
     	SymptomsForm symptomsForm = new SymptomsForm(caseDataDto.getDisease(), person, SymptomsContext.CASE, UserRight.CASE_EDIT, viewMode);
         symptomsForm.setValue(caseDataDto.getSymptoms());
     	symptomsForm.initializeSymptomRequirementsForCase();
-        final CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(symptomsForm, symptomsForm.getFieldGroup());
+        CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(symptomsForm, symptomsForm.getFieldGroup());
         
         editView.addCommitListener(new CommitListener() {
         	
@@ -323,29 +381,7 @@ public class CaseController {
         return editView;
     }    
 	
-	public CommitDiscardWrapperComponent<CaseHospitalizationForm> getCaseHospitalizationComponent(final String caseUuid, ViewMode viewMode) {
-		CaseDataDto caze = findCase(caseUuid);
-		CaseHospitalizationForm hospitalizationForm = new CaseHospitalizationForm(caze, UserRight.CASE_EDIT, viewMode);
-		hospitalizationForm.setValue(caze.getHospitalization());
-	
-		final CommitDiscardWrapperComponent<CaseHospitalizationForm> editView = new CommitDiscardWrapperComponent<CaseHospitalizationForm>(hospitalizationForm, hospitalizationForm.getFieldGroup());
-		
-		editView.addCommitListener(new CommitListener() {
-			@Override
-			public void onCommit() {
-				if (!hospitalizationForm.getFieldGroup().isModified()) {
-					HospitalizationDto dto = hospitalizationForm.getValue();
-					 FacadeProvider.getHospitalizationFacade().saveHospitalization(dto);
-					Notification.show("Case hospitalization saved", Type.WARNING_MESSAGE);
-					navigateToView(CaseHospitalizationView.VIEW_NAME, caseUuid, viewMode);
-				}
-			}
-		});
-		
-		return editView;
-	}
-	
-	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid, ViewMode viewMode) {
+	public CommitDiscardWrapperComponent<EpiDataForm> getCaseEpiDataComponent(final String caseUuid, ViewMode viewMode) {
 		CaseDataDto caze = findCase(caseUuid);
 		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), UserRight.CASE_EDIT, viewMode);
 		epiDataForm.setValue(caze.getEpiData());

@@ -9,6 +9,7 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.DefaultFieldGroupFieldFactory;
+import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitEvent;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitHandler;
@@ -25,6 +26,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
@@ -154,6 +156,22 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		if (editOrCreateUserRight != null && !LoginHelper.hasUserRight(editOrCreateUserRight)) {
 			getFieldGroup().setReadOnly(true);
 		}
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static CommitDiscardWrapperComponent<? extends AbstractEditForm> buildCommitDiscardWrapper(AbstractEditForm wrappedForm) {
+		return new CommitDiscardWrapperComponent<>(wrappedForm, wrappedForm.getFieldGroup());
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static CommitDiscardWrapperComponent<VerticalLayout> buildCommitDiscardWrapper(AbstractEditForm ...wrappedForms) {
+		VerticalLayout formsLayout = new VerticalLayout();
+		FieldGroup[] fieldGroups = new FieldGroup[wrappedForms.length];
+		for (int i=0; i<wrappedForms.length; i++) {
+			formsLayout.addComponent(wrappedForms[i]);
+			fieldGroups[i] = wrappedForms[i].getFieldGroup();
+		}
+		return new CommitDiscardWrapperComponent<>(formsLayout, fieldGroups);
 	}
 
 	@Override
