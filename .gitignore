@@ -16,3 +16,4 @@ deploy
 
 /sormas-ui/src/main/webapp/VAADIN/themes/sormas/addons.scss
 /sormas-ui/src/main/webapp/VAADIN/themes/sormas/styles.css
+/sormas-app/keystore.properties

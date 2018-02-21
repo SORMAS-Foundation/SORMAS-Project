@@ -25,3 +25,4 @@ task clean(type: Delete) {
 }
 
 apply from: 'versioning.gradle'
+apply from: 'signing.gradle'
