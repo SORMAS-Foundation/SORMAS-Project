@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import org.geotools.data.shapefile.ShapefileDataStore;
@@ -27,11 +28,11 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 
@@ -42,9 +43,10 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 	@EJB
 	private RegionFacadeEjbLocal regionFacade;
-
 	@EJB
 	private DistrictFacadeEjbLocal districtFacade;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	private Map<RegionReferenceDto, MultiPolygon> regionMultiPolygons;
 	private Map<RegionReferenceDto, GeoLatLon[][]> regionShapes;
@@ -127,7 +129,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		regionMultiPolygons = new HashMap<>();
 
 		// load shapefile
-		String countryName = FacadeProvider.getConfigFacade().getCountryName();
+		String countryName = configFacade.getCountryName();
 		String filepath = "shapefiles/" + countryName + "/regions.shp";
 		URL filepathUrl = getClass().getClassLoader().getResource(filepath);
 		if (filepathUrl == null || !filepath.endsWith(".shp")) {
@@ -209,7 +211,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		districtMultiPolygons = new HashMap<>();
 
 		// load shapefile
-		String countryName = FacadeProvider.getConfigFacade().getCountryName();
+		String countryName = configFacade.getCountryName();
 		String filepath = "shapefiles/" + countryName + "/districts.shp";
 		URL filepathUrl = getClass().getClassLoader().getResource(filepath);
 		if (filepathUrl == null || !filepath.endsWith(".shp")) {
@@ -336,5 +338,10 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 				costs[s2.length()] = lastValue;
 		}
 		return costs[s2.length()];
+	}
+	
+	@LocalBean
+	@Stateless
+	public static class GeoShapeProviderEjbLocal extends GeoShapeProviderEjb {
 	}
 }

@@ -26,28 +26,28 @@ import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
-import de.symeda.sormas.backend.event.EventFacadeEjb;
-import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
+import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
-import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
-import de.symeda.sormas.backend.region.GeoShapeProviderEjb;
+import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.GeoShapeProviderEjb.GeoShapeProviderEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.report.WeeklyReportEntryFacadeEjb;
+import de.symeda.sormas.backend.report.WeeklyReportEntryFacadeEjb.WeeklyReportEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleTestFacadeEjb.SampleTestFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
-import de.symeda.sormas.backend.task.TaskFacadeEjb;
+import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
-import de.symeda.sormas.backend.visit.VisitFacadeEjb;
+import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import info.novatec.beantest.api.BaseBeanTest;
 
 public class AbstractBeanTest extends BaseBeanTest {
@@ -72,15 +72,15 @@ public class AbstractBeanTest extends BaseBeanTest {
 	}
 	
 	public EventFacade getEventFacade() {
-		return getBean(EventFacadeEjb.class);
+		return getBean(EventFacadeEjbLocal.class);
 	}
 	
 	public EventParticipantFacade getEventParticipantFacade() {
-		return getBean(EventParticipantFacadeEjb.class);
+		return getBean(EventParticipantFacadeEjbLocal.class);
 	}
 	
 	public VisitFacade getVisitFacade() {
-		return getBean(VisitFacadeEjb.class);
+		return getBean(VisitFacadeEjbLocal.class);
 	}
 	
 	public PersonFacade getPersonFacade() {
@@ -88,7 +88,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	public TaskFacade getTaskFacade() {
-		return getBean(TaskFacadeEjb.class);
+		return getBean(TaskFacadeEjbLocal.class);
 	}
 
 	public SampleFacade getSampleFacade() {
@@ -116,7 +116,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 	}
 	
 	public CommunityFacade getCommunityFacade() {
-		return getBean(CommunityFacadeEjb.class);
+		return getBean(CommunityFacadeEjbLocal.class);
 	}
 
 	public UserFacade getUserFacade() {
@@ -136,11 +136,11 @@ public class AbstractBeanTest extends BaseBeanTest {
 	}
 	
 	public WeeklyReportEntryFacade getWeeklyReportEntryFacade() {
-		return getBean(WeeklyReportEntryFacadeEjb.class);
+		return getBean(WeeklyReportEntryFacadeEjbLocal.class);
 	}
 	
 	public GeoShapeProvider getGeoShapeProvider() {
-		return getBean(GeoShapeProviderEjb.class);
+		return getBean(GeoShapeProviderEjbLocal.class);
 	}
 	
 	public OutbreakFacade getOutbreakFacade() {

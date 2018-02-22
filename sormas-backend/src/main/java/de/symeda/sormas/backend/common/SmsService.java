@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.common;
 import java.io.IOException;
 
 import javax.ejb.Asynchronous;
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
@@ -19,13 +20,16 @@ import com.nexmo.client.insight.standard.StandardInsightResponse;
 import com.nexmo.client.sms.SmsSubmissionResult;
 import com.nexmo.client.sms.messages.TextMessage;
 
-import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 
 @Stateless(name = "SmsService")
 @LocalBean
 public class SmsService {
 
 	private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
+
+	@EJB
+	ConfigFacadeEjbLocal configFacade;
 
 	@Asynchronous
 	public void sendSms(String phoneNumber, String subject, String content) throws IOException, NexmoClientException, InvalidPhoneNumberException {
@@ -34,7 +38,7 @@ public class SmsService {
 			phoneNumber = phoneNumber.substring(1);
 		}
 		
-		AuthMethod auth = new TokenAuthMethod(FacadeProvider.getConfigFacade().getSmsAuthKey(), FacadeProvider.getConfigFacade().getSmsAuthSecret());
+		AuthMethod auth = new TokenAuthMethod(configFacade.getSmsAuthKey(), configFacade.getSmsAuthSecret());
 		NexmoClient client = new NexmoClient(auth);
 
 		// If the phone number is invalid, e.g. because it is a landline number or malformed otherwise, throw an exception

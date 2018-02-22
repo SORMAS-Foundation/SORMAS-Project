@@ -20,6 +20,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.facility.Facility;
@@ -49,6 +50,8 @@ public class StartupShutdownService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
+	private ConfigFacadeEjbLocal configFacade;
+	@EJB
 	private UserService userService;
 	@EJB
 	private CaseService caseService;
@@ -70,7 +73,7 @@ public class StartupShutdownService {
 	@PostConstruct
 	public void startup() {
 		
-		String countryName = FacadeProvider.getConfigFacade().getCountryName();
+		String countryName = configFacade.getCountryName();
 		
 		importAdministrativeDivisions(countryName);
 		

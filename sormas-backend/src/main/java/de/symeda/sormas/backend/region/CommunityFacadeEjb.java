@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.region.CommunityDto;
@@ -83,5 +84,10 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 
 		return dto;
+	}
+	
+	@LocalBean
+	@Stateless
+	public static class CommunityFacadeEjbLocal extends CommunityFacadeEjb {
 	}
 }

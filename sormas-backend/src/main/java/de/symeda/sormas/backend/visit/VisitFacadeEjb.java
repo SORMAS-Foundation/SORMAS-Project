@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
@@ -245,5 +246,9 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		contactService.updateFollowUpUntilAndStatusByVisit(newVisit);
 	}
-
+	
+	@LocalBean
+	@Stateless
+	public static class VisitFacadeEjbLocal extends VisitFacadeEjb {
+	}	
 }

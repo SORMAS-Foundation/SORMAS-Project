@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -472,6 +473,10 @@ public class TaskFacadeEjb implements TaskFacade {
 			}
 		}
 	}
-
+	
+	@LocalBean
+	@Stateless
+	public static class TaskFacadeEjbLocal extends TaskFacadeEjb {
+	}	
 }
 

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
@@ -113,4 +114,9 @@ public class WeeklyReportEntryFacadeEjb implements WeeklyReportEntryFacade {
 		return target;
 	}
 	
+
+	@LocalBean
+	@Stateless
+	public static class WeeklyReportEntryFacadeEjbLocal extends WeeklyReportEntryFacadeEjb {
+	}
 }

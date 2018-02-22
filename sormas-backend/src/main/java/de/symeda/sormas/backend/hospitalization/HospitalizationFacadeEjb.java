@@ -181,6 +181,5 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 	@LocalBean
 	@Stateless
 	public static class HospitalizationFacadeEjbLocal extends HospitalizationFacadeEjb {
-	}
-	
+	}	
 }
