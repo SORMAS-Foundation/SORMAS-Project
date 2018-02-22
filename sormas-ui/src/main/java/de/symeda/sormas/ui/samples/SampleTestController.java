@@ -32,7 +32,7 @@ public class SampleTestController {
 	public void create(SampleReferenceDto sampleRef, SampleTestGrid grid) {
 		SampleTestEditForm createForm = new SampleTestEditForm(true, UserRight.SAMPLETEST_CREATE);
 		createForm.setValue(createNewSampleTest(sampleRef));
-		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(createForm, createForm.getFieldGroup(), UserRight.SAMPLETEST_CREATE);
+		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(createForm, createForm.getFieldGroup());
 	
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -54,7 +54,7 @@ public class SampleTestController {
 		
 		SampleTestEditForm form = new SampleTestEditForm(false, UserRight.SAMPLETEST_EDIT);
 		form.setValue(newDto);
-		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(form, form.getFieldGroup(), UserRight.SAMPLETEST_EDIT);
+		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(form, form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Edit sample test result");
 		

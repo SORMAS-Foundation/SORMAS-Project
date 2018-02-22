@@ -189,12 +189,6 @@
                 android:value="@={symptoms.cough}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_cutaneousEruption"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.cutaneousEruption}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_darkUrine"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -271,6 +265,78 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:value="@={symptoms.kopliksSpots}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_lymphadenopathyAxillary"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.lymphadenopathyAxillary}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_lymphadenopathyCervical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.lymphadenopathyCervical}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_lymphadenopathyInguinal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.lymphadenopathyInguinal}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_otitisMedia"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.otitisMedia}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_musclePain"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.musclePain}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_nausea"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.nausea}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_neckStiffness"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.neckStiffness}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_painfulLymphadenitis"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.painfulLymphadenitis}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_rapidBreathing"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.rapidBreathing}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_refusalFeedorDrink"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.refusalFeedorDrink}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_runnyNose"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.runnyNose}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_oralUlcers"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.oralUlcers}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_lesions"
@@ -442,79 +508,15 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.DateField
+                    android:id="@+id/symptoms_lesionsOnsetDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={symptoms.lesionsOnsetDate}"/>
+
             </LinearLayout>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_lymphadenopathyAxillary"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.lymphadenopathyAxillary}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_lymphadenopathyCervical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.lymphadenopathyCervical}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_lymphadenopathyInguinal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.lymphadenopathyInguinal}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_otitisMedia"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.otitisMedia}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_musclePain"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.musclePain}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_nausea"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.nausea}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_neckStiffness"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.neckStiffness}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_painfulLymphadenitis"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.painfulLymphadenitis}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_rapidBreathing"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.rapidBreathing}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_refusalFeedorDrink"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.refusalFeedorDrink}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_runnyNose"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.runnyNose}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_oralUlcers"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.oralUlcers}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_shock"

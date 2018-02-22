@@ -1,6 +1,7 @@
 package de.symeda.sormas.app;
 
 import android.accounts.AuthenticatorException;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,9 +21,11 @@ import java.net.ConnectException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
+import de.symeda.sormas.app.component.ConfirmationDialog;
 import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.SyncCallback;
 
@@ -83,20 +86,20 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
 
     public void synchronizeCompleteData() {
         SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        synchronizeData(SynchronizeDataAsync.SyncMode.Complete, true, refreshLayout == null, refreshLayout, null);
+        synchronizeData(SynchronizeDataAsync.SyncMode.Complete, true, refreshLayout == null, true, refreshLayout, null);
     }
 
     public void synchronizeChangedData() {
         SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, refreshLayout == null, refreshLayout, null);
+        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, refreshLayout == null, true, refreshLayout, null);
     }
 
     public void synchronizeChangedData(Callback callback) {
         SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, refreshLayout == null, refreshLayout, callback);
+        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, refreshLayout == null, false, refreshLayout, callback);
     }
 
-    public void synchronizeData(SynchronizeDataAsync.SyncMode syncMode, final boolean showResultSnackbar, final boolean showProgressDialog, final SwipeRefreshLayout swipeRefreshLayout, final Callback callback) {
+    public void synchronizeData(final SynchronizeDataAsync.SyncMode syncMode, final boolean showResultSnackbar, final boolean showProgressDialog, boolean showUpgradePrompt, final SwipeRefreshLayout swipeRefreshLayout, final Callback callback) {
 
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setRefreshing(true);
@@ -116,8 +119,20 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
                     errorMessage = e.getMessage();
                 }
                 // switch to LoginActivity is done below
-            } catch (RetroProvider.ApiVersionException e) {
-                if (showResultSnackbar) {
+            } catch (final RetroProvider.ApiVersionException e) {
+                if (showUpgradePrompt && e.getAppUrl() != null) {
+                    if (swipeRefreshLayout != null) {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                    AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), true,
+                            new Callback() {
+                                @Override
+                                public void call() {
+                                    synchronizeData(syncMode, showResultSnackbar, showProgressDialog, false, swipeRefreshLayout, callback);
+                                }
+                            });
+                    return;
+                } else if (showResultSnackbar) {
                     Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
                     errorMessage = e.getMessage();
                 }
@@ -217,4 +232,22 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
         SyncLogDialog syncLogDialog = new SyncLogDialog(this);
         syncLogDialog.show(this);
     }
+
+    @Override
+    // Handles the result of the attempt to install a new app version - should be added to every activity that uses the UpdateAppDialog
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == AppUpdateController.INSTALL_RESULT) {
+            switch (resultCode) {
+                // Do nothing if the installation was successful
+                case Activity.RESULT_OK:
+                case Activity.RESULT_CANCELED:
+                    break;
+                // Everything else probably is an error
+                default:
+                    AppUpdateController.getInstance().handleInstallFailure();
+                    break;
+            }
+        }
+    }
+
 }

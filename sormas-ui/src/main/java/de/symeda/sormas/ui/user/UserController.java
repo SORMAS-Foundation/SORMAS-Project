@@ -20,7 +20,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -32,8 +31,6 @@ import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class UserController {
-
-	private UserFacade uf = FacadeProvider.getUserFacade();
 
 	public UserController() {
 	}
@@ -81,7 +78,7 @@ public class UserController {
 		UserEditForm userEditForm = new UserEditForm(false, UserRight.USER_EDIT);
 		UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
 		userEditForm.setValue(userDto);
-		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, userEditForm.getFieldGroup(), UserRight.USER_EDIT);
+		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, userEditForm.getFieldGroup());
 
 		// Add reset password button
 		Button resetPasswordButton = createResetPasswordButton(userUuid, editView);        
@@ -92,7 +89,7 @@ public class UserController {
 			public void onCommit() {
 				if (!userEditForm.getFieldGroup().isModified()) {
 					UserDto dto = userEditForm.getValue();
-					uf.saveUser(dto);
+					FacadeProvider.getUserFacade().saveUser(dto);
 					refreshView();
 				}
 			}
@@ -116,14 +113,14 @@ public class UserController {
 
 		UserEditForm createForm = new UserEditForm(true, UserRight.USER_CREATE);
 		createForm.setValue(createNewUser());
-		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(createForm, createForm.getFieldGroup(), UserRight.USER_CREATE);
+		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(createForm, createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
 				if (!createForm.getFieldGroup().isModified()) {
 					UserDto dto = createForm.getValue();
-					dto = uf.saveUser(dto);
+					dto = FacadeProvider.getUserFacade().saveUser(dto);
 					refreshView();
 					makeNewPassword(dto.getUuid());
 				}
@@ -133,11 +130,11 @@ public class UserController {
 	}  
 
 	public boolean isLoginUnique(String uuid, String userName) {
-		return uf.isLoginUnique(uuid, userName);
+		return FacadeProvider.getUserFacade().isLoginUnique(uuid, userName);
 	}
 
 	public void makeNewPassword(String userUuid) {
-		String newPassword = uf.resetPassword(userUuid);
+		String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
 
 		VerticalLayout layout = new VerticalLayout();
 		layout.addComponent(new Label("Please copy this password, it is shown only once."));

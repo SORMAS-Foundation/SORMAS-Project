@@ -46,5 +46,7 @@ public interface UserFacade {
 	List<UserReferenceDto> getForWeeklyReportDetails(DistrictReferenceDto districtRef);
 
 	List<String> getAllUuids(String userUuid);
+
+	List<UserDto> getByUuids(List<String> uuids);
 	
 }

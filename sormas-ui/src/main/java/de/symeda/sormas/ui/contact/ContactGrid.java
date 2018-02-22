@@ -20,6 +20,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -89,7 +90,7 @@ public class ContactGrid extends Grid {
 			}
         });
 
-        setColumns(ContactIndexDto.UUID, DISEASE_SHORT, ContactIndexDto.CONTACT_CLASSIFICATION, 
+        setColumns(ContactIndexDto.UUID, DISEASE_SHORT, ContactIndexDto.CONTACT_CLASSIFICATION, ContactIndexDto.CONTACT_STATUS,
         		ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY,
         		ContactIndexDto.FOLLOW_UP_STATUS, NUMBER_OF_VISITS, NUMBER_OF_PENDING_TASKS);
         getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
@@ -160,6 +161,14 @@ public class ContactGrid extends Grid {
 	        getContainer().addContainerFilter(filter);
     	}
     }
+	
+	public void setStatusFilter(ContactStatus status) {
+		getContainer().removeContainerFilters(ContactIndexDto.CONTACT_STATUS);
+		if (status != null) {
+			Equal filter = new Equal(ContactIndexDto.CONTACT_STATUS, status);
+			getContainer().addContainerFilter(filter);
+		}
+	}
 	
 	public void setFollowUpStatusFilter(FollowUpStatus status) {
 		getContainer().removeContainerFilters(ContactIndexDto.FOLLOW_UP_STATUS);

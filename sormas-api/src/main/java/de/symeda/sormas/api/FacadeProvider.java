@@ -132,6 +132,9 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(OutbreakFacade.class);
 	}
 	
+	public static ConfigFacade getConfigFacade() {
+		return get().lookupEjbRemote(ConfigFacade.class);
+	}
 
 	@SuppressWarnings("unchecked")
 	public <P> P lookupEjbRemote(Class<P> clazz) {

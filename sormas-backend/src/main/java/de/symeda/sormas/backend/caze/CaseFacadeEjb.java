@@ -57,10 +57,10 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.ConfigService;
 import de.symeda.sormas.backend.common.EmailDeliveryFailedException;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
+import de.symeda.sormas.backend.common.SmsDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -138,8 +138,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	private EpiDataFacadeEjbLocal epiDataFacade;
 	@EJB
 	private ContactFacadeEjbLocal contactFacade;
-	@EJB
-	private ConfigService configService;
 	@EJB
 	private MessagingService messagingService;
 
@@ -384,6 +382,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPlagueType(source.getPlagueType());
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
+		target.setInvestigatedDate(source.getInvestigatedDate());
+		target.setReceptionDate(source.getReceptionDate());
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
 		target.setCaseClassification(source.getCaseClassification());
 		target.setInvestigationStatus(source.getInvestigationStatus());
@@ -406,7 +406,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
-		target.setSmallpoxVaccinationDate(source.getSmallpoxVaccinationDate());
+		target.setVaccinationDate(source.getVaccinationDate());
 
 		target.setEpidNumber(source.getEpidNumber());
 
@@ -453,6 +453,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setReportDate(source.getReportDate());
 		target.setInvestigatedDate(source.getInvestigatedDate());
+		target.setReceptionDate(source.getReceptionDate());
 
 		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
 		target.setCaseOfficer(UserFacadeEjb.toReferenceDto(source.getCaseOfficer()));
@@ -464,7 +465,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
-		target.setSmallpoxVaccinationDate(source.getSmallpoxVaccinationDate());
+		target.setVaccinationDate(source.getVaccinationDate());
 
 		target.setEpidNumber(source.getEpidNumber());
 
@@ -717,10 +718,13 @@ public class CaseFacadeEjb implements CaseFacade {
 				try {
 					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_CASE_CLASSIFICATION_CHANGED), 
 							String.format(I18nProperties.getMessage(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED), DataHelper.getShortUuid(newCase.getUuid()), newCase.getCaseClassification().toString()), 
-							MessageType.EMAIL);
+							MessageType.EMAIL, MessageType.SMS);
 				} catch (EmailDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the change of a case classification. "
 							+ "Failed to send email to user with UUID %s.", recipient.getUuid()));
+				} catch (SmsDeliveryFailedException e) {
+					logger.error(String.format("SmsDeliveryFailedException when trying to notify supervisors about the cange of a case classification. "
+							+ "Failed to send SMS to user with UUID %s.", recipient.getUuid()));
 				}
 			}
 		}

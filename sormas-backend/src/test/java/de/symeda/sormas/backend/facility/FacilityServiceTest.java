@@ -12,7 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.backend.common.ConfigService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
@@ -24,16 +24,15 @@ public class FacilityServiceTest {
     private static BeanProviderHelper bm;
     
     @BeforeClass
-    public static void initilaize() {
+    public static void initialize() {
         bm = BeanProviderHelper.getInstance();
         
-		ConfigService configService = getBean(ConfigService.class);
 		FacilityService facilityService = getBean(FacilityService.class);
 		RegionService regionService = getBean(RegionService.class);
 		DistrictService districtService = getBean(DistrictService.class);
 		CommunityService communityService = getBean(CommunityService.class);
 
-		String countryName = configService.getCountryName();
+		String countryName = getBean(ConfigFacadeEjbLocal.class).getCountryName();
 
 		List<Region> regions = regionService.getAll();
 

@@ -37,7 +37,7 @@ public class TaskController {
 	public void create(TaskContext context, ReferenceDto entityRef, TaskGrid grid) {
 		TaskEditForm createForm = new TaskEditForm(true, UserRight.TASK_CREATE);
 		createForm.setValue(createNewTask(context, entityRef));
-		final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(createForm, createForm.getFieldGroup(), UserRight.TASK_CREATE);
+		final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(createForm, createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -61,7 +61,7 @@ public class TaskController {
 		taskDto.setAssigneeUser(sample.getReportingUser());
 		createForm.setValue(taskDto);
 
-		final CommitDiscardWrapperComponent<TaskEditForm> createView = new CommitDiscardWrapperComponent<TaskEditForm>(createForm, createForm.getFieldGroup(), UserRight.TASK_CREATE);
+		final CommitDiscardWrapperComponent<TaskEditForm> createView = new CommitDiscardWrapperComponent<TaskEditForm>(createForm, createForm.getFieldGroup());
 		createView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
@@ -81,7 +81,7 @@ public class TaskController {
 
 		TaskEditForm form = new TaskEditForm(false, UserRight.TASK_EDIT);
 		form.setValue(newDto);
-		final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(form, form.getFieldGroup(), UserRight.TASK_EDIT);
+		final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(form, form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Edit task");
 

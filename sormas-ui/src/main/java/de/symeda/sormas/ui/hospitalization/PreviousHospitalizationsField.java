@@ -110,7 +110,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 		editForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<PreviousHospitalizationEditForm> editView = new CommitDiscardWrapperComponent<PreviousHospitalizationEditForm>(
-				editForm, editForm.getFieldGroup(), UserRight.CASE_EDIT);
+				editForm, editForm.getFieldGroup());
 		editView.getCommitButton().setCaption("done");
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, "Previous hospitalization");

@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.contact;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -14,6 +13,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -68,12 +68,12 @@ public class ContactsView extends AbstractView {
     	topLayout.setSizeUndefined();
     	topLayout.addStyleName(CssStyles.VSPACE_3);
     	
-    	Button statusAll = new Button("all", e -> grid.setClassificationFilter(null));
+    	Button statusAll = new Button("all", e -> grid.setStatusFilter(null));
         statusAll.setStyleName(ValoTheme.BUTTON_LINK);
         topLayout.addComponent(statusAll);
         
-        for (ContactClassification status : ContactClassification.values()) {
-	    	Button statusButton = new Button(status.toString(), e -> grid.setClassificationFilter(status));
+        for (ContactStatus status : ContactStatus.values()) {
+	    	Button statusButton = new Button(status.toString(), e -> grid.setStatusFilter(status));
 	    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
 	    	topLayout.addComponent(statusButton);
         }
@@ -86,6 +86,13 @@ public class ContactsView extends AbstractView {
     	filterLayout.setSpacing(true);
     	filterLayout.setSizeUndefined();
     	filterLayout.addStyleName(CssStyles.VSPACE_3);
+    	
+    	ComboBox classificationFilter = new ComboBox();
+    	classificationFilter.setWidth(140, Unit.PIXELS);
+    	classificationFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
+    	classificationFilter.addItems((Object[]) ContactClassification.values());
+    	classificationFilter.addValueChangeListener(e -> grid.setClassificationFilter((ContactClassification) e.getProperty().getValue()));
+    	filterLayout.addComponent(classificationFilter);
     	
         ComboBox diseaseFilter = new ComboBox();
         diseaseFilter.setWidth(140, Unit.PIXELS);

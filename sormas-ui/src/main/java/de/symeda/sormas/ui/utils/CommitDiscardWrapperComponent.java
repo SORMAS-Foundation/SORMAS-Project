@@ -3,8 +3,9 @@ package de.symeda.sormas.ui.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import com.vaadin.data.Buffered;
 import com.vaadin.data.Property;
@@ -35,9 +36,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.login.LoginHelper;
 
 
 public class CommitDiscardWrapperComponent<C extends Component> extends
@@ -71,7 +69,7 @@ VerticalLayout implements Buffered {
 	private Panel contentPanel;
 
 	private C wrappedComponent;
-	private FieldGroup fieldGroup;
+	private FieldGroup[] fieldGroups;
 
 	private HorizontalLayout buttonsPanel;
 	private Button commitButton;
@@ -110,14 +108,14 @@ VerticalLayout implements Buffered {
 
 	}
 
-	public CommitDiscardWrapperComponent(C component, FieldGroup fieldGroup, UserRight editOrCreateUserRight) {
-		setWrappedComponent(component, fieldGroup, editOrCreateUserRight);
+	public CommitDiscardWrapperComponent(C component, FieldGroup ...fieldGroups) {
+		setWrappedComponent(component, fieldGroups);
 	}
 
-	protected void setWrappedComponent(C component, FieldGroup fieldGroup, UserRight editOrCreateUserRight) {
+	protected void setWrappedComponent(C component, FieldGroup ...fieldGroups) {
 
 		this.wrappedComponent = component;
-		this.fieldGroup = fieldGroup;
+		this.fieldGroups = fieldGroups;
 
 		if (contentPanel != null) {
 			contentPanel.setContent(wrappedComponent);
@@ -158,9 +156,33 @@ VerticalLayout implements Buffered {
 
 		applyAutoDisabling();
 
-		if (editOrCreateUserRight != null && !LoginHelper.hasUserRight(editOrCreateUserRight)) {
-			getCommitButton().setVisible(false);
-			getDiscardButton().setVisible(false);
+		if (fieldGroups != null) {
+			// convention: set wrapper to read-only when all wrapped field groups are read-only
+			boolean allReadOnly = true;
+			for (FieldGroup fieldGroup : fieldGroups)  {
+				if (!fieldGroup.isReadOnly()) {
+					allReadOnly = false;
+					break;
+				}
+			}
+			if (allReadOnly) {
+				setReadOnly(true);
+			}
+		} else if (wrappedComponent != null) {
+			if (wrappedComponent.isReadOnly()) {
+				setReadOnly(true);
+			}
+		}
+	}
+
+	protected Stream<Field<?>> getFieldsStream() {
+
+		if (fieldGroups != null) {
+			return Arrays.stream(fieldGroups)
+			.map(FieldGroup::getFields)
+			.flatMap(Collection::stream);
+		} else {
+			return Stream.empty();
 		}
 	}
 
@@ -177,33 +199,22 @@ VerticalLayout implements Buffered {
 		if (!autoFocusing)
 			return;
 
-		Collection<Field<?>> fields;
-		if (fieldGroup == null) {
-			if (wrappedComponent instanceof Field) {
-				Field<?> field = (Field<?>) wrappedComponent;
-				fields = Collections.<Field<?>> singleton(field);
+		Optional<Field<?>> firstField = getFieldsStream()
+			.filter(field -> field.isEnabled() && field.isVisible() && field.getTabIndex() >= 0)
+			.findFirst();
+		
+		if (firstField.isPresent()) {
+
+			FocusNotifier fn;
+			if (autoDisablingButtons && firstField.get() instanceof FocusNotifier) {
+				fn = (FocusNotifier) firstField.get();
+				fn.removeFocusListener(autoHideFocusListener);
 			} else {
-				return;
+				fn = null;
 			}
-		} else {
-			fields = fieldGroup.getFields();
-		}
-
-		for (Field<?> field : fields) {
-			if (field.isEnabled() && field.isVisible() && field.getTabIndex() >= 0) {
-
-				FocusNotifier fn;
-				if (autoDisablingButtons && field instanceof FocusNotifier) {
-					fn = (FocusNotifier) field;
-					fn.removeFocusListener(autoHideFocusListener);
-				} else {
-					fn = null;
-				}
-				field.focus();
-				if (fn != null) {
-					fn.addFocusListener(autoHideFocusListener);
-				}
-				break;
+			firstField.get().focus();
+			if (fn != null) {
+				fn.addFocusListener(autoHideFocusListener);
 			}
 		}
 	}
@@ -218,26 +229,14 @@ VerticalLayout implements Buffered {
 	public boolean isAutoDisablingButtons() {
 		return autoDisablingButtons;
 	}
-
+	
 	protected void applyAutoDisabling() {
 
 		boolean modified = isModified();
 		getCommitButton().setEnabled(!autoDisablingButtons || modified);
 		getDiscardButton().setEnabled(!autoDisablingButtons || modified);
 
-		Collection<Field<?>> fields;
-		if (fieldGroup == null) {
-			if (wrappedComponent instanceof Field) {
-				Field<?> field = (Field<?>) wrappedComponent;
-				fields = Collections.<Field<?>> singleton(field);
-			} else {
-				return;
-			}
-		} else {
-			fields = fieldGroup.getFields();
-		}
-
-		for (Field<?> field : fields) {
+		getFieldsStream().forEach((field) -> {
 
 			field.removeValueChangeListener(autoHideValueChangeListener);
 			if (autoDisablingButtons)
@@ -248,11 +247,11 @@ VerticalLayout implements Buffered {
 				if (autoDisablingButtons)
 					((FocusNotifier) field).addFocusListener(autoHideFocusListener);
 			}
-		}
+		});
 	}
 
 	/**
-	 * Ob die Buttons per ENTER und ESC bedient werden können
+	 * Whether the buttons can be operated by ENTER and ESC
 	 * 
 	 * @param shortcutsEnabled
 	 */
@@ -264,10 +263,6 @@ VerticalLayout implements Buffered {
 		}
 
 		this.shortcutsEnabled = shortcutsEnabled;
-
-		if (fieldGroup == null) {
-			return;
-		}
 
 		if (actions == null) {
 			actions = new ArrayList<>();
@@ -297,10 +292,6 @@ VerticalLayout implements Buffered {
 
 	public C getWrappedComponent() {
 		return wrappedComponent;
-	}
-
-	public FieldGroup getFieldGroup() {
-		return fieldGroup;
 	}
 
 	public HorizontalLayout getButtonsPanel() {
@@ -404,14 +395,16 @@ VerticalLayout implements Buffered {
 
 	@Override
 	public boolean isModified() {
-
-		if (fieldGroup != null)
-			return fieldGroup.isModified();
-		else if (wrappedComponent instanceof Buffered) {
-			return ((Buffered) wrappedComponent).isModified();
-		} else {
-			return false;
+		if (fieldGroups != null) {
+			for (FieldGroup fieldGroup : fieldGroups) {
+				if (fieldGroup.isModified()) {
+					return true;
+				}
+			}
+		} else if (wrappedComponent instanceof Buffered) {
+			return ((Buffered)wrappedComponent).isModified(); 
 		}
+		return false;
 	}
 
 	public boolean isCommited() {
@@ -421,10 +414,20 @@ VerticalLayout implements Buffered {
 	@Override
 	public void commit() {
 
-		if (fieldGroup != null)
+		if (fieldGroups != null)
 		{
+			// validate all fields first, so commit will likely work for all fieldGroups
+			// this is basically only needed when we have multiple field groups
+			getFieldsStream().forEach(field -> {
+				if (!field.isInvalidCommitted()) {
+					field.validate();
+				}
+			});
+			
 			try {
-				fieldGroup.commit();
+				for (FieldGroup fieldGroup : fieldGroups) {
+					fieldGroup.commit();
+				}
 			} 
 			catch (CommitException e) {
 				if (e.getCause() instanceof InvalidValueException)
@@ -434,9 +437,8 @@ VerticalLayout implements Buffered {
 				else
 					throw new CommitRuntimeException(e);
 			}
-		}
-		else if (wrappedComponent instanceof Buffered) {
-			((Buffered) wrappedComponent).commit();
+		} else if (wrappedComponent instanceof Buffered) {
+			((Buffered)wrappedComponent).commit(); 
 		} else {
 			// NOOP
 		}
@@ -511,10 +513,12 @@ VerticalLayout implements Buffered {
 	@Override
 	public void discard() {
 
-		if (fieldGroup != null) {
-			fieldGroup.discard();
+		if (fieldGroups != null) {
+			for (FieldGroup fieldGroup : fieldGroups) {
+				fieldGroup.discard();
+			}
 		} else if (wrappedComponent instanceof Buffered) {
-			((Buffered) wrappedComponent).discard();
+			((Buffered)wrappedComponent).discard(); 
 		} else {
 			// NOOP
 		}
@@ -526,10 +530,12 @@ VerticalLayout implements Buffered {
 
 	@Override
 	public void setBuffered(boolean buffered) {
-		if (fieldGroup != null)
-			fieldGroup.setBuffered(buffered);
-		else if (wrappedComponent instanceof Buffered) {
-			((Buffered) wrappedComponent).setBuffered(buffered);
+		if (fieldGroups != null) {
+			for (FieldGroup fieldGroup : fieldGroups) {
+				fieldGroup.setBuffered(buffered);
+			}
+		} else if (wrappedComponent instanceof Buffered) {
+			((Buffered)wrappedComponent).setBuffered(buffered);
 		} else {
 			// NOOP
 		}
@@ -537,9 +543,15 @@ VerticalLayout implements Buffered {
 
 	@Override
 	public boolean isBuffered() {
-		if (fieldGroup != null)
-			return fieldGroup.isBuffered();
-		else if (wrappedComponent instanceof Buffered) {
+		if (fieldGroups != null) {
+			Boolean buffered = null;
+			for (FieldGroup fieldGroup : fieldGroups) {
+				if (buffered != null && buffered.booleanValue() != fieldGroup.isBuffered())
+					throw new IllegalStateException("FieldGroups have different isBuffered states");
+				buffered = fieldGroup.isBuffered();
+			}
+			return Boolean.TRUE.equals(buffered);
+		} else if (wrappedComponent instanceof Buffered) {
 			return ((Buffered) wrappedComponent).isBuffered();
 		} else {
 			return false;
@@ -624,8 +636,13 @@ VerticalLayout implements Buffered {
 	@Override
 	public void setReadOnly(boolean readOnly) {
 		super.setReadOnly(readOnly);
+
 		getWrappedComponent().setReadOnly(readOnly);
-		fieldGroup.setReadOnly(readOnly);
+		if (fieldGroups != null) {
+			for (FieldGroup fieldGroup : fieldGroups) {
+				fieldGroup.setReadOnly(readOnly);
+			}
+		}
 
 		buttonsPanel.setVisible(!readOnly);
 	}
@@ -671,16 +688,6 @@ VerticalLayout implements Buffered {
 		public CommitRuntimeException(CommitException e) {
 			super(e.getMessage(), e);
 		}
-	}
-
-	/**
-	 * Dirty Hack zum Schließen des CommitDiscardWrapper
-	 * 
-	 * @param wrappedComponent
-	 */
-	public static void dirtyDiscardHack(Component wrappedComponent) {
-		CommitDiscardWrapperComponent<?> cdw = (CommitDiscardWrapperComponent<?>) wrappedComponent.getParent().getParent();
-		cdw.discard();
 	}
 
 	@Override

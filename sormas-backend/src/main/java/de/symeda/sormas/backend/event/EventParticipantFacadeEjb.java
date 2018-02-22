@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
@@ -149,4 +150,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		return target;
 	}
 
+	@LocalBean
+	@Stateless
+	public static class EventParticipantFacadeEjbLocal extends EventParticipantFacadeEjb {
+	}	
 }

@@ -53,6 +53,7 @@ public final class ConfigProvider {
     private static String KEY_SERVER_REST_URL = "serverRestUrl";
     private static String KEY_ACCESS_GRANTED = "accessGranted";
     private static String LAST_NOTIFICATION_DATE = "lastNotificationDate";
+    private static String CURRENT_APP_DOWNLOAD_ID = "currentAppDownloadId";
 
     public static ConfigProvider instance = null;
 
@@ -71,6 +72,7 @@ public final class ConfigProvider {
     private String pin;
     private User user;
     private Date lastNotificationDate;
+    private Long currentAppDownloadId;
     private Boolean accessGranted;
 
     private ConfigProvider(Context context) {
@@ -117,37 +119,43 @@ public final class ConfigProvider {
     }
 
     public static User getUser() {
-        if (instance.user == null) {
-            synchronized (ConfigProvider.class) {
-                if (instance.user == null) {
-                    String username = getUsername();
-                    if (username != null) {
-                        instance.user = DatabaseHelper.getUserDao().getByUsername(username);
+        synchronized(ConfigProvider.class) {
+            if (instance.user == null) {
+                synchronized (ConfigProvider.class) {
+                    if (instance.user == null) {
+                        String username = getUsername();
+                        if (username != null) {
+                            instance.user = DatabaseHelper.getUserDao().getByUsername(username);
+                        }
                     }
                 }
             }
+            return instance.user;
         }
-        return instance.user;
     }
 
     public static String getUsername() {
-        if (instance.username == null) {
-            Config config = DatabaseHelper.getConfigDao().queryForId(KEY_USERNAME);
-            if (config != null) {
-                instance.username = config.getValue();
+        synchronized(ConfigProvider.class) {
+            if (instance.username == null) {
+                Config config = DatabaseHelper.getConfigDao().queryForId(KEY_USERNAME);
+                if (config != null) {
+                    instance.username = config.getValue();
+                }
             }
+            return instance.username;
         }
-        return instance.username;
     }
 
     public static String getPassword() {
-        if (instance.password == null) {
-            Config config = DatabaseHelper.getConfigDao().queryForId(KEY_PASSWORD);
-            if (config != null) {
-                instance.password = config.getValue();
+        synchronized(ConfigProvider.class) {
+            if (instance.password == null) {
+                Config config = DatabaseHelper.getConfigDao().queryForId(KEY_PASSWORD);
+                if (config != null) {
+                    instance.password = config.getValue();
+                }
             }
+            return instance.decodeCredential(instance.password, "Password");
         }
-        return instance.decodeCredential(instance.password, "Password");
     }
 
     public static String getPin() {
@@ -161,18 +169,21 @@ public final class ConfigProvider {
     }
 
     public static void clearUsernameAndPassword() {
+        // synchronized to make sure this does not interfere with setUserNameAndPassword or getUsername/getPassword
+        synchronized(ConfigProvider.class) {
 
-        instance.user = null;
-        instance.username = null;
-        instance.password = null;
+            ConfigDao configDao = DatabaseHelper.getConfigDao();
+            if (configDao.queryForId(KEY_PASSWORD) != null) {
+                configDao.delete(new Config(KEY_PASSWORD, ""));
+            }
+            if (configDao.queryForId(KEY_USERNAME) != null) {
+                configDao.delete(new Config(KEY_USERNAME, ""));
+            }
 
-        ConfigDao configDao = DatabaseHelper.getConfigDao();
-        if (configDao.queryForId(KEY_PASSWORD) == null && configDao.queryForId(KEY_USERNAME) == null) {
-            return;
+            instance.username = null;
+            instance.password = null;
+            instance.user = null;
         }
-
-        configDao.delete(new Config(KEY_USERNAME, ""));
-        configDao.delete(new Config(KEY_PASSWORD, ""));
     }
 
     public static void clearPin() {
@@ -187,25 +198,26 @@ public final class ConfigProvider {
     }
 
     public static void setUsernameAndPassword(String username, String password) {
+        synchronized(ConfigProvider.class) {
+            if (username == null)
+                throw new NullPointerException("username");
+            if (password == null)
+                throw new NullPointerException("password");
 
-        if (username == null)
-            throw new NullPointerException("username");
-        if (password == null)
-            throw new NullPointerException("password");
+            password = instance.encodeCredential(password, "Password");
 
-        password = instance.encodeCredential(password, "Password");
+            if (username.equals(instance.username) && password.equals(instance.password))
+                return;
 
-        if (username.equals(instance.username) && password.equals(instance.password))
-            return;
+            instance.user = null;
+            instance.username = username;
+            instance.password = password;
 
-        instance.user = null;
-        instance.username = username;
-        instance.password = password;
+            DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_USERNAME, username));
+            DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_PASSWORD, password));
 
-        DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_USERNAME, username));
-        DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_PASSWORD, password));
-
-        DatabaseHelper.clearTables(false);
+            DatabaseHelper.clearTables(false);
+        }
     }
 
     public static void setPin(String pin) {
@@ -379,6 +391,7 @@ public final class ConfigProvider {
 
         if (!wasNull) {
             // clear everything
+            clearUsernameAndPassword();
             DatabaseHelper.clearTables(true);
         }
     }
@@ -407,6 +420,33 @@ public final class ConfigProvider {
             DatabaseHelper.getConfigDao().delete(new Config(LAST_NOTIFICATION_DATE, ""));
         } else {
             DatabaseHelper.getConfigDao().createOrUpdate(new Config(LAST_NOTIFICATION_DATE, String.valueOf(lastNotificationDate.getTime())));
+        }
+    }
+
+    public static Long getCurrentAppDownloadId() {
+        if (instance.currentAppDownloadId == null) {
+            synchronized (ConfigProvider.class) {
+                if (instance.currentAppDownloadId == null) {
+                    Config config = DatabaseHelper.getConfigDao().queryForId(CURRENT_APP_DOWNLOAD_ID);
+                    if (config != null) {
+                        instance.currentAppDownloadId = Long.parseLong(config.getValue());
+                    }
+                }
+            }
+        }
+        return instance.currentAppDownloadId;
+    }
+
+    public static void setCurrentAppDownloadId(Long currentAppDownloadId) {
+        if (currentAppDownloadId != null && currentAppDownloadId.equals(instance.currentAppDownloadId)) {
+            return;
+        }
+
+        instance.currentAppDownloadId = currentAppDownloadId;
+        if (currentAppDownloadId == null) {
+            DatabaseHelper.getConfigDao().delete(new Config(CURRENT_APP_DOWNLOAD_ID, ""));
+        } else {
+            DatabaseHelper.getConfigDao().createOrUpdate(new Config(CURRENT_APP_DOWNLOAD_ID, String.valueOf(currentAppDownloadId)));
         }
     }
 

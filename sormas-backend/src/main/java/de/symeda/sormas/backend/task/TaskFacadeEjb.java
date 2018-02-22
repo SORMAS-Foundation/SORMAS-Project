@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -46,6 +47,7 @@ import de.symeda.sormas.backend.common.CronService;
 import de.symeda.sormas.backend.common.EmailDeliveryFailedException;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
+import de.symeda.sormas.backend.common.SmsDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -83,7 +85,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	@EJB
 	private MessagingService messagingService;
 
-	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
+	private static final Logger logger = LoggerFactory.getLogger(TaskFacadeEjb.class);
 
 	public Task fromDto(TaskDto source) {		
 		if (source == null) {
@@ -435,10 +437,13 @@ public class TaskFacadeEjb implements TaskFacade {
 								String.format(I18nProperties.getMessage(MessagingService.CONTENT_TASK_START_SPECIFIC), task.getTaskType().toString(), 
 								context.toString() + " " + DataHelper.getShortUuid(associatedEntity.getUuid()));
 
-					messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL);
+					messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL, MessageType.SMS);
 				} catch (EmailDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a starting task. "
 							+ "Failed to send email to user with UUID %s.", task.getAssigneeUser().getUuid()));
+				} catch (SmsDeliveryFailedException e) {
+					logger.error(String.format("SmsDeliveryFailedException when trying to notify a user about a starting task. "
+							+ "Failed to send SMS to user with UUID %s.", task.getAssigneeUser().getUuid()));
 				}
 			}
 		}
@@ -457,14 +462,21 @@ public class TaskFacadeEjb implements TaskFacade {
 								String.format(I18nProperties.getMessage(MessagingService.CONTENT_TASK_DUE_SPECIFIC), task.getTaskType().toString(), 
 								context.toString() + " " + DataHelper.getShortUuid(associatedEntity.getUuid()));
 
-					messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL);
+					messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL, MessageType.SMS);
 				} catch (EmailDeliveryFailedException e) {
 						logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a due task. "
 							+ "Failed to send email to user with UUID %s.", task.getAssigneeUser().getUuid()));
+				} catch (SmsDeliveryFailedException e) {
+						logger.error(String.format("SmsDeliveryFailedException when trying to notify a user about a due task. "
+							+ "Failed to send SMS to user with UUID %s.", task.getAssigneeUser().getUuid()));
 				}
 			}
 		}
 	}
-
+	
+	@LocalBean
+	@Stateless
+	public static class TaskFacadeEjbLocal extends TaskFacadeEjb {
+	}	
 }
 

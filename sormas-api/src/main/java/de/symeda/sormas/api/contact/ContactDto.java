@@ -22,6 +22,7 @@ public class ContactDto extends EntityDto {
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
+	public static final String CONTACT_STATUS = "contactStatus";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
 	public static final String FOLLOW_UP_COMMENT = "followUpComment";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
@@ -38,6 +39,7 @@ public class ContactDto extends EntityDto {
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
+	private ContactStatus contactStatus;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private FollowUpStatus followUpStatus;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
@@ -100,7 +102,6 @@ public class ContactDto extends EntityDto {
 	public void setContactOfficer(UserReferenceDto contactOfficer) {
 		this.contactOfficer = contactOfficer;
 	}
-	
 	public FollowUpStatus getFollowUpStatus() {
 		return followUpStatus;
 	}
@@ -112,6 +113,12 @@ public class ContactDto extends EntityDto {
 	}
 	public void setContactClassification(ContactClassification contactClassification) {
 		this.contactClassification = contactClassification;
+	}
+	public ContactStatus getContactStatus() {
+		return contactStatus;
+	}
+	public void setContactStatus(ContactStatus contactStatus) {
+		this.contactStatus = contactStatus;
 	}
 	public Date getFollowUpUntil() {
 		return followUpUntil;

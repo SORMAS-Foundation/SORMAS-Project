@@ -296,12 +296,12 @@
                 android:value="@={caze.smallpoxVaccinationReceived}"/>
 
             <de.symeda.sormas.app.component.DateField
-                android:id="@+id/caseData_smallpoxVaccinationDate"
+                android:id="@+id/caseData_vaccinationDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/field_padding"
                 android:paddingBottom="@dimen/field_padding"
-                android:value="@={caze.smallpoxVaccinationDate}"/>
+                android:value="@={caze.vaccinationDate}"/>
 
             <de.symeda.sormas.app.component.YesNoUnknownField
                 android:id="@+id/caseData_smallpoxVaccinationScar"

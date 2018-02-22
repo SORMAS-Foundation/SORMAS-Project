@@ -19,15 +19,15 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 public class Symptoms extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 1467852910743225822L;
-	
+
 	public static final String ONSET_DATE = "onsetDate";
 	public static final String SYMPTOMATIC = "symptomatic";
-	
+
 	private Date onsetDate;
 	private String onsetSymptom;
 	private Boolean symptomatic;
 	private String patientIllLocation;
-	
+
 	private Float temperature;
 	private TemperatureSource temperatureSource;
 	private SymptomState fever;
@@ -74,7 +74,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState jointPain;
 	private SymptomState shock;
 	private SymptomState hiccups;
-	private SymptomState otherNonHemorrhagicSymptoms;	
+	private SymptomState otherNonHemorrhagicSymptoms;
 	private SymptomState backache;
 	private SymptomState eyesBleeding;
 	private SymptomState jaundice;
@@ -82,7 +82,6 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState stomachBleeding;
 	private SymptomState rapidBreathing;
 	private SymptomState swollenGlands;
-	private SymptomState cutaneousEruption;
 	private SymptomState lesions;
 	private SymptomState lesionsSameState;
 	private SymptomState lesionsSameSize;
@@ -100,6 +99,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState lesionsResembleImg2;
 	private SymptomState lesionsResembleImg3;
 	private SymptomState lesionsResembleImg4;
+	private Date lesionsOnsetDate;
 	private SymptomState lymphadenopathyInguinal;
 	private SymptomState lymphadenopathyAxillary;
 	private SymptomState lymphadenopathyCervical;
@@ -112,7 +112,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState bulgingFontanelle;
 	private String otherNonHemorrhagicSymptomsText;
 	private String symptomsComments;
-	
+
 	@Temporal(TemporalType.DATE)
 	public Date getOnsetDate() {
 		return onsetDate;
@@ -121,7 +121,7 @@ public class Symptoms extends AbstractDomainObject {
 	public void setOnsetDate(Date onsetDate) {
 		this.onsetDate = onsetDate;
 	}
-	
+
 	@Column(length = 255)
 	public String getPatientIllLocation() {
 		return patientIllLocation;
@@ -283,7 +283,7 @@ public class Symptoms extends AbstractDomainObject {
 	public void setEyePainLightSensitive(SymptomState eyePainLightSensitive) {
 		this.eyePainLightSensitive = eyePainLightSensitive;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getConfusedDisoriented() {
 		return confusedDisoriented;
@@ -319,7 +319,7 @@ public class Symptoms extends AbstractDomainObject {
 	public void setInjectionSiteBleeding(SymptomState injectionSiteBleeding) {
 		this.injectionSiteBleeding = injectionSiteBleeding;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getDigestedBloodVomit() {
 		return digestedBloodVomit;
@@ -349,7 +349,7 @@ public class Symptoms extends AbstractDomainObject {
 	public void setKopliksSpots(SymptomState kopliksSpots) {
 		this.kopliksSpots = kopliksSpots;
 	}
-	
+
 	public void setNausea(SymptomState nausea) {
 		this.nausea = nausea;
 	}
@@ -648,15 +648,6 @@ public class Symptoms extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public SymptomState getCutaneousEruption() {
-		return cutaneousEruption;
-	}
-
-	public void setCutaneousEruption(SymptomState cutaneousEruption) {
-		this.cutaneousEruption = cutaneousEruption;
-	}
-
-	@Enumerated(EnumType.STRING)
 	public SymptomState getLesions() {
 		return lesions;
 	}
@@ -723,11 +714,11 @@ public class Symptoms extends AbstractDomainObject {
 	public void setLesionsDeepProfound(SymptomState lesionsDeepProfound) {
 		this.lesionsDeepProfound = lesionsDeepProfound;
 	}
-	
+
 	public void setLesionsFace(Boolean lesionsFace) {
 		this.lesionsFace = lesionsFace;
 	}
-	
+
 	public void setLesionsLegs(Boolean lesionsLegs) {
 		this.lesionsLegs = lesionsLegs;
 	}
@@ -739,7 +730,7 @@ public class Symptoms extends AbstractDomainObject {
 	public void setLesionsPalmsHands(Boolean lesionsPalmsHands) {
 		this.lesionsPalmsHands = lesionsPalmsHands;
 	}
-	
+
 	public void setLesionsThorax(Boolean lesionsThorax) {
 		this.lesionsThorax = lesionsThorax;
 	}
@@ -786,6 +777,15 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setLesionsResembleImg4(SymptomState lesionsResembleImg4) {
 		this.lesionsResembleImg4 = lesionsResembleImg4;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getLesionsOnsetDate() {
+		return lesionsOnsetDate;
+	}
+
+	public void setLesionsOnsetDate(Date lesionsOnsetDate) {
+		this.lesionsOnsetDate = lesionsOnsetDate;
 	}
 
 	@Enumerated(EnumType.STRING)

@@ -39,6 +39,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String INVESTIGATED_DATE = "investigatedDate";
+	public static final String RECEPTION_DATE = "receptionDate";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String HOSPITALIZATION = "hospitalization";
@@ -47,9 +48,9 @@ public class CaseDataDto extends EntityDto {
 	public static final String VACCINATION = "vaccination";
 	public static final String VACCINATION_DOSES = "vaccinationDoses";
 	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
+	public static final String VACCINATION_DATE = "vaccinationDate";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String SMALLPOX_VACCINATION_RECEIVED = "smallpoxVaccinationReceived";
-	public static final String SMALLPOX_VACCINATION_DATE = "smallpoxVaccinationDate";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -73,6 +74,8 @@ public class CaseDataDto extends EntityDto {
 	private Date reportDate;
 	@Outbreaks
 	private Date investigatedDate;
+	@Outbreaks
+	private Date receptionDate;
 	
 	private HospitalizationDto hospitalization;
 	private EpiDataDto epiData;
@@ -104,8 +107,8 @@ public class CaseDataDto extends EntityDto {
 	private YesNoUnknown smallpoxVaccinationScar;
 	@Diseases({Disease.MONKEYPOX})
 	private YesNoUnknown smallpoxVaccinationReceived;
-	@Diseases({Disease.MONKEYPOX})
-	private Date smallpoxVaccinationDate;
+	@Diseases({Disease.MEASLES,Disease.YELLOW_FEVER,Disease.CSM,Disease.MONKEYPOX,Disease.OTHER})
+	private Date vaccinationDate;
 	
 	@Outbreaks
 	private String epidNumber;
@@ -202,6 +205,14 @@ public class CaseDataDto extends EntityDto {
 
 	public void setInvestigatedDate(Date investigatedDate) {
 		this.investigatedDate = investigatedDate;
+	}
+
+	public Date getReceptionDate() {
+		return receptionDate;
+	}
+
+	public void setReceptionDate(Date receptionDate) {
+		this.receptionDate = receptionDate;
 	}
 
 	public UserReferenceDto getSurveillanceOfficer() {
@@ -326,12 +337,12 @@ public class CaseDataDto extends EntityDto {
 		this.smallpoxVaccinationReceived = smallpoxVaccinationReceived;
 	}
 
-	public Date getSmallpoxVaccinationDate() {
-		return smallpoxVaccinationDate;
+	public Date getVaccinationDate() {
+		return vaccinationDate;
 	}
 
-	public void setSmallpoxVaccinationDate(Date smallpoxVaccinationDate) {
-		this.smallpoxVaccinationDate = smallpoxVaccinationDate;
+	public void setVaccinationDate(Date vaccinationDate) {
+		this.vaccinationDate = vaccinationDate;
 	}
 
 	public String getEpidNumber() {

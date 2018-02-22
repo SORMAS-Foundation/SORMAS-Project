@@ -101,7 +101,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setVaccinationInfoSource(source.getVaccinationInfoSource());
         target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
         target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
-        target.setSmallpoxVaccinationDate(source.getSmallpoxVaccinationDate());
+        target.setVaccinationDate(source.getVaccinationDate());
         target.setEpidNumber(source.getEpidNumber());
         target.setPlagueType(source.getPlagueType());
 
@@ -201,7 +201,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setVaccinationInfoSource(source.getVaccinationInfoSource());
         target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
         target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
-        target.setSmallpoxVaccinationDate(source.getSmallpoxVaccinationDate());
+        target.setVaccinationDate(source.getVaccinationDate());
         target.setEpidNumber(source.getEpidNumber());
         target.setPlagueType(source.getPlagueType());
 

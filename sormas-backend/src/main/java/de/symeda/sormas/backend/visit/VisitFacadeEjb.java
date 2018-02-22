@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
@@ -26,10 +27,10 @@ import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.EmailDeliveryFailedException;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
+import de.symeda.sormas.backend.common.SmsDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.Person;
@@ -58,7 +59,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	@EJB
 	private MessagingService messagingService;
 
-	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
+	private static final Logger logger = LoggerFactory.getLogger(VisitFacadeEjb.class);
 
 
 	@Override
@@ -231,10 +232,13 @@ public class VisitFacadeEjb implements VisitFacade {
 					try { 
 						messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_CONTACT_SYMPTOMATIC), 
 								String.format(I18nProperties.getMessage(MessagingService.CONTENT_CONTACT_SYMPTOMATIC), DataHelper.getShortUuid(contact.getUuid()), DataHelper.getShortUuid(contactCase.getUuid())), 
-								MessageType.EMAIL);
+								MessageType.EMAIL, MessageType.SMS);
 					} catch (EmailDeliveryFailedException e) {
 						logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic. "
 								+ "Failed to send email to user with UUID %s.", recipient.getUuid()));
+					} catch (SmsDeliveryFailedException e) {
+						logger.error(String.format("SmsDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic. "
+								+ "Failed to send SMS to user with UUID %s.", recipient.getUuid()));
 					}
 				}
 			}
@@ -242,5 +246,9 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		contactService.updateFollowUpUntilAndStatusByVisit(newVisit);
 	}
-
+	
+	@LocalBean
+	@Stateless
+	public static class VisitFacadeEjbLocal extends VisitFacadeEjb {
+	}	
 }

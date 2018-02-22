@@ -10,11 +10,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -32,10 +28,10 @@ import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.EmailDeliveryFailedException;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
+import de.symeda.sormas.backend.common.SmsDeliveryFailedException;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.region.District;
@@ -65,7 +61,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	@EJB
 	private MessagingService messagingService;
 
-	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
+	private static final Logger logger = LoggerFactory.getLogger(SampleTestFacadeEjb.class);
 
 	@Override
 	public List<String> getAllUuids(String userUuid) {
@@ -114,29 +110,6 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	}
 
 	@Override
-	public SampleTestDto getLatestBySample(SampleReferenceDto sampleRef) {
-		if (sampleRef == null) {
-			return null;
-		}
-
-		Sample sample = sampleService.getByReferenceDto(sampleRef);
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<SampleTest> cq = cb.createQuery(SampleTest.class);
-		Root<SampleTest> from = cq.from(SampleTest.class);
-
-		cq.where(cb.equal(from.get(SampleTest.SAMPLE), sample));
-		cq.orderBy(cb.desc(from.get(SampleTest.TEST_DATE_TIME)));
-
-		try {
-			SampleTestDto result = toDto(em.createQuery(cq).setMaxResults(1).getSingleResult());
-			return result;
-		} catch (NoResultException e) {
-			return null;
-		}
-	}
-
-	@Override
 	public List<DashboardTestResultDto> getNewTestResultsForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		District district = districtService.getByReferenceDto(districtRef);
@@ -154,6 +127,8 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		SampleTestDto existingSampleTest = toDto(sampleTestService.getByUuid(dto.getUuid()));		
 		SampleTest sampleTest = fromDto(dto);
 		sampleTestService.ensurePersisted(sampleTest);
+		
+		sampleService.updateMainSampleTest(sampleTest.getSample());
 
 		onSampleTestChanged(existingSampleTest, sampleTest);
 
@@ -219,6 +194,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	}
 
 	private void onSampleTestChanged(SampleTestDto existingSampleTest, SampleTest newSampleTest) {
+		
 		// Send an email to all responsible supervisors when a new non-pending sample test is created or the status of a formerly pending test result has changed
 		if (existingSampleTest == null && newSampleTest.getTestResult() != SampleTestResultType.PENDING) {
 			Case existingSampleCase = sampleService.getByUuid(newSampleTest.getSample().getUuid()).getAssociatedCase();
@@ -230,10 +206,13 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_LAB_RESULT_ARRIVED), 
 							String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_RESULT_ARRIVED), 
 									newSampleTest.getTestResult().toString(), DataHelper.getShortUuid(newSampleTest.getUuid())), 
-							MessageType.EMAIL);
+							MessageType.EMAIL, MessageType.SMS);
 				} catch (EmailDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the arrival of a lab result. "
 							+ "Failed to send email to user with UUID %s.", recipient.getUuid()));
+				} catch (SmsDeliveryFailedException e) {
+					logger.error(String.format("SmsDeliveryFailedException when trying to notify supervisors about the arrival of a lab result. "
+							+ "Failed to send SMS to user with UUID %s.", recipient.getUuid()));
 				}
 			}
 		} else if (existingSampleTest != null && existingSampleTest.getTestResult() == SampleTestResultType.PENDING && 
@@ -247,10 +226,13 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_LAB_RESULT_SPECIFIED), 
 							String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_RESULT_SPECIFIED), 
 									DataHelper.getShortUuid(newSampleTest.getUuid()), newSampleTest.getTestResult().toString()), 
-							MessageType.EMAIL);
+							MessageType.EMAIL, MessageType.SMS);
 				} catch (EmailDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the specification of a lab result. "
 							+ "Failed to send email to user with UUID %s.", recipient.getUuid()));
+				} catch (SmsDeliveryFailedException e) {
+					logger.error(String.format("SmsDeliveryFailedException when trying to notify supervisors about the specification of a lab result. "
+							+ "Failed to send SMS to user with UUID %s.", recipient.getUuid()));
 				}
 			}
 		}

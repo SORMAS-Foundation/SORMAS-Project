@@ -18,6 +18,10 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+
 @Stateless(name = "EmailService")
 @LocalBean
 public class EmailService {
@@ -28,16 +32,17 @@ public class EmailService {
 	private Session mailSession;
 	
 	@EJB
-	private ConfigService config;
-	
+	private ConfigFacadeEjbLocal configFacade;
+
+	@Asynchronous
 	public void sendEmail(String recipient, String subject, String content) throws AddressException, MessagingException {
 		 
 		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
  
 		MimeMessage message = new MimeMessage(mailSession);
  
-		String senderAddress = config.getEmailSenderAddress();
-		String senderName = config.getEmailSenderName();
+		String senderAddress = configFacade.getEmailSenderAddress();
+		String senderName = configFacade.getEmailSenderName();
  
 		try {
 			InternetAddress fromAddress = new InternetAddress(senderAddress, senderName);
@@ -53,16 +58,6 @@ public class EmailService {
  
 		Transport.send(message);
 		logger.info("Mail sent to {}.", recipient);
-	}
-	
-	@Asynchronous
-	public void sendEmailAsync(String recipient, String subject, String content) {
-		
-		try {
-			sendEmail(recipient, subject, content);
-		} catch (MessagingException e) {
-			logger.error("Error sending email for " + recipient, e);
-		}
 	}
 	
 }

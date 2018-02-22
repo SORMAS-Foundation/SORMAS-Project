@@ -266,6 +266,11 @@ public class LabelField extends PropertyField<String> {
         labelField.setValue(number!=null?number.toString():"");
     }
 
+    @BindingAdapter("toString")
+    public static void useToStringOfContent(LabelField labelField, Object content) {
+        labelField.setValue(content != null ? content.toString() : "");
+    }
+
     @BindingAdapter("locationLatLon")
     public static void setLocationLatLonForLabel(LabelField labelField, Location location) {
         setLatLonForLabel(labelField,

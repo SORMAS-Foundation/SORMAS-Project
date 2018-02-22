@@ -132,6 +132,10 @@ public class Case extends AbstractDomainObject {
 	private YesNoUnknown smallpoxVaccinationReceived;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date vaccinationDate;
+
+	@Column
+	@Deprecated
 	private Date smallpoxVaccinationDate;
 
 	@Column(length=512)
@@ -334,12 +338,12 @@ public class Case extends AbstractDomainObject {
 		this.smallpoxVaccinationReceived = smallpoxVaccinationReceived;
 	}
 
-	public Date getSmallpoxVaccinationDate() {
-		return smallpoxVaccinationDate;
+	public Date getVaccinationDate() {
+		return vaccinationDate;
 	}
 
-	public void setSmallpoxVaccinationDate(Date smallpoxVaccinationDate) {
-		this.smallpoxVaccinationDate = smallpoxVaccinationDate;
+	public void setVaccinationDate(Date vaccinationDate) {
+		this.vaccinationDate = vaccinationDate;
 	}
 
 	public String getEpidNumber() {

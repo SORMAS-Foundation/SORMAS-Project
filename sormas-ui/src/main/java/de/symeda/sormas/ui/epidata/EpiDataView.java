@@ -4,6 +4,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
+import de.symeda.sormas.ui.utils.ViewMode;
 
 @SuppressWarnings("serial")
 public class EpiDataView extends AbstractCaseView {
@@ -17,7 +18,13 @@ public class EpiDataView extends AbstractCaseView {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
-		setSubComponent(ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), getViewMode()));
+		
+    	if (getViewMode() == ViewMode.SIMPLE) {
+    		ControllerProvider.getCaseController().navigateToCase(getCaseRef().getUuid());
+    		return;
+    	}
+		
+		setSubComponent(ControllerProvider.getCaseController().getCaseEpiDataComponent(getCaseRef().getUuid(), getViewMode()));
 	}
 
 }

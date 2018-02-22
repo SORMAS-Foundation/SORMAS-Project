@@ -207,6 +207,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 			case SURVEILLANCE_SUPERVISOR:
 			case CONTACT_SUPERVISOR:
 			case CASE_SUPERVISOR:
+			case STATE_OBSERVER:
 				// Supervisors see all reports from facilities in their region
 				if (user.getRegion() != null) {
 					filter = cb.or(filter, cb.equal(informant.join(User.HEALTH_FACILITY, JoinType.LEFT).get(Facility.REGION), user.getRegion()));

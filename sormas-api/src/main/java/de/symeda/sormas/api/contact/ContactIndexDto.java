@@ -24,6 +24,7 @@ public class ContactIndexDto implements Serializable {
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
+	public static final String CONTACT_STATUS = "contactStatus";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String CONTACT_OFFICER_UUID = "contactOfficerUuid";
@@ -41,6 +42,7 @@ public class ContactIndexDto implements Serializable {
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
+	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
 	private String contactOfficerUuid;
@@ -48,7 +50,7 @@ public class ContactIndexDto implements Serializable {
 	public ContactIndexDto(String uuid, String personUuid, String personFirstName, String personLastName, String cazeUuid,
 			Disease caseDisease, String caseDiseaseDetails, String casePersonUuid, String caseFirstName, String caseLastName, String caseRegionUuid,
 			String caseDistrictUuid, String caseHealthFacilityUuid, Date lastContactDate, ContactProximity contactProximity,
-			ContactClassification contactClassification, FollowUpStatus followUpStatus, Date followUpUntil, String contactOfficerUuid) {
+			ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus, Date followUpUntil, String contactOfficerUuid) {
 		this.uuid = uuid;
 		this.person = new PersonReferenceDto(personUuid, personFirstName, personLastName);
 		this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
@@ -60,6 +62,7 @@ public class ContactIndexDto implements Serializable {
 		this.lastContactDate = lastContactDate;
 		this.contactProximity = contactProximity;
 		this.contactClassification = contactClassification;
+		this.contactStatus = contactStatus;
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
 		this.contactOfficerUuid = contactOfficerUuid;
@@ -112,6 +115,12 @@ public class ContactIndexDto implements Serializable {
 	}
 	public void setContactClassification(ContactClassification contactClassification) {
 		this.contactClassification = contactClassification;
+	}
+	public ContactStatus getContactStatus() {
+		return contactStatus;
+	}
+	public void setContactStatus(ContactStatus contactStatus) {
+		this.contactStatus = contactStatus;
 	}
 	public FollowUpStatus getFollowUpStatus() {
 		return followUpStatus;

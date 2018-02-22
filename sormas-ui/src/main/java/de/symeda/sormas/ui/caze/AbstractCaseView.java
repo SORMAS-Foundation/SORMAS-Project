@@ -42,9 +42,9 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
         		ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY,
         		CssStyles.VSPACE_TOP_3);
         viewModeToggle.addItems((Object[]) ViewMode.values());
-        viewModeToggle.setItemCaption(ViewMode.OUTBREAK, I18nProperties.getEnumCaption(ViewMode.OUTBREAK));
+        viewModeToggle.setItemCaption(ViewMode.SIMPLE, I18nProperties.getEnumCaption(ViewMode.SIMPLE));
         viewModeToggle.setItemCaption(ViewMode.FULL, I18nProperties.getEnumCaption(ViewMode.FULL));
-        viewModeToggle.setValue(ViewMode.OUTBREAK);
+        viewModeToggle.setValue(ViewMode.SIMPLE);
         // View mode toggle is hidden by default
         viewModeToggle.setVisible(false);
         addHeaderComponent(viewModeToggle);     
@@ -54,7 +54,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
     		@Override
     		public void valueChange(ValueChangeEvent event) {
     	   		viewMode = (ViewMode)event.getProperty().getValue();
-    	   		reloadView();
+   	   			reloadView();
     		}
     	};        
         viewModeToggle.addValueChangeListener(viewModeToggleListener);
@@ -86,7 +86,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		
 		// outbreak?
 		if (FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getDistrict(), caze.getDisease())) {
-			viewMode = ViewMode.OUTBREAK;
+			viewMode = ViewMode.SIMPLE;
 			// param might change this
 			if (passedParams.length > 1 && passedParams[1].startsWith(VIEW_MODE_URL_PREFIX + "=")) {
 				String viewModeString = passedParams[1].substring(2);
@@ -107,12 +107,11 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		menu.removeAllViews();
 		menu.addView(CasesView.VIEW_NAME, "Cases list");
 		menu.addView(CaseDataView.VIEW_NAME, I18nProperties.getFieldCaption(CaseDataDto.I18N_PREFIX), params);
-		menu.addView(CasePersonView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON), params);
-		menu.addView(CaseHospitalizationView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "hospitalization"), params);
-		menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
-		if (viewMode != ViewMode.OUTBREAK) {
-			// TODO this is a hack - look into the actual field configuration instead
-			menu.addView(EpiDataView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "epiData"), params);
+		if (viewMode != ViewMode.SIMPLE) {
+			menu.addView(CasePersonView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON), params);
+			menu.addView(CaseHospitalizationView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION), params);
+			menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
+			menu.addView(EpiDataView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), params);
 		}
 		if (DiseaseHelper.hasContactFollowUp(caze)) {
 			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "contacts"), params);

@@ -64,7 +64,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         }
 
         try {
-
             switch (syncMode) {
                 case ChangesOnly:
                     synchronizeChangedData();
@@ -74,16 +73,16 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                     synchronizeChangedData();
                     break;
                 case Complete:
-                    deleteInvalidInfrastructure();
+                    pullMissingAndDeleteInvalidInfrastructure();
                     pullInfrastructure();
-                    pullMissingAndDeleteInvalid();
+                    pullMissingAndDeleteInvalidData();
                     synchronizeChangedData();
                     break;
                 case CompleteAndRepull:
-                    deleteInvalidInfrastructure();
+                    pullMissingAndDeleteInvalidInfrastructure();
                     pullInfrastructure();
                     repullData();
-                    pullMissingAndDeleteInvalid();
+                    pullMissingAndDeleteInvalidData();
                     synchronizeChangedData();
                     break;
                 default:
@@ -100,6 +99,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             SyncMode newSyncMode = null;
             switch (syncMode) {
                 case ChangesOnly:
+                    newSyncMode = SyncMode.ChangesAndInfrastructure;
+                    break;
                 case ChangesAndInfrastructure:
                     newSyncMode = SyncMode.Complete;
                     break;
@@ -136,12 +137,17 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
     }
 
     public static boolean hasAnyUnsynchronizedData() {
-        return DatabaseHelper.getCaseDao().isAnyModified() || DatabaseHelper.getContactDao().isAnyModified() ||
+        return DatabaseHelper.getCaseDao().isAnyModified() ||
+                DatabaseHelper.getContactDao().isAnyModified() ||
                 DatabaseHelper.getPersonDao().isAnyModified() ||
-                DatabaseHelper.getEventDao().isAnyModified() || DatabaseHelper.getEventParticipantDao().isAnyModified() ||
-                DatabaseHelper.getSampleDao().isAnyModified() || DatabaseHelper.getSampleTestDao().isAnyModified() ||
-                DatabaseHelper.getTaskDao().isAnyModified() || DatabaseHelper.getVisitDao().isAnyModified() ||
-                DatabaseHelper.getWeeklyReportDao().isAnyModified() || DatabaseHelper.getWeeklyReportEntryDao().isAnyModified();
+                DatabaseHelper.getEventDao().isAnyModified() ||
+                DatabaseHelper.getEventParticipantDao().isAnyModified() ||
+                DatabaseHelper.getSampleDao().isAnyModified() ||
+                DatabaseHelper.getSampleTestDao().isAnyModified() ||
+                DatabaseHelper.getTaskDao().isAnyModified() ||
+                DatabaseHelper.getVisitDao().isAnyModified() ||
+                DatabaseHelper.getWeeklyReportDao().isAnyModified() ||
+                DatabaseHelper.getWeeklyReportEntryDao().isAnyModified();
     }
 
     private void synchronizeChangedData() throws DaoException, ServerConnectionException, SynchronizationException {
@@ -238,10 +244,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new UserDtoHelper().pullEntities(false);
     }
 
-    private void pullMissingAndDeleteInvalid() throws ServerConnectionException {
+    private void pullMissingAndDeleteInvalidData() throws ServerConnectionException {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
 
-        Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalid");
+        Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalidData");
 
         // order is important, due to dependencies (e.g. case & person)
 
@@ -296,10 +302,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new WeeklyReportEntryDtoHelper().pullMissing(weeklyReportEntryUuids);
     }
 
-    private void deleteInvalidInfrastructure() throws ServerConnectionException {
+    private void pullMissingAndDeleteInvalidInfrastructure() throws ServerConnectionException {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
 
-        Log.d(SynchronizeDataAsync.class.getSimpleName(), "deleteInvalidInfrastructure");
+        Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalidInfrastructure");
 
         // users
         List<String> userUuids = executeUuidCall(RetroProvider.getUserFacade().pullUuids());
@@ -316,6 +322,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // regions
         List<String> regionUuids = executeUuidCall(RetroProvider.getRegionFacade().pullUuids());
         DatabaseHelper.getRegionDao().deleteInvalid(regionUuids);
+
+        // order is important, due to dependencies
+
+        // TODO pull missing regions, etc.
+
+        new UserDtoHelper().pullMissing(userUuids);
     }
 
     private List<String> executeUuidCall(Call<List<String>> call) throws ServerConnectionException {

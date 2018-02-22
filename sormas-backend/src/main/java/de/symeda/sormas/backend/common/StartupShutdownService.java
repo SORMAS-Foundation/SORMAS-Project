@@ -15,10 +15,12 @@ import javax.ejb.TransactionManagementType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.facility.Facility;
@@ -48,7 +50,7 @@ public class StartupShutdownService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
-	private ConfigService configService;
+	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private UserService userService;
 	@EJB
@@ -71,7 +73,7 @@ public class StartupShutdownService {
 	@PostConstruct
 	public void startup() {
 		
-		String countryName = configService.getCountryName();
+		String countryName = configFacade.getCountryName();
 		
 		importAdministrativeDivisions(countryName);
 		

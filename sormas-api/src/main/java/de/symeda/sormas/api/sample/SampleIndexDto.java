@@ -7,6 +7,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class SampleIndexDto implements Serializable {
 
@@ -26,11 +27,11 @@ public class SampleIndexDto implements Serializable {
 	public static final String RECEIVED_DATE = "receivedDate";
 	public static final String LAB = "lab";
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
-	public static final String LAB_USER = "labUser";
-	public static final String TEST_RESULT = "testResult";
 	public static final String SHIPPED = "shipped";
 	public static final String RECEIVED = "received";
 	public static final String REFERRED = "referred";
+	public static final String SAMPLE_TEST_RESULT = "sampleTestResult";
+	public static final String SAMPLE_TEST_LAB_USER_NAME = "sampleTestLabUserName";
 	
 	private String uuid;
 	private CaseReferenceDto associatedCase;
@@ -48,11 +49,17 @@ public class SampleIndexDto implements Serializable {
 	private FacilityReferenceDto lab;
 	private SampleMaterial sampleMaterial;
 	private SpecimenCondition specimenCondition;
+	private SampleTestResultType sampleTestResult;
+	private String sampleTestLabUserName;
 	
-	public SampleIndexDto(String uuid, String associatedCaseUuid, String associatedCaseFirstName, String associatedCaseLastName,
-			String sampleCode, String labSampleId, Disease disease, String diseaseDetails, String caseRegionUuid, 
-			String caseDistrictUuid, String caseDistrictName, boolean shipped, boolean received, String referredSampleUuid, Date shipmenteDate,
-			Date receivedDate, String labUuid, String labName, SampleMaterial sampleMaterial, SpecimenCondition specimenCondition) {
+	public SampleIndexDto(String uuid, String sampleCode, String labSampleId, 
+			boolean shipped, Date shipmentDate, boolean received, Date receivedDate, 
+			SampleMaterial sampleMaterial, SpecimenCondition specimenCondition,
+			String labUuid, String labName, String referredSampleUuid, 
+			String associatedCaseUuid, String associatedCaseFirstName, String associatedCaseLastName,
+			Disease disease, String diseaseDetails, String caseRegionUuid, 
+			String caseDistrictUuid, String caseDistrictName, SampleTestResultType sampleTestResult,
+			String sampleTestLabUserFirstName, String sampleTestLabUserLastName) {
 		this.uuid = uuid;
 		this.associatedCase = new CaseReferenceDto(associatedCaseUuid, associatedCaseFirstName, associatedCaseLastName);
 		this.sampleCode = sampleCode;
@@ -64,11 +71,13 @@ public class SampleIndexDto implements Serializable {
 		this.shipped = shipped;
 		this.received = received;
 		this.referred = referredSampleUuid != null;
-		this.shipmentDate = shipmenteDate;
+		this.shipmentDate = shipmentDate;
 		this.receivedDate = receivedDate;
 		this.lab = new FacilityReferenceDto(labUuid, labName);
 		this.sampleMaterial = sampleMaterial;
 		this.specimenCondition = specimenCondition;
+		this.sampleTestResult = sampleTestResult;
+		this.sampleTestLabUserName = UserReferenceDto.buildCaption(sampleTestLabUserFirstName, sampleTestLabUserLastName, null);
 	}
 	
 	public String getUuid() {
@@ -170,5 +179,21 @@ public class SampleIndexDto implements Serializable {
 	
 	public SampleReferenceDto toReference() {
 		return new SampleReferenceDto(uuid, getSampleMaterial(), getAssociatedCase().getUuid());
+	}
+
+	public SampleTestResultType getSampleTestResult() {
+		return sampleTestResult;
+	}
+
+	public void setSampleTestResult(SampleTestResultType sampleTestResult) {
+		this.sampleTestResult = sampleTestResult;
+	}
+
+	public String getSampleTestLabUserName() {
+		return sampleTestLabUserName;
+	}
+
+	public void setSampleTestLabUserName(String sampleTestLabUserName) {
+		this.sampleTestLabUserName = sampleTestLabUserName;
 	}
 }

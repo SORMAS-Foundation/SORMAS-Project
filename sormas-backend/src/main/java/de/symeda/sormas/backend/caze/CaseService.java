@@ -142,14 +142,19 @@ public class CaseService extends AbstractAdoService<Case> {
 
 		Predicate filter = createUserFilter(cb, cq, caze, user);
 
-		// Use the onset date if available and the report date otherwise
+		// Onset date > reception date > report date (use report date as a fallback if none of the other dates is available)
 		Predicate dateFilter = cb.or(
 				cb.between(symptoms.get(Symptoms.ONSET_DATE), from, to), 
 				cb.and(
 						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
+						cb.between(caze.get(Case.RECEPTION_DATE), from, to)
+				),
+				cb.and(
+						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
+						cb.isNull(caze.get(Case.RECEPTION_DATE)),
 						cb.between(caze.get(Case.REPORT_DATE), from, to)
-						)
-				);
+				)
+		);
 		if (filter != null) {
 			filter = cb.and(filter, dateFilter);
 		} else {
@@ -180,6 +185,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			cq.multiselect(
 					caze.get(Case.REPORT_DATE),
 					symptoms.get(Symptoms.ONSET_DATE),
+					caze.get(Case.RECEPTION_DATE),
 					caze.get(Case.CASE_CLASSIFICATION),
 					caze.get(Case.DISEASE),
 					caze.get(Case.INVESTIGATION_STATUS),
@@ -336,6 +342,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			case CONTACT_SUPERVISOR:
 			case CASE_SUPERVISOR:
 			case RUMOR_MANAGER:
+			case STATE_OBSERVER:
 				// supervisors see all cases of their region
 				if (user.getRegion() != null) {
 					filter = cb.or(filter, cb.equal(casePath.get(Case.REGION), user.getRegion()));
@@ -419,7 +426,7 @@ public class CaseService extends AbstractAdoService<Case> {
 	}
 	
 	/**
-	 * A case is considered active when the time span between onset/report date and outcome date overlaps
+	 * A case is considered active when the time span between onset/reception/report date and outcome date overlaps
 	 * the time span defined by the fromDate and toDate.
 	 */
 	public Predicate createActiveCaseFilter(CriteriaBuilder cb, Root<Case> from, Date fromDate, Date toDate) {
@@ -432,12 +439,17 @@ public class CaseService extends AbstractAdoService<Case> {
 			);
 		}
 		if (toDate != null) {
-			// Use the onset date if available and the report date otherwise
+			// Onset date > reception date > report date (use report date as a fallback if none of the other dates is available)
 			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS, JoinType.LEFT);
 			dateToFilter = cb.or(
 					cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), toDate), 
 					cb.and(
 							cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
+							cb.lessThanOrEqualTo(from.get(Case.RECEPTION_DATE), toDate)
+					),
+					cb.and(
+							cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
+							cb.isNull(from.get(Case.RECEPTION_DATE)),
 							cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), toDate)
 					)
 			);

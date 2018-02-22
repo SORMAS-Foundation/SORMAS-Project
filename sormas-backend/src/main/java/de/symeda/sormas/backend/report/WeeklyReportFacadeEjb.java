@@ -13,7 +13,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -31,14 +30,17 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.report.WeeklyReportEntryFacadeEjb.WeeklyReportEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -58,6 +60,12 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	private UserService userService;	
 	@EJB
 	private TaskService taskService;
+	@EJB
+	FacilityFacadeEjbLocal facilityFacade;
+	@EJB
+	private WeeklyReportEntryFacadeEjbLocal weeklyReportEntryFacade;
+	@EJB
+	private UserFacadeEjbLocal userFacade;
 	
 	@Override
 	public List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date, String userUuid) {
@@ -119,14 +127,14 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	
 	@Override
 	public WeeklyReportSummaryDto getSummaryDtoByRegion(RegionReferenceDto regionRef, EpiWeek epiWeek) {
-		List<FacilityReferenceDto> facilities = FacadeProvider.getFacilityFacade().getHealthFacilitiesByRegion(regionRef, false);
+		List<FacilityReferenceDto> facilities = facilityFacade.getHealthFacilitiesByRegion(regionRef, false);
 	
 		return buildSummaryDto(facilities, regionRef, null, epiWeek);
 	}
 	
 	@Override
 	public WeeklyReportSummaryDto getSummaryDtoByDistrict(DistrictReferenceDto districtRef, EpiWeek epiWeek) {
-		List<FacilityReferenceDto> facilities = FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtRef, false);
+		List<FacilityReferenceDto> facilities = facilityFacade.getHealthFacilitiesByDistrict(districtRef, false);
 		
 		return buildSummaryDto(facilities, null, districtRef, epiWeek);
 	}
@@ -206,7 +214,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		int numberOfZeroReports = 0;
 		int numberOfMissingReports = 0;
 		for (FacilityReferenceDto facility : facilities) {
-			int numberOfInformants = FacadeProvider.getUserFacade().getNumberOfInformantsByFacility(facility);
+			int numberOfInformants = userFacade.getNumberOfInformantsByFacility(facility);
 			int numberOfWeeklyReports = getNumberOfWeeklyReportsByFacility(facility, epiWeek);
 			if (numberOfInformants != numberOfWeeklyReports) {
 				numberOfMissingReports++;
@@ -216,7 +224,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			List<WeeklyReportReferenceDto> reports = getWeeklyReportsByFacility(facility, epiWeek);
 			int numberOfReportsForFacility = 0;
 			for (WeeklyReportReferenceDto report : reports) {
-				int nonZeroEntries = FacadeProvider.getWeeklyReportEntryFacade().getNumberOfNonZeroEntries(report);
+				int nonZeroEntries = weeklyReportEntryFacade.getNumberOfNonZeroEntries(report);
 				if (nonZeroEntries > 0) {
 					numberOfReportsForFacility++;
 					continue;

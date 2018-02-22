@@ -33,7 +33,6 @@ public class SymptomsDto extends EntityDto {
 	public static final String CONFUSED_DISORIENTED = "confusedDisoriented";
 	public static final String CONJUNCTIVITIS = "conjunctivitis";
 	public static final String COUGH = "cough";
-	public static final String CUTANEOUS_ERUPTION = "cutaneousEruption";
 	public static final String DARK_URINE = "darkUrine";
 	public static final String DEHYDRATION = "dehydration";
 	public static final String DIARRHEA = "diarrhea";
@@ -63,6 +62,7 @@ public class SymptomsDto extends EntityDto {
 	public static final String LESIONS_RESEMBLE_IMG2 = "lesionsResembleImg2";
 	public static final String LESIONS_RESEMBLE_IMG3 = "lesionsResembleImg3";
 	public static final String LESIONS_RESEMBLE_IMG4 = "lesionsResembleImg4";
+	public static final String LESIONS_ONSET_DATE = "lesionsOnsetDate";
 	public static final String LESIONS_THAT_ITCH = "lesionsThatItch";
 	public static final String LYMPHADENOPATHY_AXILLARY = "lymphadenopathyAxillary";
 	public static final String LYMPHADENOPATHY_CERVICAL = "lymphadenopathyCervical";
@@ -166,6 +166,7 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState digestedBloodVomit;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState coughingBlood;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState bleedingVagina;
@@ -186,12 +187,14 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState soreThroat;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState cough;
 	@Diseases({Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.OTHER})
 	private SymptomState runnyNose;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState difficultyBreathing;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState chestPain;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.PLAGUE,Disease.OTHER})
 	@Outbreaks
@@ -241,8 +244,6 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.DENGUE,Disease.OTHER})
 	private SymptomState swollenGlands;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
-	private SymptomState cutaneousEruption;
-	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState lesions;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState lesionsSameState;
@@ -274,6 +275,8 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState lesionsResembleImg3;
 	@Diseases({Disease.MONKEYPOX})
 	private SymptomState lesionsResembleImg4;
+	@Diseases({Disease.MONKEYPOX})
+	private Date lesionsOnsetDate;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState lymphadenopathyInguinal;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
@@ -281,8 +284,10 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState lymphadenopathyCervical;
 	@Diseases({Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState painfulLymphadenitis;
 	@Diseases({Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState chillsSweats;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState lesionsThatItch;
@@ -643,12 +648,6 @@ public class SymptomsDto extends EntityDto {
 	public void setSwollenGlands(SymptomState swollenGlands) {
 		this.swollenGlands = swollenGlands;
 	}
-	public SymptomState getCutaneousEruption() {
-		return cutaneousEruption;
-	}
-	public void setCutaneousEruption(SymptomState cutaneousEruption) {
-		this.cutaneousEruption = cutaneousEruption;
-	}
 	public SymptomState getLesions() {
 		return lesions;
 	}
@@ -744,6 +743,12 @@ public class SymptomsDto extends EntityDto {
 	}
 	public void setLesionsResembleImg4(SymptomState lesionsResembleImg4) {
 		this.lesionsResembleImg4 = lesionsResembleImg4;
+	}
+	public Date getLesionsOnsetDate() {
+		return lesionsOnsetDate;
+	}
+	public void setLesionsOnsetDate(Date lesionsOnsetDate) {
+		this.lesionsOnsetDate = lesionsOnsetDate;
 	}
 	public SymptomState getLymphadenopathyInguinal() {
 		return lymphadenopathyInguinal;

@@ -16,4 +16,7 @@ public interface InfoFacadeRetro {
 
     @GET("info/version")
     Call<String> getVersion();
+
+    @GET("info/appurl")
+    Call<String> getAppUrl();
 }

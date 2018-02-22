@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.sample;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -19,11 +20,15 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
+import de.symeda.sormas.api.sample.SampleCriteria;
+import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -67,6 +72,16 @@ public class SampleService extends AbstractAdoService<Sample> {
 			return em.createQuery(cq).getSingleResult();
 		} catch (NoResultException e) {
 			return null;
+		}
+	}
+	
+	public void updateMainSampleTest(Sample sample) {
+		if (sample.getSampleTests().isEmpty()) {
+			sample.setMainSampleTest(null);
+		} else {
+			sample.setMainSampleTest(sample.getSampleTests().stream()
+					.sorted(Comparator.comparing(SampleTest::getTestDateTime, Comparator.nullsLast(Comparator.reverseOrder())))
+					.findFirst().get());
 		}
 	}
 	
@@ -149,6 +164,53 @@ public class SampleService extends AbstractAdoService<Sample> {
 				filter = or(cb, filter, cb.equal(samplePath.get(Sample.LAB), user.getLaboratory()));			}
 		}
 		
+		return filter;
+	}
+	
+	public Predicate buildCriteriaFilter(SampleCriteria sampleCriteria, CriteriaBuilder cb, Root<Sample> from) {
+		
+		Join<Sample, Case> caze = from.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
+		
+		Predicate filter = null;
+		if (sampleCriteria.getRegion() != null) {
+			filter = and(cb, filter, cb.equal(caze.join(Case.REGION, JoinType.LEFT).get(Region.UUID), sampleCriteria.getRegion().getUuid()));
+		}
+		if (sampleCriteria.getDistrict() != null) {
+			filter = and(cb, filter, cb.equal(caze.join(Case.DISTRICT, JoinType.LEFT).get(District.UUID), sampleCriteria.getDistrict().getUuid()));
+		}
+		if (sampleCriteria.getLaboratory() != null) {
+			filter = and(cb, filter, cb.equal(from.join(Sample.LAB, JoinType.LEFT).get(Facility.UUID), sampleCriteria.getLaboratory().getUuid()));
+		}
+		if (sampleCriteria.getShipped() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Sample.SHIPPED), sampleCriteria.getShipped()));
+		}
+		if (sampleCriteria.getReceived() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Sample.RECEIVED), sampleCriteria.getReceived()));
+		}
+		if (sampleCriteria.getReferred() != null) {
+			if (sampleCriteria.getReferred().equals(Boolean.TRUE)) {
+				filter = and(cb, filter, cb.isNotNull(from.get(Sample.REFERRED_TO)));
+			} else {
+				filter = and(cb, filter, cb.isNull(from.get(Sample.REFERRED_TO)));
+			}
+		}
+		if (sampleCriteria.getTestResult() != null) {
+			Predicate subFilter = cb.equal(from.join(Sample.MAIN_SAMPLE_TEST, JoinType.LEFT).get(SampleTest.TEST_RESULT), sampleCriteria.getTestResult());
+			if (sampleCriteria.getTestResult() == SampleTestResultType.PENDING) {
+				subFilter = or(cb, subFilter, cb.isNull(from.join(Sample.MAIN_SAMPLE_TEST, JoinType.LEFT).get(SampleTest.TEST_RESULT)));
+			}
+			filter = and(cb, filter, subFilter);
+		}
+		if (sampleCriteria.getCaseClassification() != null) {
+			filter = and(cb, filter, cb.equal(caze.get(Case.CASE_CLASSIFICATION), sampleCriteria.getCaseClassification()));
+		}
+		if (sampleCriteria.getCaze() != null) {
+			filter = and(cb, filter, cb.equal(caze.get(Case.UUID), sampleCriteria.getCaze().getUuid()));
+		}
+		if (sampleCriteria.getSpecimenCondition() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Sample.SPECIMEN_CONDITION), sampleCriteria.getSpecimenCondition()));
+		}
+
 		return filter;
 	}
 }

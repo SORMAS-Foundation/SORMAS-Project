@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>sormas-base</artifactId>
-        <groupId>de.symeda.sormas</groupId>
-        <version>0.14.0</version>
-        <relativePath>../sormas-base</relativePath>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>sormas-base</artifactId>
+		<groupId>de.symeda.sormas</groupId>
+		<version>0.15.0</version>
+		<relativePath>../sormas-base</relativePath>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
 
-    <artifactId>sormas-backend</artifactId>
+	<artifactId>sormas-backend</artifactId>
 	<name>${project.artifactId}</name>
-    <packaging>ejb</packaging>
+	<packaging>ejb</packaging>
 
-    <dependencies>
+	<dependencies>
 
 		<dependency>
 			<groupId>javax</groupId>
@@ -29,11 +29,11 @@
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>sormas-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>sormas-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>joda-time</groupId>
@@ -41,36 +41,41 @@
 		</dependency>
 
 		<dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-shapefile</artifactId>
-        </dependency>
-	        
-		<!-- Testing -->
-
-		<dependency>
-		    <groupId>org.eclipse.persistence</groupId>
-    		<artifactId>org.eclipse.persistence.jpa</artifactId>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-shapefile</artifactId>
 		</dependency>
 
 		<dependency>
-		    <groupId>org.hibernate</groupId>
-    		<artifactId>hibernate-validator</artifactId>
+			<groupId>com.nexmo</groupId>
+			<artifactId>client</artifactId>
+		</dependency>
+
+		<!-- Testing -->
+
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>org.eclipse.persistence.jpa</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 		</dependency>
-			
-	    <dependency>
-	      	<groupId>info.novatec</groupId>
-	      	<artifactId>bean-test</artifactId>
-	    </dependency>
-	    
-    
-    </dependencies>
 
-    <build>
-    </build>
+		<dependency>
+			<groupId>info.novatec</groupId>
+			<artifactId>bean-test</artifactId>
+		</dependency>
+
+
+	</dependencies>
+
+	<build>
+	</build>
 
 </project>
