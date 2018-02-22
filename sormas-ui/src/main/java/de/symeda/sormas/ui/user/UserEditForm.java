@@ -5,6 +5,7 @@ import java.util.Set;
 import com.vaadin.data.Validator;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 
@@ -21,14 +22,19 @@ import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
 @SuppressWarnings("serial")
 public class UserEditForm extends AbstractEditForm<UserDto> {
+	
+	private static final String USER_EMAIL_DESC_LOC = "userEmailDescLoc";
+	private static final String USER_PHONE_DESC_LOC = "userPhoneDescLoc";
 	
     private static final String HTML_LAYOUT = 
     		LayoutUtil.h3("Person data")+
 			LayoutUtil.fluidRowLocs(UserDto.FIRST_NAME, UserDto.LAST_NAME)+
 			LayoutUtil.fluidRowLocs(UserDto.USER_EMAIL, UserDto.PHONE)+
+			LayoutUtil.fluidRowLocs(USER_EMAIL_DESC_LOC, USER_PHONE_DESC_LOC)+
 			LayoutUtil.h3("Adress") +
 			LayoutUtil.fluidRowLocs(UserDto.ADDRESS) +
 			LayoutUtil.h3("User data") +
@@ -54,8 +60,15 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	addField(UserDto.FIRST_NAME, TextField.class);
     	addField(UserDto.LAST_NAME, TextField.class);
     	addField(UserDto.USER_EMAIL, TextField.class);
-    	addField(UserDto.PHONE, TextField.class);
+    	TextField phone = addField(UserDto.PHONE, TextField.class);
+    	phone.addValidator(new PhoneNumberValidator("Phone numbers have to start with a + followed by the country code. "
+    			+ "Using a different format will make the user unable to receive SMS notifications."));
     	
+    	Label userEmailDesc = new Label("Used to send Email notifications.");
+    	getContent().addComponent(userEmailDesc, USER_EMAIL_DESC_LOC);
+    	Label userPhoneDesc = new Label("Used to send SMS notifications. Needs to contain country code.");
+    	getContent().addComponent(userPhoneDesc, USER_PHONE_DESC_LOC);
+    	    	
     	addField(UserDto.ADDRESS, LocationEditForm.class).setCaption(null);
     	
     	addField(UserDto.ACTIVE, CheckBox.class);

@@ -28,7 +28,8 @@ public class EmailService {
 	
 	@Resource(name = "mail/MailSession")
 	private Session mailSession;
-	
+
+	@Asynchronous
 	public void sendEmail(String recipient, String subject, String content) throws AddressException, MessagingException {
 		 
 		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
@@ -53,16 +54,6 @@ public class EmailService {
  
 		Transport.send(message);
 		logger.info("Mail sent to {}.", recipient);
-	}
-	
-	@Asynchronous
-	public void sendEmailAsync(String recipient, String subject, String content) {
-		
-		try {
-			sendEmail(recipient, subject, content);
-		} catch (MessagingException e) {
-			logger.error("Error sending email for " + recipient, e);
-		}
 	}
 	
 }

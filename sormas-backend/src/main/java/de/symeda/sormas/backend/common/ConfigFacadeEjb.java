@@ -23,6 +23,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	
 	private static final String EMAIL_SENDER_ADDRESS = "email.sender.address";
 	private static final String EMAIL_SENDER_NAME = "email.sender.name";
+	private static final String SMS_SENDER_NAME = "sms.sender.name";
+	private static final String SMS_AUTH_KEY = "sms.auth.key";
+	private static final String SMS_AUTH_SECRET = "sms.auth.secret";
 	
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ConfigFacadeEjb.class);
@@ -65,6 +68,21 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getProperty(EMAIL_SENDER_NAME, "SORMAS Support");
 	}
 
+	@Override
+	public String getSmsSenderName() {
+		return getProperty(SMS_SENDER_NAME, "SORMAS");
+	}
+	
+	@Override
+	public String getSmsAuthKey() {
+		return getProperty(SMS_AUTH_KEY, "");
+	}
+	
+	@Override
+	public String getSmsAuthSecret() {
+		return getProperty(SMS_AUTH_SECRET, "");
+	}
+	
 	private String getProperty(String name, String defaultValue){
 		return getProp(name, defaultValue);
 	}

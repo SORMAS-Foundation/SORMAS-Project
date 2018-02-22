@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.common;
 
+import java.io.IOException;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -8,11 +10,13 @@ import javax.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.nexmo.client.NexmoClientException;
+
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.user.User;
 
 /**
- * Service used to send email or SMS messages to SORMAS users. SMS messages are currently not supported.
+ * Service used to send email and SMS messages to SORMAS users.
  * 
  * @author Maté Strysewske
  */
@@ -42,35 +46,40 @@ public class MessagingService {
 	
 	@EJB
 	private EmailService emailService;
+	@EJB
+	private SmsService smsService;
 	
 	/**
-	 * Sends the message specified by the messageContent via mail or SMS, according to the messageType, to the specified recipient's
-	 * email address or phone number. Logs an error if the email address or phone number is not set.
+	 * Sends the message specified by the messageContent via mail and/or SMS, according to the messageTypes, to the specified recipient's
+	 * email address and/or phone number. Logs an error if the email address or phone number is not set.
 	 */
-	public boolean sendMessage(User recipient, String subject, String messageContent, MessageType messageType) throws EmailDeliveryFailedException {
+	public void sendMessage(User recipient, String subject, String messageContent, MessageType... messageTypes) throws EmailDeliveryFailedException, SmsDeliveryFailedException {
 
 		String emailAddress = recipient.getUserEmail();
 		String phoneNumber = recipient.getPhone();
-
-		if (messageType == MessageType.EMAIL && DataHelper.isNullOrEmpty(emailAddress)) {
-			logger.info(String.format("Tried to send an email to a user without an email address (UUID: %s).", recipient.getUuid()));
-			return false;
-		} else if (messageType == MessageType.SMS && DataHelper.isNullOrEmpty(phoneNumber)) {
-			logger.info(String.format("Tried to send an SMS to a user without a phone number (UUID: %s).", recipient.getUuid()));
-			return false;
-		} else {
-			try {
-				if (messageType == MessageType.EMAIL) {
-					emailService.sendEmail(emailAddress, subject, messageContent);
-				} else {
-					throw new UnsupportedOperationException("Sending SMS messages is currently not supported.");
+		
+		for (MessageType messageType : messageTypes) {
+			if (messageType == MessageType.EMAIL && DataHelper.isNullOrEmpty(emailAddress)) {
+				logger.info(String.format("Tried to send an email to a user without an email address (UUID: %s).", recipient.getUuid()));
+			} else if (messageType == MessageType.SMS && DataHelper.isNullOrEmpty(phoneNumber)) {
+				logger.info(String.format("Tried to send an SMS to a user without a phone number (UUID: %s).", recipient.getUuid()));
+			} else {
+				try {
+					if (messageType == MessageType.EMAIL) {
+						emailService.sendEmail(emailAddress, subject, messageContent);
+					} else if (messageType == MessageType.SMS) {
+						smsService.sendSms(phoneNumber, subject, messageContent);
+					}
+				} catch (MessagingException e) {
+					throw new EmailDeliveryFailedException("Email could not be sent due to an unexpected error.", e);
+				} catch (IOException | NexmoClientException e) {
+					throw new SmsDeliveryFailedException("SMS could not be sent due to an unexpected error.", e);
+				} catch (InvalidPhoneNumberException e) {
+					throw new SmsDeliveryFailedException("SMS could not be sent because of an invalid phone number.", e);
 				}
-			} catch (MessagingException e) {
-				throw new EmailDeliveryFailedException("Email could not be sent due to an unexpected error.", e);
 			}
-
-			return true;
 		}
+		
 	}
 	
 }

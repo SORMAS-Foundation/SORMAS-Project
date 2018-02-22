@@ -60,6 +60,7 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.EmailDeliveryFailedException;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
+import de.symeda.sormas.backend.common.SmsDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -717,10 +718,13 @@ public class CaseFacadeEjb implements CaseFacade {
 				try {
 					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_CASE_CLASSIFICATION_CHANGED), 
 							String.format(I18nProperties.getMessage(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED), DataHelper.getShortUuid(newCase.getUuid()), newCase.getCaseClassification().toString()), 
-							MessageType.EMAIL);
+							MessageType.EMAIL, MessageType.SMS);
 				} catch (EmailDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the change of a case classification. "
 							+ "Failed to send email to user with UUID %s.", recipient.getUuid()));
+				} catch (SmsDeliveryFailedException e) {
+					logger.error(String.format("SmsDeliveryFailedException when trying to notify supervisors about the cange of a case classification. "
+							+ "Failed to send SMS to user with UUID %s.", recipient.getUuid()));
 				}
 			}
 		}

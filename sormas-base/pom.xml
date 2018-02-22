@@ -262,6 +262,13 @@
 	            <artifactId>gt-shapefile</artifactId>
 			   <version>17.2</version>
 	        </dependency>
+	        
+	        <!-- Nexmo SMS API -->
+	        <dependency>
+	        	<groupId>com.nexmo</groupId>
+	        	<artifactId>client</artifactId>
+	        	<version>3.3.0</version>
+	        </dependency>
 		</dependencies>
 	</dependencyManagement>
 

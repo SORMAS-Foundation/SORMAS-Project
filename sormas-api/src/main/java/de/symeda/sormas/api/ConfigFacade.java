@@ -15,4 +15,10 @@ public interface ConfigFacade {
 	
 	String getEmailSenderName();
 	
+	String getSmsSenderName();
+	
+	String getSmsAuthKey();
+	
+	String getSmsAuthSecret();
+	
 }
