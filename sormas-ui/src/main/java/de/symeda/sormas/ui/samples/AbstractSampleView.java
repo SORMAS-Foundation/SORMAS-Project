@@ -29,7 +29,7 @@ public class AbstractSampleView extends AbstractSubNavigationView {
 		menu.removeAllViews();
 		menu.addView(SamplesView.VIEW_NAME, "Samples list");
 		if(caseRef != null) {
-			menu.addView(CaseDataView.VIEW_NAME, "Case samples list", caseRef.getUuid(), true);
+			menu.addView(CaseDataView.VIEW_NAME, "Case", caseRef.getUuid(), true);
 		}
 		menu.addView(SampleDataView.VIEW_NAME, I18nProperties.getFieldCaption(SampleDto.I18N_PREFIX), params);
 		infoLabel.setValue(sampleRef.getCaption());
