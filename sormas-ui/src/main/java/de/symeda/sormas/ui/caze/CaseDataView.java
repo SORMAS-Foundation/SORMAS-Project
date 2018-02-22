@@ -35,7 +35,7 @@ public class CaseDataView extends AbstractCaseView {
 	    	CommitDiscardWrapperComponent<CaseDataForm> caseDataEditComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), getViewMode());
 	    	setSubComponent(caseDataEditComponent);
     	} else {
-    		CommitDiscardWrapperComponent<? extends Component> caseFullEditComponent = ControllerProvider.getCaseController().getCaseFullEditComponent(getCaseRef().getUuid(), getViewMode());
+    		CommitDiscardWrapperComponent<? extends Component> caseFullEditComponent = ControllerProvider.getCaseController().getCaseCombinedEditComponent(getCaseRef().getUuid(), getViewMode());
     		setSubComponent(caseFullEditComponent);
     	}
     	

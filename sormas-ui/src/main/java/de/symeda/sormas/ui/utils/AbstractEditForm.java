@@ -440,7 +440,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 				}
 			}
 			
-			if (viewMode != null && viewMode == ViewMode.OUTBREAK) {
+			if (viewMode != null && viewMode == ViewMode.SIMPLE) {
 				if (!Outbreaks.OutbreaksConfiguration.isDefined(getType(), (String) propertyId)) {
 					outbreakVisibility = false;
 				}

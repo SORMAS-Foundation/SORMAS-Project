@@ -19,7 +19,7 @@ public class CaseHospitalizationView extends AbstractCaseView {
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
 		
-    	if (getViewMode() == ViewMode.OUTBREAK) {
+    	if (getViewMode() == ViewMode.SIMPLE) {
     		ControllerProvider.getCaseController().navigateToCase(getCaseRef().getUuid());
     		return;
     	}

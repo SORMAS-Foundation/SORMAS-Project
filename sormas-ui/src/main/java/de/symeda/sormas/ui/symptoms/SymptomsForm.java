@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Alignment;
@@ -335,8 +336,16 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			}
 		});
 	}	
+	
+	@Override
+	public void setValue(SymptomsDto newFieldValue) throws ReadOnlyException, ConversionException {
 
-	public void initializeSymptomRequirementsForCase() {
+		super.setValue(newFieldValue);
+
+		initializeSymptomRequirementsForCase();
+	}
+
+	private void initializeSymptomRequirementsForCase() {
 		addSoftRequiredStyleWhenSymptomaticAndCooperative(getFieldGroup(), SymptomsDto.ONSET_DATE, unconditionalSymptomFieldIds, Arrays.asList(SymptomState.YES), null);
 		addSoftRequiredStyleWhenSymptomaticAndCooperative(getFieldGroup(), SymptomsDto.ONSET_SYMPTOM, unconditionalSymptomFieldIds, Arrays.asList(SymptomState.YES), null);
 		addSoftRequiredStyleWhenSymptomaticAndCooperative(getFieldGroup(), SymptomsDto.PATIENT_ILL_LOCATION, unconditionalSymptomFieldIds, Arrays.asList(SymptomState.YES), null);
