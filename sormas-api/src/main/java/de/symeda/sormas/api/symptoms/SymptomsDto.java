@@ -166,6 +166,7 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState digestedBloodVomit;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState coughingBlood;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private SymptomState bleedingVagina;
@@ -186,12 +187,14 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState soreThroat;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState cough;
 	@Diseases({Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.OTHER})
 	private SymptomState runnyNose;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MEASLES,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState difficultyBreathing;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState chestPain;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.PLAGUE,Disease.OTHER})
 	@Outbreaks
@@ -281,8 +284,10 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState lymphadenopathyCervical;
 	@Diseases({Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState painfulLymphadenitis;
 	@Diseases({Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Outbreaks
 	private SymptomState chillsSweats;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState lesionsThatItch;
