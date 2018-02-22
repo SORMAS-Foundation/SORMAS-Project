@@ -1,6 +1,8 @@
 package de.symeda.sormas.app.settings;
 
 import android.accounts.AuthenticatorException;
+import android.app.Activity;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,12 +15,12 @@ import java.net.ConnectException;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.component.UpdateAppDialog;
+import de.symeda.sormas.app.component.ConfirmationDialog;
 import de.symeda.sormas.app.databinding.SettingsFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.SyncCallback;
 
@@ -66,9 +68,12 @@ public class SettingsForm extends FormTab {
             } catch (AuthenticatorException e) {
                 Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             } catch (RetroProvider.ApiVersionException e) {
-                UpdateAppDialog updateAppDialog = new UpdateAppDialog(this.getActivity(), e.getAppUrl());
-                updateAppDialog.show();
-                return;
+                if (e.getAppUrl() != null) {
+                    AppUpdateController.getInstance().updateApp(this.getActivity(), e.getAppUrl(), e.getVersion(), true, null);
+                    return;
+                } else {
+                    Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                }
             } catch (ConnectException e) {
                 Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             }
@@ -97,4 +102,5 @@ public class SettingsForm extends FormTab {
     public AbstractDomainObject getData() {
         return null;
     }
+
 }

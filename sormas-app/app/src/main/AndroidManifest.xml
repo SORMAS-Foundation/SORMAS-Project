@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-feature android:name="android.hardware.location.gps" />
 
     <application
@@ -164,9 +166,6 @@
         </activity>
         <activity
             android:name=".reports.ReportsActivity"
-            android:launchMode="singleTop" />
-        <activity
-            android:name=".UpdateAppActivity"
             android:launchMode="singleTop" />
 
         <receiver

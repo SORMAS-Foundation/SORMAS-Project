@@ -172,7 +172,7 @@ public final class RetroProvider {
                 }
 
                 if (appUrlResponse.isSuccessful()) {
-                    throw new ApiVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'", appUrlResponse.body());
+                    throw new ApiVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'", appUrlResponse.body(), serverApiVersion);
                 } else {
                     throw new ApiVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'");
                 }
@@ -419,15 +419,17 @@ public final class RetroProvider {
 
     public static class ApiVersionException extends Exception {
         private String appUrl;
+        private String version;
         public ApiVersionException() {
             super();
         }
         public ApiVersionException(String message) {
             super(message);
         }
-        public ApiVersionException(String message, String appUrl) {
+        public ApiVersionException(String message, String appUrl, String version) {
             super(message);
             this.appUrl = appUrl;
+            this.version = version;
         }
         public ApiVersionException(String message, Throwable cause) {
             super(message, cause);
@@ -437,6 +439,9 @@ public final class RetroProvider {
         }
         public String getAppUrl() {
             return appUrl;
+        }
+        public String getVersion() {
+            return version;
         }
     }
 }

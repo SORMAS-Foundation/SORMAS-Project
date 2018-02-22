@@ -1,6 +1,7 @@
 package de.symeda.sormas.app;
 
 import android.accounts.AuthenticatorException;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -14,11 +15,13 @@ import java.net.ConnectException;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CasesActivity;
-import de.symeda.sormas.app.component.UpdateAppDialog;
+import de.symeda.sormas.app.component.ConfirmationDialog;
 import de.symeda.sormas.app.contact.ContactsActivity;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
+import de.symeda.sormas.app.util.AppUpdateController;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SyncCallback;
 
@@ -43,7 +46,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         super.onResume();
 
         if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
-            processLogin();
+            processLogin(false);
         }
     }
 
@@ -66,9 +69,18 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                 // clearing login data is done below
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             } catch (RetroProvider.ApiVersionException e) {
-                UpdateAppDialog updateAppDialog = new UpdateAppDialog(this, e.getAppUrl());
-                updateAppDialog.show();
-                return;
+                if (e.getAppUrl() != null) {
+                    AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), false,
+                            new Callback() {
+                                @Override
+                                public void call() {
+                                    closeApp();
+                                }
+                            });
+                    return;
+                } else {
+                    Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                }
             } catch (ConnectException e) {
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             }
@@ -98,7 +110,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
-            processLogin();
+            processLogin(false);
         }
     }
 
@@ -110,10 +122,9 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
             intent = new Intent(LoginActivity.this, CasesActivity.class);
         }
         startActivity(intent);
-
     }
 
-    private void processLogin() {
+    private void processLogin(boolean ignoreApiVersionConflict) {
         // try to connect -> validates login data
         if (ConfigProvider.getUsername() != null) {
             try {
@@ -123,9 +134,25 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                 ConfigProvider.clearUsernameAndPassword();
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             } catch (RetroProvider.ApiVersionException e) {
-                UpdateAppDialog updateAppDialog = new UpdateAppDialog(this, e.getAppUrl());
-                updateAppDialog.show();
-                return;
+                if (!ignoreApiVersionConflict) {
+                    if (e.getAppUrl() != null) {
+                        AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), ConfigProvider.getUser() != null,
+                                new Callback() {
+                                    @Override
+                                    public void call() {
+                                        if (ConfigProvider.getUser() != null) {
+                                            processLogin(true);
+                                        } else {
+                                            closeApp();
+                                        }
+                                    }
+                                }
+                        );
+                        return;
+                    } else {
+                        Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                    }
+                }
             } catch (ConnectException e) {
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             }
@@ -143,10 +170,35 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                         }
                     }
                 });
+            } else {
+                openStartActivity();
             }
-            else {
-                openStartActivity();            }
         }
+    }
+
+    @Override
+    // Handles the result of the attempt to install a new app version - should be added to every activity that uses the UpdateAppDialog
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == AppUpdateController.INSTALL_RESULT) {
+            switch (resultCode) {
+                // Do nothing if the installation was successful
+                case Activity.RESULT_OK:
+                case Activity.RESULT_CANCELED:
+                    break;
+                // Everything else probably is an error
+                default:
+                    AppUpdateController.getInstance().handleInstallFailure();
+                    break;
+            }
+        }
+    }
+
+    private void closeApp() {
+        Activity finishActivity = this;
+        do {
+            finishActivity.finish();
+            finishActivity = finishActivity.getParent();
+        } while (finishActivity != null);
     }
 
 }

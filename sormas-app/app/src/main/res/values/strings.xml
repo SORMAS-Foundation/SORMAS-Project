@@ -50,6 +50,12 @@
     <string name="action_loadMore">Load more</string>
     <string name="action_ok">Ok</string>
     <string name="action_download">Download</string>
+    <string name="action_download_later">Download later</string>
+    <string name="action_try_again">Try again</string>
+    <string name="action_install_app">Install</string>
+    <string name="action_install_later">Install later</string>
+    <string name="action_redownload_app">Redownload</string>
+    <string name="action_redownload_app_later">Redownload later</string>
     <string name="action_share_problem">Share Problem</string>
     <string name="action_forgot_PIN">Forgot PIN?</string>
     <string name="action_change_PIN">Change PIN</string>
@@ -67,6 +73,7 @@
     <string name="action_confirm">Confirm</string>
     <string name="action_logout_anyway">Logout anyway</string>
     <string name="action_retry">Retry</string>
+    <string name="action_download_background">Download in background</string>
 
     <!-- field -->
     <string name="field_yes_no_yes">Yes</string>
@@ -131,6 +138,9 @@
     <string name="headline_travel">Travel</string>
     <string name="headline_user_report">Report a problem</string>
     <string name="headline_update_app">App update required</string>
+    <string name="headline_download_app_failed">App download failed</string>
+    <string name="headline_install_app">Ready to install</string>
+    <string name="headline_install_app_failed">App installation failed</string>
     <string name="headline_report_sent">Report successfully sent</string>
     <string name="headline_sync_log">Synchronization Conflicts</string>
     <string name="headline_synchronization">Synchronization</string>
@@ -139,6 +149,7 @@
     <string name="headline_sample_synchronization">Sample Synchronization</string>
     <string name="headline_task_synchronization">Task Synchronization</string>
     <string name="headline_visit_synchronization">Visit Synchronization</string>
+    <string name="headline_app_download">Downloading</string>
     <string name="headline_reset_PIN">Reset PIN</string>
     <string name="headline_warning">Warning</string>
     <string name="headline_logout">Logging Out</string>
@@ -200,6 +211,7 @@
     <string name="hint_sample_synchronization">Samples are being synchronized...</string>
     <string name="hint_task_synchronization">Tasks are being synchronized...</string>
     <string name="hint_visit_synchronization">Visits are being synchronized...</string>
+    <string name="hint_app_download">Downloading new SORMAS version... Depending on your internet connection, this may take a while.</string>
     <string name="hint_enter_pin">Please enter your authentication PIN.</string>
     <string name="hint_create_pin">Please choose a four-digit PIN which you will use to authenticate yourself whenever you open the SORMAS app.</string>
     <string name="hint_create_pin_again">Please enter the PIN again.</string>
@@ -212,9 +224,12 @@
     <string name="hint_report_not_yet_submitted">Not yet submitted</string>
     <string name="hint_report_not_submitted">No report submitted</string>
 
-    <string name="message_app_update_required">The SORMAS app needs to be updated. Please click the \'Download\' button if you have a constant internet connection or \'Close SORMAS\' to execute the update later.</string>
-    <string name="message_app_update_not_possible">The SORMAS app needs to be updated, but the updated version could not be retrieved. Please click the \'Share Problem\' button to notify a supervisor about this issue.</string>
-    <string name="message_report_sent">The error report has been sent. Please wait for your supervisor to contact you. You can now close the app or retry to retrieve the updated version.</string>
+    <string name="message_update_app_required">A new version of the SORMAS app is available. It is strongly recommended to download it by clicking the \'Download\' button below.</string>
+    <string name="message_update_app_not_possible">A new version of the SORMAS app is available, but the download is currently not possible. Your supervisor will automatically be notified about this issue.</string>
+    <string name="message_download_app_failed">The download of the new SORMAS version failed. Please make sure you have the best internet connection possible and try again or inform a supervisor if you keep getting this error despite a good internet connection.</string>
+    <string name="message_install_app">A new SORMAS version is ready to install. Please click on \'Install\' to continue. You will need to restart the app after the update has been completed.</string>
+    <string name="message_install_app_failed">There was an error installing the new SORMAS version. Maybe the downloaded file was incomplete because of an interrupted download. Please click on \'Redownload\' to try again or inform a supervisor if this error occurs again.</string>
+    <string name="message_install_app_not_possible">There was an error installing the new SORMAS version. Your supervisor will automatically be notified about this issue.</string>
 
     <string name="sync_error">Synchronization failed. Please try again later.</string>
     <string name="server_connection_error">Could not connect to SORMAS server. Synchronization canceled. Try again later.</string>

@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.settings;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -22,6 +23,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.util.AppUpdateController;
 
 
 public class SettingsActivity extends AbstractEditTabActivity {
@@ -143,6 +145,23 @@ public class SettingsActivity extends AbstractEditTabActivity {
 
     private interface LogoutCallback {
         void call(boolean hasUnmodifiedEntities);
+    }
+
+    @Override
+    // Handles the result of the attempt to install a new app version - should be added to every activity that uses the UpdateAppDialog
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == AppUpdateController.INSTALL_RESULT) {
+            switch (resultCode) {
+                // Do nothing if the installation was successful
+                case Activity.RESULT_OK:
+                case Activity.RESULT_CANCELED:
+                    break;
+                // Everything else probably is an error
+                default:
+                    AppUpdateController.getInstance().handleInstallFailure();
+                    break;
+            }
+        }
     }
 
 }

@@ -18,7 +18,6 @@ import javax.ws.rs.core.SecurityContext;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestFacade;
-import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Path("/sampletests")

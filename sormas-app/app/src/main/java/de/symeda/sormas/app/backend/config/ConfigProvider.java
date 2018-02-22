@@ -53,6 +53,7 @@ public final class ConfigProvider {
     private static String KEY_SERVER_REST_URL = "serverRestUrl";
     private static String KEY_ACCESS_GRANTED = "accessGranted";
     private static String LAST_NOTIFICATION_DATE = "lastNotificationDate";
+    private static String CURRENT_APP_DOWNLOAD_ID = "currentAppDownloadId";
 
     public static ConfigProvider instance = null;
 
@@ -71,6 +72,7 @@ public final class ConfigProvider {
     private String pin;
     private User user;
     private Date lastNotificationDate;
+    private Long currentAppDownloadId;
     private Boolean accessGranted;
 
     private ConfigProvider(Context context) {
@@ -418,6 +420,33 @@ public final class ConfigProvider {
             DatabaseHelper.getConfigDao().delete(new Config(LAST_NOTIFICATION_DATE, ""));
         } else {
             DatabaseHelper.getConfigDao().createOrUpdate(new Config(LAST_NOTIFICATION_DATE, String.valueOf(lastNotificationDate.getTime())));
+        }
+    }
+
+    public static Long getCurrentAppDownloadId() {
+        if (instance.currentAppDownloadId == null) {
+            synchronized (ConfigProvider.class) {
+                if (instance.currentAppDownloadId == null) {
+                    Config config = DatabaseHelper.getConfigDao().queryForId(CURRENT_APP_DOWNLOAD_ID);
+                    if (config != null) {
+                        instance.currentAppDownloadId = Long.parseLong(config.getValue());
+                    }
+                }
+            }
+        }
+        return instance.currentAppDownloadId;
+    }
+
+    public static void setCurrentAppDownloadId(Long currentAppDownloadId) {
+        if (currentAppDownloadId != null && currentAppDownloadId.equals(instance.currentAppDownloadId)) {
+            return;
+        }
+
+        instance.currentAppDownloadId = currentAppDownloadId;
+        if (currentAppDownloadId == null) {
+            DatabaseHelper.getConfigDao().delete(new Config(CURRENT_APP_DOWNLOAD_ID, ""));
+        } else {
+            DatabaseHelper.getConfigDao().createOrUpdate(new Config(CURRENT_APP_DOWNLOAD_ID, String.valueOf(currentAppDownloadId)));
         }
     }
 
