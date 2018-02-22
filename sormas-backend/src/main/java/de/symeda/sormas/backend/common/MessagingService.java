@@ -68,14 +68,15 @@ public class MessagingService {
 					if (messageType == MessageType.EMAIL) {
 						emailService.sendEmail(emailAddress, subject, messageContent);
 					} else if (messageType == MessageType.SMS) {
-						smsService.sendSms(phoneNumber, subject, messageContent);
+						// Do nothing
+						//smsService.sendSms(phoneNumber, subject, messageContent);
 					}
 				} catch (MessagingException e) {
 					throw new EmailDeliveryFailedException("Email could not be sent due to an unexpected error.", e);
-				} catch (IOException | NexmoClientException e) {
-					throw new SmsDeliveryFailedException("SMS could not be sent due to an unexpected error.", e);
-				} catch (InvalidPhoneNumberException e) {
-					throw new SmsDeliveryFailedException("SMS could not be sent because of an invalid phone number.", e);
+//				} catch (IOException | NexmoClientException e) {
+//					throw new SmsDeliveryFailedException("SMS could not be sent due to an unexpected error.", e);
+//				} catch (InvalidPhoneNumberException e) {
+//					throw new SmsDeliveryFailedException("SMS could not be sent because of an invalid phone number.", e);
 				}
 			}
 		}
