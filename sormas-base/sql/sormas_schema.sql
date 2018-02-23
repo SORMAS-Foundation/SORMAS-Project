@@ -2056,4 +2056,10 @@ ALTER TABLE samples_history ADD COLUMN mainsampletest_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (92, 'Test result filter under Samples Directory #482');
 
-  
+-- 2018-02-23 Resulting case for contacts #402
+
+ALTER TABLE contact ADD COLUMN resultingcase_id bigint;
+ALTER TABLE contact ADD CONSTRAINT fk_contact_resultingcase_id FOREIGN KEY (resultingcase_id) REFERENCES cases (id);
+ALTER TABLE contact_history ADD COLUMN resultingcase_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (93, 'Resulting case for contacts #402');

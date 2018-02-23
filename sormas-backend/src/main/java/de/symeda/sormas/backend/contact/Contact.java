@@ -49,6 +49,7 @@ public class Contact extends AbstractDomainObject {
 	public static final String RELATION_TO_CASE = "relationToCase";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
+	public static final String RESULTING_CASE = "resultingCase";
 	
 	private Person person;
 	private Case caze;
@@ -64,6 +65,7 @@ public class Contact extends AbstractDomainObject {
 	private User contactOfficer;
 	private String description;
 	private ContactRelation relationToCase;
+	private Case resultingCase;
 	
 	private Double reportLat;
 	private Double reportLon;
@@ -187,7 +189,17 @@ public class Contact extends AbstractDomainObject {
 	public void setRelationToCase(ContactRelation relationToCase) {
 		this.relationToCase = relationToCase;
 	}
-	
+
+	@ManyToOne(cascade = {})
+	@JoinColumn
+	public Case getResultingCase() {
+		return resultingCase;
+	}
+
+	public void setResultingCase(Case resultingCase) {
+		this.resultingCase = resultingCase;
+	}
+
 	@Override
 	public String toString() {
 		Person contactPerson = getPerson();
