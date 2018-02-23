@@ -28,10 +28,9 @@ import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.EmailDeliveryFailedException;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
-import de.symeda.sormas.backend.common.SmsDeliveryFailedException;
+import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.region.District;
@@ -207,12 +206,9 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 							String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_RESULT_ARRIVED), 
 									newSampleTest.getTestResult().toString(), DataHelper.getShortUuid(newSampleTest.getUuid())), 
 							MessageType.EMAIL, MessageType.SMS);
-				} catch (EmailDeliveryFailedException e) {
+				} catch (NotificationDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the arrival of a lab result. "
-							+ "Failed to send email to user with UUID %s.", recipient.getUuid()));
-				} catch (SmsDeliveryFailedException e) {
-					logger.error(String.format("SmsDeliveryFailedException when trying to notify supervisors about the arrival of a lab result. "
-							+ "Failed to send SMS to user with UUID %s.", recipient.getUuid()));
+							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
 				}
 			}
 		} else if (existingSampleTest != null && existingSampleTest.getTestResult() == SampleTestResultType.PENDING && 
@@ -227,12 +223,9 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 							String.format(I18nProperties.getMessage(MessagingService.CONTENT_LAB_RESULT_SPECIFIED), 
 									DataHelper.getShortUuid(newSampleTest.getUuid()), newSampleTest.getTestResult().toString()), 
 							MessageType.EMAIL, MessageType.SMS);
-				} catch (EmailDeliveryFailedException e) {
+				} catch (NotificationDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the specification of a lab result. "
-							+ "Failed to send email to user with UUID %s.", recipient.getUuid()));
-				} catch (SmsDeliveryFailedException e) {
-					logger.error(String.format("SmsDeliveryFailedException when trying to notify supervisors about the specification of a lab result. "
-							+ "Failed to send SMS to user with UUID %s.", recipient.getUuid()));
+							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
 				}
 			}
 		}

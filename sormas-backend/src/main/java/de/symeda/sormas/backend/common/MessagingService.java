@@ -53,7 +53,7 @@ public class MessagingService {
 	 * Sends the message specified by the messageContent via mail and/or SMS, according to the messageTypes, to the specified recipient's
 	 * email address and/or phone number. Logs an error if the email address or phone number is not set.
 	 */
-	public void sendMessage(User recipient, String subject, String messageContent, MessageType... messageTypes) throws EmailDeliveryFailedException, SmsDeliveryFailedException {
+	public void sendMessage(User recipient, String subject, String messageContent, MessageType... messageTypes) throws NotificationDeliveryFailedException {
 
 		String emailAddress = recipient.getUserEmail();
 		String phoneNumber = recipient.getPhone();
@@ -68,15 +68,14 @@ public class MessagingService {
 					if (messageType == MessageType.EMAIL) {
 						emailService.sendEmail(emailAddress, subject, messageContent);
 					} else if (messageType == MessageType.SMS) {
-						// Do nothing
-						//smsService.sendSms(phoneNumber, subject, messageContent);
+						smsService.sendSms(phoneNumber, subject, messageContent);
 					}
 				} catch (MessagingException e) {
-					throw new EmailDeliveryFailedException("Email could not be sent due to an unexpected error.", e);
-//				} catch (IOException | NexmoClientException e) {
-//					throw new SmsDeliveryFailedException("SMS could not be sent due to an unexpected error.", e);
-//				} catch (InvalidPhoneNumberException e) {
-//					throw new SmsDeliveryFailedException("SMS could not be sent because of an invalid phone number.", e);
+					throw new NotificationDeliveryFailedException("Email could not be sent due to an unexpected error.", MessageType.EMAIL, e);
+				} catch (IOException | NexmoClientException e) {
+					throw new NotificationDeliveryFailedException("SMS could not be sent due to an unexpected error.", MessageType.SMS, e);
+				} catch (InvalidPhoneNumberException e) {
+					throw new NotificationDeliveryFailedException("SMS could not be sent because of an invalid phone number.", MessageType.SMS, e);
 				}
 			}
 		}
