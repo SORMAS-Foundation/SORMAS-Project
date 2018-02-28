@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -29,6 +30,7 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
+import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -73,7 +75,6 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.symptom.Symptom;
-import de.symeda.sormas.api.person.CauseOfDeath;
 
 /**
  * Created by Orson on 02/12/2017.
@@ -1891,7 +1892,8 @@ class UserGenerator extends BaseDataGenerator {
             data1.setRegion(RegionGenerator.getSingle());
             data1.setDistrict(DistrictGenerator.getSingle());
             data1.setHealthFacility(FacilityGenerator.getSingle());
-            data1.setUserRole(UserRoleGenerator.getSingle());
+            //data1.setUserRoles(new HashSet<UserRole>() { UserRoleGenerator.getSingle() });
+            data1.setUserRoles(new HashSet<UserRole>());
             //data1.setAssociatedOfficer(UserGenerator.getSingle());
 
             pool.add(data1);
@@ -2396,11 +2398,11 @@ abstract class BaseDataGenerator {
 
     public static ContactClassification getContactClassification() {
         List<ContactClassification> list = new ArrayList<ContactClassification>() {{
-            add(ContactClassification.POSSIBLE);
+            add(ContactClassification.UNCONFIRMED);
             add(ContactClassification.CONFIRMED);
             add(ContactClassification.NO_CONTACT);
-            add(ContactClassification.CONVERTED);
-            add(ContactClassification.DROPPED);
+            /*add(ContactClassification.CONVERTED);
+            add(ContactClassification.DROPPED);*/
         }};
 
         return randomItem(list);
@@ -2447,11 +2449,11 @@ abstract class BaseDataGenerator {
 
     public static List<ContactClassification> getAllContactClassification() {
         return new ArrayList<ContactClassification>() {{
-            add(ContactClassification.POSSIBLE);
+            add(ContactClassification.UNCONFIRMED);
             add(ContactClassification.CONFIRMED);
             add(ContactClassification.NO_CONTACT);
-            add(ContactClassification.CONVERTED);
-            add(ContactClassification.DROPPED);
+            /*add(ContactClassification.CONVERTED);
+            add(ContactClassification.DROPPED);*/
         }};
     }
 
