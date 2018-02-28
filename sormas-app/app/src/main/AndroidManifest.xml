@@ -15,39 +15,16 @@
     <application
         android:name=".SormasApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/sormas_logo"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/SormasTheme">
-        <activity
-            android:name=".caze.CasesActivity"
-            android:launchMode="singleTop"></activity>
-        <activity
-            android:name=".caze.CaseEditActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".caze.CasesActivity">
 
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".caze.CasesActivity" />
-        </activity>
-        <activity
-            android:name=".caze.CaseNewActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".caze.CasesActivity">
 
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".caze.CasesActivity" />
-        </activity>
-        <activity
-            android:name=".settings.SettingsActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop"></activity>
-        <activity
-            android:name=".LoginActivity"
+
+
+        <activity android:name=".LoginActivity"
+            android:theme="@style/LoginActivityTheme"
             android:screenOrientation="portrait"
             android:launchMode="singleTop">
             <intent-filter>
@@ -56,117 +33,296 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".settings.SettingsActivity"
+            android:theme="@style/SettingActivityTheme"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+        <activity
             android:name=".EnterPinActivity"
+            android:theme="@style/EnterPinActivityTheme"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
-            android:windowSoftInputMode="stateVisible">
+            android:windowSoftInputMode="stateHidden">
         </activity>
-        <activity
-            android:name=".task.TasksActivity"
-            android:launchMode="singleTop" />
-        <activity
-            android:name=".task.TaskEditActivity"
+
+
+
+        <activity android:name=".dashboard.DashboardActivity"
+            android:theme="@style/DashboardActivityTheme"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
-            android:parentActivityName=".task.TasksActivity">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".task.TasksActivity" />
+            android:windowSoftInputMode="stateHidden">
         </activity>
+
+
+
+
+
+
         <activity
-            android:name=".contact.ContactsActivity"
+            android:name=".task.landing.TasksLandingActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".task.list.TaskListActivity"
+            android:parentActivityName=".task.landing.TasksLandingActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity android:name=".task.read.TaskReadActivity"
+            android:parentActivityName=".task.list.TaskListActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity android:name=".task.edit.TaskEditActivity"
+            android:parentActivityName=".task.read.TaskReadActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+
+
+
+
+
+
+        <activity
+            android:name=".sample.landing.SampleLandingActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".sample.list.SampleListActivity"
+            android:parentActivityName=".sample.landing.SampleLandingActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity android:name=".sample.read.SampleReadActivity"
+            android:parentActivityName=".sample.list.SampleListActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity android:name=".sample.edit.SampleEditActivity"
+            android:parentActivityName=".sample.read.SampleReadActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+
+
+
+
+
+
+        <activity
+            android:name=".caze.landing.CasesLandingActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".caze.list.CaseListActivity"
+            android:parentActivityName=".caze.landing.CasesLandingActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".caze.read.CaseReadActivity"
+            android:parentActivityName=".caze.list.CaseListActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".caze.edit.CaseNewActivity"
+            android:parentActivityName=".caze.list.CaseListActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".caze.edit.CaseEditActivity"
+            android:parentActivityName=".caze.read.CaseReadActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".caze.edit.sub.CaseEditTaskInfoActivity"
+            android:parentActivityName=".caze.edit.CaseEditActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".caze.edit.sub.CaseEditSampleInfoActivity"
+            android:parentActivityName=".caze.edit.CaseEditActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".caze.edit.sub.CaseEditContactInfoActivity"
+            android:parentActivityName=".caze.edit.CaseEditActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+
+
+
+
+
+
+
+
+
+        <activity
+            android:name=".contact.landing.ContactsLandingActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".contact.list.ContactListActivity"
+            android:parentActivityName=".contact.landing.ContactsLandingActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".contact.read.ContactReadActivity"
+            android:parentActivityName=".contact.list.ContactListActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".contact.read.sub.ContactReadTaskInfoActivity"
+            android:parentActivityName=".contact.read.ContactReadActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".contact.read.sub.ContactReadFollowUpVisitInfoActivity"
+            android:parentActivityName=".contact.read.ContactReadActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".contact.edit.ContactEditActivity"
+            android:parentActivityName=".contact.read.ContactReadActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".contact.edit.sub.ContactEditFollowUpInfoActivity"
+            android:parentActivityName=".contact.edit.ContactEditActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".contact.edit.sub.ContactEditTaskInfoActivity"
+            android:parentActivityName=".contact.edit.ContactEditActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+
+
+
+
+
+
+        <activity
+            android:name=".event.landing.EventsLandingActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".event.list.EventListActivity"
+            android:parentActivityName=".event.landing.EventsLandingActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity android:name=".event.read.EventReadActivity"
+            android:parentActivityName=".event.list.EventListActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+
+        <activity android:name=".event.read.EventReadPersonsInvolvedInfoActivity"
+            android:parentActivityName=".event.read.EventReadActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity android:name=".event.read.EventReadTaskInfoActivity"
+            android:parentActivityName=".event.read.EventReadActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity android:name=".event.edit.EventEditActivity"
+            android:parentActivityName=".event.read.EventReadActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity android:name=".event.edit.EventEditPersonsInvolvedInfoActivity"
+            android:parentActivityName=".event.edit.EventEditActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity android:name=".event.edit.EventEditTaskInfoActivity"
+            android:parentActivityName=".event.edit.EventEditActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <activity
+            android:name=".report.ReportsLandingActivity"
             android:launchMode="singleTop" />
-        <activity
-            android:name=".contact.ContactNewActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".contact.ContactsActivity">
 
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".contact.ContactsActivity" />
-        </activity>
-        <activity
-            android:name=".contact.ContactEditActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".contact.ContactsActivity">
 
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".contact.ContactsActivity" />
-        </activity>
-        <activity
-            android:name=".visit.VisitEditActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".contact.ContactEditActivity">
 
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".contact.ContactEditActivity" />
-        </activity>
-        <activity
-            android:name=".event.EventsActivity"
-            android:launchMode="singleTop" />
-        <activity
-            android:name=".event.EventEditActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".event.EventsActivity">
 
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".event.EventsActivity" />
-        </activity>
-        <activity
-            android:name=".event.EventNewActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".event.EventsActivity">
 
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".event.EventsActivity"/>
-        </activity>
-        <activity
-            android:name=".event.EventParticipantEditActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".event.EventEditActivity">
 
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".event.EventEditActivity" />
-        </activity>
-        <activity
-            android:name=".event.EventParticipantNewActivity"
-            android:screenOrientation="portrait"
-            android:noHistory="true"
-            android:parentActivityName=".event.EventEditActivity">
 
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".event.EventEditActivity" />
-        </activity>
-        <activity
-            android:name=".sample.SamplesActivity"
-            android:launchMode="singleTop" />
-        <activity
-            android:name=".sample.SampleEditActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".sample.SamplesActivity">
 
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".sample.SamplesActivity" />
-        </activity>
-        <activity
-            android:name=".report.ReportsActivity"
-            android:launchMode="singleTop" />
+
+
+
 
         <receiver
             android:name=".SormasBootstrap"

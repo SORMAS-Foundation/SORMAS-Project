@@ -1,14 +1,6 @@
 package de.symeda.sormas.app.backend.caze;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
 import android.location.Location;
-import android.support.v4.app.NotificationCompat;
-import android.text.Html;
 import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
@@ -16,7 +8,6 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -29,7 +20,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -43,7 +33,6 @@ import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.util.LocationService;
 
 public class CaseDao extends AbstractAdoDao<Case> {
@@ -266,7 +255,8 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
     @Override
     public Case mergeOrCreate(Case source) throws DaoException {
-        Case currentCase = queryUuid(source.getUuid());
+        //TODO: Orson investigate the need to access CaseEditActivity from here
+        /*Case currentCase = queryUuid(source.getUuid());
         Case mergedCase = super.mergeOrCreate(source);
 
         // Build and send a notification when the disease has changed
@@ -295,7 +285,8 @@ public class CaseDao extends AbstractAdoDao<Case> {
             int notificationId = mergedCase.getId().intValue();
             notificationManager.notify(notificationId, notification);
         }
-        return mergedCase;
+        return mergedCase;*/
+        return null;
     }
 
     @Override

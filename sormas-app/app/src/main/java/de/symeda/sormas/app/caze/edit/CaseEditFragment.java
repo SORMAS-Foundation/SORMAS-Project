@@ -6,8 +6,15 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.AdapterView;
 
+import java.util.List;
+
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.caze.CaseOutcome;
 import de.symeda.sormas.app.component.Item;
@@ -15,14 +22,6 @@ import de.symeda.sormas.app.component.TeboSpinner;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
-import java.util.List;
-
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
 /**
  * Created by Orson on 16/02/2018.
