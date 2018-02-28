@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<summary name="task_landing_page_menu">
+    <entry>
+        <key>0</key>
+        <label>Normal</label>
+        <value>52.3</value>
+    </entry>
+    <entry>
+        <key>1</key>
+        <label>Low</label>
+        <value>5.6</value>
+    </entry>
+    <entry>
+        <key>2</key>
+        <label>High</label>
+        <value>66.76</value>
+    </entry>
+</summary>

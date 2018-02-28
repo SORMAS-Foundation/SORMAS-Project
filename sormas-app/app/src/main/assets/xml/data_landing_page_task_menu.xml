@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menus name="task_landing_page_menu" title="Filter by Execution Status">
+    <menu>
+        <key>0</key>
+        <title>Pending</title>
+        <description>Pending Tasks</description>
+        <icon def-viewType="drawable">ic_lp_pending_task_192dp</icon>
+    </menu>
+    <menu>
+        <key>1</key>
+        <title>Done</title>
+        <description>Done Tasks</description>
+        <icon def-viewType="drawable">ic_lp_done_task_192dp</icon>
+    </menu>
+    <menu>
+        <key>2</key>
+        <title>Not Executable</title>
+        <description>Not Executable Tasks</description>
+        <icon def-viewType="drawable">ic_lp_not_exec_task_192dp</icon>
+    </menu>
+</menus>

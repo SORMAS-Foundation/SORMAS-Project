@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menus name="contact_landing_page_menu" title="Filter by Follow-Up Status">
+    <menu>
+        <key>0</key>
+        <title>Ongoing</title>
+        <description>Ongoing</description>
+        <icon def-viewType="drawable">ic_lp_ongoing_followup_192dp</icon>
+    </menu>
+    <menu>
+        <key>1</key>
+        <title>Completed</title>
+        <description>Completed</description>
+        <icon def-viewType="drawable">ic_lp_completed_followup_192dp</icon>
+    </menu>
+    <menu>
+        <key>2</key>
+        <title>Cancelled</title>
+        <description>Cancelled</description>
+        <icon def-viewType="drawable">ic_lp_cancelled_followup_192dp</icon>
+    </menu>
+    <menu>
+        <key>3</key>
+        <title>Lost to Follow-Up</title>
+        <description>Lost to Follow-Up</description>
+        <icon def-viewType="drawable">ic_lp_lost_to_followup_192dp</icon>
+    </menu>
+    <menu>
+        <key>4</key>
+        <title>No Follow-Up</title>
+        <description>No Follow-Up</description>
+        <icon def-viewType="drawable">ic_lp_no_followup_192dp</icon>
+    </menu>
+</menus>

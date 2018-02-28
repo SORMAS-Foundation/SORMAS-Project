@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menus name="case_landing_page_menu" title="Filter by Investigation Status">
+    <menu>
+        <key>0</key>
+        <title>Pending</title>
+        <description>Investigation Pending</description>
+        <icon def-viewType="drawable">ic_lp_investigation_pending_192dp</icon>
+    </menu>
+    <menu>
+        <key>1</key>
+        <title>Done</title>
+        <description>Investigation Done</description>
+        <icon def-viewType="drawable">ic_lp_investigation_done_192dp</icon>
+    </menu>
+    <menu>
+        <key>2</key>
+        <title>Discarded</title>
+        <description>Investigation Discarded</description>
+        <icon def-viewType="drawable">ic_lp_investigation_discarded_192dp</icon>
+    </menu>
+</menus>

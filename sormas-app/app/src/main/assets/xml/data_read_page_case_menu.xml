@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menus name="case_read_page_menu" title="Information Sections">
+    <menu>
+        <key>0</key>
+        <title>Case Information</title>
+        <description>Case Information</description>
+    </menu>
+    <menu>
+        <key>1</key>
+        <title>Patient Information</title>
+        <description>Patient Information</description>
+    </menu>
+    <menu>
+        <key>2</key>
+        <title>Hospitalization</title>
+        <description>Hospitalization</description>
+    </menu>
+    <menu>
+        <key>3</key>
+        <title>Symptoms</title>
+        <description>Symptoms</description>
+    </menu>
+    <menu>
+        <key>4</key>
+        <title>Epidemiological Data</title>
+        <description>Epidemiological Data</description>
+    </menu>
+    <menu>
+        <key>5</key>
+        <title>Contacts</title>
+        <description>Contacts</description>
+    </menu>
+    <menu>
+        <key>6</key>
+        <title>Samples</title>
+        <description>Samples</description>
+    </menu>
+    <menu>
+        <key>7</key>
+        <title>Tasks</title>
+        <description>Tasks</description>
+    </menu>
+</menus>
