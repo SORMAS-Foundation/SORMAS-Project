@@ -218,7 +218,7 @@
         <!--app:value="@={data.illLocation}"-->
         
         
-        <LinearLayout
+        <!--<LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -251,7 +251,7 @@
                 app:value="@={data.illLocationTo}"
                 />
             
-        </LinearLayout>
+        </LinearLayout>-->
 
 
 
