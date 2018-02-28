@@ -255,7 +255,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <de.symeda.sormas.app.component.TeboTextRead
+            <!--<de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtYellowFeverVaccination"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -279,7 +279,7 @@
                 app:labelCaption="@string/label_case_yellow_fever_vaccination_info_source"
                 app:value="@{data.yellowFeverVaccinationInfoSource}"
                 app:defaultValue='@{@string/not_available}'
-                />
+                />-->
 
             <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtResponsibleOfficer"
