@@ -6,6 +6,7 @@
     android:id="@+id/base_layout">
 
     <data>
+        <import type="de.symeda.sormas.app.core.BoxingUtil" />
         <variable name="symptoms" type="de.symeda.sormas.app.backend.symptoms.Symptoms"/>
     </data>
 
@@ -394,49 +395,49 @@
                     android:id="@+id/symptoms_lesionsFace"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:value="@={symptoms.lesionsFace}"/>
+                    android:value="@={BoxingUtil.safeUnbox(symptoms.lesionsFace)}"/>
 
                 <de.symeda.sormas.app.component.CheckBoxField
                     android:id="@+id/symptoms_lesionsLegs"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:value="@={symptoms.lesionsLegs}"/>
+                    android:value="@={BoxingUtil.safeUnbox(symptoms.lesionsLegs)}"/>
 
                 <de.symeda.sormas.app.component.CheckBoxField
                     android:id="@+id/symptoms_lesionsSolesFeet"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:value="@={symptoms.lesionsSolesFeet}"/>
+                    android:value="@={BoxingUtil.safeUnbox(symptoms.lesionsSolesFeet)}"/>
 
                 <de.symeda.sormas.app.component.CheckBoxField
                     android:id="@+id/symptoms_lesionsPalmsHands"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:value="@={symptoms.lesionsPalmsHands}"/>
+                    android:value="@={BoxingUtil.safeUnbox(symptoms.lesionsPalmsHands)}"/>
 
                 <de.symeda.sormas.app.component.CheckBoxField
                     android:id="@+id/symptoms_lesionsThorax"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:value="@={symptoms.lesionsThorax}"/>
+                    android:value="@={BoxingUtil.safeUnbox(symptoms.lesionsThorax)}"/>
 
                 <de.symeda.sormas.app.component.CheckBoxField
                     android:id="@+id/symptoms_lesionsArms"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:value="@={symptoms.lesionsArms}"/>
+                    android:value="@={BoxingUtil.safeUnbox(symptoms.lesionsArms)}"/>
 
                 <de.symeda.sormas.app.component.CheckBoxField
                     android:id="@+id/symptoms_lesionsGenitals"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:value="@={symptoms.lesionsGenitals}"/>
+                    android:value="@={BoxingUtil.safeUnbox(symptoms.lesionsGenitals)}"/>
 
                 <de.symeda.sormas.app.component.CheckBoxField
                     android:id="@+id/symptoms_lesionsAllOverBody"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:value="@={symptoms.lesionsAllOverBody}"/>
+                    android:value="@={BoxingUtil.safeUnbox(symptoms.lesionsAllOverBody)}"/>
 
                 <LinearLayout
                     android:id="@+id/symptoms_monkeypoxLayout"
