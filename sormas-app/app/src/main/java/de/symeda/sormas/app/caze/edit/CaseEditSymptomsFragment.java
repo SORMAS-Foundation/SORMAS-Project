@@ -198,8 +198,8 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
             }
         });
 
-        binding.dtpStayStart.initialize(getFragmentManager());
-        binding.dtpStayEnd.initialize(getFragmentManager());
+        //binding.dtpStayStart.initialize(getFragmentManager());
+        //binding.dtpStayEnd.initialize(getFragmentManager());
     }
 
     @Override

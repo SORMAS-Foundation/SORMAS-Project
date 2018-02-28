@@ -198,8 +198,8 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
             }
         });
 
-        binding.dtpStayStart.initialize(getFragmentManager());
-        binding.dtpStayEnd.initialize(getFragmentManager());
+        //binding.dtpStayStart.initialize(getFragmentManager());
+        //binding.dtpStayEnd.initialize(getFragmentManager());
     }
 
     @Override
