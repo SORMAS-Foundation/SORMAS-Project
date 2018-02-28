@@ -74,6 +74,8 @@ dependencies {
     compile "de.symeda.sormas:sormas-api:$sormasVersion"
     compile 'com.google.android.gms:play-services-analytics:10.0.1'
     compile 'com.googlecode:openbeans:1.0'
+    compile files('libs/MPAndroidChart-v3.0.2.jar')
+    compile(name: 'CircleProgress-v1.2.1', ext: 'aar')
     testCompile 'junit:junit:4.12'
     testCompile 'org.hamcrest:hamcrest-library:1.1'
     testCompile 'org.robolectric:robolectric:3.0'
