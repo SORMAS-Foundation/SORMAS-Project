@@ -15,7 +15,7 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
-import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.symptom.Symptom;
 
 @Entity(name= Symptoms.TABLE_NAME)
 @DatabaseTable(tableName = Symptoms.TABLE_NAME)
@@ -26,6 +26,9 @@ public class Symptoms extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "symptoms";
 	public static final String I18N_PREFIX = "Symptoms";
+
+	//Orson Added
+	private Symptom firstSymptom;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date onsetDate;
@@ -217,6 +220,16 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState otherNonHemorrhagicSymptoms;
 	@Column(length = 255)
 	private String otherNonHemorrhagicSymptomsText;
+
+	//Orson Added
+	public Symptom getFirstSymptom() {
+		return firstSymptom;
+	}
+
+	public void setFirstSymptom(Symptom firstSymptom) {
+		this.firstSymptom = firstSymptom;
+	}
+
 
 	public Date getOnsetDate() {
 		return onsetDate;
