@@ -6,14 +6,14 @@ import com.google.android.gms.analytics.Tracker;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.SocketTimeoutException;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 
 /**
- * Created by Mate Strysewske on 27.04.2017.
+ * Created by Orson on 08/11/2017.
  */
+
 public class ErrorReportingHelper {
 
     public static String getStackTrace(Throwable throwable) {
@@ -43,9 +43,9 @@ public class ErrorReportingHelper {
     public static void sendCaughtException(Tracker tracker, Exception e, AbstractDomainObject entity, boolean fatal, String... additionalInformation) {
 
         tracker.send(new HitBuilders.ExceptionBuilder()
-                        .setDescription(buildErrorReportDescription(e, entity, additionalInformation))
-                        .setFatal(fatal)
-                        .build());
+                .setDescription(buildErrorReportDescription(e, entity, additionalInformation))
+                .setFatal(fatal)
+                .build());
     }
 
     /**
