@@ -3,21 +3,25 @@ package de.symeda.sormas.app;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.util.FormTab;
-import de.symeda.sormas.app.util.SlidingTabLayout;
 
-public abstract class AbstractTabActivity extends AbstractSormasActivity {
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+
+/**
+ * Created by Orson on 08/11/2017.
+ */
+
+public abstract class AbstractTabActivity extends AbstractSormasActivity  {
 
     public static final String KEY_PAGE = "page";
 
     protected ViewPager pager;
-    protected SlidingTabLayout tabs;
+    //protected SlidingTabLayout tabs;
     protected int currentTab = 0;
 
     protected void createTabViews(FragmentStatePagerAdapter adapter) {
         // Assigning ViewPager View and setting the adapter
-        pager = (ViewPager) findViewById(R.id.pager);
+        /*pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
 
         // Assigning the Sliding Tab Layout View
@@ -46,7 +50,7 @@ public abstract class AbstractTabActivity extends AbstractSormasActivity {
                 setCurrentTab(position);
                 invalidateOptionsMenu();
             }
-        });
+        });*/
     }
 
 
@@ -73,4 +77,9 @@ public abstract class AbstractTabActivity extends AbstractSormasActivity {
     public void reloadTabs() {
         createTabViews((FragmentStatePagerAdapter) pager.getAdapter());
     }
+
+
+
+
+
 }

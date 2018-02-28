@@ -1,8 +1,6 @@
 package de.symeda.sormas.app.settings;
 
 import android.accounts.AuthenticatorException;
-import android.app.Activity;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,37 +9,40 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.net.ConnectException;
-
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.component.ConfirmationDialog;
-import de.symeda.sormas.app.databinding.SettingsFragmentLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.SyncCallback;
 
+import java.net.ConnectException;
+
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+
 /**
- * Created by Stefan Szczesny on 27.07.2016.
+ * Created by Orson on 03/11/2017.
  */
+
 public class SettingsForm extends FormTab {
 
-    private SettingsFragmentLayoutBinding binding;
+
+    private FragmentSettingsLayoutBinding binding;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.settings_fragment_layout, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings_layout, container, false);
 
-        binding.configServerUrl.setValue((String)ConfigProvider.getServerRestUrl());
+        binding.txtSettingsServerUrl.setValue((String) ConfigProvider.getServerRestUrl());
 
-        binding.configRepullData.setOnClickListener(new View.OnClickListener() {
+        binding.btnSettingsDropData.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                repullData();
+                dropData();
             }
         });
+        binding.btnSettingsDropData.setVisibility(View.GONE);
 
         return binding.getRoot();
     }
@@ -51,16 +52,15 @@ public class SettingsForm extends FormTab {
         super.onResume();
 
         boolean hasUser = ConfigProvider.getUser() != null;
-        binding.configChangePIN.setVisibility(hasUser ? View.VISIBLE : View.GONE);
-        binding.configRepullData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
-        binding.configSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
-        binding.configLogout.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+        binding.btnSettingsChangePIN.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+        binding.btnSettingsSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+        binding.btnSettingsLogout.setVisibility(hasUser ? View.VISIBLE : View.GONE);
     }
 
     /**
      * Only possible when server connection is available
      */
-    private void repullData() {
+    private void dropData() {
 
         if (!RetroProvider.isConnected()) {
             try {
@@ -68,12 +68,7 @@ public class SettingsForm extends FormTab {
             } catch (AuthenticatorException e) {
                 Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             } catch (RetroProvider.ApiVersionException e) {
-                if (e.getAppUrl() != null) {
-                    AppUpdateController.getInstance().updateApp(this.getActivity(), e.getAppUrl(), e.getVersion(), true, null);
-                    return;
-                } else {
-                    Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                }
+                Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             } catch (ConnectException e) {
                 Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             }
@@ -82,7 +77,8 @@ public class SettingsForm extends FormTab {
         if (RetroProvider.isConnected()) {
             binding.configProgressBar.setVisibility(View.VISIBLE);
 
-            SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.CompleteAndRepull, getContext(), new SyncCallback() {
+            DatabaseHelper.clearTables(true);
+            SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, getContext(), new SyncCallback() {
                 @Override
                 public void call(boolean syncFailed, String syncFailedMessage) {
                     SettingsForm.this.onResume();
@@ -95,12 +91,11 @@ public class SettingsForm extends FormTab {
     }
 
     public String getServerUrl() {
-        return binding.configServerUrl.getValue();
+        return binding.txtSettingsServerUrl.getValue();
     }
 
     @Override
     public AbstractDomainObject getData() {
         return null;
     }
-
 }

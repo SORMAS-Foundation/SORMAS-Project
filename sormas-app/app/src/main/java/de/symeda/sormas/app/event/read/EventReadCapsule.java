@@ -1,0 +1,18 @@
+package de.symeda.sormas.app.event.read;
+
+import android.content.Context;
+
+import de.symeda.sormas.app.core.BaseNavigationCapsule;
+
+import de.symeda.sormas.api.event.EventType;
+
+/**
+ * Created by Orson on 09/01/2018.
+ */
+
+public class EventReadCapsule extends BaseNavigationCapsule {
+
+    public EventReadCapsule(Context context, String recordUuid, EventType pageStatus) {
+        super(context, recordUuid, pageStatus);
+    }
+}

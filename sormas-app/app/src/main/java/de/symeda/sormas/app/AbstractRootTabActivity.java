@@ -17,7 +17,7 @@ import de.symeda.sormas.app.caze.CaseNewActivity;
 import de.symeda.sormas.app.caze.CasesActivity;
 import de.symeda.sormas.app.contact.ContactsActivity;
 import de.symeda.sormas.app.event.EventsActivity;
-import de.symeda.sormas.app.reports.ReportsActivity;
+import de.symeda.sormas.app.report.ReportsActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.sample.SamplesActivity;
 import de.symeda.sormas.app.settings.SettingsActivity;

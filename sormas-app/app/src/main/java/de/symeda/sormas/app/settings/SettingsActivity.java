@@ -1,41 +1,39 @@
 package de.symeda.sormas.app.settings;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.app.AbstractEditTabActivity;
+import de.symeda.sormas.app.BaseLandingActivity;
+import de.symeda.sormas.app.BaseLandingActivityFragment;
 import de.symeda.sormas.app.EnterPinActivity;
 import de.symeda.sormas.app.LoginActivity;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
+
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.component.SyncLogDialog;
-import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.util.AppUpdateController;
 
+/**
+ * Created by Orson on 03/11/2017.
+ */
 
-public class SettingsActivity extends AbstractEditTabActivity {
+public class SettingsActivity extends BaseLandingActivity {
+
+    //TODO: Create an interface to enforce Form Instantiation
+    //TODO: Create an abstract method to set root layout
+    //TODO: Create an interface to set Activity Title
+    //TODO: Method to access the Form
 
     private SettingsForm settingsForm;
+    //private BaseLandingActivityFragment activeFragment = null;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.sormas_default_activity_layout);
-
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(getResources().getString(R.string.main_menu_settings));
 
         // setting the fragment_frame
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -44,24 +42,35 @@ public class SettingsActivity extends AbstractEditTabActivity {
     }
 
     @Override
+    protected void initializeActivity(Bundle arguments) {
+
+    }
+
+    @Override
+    public BaseLandingActivityFragment getActiveReadFragment() {
+        return null;
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
-        settingsForm.onResume();
+        if (settingsForm != null)
+            settingsForm.onResume();
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
+        final Menu _menu = menu;
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.edit_action_bar, menu);
+        inflater.inflate(R.menu.edit_action_menu, menu);
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_options).getSubMenu().setGroupVisible(R.id.group_action_help,false);
-        menu.setGroupVisible(R.id.group_action_add,false);
-        menu.setGroupVisible(R.id.group_action_save,true);
 
         return true;
     }
@@ -77,56 +86,35 @@ public class SettingsActivity extends AbstractEditTabActivity {
 
             // Report problem button
             case R.id.action_report:
-                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
+                /*UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
                 AlertDialog dialog = userReportDialog.create();
-                dialog.show();
+                dialog.show();*/
                 return true;
 
-            case R.id.action_save:
+            /*case R.id.option_menu_action_save:
                 String serverUrl = settingsForm.getServerUrl();
                 ConfigProvider.setServerRestUrl(serverUrl);
                 onResume();
-                return true;
+                return true;*/
         }
         return super.onOptionsItemSelected(item);
     }
 
+    protected int getActivityTitle() {
+        return R.string.main_menu_settings;
+    }
+
+    // TODO: openSyncLog
     public void openSyncLog(View view) {
-        SyncLogDialog syncLogDialog = new SyncLogDialog(this);
-        syncLogDialog.show(this);
+        /*SyncLogDialog syncLogDialog = new SyncLogDialog(this);
+        syncLogDialog.show(this);*/
     }
 
     public void logout(View view) {
-
-        if (SynchronizeDataAsync.hasAnyUnsynchronizedData()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
-            builder.setCancelable(true);
-            builder.setMessage(R.string.alert_unsynchronized_changes);
-            builder.setTitle(R.string.alert_title_unsynchronized_changes);
-            builder.setIcon(R.drawable.ic_perm_device_information_black_24dp);
-            AlertDialog dialog = builder.create();
-
-            dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_cancel),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }
-            );
-            dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.action_logout_anyway),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            processLogout();
-                        }
-                    }
-            );
-
-            dialog.show();
-        } else {
-            processLogout();
-        }
+        ConfigProvider.clearUsernameAndPassword();
+        ConfigProvider.clearPin();
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 
     public void changePIN(View view) {
@@ -134,34 +122,4 @@ public class SettingsActivity extends AbstractEditTabActivity {
         intent.putExtra(EnterPinActivity.CALLED_FROM_SETTINGS, true);
         startActivity(intent);
     }
-
-    private void processLogout() {
-        ConfigProvider.clearUsernameAndPassword();
-        ConfigProvider.clearPin();
-        ConfigProvider.setAccessGranted(false);
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-    }
-
-    private interface LogoutCallback {
-        void call(boolean hasUnmodifiedEntities);
-    }
-
-    @Override
-    // Handles the result of the attempt to install a new app version - should be added to every activity that uses the UpdateAppDialog
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (requestCode == AppUpdateController.INSTALL_RESULT) {
-            switch (resultCode) {
-                // Do nothing if the installation was successful
-                case Activity.RESULT_OK:
-                case Activity.RESULT_CANCELED:
-                    break;
-                // Everything else probably is an error
-                default:
-                    AppUpdateController.getInstance().handleInstallFailure();
-                    break;
-            }
-        }
-    }
-
 }

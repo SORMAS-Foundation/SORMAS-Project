@@ -1,0 +1,47 @@
+package de.symeda.sormas.app.sample.list;
+
+import de.symeda.sormas.app.sample.ShipmentStatus;
+import de.symeda.sormas.app.util.MemoryDatabaseHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import de.symeda.sormas.app.backend.sample.Sample;
+
+/**
+ * Created by Orson on 10/12/2017.
+ */
+
+public class SamplesSearchByShipmentStatusStrategy implements ISamplesSearchStrategy {
+
+    public static final String ARG_FILTER_STATUS = "filterStatus";
+
+    private ShipmentStatus status = null;
+
+    public SamplesSearchByShipmentStatusStrategy(ShipmentStatus status) {
+        this.status= status;
+    }
+
+    @Override
+    public List<Sample> search() {
+        List<Sample> list = new ArrayList<>();
+
+        //TODO: Make changes here
+        if (status == null) {
+            //return DatabaseHelper.getContactDao().queryForAll(Contact.REPORT_DATE_TIME, false);
+            return new ArrayList<>();
+        }
+
+        if (status == ShipmentStatus.NOT_SHIPPED) {
+            list = MemoryDatabaseHelper.SAMPLE.getNotShippedSamples(20);
+        } else if (status == ShipmentStatus.SHIPPED) {
+            list = MemoryDatabaseHelper.SAMPLE.getShippedSamples(20);
+        } else if (status == ShipmentStatus.RECEIVED) {
+            list = MemoryDatabaseHelper.SAMPLE.getReceivedSamples(20);
+        } else {
+            list = MemoryDatabaseHelper.SAMPLE.getReferredSamples(20);
+        }
+
+        return list;
+    }
+}

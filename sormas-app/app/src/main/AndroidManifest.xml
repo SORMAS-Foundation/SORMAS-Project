@@ -165,7 +165,7 @@
                 android:value=".sample.SamplesActivity" />
         </activity>
         <activity
-            android:name=".reports.ReportsActivity"
+            android:name=".report.ReportsActivity"
             android:launchMode="singleTop" />
 
         <receiver

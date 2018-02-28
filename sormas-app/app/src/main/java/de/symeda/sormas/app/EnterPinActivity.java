@@ -4,43 +4,39 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import de.symeda.sormas.app.dashboard.DashboardActivity;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.settings.SettingsActivity;
+
 import java.util.regex.Pattern;
 
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.task.Task;
-import de.symeda.sormas.app.caze.CasesActivity;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.settings.SettingsActivity;
-import de.symeda.sormas.app.task.TaskEditActivity;
-import de.symeda.sormas.app.util.SyncCallback;
 
 /**
- * Created by Mate Strysewske on 23.06.2017.
+ * Created by Orson on 15/11/2017.
  */
+
 public class EnterPinActivity extends AppCompatActivity {
 
     public static final String CALLED_FROM_SETTINGS = "calledFromSettings";
 
-    private String lastEnteredPIN;
     private boolean calledFromSettings;
+    private String lastEnteredPIN;
     private boolean confirmedCurrentPIN;
     private boolean triedAgain;
     private EditText[] pinFields;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.user_enter_pin_activity_layout);
+        setContentView(R.layout.activity_enter_pin_layout);
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
@@ -49,9 +45,9 @@ public class EnterPinActivity extends AppCompatActivity {
             }
         }
 
-        getWindow().setSoftInputMode(
+        /*getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-        );
+        );*/
 
         // sync...
         SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, EnterPinActivity.this, null);
@@ -101,7 +97,7 @@ public class EnterPinActivity extends AppCompatActivity {
             }
         }
 
-       pinFields = new EditText[] {
+        pinFields = new EditText[] {
                 (EditText) findViewById(R.id.pin_char1),
                 (EditText) findViewById(R.id.pin_char2),
                 (EditText) findViewById(R.id.pin_char3),
@@ -111,82 +107,6 @@ public class EnterPinActivity extends AppCompatActivity {
         // submit attempt or when it has to be entered a second time
         for (int i = 0; i< pinFields.length; i++) {
             pinFields[i].setText("");
-        }
-    }
-
-    public void submit(View view) {
-
-        String enteredPIN = "";
-        for (int i = 0; i< pinFields.length; i++) {
-            enteredPIN += pinFields[i].getText().toString();
-        }
-
-        if (!validateNumber(enteredPIN, true)) {
-            onResume();
-            return;
-        }
-
-        String savedPIN = ConfigProvider.getPin();
-
-        if (savedPIN == null) {
-            if (lastEnteredPIN == null) {
-                // Store the entered PIN and restart the activity because the user has to
-                // enter it twice
-                lastEnteredPIN = enteredPIN;
-                onResume();
-            } else {
-                // Check whether the two entered PINs match - if yes, store it and process the login,
-                // otherwise display an error message and restart the activity
-                if (lastEnteredPIN.equals(enteredPIN)) {
-                    ConfigProvider.setPin(enteredPIN);
-                    ConfigProvider.setAccessGranted(true);
-                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_correct_loading, Snackbar.LENGTH_LONG).show();
-                    finish();
-                } else {
-                    lastEnteredPIN = null;
-                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_not_matching, Snackbar.LENGTH_LONG).show();
-                    onResume();
-                }
-            }
-        } else {
-            if (calledFromSettings) {
-                if (confirmedCurrentPIN) {
-                    if (lastEnteredPIN == null) {
-                        lastEnteredPIN = enteredPIN;
-                        onResume();
-                    } else {
-                        if (lastEnteredPIN.equals(enteredPIN)) {
-                            ConfigProvider.setPin(enteredPIN);
-                            Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_changed, Snackbar.LENGTH_LONG).show();
-                            finish();
-                        } else {
-                            lastEnteredPIN = null;
-                            Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_not_matching, Snackbar.LENGTH_LONG).show();
-                            onResume();
-                        }
-                    }
-                } else {
-                    if (enteredPIN.equals(savedPIN)) {
-                        confirmedCurrentPIN = true;
-                        onResume();
-                    } else {
-                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_wrong, Snackbar.LENGTH_LONG).show();
-                        triedAgain = true;
-                        onResume();
-                    }
-                }
-            } else {
-                // Process the login if the PIN is correct, otherwise display an error message and restart the activity
-                if (enteredPIN.equals(savedPIN)) {
-                    ConfigProvider.setAccessGranted(true);
-                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_correct_loading, Snackbar.LENGTH_LONG).show();
-                    finish();
-                } else {
-                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_wrong, Snackbar.LENGTH_LONG).show();
-                    triedAgain = true;
-                    onResume();
-                }
-            }
         }
     }
 
@@ -237,42 +157,12 @@ public class EnterPinActivity extends AppCompatActivity {
         return super.dispatchKeyEvent(event);
     }
 
-    public void forgotPIN(final View view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-        builder.setPositiveButton(view.getContext().getResources().getText(R.string.action_ok),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ConfigProvider.clearUsernameAndPassword();
-                        ConfigProvider.clearPin();
-                        Intent intent = new Intent(view.getContext(), LoginActivity.class);
-                        startActivity(intent);
-                        dialog.dismiss();
-                    }
-                }
-        );
-        builder.setNegativeButton(view.getContext().getResources().getText(R.string.action_cancel),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }
-        );
-
-        AlertDialog dialog = builder.create();
-        dialog.setCancelable(true);
-        dialog.setTitle(view.getContext().getResources().getText(R.string.headline_reset_PIN).toString());
-        dialog.setMessage(view.getContext().getResources().getText(R.string.infoText_resetPIN).toString());
-        dialog.show();
-    }
-
-    public void enterNumber(View view) {
+    public void enterNumber(View view)
+    {
         enterNumber(((Button)view).getText());
     }
 
     public void enterNumber(CharSequence number) {
-
         if (number.length() != 1 || !Character.isDigit(number.charAt(0))) {
             throw new IllegalArgumentException(number + " is not a single number");
         }
@@ -283,22 +173,15 @@ public class EnterPinActivity extends AppCompatActivity {
                 break;
             }
         }
-
     }
 
     public void deleteNumber(View view) {
-
         for (int i = pinFields.length-1; i>=0; i--) {
             if (pinFields[i].length() > 0) {
                 pinFields[i].setText("");
                 break;
             }
         }
-    }
-
-    public void backToSettings(View view) {
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
     }
 
     private boolean validateNumber(String number, boolean showSnackbar) {
@@ -327,5 +210,125 @@ public class EnterPinActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    public void submit(View view) {
+        startLandingPageActivity();
+        return;
+
+
+        /*String enteredPIN = "";
+        for (int i = 0; i< pinFields.length; i++) {
+            enteredPIN += pinFields[i].getText().toString();
+        }
+
+        if (!validateNumber(enteredPIN, true)) {
+            onResume();
+            return;
+        }
+
+        String savedPIN = ConfigProvider.getPin();
+
+        if (savedPIN == null) {
+            if (lastEnteredPIN == null) {
+                // Store the entered PIN and restart the activity because the user has to
+                // enter it twice
+                lastEnteredPIN = enteredPIN;
+                onResume();
+            } else {
+                // Check whether the two entered PINs match - if yes, store it and process the login,
+                // otherwise display an error message and restart the activity
+                if (lastEnteredPIN.equals(enteredPIN)) {
+                    ConfigProvider.setPin(enteredPIN);
+                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_correct_loading, Snackbar.LENGTH_LONG).show();
+                    startLandingPageActivity();
+                } else {
+                    lastEnteredPIN = null;
+                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_not_matching, Snackbar.LENGTH_LONG).show();
+                    onResume();
+                }
+            }
+        } else {
+            if (calledFromSettings) {
+                if (confirmedCurrentPIN) {
+                    if (lastEnteredPIN == null) {
+                        lastEnteredPIN = enteredPIN;
+                        onResume();
+                    } else {
+                        if (lastEnteredPIN.equals(enteredPIN)) {
+                            ConfigProvider.setPin(enteredPIN);
+                            Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_changed, Snackbar.LENGTH_LONG).show();
+                            finish();
+                        } else {
+                            lastEnteredPIN = null;
+                            Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_not_matching, Snackbar.LENGTH_LONG).show();
+                            onResume();
+                        }
+                    }
+                } else {
+                    if (enteredPIN.equals(savedPIN)) {
+                        confirmedCurrentPIN = true;
+                        onResume();
+                    } else {
+                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_wrong, Snackbar.LENGTH_LONG).show();
+                        triedAgain = true;
+                        onResume();
+                    }
+                }
+            } else {
+                // Process the login if the PIN is correct, otherwise display an error message and restart the activity
+                if (enteredPIN.equals(savedPIN)) {
+                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_correct_loading, Snackbar.LENGTH_LONG).show();
+                    startLandingPageActivity();
+                } else {
+                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_wrong, Snackbar.LENGTH_LONG).show();
+                    triedAgain = true;
+                    onResume();
+                }
+            }
+        }*/
+    }
+
+    private void startLandingPageActivity() {
+        //Get user role
+        //ConfigProvider.getUser().getUserRole()
+        //Inject User
+        Intent intent = new Intent(this, DashboardActivity.class);
+        startActivity(intent);
+    }
+
+    public void backToSettings(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    public void forgotPIN(final View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+        builder.setPositiveButton(view.getContext().getResources().getText(R.string.action_ok),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ConfigProvider.clearUsernameAndPassword();
+                        ConfigProvider.clearPin();
+                        Intent intent = new Intent(view.getContext(), LoginActivity.class);
+                        startActivity(intent);
+                        dialog.dismiss();
+                    }
+                }
+        );
+        builder.setNegativeButton(view.getContext().getResources().getText(R.string.action_cancel),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }
+        );
+
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(true);
+        dialog.setTitle(view.getContext().getResources().getText(R.string.headline_reset_PIN).toString());
+        dialog.setMessage(view.getContext().getResources().getText(R.string.infoText_resetPIN).toString());
+        dialog.show();
     }
 }
