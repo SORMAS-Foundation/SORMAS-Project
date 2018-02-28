@@ -11,23 +11,22 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 
+import java.util.Date;
+import java.util.List;
+
+import de.symeda.sormas.api.person.BurialConductor;
+import de.symeda.sormas.api.person.CauseOfDeath;
+import de.symeda.sormas.api.person.DeathPlaceType;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.TeboDatePicker;
 import de.symeda.sormas.app.component.TeboSpinner;
 import de.symeda.sormas.app.component.TeboTextInputEditText;
 import de.symeda.sormas.app.event.edit.OnSetBindingVariableListener;
-import de.symeda.sormas.app.temp.CauseOfDeath;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
-import java.util.Date;
-import java.util.List;
-
-import de.symeda.sormas.api.person.BurialConductor;
-import de.symeda.sormas.api.person.DeathPlaceType;
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.app.backend.person.Person;
 
 /**
  * Created by Orson on 13/02/2018.

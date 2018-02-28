@@ -16,7 +16,7 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.TeboDatePicker;
 import de.symeda.sormas.app.component.TeboSpinner;
 import de.symeda.sormas.app.databinding.FragmentEventEditPersonInfoLayoutBinding;
-import de.symeda.sormas.app.temp.CauseOfDeath;
+import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 

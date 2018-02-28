@@ -4,10 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import org.joda.time.DateTime;
-import de.symeda.sormas.app.caze.CaseOutcome;
-import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.symptom.Symptom;
-import de.symeda.sormas.app.temp.CauseOfDeath;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -17,6 +13,7 @@ import java.util.Random;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -74,6 +71,9 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
+import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.symptom.Symptom;
+import de.symeda.sormas.api.person.CauseOfDeath;
 
 /**
  * Created by Orson on 02/12/2017.
@@ -911,8 +911,8 @@ class VisitGenerator extends BaseDataGenerator {
             data1.setVisitUser(UserGenerator.getSingle());
             data1.setVisitStatus(getRandomVisitStatus());
             data1.setVisitRemarks(getRandomSentence());
-            data1.setReportLat(getRandomFloat());
-            data1.setReportLon(getRandomFloat());
+            data1.setReportLat(getRandomDouble());
+            data1.setReportLon(getRandomDouble());
 
             for(int j = 0; j < 20; j++) {
                 data1.setSymptoms(SymptomsGenerator.getSingle());
@@ -1231,9 +1231,9 @@ class SymptomsGenerator extends BaseDataGenerator {
             data1.setOnsetDate(getRandomDate());
             data1.setTemperature(getRandomFloat());
             data1.setTemperatureSource(getRandomTemperatureSource());
-            data1.setIllLocation(LocationGenerator.getSingle());
+            /*data1.setIllLocation(LocationGenerator.getSingle());
             data1.setIllLocationFrom(getRandomDate());
-            data1.setIllLocationTo(getRandomDate());
+            data1.setIllLocationTo(getRandomDate());*/
             data1.setFever(getRandomSymptomState());
             data1.setDiarrhea(getRandomSymptomState());
             data1.setAnorexiaAppetiteLoss(getRandomSymptomState());
@@ -1541,16 +1541,16 @@ class CaseGenerator extends BaseDataGenerator {
             data1.setCaseOfficer(UserGenerator.getSingle());
             data1.setInvestigationStatus(getRandomInvestigationStatus());
             data1.setPregnant(getRandomYesNoUnknown());
-            data1.setMeaslesVaccination(getRandomVaccination());
-            data1.setMeaslesDoses(getRandomString());
-            data1.setMeaslesVaccinationInfoSource(getRandomVaccinationInfoSource());
-            data1.setYellowFeverVaccination(getRandomVaccination());
-            data1.setYellowFeverVaccinationInfoSource(getRandomVaccinationInfoSource());
+            data1.setVaccination(getRandomVaccination());
+            data1.setVaccinationDoses(getRandomString());
+            data1.setVaccinationInfoSource(getRandomVaccinationInfoSource());
+            /*data1.setYellowFeverVaccination(getRandomVaccination());
+            data1.setYellowFeverVaccinationInfoSource(getRandomVaccinationInfoSource());*/
             data1.setEpidNumber(getRandomEpidCode());
             data1.setHospitalization(HospitalizationGenerator.getSingle());
             data1.setEpiData(EpiDataGenerator.getSingle());
-            data1.setReportLat(getRandomFloat());
-            data1.setReportLon(getRandomFloat());
+            data1.setReportLat(getRandomDouble());
+            data1.setReportLon(getRandomDouble());
             data1.setOutcome(getRandomCaseOutcome());
             data1.setOutcomeDate(getRandomDate());
 
@@ -1595,8 +1595,8 @@ class ContactGenerator extends BaseDataGenerator {
             data1.setDescription(getRandomSentence());
             data1.setContactOfficer(UserGenerator.getSingle());
             data1.setRelationToCase(getContactRelation());
-            data1.setReportLat(getRandomFloat());
-            data1.setReportLon(getRandomFloat());
+            data1.setReportLat(getRandomDouble());
+            data1.setReportLon(getRandomDouble());
 
             pool.add(data1);
         }
@@ -1642,8 +1642,8 @@ class EventGenerator extends BaseDataGenerator {
             data1.setDiseaseDetails(getRandomString());
             data1.setSurveillanceOfficer(UserGenerator.getSingle());
             data1.setTypeOfPlaceText(getRandomString());
-            data1.setReportLat(getRandomFloat());
-            data1.setReportLon(getRandomFloat());
+            data1.setReportLat(getRandomDouble());
+            data1.setReportLon(getRandomDouble());
 
             pool.add(data1);
         }
@@ -1679,8 +1679,8 @@ class LocationGenerator extends BaseDataGenerator {
             data1.setRegion(RegionGenerator.getSingle());
             data1.setDistrict(DistrictGenerator.getSingle());
             data1.setCommunity(CommunityGenerator.getSingle());
-            data1.setLatitude(getRandomFloat());
-            data1.setLongitude(getRandomFloat());
+            data1.setLatitude(getRandomDouble());
+            data1.setLongitude(getRandomDouble());
 
             pool.add(data1);
         }
@@ -1805,8 +1805,8 @@ class FacilityGenerator extends BaseDataGenerator {
             data1.setRegion(RegionGenerator.getSingle());
             data1.setDistrict(DistrictGenerator.getSingle());
             data1.setCommunity(CommunityGenerator.getSingle());
-            data1.setLatitude(getRandomFloat());
-            data1.setLongitude(getRandomFloat());
+            data1.setLatitude(getRandomDouble());
+            data1.setLongitude(getRandomDouble());
             data1.setType(getFacilityType());
             data1.setPublicOwnership(getRandomBoolean());
 
@@ -1940,8 +1940,8 @@ class TaskGenerator extends BaseDataGenerator {
             data1.setAssigneeReply(getAssigneeReply());
             data1.setPriority(getTaskPriority());
             data1.setSuggestedStart(getRandomDate());
-            data1.setClosedLat(getRandomFloat());
-            data1.setClosedLon(getRandomFloat());
+            data1.setClosedLat(getRandomDouble());
+            data1.setClosedLon(getRandomDouble());
 
             pool.add(data1);
         }
@@ -2178,6 +2178,10 @@ abstract class BaseDataGenerator {
 
     public static float getRandomFloat() {
         return new Random().nextFloat();
+    }
+
+    public static double getRandomDouble() {
+        return new Random().nextDouble();
     }
 
     public static String getRandomName() {

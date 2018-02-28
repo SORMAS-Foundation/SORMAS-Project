@@ -9,17 +9,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.TeboSpinner;
-import de.symeda.sormas.app.temp.CauseOfDeath;
-import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.person.CauseOfDeath;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 
 /**
  * Created by Orson on 12/02/2018.
