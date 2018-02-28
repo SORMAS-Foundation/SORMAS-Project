@@ -42,6 +42,7 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.FieldHelper;
+import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.LocationDialogBuilder;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SpinnerField;
