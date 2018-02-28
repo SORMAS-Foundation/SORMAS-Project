@@ -22,34 +22,36 @@ public class ContactClassificationElaborator implements IStatusElaborator {
 
     @Override
     public String getFriendlyName() {
-        if (status == ContactClassification.POSSIBLE) {
+        //TODO: Orson, come back and ensure Contact Classification is re-mapped correctly
+        if (status == ContactClassification.UNCONFIRMED) {
             return resources.getString(R.string.status_contact_classification_possible);
         } else if (status == ContactClassification.CONFIRMED) {
             return resources.getString(R.string.status_contact_classification_confirmed);
         } else if (status == ContactClassification.NO_CONTACT) {
             return resources.getString(R.string.status_contact_classification_no_contact);
-        } else if (status == ContactClassification.CONVERTED) {
+        } /*else if (status == ContactClassification.CONVERTED) {
             return resources.getString(R.string.status_contact_classification_converted);
         } else if (status == ContactClassification.DROPPED) {
             return resources.getString(R.string.status_contact_classification_dropped);
-        }
+        }*/
 
         return "";
     }
 
     @Override
     public int getColorIndicatorResource() {
-        if (status == ContactClassification.POSSIBLE) {
+        //TODO: Orson, come back and ensure Contact Classification is re-mapped correctly
+        if (status == ContactClassification.UNCONFIRMED) {
             return R.color.indicatorPossibleContact;
         } else if (status == ContactClassification.CONFIRMED) {
             return R.color.indicatorConfirmedContact;
         } else if (status == ContactClassification.NO_CONTACT) {
             return R.color.indicatorNoContact;
-        } else if (status == ContactClassification.CONVERTED) {
+        } /*else if (status == ContactClassification.CONVERTED) {
             return R.color.indicatorConvertedContact;
         } else if (status == ContactClassification.DROPPED) {
             return R.color.indicatorDroppedContact;
-        }
+        }*/
 
         return R.color.noColor;
     }
