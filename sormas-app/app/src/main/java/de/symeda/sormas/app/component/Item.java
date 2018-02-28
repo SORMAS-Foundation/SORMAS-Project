@@ -1,11 +1,7 @@
 package de.symeda.sormas.app.component;
 
 /**
- * Created by Orson on 26/01/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
+ * Created by Stefan Szczesny on 02.08.2016.
  */
 
 public class Item<C> {

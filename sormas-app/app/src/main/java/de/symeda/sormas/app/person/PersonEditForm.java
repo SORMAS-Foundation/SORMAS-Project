@@ -50,7 +50,6 @@ import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
-import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.validation.PersonValidator;
 
 /**

@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.component;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
@@ -9,24 +8,18 @@ import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.databinding.EventParticipantNewFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.PersonSelectOrCreateFragmentLayoutBinding;
 import de.symeda.sormas.app.person.PersonSelectVO;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
-import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.util.Consumer;
 
 
