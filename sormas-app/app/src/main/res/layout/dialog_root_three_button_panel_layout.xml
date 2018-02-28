@@ -6,19 +6,19 @@
 
     <data>
         <import type="android.view.View" />
-        <import type="org.technologyboard.android.sormas.component.TeboButtonType"/>
+        <import type="de.symeda.sormas.app.component.TeboButtonType"/>
         <variable name="data" type="Object"/>
-        <variable name="config" type="org.technologyboard.android.sormas.component.dialog.DialogViewConfig"/>
-        <variable name="dialog" type="org.technologyboard.android.sormas.component.dialog.BaseTeboAlertDialog" />
+        <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
+        <variable name="dialog" type="de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog" />
         <variable
             name="deleteCallback"
-            type="org.technologyboard.android.sormas.component.dialog.IDialogDeleteOnClickListener" />
+            type="de.symeda.sormas.app.component.dialog.IDialogDeleteOnClickListener" />
         <variable
             name="dismissCallback"
-            type="org.technologyboard.android.sormas.component.dialog.IDialogDismissOnClickListener" />
+            type="de.symeda.sormas.app.component.dialog.IDialogDismissOnClickListener" />
         <variable
             name="okCallback"
-            type="org.technologyboard.android.sormas.component.dialog.IDialogOkOnClickListener" />
+            type="de.symeda.sormas.app.component.dialog.IDialogOkOnClickListener" />
     </data>
 
     <RelativeLayout
@@ -32,7 +32,7 @@
 
 
 
-        <org.technologyboard.android.sormas.component.TeboButton
+        <de.symeda.sormas.app.component.TeboButton
             android:id="@+id/btnDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
 
 
 
-        <org.technologyboard.android.sormas.component.TeboButton
+        <de.symeda.sormas.app.component.TeboButton
             android:id="@+id/btnDismiss"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
             app:onButtonOnClick="@{(view) -> dismissCallback.onDismissClick(view, data)}"
             />
 
-        <org.technologyboard.android.sormas.component.TeboButton
+        <de.symeda.sormas.app.component.TeboButton
             android:id="@+id/btnOk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

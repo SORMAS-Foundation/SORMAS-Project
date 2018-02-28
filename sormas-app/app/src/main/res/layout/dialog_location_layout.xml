@@ -6,13 +6,13 @@
 
     <data>
         <variable name="data" type="de.symeda.sormas.app.backend.location.Location"/>
-        <variable name="config" type="org.technologyboard.android.sormas.component.dialog.DialogViewConfig"/>
+        <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
         <variable
             name="showNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
         <variable
             name="hideNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
     </data>
 
 
@@ -40,7 +40,7 @@
 
 
 
-            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.TeboTextInputEditText
                 android:id="@+id/txtAddressLandmark"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
                 app:onHideInputErrorListener="@{hideNotificationCallback}"
                 />
 
-            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.TeboTextInputEditText
                 android:id="@+id/txtCommContactPerson"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
                 android:orientation="horizontal"
                 >
 
-                <org.technologyboard.android.sormas.component.TeboSpinner
+                <de.symeda.sormas.app.component.TeboSpinner
                     android:id="@+id/spnState"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -103,7 +103,7 @@
                     app:onHideInputErrorListener="@{hideNotificationCallback}"
                     />
 
-                <org.technologyboard.android.sormas.component.TeboSpinner
+                <de.symeda.sormas.app.component.TeboSpinner
                     android:id="@+id/spnLga"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -134,7 +134,7 @@
                 android:orientation="horizontal"
                 >
 
-                <org.technologyboard.android.sormas.component.TeboSpinner
+                <de.symeda.sormas.app.component.TeboSpinner
                     android:id="@+id/spnWard"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -153,7 +153,7 @@
                     app:onHideInputErrorListener="@{hideNotificationCallback}"
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.TeboTextInputEditText
                     android:id="@+id/txtCity"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -182,7 +182,7 @@
                 android:orientation="horizontal"
                 >
 
-                <org.technologyboard.android.sormas.component.TeboButton
+                <de.symeda.sormas.app.component.TeboButton
                     android:id="@+id/btnPickGpsCoordinates"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -192,7 +192,7 @@
                     app:text="@string/action_pick_gps"
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtGpsLatLon"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

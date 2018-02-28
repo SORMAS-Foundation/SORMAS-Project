@@ -8,7 +8,7 @@
 
         <variable
             name="callback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
 
     <LinearLayout
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             >
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtAdmissionAndDischargeDate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtIsolation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -63,7 +63,7 @@
                 />
         </LinearLayout>
 
-        <org.technologyboard.android.sormas.component.TeboTextRead
+        <de.symeda.sormas.app.component.TeboTextRead
             android:id="@+id/txtHospitalName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
             />
 
 
-        <org.technologyboard.android.sormas.component.TeboTextRead
+        <de.symeda.sormas.app.component.TeboTextRead
             android:id="@+id/txtStatAndLga"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
             app:defaultValue='@{@string/not_available}'
             />
 
-        <org.technologyboard.android.sormas.component.TeboTextRead
+        <de.symeda.sormas.app.component.TeboTextRead
             android:id="@+id/txtWard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -102,7 +102,7 @@
             app:defaultValue='@{@string/not_available}'
             />
 
-        <org.technologyboard.android.sormas.component.TeboTextRead
+        <de.symeda.sormas.app.component.TeboTextRead
             android:id="@+id/txtDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

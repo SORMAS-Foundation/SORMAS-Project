@@ -8,10 +8,10 @@
     <data>
         <variable
             name="showNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
         <variable
             name="hideNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.person.Person"/>
     </data>
@@ -22,7 +22,7 @@
         android:orientation="vertical"
         >
 
-        <org.technologyboard.android.sormas.component.TeboTextInputEditText
+        <de.symeda.sormas.app.component.TeboTextInputEditText
             android:id="@+id/txtBizType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

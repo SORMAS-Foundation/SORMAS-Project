@@ -6,14 +6,14 @@
 
     <data>
         <import type="android.view.Gravity" />
-        <variable name="config" type="org.technologyboard.android.sormas.component.dialog.DialogViewConfig"/>
-        <variable name="dialog" type="org.technologyboard.android.sormas.component.dialog.BaseTeboAlertDialog" />
+        <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
+        <variable name="dialog" type="de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog" />
         <variable
             name="dismissCallback"
-            type="org.technologyboard.android.sormas.component.dialog.IDialogDismissOnClickListener" />
+            type="de.symeda.sormas.app.component.dialog.IDialogDismissOnClickListener" />
         <variable
             name="okCallback"
-            type="org.technologyboard.android.sormas.component.dialog.IDialogOkOnClickListener" />
+            type="de.symeda.sormas.app.component.dialog.IDialogOkOnClickListener" />
     </data>
 
     <ScrollView

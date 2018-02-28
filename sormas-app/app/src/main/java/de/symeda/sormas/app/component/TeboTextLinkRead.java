@@ -1,0 +1,86 @@
+package de.symeda.sormas.app.component;
+
+import android.content.Context;
+import android.databinding.BindingAdapter;
+import android.graphics.Paint;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
+
+import de.symeda.sormas.app.R;
+
+/**
+ * Created by Orson on 31/12/2017.
+ * <p>
+ * www.technologyboard.org
+ * sampson.orson@gmail.com
+ * sampson.orson@technologyboard.org
+ */
+
+public class TeboTextLinkRead extends TeboTextRead {
+
+    private OnLinkClickListener onLinkClickListener;
+
+    // <editor-fold defaultstate="collapsed" desc="Constructors">
+
+    public TeboTextLinkRead(Context context) {
+        super(context);
+    }
+
+    public TeboTextLinkRead(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public TeboTextLinkRead(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
+
+    // </editor-fold>
+
+    @Override
+    protected void initializeViews(Context context, AttributeSet attrs, int defStyle) {
+        super.initializeViews(context, attrs, defStyle);
+
+    }
+
+    @Override
+    protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+        LayoutInflater inflater = (LayoutInflater) context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater.inflate(R.layout.control_textfield_read_link_layout, this);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+
+        txtControlInput.setPaintFlags(txtControlInput.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+
+
+        txtControlInput.setNextFocusLeftId(getNextFocusLeft());
+        txtControlInput.setNextFocusRightId(getNextFocusRight());
+        txtControlInput.setNextFocusUpId(getNextFocusUp());
+        txtControlInput.setNextFocusDownId(getNextFocusDown());
+        txtControlInput.setNextFocusForwardId(getNextFocusForward());
+
+        txtControlInput.setImeOptions(getImeOptions());
+
+        txtControlInput.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onLinkClickListener != null)
+                    onLinkClickListener.onClick(v, null);
+            }
+        });
+    }
+
+    @BindingAdapter("onLinkClick")
+    public static void setLinkClickListener(TeboTextLinkRead view, OnLinkClickListener listener) {
+        if (listener != null)
+            view.setOnLinkClickListener(listener);
+    }
+
+    public void setOnLinkClickListener(OnLinkClickListener listener) {
+        onLinkClickListener = listener;
+    }
+}

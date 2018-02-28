@@ -6,18 +6,18 @@
 
     <data>
         <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiDataBurial"/>
-        <variable name="config" type="org.technologyboard.android.sormas.component.dialog.DialogViewConfig"/>
+        <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
         <variable
             name="showNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
         <variable
             name="hideNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="yesNoUnknownClass" type="Class" />
         <variable
             name="addressLinkCallback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
 
 
@@ -39,7 +39,7 @@
                 android:orientation="horizontal"
                 >
 
-                <org.technologyboard.android.sormas.component.TeboDatePicker
+                <de.symeda.sormas.app.component.TeboDatePicker
                     android:id="@+id/dtpBurialFromDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
                     app:value="@={data.burialDateFrom}"
                     />
 
-                <org.technologyboard.android.sormas.component.TeboDatePicker
+                <de.symeda.sormas.app.component.TeboDatePicker
                     android:id="@+id/dtpBurialToDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
                 android:orientation="horizontal"
                 >
 
-                <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.TeboTextInputEditText
                     android:id="@+id/txtDeceasedPerson"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -94,7 +94,7 @@
                     />
 
 
-                <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.TeboTextInputEditText
                     android:id="@+id/txtRelationship"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -114,7 +114,7 @@
 
             </LinearLayout>
 
-            <org.technologyboard.android.sormas.component.TeboAddress
+            <de.symeda.sormas.app.component.TeboAddress
                 android:id="@+id/txtBurialAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -133,7 +133,7 @@
                 />
             <!---->
 
-            <org.technologyboard.android.sormas.component.TeboSwitch
+            <de.symeda.sormas.app.component.TeboSwitch
                 android:id="@+id/swhPersonIll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -157,7 +157,7 @@
                 app:onHideInputErrorListener="@{hideNotificationCallback}"
                 />
 
-            <org.technologyboard.android.sormas.component.TeboSwitch
+            <de.symeda.sormas.app.component.TeboSwitch
                 android:id="@+id/swhTouchedOrCarriedBody"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -6,9 +6,9 @@
 
     <data>
         <variable name="data" type="de.symeda.sormas.app.backend.symptoms.Symptoms"/>
-        <variable name="symptomsYes" type="java.util.List&lt;org.technologyboard.android.sormas.component.tagview.Tag&gt;" />
-        <variable name="symptomsUnknown" type="java.util.List&lt;org.technologyboard.android.sormas.component.tagview.Tag&gt;" />
-        <variable name="symptomsNo" type="java.util.List&lt;org.technologyboard.android.sormas.component.tagview.Tag&gt;" />
+        <variable name="symptomsYes" type="java.util.List&lt;de.symeda.sormas.app.component.tagview.Tag&gt;" />
+        <variable name="symptomsUnknown" type="java.util.List&lt;de.symeda.sormas.app.component.tagview.Tag&gt;" />
+        <variable name="symptomsNo" type="java.util.List&lt;de.symeda.sormas.app.component.tagview.Tag&gt;" />
     </data>
 
 
@@ -26,7 +26,7 @@
             android:paddingRight="@dimen/parentLayoutHorizontalPadding"
             >
 
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtBodyTemperature"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <org.technologyboard.android.sormas.component.tagview.TagView
+            <de.symeda.sormas.app.component.tagview.TagView
                 android:id="@+id/tvSymptomsYes"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -65,7 +65,7 @@
                 app:rowLayout="@{@layout/row_symptom_read_item_layout}"
                 app:tags="@{symptomsYes}" />
 
-            <org.technologyboard.android.sormas.component.tagview.TagView
+            <de.symeda.sormas.app.component.tagview.TagView
                 android:id="@+id/tvSymptomsUnknown"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -92,7 +92,7 @@
                 app:rowLayout="@{@layout/row_symptom_read_item_layout}"
                 app:tags="@{symptomsUnknown}" />
 
-            <org.technologyboard.android.sormas.component.tagview.TagView
+            <de.symeda.sormas.app.component.tagview.TagView
                 android:id="@+id/tvSymptomsNo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -123,7 +123,7 @@
 
 
 
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtOtherClinicalSymptoms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -135,7 +135,7 @@
                 />
 
 
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtOtherClinicalSymptomsComment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -158,7 +158,7 @@
                 android:orientation="horizontal"
                 >
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtFirstSymptomDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -170,7 +170,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtFirstSymptom"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

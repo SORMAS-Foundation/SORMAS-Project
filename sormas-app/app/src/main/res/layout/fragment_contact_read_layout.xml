@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 >
-                <org.technologyboard.android.sormas.component.TeboTextUuidRead
+                <de.symeda.sormas.app.component.TeboTextUuidRead
                     android:id="@+id/txtContactId"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtFollowUpStatus"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
 
             </LinearLayout>
 
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtFollowUpStatusComment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 >
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtReportingUser"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -88,7 +88,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtReportDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -109,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 >
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtContactPerson"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -121,7 +121,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtFollowUpUntil"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -142,7 +142,7 @@
                 android:background="@color/viewSeparator"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom" />
 
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtLastContactDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -153,7 +153,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtContactType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -164,7 +164,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtRelationshipWithCase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -175,7 +175,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtContactDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -199,7 +199,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 >
-                <org.technologyboard.android.sormas.component.TeboTextLinkRead
+                <de.symeda.sormas.app.component.TeboTextLinkRead
                     android:id="@+id/txtCaseId"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -212,7 +212,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtCaseClassification"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -227,7 +227,7 @@
 
             </LinearLayout>
 
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtCaseName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -244,7 +244,7 @@
                 android:orientation="horizontal"
                 >
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtAge"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -258,7 +258,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtGender"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -280,7 +280,7 @@
                 android:orientation="horizontal"
                 >
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtDisease"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -292,7 +292,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtSymptomsOnset"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

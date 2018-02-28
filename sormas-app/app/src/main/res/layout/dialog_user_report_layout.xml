@@ -5,14 +5,14 @@
     android:id="@+id/base_layout">
 
     <data>
-        <variable name="data" type="org.technologyboard.android.sormas.component.dialog.UserReport"/>
-        <variable name="config" type="org.technologyboard.android.sormas.component.dialog.DialogViewConfig"/>
+        <variable name="data" type="de.symeda.sormas.app.component.dialog.UserReport"/>
+        <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
         <variable
             name="showNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
         <variable
             name="hideNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
     </data>
 
     <LinearLayout
@@ -33,7 +33,7 @@
             android:textColor="@color/pageHintText"
             android:textSize="@dimen/defaultPageHintTextSize"/>
 
-        <org.technologyboard.android.sormas.component.TeboTextInputEditText
+        <de.symeda.sormas.app.component.TeboTextInputEditText
             android:id="@+id/txtMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -4,7 +4,7 @@
     <data>
         <variable
             name="data"
-            type="org.technologyboard.android.sormas.component.tagview.Tag" />
+            type="de.symeda.sormas.app.component.tagview.Tag" />
     </data>
 
     <LinearLayout

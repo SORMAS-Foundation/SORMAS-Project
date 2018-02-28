@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.component;
 
+//**
+
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -14,6 +16,10 @@ public class SpinnerFieldListener implements AdapterView.OnItemSelectedListener 
 
     public void registerListener(AdapterView.OnItemSelectedListener listener) {
         registeredListeners.add(listener);
+    }
+
+    public void unRegisterListener(AdapterView.OnItemSelectedListener listener) {
+        registeredListeners.remove(listener);
     }
 
     @Override

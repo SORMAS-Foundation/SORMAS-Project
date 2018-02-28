@@ -9,7 +9,7 @@
 
         <variable
             name="callback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
 
 
@@ -39,7 +39,7 @@
                 android:orientation="horizontal"
                 >
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtTravelFrom"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtTravelTo"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
 
             </LinearLayout>
 
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtTravelType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

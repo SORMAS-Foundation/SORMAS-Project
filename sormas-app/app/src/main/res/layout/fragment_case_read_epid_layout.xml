@@ -14,25 +14,25 @@
             type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataTravel&gt;" />
         <variable
             name="animalContactYes"
-            type="java.util.List&lt;org.technologyboard.android.sormas.component.tagview.Tag&gt;" />
+            type="java.util.List&lt;de.symeda.sormas.app.component.tagview.Tag&gt;" />
         <variable
             name="animalContactUnknown"
-            type="java.util.List&lt;org.technologyboard.android.sormas.component.tagview.Tag&gt;" />
+            type="java.util.List&lt;de.symeda.sormas.app.component.tagview.Tag&gt;" />
         <variable
             name="animalContactNo"
-            type="java.util.List&lt;org.technologyboard.android.sormas.component.tagview.Tag&gt;" />
+            type="java.util.List&lt;de.symeda.sormas.app.component.tagview.Tag&gt;" />
 
         <variable
             name="burialItemClickCallback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
 
         <variable
             name="socialEventItemClickCallback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
 
         <variable
             name="travelItemClickCallback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
 
     </data>
 
@@ -239,7 +239,7 @@
                     style="@style/ReadActivitySubHeadingStyle"
                     />
 
-                <org.technologyboard.android.sormas.component.tagview.TagView
+                <de.symeda.sormas.app.component.tagview.TagView
                     android:id="@+id/tvAnimalContactYes"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -266,7 +266,7 @@
                     app:rowLayout="@{@layout/row_symptom_read_item_layout}"
                     app:tags="@{animalContactYes}" />
 
-                <org.technologyboard.android.sormas.component.tagview.TagView
+                <de.symeda.sormas.app.component.tagview.TagView
                     android:id="@+id/tvAnimalContactUnknown"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -293,7 +293,7 @@
                     app:rowLayout="@{@layout/row_symptom_read_item_layout}"
                     app:tags="@{animalContactUnknown}" />
 
-                <org.technologyboard.android.sormas.component.tagview.TagView
+                <de.symeda.sormas.app.component.tagview.TagView
                     android:id="@+id/tvAnimalContactNo"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -322,7 +322,7 @@
 
 
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtUnderCookedPoultry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -333,7 +333,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtExposureToPoultry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -348,7 +348,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtSickPoultry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -371,7 +371,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <org.technologyboard.android.sormas.component.TeboTextRead
+                    <de.symeda.sormas.app.component.TeboTextRead
                         android:id="@+id/txtLastExposureDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -383,7 +383,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <org.technologyboard.android.sormas.component.TeboTextRead
+                    <de.symeda.sormas.app.component.TeboTextRead
                         android:id="@+id/txtLastExposurePlace"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -397,7 +397,7 @@
                         />
                 </LinearLayout>
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtCattleContact"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -408,7 +408,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtContactWithOtherAnimals"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -425,7 +425,7 @@
 
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtWildBirds"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -446,7 +446,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <org.technologyboard.android.sormas.component.TeboTextRead
+                    <de.symeda.sormas.app.component.TeboTextRead
                         android:id="@+id/txtWildBirdsDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -458,7 +458,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <org.technologyboard.android.sormas.component.TeboTextRead
+                    <de.symeda.sormas.app.component.TeboTextRead
                         android:id="@+id/txtWildBirdsPlace"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -482,7 +482,7 @@
                     />
 
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtDrinkingWaterSource"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -498,7 +498,7 @@
                     />
 
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtWaterBody"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -513,7 +513,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtTickBite"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

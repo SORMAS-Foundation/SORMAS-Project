@@ -6,17 +6,17 @@
 
     <data>
         <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiDataGathering"/>
-        <variable name="config" type="org.technologyboard.android.sormas.component.dialog.DialogViewConfig"/>
+        <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
         <variable
             name="showNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
         <variable
             name="hideNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable
             name="addressLinkCallback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
 
 
@@ -32,7 +32,7 @@
             android:paddingRight="@dimen/rowListItemHorizontalMargin"
             >
 
-            <org.technologyboard.android.sormas.component.TeboDatePicker
+            <de.symeda.sormas.app.component.TeboDatePicker
                 android:id="@+id/dtpDateOfEvent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
                 app:value="@={data.gatheringDate}"
                 />
 
-            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.TeboTextInputEditText
                 android:id="@+id/txtEventDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
                 app:onHideInputErrorListener="@{hideNotificationCallback}"
                 />
 
-            <org.technologyboard.android.sormas.component.TeboTextLinkEdit
+            <de.symeda.sormas.app.component.TeboTextLinkEdit
                 android:id="@+id/txtAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

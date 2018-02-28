@@ -8,10 +8,10 @@
     <data>
         <variable
             name="showNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
         <variable
             name="hideNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.person.Person"/>
 
@@ -19,11 +19,11 @@
 
         <variable
             name="checkedCallback"
-            type="org.technologyboard.android.sormas.component.OnTeboSwitchCheckedChangeListener" />
+            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
 
         <variable
             name="addressLinkCallback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
 
 
@@ -54,7 +54,7 @@
                 android:orientation="horizontal"
                 >
 
-                <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.TeboTextInputEditText
                     android:id="@+id/txtLastName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
                     app:onHideInputErrorListener="@{hideNotificationCallback}"
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.TeboTextInputEditText
                     android:id="@+id/txtFirstName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -99,7 +99,7 @@
                 android:orientation="horizontal"
                 >
 
-                <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.TeboTextInputEditText
                     android:id="@+id/txtNickname"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -117,7 +117,7 @@
                     />
 
 
-                <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.TeboTextInputEditText
                     android:id="@+id/txtMotherMaidenName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -146,7 +146,7 @@
                 >
 
 
-                <org.technologyboard.android.sormas.component.TeboSpinner
+                <de.symeda.sormas.app.component.TeboSpinner
                     android:id="@+id/spnYear"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -161,7 +161,7 @@
                     />
 
 
-                <org.technologyboard.android.sormas.component.TeboSpinner
+                <de.symeda.sormas.app.component.TeboSpinner
                     android:id="@+id/spnMonth"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -177,7 +177,7 @@
                     />
 
 
-                <org.technologyboard.android.sormas.component.TeboSpinner
+                <de.symeda.sormas.app.component.TeboSpinner
                     android:id="@+id/spnDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -202,7 +202,7 @@
                 android:orientation="horizontal"
                 >
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtAge"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -218,7 +218,7 @@
                     />
 
 
-                <org.technologyboard.android.sormas.component.TeboSpinner
+                <de.symeda.sormas.app.component.TeboSpinner
                     android:id="@+id/spnAgeType"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -237,7 +237,7 @@
             </LinearLayout>
 
 
-            <org.technologyboard.android.sormas.component.TeboSpinner
+            <de.symeda.sormas.app.component.TeboSpinner
                 android:id="@+id/spnGender"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -257,7 +257,7 @@
                 android:orientation="horizontal"
                 >
 
-                <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.TeboTextInputEditText
                     android:id="@+id/txtPhoneNumber"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -274,7 +274,7 @@
                     app:onHideInputErrorListener="@{hideNotificationCallback}"
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.TeboTextInputEditText
                     android:id="@+id/txtPhoneNumberOwner"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -294,7 +294,7 @@
 
             </LinearLayout>
 
-            <org.technologyboard.android.sormas.component.TeboSwitch
+            <de.symeda.sormas.app.component.TeboSwitch
                 android:id="@+id/swhPresentCondition"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -340,7 +340,7 @@
             android:paddingRight="@dimen/parentLayoutHorizontalPadding"
             >
 
-            <org.technologyboard.android.sormas.component.TeboTextLinkEdit
+            <de.symeda.sormas.app.component.TeboTextLinkEdit
                 android:id="@+id/txtPermAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -364,7 +364,7 @@
                 style="@style/ReadActivitySubHeadingStyle"
                 />
 
-            <org.technologyboard.android.sormas.component.TeboSpinner
+            <de.symeda.sormas.app.component.TeboSpinner
                 android:id="@+id/spnOccupationType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

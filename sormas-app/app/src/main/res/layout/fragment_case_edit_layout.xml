@@ -8,10 +8,10 @@
     <data>
         <variable
             name="showNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
         <variable
             name="hideNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
         <variable name="caseOutcomeClass" type="Class" />
@@ -32,7 +32,7 @@
             android:layout_height="match_parent"
             android:orientation="horizontal"
             >
-            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.TeboTextInputEditText
                 android:id="@+id/txtEpidNumber"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -49,7 +49,7 @@
                 app:onHideInputErrorListener="@{hideNotificationCallback}"
                 />
 
-            <org.technologyboard.android.sormas.component.TeboSpinner
+            <de.symeda.sormas.app.component.TeboSpinner
                 android:id="@+id/spnCaseClassification"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -72,7 +72,7 @@
             android:orientation="horizontal"
             >
 
-            <org.technologyboard.android.sormas.component.TeboSpinner
+            <de.symeda.sormas.app.component.TeboSpinner
                 android:id="@+id/spnOutcome"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
                 app:value="@={data.outcome}"
                 />
             
-            <org.technologyboard.android.sormas.component.TeboDatePicker
+            <de.symeda.sormas.app.component.TeboDatePicker
                 android:id="@+id/dtpDateOfOutcome"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -104,7 +104,7 @@
             
         </LinearLayout>
 
-        <org.technologyboard.android.sormas.component.TeboSwitch
+        <de.symeda.sormas.app.component.TeboSwitch
             android:id="@+id/swhPregnant"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -137,7 +137,7 @@
             >
 
 
-            <org.technologyboard.android.sormas.component.TeboTextUuidRead
+            <de.symeda.sormas.app.component.TeboTextUuidRead
                 android:id="@+id/txtCaseId"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -150,7 +150,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <org.technologyboard.android.sormas.component.TeboTextUuidRead
+            <de.symeda.sormas.app.component.TeboTextUuidRead
                 android:id="@+id/txtInvestigationStatus"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -166,7 +166,7 @@
 
         </LinearLayout>
 
-        <org.technologyboard.android.sormas.component.TeboTextRead
+        <de.symeda.sormas.app.component.TeboTextRead
             android:id="@+id/txtDisease"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -186,7 +186,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             >
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtReportingUser"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -198,7 +198,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtReportDate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -213,7 +213,7 @@
 
         </LinearLayout>
 
-        <org.technologyboard.android.sormas.component.TeboTextRead
+        <de.symeda.sormas.app.component.TeboTextRead
             android:id="@+id/txtStateAndLga"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -226,7 +226,7 @@
             app:defaultValue='@{@string/not_available}'
             />
 
-        <org.technologyboard.android.sormas.component.TeboTextRead
+        <de.symeda.sormas.app.component.TeboTextRead
             android:id="@+id/txtWard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -241,7 +241,7 @@
 
         <ImageView style="@style/MiniHorizontalDividerStyle"/>
 
-        <org.technologyboard.android.sormas.component.TeboTextRead
+        <de.symeda.sormas.app.component.TeboTextRead
             android:id="@+id/txtHealthFacility"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -253,7 +253,7 @@
             app:defaultValue='@{@string/not_available}'
             />
 
-        <org.technologyboard.android.sormas.component.TeboTextRead
+        <de.symeda.sormas.app.component.TeboTextRead
             android:id="@+id/txtHealthFacilityDesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -266,7 +266,7 @@
             app:goneIfNull="@{data.healthFacilityDetails}"
             />
 
-        <org.technologyboard.android.sormas.component.TeboTextLinkRead
+        <de.symeda.sormas.app.component.TeboTextLinkRead
             android:id="@+id/txtMoveCase"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -289,7 +289,7 @@
             style="@style/ReadActivitySubHeadingStyle"
             />
 
-        <org.technologyboard.android.sormas.component.TeboTextRead
+        <de.symeda.sormas.app.component.TeboTextRead
             android:id="@+id/txtAdditionalMedInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -302,7 +302,7 @@
             app:defaultValue='@{@string/not_available}'
             />
 
-        <org.technologyboard.android.sormas.component.TeboTextRead
+        <de.symeda.sormas.app.component.TeboTextRead
             android:id="@+id/txtMeaslesVaccination"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -315,7 +315,7 @@
             app:defaultValue='@{@string/not_available}'
             />
 
-        <org.technologyboard.android.sormas.component.TeboTextRead
+        <de.symeda.sormas.app.component.TeboTextRead
             android:id="@+id/txtMeaslesDose"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -328,7 +328,7 @@
             app:defaultValue='@{@string/not_available}'
             />
 
-        <org.technologyboard.android.sormas.component.TeboTextRead
+        <de.symeda.sormas.app.component.TeboTextRead
             android:id="@+id/txtMeaslesVaccinationInfoSource"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -341,7 +341,7 @@
             app:defaultValue='@{@string/not_available}'
             />
 
-        <org.technologyboard.android.sormas.component.TeboTextRead
+        <de.symeda.sormas.app.component.TeboTextRead
             android:id="@+id/txtYellowFeverVaccination"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -354,7 +354,7 @@
             app:defaultValue='@{@string/not_available}'
             />
 
-        <org.technologyboard.android.sormas.component.TeboTextRead
+        <de.symeda.sormas.app.component.TeboTextRead
             android:id="@+id/txtYellowFeverVaccinationInfoSource"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -367,7 +367,7 @@
             app:defaultValue='@{@string/not_available}'
             />
 
-        <org.technologyboard.android.sormas.component.TeboTextRead
+        <de.symeda.sormas.app.component.TeboTextRead
             android:id="@+id/txtResponsibleOfficer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

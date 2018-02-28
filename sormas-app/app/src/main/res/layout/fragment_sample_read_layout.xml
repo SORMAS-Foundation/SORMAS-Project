@@ -12,7 +12,7 @@
 
         <variable
             name="recentTestItemClickCallback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
 
 
@@ -36,7 +36,7 @@
                 >
 
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtDiseaseName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
 
 
 
-                    <org.technologyboard.android.sormas.component.TeboTextRead
+                    <de.symeda.sormas.app.component.TeboTextRead
                         android:id="@+id/txtSampleCode"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <org.technologyboard.android.sormas.component.TeboTextRead
+                    <de.symeda.sormas.app.component.TeboTextRead
                         android:id="@+id/txtSampleMaterial"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
 
 
 
-                    <org.technologyboard.android.sormas.component.TeboTextRead
+                    <de.symeda.sormas.app.component.TeboTextRead
                         android:id="@+id/txtDateTimeOfSampling"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <org.technologyboard.android.sormas.component.TeboTextRead
+                    <de.symeda.sormas.app.component.TeboTextRead
                         android:id="@+id/txtTestType"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -118,7 +118,7 @@
                 </LinearLayout>
 
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtLaboratoryName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -144,7 +144,7 @@
 
 
 
-                        <org.technologyboard.android.sormas.component.TeboTextImageRead
+                        <de.symeda.sormas.app.component.TeboTextImageRead
                             android:id="@+id/txtShippingStatus"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -166,7 +166,7 @@
 
 
 
-                        <org.technologyboard.android.sormas.component.TeboTextImageRead
+                        <de.symeda.sormas.app.component.TeboTextImageRead
                             android:id="@+id/txtReceivedStatus"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -186,7 +186,7 @@
 
 
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtShipmentDetails"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -199,7 +199,7 @@
 
 
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtComment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

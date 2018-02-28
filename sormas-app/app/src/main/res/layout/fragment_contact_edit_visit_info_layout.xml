@@ -8,10 +8,10 @@
     <data>
         <variable
             name="showNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
         <variable
             name="hideNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.visit.Visit"/>
         <variable name="visitStatusClass" type="Class" />
@@ -28,7 +28,7 @@
         android:paddingRight="@dimen/parentLayoutHorizontalPadding"
         >
 
-        <org.technologyboard.android.sormas.component.TeboDateTimePicker
+        <de.symeda.sormas.app.component.TeboDateTimePicker
             android:id="@+id/dtpDateTimeOfVisit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
             />
 
 
-        <org.technologyboard.android.sormas.component.TeboRadioGroup
+        <de.symeda.sormas.app.component.TeboRadioGroup
             android:id="@+id/chkVisitStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -63,7 +63,7 @@
             app:onHideInputErrorListener="@{hideNotificationCallback}"
             />
 
-        <org.technologyboard.android.sormas.component.TeboTextInputEditText
+        <de.symeda.sormas.app.component.TeboTextInputEditText
             android:id="@+id/txtVisitRemarks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

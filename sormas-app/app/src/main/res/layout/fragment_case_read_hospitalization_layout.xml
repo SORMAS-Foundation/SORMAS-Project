@@ -40,7 +40,7 @@
                     />
 
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtHospitalName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     >
-                    <org.technologyboard.android.sormas.component.TeboTextRead
+                    <de.symeda.sormas.app.component.TeboTextRead
                         android:id="@+id/txtAdmissionDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <org.technologyboard.android.sormas.component.TeboTextRead
+                    <de.symeda.sormas.app.component.TeboTextRead
                         android:id="@+id/txtDischargeDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     >
-                    <org.technologyboard.android.sormas.component.TeboTextRead
+                    <de.symeda.sormas.app.component.TeboTextRead
                         android:id="@+id/txtIsolation"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <org.technologyboard.android.sormas.component.TeboTextRead
+                    <de.symeda.sormas.app.component.TeboTextRead
                         android:id="@+id/txtIsolationDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"

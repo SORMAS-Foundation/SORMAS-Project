@@ -17,7 +17,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.TeboTextInputEditText
                 android:id="@+id/txtSettingsServerUrl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
                 app:description="This is the URL to the restful API"
                 app:labelCaption="Server Address"/>
 
-            <org.technologyboard.android.sormas.component.TeboButton
+            <de.symeda.sormas.app.component.TeboButton
                 android:id="@+id/btnSettingsChangePIN"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
                 app:buttonType="secondary"
                 android:onClick="changePIN"/>
 
-            <org.technologyboard.android.sormas.component.TeboButton
+            <de.symeda.sormas.app.component.TeboButton
                 android:id="@+id/btnSettingsDropData"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -43,7 +43,7 @@
                 app:buttonType="secondary"
                 app:text="@string/action_drop_data"/>
 
-            <org.technologyboard.android.sormas.component.TeboButton
+            <de.symeda.sormas.app.component.TeboButton
                 android:id="@+id/btnSettingsSyncLog"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
                 app:buttonType="secondary"
                 android:onClick="openSyncLog"/>
 
-            <org.technologyboard.android.sormas.component.TeboButton
+            <de.symeda.sormas.app.component.TeboButton
                 android:id="@+id/btnSettingsLogout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

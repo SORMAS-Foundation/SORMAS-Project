@@ -8,7 +8,7 @@
 
         <variable
             name="callback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
 
     <LinearLayout

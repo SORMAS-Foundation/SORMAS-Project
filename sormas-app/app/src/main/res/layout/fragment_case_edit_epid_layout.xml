@@ -8,25 +8,25 @@
     <data>
         <variable
             name="showNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
         <variable
             name="hideNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiData"/>
         <variable name="yesNoUnknownClass" type="Class" />
 
         <variable
             name="gatheringCallback"
-            type="org.technologyboard.android.sormas.component.OnTeboSwitchCheckedChangeListener" />
+            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
 
         <variable
             name="travelCallback"
-            type="org.technologyboard.android.sormas.component.OnTeboSwitchCheckedChangeListener" />
+            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
 
         <variable
             name="burialCallback"
-            type="org.technologyboard.android.sormas.component.OnTeboSwitchCheckedChangeListener" />
+            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
 
         <variable name="gatheringList" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataGathering&gt;" />
         <variable name="travelList" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataTravel&gt;" />
@@ -34,24 +34,24 @@
 
         <variable
             name="gatheringItemClickCallback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
         <variable
             name="addGatheringEntryClickCallback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
 
         <variable
             name="travelItemClickCallback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
         <variable
             name="addTravelEntryClickCallback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
 
         <variable
             name="burialItemClickCallback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
         <variable
             name="addBurialEntryClickCallback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
 
     <LinearLayout
@@ -70,7 +70,7 @@
             android:paddingRight="@dimen/parentLayoutHorizontalPadding"
             >
 
-            <org.technologyboard.android.sormas.component.TeboHint
+            <de.symeda.sormas.app.component.TeboHint
                 android:id="@+id/txtEpidTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
                 app:value="@{@string/epiData_infoText}"
                 />
 
-            <org.technologyboard.android.sormas.component.TeboSwitch
+            <de.symeda.sormas.app.component.TeboSwitch
                 android:id="@+id/swhBurial"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -140,7 +140,7 @@
                     style="@style/ReadActivitySubHeadingNoBMarginStyle"
                     />
 
-                <org.technologyboard.android.sormas.component.TeboButton
+                <de.symeda.sormas.app.component.TeboButton
                     android:id="@+id/btnNewBurialEntry"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -185,7 +185,7 @@
             android:paddingRight="@dimen/parentLayoutHorizontalPadding"
             >
 
-            <org.technologyboard.android.sormas.component.TeboSwitch
+            <de.symeda.sormas.app.component.TeboSwitch
                 android:id="@+id/swhGathering"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -241,7 +241,7 @@
                     style="@style/ReadActivitySubHeadingNoBMarginStyle"
                     />
 
-                <org.technologyboard.android.sormas.component.TeboButton
+                <de.symeda.sormas.app.component.TeboButton
                     android:id="@+id/btnNewGatheringEntry"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -284,7 +284,7 @@
             android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
             android:paddingRight="@dimen/parentLayoutHorizontalPadding"
             >
-            <org.technologyboard.android.sormas.component.TeboSwitch
+            <de.symeda.sormas.app.component.TeboSwitch
                 android:id="@+id/swhTraveled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -340,7 +340,7 @@
                     style="@style/ReadActivitySubHeadingNoBMarginStyle"
                     />
 
-                <org.technologyboard.android.sormas.component.TeboButton
+                <de.symeda.sormas.app.component.TeboButton
                     android:id="@+id/btnNewTravelEntry"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -424,7 +424,7 @@
                 />
 
 
-            <org.technologyboard.android.sormas.component.TeboSpinner
+            <de.symeda.sormas.app.component.TeboSpinner
                 android:id="@+id/spnSourceOfDrinkingWater"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -438,7 +438,7 @@
                 />
 
 
-            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.TeboTextInputEditText
                 android:id="@+id/txtSourceOfDrinkingWaterOther"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

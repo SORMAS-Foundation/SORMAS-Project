@@ -6,13 +6,13 @@
 
     <data>
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
-        <variable name="config" type="org.technologyboard.android.sormas.component.dialog.DialogViewConfig"/>
+        <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
         <variable
             name="showNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
         <variable
             name="hideNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
     </data>
 
 
@@ -39,7 +39,7 @@
                 android:textSize="@dimen/defaultPageHintTextSize"/>-->
 
 
-            <org.technologyboard.android.sormas.component.TeboSpinner
+            <de.symeda.sormas.app.component.TeboSpinner
                 android:id="@+id/spnState"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
                 app:onHideInputErrorListener="@{hideNotificationCallback}"
                 />
 
-            <org.technologyboard.android.sormas.component.TeboSpinner
+            <de.symeda.sormas.app.component.TeboSpinner
                 android:id="@+id/spnLga"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
                 app:onHideInputErrorListener="@{hideNotificationCallback}"
                 />
 
-            <org.technologyboard.android.sormas.component.TeboSpinner
+            <de.symeda.sormas.app.component.TeboSpinner
                 android:id="@+id/spnWard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
                 app:onHideInputErrorListener="@{hideNotificationCallback}"
                 />
 
-            <org.technologyboard.android.sormas.component.TeboSpinner
+            <de.symeda.sormas.app.component.TeboSpinner
                 android:id="@+id/spnFacility"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -111,7 +111,7 @@
                 app:onHideInputErrorListener="@{hideNotificationCallback}"
                 />
 
-            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.TeboTextInputEditText
                 android:id="@+id/txtFacilityDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

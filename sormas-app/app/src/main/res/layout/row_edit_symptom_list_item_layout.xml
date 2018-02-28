@@ -5,16 +5,16 @@
     <data>
         <variable
             name="showNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
         <variable
             name="hideNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
-        <variable name="data" type="org.technologyboard.android.sormas.symptom.Symptom"/>
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
+        <variable name="data" type="de.symeda.sormas.app.symptom.Symptom"/>
         <variable name="symptomStateClass" type="Class" />
 
         <variable
             name="checkedCallback"
-            type="org.technologyboard.android.sormas.component.OnTeboSwitchCheckedChangeListener" />
+            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
     </data>
 
     <LinearLayout
@@ -57,7 +57,7 @@
                     android:fontFamily="sans-serif"
                     />
 
-                <org.technologyboard.android.sormas.component.TeboSwitch
+                <de.symeda.sormas.app.component.TeboSwitch
                     android:id="@+id/swhSymptomState"
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
@@ -77,7 +77,7 @@
                     />
             </LinearLayout>
 
-            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.TeboTextInputEditText
                 android:id="@+id/txtSymptomDetail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

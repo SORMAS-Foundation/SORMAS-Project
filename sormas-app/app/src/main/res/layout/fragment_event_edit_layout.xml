@@ -8,10 +8,10 @@
     <data>
         <variable
             name="showNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
         <variable
             name="hideNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
 
@@ -20,12 +20,12 @@
 
         <variable
             name="checkedCallback"
-            type="org.technologyboard.android.sormas.component.OnTeboSwitchCheckedChangeListener" />
+            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
 
 
         <variable
             name="addressLinkCallback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
 
 
@@ -45,7 +45,7 @@
             android:orientation="horizontal"
             >
 
-            <org.technologyboard.android.sormas.component.TeboTextUuidRead
+            <de.symeda.sormas.app.component.TeboTextUuidRead
                 android:id="@+id/txtAlertId"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtReportDate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
             android:orientation="horizontal"
             >
 
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtReportingUser"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -92,7 +92,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <org.technologyboard.android.sormas.component.TeboTextRead
+            <de.symeda.sormas.app.component.TeboTextRead
                 android:id="@+id/txtSurveillanceOfficer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -108,7 +108,7 @@
         </LinearLayout>
 
 
-        <org.technologyboard.android.sormas.component.TeboSwitch
+        <de.symeda.sormas.app.component.TeboSwitch
             android:id="@+id/swhAlertType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -132,7 +132,7 @@
             app:onHideInputErrorListener="@{hideNotificationCallback}"
             />
 
-        <org.technologyboard.android.sormas.component.TeboTextInputEditText
+        <de.symeda.sormas.app.component.TeboTextInputEditText
             android:id="@+id/txtAlertDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -149,7 +149,7 @@
             />
 
 
-        <org.technologyboard.android.sormas.component.TeboSpinner
+        <de.symeda.sormas.app.component.TeboSpinner
             android:id="@+id/spnDisease"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -163,7 +163,7 @@
             />
 
 
-        <org.technologyboard.android.sormas.component.TeboDatePicker
+        <de.symeda.sormas.app.component.TeboDatePicker
             android:id="@+id/dtpDateOfAlert"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -176,7 +176,7 @@
             />
 
 
-        <org.technologyboard.android.sormas.component.TeboSpinner
+        <de.symeda.sormas.app.component.TeboSpinner
             android:id="@+id/spnTypeOfPlace"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -190,7 +190,7 @@
             />
 
 
-        <org.technologyboard.android.sormas.component.TeboTextInputEditText
+        <de.symeda.sormas.app.component.TeboTextInputEditText
             android:id="@+id/txtOtherEventPlace"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -208,7 +208,7 @@
 
 
         <!--app:hint="Eg. No. 32 Hey Street, Maitama, Abuja, FCT"-->
-        <org.technologyboard.android.sormas.component.TeboTextLinkEdit
+        <de.symeda.sormas.app.component.TeboTextLinkEdit
             android:id="@+id/txtAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -240,7 +240,7 @@
             >
 
 
-            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.TeboTextInputEditText
                 android:id="@+id/txtSourceLastName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -258,7 +258,7 @@
                 />
 
 
-            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.TeboTextInputEditText
                 android:id="@+id/txtSourceFirstName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -278,7 +278,7 @@
         </LinearLayout>
 
 
-        <org.technologyboard.android.sormas.component.TeboTextInputEditText
+        <de.symeda.sormas.app.component.TeboTextInputEditText
             android:id="@+id/txtSourceTelNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -296,7 +296,7 @@
             />
 
 
-        <org.technologyboard.android.sormas.component.TeboTextInputEditText
+        <de.symeda.sormas.app.component.TeboTextInputEditText
             android:id="@+id/txtSourceEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

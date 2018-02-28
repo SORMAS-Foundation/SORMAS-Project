@@ -8,24 +8,24 @@
     <data>
         <variable
             name="showNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
         <variable
             name="hideNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.symptoms.Symptoms"/>
 
 
         <variable
             name="clearAllCallback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
         <variable
             name="setAllToNoCallback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
 
         <variable
             name="addressLinkCallback"
-            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
 
 
@@ -46,7 +46,7 @@
             android:orientation="horizontal"
             >
             
-            <org.technologyboard.android.sormas.component.TeboSpinner
+            <de.symeda.sormas.app.component.TeboSpinner
                 android:id="@+id/spnBodyTemperature"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
                 app:value="@={data.temperature}"
                 />
 
-            <org.technologyboard.android.sormas.component.TeboSpinner
+            <de.symeda.sormas.app.component.TeboSpinner
                 android:id="@+id/spnBodyTemperatureSource"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -77,7 +77,7 @@
 
         </LinearLayout>
         
-        <org.technologyboard.android.sormas.component.TeboHint
+        <de.symeda.sormas.app.component.TeboHint
             android:id="@+id/txtSymptomsTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
             android:orientation="horizontal"
             >
 
-            <org.technologyboard.android.sormas.component.TeboButton
+            <de.symeda.sormas.app.component.TeboButton
                 android:id="@+id/btnClearAll"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -108,7 +108,7 @@
                 app:onButtonOnClick="@{(view) -> clearAllCallback.onClick(view, data)}"
                 />
 
-            <org.technologyboard.android.sormas.component.TeboButton
+            <de.symeda.sormas.app.component.TeboButton
                 android:id="@+id/btnClearedToNo"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -148,7 +148,7 @@
 
         </android.support.v4.widget.NestedScrollView>
 
-        <org.technologyboard.android.sormas.component.TeboTextInputEditText
+        <de.symeda.sormas.app.component.TeboTextInputEditText
             android:id="@+id/txtSymptomComment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -165,7 +165,7 @@
             />
 
 
-        <org.technologyboard.android.sormas.component.TeboDatePicker
+        <de.symeda.sormas.app.component.TeboDatePicker
             android:id="@+id/dtpSymptomOnset"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -178,7 +178,7 @@
             />
 
 
-        <org.technologyboard.android.sormas.component.TeboSpinner
+        <de.symeda.sormas.app.component.TeboSpinner
             android:id="@+id/spnFirstSymptoms"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -191,7 +191,7 @@
             app:value="@={data.firstSymptom}"
             />
 
-        <org.technologyboard.android.sormas.component.TeboTextLinkEdit
+        <de.symeda.sormas.app.component.TeboTextLinkEdit
             android:id="@+id/txtSymptomaticLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -216,7 +216,7 @@
             android:orientation="horizontal"
             >
 
-            <org.technologyboard.android.sormas.component.TeboDatePicker
+            <de.symeda.sormas.app.component.TeboDatePicker
                 android:id="@+id/dtpStayStart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -229,7 +229,7 @@
                 app:value="@={data.illLocationFrom}"
                 />
 
-            <org.technologyboard.android.sormas.component.TeboDatePicker
+            <de.symeda.sormas.app.component.TeboDatePicker
                 android:id="@+id/dtpStayEnd"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

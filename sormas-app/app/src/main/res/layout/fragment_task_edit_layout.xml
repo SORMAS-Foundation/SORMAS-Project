@@ -5,7 +5,7 @@
     android:id="@+id/base_layout">
 
     <data>
-        <import type="org.technologyboard.android.sormas.core.BoxingUtil" />
+        <import type="de.symeda.sormas.app.core.BoxingUtil" />
         <variable name="data" type="de.symeda.sormas.app.backend.task.Task"/>
         <variable name="person" type="de.symeda.sormas.app.backend.person.Person"/>
         <variable name="test1" type="de.symeda.sormas.app.backend.event.Event"/>
@@ -16,10 +16,10 @@
         <variable name="symptomState" type="Class" />
         <variable
             name="showNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
         <variable
             name="hideNotificationCallback"
-            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
         <variable
             name="doneCallback"
             type="android.view.View.OnClickListener" />
@@ -30,7 +30,7 @@
 
         <variable
             name="checkedCallback"
-            type="org.technologyboard.android.sormas.component.OnTeboSwitchCheckedChangeListener" />
+            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
     </data>
 
 
@@ -56,7 +56,7 @@
                 >
 
 
-                <org.technologyboard.android.sormas.component.TeboTextRead
+                <de.symeda.sormas.app.component.TeboTextRead
                     android:id="@+id/txtTaskType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextLinkRead
+                <de.symeda.sormas.app.component.TeboTextLinkRead
                     android:id="@+id/txtAssocCaze"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
                     app:goneIfNull='@{data.caze}'
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextLinkRead
+                <de.symeda.sormas.app.component.TeboTextLinkRead
                     android:id="@+id/txtAssocContact"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -95,7 +95,7 @@
                     app:goneIfNull='@{data.contact}'
                     />
 
-                <org.technologyboard.android.sormas.component.TeboTextLinkRead
+                <de.symeda.sormas.app.component.TeboTextLinkRead
                     android:id="@+id/txtAssocEvent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -115,7 +115,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <org.technologyboard.android.sormas.component.TeboTextImageRead
+                    <de.symeda.sormas.app.component.TeboTextImageRead
                         android:id="@+id/txtTaskPriority"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -131,7 +131,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <org.technologyboard.android.sormas.component.TeboTextImageRead
+                    <de.symeda.sormas.app.component.TeboTextImageRead
                         android:id="@+id/txtTaskStatus"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -154,7 +154,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <org.technologyboard.android.sormas.component.TeboTextRead
+                    <de.symeda.sormas.app.component.TeboTextRead
                         android:id="@+id/txtSuggestedStart"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -166,7 +166,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <org.technologyboard.android.sormas.component.TeboTextRead
+                    <de.symeda.sormas.app.component.TeboTextRead
                         android:id="@+id/txtDueDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -180,7 +180,7 @@
                         />
                 </LinearLayout>
 
-                <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.TeboTextInputEditText
                     android:id="@+id/txtCommentOnExec"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -196,7 +196,7 @@
                     />
 
 
-                <org.technologyboard.android.sormas.component.TeboSwitch
+                <de.symeda.sormas.app.component.TeboSwitch
                     android:id="@+id/swhAlertType"
                     android:layout_width="180dp"
                     android:layout_height="wrap_content"
@@ -234,7 +234,7 @@
             android:elevation="16dp"
             >
 
-            <org.technologyboard.android.sormas.component.TeboButton
+            <de.symeda.sormas.app.component.TeboButton
                 android:id="@+id/btnNotExecutable"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -254,7 +254,7 @@
                 style="@style/FormButtonDividerStyle"
                 />
 
-            <org.technologyboard.android.sormas.component.TeboButton
+            <de.symeda.sormas.app.component.TeboButton
                 android:id="@+id/btnDone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
