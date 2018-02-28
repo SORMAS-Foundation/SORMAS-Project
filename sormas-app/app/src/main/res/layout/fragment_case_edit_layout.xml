@@ -311,7 +311,7 @@
             app:maxLines="2"
             app:description="@string/desc_case_measles_vaccination"
             app:labelCaption="@string/label_case_measles_vaccination"
-            app:value="@{data.measlesVaccination}"
+            app:value="@{data.vaccination}"
             app:defaultValue='@{@string/not_available}'
             />
 
@@ -324,7 +324,7 @@
             app:maxLines="2"
             app:description="@string/desc_case_measles_doses"
             app:labelCaption="@string/label_case_measles_doses"
-            app:value="@{data.measlesVaccination}"
+            app:value="@{data.vaccinationDoses}"
             app:defaultValue='@{@string/not_available}'
             />
 
@@ -337,7 +337,7 @@
             app:maxLines="2"
             app:description="@string/desc_case_measles_vaccination_info_source"
             app:labelCaption="@string/label_case_measles_vaccination_info_source"
-            app:value="@{data.measlesVaccinationInfoSource}"
+            app:value="@{data.vaccinationInfoSource}"
             app:defaultValue='@{@string/not_available}'
             />
 
