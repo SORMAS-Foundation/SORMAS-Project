@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="task_landing_activity_menu">
+        <item>Pending</item>
+        <item>Done</item>
+        <item>Not Executable</item>
+    </string-array>
+</resources>

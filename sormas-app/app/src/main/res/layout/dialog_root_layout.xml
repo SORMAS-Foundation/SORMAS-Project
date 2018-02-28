@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <import type="android.view.Gravity" />
+        <variable name="config" type="org.technologyboard.android.sormas.component.dialog.DialogViewConfig"/>
+        <variable name="dialog" type="org.technologyboard.android.sormas.component.dialog.BaseTeboAlertDialog" />
+        <variable
+            name="dismissCallback"
+            type="org.technologyboard.android.sormas.component.dialog.IDialogDismissOnClickListener" />
+        <variable
+            name="okCallback"
+            type="org.technologyboard.android.sormas.component.dialog.IDialogOkOnClickListener" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/parentLayoutVerticalPadding"
+        android:paddingBottom="@dimen/parentLayoutVerticalPadding"
+        android:orientation="vertical"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <TextView
+            android:id="@+id/dialogHeading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="@{dialog.isHeadingCentered? Gravity.CENTER_HORIZONTAL : Gravity.START}"
+            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+            android:paddingRight="@dimen/rowListItemHorizontalMargin"
+            android:textColor="@color/normalText"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="@dimen/dialogHeadingTextSize"
+            android:layout_marginBottom="@dimen/parentLayoutVerticalMargin"
+            android:text="@{config.heading}"
+            />
+
+        <LinearLayout
+            android:id="@+id/notificationFrame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+            android:paddingRight="@dimen/rowListItemHorizontalMargin"
+            android:orientation="vertical"
+            android:elevation="8dp"
+            android:background="@drawable/background_notification_dialog"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:visibility="gone"
+            >
+            <TextView
+                android:id="@+id/tvNotificationMessage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@color/whiteOpaque"
+                android:text=""/>
+
+        </LinearLayout>
+
+
+        <ViewStub android:id="@+id/vsDialogContent"
+            android:inflatedId="@+id/dialogContentView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+            android:paddingRight="@dimen/rowListItemHorizontalMargin"
+            />
+
+        <ViewStub android:id="@+id/vsDialogButtonPanel"
+            android:inflatedId="@+id/dialogButtonPanelView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+            android:paddingRight="@dimen/rowListItemHorizontalMargin"
+            />
+
+
+
+    </LinearLayout>
+
+    </ScrollView>
+
+</layout>

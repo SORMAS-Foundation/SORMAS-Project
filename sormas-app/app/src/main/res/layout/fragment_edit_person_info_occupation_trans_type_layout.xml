@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable
+            name="showNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.person.Person"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <org.technologyboard.android.sormas.component.TeboTextInputEditText
+            android:id="@+id/txtTransType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/textControlMarginBottom"
+            app:hint="@string/hint_event_pinvolv_occupation_trans_type"
+            app:labelCaption="@string/label_event_pinvolv_occupation_trans_type"
+            app:description="@string/desc_event_pinvolv_occupation_trans_type"
+            app:required="true"
+            app:value="@={data.occupationDetails}"
+            app:nextFocusDown="@+id/txtControl1"
+            app:imeOptions="actionNext"
+            app:onShowInputErrorListener="@{showNotificationCallback}"
+            app:onHideInputErrorListener="@{hideNotificationCallback}"
+            />
+
+
+    </LinearLayout>
+
+</layout>
+

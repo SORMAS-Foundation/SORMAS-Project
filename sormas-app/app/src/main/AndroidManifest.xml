@@ -18,7 +18,7 @@
         android:icon="@mipmap/sormas_logo"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/SormasTheme">
         <activity
             android:name=".caze.CasesActivity"
             android:launchMode="singleTop"></activity>

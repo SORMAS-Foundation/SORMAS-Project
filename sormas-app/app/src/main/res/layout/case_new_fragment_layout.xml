@@ -17,7 +17,7 @@
             android:padding="10dp"
             android:descendantFocusability="beforeDescendants"
             android:focusableInTouchMode="true"
-            android:theme="@style/AppTheme">
+            android:theme="@style/SormasTheme">
 
             <!-- ============= NEW_CASE ============= -->
             <TextView

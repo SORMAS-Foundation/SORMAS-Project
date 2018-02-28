@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
+        <variable name="config" type="org.technologyboard.android.sormas.component.dialog.DialogViewConfig"/>
+        <variable
+            name="showNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+            android:paddingRight="@dimen/rowListItemHorizontalMargin"
+            >
+
+            <!--<TextView
+                android:id="@+id/txtDialogHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@={config.subHeading}"
+                android:textColor="@color/pageHintText"
+                android:textSize="@dimen/defaultPageHintTextSize"/>-->
+
+
+            <org.technologyboard.android.sormas.component.TeboSpinner
+                android:id="@+id/spnState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
+                app:slim="true"
+                app:hint="@string/hint_case_state"
+                app:description="@string/desc_case_state"
+                app:labelCaption="@string/label_case_state"
+                app:required="true"
+                app:spinnerMode="dialog"
+                app:nextFocusDown="@+id/spnLga"
+                app:imeOptions="actionNext"
+                app:value="@={data.region}"
+                app:onShowInputErrorListener="@{showNotificationCallback}"
+                app:onHideInputErrorListener="@{hideNotificationCallback}"
+                />
+
+            <org.technologyboard.android.sormas.component.TeboSpinner
+                android:id="@+id/spnLga"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
+                app:slim="true"
+                app:hint="@string/hint_case_lga"
+                app:description="@string/desc_case_lga"
+                app:labelCaption="@string/label_case_lga"
+                app:required="true"
+                app:spinnerMode="dialog"
+                app:nextFocusDown="@+id/spnWard"
+                app:imeOptions="actionNext"
+                app:value="@={data.district}"
+                app:onShowInputErrorListener="@{showNotificationCallback}"
+                app:onHideInputErrorListener="@{hideNotificationCallback}"
+                />
+
+            <org.technologyboard.android.sormas.component.TeboSpinner
+                android:id="@+id/spnWard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
+                app:slim="true"
+                app:hint="@string/hint_case_ward"
+                app:description="@string/desc_case_ward"
+                app:labelCaption="@string/label_case_ward"
+                app:required="true"
+                app:spinnerMode="dialog"
+                app:nextFocusDown="@+id/spnCity"
+                app:imeOptions="actionNext"
+                app:value="@={data.community}"
+                app:onShowInputErrorListener="@{showNotificationCallback}"
+                app:onHideInputErrorListener="@{hideNotificationCallback}"
+                />
+
+            <org.technologyboard.android.sormas.component.TeboSpinner
+                android:id="@+id/spnFacility"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
+                app:slim="true"
+                app:hint="@string/hint_case_health_facility"
+                app:description="@string/desc_case_health_facility"
+                app:labelCaption="@string/label_case_health_facility"
+                app:required="true"
+                app:spinnerMode="dialog"
+                app:nextFocusDown="@+id/spnCity"
+                app:imeOptions="actionNext"
+                app:value="@={data.healthFacility}"
+                app:onShowInputErrorListener="@{showNotificationCallback}"
+                app:onHideInputErrorListener="@{hideNotificationCallback}"
+                />
+
+            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                android:id="@+id/txtFacilityDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
+                app:slim="true"
+                app:hint="@string/hint_case_health_facility_desc"
+                app:description="@string/desc_case_health_facility_desc"
+                app:labelCaption="@string/label_case_health_facility_desc"
+                app:required="true"
+                app:value="@={data.healthFacilityDetails}"
+                app:nextFocusDown="@+id/checkbox1"
+                app:imeOptions="actionNext"
+                app:onShowInputErrorListener="@{showNotificationCallback}"
+                app:onHideInputErrorListener="@{hideNotificationCallback}"
+                />
+
+        </LinearLayout>
+    </ScrollView>
+</layout>
+

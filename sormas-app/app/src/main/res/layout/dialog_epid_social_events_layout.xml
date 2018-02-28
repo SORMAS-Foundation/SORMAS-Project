@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiDataGathering"/>
+        <variable name="config" type="org.technologyboard.android.sormas.component.dialog.DialogViewConfig"/>
+        <variable
+            name="showNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+
+        <variable
+            name="addressLinkCallback"
+            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+            android:paddingRight="@dimen/rowListItemHorizontalMargin"
+            >
+
+            <org.technologyboard.android.sormas.component.TeboDatePicker
+                android:id="@+id/dtpDateOfEvent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                app:hint="@string/hint_case_epid_social_event_date"
+                app:labelCaption="@string/label_case_epid_social_event_date"
+                app:description="@string/desc_case_epid_social_event_date"
+                app:required="true"
+                app:slim="false"
+                app:value="@={data.gatheringDate}"
+                />
+
+            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                android:id="@+id/txtEventDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                app:hint="@string/hint_case_epid_social_event_desc"
+                app:labelCaption="@string/label_case_epid_social_event_desc"
+                app:description="@string/desc_case_epid_social_event_desc"
+                app:required="true"
+                app:value="@={data.description}"
+                app:nextFocusDown="@+id/txtControl1"
+                app:imeOptions="actionNext"
+                app:onShowInputErrorListener="@{showNotificationCallback}"
+                app:onHideInputErrorListener="@{hideNotificationCallback}"
+                />
+
+            <org.technologyboard.android.sormas.component.TeboTextLinkEdit
+                android:id="@+id/txtAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                app:background="@drawable/control_link_edittextview_background_selector"
+                app:drawablePadding="@dimen/contentHorizontalSpacing"
+                app:drawableLeft="@drawable/ic_edit_location_black_24dp"
+                app:drawableTint="@color/control_link_edittextview_color_selector"
+                app:textColor="@color/control_link_edittextview_color_selector"
+                app:textColorHint="@color/control_link_edittextview_hint_color_selector"
+                app:hint="@string/hint_case_epid_social_event_address"
+                app:labelCaption="@string/label_case_epid_social_event_address"
+                app:description="@string/desc_case_epid_social_event_address"
+                app:onLinkClick="@{(view) -> addressLinkCallback.onClick(view, data)}"
+                />
+
+
+        </LinearLayout>
+    </ScrollView>
+</layout>
+

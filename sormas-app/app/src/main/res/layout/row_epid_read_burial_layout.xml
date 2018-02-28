@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.backend.epidata.EpiDataBurial" />
+
+        <variable
+            name="callback"
+            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/rowListItemBurial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/parentLayoutVerticalPadding"
+        android:paddingBottom="@dimen/parentLayoutVerticalPadding"
+        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+        android:paddingRight="@dimen/rowListItemHorizontalMargin"
+        android:orientation="vertical"
+        android:background="@drawable/selector_list_section_row_background"
+        android:elevation="2dp"
+        android:onClickListener="@{(view) -> callback.onClick(view, data)}"
+        >
+
+        <TextView
+            android:id="@+id/txtPatientNameAndRelationship"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:gravity="left|center_vertical"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:value="@{data.burialPersonname}"
+            app:appendValue="@{data.burialRelation}"
+            app:valueFormat='@{@string/text_with_bracket_desc_format}'
+            app:defaultValue='@{@string/epid_burial_person_unknown}'
+
+
+            android:textAllCaps="true"
+            android:textColor="@color/readInlineListSecondaryTextColor"
+            android:textSize="@dimen/readInlineListSecondaryTextSize"
+            />
+
+        <TextView
+            android:id="@+id/txtBurialLocation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:gravity="left|center_vertical"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:locationValue="@{data.burialAddress}"
+            app:defaultValue='@{@string/epid_burial_location_unknown}'
+
+
+            android:textAllCaps="true"
+            android:textColor="@color/readInlineListTertiaryTextColor"
+            android:textSize="@dimen/readInlineListTertiaryTextSize"
+            android:fontFamily="sans-serif-medium"
+            />
+
+        <TextView
+            android:id="@+id/txtFromToBurialDate"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:gravity="left|center_vertical"
+            android:layout_marginBottom="@dimen/contentVerticalSpacing"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:dateRangeValue="@{data.burialDateFrom}"
+            app:appendValue="@{data.burialDateTo}"
+            app:valueFormat='@{@string/date_range_format}'
+            app:defaultValue='@{@string/epid_burial_date_unknown}'
+
+
+            android:textAllCaps="true"
+            android:textColor="@color/readInlineListPrimaryTextColor"
+            android:textSize="@dimen/readInlineListPrimaryTextSize"
+            android:fontFamily="sans-serif-medium"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:clipToPadding="false"
+            app:burialInfoList="@{data}"
+            app:layout="@{@layout/row_bullet_string_list_item_layout}"
+            />
+
+
+
+    </LinearLayout>
+</layout>

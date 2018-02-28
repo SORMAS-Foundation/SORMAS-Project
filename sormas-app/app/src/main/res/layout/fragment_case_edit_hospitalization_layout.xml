@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable
+            name="showNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.hospitalization.Hospitalization"/>
+        <variable name="yesNoUnknownClass" type="Class" />
+
+        <variable
+            name="isolationCallback"
+            type="org.technologyboard.android.sormas.component.OnTeboSwitchCheckedChangeListener" />
+
+        <variable
+            name="admittedToFacilityCallback"
+            type="org.technologyboard.android.sormas.component.OnTeboSwitchCheckedChangeListener" />
+
+        <variable
+            name="previousHospitalizationCallback"
+            type="org.technologyboard.android.sormas.component.OnTeboSwitchCheckedChangeListener" />
+        <variable name="previousHospitalizationList" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization&gt;" />
+
+        <variable
+            name="prevHosItemClickCallback"
+            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+        <variable
+            name="addEntryClickCallback"
+            type="org.technologyboard.android.sormas.core.IEntryItemOnClickListener" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/parentLayoutVerticalMargin"
+            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+            >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/heading_sub_case_hos_most_recent_hospitalization"
+                style="@style/ReadActivitySubHeadingStyle"
+                />
+
+            <org.technologyboard.android.sormas.component.TeboSwitch
+                android:id="@+id/swhAdmittedToHealthFacility"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                app:paddingTop="@dimen/defaultControlVerticalPadding"
+                app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                app:background="@drawable/control_switch_background_border"
+                app:borderSize="@dimen/defaultControlStrokeWidth"
+                app:textColor="@color/control_switch_color_selector"
+                app:hint="@string/hint_case_hos_admitted_to_health_facility"
+                app:labelCaption="@string/label_case_hos_admitted_to_health_facility"
+                app:description="@string/desc_case_hos_admitted_to_health_facility"
+                app:required="true"
+                app:orientation="horizontal"
+                app:slim="false"
+                app:includeUnknown="@{false}"
+                app:enumClass="@{yesNoUnknownClass}"
+                app:value="@={data.admittedToHealthFacility}"
+                app:onCheckedChangeListener="@{admittedToFacilityCallback}"
+                app:onShowInputErrorListener="@{showNotificationCallback}"
+                app:onHideInputErrorListener="@{hideNotificationCallback}"
+                />
+
+            <LinearLayout
+                android:id="@+id/ctrlAdmission"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <org.technologyboard.android.sormas.component.TeboDatePicker
+                    android:id="@+id/dtpDateOfAdmission"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:hint="@string/hint_case_hos_admission_date"
+                    app:labelCaption="@string/label_case_hos_admission_date"
+                    app:description="@string/desc_case_hos_admission_date"
+                    app:required="true"
+                    app:value="@={data.admissionDate}"
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboDatePicker
+                    android:id="@+id/dtpDateOfDischarge"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    app:hint="@string/hint_case_hos_discharge_date"
+                    app:labelCaption="@string/label_case_hos_discharge_date"
+                    app:description="@string/desc_case_hos_discharge_date"
+                    app:required="true"
+                    app:value="@={data.dischargeDate}"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ctrlIsolation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <org.technologyboard.android.sormas.component.TeboSwitch
+                    android:id="@+id/swhIsolation"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:paddingTop="@dimen/defaultControlVerticalPadding"
+                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                    app:background="@drawable/control_switch_background_border"
+                    app:borderSize="@dimen/defaultControlStrokeWidth"
+                    app:textColor="@color/control_switch_color_selector"
+                    app:hint="@string/hint_case_hos_isolation"
+                    app:labelCaption="@string/label_case_hos_isolation"
+                    app:description="@string/desc_case_hos_isolation"
+                    app:required="true"
+                    app:orientation="horizontal"
+                    app:slim="false"
+                    app:includeUnknown="@{false}"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:value="@={data.isolated}"
+                    app:onCheckedChangeListener="@{isolationCallback}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+
+                <org.technologyboard.android.sormas.component.TeboDatePicker
+                    android:id="@+id/dtpIsolationDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    app:hint="@string/hint_case_hos_isolation_date"
+                    app:labelCaption="@string/label_case_hos_isolation_date"
+                    app:description="@string/desc_case_hos_isolation_date"
+                    app:required="true"
+                    app:value="@={data.isolationDate}"
+                    />
+
+            </LinearLayout>
+
+            <org.technologyboard.android.sormas.component.TeboSwitch
+                android:id="@+id/swhPreviousHospitalization"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                app:paddingTop="@dimen/defaultControlVerticalPadding"
+                app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                app:background="@drawable/control_switch_background_border"
+                app:borderSize="@dimen/defaultControlStrokeWidth"
+                app:textColor="@color/control_switch_color_selector"
+                app:hint="@string/hint_case_hos_visited_previously_for_illness"
+                app:labelCaption="@string/label_case_hos_visited_previously_for_illness"
+                app:description="@string/desc_case_hos_visited_previously_for_illness"
+                app:required="true"
+                app:orientation="horizontal"
+                app:slim="false"
+                app:includeUnknown="@{false}"
+                app:enumClass="@{yesNoUnknownClass}"
+                app:value="@={data.admittedToHealthFacility}"
+                app:onShowInputErrorListener="@{showNotificationCallback}"
+                app:onHideInputErrorListener="@{hideNotificationCallback}"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ctrlPrevHospitalization"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/formListSectionBackground"
+            android:paddingTop="@dimen/parentLayoutVerticalMargin"
+            android:paddingBottom="@dimen/parentLayoutVerticalMargin"
+            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+            >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
+                >
+
+                <TextView
+                    android:id="@+id/hPrevHospitalization"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/heading_sub_case_hos_prev_hospitalization_history"
+                    style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                    />
+
+                <!--android:layout_below="@+id/hPrevHospitalization"-->
+                <org.technologyboard.android.sormas.component.TeboButton
+                    android:id="@+id/btnNewEntry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    app:text="@string/action_new"
+                    app:buttonType="line_primary"
+                    app:rounded="true"
+                    app:slim="true"
+                    app:drawableLeft="@drawable/ic_add_24dp"
+                    app:onButtonOnClick="@{(view) -> addEntryClickCallback.onClick(view, data)}"
+                    />
+
+            </RelativeLayout>
+
+            <ImageView
+                style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:clipToPadding="false"
+                android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
+                android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
+                android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
+                android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
+                app:entries="@{previousHospitalizationList}"
+                app:layout="@{@layout/row_previous_hospitalization_layout}"
+                app:callback="@{prevHosItemClickCallback}"
+                />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>
+

@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/parentLayoutVerticalMargin"
+            android:paddingBottom="@dimen/parentLayoutVerticalMargin"
+            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <org.technologyboard.android.sormas.component.TeboTextUuidRead
+                    android:id="@+id/txtAlertId"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_alert_id"
+                    app:labelCaption="@string/label_alert_id"
+                    app:uuidValue="@{data.uuid}"
+                    app:shortUuid="@{true}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtAlertType"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_alert_type"
+                    app:labelCaption="@string/label_alert_type"
+                    app:value="@{data.eventType}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtDateOfAlert"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_alert_date"
+                    app:labelCaption="@string/label_alert_date"
+                    app:value="@{data.eventDate}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtSurveillanceOfficer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_alert_surveillance_officer"
+                    app:labelCaption="@string/label_alert_surveillance_officer"
+                    app:value="@{data.surveillanceOfficer}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+            </LinearLayout>
+
+            <org.technologyboard.android.sormas.component.TeboTextRead
+                android:id="@+id/txtAlertDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:description="@string/desc_alert_description"
+                app:labelCaption="@string/label_alert_description"
+                app:value="@{data.eventDesc}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtReportDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_alert_report_date"
+                    app:labelCaption="@string/label_alert_report_date"
+                    app:value="@{data.reportDateTime}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtReportingUser"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_alert_reporting_user"
+                    app:labelCaption="@string/label_alert_reporting_user"
+                    app:value="@{data.reportingUser}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+            </LinearLayout>
+
+            <org.technologyboard.android.sormas.component.TeboTextRead
+                android:id="@+id/txtPlaceType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:description="@string/desc_alert_type_of_place"
+                app:labelCaption="@string/label_alert_type_of_place"
+                app:enumValueWithDesc="@{data.typeOfPlace}"
+                app:valueDesc="@{data.typeOfPlaceText}"
+                app:valueFormat="@{@string/enum_desc_format}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <org.technologyboard.android.sormas.component.TeboTextRead
+                android:id="@+id/txtDisease"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:description="@string/desc_alert_disease"
+                app:labelCaption="@string/label_alert_disease"
+                app:value="@{data.disease.toString()}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/heading_sub_alert_source_of_information"
+                style="@style/ReadActivitySubHeadingStyle"
+                />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtSourceLastName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_alert_source_lastname"
+                    app:labelCaption="@string/label_alert_source_lastname"
+                    app:value="@{data.srcLastName}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtSourceFirstName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_alert_source_firstname"
+                    app:labelCaption="@string/label_alert_source_firstname"
+                    app:value="@{data.srcFirstName}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+            </LinearLayout>
+
+            <org.technologyboard.android.sormas.component.TeboTextRead
+                android:id="@+id/txtSourceTelNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:description="@string/desc_alert_source_tel"
+                app:labelCaption="@string/label_alert_source_tel"
+                app:value="@{data.srcTelNo}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <org.technologyboard.android.sormas.component.TeboTextRead
+                android:id="@+id/txtSourceEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:description="@string/desc_alert_source_email"
+                app:labelCaption="@string/label_alert_source_email"
+                app:value="@{data.srcEmail}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+        </LinearLayout>
+
+    </ScrollView>
+</layout>
+

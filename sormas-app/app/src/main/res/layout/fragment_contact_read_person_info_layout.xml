@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.person.Person"/>
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/parentLayoutVerticalMargin"
+            android:paddingBottom="@dimen/parentLayoutVerticalMargin"
+            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtLastName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_last_name"
+                    app:labelCaption="@string/label_contact_person_last_name"
+                    app:value="@{data.lastName}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtFirstName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_first_name"
+                    app:labelCaption="@string/label_contact_person_first_name"
+                    app:value="@{data.firstName}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtNickname"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_nickname"
+                    app:labelCaption="@string/label_contact_person_nickname"
+                    app:value="@{data.nickname}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtGender"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_gender"
+                    app:labelCaption="@string/label_contact_person_gender"
+                    app:value="@{data.sex}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtAge"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_age"
+                    app:labelCaption="@string/label_contact_person_age"
+                    app:ageWithDateValue="@{data}"
+                    app:valueFormat="@{@string/age_with_dob_format}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtMotherMaidenName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_mother_maiden_name"
+                    app:labelCaption="@string/label_contact_person_mother_maiden_name"
+                    app:value="@{data.mothersMaidenName}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtPhoneNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_pnumber"
+                    app:labelCaption="@string/label_contact_person_pnumber"
+                    app:value="@{data.phone}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtOwnerOfPhone"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_phone_owner"
+                    app:labelCaption="@string/label_contact_person_phone_owner"
+                    app:value="@{data.phoneOwner}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+            </LinearLayout>
+
+            <!--<LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <org.technologyboard.android.sormas.component.TextReadControl
+                    android:id="@+id/txtFullName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_fullname"
+                    app:labelCaption="@string/label_contact_person_fullname"
+                    app:personValue="@{data}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TextReadControl
+                    android:id="@+id/txtNickname"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_nickname"
+                    app:labelCaption="@string/label_contact_person_nickname"
+                    app:value="@{data.nickname}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <org.technologyboard.android.sormas.component.TextReadControl
+                    android:id="@+id/txtGender"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_gender"
+                    app:labelCaption="@string/label_contact_person_gender"
+                    app:value="@{data.sex}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TextReadControl
+                    android:id="@+id/txtAge"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_age"
+                    app:labelCaption="@string/label_contact_person_age"
+                    app:ageWithDateValue="@{data}"
+                    app:valueFormat="@{@string/age_with_dob_format}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <org.technologyboard.android.sormas.component.TextReadControl
+                    android:id="@+id/txtMotherMaidenName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_mother_maiden_name"
+                    app:labelCaption="@string/label_contact_person_mother_maiden_name"
+                    app:value="@{data.mothersMaidenName}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TextReadControl
+                    android:id="@+id/txtPhoneNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_pnumber"
+                    app:labelCaption="@string/label_contact_person_pnumber"
+                    app:value="@{data.phone}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+            </LinearLayout>
+
+            <org.technologyboard.android.sormas.component.TextReadControl
+                android:id="@+id/txtOwnerOfPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:description="@string/desc_contact_person_phone_owner"
+                app:labelCaption="@string/label_contact_person_phone_owner"
+                app:value="@{data.phoneOwner}"
+                app:defaultValue='@{@string/not_available}'
+                />-->
+
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <org.technologyboard.android.sormas.component.TeboTextRead
+                android:id="@+id/txtPresentCondition"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:description="@string/desc_contact_person_present_condition"
+                app:labelCaption="@string/label_contact_person_present_condition"
+                app:value="@{data.presentCondition}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtDateOfDeath"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_death_date"
+                    app:labelCaption="@string/label_contact_person_death_date"
+                    app:value="@{data.deathDate}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtDeathPlaceType"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_death_place"
+                    app:labelCaption="@string/label_contact_person_death_place"
+                    app:value="@{data.deathPlaceType}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+            </LinearLayout>
+
+            <org.technologyboard.android.sormas.component.TeboTextRead
+                android:id="@+id/txtDeathPlaceDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:singleLine="false"
+                app:maxLines="2"
+                app:description="@string/desc_contact_person_death_place_desc"
+                app:labelCaption="@string/label_contact_person_death_place_desc"
+                app:value="@{data.deathPlaceDescription}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <ImageView style="@style/MiniHorizontalDividerStyle"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtDateOfBurial"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_burial_date"
+                    app:labelCaption="@string/label_contact_person_burial_date"
+                    app:value="@{data.burialDate}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtBurialConductor"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_contact_person_burial_conductor"
+                    app:labelCaption="@string/label_contact_person_burial_conductor"
+                    app:value="@{data.burialConductor}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+            </LinearLayout>
+
+            <org.technologyboard.android.sormas.component.TeboTextRead
+                android:id="@+id/txtBurialPlaceDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:singleLine="false"
+                app:maxLines="2"
+                app:description="@string/desc_contact_person_burial_place_desc"
+                app:labelCaption="@string/label_contact_person_burial_place_desc"
+                app:value="@{data.burialPlaceDescription}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <org.technologyboard.android.sormas.component.TeboTextRead
+                android:id="@+id/txtPermResidenceAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:singleLine="false"
+                app:maxLines="2"
+                app:description="@string/desc_contact_person_perm_resident_address"
+                app:labelCaption="@string/label_contact_person_perm_resident_address"
+                app:locationValue="@{data.address}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/heading_sub_contact_person_occupation"
+                style="@style/ReadActivitySubHeadingStyle"
+                />
+
+            <org.technologyboard.android.sormas.component.TeboTextRead
+                android:id="@+id/txtOccupationType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:singleLine="false"
+                app:maxLines="2"
+                app:description="@string/desc_contact_person_occupation_type"
+                app:labelCaption="@string/label_contact_person_occupation_type"
+                app:enumValueWithDesc="@{data.occupationType}"
+                app:valueDesc="@{data.occupationDetails}"
+                app:valueFormat="@{@string/enum_desc_format}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <org.technologyboard.android.sormas.component.TeboTextRead
+                android:id="@+id/txtOccupationFacility"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:singleLine="false"
+                app:maxLines="2"
+                app:description="@string/desc_contact_person_occupation_facility"
+                app:labelCaption="@string/label_contact_person_occupation_facility"
+                app:facilityValue="@{data.occupationFacility}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+        </LinearLayout>
+
+    </ScrollView>
+</layout>
+

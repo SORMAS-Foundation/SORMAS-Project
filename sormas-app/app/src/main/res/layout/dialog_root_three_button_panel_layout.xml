@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <import type="android.view.View" />
+        <import type="org.technologyboard.android.sormas.component.TeboButtonType"/>
+        <variable name="data" type="Object"/>
+        <variable name="config" type="org.technologyboard.android.sormas.component.dialog.DialogViewConfig"/>
+        <variable name="dialog" type="org.technologyboard.android.sormas.component.dialog.BaseTeboAlertDialog" />
+        <variable
+            name="deleteCallback"
+            type="org.technologyboard.android.sormas.component.dialog.IDialogDeleteOnClickListener" />
+        <variable
+            name="dismissCallback"
+            type="org.technologyboard.android.sormas.component.dialog.IDialogDismissOnClickListener" />
+        <variable
+            name="okCallback"
+            type="org.technologyboard.android.sormas.component.dialog.IDialogOkOnClickListener" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+        android:paddingRight="@dimen/rowListItemHorizontalMargin"
+        android:visibility="@{dialog.isButtonPanelVisible? View.VISIBLE : View.GONE}"
+        >
+
+
+
+        <org.technologyboard.android.sormas.component.TeboButton
+            android:id="@+id/btnDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_alignParentLeft="true"
+            android:visibility="@{dialog.isDeleteButtonVisible? View.VISIBLE : View.GONE}"
+            app:text="@{config.deleteButtonText}"
+            app:drawableLeft="@drawable/ic_delete_forever_black_24dp"
+            app:buttonType="@{dialog.deleteButtonType}"
+            app:rounded="@{dialog.isRounded}"
+            app:slim="true"
+            app:iconOnly="true"
+            app:onButtonOnClick="@{(view) -> deleteCallback.onDeleteClick(view, data)}"
+            />
+
+
+
+        <org.technologyboard.android.sormas.component.TeboButton
+            android:id="@+id/btnDismiss"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_toLeftOf="@+id/btnOk"
+            android:visibility="@{dialog.isDismissButtonVisible? View.VISIBLE : View.GONE}"
+            app:text="@{config.negativeButtonText}"
+            app:drawableLeft="@drawable/ic_clear_black_24dp"
+            app:buttonType="@{dialog.dismissButtonType}"
+            app:rounded="@{dialog.isRounded}"
+            app:slim="true"
+            app:onButtonOnClick="@{(view) -> dismissCallback.onDismissClick(view, data)}"
+            />
+
+        <org.technologyboard.android.sormas.component.TeboButton
+            android:id="@+id/btnOk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginLeft="@dimen/formLayoutGutterSize"
+            android:layout_alignParentRight="true"
+            android:visibility="@{dialog.isOkButtonVisible? View.VISIBLE : View.GONE}"
+            app:text="@{config.positiveButtonText}"
+            app:drawableLeft="@drawable/ic_done_black_24dp"
+            app:buttonType="@{dialog.okButtonType}"
+            app:rounded="@{dialog.isRounded}"
+            app:slim="true"
+            app:onButtonOnClick="@{(view) -> okCallback.onOkClick(view, data)}"
+            />
+    </RelativeLayout>
+
+</layout>

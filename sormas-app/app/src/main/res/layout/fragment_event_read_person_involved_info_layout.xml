@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.event.EventParticipant"/>
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/parentLayoutVerticalMargin"
+            android:paddingBottom="@dimen/parentLayoutVerticalMargin"
+            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+            >
+
+            <org.technologyboard.android.sormas.component.TeboTextRead
+                android:id="@+id/txtInvolvementDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:description="@string/desc_event_pinvolv_desc"
+                app:labelCaption="@string/label_event_pinvolv_desc"
+                app:value="@{data.involvementDescription}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtLastName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_event_pinvolv_last_name"
+                    app:labelCaption="@string/label_event_pinvolv_last_name"
+                    app:value="@{data.person.lastName}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtFirstName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_event_pinvolv_first_name"
+                    app:labelCaption="@string/label_event_pinvolv_first_name"
+                    app:value="@{data.person.firstName}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtNickname"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_event_pinvolv_nickname"
+                    app:labelCaption="@string/label_event_pinvolv_nickname"
+                    app:value="@{data.person.nickname}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtGender"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_event_pinvolv_gender"
+                    app:labelCaption="@string/label_event_pinvolv_gender"
+                    app:value="@{data.person.sex}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtAge"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_event_pinvolv_age"
+                    app:labelCaption="@string/label_event_pinvolv_age"
+                    app:ageWithDateValue="@{data.person}"
+                    app:valueFormat="@{@string/age_with_dob_format}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtMotherMaidenName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_event_pinvolv_mum_maiden_name"
+                    app:labelCaption="@string/label_event_pinvolv_mum_maiden_name"
+                    app:value="@{data.person.mothersMaidenName}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtPhoneNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_event_pinvolv_pnumber"
+                    app:labelCaption="@string/label_event_pinvolv_pnumber"
+                    app:value="@{data.person.phone}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtOwnerOfPhone"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_event_pinvolv_pnumber_owner"
+                    app:labelCaption="@string/label_event_pinvolv_pnumber_owner"
+                    app:value="@{data.person.phoneOwner}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/separatorThickness"
+                android:background="@color/viewSeparator"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtPresentCondition"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_event_pinvolv_present_condition"
+                    app:labelCaption="@string/label_event_pinvolv_present_condition"
+                    app:value="@{data.person.presentCondition}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtDateOfDeath"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_event_pinvolv_death_date"
+                    app:labelCaption="@string/label_event_pinvolv_death_date"
+                    app:value="@{data.person.deathDate}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/separatorThickness"
+                android:background="@color/viewSeparator"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/heading_sub_event_pinvolv_occupation"
+                style="@style/ReadActivitySubHeadingStyle"
+                />
+
+            <org.technologyboard.android.sormas.component.TeboTextRead
+                android:id="@+id/txtOccupationType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:singleLine="false"
+                app:maxLines="2"
+                app:description="@string/desc_event_pinvolv_occupation_type"
+                app:labelCaption="@string/label_event_pinvolv_occupation_type"
+                app:occupationTypeValue="@{data.person}"
+                app:valueFormat="@{@string/enum_desc_format}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+        </LinearLayout>
+
+    </ScrollView>
+</layout>
+

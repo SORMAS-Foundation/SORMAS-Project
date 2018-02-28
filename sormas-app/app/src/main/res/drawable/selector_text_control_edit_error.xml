@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- disabled -->
+    <item android:state_enabled="false">
+        <shape>
+            <stroke
+                android:width="@dimen/textViewBorder"
+                android:color="@color/controlTextViewDisabledStroke"/>
+            <corners android:radius="@dimen/textViewRadius" />
+            <padding
+                android:left="@dimen/textViewLeftPadding"
+                android:right="@dimen/textViewRightPadding" />
+        </shape>
+    </item>
+
+    <!-- pressed -->
+    <item android:state_hovered="true">
+        <shape>
+            <stroke
+                android:width="@dimen/textViewBorder"
+                android:color="@color/controlTextViewErrorStroke"/>
+
+            <corners android:radius="@dimen/textViewRadius" />
+
+            <padding
+                android:left="@dimen/textViewLeftPadding"
+                android:right="@dimen/textViewRightPadding"/>
+        </shape>
+    </item>
+
+    <!-- pressed -->
+    <item android:state_active="true">
+        <shape>
+            <stroke
+                android:width="@dimen/textViewBorder"
+                android:color="@color/controlTextViewErrorStroke"/>
+
+            <corners android:radius="@dimen/textViewRadius" />
+
+            <padding
+                android:left="@dimen/textViewLeftPadding"
+                android:right="@dimen/textViewRightPadding"/>
+        </shape>
+    </item>
+
+    <!-- pressed -->
+    <item android:state_activated="true">
+        <shape>
+            <stroke
+                android:width="@dimen/textViewBorder"
+                android:color="@color/controlTextViewErrorStroke"/>
+
+            <corners android:radius="@dimen/textViewRadius" />
+
+            <padding
+                android:left="@dimen/textViewLeftPadding"
+                android:right="@dimen/textViewRightPadding"/>
+        </shape>
+    </item>
+
+    <!-- pressed -->
+    <item android:state_selected="true">
+        <shape>
+            <stroke
+                android:width="@dimen/textViewBorder"
+                android:color="@color/controlTextViewErrorStroke"/>
+
+            <corners android:radius="@dimen/textViewRadius" />
+
+            <padding
+                android:left="@dimen/textViewLeftPadding"
+                android:right="@dimen/textViewRightPadding"/>
+        </shape>
+    </item>
+
+    <!-- pressed -->
+    <item android:state_pressed="true">
+        <shape>
+            <stroke
+                android:width="@dimen/textViewBorder"
+                android:color="@color/controlTextViewErrorStroke"/>
+
+            <corners android:radius="@dimen/textViewRadius" />
+
+            <padding
+                android:left="@dimen/textViewLeftPadding"
+                android:right="@dimen/textViewRightPadding"/>
+        </shape>
+    </item>
+
+    <!-- focused -->
+    <item android:state_focused="true">
+
+        <shape>
+            <stroke
+                android:width="@dimen/textViewBorder"
+                android:color="@color/controlTextViewErrorStroke"/>
+
+            <corners android:radius="@dimen/textViewRadius" />
+
+            <padding
+                android:left="@dimen/textViewLeftPadding"
+                android:right="@dimen/textViewRightPadding"/>
+        </shape>
+    </item>
+
+    <!-- error -->
+    <item>
+        <shape>
+            <stroke
+                android:width="@dimen/textViewBorder"
+                android:color="@color/controlTextViewErrorStroke"/>
+
+            <corners android:radius="@dimen/textViewRadius" />
+
+            <padding
+                android:left="@dimen/textViewLeftPadding"
+                android:right="@dimen/textViewRightPadding"/>
+        </shape>
+    </item>
+</selector>

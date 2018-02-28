@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.location.Location"/>
+        <variable name="config" type="org.technologyboard.android.sormas.component.dialog.DialogViewConfig"/>
+        <variable
+            name="showNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+            android:paddingRight="@dimen/rowListItemHorizontalMargin"
+            >
+
+            <!--<TextView
+                android:id="@+id/txtDialogHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@={config.subHeading}"
+                android:textColor="@color/pageHintText"
+                android:textSize="@dimen/defaultPageHintTextSize"/>-->
+
+
+
+            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                android:id="@+id/txtAddressLandmark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
+                app:slim="true"
+                app:hint="@string/hint_location_address"
+                app:labelCaption="@string/label_location_address"
+                app:description="@string/desc_location_address"
+                app:required="true"
+                app:value="@={data.address}"
+                app:nextFocusDown="@+id/txtCommContactPerson"
+                app:imeOptions="actionNext"
+                app:onShowInputErrorListener="@{showNotificationCallback}"
+                app:onHideInputErrorListener="@{hideNotificationCallback}"
+                />
+
+            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                android:id="@+id/txtCommContactPerson"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
+                app:slim="true"
+                app:hint="@string/hint_location_contact_person"
+                app:labelCaption="@string/label_location_contact_person"
+                app:description="@string/desc_location_contact_person"
+                app:required="true"
+                app:value="@={data.details}"
+                app:nextFocusDown="@+id/spnState"
+                app:imeOptions="actionNext"
+                app:onShowInputErrorListener="@{showNotificationCallback}"
+                app:onHideInputErrorListener="@{hideNotificationCallback}"
+                />
+
+
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <org.technologyboard.android.sormas.component.TeboSpinner
+                    android:id="@+id/spnState"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
+                    app:slim="true"
+                    app:hint="@string/hint_location_state"
+                    app:description="@string/desc_location_state"
+                    app:labelCaption="@string/label_location_state"
+                    app:required="true"
+                    app:spinnerMode="dialog"
+                    app:nextFocusDown="@+id/spnLga"
+                    app:imeOptions="actionNext"
+                    app:value="@={data.region}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboSpinner
+                    android:id="@+id/spnLga"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    app:slim="true"
+                    app:hint="@string/hint_location_lga"
+                    app:description="@string/desc_location_lga"
+                    app:labelCaption="@string/label_location_lga"
+                    app:required="true"
+                    app:spinnerMode="dialog"
+                    app:nextFocusDown="@+id/spnWard"
+                    app:imeOptions="actionNext"
+                    app:value="@={data.district}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+            </LinearLayout>
+
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <org.technologyboard.android.sormas.component.TeboSpinner
+                    android:id="@+id/spnWard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
+                    app:slim="true"
+                    app:hint="@string/hint_location_ward"
+                    app:description="@string/desc_location_ward"
+                    app:labelCaption="@string/label_location_ward"
+                    app:required="true"
+                    app:spinnerMode="dialog"
+                    app:nextFocusDown="@+id/spnCity"
+                    app:imeOptions="actionNext"
+                    app:value="@={data.community}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                    android:id="@+id/txtCity"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    app:slim="true"
+                    app:hint="@string/hint_location_city"
+                    app:description="@string/desc_location_city"
+                    app:labelCaption="@string/label_location_city"
+                    app:required="true"
+                    app:value="@={data.city}"
+                    app:nextFocusDown="@+id/checkbox1"
+                    app:imeOptions="actionNext"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+            </LinearLayout>
+
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <org.technologyboard.android.sormas.component.TeboButton
+                    android:id="@+id/btnPickGpsCoordinates"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:slim="true"
+                    app:drawableLeft="@drawable/ic_gps_fixed_black_24dp"
+                    app:buttonType="secondary"
+                    app:text="@string/action_pick_gps"
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtGpsLatLon"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    app:description="@string/desc_pick_gps"
+                    app:labelCaption="@string/label_pick_gps"
+                    app:value="@{data.community.name}"
+                    app:defaultValue='@{@string/hint_pick_gps}'
+                    />
+
+
+
+            </LinearLayout>
+
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+
+
+
+        </LinearLayout>
+    </ScrollView>
+</layout>
+

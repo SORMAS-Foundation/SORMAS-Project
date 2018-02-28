@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable
+            name="showNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+
+
+        <variable name="data" type="de.symeda.sormas.app.backend.person.Person"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/formListSectionBackground"
+        android:paddingTop="@dimen/parentLayoutVerticalMargin"
+        android:paddingBottom="@dimen/parentLayoutVerticalMargin"
+        android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+        android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+        >
+
+        <!--<ImageView style="@style/FullHorizontalDividerStyle"/>-->
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <org.technologyboard.android.sormas.component.TeboDatePicker
+                    android:id="@+id/dtpDateOfDeath"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:hint="@string/hint_contact_person_death_date"
+                    app:labelCaption="@string/label_contact_person_death_date"
+                    app:description="@string/desc_contact_person_death_date"
+                    app:required="true"
+                    app:value="@={data.deathDate}"
+                    />
+
+
+                <org.technologyboard.android.sormas.component.TeboSpinner
+                    android:id="@+id/spnCauseOfDeath"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    app:hint="@string/hint_contact_person_death_cause"
+                    app:labelCaption="@string/label_contact_person_death_cause"
+                    app:description="@string/desc_contact_person_death_cause"
+                    app:required="true"
+                    app:spinnerMode="dialog"
+                    app:value="@={data.causeOfDeath}"
+                    />
+
+            </LinearLayout>
+
+            <include android:id="@+id/causeOfDeathInclude"
+                layout="@layout/blank_layout"
+                />
+
+            <org.technologyboard.android.sormas.component.TeboSpinner
+                android:id="@+id/spnDeathPlaceType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                app:hint="@string/hint_contact_person_death_place"
+                app:labelCaption="@string/label_contact_person_death_place"
+                app:description="@string/desc_contact_person_death_place"
+                app:required="true"
+                app:spinnerMode="dialog"
+                app:value="@={data.deathPlaceType}"
+                />
+
+            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                android:id="@+id/txtDeathPlaceDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                app:hint="@string/hint_contact_person_death_place_desc"
+                app:labelCaption="@string/label_contact_person_death_place_desc"
+                app:description="@string/desc_contact_person_death_place_desc"
+                app:required="true"
+                app:value="@={data.deathPlaceDescription}"
+                app:nextFocusDown="@+id/txtControl1"
+                app:imeOptions="actionNext"
+                app:onShowInputErrorListener="@{showNotificationCallback}"
+                app:onHideInputErrorListener="@{hideNotificationCallback}"
+                />
+
+
+        </LinearLayout>
+
+        <ImageView style="@style/MiniHorizontalDividerStyle"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+    
+    
+            <org.technologyboard.android.sormas.component.TeboDatePicker
+                android:id="@+id/dtpBurialDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                app:hint="@string/hint_contact_person_burial_date"
+                app:labelCaption="@string/label_contact_person_burial_date"
+                app:description="@string/desc_contact_person_burial_date"
+                app:required="true"
+                app:value="@={data.burialDate}"
+                />
+            
+            
+            <org.technologyboard.android.sormas.component.TeboSpinner
+                android:id="@+id/spnBurialConductor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                android:paddingLeft="@dimen/formLayoutGutterSize"
+                app:hint="@string/hint_contact_person_burial_conductor"
+                app:labelCaption="@string/label_contact_person_burial_conductor"
+                app:description="@string/desc_contact_person_burial_conductor"
+                app:required="true"
+                app:spinnerMode="dialog"
+                app:value="@={data.burialConductor}"
+                />
+            
+            
+        </LinearLayout>
+
+        <!--android:layout_marginBottom="@dimen/textControlMarginBottom"-->
+        <org.technologyboard.android.sormas.component.TeboTextInputEditText
+            android:id="@+id/txtBurialPlaceDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hint="@string/hint_contact_person_burial_place_desc"
+            app:labelCaption="@string/label_contact_person_burial_place_desc"
+            app:description="@string/desc_contact_person_burial_place_desc"
+            app:required="true"
+            app:value="@={data.burialPlaceDescription}"
+            app:nextFocusDown="@+id/txtControl1"
+            app:imeOptions="actionNext"
+            app:onShowInputErrorListener="@{showNotificationCallback}"
+            app:onHideInputErrorListener="@{hideNotificationCallback}"
+            />
+
+
+        <!--<ImageView style="@style/FullHorizontalDividerStyle"/>-->
+
+    </LinearLayout>
+
+</layout>
+

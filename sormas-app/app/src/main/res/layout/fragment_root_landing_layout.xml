@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/landingPageSummaryDivider"
+    android:id="@+id/base_layout">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/summaryCellBackground">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerview_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_summary_cell_last"/>
+        </LinearLayout>
+    </ScrollView>
+
+
+
+    <org.technologyboard.android.sormas.component.menu.LandingPageMenuControl
+        android:id="@+id/landingPageMenuControl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cellLayout="@layout/control_landing_page_menu_item_cell_layout"/>
+
+</LinearLayout>

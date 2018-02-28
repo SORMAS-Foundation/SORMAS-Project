@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <import type="org.technologyboard.android.sormas.core.BoxingUtil" />
+        <variable name="data" type="de.symeda.sormas.app.backend.task.Task"/>
+        <variable name="person" type="de.symeda.sormas.app.backend.person.Person"/>
+        <variable name="test1" type="de.symeda.sormas.app.backend.event.Event"/>
+        <variable
+            name="test"
+            type="de.symeda.sormas.app.backend.symptoms.Symptoms" />
+        <variable name="callback" type="android.view.View.OnClickListener"/>
+        <variable name="symptomState" type="Class" />
+        <variable
+            name="showNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+        <variable
+            name="doneCallback"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="notExecCallback"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="checkedCallback"
+            type="org.technologyboard.android.sormas.component.OnTeboSwitchCheckedChangeListener" />
+    </data>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingBottom="@dimen/parentLayoutVerticalMargin"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                >
+
+
+                <org.technologyboard.android.sormas.component.TeboTextRead
+                    android:id="@+id/txtTaskType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_task_type"
+                    app:labelCaption="@string/label_task_type"
+                    app:value="@{data.taskType}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextLinkRead
+                    android:id="@+id/txtAssocCaze"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:singleLine="false"
+                    app:maxLines="2"
+                    app:description="@string/desc_task_assoc_caze"
+                    app:labelCaption="@string/label_task_assoc_caze"
+                    app:cazeAndLocation="@{data.caze}"
+                    app:defaultValue='@{@string/not_available}'
+                    app:goneIfNull='@{data.caze}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextLinkRead
+                    android:id="@+id/txtAssocContact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:singleLine="false"
+                    app:maxLines="2"
+                    app:description="@string/desc_task_assoc_contact"
+                    app:labelCaption="@string/label_task_assoc_contact"
+                    app:contactAndLocation="@{data.contact}"
+                    app:defaultValue='@{@string/not_available}'
+                    app:goneIfNull='@{data.contact}'
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboTextLinkRead
+                    android:id="@+id/txtAssocEvent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:singleLine="false"
+                    app:maxLines="2"
+                    app:description="@string/desc_task_assoc_event"
+                    app:labelCaption="@string/label_task_assoc_event"
+                    app:eventAndLocation="@{data.event}"
+                    app:defaultValue='@{@string/not_available}'
+                    app:goneIfNull='@{data.event}'
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+                    <org.technologyboard.android.sormas.component.TeboTextImageRead
+                        android:id="@+id/txtTaskPriority"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        app:description="@string/desc_task_priority"
+                        app:labelCaption="@string/label_task_priority"
+                        app:imageColor="@color/green"
+                        app:image="@drawable/indicator_status_circle"
+                        app:imageWidth="@dimen/readControlSmallIconWidth"
+                        app:imageHeight="@dimen/readControlSmallIconHeight"
+                        app:setValueAndIndicator="@{data.priority}"
+                        app:defaultValue='@{@string/not_available}'
+                        />
+
+                    <org.technologyboard.android.sormas.component.TeboTextImageRead
+                        android:id="@+id/txtTaskStatus"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingLeft="@dimen/formLayoutGutterSize"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        app:description="@string/desc_task_status"
+                        app:labelCaption="@string/label_task_status"
+                        app:image="@drawable/indicator_status_circle"
+                        app:imageWidth="@dimen/readControlSmallIconWidth"
+                        app:imageHeight="@dimen/readControlSmallIconHeight"
+                        app:setValueAndIndicator="@{data.taskStatus}"
+                        app:defaultValue='@{@string/not_available}'
+                        />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+                    <org.technologyboard.android.sormas.component.TeboTextRead
+                        android:id="@+id/txtSuggestedStart"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        app:description="@string/desc_task_suggested_start"
+                        app:labelCaption="@string/label_task_suggested_start"
+                        app:value="@{data.suggestedStart}"
+                        app:defaultValue='@{@string/not_available}'
+                        />
+
+                    <org.technologyboard.android.sormas.component.TeboTextRead
+                        android:id="@+id/txtDueDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingLeft="@dimen/formLayoutGutterSize"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        app:description="@string/desc_task_due_date_time"
+                        app:labelCaption="@string/label_task_due_date_time"
+                        app:value="@{data.dueDate}"
+                        app:defaultValue='@{@string/not_available}'
+                        />
+                </LinearLayout>
+
+                <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                    android:id="@+id/txtCommentOnExec"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:hint="@string/hint_task_comment_on_exc"
+                    app:labelCaption="@string/label_task_comment_on_exc"
+                    app:description="@string/desc_task_comment_on_exc"
+                    app:required="true"
+                    app:value="@={data.assigneeReply}"
+                    app:imeOptions="actionNext"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+
+                <org.technologyboard.android.sormas.component.TeboSwitch
+                    android:id="@+id/swhAlertType"
+                    android:layout_width="180dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:paddingTop="@dimen/defaultControlVerticalPadding"
+                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                    app:background="@drawable/control_switch_background_border"
+                    app:borderSize="@dimen/defaultControlStrokeWidth"
+                    app:textColor="@color/control_switch_color_selector"
+                    app:hint="@string/hint_task_comment_on_exc"
+                    app:labelCaption="@string/label_task_comment_on_exc"
+                    app:description="@string/desc_task_comment_on_exc"
+                    app:required="true"
+                    app:orientation="horizontal"
+                    app:slim="false"
+                    app:enumClass="@{symptomState}"
+                    app:value="@={test.runnyNose}"
+                    app:onCheckedChangeListener="@{checkedCallback}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+            </LinearLayout>
+
+        </ScrollView>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/background_notification_dialog"
+            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+            android:paddingTop="@dimen/buttonPanelVerticalMargin"
+            android:paddingBottom="@dimen/buttonPanelVerticalMargin"
+            android:elevation="16dp"
+            >
+
+            <org.technologyboard.android.sormas.component.TeboButton
+                android:id="@+id/btnNotExecutable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/btnDivider"
+                app:text="@string/action_not_executable"
+                app:buttonType="line_danger"
+                app:rounded="true"
+                app:drawableLeft="@drawable/ic_block_black_24dp"
+                app:onButtonOnClick="@{notExecCallback}"
+                />
+
+
+            <ImageView
+                android:id="@+id/btnDivider"
+                android:layout_toLeftOf="@+id/btnDone"
+                android:layout_centerVertical="true"
+                style="@style/FormButtonDividerStyle"
+                />
+
+            <org.technologyboard.android.sormas.component.TeboButton
+                android:id="@+id/btnDone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                app:text="@string/action_done"
+                app:buttonType="line_primary"
+                app:rounded="true"
+                app:drawableLeft="@drawable/ic_done_black_24dp"
+                app:onButtonOnClick="@{doneCallback}"
+                />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+</layout>
+

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable
+            name="showNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
+        <variable name="contactProximityClass" type="Class" />
+
+        <variable
+            name="checkedCallback"
+            type="org.technologyboard.android.sormas.component.OnTeboSwitchCheckedChangeListener" />
+    </data>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/parentLayoutVerticalMargin"
+        android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+        android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+        >
+
+        <org.technologyboard.android.sormas.component.TeboDatePicker
+            android:id="@+id/dtpDateOfLastContact"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/textControlMarginBottom"
+            app:hint="@string/hint_contact_last_contact_date"
+            app:labelCaption="@string/label_contact_last_contact_date"
+            app:description="@string/desc_contact_last_contact_date"
+            app:required="true"
+            app:value="@={data.lastContactDate}"
+            />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                android:id="@+id/txtLastName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                app:hint="@string/hint_contact_person_last_name"
+                app:labelCaption="@string/label_contact_person_last_name"
+                app:description="@string/desc_contact_person_last_name"
+                app:required="true"
+                app:value="@={data.person.lastName}"
+                app:nextFocusDown="@+id/txtControl1"
+                app:imeOptions="actionNext"
+                app:onShowInputErrorListener="@{showNotificationCallback}"
+                app:onHideInputErrorListener="@{hideNotificationCallback}"
+                />
+
+            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                android:id="@+id/txtFirstName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                android:paddingLeft="@dimen/formLayoutGutterSize"
+                app:hint="@string/hint_contact_person_first_name"
+                app:labelCaption="@string/label_contact_person_first_name"
+                app:description="@string/desc_contact_person_first_name"
+                app:required="true"
+                app:value="@={data.person.firstName}"
+                app:nextFocusDown="@+id/txtControl1"
+                app:imeOptions="actionNext"
+                app:onShowInputErrorListener="@{showNotificationCallback}"
+                app:onHideInputErrorListener="@{hideNotificationCallback}"
+                />
+
+
+        </LinearLayout>
+
+        <org.technologyboard.android.sormas.component.TeboRadioGroup
+            android:id="@+id/chkContactProximity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/textControlMarginBottom"
+            app:hint="@string/hint_contact_type"
+            app:labelCaption="@string/label_contact_type"
+            app:description="@string/desc_contact_type"
+            app:required="true"
+            app:horizontalFlow="false"
+            app:scaleX="1"
+            app:scaleY="1"
+            app:radioButtonMarginStart="@dimen/radioButtonMarginStart"
+            app:includeMarginStart="true"
+            app:radioButtonLabelMarginStart="@dimen/radioButtonLabelMarginStart"
+            app:enumClass="@{contactProximityClass}"
+            app:value="@={data.contactProximity}"
+            app:onShowInputErrorListener="@{showNotificationCallback}"
+            app:onHideInputErrorListener="@{hideNotificationCallback}"
+            />
+
+        <org.technologyboard.android.sormas.component.TeboSpinner
+            android:id="@+id/spnContactRelationship"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/textControlMarginBottom"
+            app:hint="@string/hint_contact_relationship_with_case"
+            app:labelCaption="@string/label_contact_relationship_with_case"
+            app:description="@string/desc_contact_relationship_with_case"
+            app:required="true"
+            app:spinnerMode="dialog"
+            app:value="@={data.relationToCase}"
+            />
+
+        <org.technologyboard.android.sormas.component.TeboTextInputEditText
+            android:id="@+id/txtContactDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/textControlMarginBottom"
+            app:hint="@string/hint_contact_description"
+            app:labelCaption="@string/label_contact_description"
+            app:description="@string/desc_contact_description"
+            app:required="true"
+            app:value="@={data.description}"
+            app:nextFocusDown="@+id/txtControl1"
+            app:imeOptions="actionNext"
+            app:onShowInputErrorListener="@{showNotificationCallback}"
+            app:onHideInputErrorListener="@{hideNotificationCallback}"
+            />
+
+    </LinearLayout>
+
+</layout>
+

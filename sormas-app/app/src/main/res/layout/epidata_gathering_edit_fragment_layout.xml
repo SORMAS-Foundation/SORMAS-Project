@@ -17,7 +17,7 @@
         android:focusableInTouchMode="true"
         android:orientation="vertical"
         android:padding="10dp"
-        android:theme="@style/AppTheme">
+        android:theme="@style/SormasTheme">
 
         <de.symeda.sormas.app.component.DateField
             android:id="@+id/gather_date"

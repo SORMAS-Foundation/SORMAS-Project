@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="type_event_rumor">Rumor</string>
+    <string name="type_event_outbreak">Outbreak</string>
+
+    <string name="status_event_possible">Possible</string>
+    <string name="status_event_confirmed">Confirmed</string>
+    <string name="status_event_no_event">No Event</string>
+
+    <string name="status_shipment_not_shipped">Not Shipped</string>
+    <string name="status_shipment_shipped">Shipped</string>
+    <string name="status_shipment_received">Received</string>
+    <string name="status_shipment_referred_other_lab">Referred</string>
+
+    <string name="status_investigation_pending">Pending</string>
+    <string name="status_investigation_done">Done</string>
+    <string name="status_investigation_discarded">Discarded</string>
+
+    <string name="status_followup_follow_up">Follow-Up</string>
+    <string name="status_followup_completed">Completed Follow-Up</string>
+    <string name="status_followup_canceled">Canceled Follow-Up</string>
+    <string name="status_followup_lost">Lost Follow-Up</string>
+    <string name="status_followup_no_follow_up">No Follow-Up</string>
+
+    <string name="status_task_pending">Pending</string>
+    <string name="status_task_done">Done</string>
+    <string name="status_task_removed">Removed</string>
+    <string name="status_task_not_executable">Not Executable</string>
+
+    <string name="status_visit_unavailable">Unavailable</string>
+    <string name="status_visit_uncooperative">Uncooperative</string>
+    <string name="status_visit_cooperative">Cooperative</string>
+
+    <string name="status_case_classification_not_classified">Not Classified</string>
+    <string name="status_case_classification_suspected">Suspected</string>
+    <string name="status_case_classification_probable">Probable</string>
+    <string name="status_case_classification_confirmed">Confirmed</string>
+    <string name="status_case_classification_no_case">No Case</string>
+
+    <string name="status_contact_classification_possible">Possible</string>
+    <string name="status_contact_classification_confirmed">Confirmed</string>
+    <string name="status_contact_classification_no_contact">No Contract</string>
+    <string name="status_contact_classification_converted">Converted</string>
+    <string name="status_contact_classification_dropped">Dropped</string>
+
+</resources>

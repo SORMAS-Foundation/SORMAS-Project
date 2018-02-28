@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable
+            name="showNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+
+
+        <variable name="data" type="de.symeda.sormas.app.backend.person.Person"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+
+        <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <org.technologyboard.android.sormas.component.TeboDatePicker
+                    android:id="@+id/dtpDateOfDeath"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:hint="@string/hint_event_pinvolv_death_date"
+                    app:labelCaption="@string/label_event_pinvolv_death_date"
+                    app:description="@string/desc_event_pinvolv_death_date"
+                    app:required="true"
+                    app:value="@={data.deathDate}"
+                    />
+
+
+                <org.technologyboard.android.sormas.component.TeboSpinner
+                    android:id="@+id/spnCauseOfDeath"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    app:hint="@string/hint_event_pinvolv_cause_of_death"
+                    app:labelCaption="@string/label_event_pinvolv_cause_of_death"
+                    app:description="@string/desc_event_pinvolv_cause_of_death"
+                    app:required="true"
+                    app:spinnerMode="dialog"
+                    app:value="@={data.causeOfDeath}"
+                    />
+
+            </LinearLayout>
+
+            <include android:id="@+id/causeOfDeathInclude"
+                layout="@layout/blank_layout"
+                />
+
+
+            <!--<org.technologyboard.android.sormas.component.TeboSpinner
+                android:id="@+id/spnDisease"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                app:hint="@string/hint_event_pinvolv_responsible_disease"
+                app:labelCaption="@string/label_event_pinvolv_responsible_disease"
+                app:description="@string/desc_event_pinvolv_responsible_disease"
+                app:required="true"
+                app:spinnerMode="dialog"
+                app:value="@={data.person.causeOfDeathDisease}"
+                android:visibility="gone"
+                />
+            
+            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                android:id="@+id/txtCauseOfDeathDisease"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                app:hint="@string/hint_event_pinvolv_other_cause_of_death"
+                app:labelCaption="@string/label_event_pinvolv_other_cause_of_death"
+                app:description="@string/desc_event_pinvolv_other_cause_of_death"
+                app:required="true"
+                app:value="@={data.person.causeOfDeathDetails}"
+                app:nextFocusDown="@+id/txtControl1"
+                app:imeOptions="actionNext"
+                app:onShowInputErrorListener="@{showNotificationCallback}"
+                app:onHideInputErrorListener="@{hideNotificationCallback}"
+                android:visibility="gone"
+                />-->
+
+
+        </LinearLayout>
+
+
+
+
+        <ImageView style="@style/FullHorizontalDividerStyle"/>
+    </LinearLayout>
+
+</layout>
+

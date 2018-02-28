@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="config" type="org.technologyboard.android.sormas.component.dialog.DialogViewConfig"/>
+        <variable
+            name="showNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+        android:paddingRight="@dimen/rowListItemHorizontalMargin"
+        >
+
+        <TextView
+            android:id="@+id/txtDialogHint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@{config.subHeading}"
+            android:textColor="@color/pageHintText"
+            android:textSize="@dimen/defaultPageHintTextSize"/>
+
+
+        <ImageView
+            android:layout_width="@dimen/notificationDialogIconWidth"
+            android:layout_height="@dimen/notificationDialogIconHeight"
+            android:layout_marginTop="@dimen/notificationDialogIconVerticalMargin"
+            android:layout_marginBottom="@dimen/notificationDialogIconVerticalMargin"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_check_blue_24dp"
+            android:tint="@color/successNotificationDialogIcon"
+            />
+
+    </LinearLayout>
+
+</layout>

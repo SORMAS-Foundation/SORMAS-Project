@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="showNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="org.technologyboard.android.sormas.component.OnHideInputErrorListener" />
+        <variable name="data" type="org.technologyboard.android.sormas.symptom.Symptom"/>
+        <variable name="symptomStateClass" type="Class" />
+
+        <variable
+            name="checkedCallback"
+            type="org.technologyboard.android.sormas.component.OnTeboSwitchCheckedChangeListener" />
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selector_list_activity_row_background"
+        >
+
+        <!--android:paddingTop="@dimen/rowListItemVerticalPadding"
+        android:paddingBottom="@dimen/rowListItemVerticalPadding"-->
+        <!--android:background="@drawable/background_list_activity_row_no_indicator"-->
+        <!---->
+        <LinearLayout
+            android:id="@+id/rowListItem"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/symptomRowListItemVerticalPadding"
+            android:paddingBottom="@dimen/symptomRowListItemVerticalPadding"
+            android:background="@drawable/background_list_activity_row_no_indicator"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                >
+
+
+                <TextView
+                    android:id="@+id/txtSymptomName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@{data.name}"
+                    android:textSize="@dimen/listActivityRowSecondaryTextSize"
+                    android:textColor="@color/listActivityRowPrimaryText"
+                    android:fontFamily="sans-serif"
+                    />
+
+                <org.technologyboard.android.sormas.component.TeboSwitch
+                    android:id="@+id/swhSymptomState"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    app:paddingTop="@dimen/defaultControlVerticalPadding"
+                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                    app:background="@drawable/control_switch_background_border"
+                    app:borderSize="@dimen/defaultControlStrokeWidth"
+                    app:textColor="@color/control_switch_color_selector"
+                    app:showCaption="false"
+                    app:required="true"
+                    app:orientation="horizontal"
+                    app:slim="true"
+                    app:includeUnknown="@{false}"
+                    app:enumClass="@{symptomStateClass}"
+                    app:value="@={data.state}"
+                    app:onCheckedChangeListener="@{checkedCallback}"
+                    />
+            </LinearLayout>
+
+            <org.technologyboard.android.sormas.component.TeboTextInputEditText
+                android:id="@+id/txtSymptomDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/symptomRowListItemVerticalPadding"
+                android:visibility="gone"
+                app:showCaption="false"
+                app:slim="true"
+                app:hint="@string/hint_specify_detail"
+                app:required="true"
+                app:value="@={data.detail}"
+                app:nextFocusDown="@+id/txtControl1"
+                app:imeOptions="actionNext"
+                app:onShowInputErrorListener="@{showNotificationCallback}"
+                app:onHideInputErrorListener="@{hideNotificationCallback}"
+                />
+
+        </LinearLayout>
+
+
+
+
+    </LinearLayout>
+</layout>
