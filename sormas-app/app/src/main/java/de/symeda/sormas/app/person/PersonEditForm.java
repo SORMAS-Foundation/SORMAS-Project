@@ -26,7 +26,6 @@ import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases;
@@ -66,7 +65,8 @@ public class PersonEditForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.person_edit_fragment_layout, container, false);
-        editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
+        //TODO: Orson check back
+        //editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
 
         final String personUuid = getArguments().getString(Person.UUID);
         PersonDao personDao = DatabaseHelper.getPersonDao();
@@ -438,8 +438,9 @@ public class PersonEditForm extends FormTab {
                 }
             }
         } else {
-            approximateAgeTextField.setEnabled(true, editOrCreateUserRight);
-            approximateAgeTypeField.setEnabled(true, editOrCreateUserRight);
+            //TODO: Orson check back
+            //approximateAgeTextField.setEnabled(true, editOrCreateUserRight);
+            //approximateAgeTypeField.setEnabled(true, editOrCreateUserRight);
         }
     }
 

@@ -165,10 +165,10 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
         onLinkClickListener = new OnLinkClickListener() {
             @Override
             public void onClick(View v, Object item) {
-                Symptoms s = (Symptoms)item;
+                /*Symptoms s = (Symptoms)item;
                 SimpleDialog simpleDialog = new SimpleDialog(getContext(),
                         R.layout.dialog_location_layout, s.getIllLocation());
-                AlertDialog dialog = simpleDialog.show();
+                AlertDialog dialog = simpleDialog.show();*/
                 //Toast.makeText(getContext(), "Hurray!", Toast.LENGTH_SHORT).show();
             }
         };
