@@ -1,9 +1,11 @@
 package de.symeda.sormas.app;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
@@ -11,20 +13,21 @@ import com.google.android.gms.analytics.ExceptionReporter;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
-import de.symeda.sormas.app.core.VibrationHelper;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-import de.symeda.sormas.app.util.UncaughtExceptionParser;
-
 import java.util.Locale;
 
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.core.VibrationHelper;
+import de.symeda.sormas.app.task.TaskNotificationService;
+import de.symeda.sormas.app.util.LocationService;
+import de.symeda.sormas.app.util.MemoryDatabaseHelper;
+import de.symeda.sormas.app.util.UncaughtExceptionParser;
 
 /**
  * Created by Orson on 03/11/2017.
  */
 
-public class SormasApplication extends Application {
+public class SormasApplication extends Application implements Application.ActivityLifecycleCallbacks {
     private static final String PROPERTY_ID = "UA-98128295-1";
 
     private Tracker tracker;
@@ -38,13 +41,14 @@ public class SormasApplication extends Application {
         //updateLocale(this);
         DatabaseHelper.init(this);
         ConfigProvider.init(this);
+        LocationService.init(this);
 
-        //TODO: Remove Temporary Database
-        MemoryDatabaseHelper.init(this);
-        VibrationHelper.getInstance(getApplicationContext());
+        VibrationHelper.getInstance(this);
 
-        //TODO: TaskNotificationService.startTaskNotificationAlarm(this);
-        //TaskNotificationService.startTaskNotificationAlarm(this);
+        // Make sure the Enter Pin Activity is shown when the app has just started
+        ConfigProvider.setAccessGranted(false);
+
+        TaskNotificationService.startTaskNotificationAlarm(this);
 
         // Initialize the tracker that is used to send information to Google Analytics
         GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
@@ -58,6 +62,11 @@ public class SormasApplication extends Application {
         reporter.setExceptionParser(new UncaughtExceptionParser());
 
         super.onCreate();
+
+        this.registerActivityLifecycleCallbacks(this);
+
+        //TODO: Remove Temporary Database
+        MemoryDatabaseHelper.init(this);
     }
 
     public static void updateLocale(Context ctx) {
@@ -74,5 +83,40 @@ public class SormasApplication extends Application {
             cfg.locale = Locale.getDefault();
 
         ctx.getResources().updateConfiguration(cfg, null);
+    }
+
+    @Override
+    public void onActivityCreated(Activity activity, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onActivityStarted(Activity activity) {
+        LocationService.instance().requestActiveLocationUpdates(activity);
+    }
+
+    @Override
+    public void onActivityResumed(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityPaused(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityStopped(Activity activity) {
+        LocationService.instance().removeActiveLocationUpdates();
+    }
+
+    @Override
+    public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onActivityDestroyed(Activity activity) {
+
     }
 }
