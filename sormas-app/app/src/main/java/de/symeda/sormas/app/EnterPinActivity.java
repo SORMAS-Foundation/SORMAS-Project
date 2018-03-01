@@ -2,29 +2,35 @@ package de.symeda.sormas.app;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import de.symeda.sormas.app.dashboard.DashboardActivity;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.settings.SettingsActivity;
-
 import java.util.regex.Pattern;
 
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.component.OnHideInputErrorListener;
+import de.symeda.sormas.app.component.OnShowInputErrorListener;
+import de.symeda.sormas.app.core.NotificationType;
+import de.symeda.sormas.app.dashboard.DashboardActivity;
+import de.symeda.sormas.app.databinding.ActivityEnterPinLayoutBinding;
+import de.symeda.sormas.app.login.LoginActivity;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.settings.SettingsActivity;
+import de.symeda.sormas.app.util.NotificationHelper;
 
 /**
  * Created by Orson on 15/11/2017.
  */
 
-public class EnterPinActivity extends AppCompatActivity {
+public class EnterPinActivity extends AppCompatActivity implements OnShowInputErrorListener, OnHideInputErrorListener {
 
     public static final String CALLED_FROM_SETTINGS = "calledFromSettings";
 
@@ -34,9 +40,15 @@ public class EnterPinActivity extends AppCompatActivity {
     private boolean triedAgain;
     private EditText[] pinFields;
 
+    private ActivityEnterPinLayoutBinding binding;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_enter_pin_layout);
+
+        //setContentView(R.layout.activity_enter_pin_layout);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_enter_pin_layout);
+        binding.setShowNotificationCallback(this);
+        binding.setHideNotificationCallback(this);
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
@@ -45,9 +57,9 @@ public class EnterPinActivity extends AppCompatActivity {
             }
         }
 
-        /*getWindow().setSoftInputMode(
+        getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-        );*/
+        );
 
         // sync...
         SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, EnterPinActivity.this, null);
@@ -62,6 +74,7 @@ public class EnterPinActivity extends AppCompatActivity {
 
         // Hide back to settings button
         findViewById(R.id.action_backToSettings).setVisibility(calledFromSettings ? View.VISIBLE : View.GONE);
+
         // Hide the forgot PIN button?
         findViewById(R.id.action_forgotPIN).setVisibility(!calledFromSettings && triedAgain ? View.VISIBLE : View.GONE);
 
@@ -188,7 +201,8 @@ public class EnterPinActivity extends AppCompatActivity {
 
         if (number.length() != 4) {
             if (showSnackbar) {
-                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_too_short, Snackbar.LENGTH_LONG).show();
+                //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_too_short, Snackbar.LENGTH_LONG).show();
+                NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_too_short);
             }
             return false;
         }
@@ -196,7 +210,8 @@ public class EnterPinActivity extends AppCompatActivity {
         boolean consecutiveNumbers = Pattern.matches("(0123|1234|2345|3456|4567|5678|6789|9876|8765|7654|6543|5432|4321|3210)", number);
         if (consecutiveNumbers) {
             if (showSnackbar) {
-                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_no_consecutive, Snackbar.LENGTH_LONG).show();
+                //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_no_consecutive, Snackbar.LENGTH_LONG).show();
+                NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_no_consecutive);
             }
             return false;
         }
@@ -204,7 +219,8 @@ public class EnterPinActivity extends AppCompatActivity {
         boolean sameNumbers = Pattern.matches("\\\\d*?(\\\\d)\\\\1{2,}\\\\d*", number);
         if (sameNumbers) {
             if (showSnackbar) {
-                Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_no_same, Snackbar.LENGTH_LONG).show();
+                //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_no_same, Snackbar.LENGTH_LONG).show();
+                NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_no_same);
             }
             return false;
         }
@@ -213,11 +229,7 @@ public class EnterPinActivity extends AppCompatActivity {
     }
 
     public void submit(View view) {
-        startLandingPageActivity();
-        return;
-
-
-        /*String enteredPIN = "";
+        String enteredPIN = "";
         for (int i = 0; i< pinFields.length; i++) {
             enteredPIN += pinFields[i].getText().toString();
         }
@@ -240,11 +252,14 @@ public class EnterPinActivity extends AppCompatActivity {
                 // otherwise display an error message and restart the activity
                 if (lastEnteredPIN.equals(enteredPIN)) {
                     ConfigProvider.setPin(enteredPIN);
-                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_correct_loading, Snackbar.LENGTH_LONG).show();
-                    startLandingPageActivity();
+                    ConfigProvider.setAccessGranted(true);
+                    //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_correct_loading, Snackbar.LENGTH_LONG).show();
+                    NotificationHelper.showNotification(binding, NotificationType.SUCCESS, R.string.snackbar_pin_correct_loading);
+                    finish();
                 } else {
                     lastEnteredPIN = null;
-                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_not_matching, Snackbar.LENGTH_LONG).show();
+                    //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_not_matching, Snackbar.LENGTH_LONG).show();
+                    NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_not_matching);
                     onResume();
                 }
             }
@@ -257,11 +272,13 @@ public class EnterPinActivity extends AppCompatActivity {
                     } else {
                         if (lastEnteredPIN.equals(enteredPIN)) {
                             ConfigProvider.setPin(enteredPIN);
-                            Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_changed, Snackbar.LENGTH_LONG).show();
+                            //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_changed, Snackbar.LENGTH_LONG).show();
+                            NotificationHelper.showNotification(binding, NotificationType.INFO, R.string.snackbar_pin_changed);
                             finish();
                         } else {
                             lastEnteredPIN = null;
-                            Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_not_matching, Snackbar.LENGTH_LONG).show();
+                            //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_not_matching, Snackbar.LENGTH_LONG).show();
+                            NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_not_matching);
                             onResume();
                         }
                     }
@@ -270,7 +287,8 @@ public class EnterPinActivity extends AppCompatActivity {
                         confirmedCurrentPIN = true;
                         onResume();
                     } else {
-                        Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_wrong, Snackbar.LENGTH_LONG).show();
+                        //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_wrong, Snackbar.LENGTH_LONG).show();
+                        NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_wrong);
                         triedAgain = true;
                         onResume();
                     }
@@ -278,15 +296,18 @@ public class EnterPinActivity extends AppCompatActivity {
             } else {
                 // Process the login if the PIN is correct, otherwise display an error message and restart the activity
                 if (enteredPIN.equals(savedPIN)) {
-                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_correct_loading, Snackbar.LENGTH_LONG).show();
-                    startLandingPageActivity();
+                    ConfigProvider.setAccessGranted(true);
+                    //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_correct_loading, Snackbar.LENGTH_LONG).show();
+                    NotificationHelper.showNotification(binding, NotificationType.SUCCESS, R.string.snackbar_pin_correct_loading);
+                    finish();
                 } else {
-                    Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_wrong, Snackbar.LENGTH_LONG).show();
+                    //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_wrong, Snackbar.LENGTH_LONG).show();
+                    NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_wrong);
                     triedAgain = true;
                     onResume();
                 }
             }
-        }*/
+        }
     }
 
     private void startLandingPageActivity() {
@@ -330,5 +351,15 @@ public class EnterPinActivity extends AppCompatActivity {
         dialog.setTitle(view.getContext().getResources().getText(R.string.headline_reset_PIN).toString());
         dialog.setMessage(view.getContext().getResources().getText(R.string.infoText_resetPIN).toString());
         dialog.show();
+    }
+
+    @Override
+    public void onInputErrorShowing(View v, String message, boolean errorState) {
+        NotificationHelper.showNotification(binding, NotificationType.ERROR, message);
+    }
+
+    @Override
+    public void onInputErrorHiding(View v, boolean errorState) {
+        NotificationHelper.hideNotification(binding);
     }
 }

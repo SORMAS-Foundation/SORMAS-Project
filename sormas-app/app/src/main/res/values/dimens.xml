@@ -92,8 +92,10 @@
     <dimen name="loginHeading2LayoutMarginBottom">8dp</dimen>
 
     <!-- PIN -->
+    <dimen name="pinLayoutMarginTop">56dp</dimen>
     <dimen name="pinHeading1MarginTop">20dp</dimen>
     <dimen name="pinHeading1MarginBottom">10dp</dimen>
+    <dimen name="pinSubHeadingHeight">33dp</dimen>
     <dimen name="pinButtonWidth">80dp</dimen>
     <dimen name="pinButtonHeight">80dp</dimen>
     <dimen name="pinButtonTextSize">32sp</dimen>

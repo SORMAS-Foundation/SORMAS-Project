@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,7 +21,6 @@ import com.google.gson.JsonSerializer;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.ConnectException;
-import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -125,6 +125,8 @@ public final class RetroProvider {
                     try {
                         return versionCall.execute();
                     } catch (IOException e) {
+                         String kkkk = e.getMessage();
+                        Log.w(RetroProvider.class.getSimpleName(), kkkk);
                         // wrap the exception message inside a response object
                         return Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
                     }

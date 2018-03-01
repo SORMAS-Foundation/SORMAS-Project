@@ -16,6 +16,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.component.menu.LandingPageMenuControl;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.component.menu.LandingPageMenuParser;
@@ -29,14 +37,6 @@ import de.symeda.sormas.app.core.NotificationType;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.util.ConstantHelper;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
 /**
  * Created by Orson on 22/01/2018.
@@ -78,7 +78,9 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
 
+    protected void initializeBaseActivity(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
             activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
         } else {

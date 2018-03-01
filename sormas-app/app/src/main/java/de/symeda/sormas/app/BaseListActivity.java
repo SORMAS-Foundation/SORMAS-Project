@@ -43,6 +43,9 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+    }
+
+    protected void initializeBaseActivity(Bundle savedInstanceState) {
         subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingListActivityTitle);
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getExtras();

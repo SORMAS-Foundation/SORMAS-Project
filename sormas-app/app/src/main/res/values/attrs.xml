@@ -25,6 +25,7 @@
     <attr name="imageWidth" format="integer"/>
     <attr name="imageHeight" format="integer"/>
 
+    <attr name="passwordToggleEnabled" format="boolean" />
     <attr name="showCaption" format="boolean" />
     <attr name="horizontalFlow" format="boolean" />
 
@@ -225,6 +226,20 @@
         <attr name="inputType" />
     </declare-styleable>
 
+
+    <declare-styleable name="TeboPassword">
+        <attr name="labelCaption" />
+        <attr name="labelColor" />
+        <attr name="textAlignment" />
+        <attr name="gravity" />
+        <attr name="hint" />
+        <attr name="description" />
+        <attr name="required" />
+        <attr name="singleLine" />
+        <attr name="maxLines" />
+        <attr name="inputType" />
+        <attr name="passwordToggleEnabled" />
+    </declare-styleable>
 
 
     <declare-styleable name="TeboTextLinkEdit">

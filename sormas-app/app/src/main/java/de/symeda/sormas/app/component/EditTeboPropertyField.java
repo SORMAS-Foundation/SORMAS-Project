@@ -52,6 +52,22 @@ public abstract class EditTeboPropertyField<T> extends TeboPropertyField<T> {
         return errorState;
     }
 
+    public void enableErrorState(int messageResId) {
+        if (messageResId <= 0)
+            return;
+
+        String message  = getResources().getString(messageResId);
+
+        this.errorState = true;
+        this.errorMessage = message;
+        //this.txtControlInput.setError(this.errorMessage);
+
+
+        if (this.onInputErrorListener != null)
+            this.onInputErrorListener.onInputErrorChange(this, this.errorMessage, errorState);
+
+    }
+
     public void enableErrorState(String message) {
         this.errorState = true;
         this.errorMessage = message;

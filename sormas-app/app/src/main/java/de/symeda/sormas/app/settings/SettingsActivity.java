@@ -12,7 +12,7 @@ import android.view.View;
 import de.symeda.sormas.app.BaseLandingActivity;
 import de.symeda.sormas.app.BaseLandingActivityFragment;
 import de.symeda.sormas.app.EnterPinActivity;
-import de.symeda.sormas.app.LoginActivity;
+import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.R;
 
 import de.symeda.sormas.app.backend.config.ConfigProvider;

@@ -14,6 +14,7 @@ import com.google.android.gms.analytics.Tracker;
 
 import java.lang.ref.WeakReference;
 
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.util.Callback;
@@ -42,10 +43,13 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         SormasApplication application = (SormasApplication) getApplication();
-        //tracker = application.getDefaultTracker();
+        tracker = application.getDefaultTracker();
+
+        setContentView(getRootActivityLayout());
+
         Drawable drawable = ContextCompat.getDrawable(this,
                 R.drawable.selector_actionbar_back_button);
-        setContentView(getRootActivityLayout());
+
         final Toolbar toolbar = (Toolbar)findViewById(R.id.applicationToolbar);
         if (toolbar != null) {
             toolbar.setNavigationIcon(drawable);
@@ -57,7 +61,18 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
         }
 
         setTitle(getResources().getString(getActivityTitle()));
+
+        initializeBaseActivity(savedInstanceState);
+
+        // Show the Enter Pin Activity if the user doesn't have access to the app
+        if (!ConfigProvider.isAccessGranted()) {
+            Intent intent = new Intent(this, EnterPinActivity.class);
+            startActivity(intent);
+            return;
+        }
     }
+
+    protected abstract void initializeBaseActivity(Bundle savedInstanceState);
 
     @Override
     protected void onResume() {

@@ -245,8 +245,8 @@
     <string name="snackbar_http_401">Could not authenticate. Please check your username and password.</string>
     <string name="snackbar_http_403">You do not have the needed permissions. Please contact the support.</string>
     <string name="snackbar_http_404">Could not find a SORMAS server at \'%s\'</string>-->
-    <string name="snackbar_empty_username">Please enter a username.</string>
-    <string name="snackbar_empty_password">Please enter a password.</string>
+    <!--<string name="snackbar_empty_username">Please enter a username.</string>
+    <string name="snackbar_empty_password">Please enter a password.</string>-->
     <string name="snackbar_sample_datetime">Please specify the time of sampling.</string>
     <string name="snackbar_sample_material">Please specify the sample material.</string>
     <string name="snackbar_sample_material_text">Please further specify the sample material.</string>
@@ -402,13 +402,15 @@
 
     <!-- Login Activity -->
     <string name="sormas_logo_desc">SORMAS Logo</string>
-    <string name="username_label_title">User Name</string>
-    <string name="password_label_title">Password</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_in_tagline">Sign into SORMAS to continue the journey of saving lives.</string>
     <string name="login_change_settings"><u>Change Settings</u></string>
-    <string name="userNameHint">Your User Name</string>
-    <string name="passwordHint">Your Password</string>
+    <string name="label_username">User Name</string>
+    <string name="label_password">Password</string>
+    <string name="desc_username">User Name</string>
+    <string name="desc_password">Password</string>
+    <string name="hint_username">Your User Name</string>
+    <string name="hint_password">Your Password</string>
 
     <string name="login_heading_1">Surveillance Outbreak</string>
     <string name="login_heading_2">Response Management &amp; Analysis System</string>
@@ -791,5 +793,10 @@
     <string name="symptoms_infoText">Please tick an answer for ALL symptoms indicating if they occurred during this illness between symptom onset and case detection:</string>
     <string name="epiData_infoText">Please indicate if any of the following is relevant for the patient during the incubation period or illness.</string>
     <string name="animalContacts_infoText">Please indicate an answer regarding ALL animals (live or dead) the person had direct exposure to (e.g. hunt, touch, eat) during the incubation period.</string>
+
+
+
+    <string name="notification_empty_username">Please enter a username.</string>
+    <string name="notification_empty_password">Please enter a password.</string>
 
 </resources>

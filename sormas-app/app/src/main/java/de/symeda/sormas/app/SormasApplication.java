@@ -18,7 +18,6 @@ import java.util.Locale;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.VibrationHelper;
-import de.symeda.sormas.app.task.TaskNotificationService;
 import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 import de.symeda.sormas.app.util.UncaughtExceptionParser;
@@ -48,7 +47,7 @@ public class SormasApplication extends Application implements Application.Activi
         // Make sure the Enter Pin Activity is shown when the app has just started
         ConfigProvider.setAccessGranted(false);
 
-        TaskNotificationService.startTaskNotificationAlarm(this);
+        //TaskNotificationService.startTaskNotificationAlarm(this);
 
         // Initialize the tracker that is used to send information to Google Analytics
         GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);

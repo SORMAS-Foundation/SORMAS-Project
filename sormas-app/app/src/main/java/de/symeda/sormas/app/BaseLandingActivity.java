@@ -45,18 +45,9 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
 
-        /*menuTitles = new String[]{
-                getResources().getString(R.string.main_menu_tasks),
-                getResources().getString(R.string.main_menu_cases),
-                getResources().getString(R.string.main_menu_contacts),
-                getResources().getString(R.string.main_menu_events),
-                getResources().getString(R.string.main_menu_samples),
-                getResources().getString(R.string.main_menu_reports),
-                getResources().getString(R.string.main_menu_settings),
-                getResources().getString(R.string.main_menu_sync_all)
-        };*/
-
+    protected void initializeBaseActivity(Bundle savedInstanceState) {
         menuDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.main_navigation_view);
         navigationView.setNavigationItemSelectedListener(new MainMenuItemSelectedListener(this, menuDrawerLayout));
@@ -69,35 +60,6 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity {
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getExtras();
         initializeActivity(arguments);
-
-        /*menuDrawerList = (ListView)findViewById(R.id.main_menu_drawer_left);
-
-        // Set the adapter for the list view
-        menuDrawerList.setAdapter(
-                new ArrayAdapter<String>(
-                        this,
-                        R.layout.drawer_list_item_layout,
-                        menuTitles));
-
-        // Set the list's click listener
-        menuDrawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
-                // necessary to prevent the drawer from staying open when the same entry is selected
-                menuDrawerLayout.closeDrawers();
-            }
-        });*/
-
-        // Set the list's click listener
-        /*menuDrawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
-                // necessary to prevent the drawer from staying open when the same entry is selected
-                menuDrawerLayout.closeDrawers();
-            }
-        });*/
 
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_blue_36dp);
 
