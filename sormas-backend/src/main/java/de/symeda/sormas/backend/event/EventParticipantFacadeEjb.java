@@ -15,6 +15,8 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.user.User;
@@ -30,6 +32,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private EventParticipantService eventParticipantService;
 	@EJB
 	private PersonService personService;
+	@EJB
+	private CaseService caseService;
 	@EJB
 	private UserService userService;
 	
@@ -92,8 +96,12 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	
 	@Override
 	public EventParticipantDto saveEventParticipant(EventParticipantDto dto) {
+
 		EventParticipant entity = fromDto(dto);
 		eventParticipantService.ensurePersisted(entity);
+		
+		eventParticipantService.udpateResultingCase(entity);
+		
 		return toDto(entity);
 	}
 	
@@ -123,7 +131,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		target.setEvent(eventService.getByReferenceDto(source.getEvent()));
 		target.setPerson(personService.getByUuid(source.getPerson().getUuid()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
-		
+		target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));
+
 		return target;
 	}
 	
@@ -146,7 +155,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
 		target.setPerson(PersonFacadeEjb.toDto(source.getPerson()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
-		
+		target.setResultingCase(CaseFacadeEjb.toReferenceDto(source.getResultingCase()));
+
 		return target;
 	}
 

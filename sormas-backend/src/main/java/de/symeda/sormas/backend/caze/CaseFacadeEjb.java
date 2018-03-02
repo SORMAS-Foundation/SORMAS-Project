@@ -27,7 +27,9 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
@@ -37,7 +39,6 @@ import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.StatisticsCaseDto;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -45,6 +46,7 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskHelper;
@@ -65,6 +67,8 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -139,6 +143,9 @@ public class CaseFacadeEjb implements CaseFacade {
 	private ContactFacadeEjbLocal contactFacade;
 	@EJB
 	private MessagingService messagingService;
+	@EJB
+	private EventParticipantService eventParticipantService;
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
 
@@ -256,18 +263,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	public CaseDataDto saveCase(CaseDataDto dto) {
 		CaseDataDto existingCase = toDto(caseService.getByUuid(dto.getUuid()));
 
-		// If the case is new and the geo coordinates of the case's health facility are null, set its coordinates to the
-		// case's report coordinates, if available
-		FacilityReferenceDto facilityRef = dto.getHealthFacility();
-		Facility facility = facilityService.getByReferenceDto(facilityRef);
-		if (existingCase == null && facility != null && facility.getUuid() != FacilityDto.OTHER_FACILITY_UUID && facility.getUuid() != FacilityDto.NONE_FACILITY_UUID
-				&& (facility.getLatitude() == null || facility.getLongitude() == null)) {
-			if (dto.getReportLat() != null && dto.getReportLon() != null) {
-				facility.setLatitude(dto.getReportLat());
-				facility.setLongitude(dto.getReportLon());
-				facilityService.ensurePersisted(facility);
-			}
-		}
+		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
 		Case caze = fromDto(dto);
 		caseService.ensurePersisted(caze);
@@ -277,12 +273,75 @@ public class CaseFacadeEjb implements CaseFacade {
 		return toDto(caze);
 	}
 
-	@Override
-	public CaseDataDto getByPersonAndDisease(String personUuid, Disease disease, String userUuid) {
-		Person person = personService.getByUuid(personUuid);
-		User user = userService.getByUuid(userUuid);
+	/**
+	 * Handles potential changes, processes and backend logic that needs to be done after a case has been created/saved
+	 */
+	private void onCaseChanged(CaseDataDto existingCase, Case newCase) {
+		
+		// If the case is new and the geo coordinates of the case's health facility are null, set its coordinates to the
+		// case's report coordinates, if available
+		Facility facility = newCase.getHealthFacility();
+		if (existingCase == null && facility != null && facility.getUuid() != FacilityDto.OTHER_FACILITY_UUID && facility.getUuid() != FacilityDto.NONE_FACILITY_UUID
+				&& (facility.getLatitude() == null || facility.getLongitude() == null)) {
+			if (newCase.getReportLat() != null && newCase.getReportLon() != null) {
+				facility.setLatitude(newCase.getReportLat());
+				facility.setLongitude(newCase.getReportLon());
+				facilityService.ensurePersisted(facility);
+			}
+		}
+		
+		if (newCase.getDisease() == Disease.PLAGUE) {
+			PlagueType plagueType = DiseaseHelper.getPlagueTypeForSymptoms(SymptomsFacadeEjb.toDto(newCase.getSymptoms()));
+			if (plagueType != newCase.getPlagueType() && plagueType != null) {
+				newCase.setPlagueType(plagueType);
+			}
+		}		
 
-		return toDto(caseService.getByPersonAndDisease(disease, person, user));
+		updateInvestigationByStatus(newCase);
+	
+		// Send an email to all responsible supervisors when the case classification has changed
+		if (existingCase != null && existingCase.getCaseClassification() != newCase.getCaseClassification()) {
+			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(newCase.getRegion(), 
+					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+			for (User recipient : messageRecipients) {
+				try {
+					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_CASE_CLASSIFICATION_CHANGED), 
+							String.format(I18nProperties.getMessage(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED), DataHelper.getShortUuid(newCase.getUuid()), newCase.getCaseClassification().toString()), 
+							MessageType.EMAIL, MessageType.SMS);
+				} catch (NotificationDeliveryFailedException e) {
+					logger.error(String.format("NotificationDeliveryFailedException when trying to notify supervisors about the change of a case classification. "
+							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
+				}
+			}
+		}
+	
+		if (existingCase == null 
+				|| newCase.getDisease() != existingCase.getDisease()
+				|| newCase.getReportDate() != existingCase.getReportDate()
+				|| newCase.getReceptionDate() != existingCase.getReceptionDate()
+				|| newCase.getSymptoms().getOnsetDate() != existingCase.getSymptoms().getOnsetDate()
+				) {
+
+			// Update follow-up until and status of all contacts
+			for (Contact contact : contactService.getAllByCase(newCase)) {
+				contactService.updateFollowUpUntilAndStatus(contact);
+				contactService.udpateContactStatusAndResultingCase(contact);
+			}
+			for (Contact contact : contactService.getAllByResultingCase(newCase)) {
+				contactService.updateFollowUpUntilAndStatus(contact);
+				contactService.udpateContactStatusAndResultingCase(contact);
+			}
+
+			// update result case of all related event participants
+			for (EventParticipant eventParticipant : eventParticipantService.getAllByPerson(newCase.getPerson())) {
+				eventParticipantService.udpateResultingCase(eventParticipant);
+			}
+		}
+		
+		// Create a task to search for other cases for new Plague cases
+		if (existingCase == null && newCase.getDisease() == Disease.PLAGUE) {
+			createActiveSearchForOtherCasesTask(newCase);
+		}
 	}
 
 	@Override
@@ -353,6 +412,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<Contact> contacts = contactService.getAllByCase(caze);
 		for (Contact contact : contacts) {
 			contactService.delete(contact);
+		}
+		contacts = contactService.getAllByResultingCase(caze);
+		for (Contact contact : contacts) {
+			contact.setResultingCase(null);
 		}
 		List<Sample> samples = sampleService.getAllByCase(caze);
 		for (Sample sample : samples) {
@@ -706,42 +769,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 	
-	/**
-	 * Handles potential changes, processes and backend logic that needs to be done after a case has been created/saved
-	 */
-	private void onCaseChanged(CaseDataDto existingCase, Case newCase) {
-		updateInvestigationByStatus(newCase);
-
-		// Send an email to all responsible supervisors when the case classification has changed
-		if (existingCase != null && existingCase.getCaseClassification() != newCase.getCaseClassification()) {
-			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(newCase.getRegion(), 
-					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
-			for (User recipient : messageRecipients) {
-				try {
-					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_CASE_CLASSIFICATION_CHANGED), 
-							String.format(I18nProperties.getMessage(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED), DataHelper.getShortUuid(newCase.getUuid()), newCase.getCaseClassification().toString()), 
-							MessageType.EMAIL, MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(String.format("NotificationDeliveryFailedException when trying to notify supervisors about the change of a case classification. "
-							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
-				}
-			}
-		}
-
-		// Update follow-up until and status of all contacts of this case if the
-		// disease has changed
-		if (existingCase != null && newCase.getDisease() != existingCase.getDisease()) {
-			for (ContactDto contact : contactFacade.getAllByCase(getReferenceByUuid(newCase.getUuid()))) {
-				contactFacade.updateFollowUpUntilAndStatus(contact);
-			}
-		}
-
-		// Create a task to search for other cases for new Plague cases
-		if (existingCase == null && newCase.getDisease() == Disease.PLAGUE) {
-			createActiveSearchForOtherCasesTask(newCase);
-		}
-	}
-
 	private void sendInvestigationDoneNotifications(Case caze) {
 		List<User> messageRecipients = userService.getAllByRegionAndUserRoles(caze.getRegion(), 
 				UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
@@ -761,5 +788,4 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
 	}
-
 }

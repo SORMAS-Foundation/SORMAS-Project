@@ -2111,3 +2111,10 @@ CREATE FUNCTION export_database_join(table_name text, join_table_name text, colu
 ;
 
 INSERT INTO schema_version (version_number, comment) VALUES (94, 'Export function for database export #507');
+-- 2018-03-01 Resulting case for event participant #402
+
+ALTER TABLE eventparticipant ADD COLUMN resultingcase_id bigint;
+ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_resultingcase_id FOREIGN KEY (resultingcase_id) REFERENCES cases (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (95, 'Resulting case for eventparticipant #402');
+

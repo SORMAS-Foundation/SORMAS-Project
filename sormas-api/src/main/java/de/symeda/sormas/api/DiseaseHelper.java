@@ -1,18 +1,9 @@
 package de.symeda.sormas.api;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 
 public class DiseaseHelper {
-
-	public static boolean hasContactFollowUp(CaseDataDto caze) {
-		Disease disease = caze.getDisease();
-
-		return disease == Disease.EVD || disease == Disease.LASSA || disease == Disease.AVIAN_INFLUENCA 
-				|| disease == Disease.MONKEYPOX || (disease == Disease.PLAGUE && caze.getPlagueType() == PlagueType.PNEUMONIC) 
-				|| disease == Disease.OTHER;
-	}
 	
 	/**
 	 * Checks whether the given symptoms match the clinical criteria of one of the three Plague types.
@@ -37,4 +28,35 @@ public class DiseaseHelper {
 		}
 	}
 
+	public static boolean hasContactFollowUp(Disease disease, PlagueType plagueType) {
+		return disease == Disease.EVD || disease == Disease.LASSA || disease == Disease.AVIAN_INFLUENCA 
+				|| disease == Disease.MONKEYPOX || (disease == Disease.PLAGUE && plagueType == PlagueType.PNEUMONIC) 
+				|| disease == Disease.OTHER;
+	}
+	
+	public static int getIncubationPeriodDays(Disease disease, PlagueType plagueType) {
+		
+		if (disease == null) {
+			return 21; // max
+		}
+
+		switch(disease) {
+		case EVD:
+		case MONKEYPOX:
+		case OTHER:
+			return 21;
+		case AVIAN_INFLUENCA:
+			return 17;
+		case PLAGUE:
+			if (plagueType == null || plagueType == PlagueType.PNEUMONIC) {
+				return 7; // worst case
+			} else {
+				return 0;
+			}
+		case LASSA:
+			return 6;
+		default:
+			return 21; // max
+		}
+	}
 }

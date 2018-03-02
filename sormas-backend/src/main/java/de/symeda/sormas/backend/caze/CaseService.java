@@ -7,7 +7,6 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -478,30 +477,72 @@ public class CaseService extends AbstractAdoService<Case> {
 		return filter;
 	}
 
-	// TODO #69 create some date filter for finding the right case (this is implemented in CaseDao.java too)
-	public Case getByPersonAndDisease(Disease disease, Person person, User user) {
+	/**
+	 * E.g. to be used to find a resulting case for a contact.
+	 * @see ContactService#udpateContactStatusAndResultingCase
+	 */
+	public Case getFirstByPersonDiseaseAndOnset(Disease disease, Person person, Date onsetBetweenStart, Date onsetBetweenEnd) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
 
-		Predicate filter = cb.equal(from.get(Case.REPORTING_USER), user);
-		if (user.getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)) {
-			filter = cb.or(filter, cb.equal(from.get(Case.SURVEILLANCE_OFFICER), user));
+		Predicate filter =  cb.equal(from.get(Case.PERSON), person);
+		if (disease != null) {
+			filter = cb.and(filter, cb.equal(from.get(Case.DISEASE), disease));
 		}
+		
+		// Onset date > reception date > report date (use report date as a fallback if none of the other dates is available)
+		Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS, JoinType.LEFT);
+		Predicate onsetFilter = cb.or(
+				cb.between(symptoms.get(Symptoms.ONSET_DATE), onsetBetweenStart, onsetBetweenEnd), 
+				cb.and(
+						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
+						cb.between(from.get(Case.RECEPTION_DATE), onsetBetweenStart, onsetBetweenEnd)
+				),
+				cb.and(
+						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
+						cb.isNull(from.get(Case.RECEPTION_DATE)),
+						cb.between(from.get(Case.REPORT_DATE), onsetBetweenStart, onsetBetweenEnd)
+				)
+		);
+		filter = cb.and(filter, onsetFilter);
 
-		filter = cb.and(filter, cb.equal(from.get(Case.DISEASE), disease));
-		filter = cb.and(filter, cb.equal(from.get(Case.PERSON), person));
+		cq.where(filter);
 
-		if(filter != null) {
-			cq.where(filter);
+		cq.orderBy(cb.asc(symptoms.get(Symptoms.ONSET_DATE)), cb.asc(from.get(Case.RECEPTION_DATE)), cb.asc(from.get(Case.REPORT_DATE)));
+
+		List<Case> resultList = em.createQuery(cq).setMaxResults(1).getResultList();
+		if (!resultList.isEmpty())
+			return resultList.get(0);
+		return null;
+	}
+
+	/**
+	 * @return Latest case of the person that "starts" before date
+	 * and has not outcome yet or and outcome after date 
+	 */
+	public Case getLastActiveByPersonDiseaseAtDate(Disease disease, Person person, Date date) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
+		Root<Case> from = cq.from(getElementClass());
+
+		Predicate filter =  cb.equal(from.get(Case.PERSON), person);
+		if (disease != null) {
+			filter = cb.and(filter, cb.equal(from.get(Case.DISEASE), disease));
 		}
-		cq.distinct(true);
+		
+		// all cases that have no outcome yet or outcome date after the date
+		filter = cb.and(filter, createActiveCaseFilter(cb, from, date, date));
 
-		try {
-			Case result = em.createQuery(cq).getSingleResult();
-			return result;
-		} catch (NoResultException e) {
-			return null;
-		}
+		cq.where(filter);
+
+		Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS, JoinType.LEFT);
+		cq.orderBy(cb.desc(symptoms.get(Symptoms.ONSET_DATE)), cb.desc(from.get(Case.RECEPTION_DATE)), cb.desc(from.get(Case.REPORT_DATE)));
+
+		List<Case> resultList = em.createQuery(cq).setMaxResults(1).getResultList();
+		if (!resultList.isEmpty())
+			return resultList.get(0);
+		return null;
 	}
 }

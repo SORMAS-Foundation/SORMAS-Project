@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.event;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 
 public class EventParticipantDto extends EntityDto {
@@ -12,11 +13,13 @@ public class EventParticipantDto extends EntityDto {
 	public static final String EVENT = "event";
 	public static final String PERSON = "person";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
+	public static final String RESULTING_CASE = "resultingCase";
 	
 	private EventReferenceDto event;
 	private PersonDto person;
 	private String involvementDescription;
-	
+	private CaseReferenceDto resultingCase;
+
 	public EventReferenceDto getEvent() {
 		return event;
 	}
@@ -43,6 +46,14 @@ public class EventParticipantDto extends EntityDto {
 	
 	public EventParticipantReferenceDto toReference() {
 		return new EventParticipantReferenceDto(getUuid());
+	}
+
+	public CaseReferenceDto getResultingCase() {
+		return resultingCase;
+	}
+
+	public void setResultingCase(CaseReferenceDto resultingCase) {
+		this.resultingCase = resultingCase;
 	}
 
 }

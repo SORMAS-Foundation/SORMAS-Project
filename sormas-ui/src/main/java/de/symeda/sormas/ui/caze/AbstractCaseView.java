@@ -113,7 +113,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 			menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
 			menu.addView(EpiDataView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), params);
 		}
-		if (DiseaseHelper.hasContactFollowUp(caze)) {
+		if (DiseaseHelper.hasContactFollowUp(caze.getDisease(), caze.getPlagueType())) {
 			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, "contacts"), params);
 		}
 		infoLabel.setValue(caseRef.getCaption());

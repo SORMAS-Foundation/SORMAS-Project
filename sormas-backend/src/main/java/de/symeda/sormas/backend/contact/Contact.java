@@ -53,6 +53,7 @@ public class Contact extends AbstractDomainObject {
 	
 	private Person person;
 	private Case caze;
+	private ContactRelation relationToCase;
 	private Date reportDateTime;
 	private User reportingUser;
 	private Date lastContactDate;
@@ -64,7 +65,6 @@ public class Contact extends AbstractDomainObject {
 	private Date followUpUntil;
 	private User contactOfficer;
 	private String description;
-	private ContactRelation relationToCase;
 	private Case resultingCase;
 	
 	private Double reportLat;

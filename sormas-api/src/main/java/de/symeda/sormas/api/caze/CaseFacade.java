@@ -33,8 +33,6 @@ public interface CaseFacade {
 
 	CaseReferenceDto getReferenceByUuid(String uuid);
 	
-	CaseDataDto getByPersonAndDisease(String personUuid, Disease disease, String userUuid);
-
 	List<String> getAllUuids(String userUuid);
 	
 	CaseDataDto moveCase(CaseReferenceDto caze, CommunityReferenceDto community, FacilityReferenceDto facility, String facilityDetails, UserReferenceDto surveillanceOfficer);
@@ -62,5 +60,4 @@ public interface CaseFacade {
 	List<Pair<DistrictDto, BigDecimal>> getCaseMeasurePerDistrict(Date onsetFromDate, Date onsetToDate, Disease disease, CaseMeasure caseMeasure);
 
 	void deleteCase(CaseReferenceDto caseRef, String userUuid);
-	
 }

@@ -21,10 +21,8 @@ import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -39,7 +37,6 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -250,23 +247,7 @@ public class CaseController {
 				cazeDto.setSymptoms(symptomsForm.getValue());
 				cazeDto.setEpiData(epiDataForm.getValue());
 
-    			cazeDto = FacadeProvider.getCaseFacade().saveCase(cazeDto);
-
-    			String symptomsSaveNotification = updateSymptomsPlagueType(cazeDto);
-
-    			if (!DataHelper.isNullOrEmpty(symptomsSaveNotification)) {
-   					Window window = VaadinUiUtil.showSimplePopupWindow("Save notification", symptomsSaveNotification);
-					window.addCloseListener(new CloseListener() {
-						@Override
-						public void windowClose(CloseEvent e) {
-							Notification.show("Case saved", Type.WARNING_MESSAGE);
-		        			navigateToView(CaseDataView.VIEW_NAME, caseUuid, viewMode);
-						}
-					});
-    			} else {
-        			Notification.show("Case saved", Type.WARNING_MESSAGE);
-        			navigateToView(CaseDataView.VIEW_NAME, caseUuid, viewMode);
-    			}
+    			saveCase(cazeDto, CaseDataView.VIEW_NAME, viewMode);
 			}
 		});
 
@@ -285,9 +266,7 @@ public class CaseController {
         	@Override
         	public void onCommit() {
     			CaseDataDto cazeDto = caseEditForm.getValue();   
-    			FacadeProvider.getCaseFacade().saveCase(cazeDto);
-    			Notification.show("Case data saved", Type.WARNING_MESSAGE);
-    			navigateToView(CaseDataView.VIEW_NAME, caseUuid, viewMode);
+    			saveCase(cazeDto, CaseDataView.VIEW_NAME, viewMode);
         	}
         });
         
@@ -358,27 +337,11 @@ public class CaseController {
         
         editView.addCommitListener(new CommitListener() {
         	
-        	@SuppressWarnings("serial")
 			@Override
         	public void onCommit() {
-    			SymptomsDto symptomsDto = symptomsForm.getValue();
-				FacadeProvider.getSymptomsFacade().saveSymptoms(symptomsDto);
-    			String saveNotification = updateSymptomsPlagueType(findCase(caseUuid));
-
-    			if (!DataHelper.isNullOrEmpty(saveNotification)) {
-   					Window window = VaadinUiUtil.showSimplePopupWindow("Save notification", saveNotification);
-					window.addCloseListener(new CloseListener() {
-						@Override
-						public void windowClose(CloseEvent e) {
-							Notification.show("Case symptoms saved", Type.WARNING_MESSAGE);
-		        			navigateToView(CaseSymptomsView.VIEW_NAME, caseUuid, viewMode);
-						}
-					});
-   					return;
-    			}
-    			
-    			Notification.show("Case symptoms saved", Type.WARNING_MESSAGE);
-    			navigateToView(CaseSymptomsView.VIEW_NAME, caseUuid, viewMode);
+        		CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
+        		cazeDto.setSymptoms(symptomsForm.getValue());
+    			saveCase(cazeDto, CaseSymptomsView.VIEW_NAME, viewMode);
         	}
         });
         
@@ -386,27 +349,28 @@ public class CaseController {
     }    
 
 
-	/**
-	 * @return notification text for the user or empty string
-	 */
-	private String updateSymptomsPlagueType(CaseDataDto caseDto) {
+	private void saveCase(CaseDataDto cazeDto, String viewName, final ViewMode viewMode) {
 		
-		// TODO would be much nicer to have this logic in the backend and inform the user using a notication
-		// for plague we may have to change the type based on symptoms
-		if (caseDto.getDisease() == Disease.PLAGUE) {
-			PlagueType plagueType = DiseaseHelper.getPlagueTypeForSymptoms(caseDto.getSymptoms());
-			if (plagueType != caseDto.getPlagueType() && plagueType != null) {
-
-				caseDto.setPlagueType(plagueType);
-				FacadeProvider.getCaseFacade().saveCase(caseDto);
-
-				return 	"The symptoms selected match the clinical criteria for " + plagueType.toString() + ". "
-						+ "The plague type will be set to " + plagueType.toString() + " for this case.";
-			}
+		CaseDataDto resultDto = FacadeProvider.getCaseFacade().saveCase(cazeDto);
+		
+		if (resultDto.getPlagueType() != cazeDto.getPlagueType()) {
+			// TODO would be much better to have a notication for this triggered in the backend
+				Window window = VaadinUiUtil.showSimplePopupWindow("Save notification", 
+						"The symptoms selected match the clinical criteria for " + resultDto.getPlagueType().toString() + ". "
+								+ "The plague type will be set to " + resultDto.getPlagueType().toString() + " for this case.");
+			window.addCloseListener(new CloseListener() {
+				@Override
+				public void windowClose(CloseEvent e) {
+					Notification.show("Case saved", Type.WARNING_MESSAGE);
+        			navigateToView(viewName, cazeDto.getUuid(), viewMode);
+				}
+			});
+		} else {
+			Notification.show("Case saved", Type.WARNING_MESSAGE);
+			navigateToView(viewName, cazeDto.getUuid(), viewMode);
 		}
-		
-		return "";
 	}
+
 	
 	public CommitDiscardWrapperComponent<EpiDataForm> getCaseEpiDataComponent(final String caseUuid, ViewMode viewMode) {
 		CaseDataDto caze = findCase(caseUuid);

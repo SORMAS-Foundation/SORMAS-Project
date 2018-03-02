@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -142,15 +141,6 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactDto> getAllByCase(CaseReferenceDto caseRef) {
-		Case caze = caseService.getByReferenceDto(caseRef);
-
-		return contactService.getAllByCase(caze).stream()
-				.map(c -> toDto(c))
-				.collect(Collectors.toList());
-	}
-
-	@Override
 	public ContactDto getContactByUuid(String uuid) {
 		return toDto(contactService.getByUuid(uuid));
 	}
@@ -162,21 +152,19 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public ContactDto saveContact(ContactDto dto) {
+		
 		Contact entity = fromDto(dto);
 		
-		if (!DiseaseHelper.hasContactFollowUp(caseFacade.getCaseDataByUuid(entity.getCaze().getUuid()))) {
+		if (!DiseaseHelper.hasContactFollowUp(entity.getCaze().getDisease(), entity.getCaze().getPlagueType())) {
 			throw new UnsupportedOperationException("Contact creation is not allowed for diseases that don't have contact follow-up.");
 		}
 		
 		contactService.ensurePersisted(entity);
-		contactService.updateFollowUpUntilAndStatus(entity);
-		return toDto(entity);
-	}
 
-	@Override
-	public ContactDto updateFollowUpUntilAndStatus(ContactDto dto) {
-		Contact entity = fromDto(dto);
 		contactService.updateFollowUpUntilAndStatus(entity);
+		
+		contactService.udpateContactStatusAndResultingCase(entity);
+		
 		return toDto(entity);
 	}
 
