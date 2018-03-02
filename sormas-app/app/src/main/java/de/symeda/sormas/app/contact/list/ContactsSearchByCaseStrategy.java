@@ -1,9 +1,9 @@
 package de.symeda.sormas.app.contact.list;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 
@@ -20,10 +20,16 @@ public class ContactsSearchByCaseStrategy implements IContactsSearchStrategy {
 
     @Override
     public List<Contact> search() {
-        //TODO: Make changes here
-        final CaseDao caseDao = DatabaseHelper.getCaseDao();
-        final Case caze = caseDao.queryUuid(caseUuid);
+        List<Contact> list = new ArrayList<>();
 
-        return DatabaseHelper.getContactDao().getByCase(caze);
+        if (caseUuid == null || caseUuid.isEmpty())
+            return list;
+
+        final Case caze = DatabaseHelper.getCaseDao().queryUuidReference(caseUuid);
+        if (caze != null) {
+            list = DatabaseHelper.getContactDao().getByCase(caze);
+        }
+
+        return list;
     }
 }

@@ -93,7 +93,7 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
     public void onResume() {
         super.onResume();
 
-
+        //TODO: This whole thing might still change
         if (searchStrategy == SearchStrategy.BY_FILTER_STATUS) {
 
             //TODO: Orson - Remove - used only during dev

@@ -8,18 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.core.SearchStrategy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.sample.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.sample.read.SampleReadActivity;
-
-import java.util.List;
-
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.app.backend.sample.Sample;
 
 /**
  * Created by Orson on 07/12/2017.
@@ -82,7 +81,8 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
         ISamplesSearchStrategy strategy = null;
         String subHeading;
 
-        //TODO: Orson - Remove
+        //TODO: Orson - Remove (Old comment)
+        //TODO: This whole thing might still change
         if (filterStatus == null)
             filterStatus = ShipmentStatus.NOT_SHIPPED;
 
