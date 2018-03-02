@@ -605,6 +605,8 @@
 
 
 
+    <string name="headline_all">All</string>
+    <string name="headline_status_unknown">Status Unknown</string>
     <string name="headline_help">Help</string>
     <string name="headline_create_pin">Create PIN</string>
     <string name="headline_confirm_pin">Confirm PIN</string>

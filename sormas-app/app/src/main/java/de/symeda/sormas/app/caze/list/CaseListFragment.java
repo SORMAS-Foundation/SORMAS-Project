@@ -8,18 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.core.SearchStrategy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
-import java.util.List;
-
-import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.app.backend.caze.Case;
 
 /**
  * Created by Orson on 05/12/2017.
@@ -84,21 +83,17 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
         if (searchStrategy == SearchStrategy.BY_FILTER_STATUS) {
 
             //TODO: Orson - reverse this relationship
-            getCommunicator().updateSubHeadingTitle(filterStatus.toString());
-
-            if (filterStatus == InvestigationStatus.PENDING) {
-                cases = MemoryDatabaseHelper.CASE.getPendingCases(20);
-            } else if (filterStatus == InvestigationStatus.DONE) {
-                cases = MemoryDatabaseHelper.CASE.getDoneCases(20);
-            } else if (filterStatus == InvestigationStatus.DISCARDED) {
-                cases = MemoryDatabaseHelper.CASE.getDiscardedCases(20);
+            if (filterStatus != null) {
+                getCommunicator().updateSubHeadingTitle(filterStatus.toString());
             } else {
-                cases = MemoryDatabaseHelper.CASE.getCases(20);
-                getCommunicator().updateSubHeadingTitle("All");
+                getCommunicator().updateSubHeadingTitle(R.string.headline_status_unknown);
             }
+
+            cases = DatabaseHelper.getCaseDao().queryForEq(Case.INVESTIGATION_STATUS, filterStatus, Case.REPORT_DATE, false);
         } else {
-            cases = MemoryDatabaseHelper.CASE.getCases(20);
-            getCommunicator().updateSubHeadingTitle("All");
+            cases = DatabaseHelper.getCaseDao().queryForAll(Case.REPORT_DATE, false);
+            //cases = MemoryDatabaseHelper.CASE.getCases(20);
+            getCommunicator().updateSubHeadingTitle(R.string.headline_all);
         }
 
 

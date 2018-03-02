@@ -6,7 +6,7 @@ package de.symeda.sormas.app.core;
 
 public interface IUpdateSubHeadingTitle {
 
-    void updateSubHeadingTitle(int titleResource);
+    void updateSubHeadingTitle(int titleResId);
     void updateSubHeadingTitle(String title);
 
 }

@@ -257,8 +257,8 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
     }
 
     @Override
-    public void updateSubHeadingTitle(int titleResource) {
-        setSubHeadingTitle(getApplicationContext().getResources().getString(titleResource));
+    public void updateSubHeadingTitle(int titleResId) {
+        setSubHeadingTitle(getApplicationContext().getResources().getString(titleResId));
     }
 
     @Override
