@@ -22,7 +22,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.OnHideInputErrorListener;
 import de.symeda.sormas.app.component.OnShowInputErrorListener;
 import de.symeda.sormas.app.component.TeboButtonType;
-import de.symeda.sormas.app.core.NotificationType;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogRootLayoutBinding;
 
 /**
@@ -101,7 +101,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
     }
 
     @Override
-    public void onInputErrorShowing(View v, String message, boolean errorState) {
+    public void onShowInputErrorShowing(View v, String message, boolean errorState) {
         if (rootBinding.notificationFrame == null)
             return;
 
@@ -252,9 +252,12 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
             }
         });
 
-        ViewStub buttonPanel = binding.vsDialogButtonPanel.getViewStub();
-        buttonPanel.setLayoutResource(btnPanelLayoutResourceId);
-        View buttonPanelInflated = buttonPanel.inflate();
+
+        if (btnPanelLayoutResourceId > 0) {
+            ViewStub buttonPanel = binding.vsDialogButtonPanel.getViewStub();
+            buttonPanel.setLayoutResource(btnPanelLayoutResourceId);
+            View buttonPanelInflated = buttonPanel.inflate();
+        }
 
 
         //Show or Hide Buttons
@@ -442,6 +445,10 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
 
     public boolean isDeleteButtonVisible() {
         return false;
+    }
+
+    public boolean isHeadingVisible() {
+        return true;
     }
 
     public boolean isHeadingCentered() {

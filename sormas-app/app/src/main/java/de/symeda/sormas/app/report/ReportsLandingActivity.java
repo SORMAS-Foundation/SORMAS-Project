@@ -26,7 +26,7 @@ public class ReportsLandingActivity extends BaseLandingActivity {
     }
 
     @Override
-    public BaseLandingActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+    public BaseLandingActivityFragment getActiveLandingFragment() throws IllegalAccessException, InstantiationException {
         return null;
     }
 

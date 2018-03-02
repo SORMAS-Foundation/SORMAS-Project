@@ -22,12 +22,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.CompositeOnFocusChangeListener;
-
 import java.util.Date;
 
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.core.CompositeOnFocusChangeListener;
 
 /**
  * Created by Orson on 14/02/2018.
@@ -64,14 +63,15 @@ public class TeboTimePicker extends EditTeboPropertyField<Date> implements ITebo
     // <editor-fold defaultstate="collapsed" desc="Getters & Setters">
 
     @Override
-    public void setValue(Date value) {
+    public void setValue(Date value) throws InvalidValueException {
         if (value == null)
             return;
 
         try {
             txtControlInput.setText(DateHelper.formatTime(value));
         } catch (Exception e) {
-            enableErrorState("Invalid time");
+            throw new InvalidValueException(value, "Invalid time");
+            //enableErrorState("Invalid time");
         }
     }
 
@@ -88,7 +88,11 @@ public class TeboTimePicker extends EditTeboPropertyField<Date> implements ITebo
         if (date == view.getValue())
             return;
 
-        view.setValue(date);
+        try {
+            view.setValue(date);
+        } catch (InvalidValueException e) {
+            e.printStackTrace();
+        }
     }
 
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")

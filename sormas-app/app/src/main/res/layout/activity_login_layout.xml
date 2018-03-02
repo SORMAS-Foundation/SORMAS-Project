@@ -194,31 +194,15 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <include
             android:id="@+id/notificationFrame"
+            layout="@layout/activity_root_notification_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            />
 
-
-            android:layout_gravity="top"
-            android:orientation="vertical"
-            android:elevation="8dp"
-            android:background="@color/watchOut"
-            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-            android:paddingRight="@dimen/rowListItemHorizontalMargin"
-            android:paddingTop="@dimen/rowListItemHorizontalMargin"
-            android:paddingBottom="@dimen/rowListItemHorizontalMargin"
-            android:visibility="gone"
-            android:onClick="@{(v) -> hideNotificationCallback.onInputErrorHiding(v, false) }"
-            >
-            <TextView
-                android:id="@+id/tvNotificationMessage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:textColor="@color/whiteOpaque"
-                android:text=""/>
-
-        </LinearLayout>
+        <!--app:showNotificationCallback="@{showNotificationCallback}"
+        app:hideNotificationCallback="@{hideNotificationCallback}"-->
 
 
     </FrameLayout>

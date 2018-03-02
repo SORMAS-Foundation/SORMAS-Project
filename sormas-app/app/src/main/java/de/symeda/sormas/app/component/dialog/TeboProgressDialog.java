@@ -11,45 +11,39 @@ import com.google.android.gms.analytics.Tracker;
 import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
-import de.symeda.sormas.app.component.TeboTextInputEditText;
-import de.symeda.sormas.app.core.INotificationContext;
 
 /**
- * Created by Orson on 01/02/2018.
+ * Created by Orson on 02/03/2018.
  * <p>
  * www.technologyboard.org
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
 
-public class UserReportDialog extends BaseTeboAlertDialog {
+public class TeboProgressDialog extends BaseTeboAlertDialog {
 
-    public static final String TAG = UserReportDialog.class.getSimpleName();
+    public static final String TAG = TeboProgressDialog.class.getSimpleName();
 
-    private String uuid;
-    private String viewName;
+    /*private String uuid;
+    private String viewName;*/
     private Tracker tracker;
-    private UserReport data;
+    private DialogViewConfig data;
+    private String subHeading;
 
-    public UserReportDialog(final FragmentActivity activity, String viewName, String uuid) {
-        this(activity, R.string.headline_user_report, R.string.hint_user_report, viewName, uuid);
-    }
+    public TeboProgressDialog(final FragmentActivity activity) {
+        super(activity, R.layout.dialog_root_layout, R.layout.dialog_progress_layout, -1, -1, -1);
 
-    public UserReportDialog(final FragmentActivity activity, int headingResId, int subHeadingResId, String viewName, String uuid) {
-        super(activity, R.layout.dialog_root_layout, R.layout.dialog_user_report_layout,
-                R.layout.dialog_root_two_button_panel_layout, headingResId, subHeadingResId);
-
-        this.uuid = uuid;
-        this.viewName = viewName;
+        /*this.uuid = uuid;
+        this.viewName = viewName;*/
         this.tracker = ((SormasApplication) activity.getApplication()).getDefaultTracker();
 
-        this.data = new UserReport(viewName, uuid);
+        this.data = null;
     }
 
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
-        TeboTextInputEditText txtMessage = (TeboTextInputEditText)rootView.findViewById(R.id.txtMessage);
-        txtMessage.enableErrorState((INotificationContext) getActivity(), "Hello");
+        /*TeboTextInputEditText txtMessage = (TeboTextInputEditText)rootView.findViewById(R.id.txtMessage);
+        txtMessage.enableErrorState("Hello");*/
         /*String description = this.data.getHeading();
         tracker.send(new HitBuilders.EventBuilder()
                 .setCategory("User Report")
@@ -88,16 +82,26 @@ public class UserReportDialog extends BaseTeboAlertDialog {
 
     @Override
     public boolean isOkButtonVisible() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isDismissButtonVisible() {
-        return true;
+        return false;
     }
 
     @Override
-    public int getPositiveButtonText() {
-        return R.string.action_send;
+    public boolean isDeleteButtonVisible() {
+        return false;
+    }
+
+    @Override
+    public boolean isHeadingVisible() {
+        return false;
+    }
+
+    @Override
+    public float getWidth() {
+        return getContext().getResources().getDimension(R.dimen.progressDialogWidth);
     }
 }

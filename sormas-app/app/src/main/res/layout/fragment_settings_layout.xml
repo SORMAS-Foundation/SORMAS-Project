@@ -32,16 +32,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/buttonControlMarginBottom"
                 app:text="@string/action_change_PIN"
-                app:buttonType="secondary"
-                android:onClick="changePIN"/>
+                app:buttonType="line_secondary"
+                app:rounded="true"
+                />
+
 
             <de.symeda.sormas.app.component.TeboButton
-                android:id="@+id/btnSettingsDropData"
+                android:id="@+id/btnSettingsRepullData"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/buttonControlMarginBottom"
-                app:buttonType="secondary"
-                app:text="@string/action_drop_data"/>
+                app:buttonType="line_secondary"
+                app:text="@string/action_repull_data"
+                app:rounded="true"
+                />
 
             <de.symeda.sormas.app.component.TeboButton
                 android:id="@+id/btnSettingsSyncLog"
@@ -49,8 +53,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/buttonControlMarginBottom"
                 app:text="@string/action_open_syncLog"
-                app:buttonType="secondary"
-                android:onClick="openSyncLog"/>
+                app:buttonType="line_secondary"
+                app:rounded="true"
+                />
 
             <de.symeda.sormas.app.component.TeboButton
                 android:id="@+id/btnSettingsLogout"
@@ -58,15 +63,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/buttonControlMarginBottom"
                 app:text="@string/action_logout"
-                app:buttonType="secondary"
-                android:onClick="logout"/>
+                app:buttonType="line_secondary"
+                app:rounded="true"
+                />
 
-            <ProgressBar
+            <!--<ProgressBar
                 android:id="@+id/config_progressBar"
                 android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"/>-->
         </LinearLayout>
 
     </ScrollView>

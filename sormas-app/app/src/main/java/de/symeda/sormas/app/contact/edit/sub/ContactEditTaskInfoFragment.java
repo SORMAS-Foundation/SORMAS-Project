@@ -10,6 +10,7 @@ import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
 import de.symeda.sormas.app.component.TeboSwitch;
+import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.databinding.FragmentTaskEditLayoutBinding;
 import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.util.MemoryDatabaseHelper;
@@ -145,7 +146,7 @@ public class ContactEditTaskInfoFragment extends BaseEditActivityFragment<Fragme
         notExecCallback = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getContentBinding().txtCommentOnExec.enableErrorState("There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.");
+                getContentBinding().txtCommentOnExec.enableErrorState((INotificationContext)getActivity(), "There are many variations of passages of Lorem Ipsum available, but the majority have.");
                 //binding.checkbox1.enableErrorState("Hello");
                 Toast.makeText(getContext(), "Not Executable", Toast.LENGTH_SHORT).show();
             }

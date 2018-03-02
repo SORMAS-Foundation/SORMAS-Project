@@ -29,6 +29,12 @@
         <item name="android:colorControlHighlight">@color/colorControlHighlight</item>
         <item name="colorControlActivated">@color/textSelectionHandle</item>
 
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="actionMenuTextColor">@color/blue</item>
+        <item name="actionMenuTextAppearance">@style/SormasActionBarMenuTextAppearance</item>
+        <item name="actionOverflowMenuStyle">@style/OverflowMenu</item>
+        <item name="android:actionOverflowMenuStyle">@style/OverflowMenu</item>
+        <item name="android:actionButtonStyle">@style/ActionButton</item>
 
         <!--<item name="android:textSelectHandle">@android:drawable/edit_text</item>
         <item name="android:textSelectHandleLeft">@android:drawable/text_select_handle_left</item>
@@ -44,7 +50,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="SettingActivityTheme" parent="SormasTheme">
+    <!--<style name="SettingActivityTheme" parent="SormasTheme">
         <item name="android:windowBackground">@color/windowBackground</item>
         <item name="actionMenuTextColor">@color/blue</item>
         <item name="actionMenuTextAppearance">@style/SormasActionBarMenuTextAppearance</item>
@@ -69,7 +75,7 @@
         <item name="actionOverflowMenuStyle">@style/OverflowMenu</item>
         <item name="android:actionOverflowMenuStyle">@style/OverflowMenu</item>
         <item name="android:actionButtonStyle">@style/ActionButton</item>
-    </style>
+    </style>-->
 
 
     <!--parent="Theme.AppCompat.Light.NoActionBar"-->

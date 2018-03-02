@@ -9,6 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 import de.symeda.sormas.app.component.menu.LandingPageMenuAdapter;
 import de.symeda.sormas.app.component.menu.LandingPageMenuControl;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
@@ -17,11 +23,6 @@ import de.symeda.sormas.app.component.menu.OnLandingPageMenuClickListener;
 import de.symeda.sormas.app.component.menu.OnNotificationCountChangingListener;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Created by Orson on 11/12/2017.
@@ -51,14 +52,16 @@ public abstract class BaseLandingActivityFragment<E extends Enum<E>, TAdapter ex
         this.menuControl = createMenuControl(view);
 
         try {
-            Context menuControlContext = this.menuControl.getContext();
+            if (this.menuControl != null) {
+                Context menuControlContext = this.menuControl.getContext();
 
-            this.menuControl.setOnNotificationCountChangingListener(this);
-            this.menuControl.setOnLandingPageMenuClickListener(this);
+                this.menuControl.setOnNotificationCountChangingListener(this);
+                this.menuControl.setOnLandingPageMenuClickListener(this);
 
-            this.menuControl.setAdapter(new LandingPageMenuAdapter(menuControlContext));
-            this.menuControl.setMenuParser(new LandingPageMenuParser(menuControlContext));
-            this.menuControl.setMenuData(getMenuData());
+                this.menuControl.setAdapter(new LandingPageMenuAdapter(menuControlContext));
+                this.menuControl.setMenuParser(new LandingPageMenuParser(menuControlContext));
+                this.menuControl.setMenuData(getMenuData());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (XmlPullParserException e) {
@@ -103,6 +106,14 @@ public abstract class BaseLandingActivityFragment<E extends Enum<E>, TAdapter ex
     public abstract int onNotificationCountChanging(AdapterView<?> parent, LandingPageMenuItem menuItem, int position);
 
     public abstract boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id);
+
+    public int getFragmentMenuIndex() {
+        return 0;
+    }
+
+    public boolean hasMenu() {
+        return getMenuData() != null;
+    }
 
     public TAdapter getLandingAdapter() {
         return this.adapter;

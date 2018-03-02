@@ -452,6 +452,7 @@
 
 
     <!-- Dialog -->
+    <dimen name="progressDialogWidth">150dp</dimen>
     <dimen name="notificationDialogWidth">300dp</dimen>
     <dimen name="notificationDialogIconVerticalMargin">48dp</dimen>
     <dimen name="notificationDialogIconWidth">96dp</dimen>

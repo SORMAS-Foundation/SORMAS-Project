@@ -8,18 +8,13 @@
 
     <data>
         <variable name="data" type="de.symeda.sormas.app.settings.SettingsViewModel"/>
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
     </data>
 
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@color/windowBackground"
         >
 
         <LinearLayout
@@ -206,7 +201,31 @@
             </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
+        <!--<ViewStub android:id="@+id/vsApplicationNotificationView"
+            android:inflatedId="@+id/notificationFrame"
+            android:layout="@layout/activity_root_notification_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />-->
+
+        <include
+            android:id="@+id/notificationFrame"
+            layout="@layout/activity_root_notification_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <!--app:showNotificationCallback="@{showNotificationCallback}"
+        app:hideNotificationCallback="@{hideNotificationCallback}"-->
+
+        <!--<include
+            android:id="@+id/applicationNotificationView"
+            layout="@layout/activity_root_notification_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />-->
+
+        <!--<LinearLayout
             android:id="@+id/notificationFrame"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -230,7 +249,7 @@
                 android:textColor="@color/whiteOpaque"
                 android:text=""/>
 
-        </LinearLayout>
+        </LinearLayout>-->
 
     </FrameLayout>
 

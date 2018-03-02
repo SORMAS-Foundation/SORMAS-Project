@@ -6,21 +6,21 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 
-import de.symeda.sormas.app.BR;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.TeboButtonType;
-import de.symeda.sormas.app.component.TeboSpinner;
-import de.symeda.sormas.app.databinding.DialogMoveCaseLayoutBinding;
-import de.symeda.sormas.app.util.DataUtils;
-
 import java.util.List;
 
+import de.symeda.sormas.app.BR;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.TeboButtonType;
+import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.databinding.DialogMoveCaseLayoutBinding;
+import de.symeda.sormas.app.util.DataUtils;
 
 /**
  * Created by Orson on 05/02/2018.
@@ -71,7 +71,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
         DialogMoveCaseLayoutBinding _contentBinding = (DialogMoveCaseLayoutBinding)contentBinding;
 
-        _contentBinding.spnState.enableErrorState("Hello");
+        _contentBinding.spnState.enableErrorState((INotificationContext) getActivity(), "Hello");
     }
 
     @Override

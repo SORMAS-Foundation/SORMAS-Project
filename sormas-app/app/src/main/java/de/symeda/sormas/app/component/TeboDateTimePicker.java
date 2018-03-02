@@ -70,20 +70,22 @@ public class TeboDateTimePicker extends EditTeboPropertyField<Date> implements I
     // <editor-fold defaultstate="collapsed" desc="Getters & Setters">
 
     @Override
-    public void setValue(Date value) {
+    public void setValue(Date value) throws InvalidValueException {
         if (value == null)
             return;
 
         try {
             dateInput.setText(DateHelper.formatDate(value));
         } catch (Exception e) {
-            enableErrorState("Invalid date");
+            throw new InvalidValueException(value, "Invalid date");
+            //enableErrorState("Invalid date");
         }
 
         try {
             timeInput.setText(DateHelper.formatTime(value));
         } catch (Exception e) {
-            enableErrorState("Invalid time");
+            throw new InvalidValueException(value, "Invalid time");
+            //enableErrorState("Invalid time");
         }
     }
 
@@ -124,7 +126,11 @@ public class TeboDateTimePicker extends EditTeboPropertyField<Date> implements I
         if (date == view.getValue())
             return;
 
-        view.setValue(date);
+        try {
+            view.setValue(date);
+        } catch (InvalidValueException e) {
+            e.printStackTrace();
+        }
     }
 
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")

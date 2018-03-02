@@ -31,9 +31,8 @@ import de.symeda.sormas.app.component.menu.OnLandingPageMenuClickListener;
 import de.symeda.sormas.app.component.menu.OnSelectInitialActiveMenuItemListener;
 import de.symeda.sormas.app.component.menu.PageMenuNavAdapter;
 import de.symeda.sormas.app.core.INavigationCapsule;
-import de.symeda.sormas.app.core.INotificationCommunicator;
+import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
-import de.symeda.sormas.app.core.NotificationType;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.util.ConstantHelper;
@@ -46,7 +45,7 @@ import de.symeda.sormas.app.util.ConstantHelper;
  * sampson.orson@technologyboard.org
  */
 
-public abstract class BaseEditActivity extends AbstractSormasActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, INotificationCommunicator {
+public abstract class BaseEditActivity extends AbstractSormasActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, INotificationContext {
 
     private LinearLayout notificationFrame;
     private TextView tvNotificationMessage;
@@ -59,6 +58,7 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
     private FloatingActionButton fab = null;
     private LandingPageMenuItem activeMenu = null;
     private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
+    private View rootView;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -90,7 +90,7 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getExtras();
         initializeActivity(arguments);
 
-
+        rootView = findViewById(R.id.base_layout);
         subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingListActivityTitle);
         fragmentFrame = findViewById(R.id.fragment_frame);
         pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);
@@ -399,9 +399,10 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
         return activeMenu;
     }
 
-    @Override
+    /*@Override
     public void showNotification(NotificationType type, String message) {
-        if (notificationFrame == null)
+        NotificationHelper.showNotification(rootView, type, message);
+        *//*if (notificationFrame == null)
             return;
 
         if (tvNotificationMessage == null)
@@ -414,15 +415,21 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
         tvNotificationMessage.setTextColor(textColor);
         tvNotificationMessage.setText(message);
 
-        notificationFrame.setVisibility(View.VISIBLE);
+        notificationFrame.setVisibility(View.VISIBLE);*//*
     }
 
     @Override
     public void hideNotification() {
-        if (notificationFrame == null)
+        NotificationHelper.hideNotification(rootView);
+        *//*if (notificationFrame == null)
             return;
 
-        notificationFrame.setVisibility(View.GONE);
+        notificationFrame.setVisibility(View.GONE);*//*
+    }*/
+
+    @Override
+    public View getRootView() {
+        return rootView;
     }
 
     public abstract boolean showStatusFrame();

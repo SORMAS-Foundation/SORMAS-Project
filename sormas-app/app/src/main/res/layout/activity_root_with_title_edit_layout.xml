@@ -72,8 +72,6 @@
 
                     </FrameLayout>
 
-
-
                     <de.symeda.sormas.app.component.menu.LandingPageMenuControl
                         android:id="@+id/landingPageMenuControl"
                         android:layout_width="match_parent"
@@ -88,45 +86,21 @@
 
                 </LinearLayout>
 
-                <LinearLayout
+                <include
                     android:id="@+id/notificationFrame"
+                    layout="@layout/activity_root_notification_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="96dp"
+                    android:layout_height="wrap_content"
+                    />
 
-                    android:layout_gravity="top"
-                    android:orientation="vertical"
-                    android:elevation="8dp"
-                    android:background="@color/watchOut"
-                    android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-                    android:paddingRight="@dimen/rowListItemHorizontalMargin"
-                    android:paddingTop="@dimen/rowListItemHorizontalMargin"
-                    android:paddingBottom="@dimen/rowListItemHorizontalMargin"
-                    android:visibility="gone"
-                    >
-                    <TextView
-                        android:id="@+id/tvNotificationMessage"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:textColor="@color/whiteOpaque"
-                        android:text=""/>
-
-                </LinearLayout>
+                <!--app:showNotificationCallback="@{showNotificationCallback}"
+                app:hideNotificationCallback="@{hideNotificationCallback}"-->
 
 
 
             </FrameLayout>
 
         </LinearLayout>
-
-        <!-- The navigation drawer -->
-        <!--<ListView android:id="@+id/main_menu_drawer_left"
-            android:layout_width="324dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:choiceMode="singleChoice"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="0dp"
-            android:background="@color/drawerBackground"/>-->
 
         <android.support.design.widget.NavigationView
             android:id="@+id/main_navigation_view"

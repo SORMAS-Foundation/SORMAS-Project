@@ -18,19 +18,20 @@ import java.util.regex.Pattern;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.OnHideInputErrorListener;
 import de.symeda.sormas.app.component.OnShowInputErrorListener;
-import de.symeda.sormas.app.core.NotificationType;
+import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.dashboard.DashboardActivity;
 import de.symeda.sormas.app.databinding.ActivityEnterPinLayoutBinding;
 import de.symeda.sormas.app.login.LoginActivity;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
-import de.symeda.sormas.app.util.NotificationHelper;
 
 /**
  * Created by Orson on 15/11/2017.
  */
 
-public class EnterPinActivity extends AppCompatActivity implements OnShowInputErrorListener, OnHideInputErrorListener {
+public class EnterPinActivity extends AppCompatActivity implements OnShowInputErrorListener, OnHideInputErrorListener, INotificationContext {
 
     public static final String CALLED_FROM_SETTINGS = "calledFromSettings";
 
@@ -47,8 +48,13 @@ public class EnterPinActivity extends AppCompatActivity implements OnShowInputEr
 
         //setContentView(R.layout.activity_enter_pin_layout);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_enter_pin_layout);
-        binding.setShowNotificationCallback(this);
-        binding.setHideNotificationCallback(this);
+
+        /*ViewStub dialogContent = binding.vsApplicationNotificationView.getViewStub();
+        dialogContent.setLayoutResource(R.layout.activity_root_notification_layout);
+        View dialogContentInflated = dialogContent.inflate();*/
+
+        //((ViewStub) binding.vsApplicationNotificationView.getViewStub()).inflate();
+
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
@@ -354,12 +360,20 @@ public class EnterPinActivity extends AppCompatActivity implements OnShowInputEr
     }
 
     @Override
-    public void onInputErrorShowing(View v, String message, boolean errorState) {
+    public void onShowInputErrorShowing(View v, String message, boolean errorState) {
         NotificationHelper.showNotification(binding, NotificationType.ERROR, message);
     }
 
     @Override
     public void onInputErrorHiding(View v, boolean errorState) {
         NotificationHelper.hideNotification(binding);
+    }
+
+    @Override
+    public View getRootView() {
+        if (binding != null)
+            return binding.getRoot();
+
+        return null;
     }
 }

@@ -19,7 +19,8 @@ import de.symeda.sormas.app.caze.landing.CasesLandingActivity;
 import de.symeda.sormas.app.component.OnHideInputErrorListener;
 import de.symeda.sormas.app.component.OnShowInputErrorListener;
 import de.symeda.sormas.app.contact.landing.ContactsLandingActivity;
-import de.symeda.sormas.app.core.NotificationType;
+import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.ActivityLoginLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -27,7 +28,7 @@ import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.LocationService;
-import de.symeda.sormas.app.util.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
 //import android.support.design.widget.Snackbar;
@@ -35,7 +36,7 @@ import de.symeda.sormas.app.util.SyncCallback;
 /**
  * Created by Orson on 29/10/2017.
  */
-public class LoginActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, OnShowInputErrorListener, OnHideInputErrorListener {
+public class LoginActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, OnShowInputErrorListener, OnHideInputErrorListener, INotificationContext {
     private ActivityLoginLayoutBinding binding;
     private LoginViewModel loginViewModel;
 
@@ -96,24 +97,20 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         }
     }
 
-
-
-
-
-
-
     public void login(View view) {
         //Hide notification
-        NotificationHelper.hideNotification(binding.notificationFrame);
+        //NotificationHelper.hideNotification(binding);
+        binding.txtUserName.disableErrorState((INotificationContext)this);
+        binding.txtPassword.disableErrorState((INotificationContext)this);
 
         String errorMessage = null;
         String userName = binding.txtUserName.getValue().trim();
         String password = binding.txtPassword.getValue();
 
         if (userName.isEmpty()) {
-            binding.txtUserName.enableErrorState(R.string.notification_empty_username);
+            binding.txtUserName.enableErrorState((INotificationContext)this, R.string.notification_empty_username);
         } else if (password.isEmpty()) {
-            binding.txtUserName.enableErrorState(R.string.notification_empty_password);
+            binding.txtPassword.enableErrorState((INotificationContext)this, R.string.notification_empty_password);
         } else {
             ConfigProvider.setUsernameAndPassword(userName, password);
 
@@ -140,7 +137,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
             }
 
             if (errorMessage != null && !errorMessage.isEmpty())
-                NotificationHelper.showNotification(binding.notificationFrame, binding.tvNotificationMessage, NotificationType.ERROR, errorMessage);
+                NotificationHelper.showNotification(binding, NotificationType.ERROR, errorMessage);
 
             if (!RetroProvider.isConnected()) {
                 // we HAVE to be connected now. Otherwise reset the authentication data
@@ -238,13 +235,13 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     }
 
     @Override
-    public void onInputErrorShowing(View v, String message, boolean errorState) {
-        NotificationHelper.showNotification(binding.notificationFrame, binding.tvNotificationMessage, NotificationType.ERROR, message);
+    public void onShowInputErrorShowing(View v, String message, boolean errorState) {
+        NotificationHelper.showNotification(binding, NotificationType.ERROR, message);
     }
 
     @Override
     public void onInputErrorHiding(View v, boolean errorState) {
-        NotificationHelper.hideNotification(binding.notificationFrame);
+        NotificationHelper.hideNotification(binding);
     }
 
     //TODO: Orson Remove this later
@@ -252,5 +249,13 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         ConfigProvider.clearUsernameAndPassword();
         ConfigProvider.clearPin();
         ConfigProvider.setAccessGranted(false);
+    }
+
+    @Override
+    public View getRootView() {
+        if (binding != null)
+            return binding.getRoot();
+
+        return null;
     }
 }

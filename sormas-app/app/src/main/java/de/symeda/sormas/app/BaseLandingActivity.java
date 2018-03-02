@@ -10,19 +10,21 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.menu.MainMenuItemSelectedListener;
 
 /**
  * Created by Orson on 03/12/2017.
  */
 
-public abstract class BaseLandingActivity extends AbstractSormasActivity {
+public abstract class BaseLandingActivity extends AbstractSormasActivity implements INotificationContext {
 
     private ActionBarDrawerToggle menuDrawerToggle;
     private DrawerLayout menuDrawerLayout;
     private String[] menuTitles;
     private ListView menuDrawerList;
 
+    private View rootView;
     private CharSequence mainViewTitle;
     private NavigationView navigationView;
     private TextView taskNotificationCounter;
@@ -48,6 +50,7 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity {
     }
 
     protected void initializeBaseActivity(Bundle savedInstanceState) {
+        rootView = findViewById(R.id.base_layout);
         menuDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.main_navigation_view);
         navigationView.setNavigationItemSelectedListener(new MainMenuItemSelectedListener(this, menuDrawerLayout));
@@ -61,7 +64,8 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity {
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getExtras();
         initializeActivity(arguments);
 
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_blue_36dp);
+        if (setHomeAsUpIndicator())
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_blue_36dp);
 
         setupDrawer();
 
@@ -69,10 +73,7 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity {
         if (fragmentFrame != null) {
             try {
                 if (savedInstanceState == null) {
-                    // setting the fragment_frame
-                    BaseLandingActivityFragment activeFragment = null;
-                    activeFragment = getActiveReadFragment();
-                    replaceFragment(activeFragment);
+                    replaceFragment(getActiveLandingFragment());
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -84,7 +85,11 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity {
 
     protected abstract void initializeActivity(Bundle arguments);
 
-    public abstract BaseLandingActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException;
+    protected boolean setHomeAsUpIndicator() {
+        return true;
+    }
+
+    public abstract BaseLandingActivityFragment getActiveLandingFragment() throws IllegalAccessException, InstantiationException;
 
     public void replaceFragment(BaseLandingActivityFragment f) {
         fragment = f;
@@ -93,7 +98,10 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             fragment.setArguments(getIntent().getExtras());
             ft.replace(R.id.fragment_frame, fragment);
-            ft.addToBackStack(null);
+
+            if (fragment.getFragmentMenuIndex() > 0)
+                ft.addToBackStack(null);
+
             ft.commit();
         }
     }
@@ -101,14 +109,8 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        /*Bundle params = getIntent().getExtras();
-        if(params!=null) {
-            if (params.containsKey(KEY_PAGE)) {
-                currentTab = params.getInt(KEY_PAGE);
-            }
-        }*/
-
-        //synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, false, false, null, null);
+        if (fragment != null)
+            fragment.onResume();
     }
 
     @Override
@@ -217,5 +219,19 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity {
     @Override
     public void onStop() {
         super.onStop();
+    }
+    /*@Override
+    public void showNotification(NotificationType type, String message) {
+        NotificationHelper.showNotification(rootView, type, message);
+    }
+
+    @Override
+    public void hideNotification() {
+        NotificationHelper.hideNotification(rootView);
+    }*/
+
+    @Override
+    public View getRootView() {
+        return rootView;
     }
 }

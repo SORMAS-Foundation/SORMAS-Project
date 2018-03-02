@@ -31,7 +31,7 @@ public class DashboardActivity extends BaseLandingActivity {
     }
 
     @Override
-    public BaseLandingActivityFragment getActiveReadFragment() {
+    public BaseLandingActivityFragment getActiveLandingFragment() {
         return null;
     }
 

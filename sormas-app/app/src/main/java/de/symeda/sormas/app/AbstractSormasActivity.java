@@ -147,9 +147,9 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
 
         if (RetroProvider.isConnected()) {
 
-            final ProgressDialog progressDialog;
+            final TeboProgressDialog progressDialog;
             if (showProgressDialog) {
-                progressDialog = ProgressDialog.show(this, getString(R.string.headline_synchronization),
+                progressDialog = TeboProgressDialog.show(this, getString(R.string.headline_synchronization),
                         getString(R.string.hint_synchronization), true);
             } else {
                 progressDialog = null;
@@ -218,11 +218,6 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
             }
         });
         snackbar.show();*/
-    }
-
-    private void openSyncLog() {
-        /*SyncLogDialog syncLogDialog = new SyncLogDialog(this);
-        syncLogDialog.show(this);*/
     }
 
     public void goToSettings(View view) {

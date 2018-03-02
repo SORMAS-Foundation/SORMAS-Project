@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.core;
+package de.symeda.sormas.app.core.notification;
 
 import de.symeda.sormas.app.R;
 
@@ -142,4 +142,27 @@ public abstract class NotificationType {
             return R.color.warningTextColor;
         }
     }
+
+    // <editor-fold defaultstate="collapsed" desc="Overrides">
+
+    @Override
+    public int hashCode() {
+        return value + 37 * value;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof NotificationType)) {
+            return false;
+        }
+        NotificationType other = (NotificationType) obj;
+        return value == other.value;
+    }
+
+    @Override
+    public String toString() {
+        return displayName;
+    }
+
+    // </editor-fold>
 }

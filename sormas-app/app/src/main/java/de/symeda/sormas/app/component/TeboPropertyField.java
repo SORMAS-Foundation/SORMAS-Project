@@ -93,7 +93,7 @@ public abstract class TeboPropertyField<T> extends LinearLayout {
     }*/
 
 
-    public abstract void setValue(T value);
+    public abstract void setValue(T value) throws InvalidValueException;
     public abstract T getValue();
 
 

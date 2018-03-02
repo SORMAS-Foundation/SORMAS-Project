@@ -11,6 +11,6 @@ import android.view.View;
  */
 
 public interface OnShowInputErrorListener {
-    void onInputErrorShowing(View v, String message, boolean errorState);
-    //void onInputErrorShowing(TeboTextInputEditText v, List<String> messages, boolean errorState);
+    void onShowInputErrorShowing(View v, String message, boolean errorState);
+    //void onShowInputErrorShowing(TeboTextInputEditText v, List<String> messages, boolean errorState);
 }

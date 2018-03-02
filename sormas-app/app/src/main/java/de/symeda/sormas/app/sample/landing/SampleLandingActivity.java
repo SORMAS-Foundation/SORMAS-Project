@@ -29,7 +29,7 @@ public class SampleLandingActivity extends BaseLandingActivity {
     }
 
     @Override
-    public BaseLandingActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+    public BaseLandingActivityFragment getActiveLandingFragment() throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             activeFragment = SampleLandingFragment.newInstance();
         }

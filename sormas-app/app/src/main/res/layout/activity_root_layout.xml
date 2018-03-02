@@ -27,23 +27,31 @@
             </android.support.v7.widget.Toolbar>
 
             <FrameLayout
-                android:id="@+id/fragment_frame"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/activityBackground">
+                >
+                <FrameLayout
+                    android:id="@+id/fragment_frame"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/activityBackground">
+                </FrameLayout>
+
+                <include
+                    android:id="@+id/notificationFrame"
+                    layout="@layout/activity_root_notification_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
+
+                <!--app:showNotificationCallback="@{showNotificationCallback}"
+                app:hideNotificationCallback="@{hideNotificationCallback}"-->
+
+
             </FrameLayout>
 
-        </LinearLayout>
 
-        <!-- The navigation drawer -->
-        <!--<ListView android:id="@+id/main_menu_drawer_left"
-            android:layout_width="324dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:choiceMode="singleChoice"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="0dp"
-            android:background="@color/drawerBackground"/>-->
+        </LinearLayout>
 
         <android.support.design.widget.NavigationView
             android:id="@+id/main_navigation_view"

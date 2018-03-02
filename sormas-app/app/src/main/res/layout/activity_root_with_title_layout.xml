@@ -36,26 +36,46 @@
                 android:layout_height="0dp"
                 android:layout_weight="1">
 
-                <FrameLayout
-                    android:id="@+id/fragment_frame"
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/activityBackground"
+                    android:orientation="vertical"
                     >
-                </FrameLayout>
+
+                    <FrameLayout
+                        android:id="@+id/fragment_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/activityBackground"
+                        >
+                    </FrameLayout>
 
 
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/fab"
-                    android:layout_width="wrap_content"
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/fab"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|end"
+                        android:layout_margin="@dimen/fab_margin"
+                        android:scaleType="center"
+                        android:visibility="gone"
+                        app:backgroundTint="@color/fab"
+                        app:elevation="0dp"
+                        />
+
+
+                </LinearLayout>
+
+                <include
+                    android:id="@+id/notificationFrame"
+                    layout="@layout/activity_root_notification_layout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:layout_margin="@dimen/fab_margin"
-                    android:scaleType="center"
-                    android:visibility="gone"
-                    app:backgroundTint="@color/fab"
-                    app:elevation="0dp"
                     />
+
+                <!--app:showNotificationCallback="@{showNotificationCallback}"
+                app:hideNotificationCallback="@{hideNotificationCallback}"-->
 
             </FrameLayout>
 
@@ -74,16 +94,6 @@
                 />
 
         </LinearLayout>
-
-        <!-- The navigation drawer -->
-        <!--<ListView android:id="@+id/main_menu_drawer_left"
-            android:layout_width="324dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:choiceMode="singleChoice"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="0dp"
-            android:background="@color/drawerBackground"/>-->
 
         <android.support.design.widget.NavigationView
             android:id="@+id/main_navigation_view"

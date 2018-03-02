@@ -17,7 +17,7 @@
             <!-- SHADOW LAYER -->
             <item android:left="0dp" android:top="0dp">
                 <shape>
-                    <solid android:color="@android:color/transparent" />
+                    <solid android:color="@color/whiteTransparent" />
                     <corners android:radius="5dp"/>
                 </shape>
             </item>

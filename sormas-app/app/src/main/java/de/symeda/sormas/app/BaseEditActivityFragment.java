@@ -12,17 +12,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.component.OnHideInputErrorListener;
 import de.symeda.sormas.app.component.OnShowInputErrorListener;
 import de.symeda.sormas.app.core.INavigationCapsule;
-import de.symeda.sormas.app.core.INotificationCommunicator;
+import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
-import de.symeda.sormas.app.core.NotificationType;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.ConstantHelper;
-
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
 /**
  * Created by Orson on 22/01/2018.
@@ -39,7 +39,7 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding>
 
     private BaseEditActivity baseEditActivity;
     private IUpdateSubHeadingTitle communicator;
-    private INotificationCommunicator notificationCommunicator;
+    private INotificationContext notificationCommunicator;
     private TBinding contentViewStubBinding;
     private ViewDataBinding rootBinding; //FragmentRootEditLayoutBinding
 
@@ -60,11 +60,11 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding>
                     + "implement IUpdateSubHeadingTitle");
         }
 
-        if (getActivity() instanceof INotificationCommunicator) {
-            this.notificationCommunicator = (INotificationCommunicator) this.getActivity();
+        if (getActivity() instanceof INotificationContext) {
+            this.notificationCommunicator = (INotificationContext) this.getActivity();
         } else {
             throw new NotImplementedException("Activity for fragment does not support showNotification; "
-                    + "implement INotificationCommunicator");
+                    + "implement INotificationContext");
         }
 
 
@@ -339,13 +339,15 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding>
     }
 
     @Override
-    public void onInputErrorShowing(View v, String message, boolean errorState) {
-        notificationCommunicator.showNotification(NotificationType.ERROR, message);
+    public void onShowInputErrorShowing(View v, String message, boolean errorState) {
+        //notificationCommunicator.showNotification(NotificationType.ERROR, message);
+        NotificationHelper.showNotification((INotificationContext)getActivity(), NotificationType.ERROR, message);
     }
 
     @Override
     public void onInputErrorHiding(View v, boolean errorState) {
-        notificationCommunicator.hideNotification();
+        //notificationCommunicator.hideNotification();
+        NotificationHelper.hideNotification((INotificationContext)getActivity());
     }
 
     public boolean showSaveAction() {
