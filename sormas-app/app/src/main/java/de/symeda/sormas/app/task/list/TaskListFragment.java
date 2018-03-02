@@ -8,18 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import de.symeda.sormas.app.BaseListActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.SearchStrategy;
-import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
-import de.symeda.sormas.app.task.read.TaskReadActivity;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.app.BaseListActivityFragment;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -28,6 +22,10 @@ import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.core.SearchStrategy;
+import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
+import de.symeda.sormas.app.task.read.TaskReadActivity;
 
 /**
  * Created by Orson on 02/12/2017.
@@ -104,11 +102,14 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
 
             //TODO: Orson - Replace with real data
             if (filterStatus == TaskStatus.PENDING) {
-                tasks = MemoryDatabaseHelper.TASK.getPendingTasks(20);
+                tasks = DatabaseHelper.getTaskDao().queryMyPending();
+                //tasks = MemoryDatabaseHelper.TASK.getPendingTasks(20);
             } else if (filterStatus == TaskStatus.NOT_EXECUTABLE) {
-                tasks = MemoryDatabaseHelper.TASK.getNotExecutableTasks(20);
+                tasks = DatabaseHelper.getTaskDao().queryMyNotExecutable();
+                //tasks = MemoryDatabaseHelper.TASK.getNotExecutableTasks(20);
             } else {
-                tasks = MemoryDatabaseHelper.TASK.getDoneTasks(20);
+                tasks = DatabaseHelper.getTaskDao().queryMyDoneOrRemoved();
+                //tasks = MemoryDatabaseHelper.TASK.getDoneTasks(20);
             }
 
             getCommunicator().updateSubHeadingTitle(filterStatus.toString());
