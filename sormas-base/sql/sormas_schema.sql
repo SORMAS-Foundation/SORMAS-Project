@@ -2063,3 +2063,51 @@ ALTER TABLE contact ADD CONSTRAINT fk_contact_resultingcase_id FOREIGN KEY (resu
 ALTER TABLE contact_history ADD COLUMN resultingcase_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (93, 'Resulting case for contacts #402');
+
+-- 2018-02-26 Export function for database export #507
+
+CREATE FUNCTION export_database(table_name text, path text, file_name text)
+	RETURNS VOID
+	LANGUAGE plpgsql
+	SECURITY DEFINER
+	AS $BODY$
+		BEGIN
+			EXECUTE '
+				COPY (SELECT * FROM 
+					' || quote_ident(table_name) || '
+				) TO 
+					' || quote_literal(path || file_name) || '
+				WITH (
+					FORMAT CSV, DELIMITER '';'', HEADER
+				);
+			';
+		END;
+	$BODY$
+;
+
+CREATE FUNCTION export_database_join(table_name text, join_table_name text, column_name text, join_column_name text, path text, file_name text)
+	RETURNS VOID
+	LANGUAGE plpgsql
+	SECURITY DEFINER
+	AS $BODY$
+		BEGIN
+			EXECUTE '
+				COPY (SELECT * FROM 
+					' || quote_ident(table_name) || ' 
+				INNER JOIN 
+					' || quote_ident(join_table_name) || ' 
+				ON 
+					' || column_name || ' 
+				= 
+					' || join_column_name || ' 
+				) TO 
+					' || quote_literal(path || file_name) || ' 
+				WITH (
+					FORMAT CSV, DELIMITER '';'', HEADER
+				);
+			';
+		END;
+	$BODY$
+;
+
+INSERT INTO schema_version (version_number, comment) VALUES (94, 'Export function for database export #507');

@@ -8,6 +8,7 @@ import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
+import de.symeda.sormas.api.export.ExportFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
@@ -134,6 +135,10 @@ public class FacadeProvider {
 	
 	public static ConfigFacade getConfigFacade() {
 		return get().lookupEjbRemote(ConfigFacade.class);
+	}
+	
+	public static ExportFacade getExportFacade() {
+		return get().lookupEjbRemote(ExportFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

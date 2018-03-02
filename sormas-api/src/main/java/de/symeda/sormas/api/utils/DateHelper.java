@@ -22,6 +22,7 @@ public final class DateHelper {
 	private static final SimpleDateFormat SHORT_DATE_TIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 	private static final SimpleDateFormat DATABASE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	private static final SimpleDateFormat EXPORT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private static final SimpleDateFormat DATE_WITHOUT_YEAR_FORMAT = new SimpleDateFormat("dd/MM");
 	
 	public static String formatTime(Date date) {
@@ -91,6 +92,14 @@ public final class DateHelper {
 	public static String formatDateForDatabase(Date date) {
 		if (date != null) {
 			return clone(DATABASE_DATE_FORMAT).format(date);
+		} else {
+			return "";
+		}
+	}
+	
+	public static String formatDateForExport(Date date) {
+		if (date != null) {
+			return clone(EXPORT_DATE_FORMAT).format(date);
 		} else {
 			return "";
 		}

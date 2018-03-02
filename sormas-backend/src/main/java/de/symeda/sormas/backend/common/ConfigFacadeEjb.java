@@ -21,6 +21,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	
 	private static final String APP_URL = "app.url";
 	
+	private static final String EXPORT_PATH = "export.path";
+	
 	private static final String EMAIL_SENDER_ADDRESS = "email.sender.address";
 	private static final String EMAIL_SENDER_NAME = "email.sender.name";
 	private static final String SMS_SENDER_NAME = "sms.sender.name";
@@ -56,6 +58,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getAppUrl() {
 		return getProperty(APP_URL, "");
+	}
+	
+	@Override
+	public String getExportPath() {
+		return getProperty(EXPORT_PATH, "/tmp/");
 	}
 
 	@Override

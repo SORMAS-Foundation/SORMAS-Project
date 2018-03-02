@@ -21,4 +21,6 @@ public interface ConfigFacade {
 	
 	String getSmsAuthSecret();
 	
+	String getExportPath();
+	
 }

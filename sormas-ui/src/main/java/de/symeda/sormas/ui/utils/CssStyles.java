@@ -50,6 +50,9 @@ public final class CssStyles {
 	public static final String HSPACE_RIGHT_4 = "hspace-right-4";
 	public static final String HSPACE_RIGHT_5 = "hspace-right-5";
 	public static final String HSPACE_RIGHT_NONE = "hspace-right-none";
+	
+	public static final String INDENT_LEFT_1 = "indent-left-1";
+	public static final String INDENT_LEFT_2 = "indent-left-2";
 
 	public static final String VAADIN_LABEL = "v-label";
 	// Font colors
