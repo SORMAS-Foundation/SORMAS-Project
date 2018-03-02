@@ -1,9 +1,8 @@
 package de.symeda.sormas.app.sample.list;
 
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
 import java.util.List;
 
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 
 /**
@@ -14,6 +13,6 @@ public class SamplesSearchStrategy implements ISamplesSearchStrategy {
     @Override
     public List<Sample> search() {
         //return DatabaseHelper.getSampleDao().queryForAll();
-        return MemoryDatabaseHelper.SAMPLE.getSamples(20);
+        return DatabaseHelper.getSampleDao().queryForAll();  //MemoryDatabaseHelper.SAMPLE.getSamples(20);
     }
 }

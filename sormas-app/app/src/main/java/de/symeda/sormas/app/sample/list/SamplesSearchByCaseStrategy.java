@@ -1,9 +1,9 @@
 package de.symeda.sormas.app.sample.list;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 
@@ -22,10 +22,16 @@ public class SamplesSearchByCaseStrategy implements ISamplesSearchStrategy {
 
     @Override
     public List<Sample> search() {
-        //TODO: Make changes here
-        CaseDao caseDao = DatabaseHelper.getCaseDao();
-        Case caze = caseDao.queryUuid(caseId);
+        List<Sample> list = new ArrayList<>();
 
-        return DatabaseHelper.getSampleDao().queryByCase(caze);
+        if (caseId == null || caseId.isEmpty())
+            return list;
+
+        final Case caze = DatabaseHelper.getCaseDao().queryUuidReference(caseId);
+        if (caze != null) {
+            list = DatabaseHelper.getSampleDao().queryByCase(caze);
+        }
+
+        return list;
     }
 }
