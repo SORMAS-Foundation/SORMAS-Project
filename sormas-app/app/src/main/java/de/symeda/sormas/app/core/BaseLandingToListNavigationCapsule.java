@@ -12,13 +12,13 @@ import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 public class BaseLandingToListNavigationCapsule implements ILandingToListNavigationCapsule {
 
     private IStatusElaborator filterStatus;
-    private SearchStrategy searchStrategy;
+    private SearchBy searchBy;
 
-    public BaseLandingToListNavigationCapsule(Context context, Enum filterStatus, SearchStrategy searchStrategy) {
+    public BaseLandingToListNavigationCapsule(Context context, Enum filterStatus, SearchBy searchBy) {
         if (filterStatus != null)
             this.filterStatus = StatusElaboratorFactory.getElaborator(context, filterStatus);
 
-        this.searchStrategy = searchStrategy;
+        this.searchBy = searchBy;
     }
 
     @Override
@@ -27,8 +27,8 @@ public class BaseLandingToListNavigationCapsule implements ILandingToListNavigat
     }
 
     @Override
-    public SearchStrategy getSearchStrategy() {
-        return searchStrategy;
+    public SearchBy getSearchStrategy() {
+        return searchBy;
     }
 
 }

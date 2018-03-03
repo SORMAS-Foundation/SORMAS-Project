@@ -7,11 +7,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.SearchStrategy;
+import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.event.landing.EventLandingToListCapsule;
 import de.symeda.sormas.app.util.NavigationHelper;
 
@@ -24,7 +23,7 @@ import de.symeda.sormas.api.event.EventStatus;
 public class EventListActivity extends BaseListActivity {
 
     private EventStatus filterStatus = null;
-    private SearchStrategy searchStrategy = null;
+    private SearchBy searchBy = null;
     private String recordUuid = null;
     private BaseListActivityFragment activeFragment = null;
 
@@ -33,7 +32,7 @@ public class EventListActivity extends BaseListActivity {
         super.onSaveInstanceState(outState);
 
         SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchStrategy);
+        SaveSearchStrategyState(outState, searchBy);
         SaveRecordUuidState(outState, recordUuid);
     }
 
@@ -64,14 +63,14 @@ public class EventListActivity extends BaseListActivity {
     @Override
     protected void initializeActivity(Bundle arguments) {
         filterStatus = (EventStatus) getFilterStatusArg(arguments);
-        searchStrategy = (SearchStrategy) getSearchStrategyArg(arguments);
+        searchBy = (SearchBy) getSearchStrategyArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
     }
 
     @Override
     public BaseListActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
-            EventListCapsule dataCapsule = new EventListCapsule(EventListActivity.this, filterStatus, searchStrategy);
+            EventListCapsule dataCapsule = new EventListCapsule(EventListActivity.this, filterStatus, searchBy);
             activeFragment = EventListFragment.newInstance(dataCapsule);
         }
 
@@ -113,6 +112,9 @@ public class EventListActivity extends BaseListActivity {
                 // TODO check parent activity intent as soon as the minimum API level has been increased to 16
                 //Intent intent = new Intent(this, EventsLandingActivity.class);
                 //startActivity(intent);
+                if (activeFragment != null)
+                    activeFragment.cancelTaskExec();
+
                 NavigationHelper.navigateUpFrom(this);
                 return true;
             case R.id.option_menu_action_sync:

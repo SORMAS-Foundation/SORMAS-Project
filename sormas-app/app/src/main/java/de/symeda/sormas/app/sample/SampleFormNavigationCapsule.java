@@ -3,7 +3,7 @@ package de.symeda.sormas.app.sample;
 import android.content.Context;
 
 import de.symeda.sormas.app.core.BaseFormNavigationCapsule;
-import de.symeda.sormas.app.core.SearchStrategy;
+import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 
 /**
@@ -13,7 +13,7 @@ import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 public class SampleFormNavigationCapsule extends BaseFormNavigationCapsule {
 
     private IStatusElaborator filterStatus;
-    private SearchStrategy searchStrategy;
+    private SearchBy searchBy;
 
     public SampleFormNavigationCapsule(Context context, String recordUuid, ShipmentStatus pageStatus) {
         super(context, recordUuid, pageStatus);

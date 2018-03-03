@@ -16,7 +16,7 @@ import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.ListAdapterDataObserver;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.core.SearchStrategy;
+import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ConstantHelper;
@@ -118,6 +118,8 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
     }
 
 
+    public abstract void cancelTaskExec();
+
 
 
 
@@ -133,11 +135,11 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
         return result;
     }
 
-    protected SearchStrategy getSearchStrategyArg(Bundle arguments) {
-        SearchStrategy e = null;
+    protected SearchBy getSearchStrategyArg(Bundle arguments) {
+        SearchBy e = null;
         if (arguments != null && !arguments.isEmpty()) {
             if(arguments.containsKey(ConstantHelper.ARG_SEARCH_STRATEGY)) {
-                e = (SearchStrategy) arguments.getSerializable(ConstantHelper.ARG_SEARCH_STRATEGY);
+                e = (SearchBy) arguments.getSerializable(ConstantHelper.ARG_SEARCH_STRATEGY);
             }
         }
 
@@ -179,7 +181,7 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
 
 
 
-    protected void SaveSearchStrategyState(Bundle outState, SearchStrategy status) {
+    protected void SaveSearchStrategyState(Bundle outState, SearchBy status) {
         if (outState != null) {
             outState.putSerializable(ConstantHelper.ARG_FILTER_STATUS, status);
         }
@@ -211,12 +213,12 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
         }
 
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
-        SearchStrategy searchStrategy = dataCapsule.getSearchStrategy();
+        SearchBy searchBy = dataCapsule.getSearchStrategy();
 
         if (filterStatus != null)
             bundle.putSerializable(ConstantHelper.ARG_FILTER_STATUS, dataCapsule.getFilterStatus().getValue());
 
-        bundle.putSerializable(ConstantHelper.ARG_SEARCH_STRATEGY, searchStrategy);
+        bundle.putSerializable(ConstantHelper.ARG_SEARCH_STRATEGY, searchBy);
 
         fragment.setArguments(bundle);
         return fragment;

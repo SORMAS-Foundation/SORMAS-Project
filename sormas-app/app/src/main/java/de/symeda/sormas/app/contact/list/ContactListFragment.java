@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.contact.list;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,18 +9,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import de.symeda.sormas.app.BaseListActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
-import de.symeda.sormas.app.contact.read.ContactReadActivity;
-import de.symeda.sormas.app.core.SearchStrategy;
-import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.app.BaseListActivityFragment;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.contact.read.ContactReadActivity;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.SearchBy;
+import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.searchstrategy.ISearchExecutor;
+import de.symeda.sormas.app.searchstrategy.ISearchResultCallback;
+import de.symeda.sormas.app.searchstrategy.SearchStrategyFor;
+import de.symeda.sormas.app.util.SubheadingHelper;
 
 /**
  * Created by Orson on 07/12/2017.
@@ -27,19 +34,20 @@ import de.symeda.sormas.app.backend.contact.Contact;
 
 public class ContactListFragment extends BaseListActivityFragment<ContactListAdapter> implements OnListItemClickListener {
 
+    private AsyncTask searchTask;
     private List<Contact> contacts;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;
     private String recordUuid = null;
     private FollowUpStatus filterStatus = null;
-    private SearchStrategy searchStrategy = null;
+    private SearchBy searchBy = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchStrategy);
+        SaveSearchStrategyState(outState, searchBy);
         SaveRecordUuidState(outState, recordUuid);
     }
 
@@ -50,7 +58,7 @@ public class ContactListFragment extends BaseListActivityFragment<ContactListAda
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         filterStatus = (FollowUpStatus) getFilterStatusArg(arguments);
-        searchStrategy = (SearchStrategy) getSearchStrategyArg(arguments);
+        searchBy = (SearchBy) getSearchStrategyArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
     }
 
@@ -77,38 +85,34 @@ public class ContactListFragment extends BaseListActivityFragment<ContactListAda
     }
 
     @Override
+    public void cancelTaskExec() {
+        if (searchTask != null)
+            searchTask.cancel(true);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
-        IContactsSearchStrategy strategy;
-        contacts = new ArrayList<>();
+        ISearchExecutor<Contact> executor = SearchStrategyFor.CONTACT.selector(searchBy, filterStatus, recordUuid);
+        searchTask = executor.search(new ISearchResultCallback<Contact>() {
+            @Override
+            public void searchResult(List<Contact> result, BoolResult resultStatus) {
+                if (!resultStatus.isSuccess()) {
+                    String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Contacts");
+                    NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
 
-        //TODO: Orson - Remove - For Dev Only
+                    return;
+                }
 
-        /*Guard.That.NotNull.isTrue(arguments);
-        Guard.That.Bundle.contains(arguments, ConstantHelper.ARG_FILTER_STATUS);
-        Guard.That.Bundle.contains(arguments, Case.UUID);*/
+                contacts = result;
 
-        //TODO: Orson - Remove
-        filterStatus = filterStatus == null ? FollowUpStatus.FOLLOW_UP : filterStatus;
-
-        if (searchStrategy == SearchStrategy.BY_FILTER_STATUS) {
-            strategy = new ContactsSearchByFollowUpStatusStrategy(filterStatus);
-            getCommunicator().updateSubHeadingTitle(filterStatus != null ? filterStatus.toString() : "");
-        } else if (searchStrategy == SearchStrategy.BY_CASE_ID) {
-            if (recordUuid != null && recordUuid != "") {
-                strategy = new ContactsSearchByCaseStrategy(recordUuid);
-            } else {
-                throw new IllegalArgumentException("Case record uuid not found");
+                //TODO: Orson - reverse this relationship
+                getCommunicator().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Contact"));
+                ContactListFragment.this.getListAdapter().replaceAll(contacts);
+                ContactListFragment.this.getListAdapter().notifyDataSetChanged();
             }
-        } else {
-            strategy = new ContactsSearchByFollowUpStatusStrategy(filterStatus);
-        }
-
-        contacts = strategy.search();
-
-        this.getListAdapter().replaceAll(contacts);
-        this.getListAdapter().notifyDataSetChanged();
+        });
     }
 
     @Override

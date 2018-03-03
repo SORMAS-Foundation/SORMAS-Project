@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.sample.list;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,15 +11,22 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.core.SearchStrategy;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.sample.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.sample.read.SampleReadActivity;
+import de.symeda.sormas.app.searchstrategy.ISearchExecutor;
+import de.symeda.sormas.app.searchstrategy.ISearchResultCallback;
+import de.symeda.sormas.app.searchstrategy.SearchStrategyFor;
+import de.symeda.sormas.app.util.SubheadingHelper;
 
 /**
  * Created by Orson on 07/12/2017.
@@ -26,11 +34,12 @@ import de.symeda.sormas.app.sample.read.SampleReadActivity;
 
 public class SampleListFragment extends BaseListActivityFragment<SampleListAdapter> implements OnListItemClickListener {
 
+    private AsyncTask searchTask;
     private List<Sample> samples;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;
     private ShipmentStatus filterStatus = null;
-    private SearchStrategy searchStrategy = null;
+    private SearchBy searchBy = null;
     private String recordUuid = null;
 
     @Override
@@ -38,7 +47,7 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
         super.onSaveInstanceState(outState);
 
         SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchStrategy);
+        SaveSearchStrategyState(outState, searchBy);
         SaveRecordUuidState(outState, recordUuid);
     }
 
@@ -49,7 +58,7 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         filterStatus = (ShipmentStatus) getFilterStatusArg(arguments);
-        searchStrategy = (SearchStrategy) getSearchStrategyArg(arguments);
+        searchBy = (SearchBy) getSearchStrategyArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
     }
 
@@ -75,39 +84,34 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
     }
 
     @Override
+    public void cancelTaskExec() {
+        if (searchTask != null)
+            searchTask.cancel(true);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
-        ISamplesSearchStrategy strategy = null;
-        String subHeading;
+        ISearchExecutor<Sample> executor = SearchStrategyFor.SAMPLE.selector(searchBy, filterStatus, recordUuid);
+        searchTask = executor.search(new ISearchResultCallback<Sample>() {
+            @Override
+            public void searchResult(List<Sample> result, BoolResult resultStatus) {
+                if (!resultStatus.isSuccess()) {
+                    String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Samples");
+                    NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
 
-        //TODO: Orson - Remove (Old comment)
-        //TODO: This whole thing might still change
-        if (filterStatus == null)
-            filterStatus = ShipmentStatus.NOT_SHIPPED;
+                    return;
+                }
 
-        if (searchStrategy == SearchStrategy.BY_FILTER_STATUS && filterStatus != null) {
-            subHeading = filterStatus.name();
-            strategy = new SamplesSearchByShipmentStatusStrategy(filterStatus);
-        } else if (searchStrategy == SearchStrategy.BY_CASE_ID) {
-            String format = getResources().getString(R.string.heading_level2_1_tasks_list_by_case);
-            subHeading = String.format(format, DataHelper.getShortUuid(recordUuid));
-            strategy = new SamplesSearchByCaseStrategy(recordUuid);
-        } else {
-            subHeading = getResources().getString(R.string.heading_all_records);
-            strategy = new SamplesSearchStrategy();
-        }
+                samples = result;
 
-        samples = strategy.search();
-
-        if (samples == null)
-            subHeading = getResources().getString(R.string.heading_no_record_found);
-
-        getCommunicator().updateSubHeadingTitle(subHeading);
-
-        this.getListAdapter().replaceAll(samples);
-        this.getListAdapter().notifyDataSetChanged();
-
+                //TODO: Orson - reverse this relationship
+                getCommunicator().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Sample"));
+                SampleListFragment.this.getListAdapter().replaceAll(samples);
+                SampleListFragment.this.getListAdapter().notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

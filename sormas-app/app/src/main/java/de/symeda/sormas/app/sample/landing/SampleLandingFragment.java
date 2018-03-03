@@ -18,7 +18,7 @@ import de.symeda.sormas.app.component.visualization.ViewTypeHelper;
 import de.symeda.sormas.app.component.visualization.ViewTypeHelper.ViewTypeEnum;
 import de.symeda.sormas.app.component.visualization.data.SummaryCircularData;
 import de.symeda.sormas.app.component.visualization.data.SummaryTotalData;
-import de.symeda.sormas.app.core.SearchStrategy;
+import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationContext;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationService;
 import de.symeda.sormas.app.sample.ShipmentStatus;
@@ -100,7 +100,7 @@ public class SampleLandingFragment extends BaseLandingActivityFragment<ViewTypeH
     @Override
     public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) {
         ShipmentStatus status = statusFilters[menuItem.getKey()];
-        SampleLandingToListCapsule dataCapsule = new SampleLandingToListCapsule(getContext(), status, SearchStrategy.BY_FILTER_STATUS);
+        SampleLandingToListCapsule dataCapsule = new SampleLandingToListCapsule(getContext(), status, SearchBy.BY_FILTER_STATUS);
         SampleListActivity.goToActivity(getActivity(), dataCapsule);
 
         return true;

@@ -8,22 +8,21 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import de.symeda.sormas.app.BaseListActivity;
-import de.symeda.sormas.app.BaseListActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.caze.edit.CaseNewActivity;
-import de.symeda.sormas.app.caze.landing.CaseLandingToListCapsule;
-import de.symeda.sormas.app.core.SearchStrategy;
-import de.symeda.sormas.app.util.NavigationHelper;
-
 import java.util.List;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.app.BaseListActivity;
+import de.symeda.sormas.app.BaseListActivityFragment;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.caze.edit.CaseNewActivity;
+import de.symeda.sormas.app.caze.landing.CaseLandingToListCapsule;
+import de.symeda.sormas.app.core.SearchBy;
+import de.symeda.sormas.app.util.NavigationHelper;
 
 /**
  * Created by Orson on 05/12/2017.
@@ -32,7 +31,7 @@ import de.symeda.sormas.app.backend.task.Task;
 public class CaseListActivity extends BaseListActivity {
 
     private InvestigationStatus filterStatus = null;
-    private SearchStrategy searchStrategy = null;
+    private SearchBy searchBy = null;
     private String recordUuid = null;
     private BaseListActivityFragment activeFragment = null;
 
@@ -43,7 +42,7 @@ public class CaseListActivity extends BaseListActivity {
 
 
         SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchStrategy);
+        SaveSearchStrategyState(outState, searchBy);
         //SaveRecordUuidState(outState, recordUuid);
     }
 
@@ -60,7 +59,7 @@ public class CaseListActivity extends BaseListActivity {
     @Override
     protected void initializeActivity(Bundle arguments) {
         filterStatus = (InvestigationStatus) getFilterStatusArg(arguments);
-        searchStrategy = (SearchStrategy) getSearchStrategyArg(arguments);
+        searchBy = (SearchBy) getSearchStrategyArg(arguments);
         //recordUuid = getRecordUuidArg(arguments);
 
 
@@ -72,7 +71,7 @@ public class CaseListActivity extends BaseListActivity {
     @Override
     public BaseListActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
-            CaseListCapsule dataCapsule = new CaseListCapsule(CaseListActivity.this, filterStatus, searchStrategy);
+            CaseListCapsule dataCapsule = new CaseListCapsule(CaseListActivity.this, filterStatus, searchBy);
             activeFragment = CaseListFragment.newInstance(dataCapsule);
         }
 
@@ -114,6 +113,9 @@ public class CaseListActivity extends BaseListActivity {
                 // TODO check parent activity intent as soon as the minimum API level has been increased to 16
                 //Intent intent = new Intent(this, CasesLandingActivity.class);
                 //startActivity(intent);
+                if (activeFragment != null)
+                    activeFragment.cancelTaskExec();
+
                 NavigationHelper.navigateUpFrom(this);
 
                 return true;

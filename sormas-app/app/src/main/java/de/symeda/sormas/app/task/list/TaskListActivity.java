@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.SearchStrategy;
+import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.task.landing.TaskLandingToListCapsule;
 import de.symeda.sormas.app.util.NavigationHelper;
 
@@ -23,7 +23,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 public class TaskListActivity  extends BaseListActivity {
 
     private TaskStatus filterStatus = null;
-    private SearchStrategy searchStrategy = null;
+    private SearchBy searchBy = null;
     private String recordUuid = null;
     private BaseListActivityFragment activeFragment = null;
 
@@ -35,7 +35,7 @@ public class TaskListActivity  extends BaseListActivity {
         super.onSaveInstanceState(outState);
 
         SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchStrategy);
+        SaveSearchStrategyState(outState, searchBy);
         SaveRecordUuidState(outState, recordUuid);
     }
 
@@ -52,7 +52,7 @@ public class TaskListActivity  extends BaseListActivity {
     @Override
     protected void initializeActivity(Bundle arguments) {
         filterStatus = (TaskStatus) getFilterStatusArg(arguments);
-        searchStrategy = (SearchStrategy) getSearchStrategyArg(arguments);
+        searchBy = (SearchBy) getSearchStrategyArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
 
         this.showStatusFrame = true;
@@ -62,7 +62,7 @@ public class TaskListActivity  extends BaseListActivity {
     @Override
     public BaseListActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
-            TaskListCapsule dataCapsule = new TaskListCapsule(TaskListActivity.this, filterStatus, searchStrategy);
+            TaskListCapsule dataCapsule = new TaskListCapsule(TaskListActivity.this, filterStatus, searchBy);
             activeFragment = TaskListFragment.newInstance(dataCapsule);
         }
 
@@ -104,6 +104,9 @@ public class TaskListActivity  extends BaseListActivity {
                 // TODO check parent activity intent as soon as the minimum API level has been increased to 16
                 //Intent intent = new Intent(this, TasksLandingActivity.class);
                 //startActivity(intent);
+                if (activeFragment != null)
+                    activeFragment.cancelTaskExec();
+
                 NavigationHelper.navigateUpFrom(this);
 
                 return true;

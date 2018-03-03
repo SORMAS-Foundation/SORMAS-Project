@@ -7,11 +7,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.SearchStrategy;
+import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.sample.landing.SampleLandingToListCapsule;
 import de.symeda.sormas.app.util.NavigationHelper;
@@ -23,7 +22,7 @@ import de.symeda.sormas.app.util.NavigationHelper;
 public class SampleListActivity extends BaseListActivity {
 
     private ShipmentStatus filterStatus = null;
-    private SearchStrategy searchStrategy = null;
+    private SearchBy searchBy = null;
     private String recordUuid = null;
     private BaseListActivityFragment activeFragment = null;
 
@@ -33,7 +32,7 @@ public class SampleListActivity extends BaseListActivity {
         super.onSaveInstanceState(outState);
 
         SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchStrategy);
+        SaveSearchStrategyState(outState, searchBy);
         SaveRecordUuidState(outState, recordUuid);
     }
 
@@ -50,14 +49,14 @@ public class SampleListActivity extends BaseListActivity {
     @Override
     protected void initializeActivity(Bundle arguments) {
         filterStatus = (ShipmentStatus) getFilterStatusArg(arguments);
-        searchStrategy = (SearchStrategy) getSearchStrategyArg(arguments);
+        searchBy = (SearchBy) getSearchStrategyArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
     }
 
     @Override
     public BaseListActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
-            SampleListCapsule dataCapsule = new SampleListCapsule(SampleListActivity.this, filterStatus, searchStrategy);
+            SampleListCapsule dataCapsule = new SampleListCapsule(SampleListActivity.this, filterStatus, searchBy);
             activeFragment = SampleListFragment.newInstance(dataCapsule);
         }
 
@@ -99,6 +98,9 @@ public class SampleListActivity extends BaseListActivity {
                 // TODO check parent activity intent as soon as the minimum API level has been increased to 16
                 //Intent intent = new Intent(this, SampleLandingActivity.class);
                 //startActivity(intent);
+                if (activeFragment != null)
+                    activeFragment.cancelTaskExec();
+
                 NavigationHelper.navigateUpFrom(this);
 
                 return true;

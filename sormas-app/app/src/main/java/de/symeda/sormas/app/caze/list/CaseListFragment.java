@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.caze.list;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,11 +15,18 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
-import de.symeda.sormas.app.core.SearchStrategy;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.searchstrategy.ISearchExecutor;
+import de.symeda.sormas.app.searchstrategy.ISearchResultCallback;
+import de.symeda.sormas.app.searchstrategy.SearchStrategyFor;
+import de.symeda.sormas.app.util.SubheadingHelper;
 
 /**
  * Created by Orson on 05/12/2017.
@@ -26,11 +34,12 @@ import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 
 public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> implements OnListItemClickListener {
 
+    private AsyncTask searchTask;
     private List<Case> cases;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;
     private InvestigationStatus filterStatus = null;
-    private SearchStrategy searchStrategy = null;
+    private SearchBy searchBy = null;
     String recordUuid = null;
 
     @Override
@@ -38,7 +47,7 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
         super.onSaveInstanceState(outState);
 
         SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchStrategy);
+        SaveSearchStrategyState(outState, searchBy);
         SaveRecordUuidState(outState, recordUuid);
     }
 
@@ -49,7 +58,7 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         filterStatus = (InvestigationStatus) getFilterStatusArg(arguments);
-        searchStrategy = (SearchStrategy) getSearchStrategyArg(arguments);
+        searchBy = (SearchBy) getSearchStrategyArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
     }
 
@@ -76,29 +85,34 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
     }
 
     @Override
+    public void cancelTaskExec() {
+        if (searchTask != null)
+            searchTask.cancel(true);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
-        //TODO: Orson - Replace with real data
-        if (searchStrategy == SearchStrategy.BY_FILTER_STATUS) {
+        ISearchExecutor<Case> executor = SearchStrategyFor.CASE.selector(searchBy, filterStatus, recordUuid);
+        searchTask = executor.search(new ISearchResultCallback<Case>() {
+            @Override
+            public void searchResult(List<Case> result, BoolResult resultStatus) {
+                if (!resultStatus.isSuccess()) {
+                    String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Cases");
+                    NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
 
-            //TODO: Orson - reverse this relationship
-            if (filterStatus != null) {
-                getCommunicator().updateSubHeadingTitle(filterStatus.toString());
-            } else {
-                getCommunicator().updateSubHeadingTitle(R.string.headline_status_unknown);
+                    return;
+                }
+
+                cases = result;
+
+                //TODO: Orson - reverse this relationship
+                getCommunicator().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Case"));
+                CaseListFragment.this.getListAdapter().replaceAll(cases);
+                CaseListFragment.this.getListAdapter().notifyDataSetChanged();
             }
-
-            cases = DatabaseHelper.getCaseDao().queryForEq(Case.INVESTIGATION_STATUS, filterStatus, Case.REPORT_DATE, false);
-        } else {
-            cases = DatabaseHelper.getCaseDao().queryForAll(Case.REPORT_DATE, false);
-            //cases = MemoryDatabaseHelper.CASE.getCases(20);
-            getCommunicator().updateSubHeadingTitle(R.string.headline_all);
-        }
-
-
-        this.getListAdapter().replaceAll(cases);
-        this.getListAdapter().notifyDataSetChanged();
+        });
     }
 
     @Override

@@ -21,7 +21,7 @@ import de.symeda.sormas.app.component.visualization.data.SummaryCircularData;
 import de.symeda.sormas.app.component.visualization.data.SummaryPieData;
 import de.symeda.sormas.app.component.visualization.data.SummaryPieEntry;
 import de.symeda.sormas.app.component.visualization.data.SummaryTotalData;
-import de.symeda.sormas.app.core.SearchStrategy;
+import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterDataModifier;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationContext;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationService;
@@ -164,7 +164,7 @@ public class TaskLandingFragment extends BaseLandingActivityFragment<ViewTypeHel
     @Override
     public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) {
         TaskStatus status = statusFilters[menuItem.getKey()];
-        TaskLandingToListCapsule dataCapsule = new TaskLandingToListCapsule(getContext(), status, SearchStrategy.BY_FILTER_STATUS);
+        TaskLandingToListCapsule dataCapsule = new TaskLandingToListCapsule(getContext(), status, SearchBy.BY_FILTER_STATUS);
         TaskListActivity.goToActivity(getActivity(), dataCapsule);
 
         return true;

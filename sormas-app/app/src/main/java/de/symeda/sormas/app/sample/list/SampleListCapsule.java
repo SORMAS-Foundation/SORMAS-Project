@@ -3,7 +3,7 @@ package de.symeda.sormas.app.sample.list;
 import android.content.Context;
 
 import de.symeda.sormas.app.core.BaseListNavigationCapsule;
-import de.symeda.sormas.app.core.SearchStrategy;
+import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 
 /**
@@ -12,7 +12,7 @@ import de.symeda.sormas.app.sample.ShipmentStatus;
 
 public class SampleListCapsule extends BaseListNavigationCapsule {
 
-    public SampleListCapsule(Context context, ShipmentStatus filterStatus, SearchStrategy searchStrategy) {
-        super(context, filterStatus, searchStrategy);
+    public SampleListCapsule(Context context, ShipmentStatus filterStatus, SearchBy searchBy) {
+        super(context, filterStatus, searchBy);
     }
 }

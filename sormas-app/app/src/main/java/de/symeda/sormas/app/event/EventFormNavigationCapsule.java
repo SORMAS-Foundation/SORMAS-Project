@@ -3,7 +3,7 @@ package de.symeda.sormas.app.event;
 import android.content.Context;
 
 import de.symeda.sormas.app.core.BaseFormNavigationCapsule;
-import de.symeda.sormas.app.core.SearchStrategy;
+import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 
 import de.symeda.sormas.api.event.EventStatus;
@@ -15,7 +15,7 @@ import de.symeda.sormas.api.event.EventStatus;
 public class EventFormNavigationCapsule extends BaseFormNavigationCapsule {
 
     private IStatusElaborator filterStatus;
-    private SearchStrategy searchStrategy;
+    private SearchBy searchBy;
 
     public EventFormNavigationCapsule(Context context, String recordUuid, EventStatus pageStatus) {
         super(context, recordUuid, pageStatus);

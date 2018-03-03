@@ -13,14 +13,14 @@ public class BaseListNavigationCapsule implements IListNavigationCapsule {
 
 
     private IStatusElaborator filterStatus;
-    private SearchStrategy searchStrategy;
+    private SearchBy searchBy;
 
 
-    public BaseListNavigationCapsule(Context context, Enum filterStatus, SearchStrategy searchStrategy) {
+    public BaseListNavigationCapsule(Context context, Enum filterStatus, SearchBy searchBy) {
         if (filterStatus != null)
             this.filterStatus = StatusElaboratorFactory.getElaborator(context, filterStatus);
 
-        this.searchStrategy = searchStrategy;
+        this.searchBy = searchBy;
     }
 
     @Override
@@ -29,8 +29,8 @@ public class BaseListNavigationCapsule implements IListNavigationCapsule {
     }
 
     @Override
-    public SearchStrategy getSearchStrategy() {
-        return searchStrategy;
+    public SearchBy getSearchStrategy() {
+        return searchBy;
     }
 
 }

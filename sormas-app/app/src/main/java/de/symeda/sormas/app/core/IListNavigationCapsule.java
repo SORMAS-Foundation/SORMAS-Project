@@ -9,5 +9,5 @@ import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 public interface IListNavigationCapsule {
     IStatusElaborator getFilterStatus();
 
-    SearchStrategy getSearchStrategy();
+    SearchBy getSearchStrategy();
 }

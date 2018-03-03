@@ -13,8 +13,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import de.symeda.sormas.app.core.ILandingToListNavigationCapsule;
+import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
-import de.symeda.sormas.app.core.SearchStrategy;
+import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.util.ConstantHelper;
@@ -23,13 +24,14 @@ import de.symeda.sormas.app.util.ConstantHelper;
  * Created by Orson on 03/12/2017.
  */
 
-public abstract class BaseListActivity extends AbstractSormasActivity implements IUpdateSubHeadingTitle {
+public abstract class BaseListActivity extends AbstractSormasActivity implements IUpdateSubHeadingTitle, INotificationContext {
 
     private View statusFrame = null;
     private View applicationTitleBar = null;
     private TextView subHeadingListActivityTitle;
     private View fragmentFrame = null;
     private BaseListActivityFragment fragment;
+    private View rootView;
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -46,6 +48,7 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
     }
 
     protected void initializeBaseActivity(Bundle savedInstanceState) {
+        rootView = findViewById(R.id.base_layout);
         subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingListActivityTitle);
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getExtras();
@@ -191,11 +194,11 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
         return e;
     }
 
-    protected SearchStrategy getSearchStrategyArg(Bundle arguments) {
-        SearchStrategy e = null;
+    protected SearchBy getSearchStrategyArg(Bundle arguments) {
+        SearchBy e = null;
         if (arguments != null && !arguments.isEmpty()) {
             if(arguments.containsKey(ConstantHelper.ARG_SEARCH_STRATEGY)) {
-                e = (SearchStrategy) arguments.getSerializable(ConstantHelper.ARG_SEARCH_STRATEGY);
+                e = (SearchBy) arguments.getSerializable(ConstantHelper.ARG_SEARCH_STRATEGY);
             }
         }
 
@@ -215,7 +218,7 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
         }
     }
 
-    protected void SaveSearchStrategyState(Bundle outState, SearchStrategy status) {
+    protected void SaveSearchStrategyState(Bundle outState, SearchBy status) {
         if (outState != null) {
             outState.putSerializable(ConstantHelper.ARG_FILTER_STATUS, status);
         }
@@ -225,16 +228,22 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
     void goToActivity(Context fromActivity, Class<TActivity> toActivity, TCapsule dataCapsule) {
 
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
-        SearchStrategy searchStrategy = dataCapsule.getSearchStrategy();
+        SearchBy searchBy = dataCapsule.getSearchStrategy();
 
         Intent intent = new Intent(fromActivity, toActivity);
 
         if (filterStatus != null)
             intent.putExtra(ConstantHelper.ARG_FILTER_STATUS, filterStatus.getValue());
 
-        if (searchStrategy != null)
-            intent.putExtra(ConstantHelper.ARG_SEARCH_STRATEGY, searchStrategy);
+        if (searchBy != null)
+            intent.putExtra(ConstantHelper.ARG_SEARCH_STRATEGY, searchBy);
 
         fromActivity.startActivity(intent);
+    }
+
+
+    @Override
+    public View getRootView() {
+        return rootView;
     }
 }

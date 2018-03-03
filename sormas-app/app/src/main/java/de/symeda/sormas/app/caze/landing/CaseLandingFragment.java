@@ -19,7 +19,7 @@ import de.symeda.sormas.app.component.visualization.ViewTypeHelper;
 import de.symeda.sormas.app.component.visualization.ViewTypeHelper.ViewTypeEnum;
 import de.symeda.sormas.app.component.visualization.data.SummaryCircularData;
 import de.symeda.sormas.app.component.visualization.data.SummaryTotalData;
-import de.symeda.sormas.app.core.SearchStrategy;
+import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationContext;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationService;
 import de.symeda.sormas.app.util.ResourceUtils;
@@ -96,7 +96,7 @@ public class CaseLandingFragment extends BaseLandingActivityFragment<ViewTypeHel
     @Override
     public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) {
         InvestigationStatus status = statusFilters[menuItem.getKey()];
-        CaseLandingToListCapsule dataCapsule = new CaseLandingToListCapsule(getContext(), status, SearchStrategy.BY_FILTER_STATUS);
+        CaseLandingToListCapsule dataCapsule = new CaseLandingToListCapsule(getContext(), status, SearchBy.BY_FILTER_STATUS);
         CaseListActivity.goToActivity(getActivity(), dataCapsule);
 
         return true;

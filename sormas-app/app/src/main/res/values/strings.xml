@@ -635,6 +635,11 @@
     <string name="heading_level2_1_tasks_list_by_contact">Contact (%1$s)</string>
     <string name="heading_level2_1_tasks_list_by_event">Event (%1$s)</string>
 
+
+    <string name="heading_list_by_case">%1$s by Case</string>
+    <string name="heading_list_by_contact">%1$s by Contact</string>
+    <string name="heading_list_by_event">%1$s by Event</string>
+
     <string name="heading_level3_task_read">Task</string>
     <string name="heading_level3_case_read">Case</string>
     <string name="heading_level3_contact_read">Contact</string>
@@ -801,5 +806,6 @@
     <string name="notification_empty_username">Please enter a username.</string>
     <string name="notification_empty_password">Please enter a password.</string>
     <string name="notification_saved_settings">Application settings has been changed.</string>
+    <string name="notification_records_not_retrieved">Unable to retrieve %1$s</string>
 
 </resources>

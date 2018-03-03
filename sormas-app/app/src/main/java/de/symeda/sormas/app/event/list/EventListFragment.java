@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.event.list;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,17 +9,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import de.symeda.sormas.app.BaseListActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.SearchStrategy;
-import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.event.EventFormNavigationCapsule;
-import de.symeda.sormas.app.event.read.EventReadActivity;
-
 import java.util.List;
 
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.app.BaseListActivityFragment;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.SearchBy;
+import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.event.EventFormNavigationCapsule;
+import de.symeda.sormas.app.event.read.EventReadActivity;
+import de.symeda.sormas.app.searchstrategy.ISearchExecutor;
+import de.symeda.sormas.app.searchstrategy.ISearchResultCallback;
+import de.symeda.sormas.app.searchstrategy.SearchStrategyFor;
+import de.symeda.sormas.app.util.SubheadingHelper;
 
 /**
  * Created by Orson on 07/12/2017.
@@ -26,11 +34,12 @@ import de.symeda.sormas.app.backend.event.Event;
 
 public class EventListFragment extends BaseListActivityFragment<EventListAdapter> implements OnListItemClickListener {
 
+    private AsyncTask searchTask;
     private List<Event> events;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;
     private EventStatus filterStatus = null;
-    private SearchStrategy searchStrategy = null;
+    private SearchBy searchBy = null;
     String recordUuid = null;
 
     @Override
@@ -38,7 +47,7 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
         super.onSaveInstanceState(outState);
 
         SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchStrategy);
+        SaveSearchStrategyState(outState, searchBy);
         SaveRecordUuidState(outState, recordUuid);
     }
 
@@ -49,7 +58,7 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         filterStatus = (EventStatus) getFilterStatusArg(arguments);
-        searchStrategy = (SearchStrategy) getSearchStrategyArg(arguments);
+        searchBy = (SearchBy) getSearchStrategyArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
     }
 
@@ -76,22 +85,34 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
     }
 
     @Override
+    public void cancelTaskExec() {
+        if (searchTask != null)
+            searchTask.cancel(true);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
-        IEventsSearchStrategy searchStrategy;
+        ISearchExecutor<Event> executor = SearchStrategyFor.EVENT.selector(searchBy, filterStatus, recordUuid);
+        searchTask = executor.search(new ISearchResultCallback<Event>() {
+            @Override
+            public void searchResult(List<Event> result, BoolResult resultStatus) {
+                if (!resultStatus.isSuccess()) {
+                    String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Events");
+                    NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
 
-        //TODO: Orson remove
-        if (filterStatus == null)
-            filterStatus = EventStatus.POSSIBLE;
+                    return;
+                }
 
-        getCommunicator().updateSubHeadingTitle(filterStatus != null ? filterStatus.toString() : "");
+                events = result;
 
-        searchStrategy = new EventsSearchByEventStatusStrategy(filterStatus);
-        events = searchStrategy.search();
-
-        this.getListAdapter().replaceAll(events);
-        this.getListAdapter().notifyDataSetChanged();
+                //TODO: Orson - reverse this relationship
+                getCommunicator().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Event"));
+                EventListFragment.this.getListAdapter().replaceAll(events);
+                EventListFragment.this.getListAdapter().notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

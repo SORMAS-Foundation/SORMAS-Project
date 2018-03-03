@@ -19,7 +19,7 @@ import de.symeda.sormas.app.component.visualization.ViewTypeHelper.ViewTypeEnum;
 import de.symeda.sormas.app.component.visualization.data.SummaryCircularData;
 import de.symeda.sormas.app.component.visualization.data.SummaryTotalData;
 import de.symeda.sormas.app.contact.list.ContactListActivity;
-import de.symeda.sormas.app.core.SearchStrategy;
+import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationContext;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationService;
 import de.symeda.sormas.app.util.ResourceUtils;
@@ -98,7 +98,7 @@ public class ContactLandingFragment extends BaseLandingActivityFragment<ViewType
     @Override
     public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) {
         FollowUpStatus status = statusFilters[menuItem.getKey()];
-        ContactLandingToListCapsule dataCapsule = new ContactLandingToListCapsule(getContext(), status, SearchStrategy.BY_FILTER_STATUS);
+        ContactLandingToListCapsule dataCapsule = new ContactLandingToListCapsule(getContext(), status, SearchBy.BY_FILTER_STATUS);
         ContactListActivity.goToActivity(getActivity(), dataCapsule);
 
         return true;

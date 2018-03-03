@@ -6,7 +6,7 @@ import de.symeda.sormas.api.I18nProperties;
  * Created by Orson on 09/01/2018.
  */
 
-public enum SearchStrategy {
+public enum SearchBy {
 
     BY_FILTER_STATUS,
     BY_CASE_ID,

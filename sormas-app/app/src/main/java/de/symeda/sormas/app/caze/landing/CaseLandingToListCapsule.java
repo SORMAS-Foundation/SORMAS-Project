@@ -3,7 +3,7 @@ package de.symeda.sormas.app.caze.landing;
 import android.content.Context;
 
 import de.symeda.sormas.app.core.BaseLandingToListNavigationCapsule;
-import de.symeda.sormas.app.core.SearchStrategy;
+import de.symeda.sormas.app.core.SearchBy;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
 
@@ -13,7 +13,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 
 public class CaseLandingToListCapsule extends BaseLandingToListNavigationCapsule {
 
-    public CaseLandingToListCapsule(Context context, InvestigationStatus filterStatus, SearchStrategy searchStrategy) {
-        super(context, filterStatus, searchStrategy);
+    public CaseLandingToListCapsule(Context context, InvestigationStatus filterStatus, SearchBy searchBy) {
+        super(context, filterStatus, searchBy);
     }
 }
