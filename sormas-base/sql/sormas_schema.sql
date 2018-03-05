@@ -2111,6 +2111,7 @@ CREATE FUNCTION export_database_join(table_name text, join_table_name text, colu
 ;
 
 INSERT INTO schema_version (version_number, comment) VALUES (94, 'Export function for database export #507');
+
 -- 2018-03-01 Resulting case for event participant #402
 
 ALTER TABLE eventparticipant ADD COLUMN resultingcase_id bigint;
@@ -2118,3 +2119,49 @@ ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_resultingcase_id
 
 INSERT INTO schema_version (version_number, comment) VALUES (95, 'Resulting case for eventparticipant #402');
 
+-- 2018-03-05 SQL function to easily add new health facilities to the database #519
+
+CREATE OR REPLACE FUNCTION add_health_facility(_name character varying(512), _islaboratory boolean, _regionname character varying(512), _districtname character varying(512), _communityname character varying(512), _city character varying(512), _latitude double precision, _longitude double precision)
+RETURNS bigint AS $resultid$
+DECLARE 
+	_type character varying(512);
+	_id bigint;
+	_uuid character varying(36);
+	_region_id bigint;
+	_district_id bigint;
+	_community_id bigint;
+BEGIN
+	IF (_islaboratory) THEN
+		_type = 'LABORATORY';
+	END IF;
+
+	SELECT region.id FROM region WHERE region.name = _regionname INTO _region_id;
+	SELECT district.id FROM district WHERE district.name = _districtname AND district.region_id = _region_id INTO _district_id;
+	SELECT community.id FROM community WHERE community.name = _communityname AND community.district_id = _district_id INTO _community_id;
+
+	IF (_region_id IS NULL) THEN
+		RAISE EXCEPTION 'region not found %', _regionname;
+	END IF;
+	IF (NOT(_islaboratory) AND _district_id IS NULL) THEN
+		RAISE EXCEPTION 'district not found %', _districtname;
+	END IF;
+
+	_id = nextval('entity_seq');
+	-- this is not the same format as we are using in code (which is base32 with 4 seperators)
+	_uuid = upper(replace(md5(random()::text || clock_timestamp()::text)::uuid::text, '-', ''));
+
+	IF ((SELECT facility.id FROM facility WHERE facility.name = _name AND facility.region_id = _region_id AND facility.district_id = _district_id) IS NOT NULL) THEN
+		RAISE EXCEPTION 'facility % allready exists in district', _name;
+	END IF;
+	
+	INSERT INTO facility(
+            id, changedate, creationdate, name, publicownership, type, uuid, 
+            region_id, district_id, community_id, city, latitude, longitude)
+	VALUES (_id, now(), now(), _name, FALSE, _type, _uuid, 
+            _region_id, _district_id, _community_id, _city, _latitude, _longitude);
+
+        RETURN _id;
+END;
+$resultid$  LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (96, 'SQL function to easily add new health facilities to the database #519');
