@@ -2131,6 +2131,13 @@ DECLARE
 	_district_id bigint;
 	_community_id bigint;
 BEGIN
+	IF (_regionname IS NULL) THEN
+		RAISE EXCEPTION 'you need to pass a region name';
+	END IF;
+	IF (NOT(_islaboratory) AND _districtname IS NULL) THEN
+		RAISE EXCEPTION 'you need to pass a district name';
+	END IF;
+
 	IF (_islaboratory) THEN
 		_type = 'LABORATORY';
 	END IF;
@@ -2139,11 +2146,14 @@ BEGIN
 	SELECT district.id FROM district WHERE district.name = _districtname AND district.region_id = _region_id INTO _district_id;
 	SELECT community.id FROM community WHERE community.name = _communityname AND community.district_id = _district_id INTO _community_id;
 
-	IF (_region_id IS NULL) THEN
+	IF (_regionname IS NOT NULL AND _region_id IS NULL) THEN
 		RAISE EXCEPTION 'region not found %', _regionname;
 	END IF;
-	IF (NOT(_islaboratory) AND _district_id IS NULL) THEN
+	IF (_districtname IS NOT NULL AND _district_id IS NULL) THEN
 		RAISE EXCEPTION 'district not found %', _districtname;
+	END IF;
+	IF (_communityname IS NOT NULL AND _community_id IS NULL) THEN
+		RAISE EXCEPTION 'community not found %', _communityname;
 	END IF;
 
 	_id = nextval('entity_seq');
