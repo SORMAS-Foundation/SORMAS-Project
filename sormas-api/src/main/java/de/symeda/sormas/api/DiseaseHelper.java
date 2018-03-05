@@ -48,10 +48,10 @@ public class DiseaseHelper {
 		case AVIAN_INFLUENCA:
 			return 17;
 		case PLAGUE:
-			if (plagueType == null || plagueType == PlagueType.PNEUMONIC) {
-				return 7; // worst case
+			if (plagueType == PlagueType.PNEUMONIC) {
+				return 7;
 			} else {
-				return 0;
+				return 7; // worst case
 			}
 		case LASSA:
 			return 6;

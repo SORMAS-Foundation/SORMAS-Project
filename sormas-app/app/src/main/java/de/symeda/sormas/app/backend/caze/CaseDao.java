@@ -86,23 +86,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
         return date;
     }
 
-    // TODO #69 build some date filter for finding the right case (this is implemented in CaseService.java too)
-    public Case getByPersonAndDisease(Person person, Disease disease) {
-        try {
-            QueryBuilder builder = queryBuilder();
-            Where where = builder.where();
-            where.and(
-                    where.eq(Case.PERSON, person),
-                    where.eq(Case.DISEASE, disease)
-            );
-
-            return (Case) builder.queryForFirst();
-        } catch (SQLException e) {
-            Log.e(getTableName(), "Could not perform getByPersonAndDisease");
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public Case build() {
         throw new UnsupportedOperationException("Use build(Person) instead");

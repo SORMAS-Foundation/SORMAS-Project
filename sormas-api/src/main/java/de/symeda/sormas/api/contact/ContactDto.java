@@ -51,7 +51,7 @@ public class ContactDto extends EntityDto {
 	private UserReferenceDto contactOfficer;
 	private String description;
 	private ContactRelation relationToCase;
-	private CaseReferenceDto resultingCase;
+	private CaseReferenceDto resultingCase; // read-only
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
@@ -137,6 +137,9 @@ public class ContactDto extends EntityDto {
 	public CaseReferenceDto getResultingCase() {
 		return resultingCase;
 	}
+	/**
+	 * This should only be called when filling the DTO in the server backend!
+	 */
 	public void setResultingCase(CaseReferenceDto resultingCase) {
 		this.resultingCase = resultingCase;
 	}

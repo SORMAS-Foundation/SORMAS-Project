@@ -131,7 +131,9 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		target.setEvent(eventService.getByReferenceDto(source.getEvent()));
 		target.setPerson(personService.getByUuid(source.getPerson().getUuid()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
-		target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));
+		
+		// resulting case is not set from DTO @see EventParticipantService#udpateResultingCase
+		//target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));
 
 		return target;
 	}

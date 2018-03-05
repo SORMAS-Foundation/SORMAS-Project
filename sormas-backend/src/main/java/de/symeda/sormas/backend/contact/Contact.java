@@ -47,9 +47,10 @@ public class Contact extends AbstractDomainObject {
 	public static final String DESCRIPTION = "description";
 	public static final String TASKS = "tasks";
 	public static final String RELATION_TO_CASE = "relationToCase";
+	public static final String RESULTING_CASE = "resultingCase";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
-	public static final String RESULTING_CASE = "resultingCase";
+	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
 	
 	private Person person;
 	private Case caze;

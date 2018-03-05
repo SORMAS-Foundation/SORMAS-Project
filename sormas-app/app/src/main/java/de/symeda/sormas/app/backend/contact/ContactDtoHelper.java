@@ -71,6 +71,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
         target.setDescription(source.getDescription());
 
+        target.setResultingCaseUuid(source.getResultingCase() != null ? source.getResultingCase().getUuid() : null);
+
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());
         target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());

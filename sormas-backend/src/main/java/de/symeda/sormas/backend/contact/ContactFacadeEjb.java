@@ -293,7 +293,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setContactOfficer(userService.getByReferenceDto(source.getContactOfficer()));
 		target.setDescription(source.getDescription());
 		target.setRelationToCase(source.getRelationToCase());
-		target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));
+		
+		// resulting case is not set from DTO @see ContactService#udpateContactStatusAndResultingCase
+		//target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());

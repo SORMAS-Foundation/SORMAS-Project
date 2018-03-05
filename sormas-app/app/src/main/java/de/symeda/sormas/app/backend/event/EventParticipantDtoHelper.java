@@ -43,40 +43,42 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
     }
 
     @Override
-    public void fillInnerFromDto(EventParticipant ado, EventParticipantDto dto) {
-        if (dto.getEvent() != null) {
-            ado.setEvent(DatabaseHelper.getEventDao().queryUuid(dto.getEvent().getUuid()));
+    public void fillInnerFromDto(EventParticipant target, EventParticipantDto source) {
+        if (source.getEvent() != null) {
+            target.setEvent(DatabaseHelper.getEventDao().queryUuid(source.getEvent().getUuid()));
         } else {
-            ado.setEvent(null);
+            target.setEvent(null);
         }
 
-        if (dto.getPerson() != null) {
-            ado.setPerson(DatabaseHelper.getPersonDao().queryUuid(dto.getPerson().getUuid()));
+        if (source.getPerson() != null) {
+            target.setPerson(DatabaseHelper.getPersonDao().queryUuid(source.getPerson().getUuid()));
         } else {
-            ado.setPerson(null);
+            target.setPerson(null);
         }
 
-        ado.setInvolvementDescription(dto.getInvolvementDescription());
+        target.setInvolvementDescription(source.getInvolvementDescription());
+
+        target.setResultingCaseUuid(source.getResultingCase() != null ? source.getResultingCase().getUuid() : null);
     }
 
     @Override
-    public void fillInnerFromAdo(EventParticipantDto dto, EventParticipant ado) {
+    public void fillInnerFromAdo(EventParticipantDto target, EventParticipant source) {
 
-        if (ado.getEvent() != null) {
-            Event event = DatabaseHelper.getEventDao().queryForId(ado.getEvent().getId());
-            dto.setEvent(EventDtoHelper.toReferenceDto(event));
+        if (source.getEvent() != null) {
+            Event event = DatabaseHelper.getEventDao().queryForId(source.getEvent().getId());
+            target.setEvent(EventDtoHelper.toReferenceDto(event));
         } else {
-            dto.setEvent(null);
+            target.setEvent(null);
         }
 
-        if (ado.getPerson() != null) {
-            Person person = DatabaseHelper.getPersonDao().queryForId(ado.getPerson().getId());
-            dto.setPerson(personHelper.adoToDto(person));
+        if (source.getPerson() != null) {
+            Person person = DatabaseHelper.getPersonDao().queryForId(source.getPerson().getId());
+            target.setPerson(personHelper.adoToDto(person));
         } else {
-            dto.setPerson(null);
+            target.setPerson(null);
         }
 
-        dto.setInvolvementDescription(ado.getInvolvementDescription());
+        target.setInvolvementDescription(source.getInvolvementDescription());
     }
 
     public static EventParticipantReferenceDto toReferenceDto(EventParticipant ado) {

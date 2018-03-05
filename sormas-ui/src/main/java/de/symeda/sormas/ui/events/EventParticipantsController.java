@@ -69,8 +69,7 @@ public class EventParticipantsController {
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> editView = new CommitDiscardWrapperComponent<EventParticipantEditForm>(editForm, editForm.getFieldGroup());
 
 		Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit person");
-        // visit form is too big for typical screens
-		window.setWidth(editForm.getWidth() + 40, Unit.PIXELS); 
+        // form is too big for typical screens
 		window.setHeight(80, Unit.PERCENTAGE); 
 		
 		editView.addCommitListener(new CommitListener() {

@@ -69,14 +69,14 @@
                     android:paddingBottom="@dimen/field_padding"
                     android:value="@={contact.contactClassification}"/>
 
-                <de.symeda.sormas.app.component.SpinnerField
+                <de.symeda.sormas.app.component.LabelField
                     android:id="@+id/contact_contactStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    android:value="@={contact.contactStatus}"/>
+                    app:enum="@{contact.contactStatus}"/>
 
             </LinearLayout>
 

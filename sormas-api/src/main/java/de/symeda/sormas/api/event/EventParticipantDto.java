@@ -18,7 +18,7 @@ public class EventParticipantDto extends EntityDto {
 	private EventReferenceDto event;
 	private PersonDto person;
 	private String involvementDescription;
-	private CaseReferenceDto resultingCase;
+	private CaseReferenceDto resultingCase; // read-only
 
 	public EventReferenceDto getEvent() {
 		return event;
@@ -51,7 +51,9 @@ public class EventParticipantDto extends EntityDto {
 	public CaseReferenceDto getResultingCase() {
 		return resultingCase;
 	}
-
+	/**
+	 * This should only be called when filling the DTO in the server backend!
+	 */
 	public void setResultingCase(CaseReferenceDto resultingCase) {
 		this.resultingCase = resultingCase;
 	}

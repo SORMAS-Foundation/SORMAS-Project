@@ -102,7 +102,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	    	contactOfficerField.addItems(FacadeProvider.getUserFacade().getAssignableUsersByDistrict(caseDto.getDistrict(), false, UserRole.CONTACT_OFFICER));
     	    	
     	    	getContent().removeComponent(TO_CASE_BTN_LOC);
-    	    	if (getValue().getResultingCase() == null) {
+    	    	if (getValue().getResultingCase() != null) {
     	    		// link to case
     		    	Link linkToData = ControllerProvider.getCaseController().createLinkToData(getValue().getResultingCase().getUuid(), 
     		    			"Open case of this contact person");
