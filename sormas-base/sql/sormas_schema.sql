@@ -2158,7 +2158,7 @@ BEGIN
 
 	_id = nextval('entity_seq');
 	-- this is not the same format as we are using in code (which is base32 with 4 seperators)
-	_uuid = upper(replace(md5(random()::text || clock_timestamp()::text)::uuid::text, '-', ''));
+	_uuid = upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29));
 
 	IF ((SELECT facility.id FROM facility WHERE facility.name = _name AND facility.region_id = _region_id AND facility.district_id = _district_id) IS NOT NULL) THEN
 		RAISE EXCEPTION 'facility % allready exists in district', _name;
