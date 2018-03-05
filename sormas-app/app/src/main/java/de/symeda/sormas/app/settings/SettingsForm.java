@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import java.net.ConnectException;
 
+import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -29,7 +30,10 @@ import de.symeda.sormas.app.util.SyncCallback;
  */
 public class SettingsForm extends FormTab {
 
+    private final int SHOW_DEV_OPTIONS_CLICK_LIMIT = 5;
+
     private SettingsFragmentLayoutBinding binding;
+    private int versionClickedCount;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -43,12 +47,26 @@ public class SettingsForm extends FormTab {
             }
         });
 
+        binding.sormasVersion.append(" " + InfoProvider.getVersion());
+        binding.sormasVersion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                versionClickedCount++;
+                if (versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT) {
+                    binding.devOptions.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
         return binding.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
+        versionClickedCount = 0;
+        binding.devOptions.setVisibility(View.GONE);
 
         boolean hasUser = ConfigProvider.getUser() != null;
         binding.configChangePIN.setVisibility(hasUser ? View.VISIBLE : View.GONE);
