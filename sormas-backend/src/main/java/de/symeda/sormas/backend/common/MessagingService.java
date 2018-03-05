@@ -26,14 +26,17 @@ public class MessagingService {
 
 	// Message subjects
 	public static final String SUBJECT_CASE_CLASSIFICATION_CHANGED = "caseClassificationChangedSubject";
+	public static final String SUBJECT_CASE_INVESTIGATION_DONE = "caseInvestigationDoneSubject";
 	public static final String SUBJECT_LAB_RESULT_ARRIVED = "labResultArrivedSubject";
 	public static final String SUBJECT_LAB_RESULT_SPECIFIED = "labResultSpecifiedSubject";
 	public static final String SUBJECT_CONTACT_SYMPTOMATIC = "contactSymptomaticSubject";
 	public static final String SUBJECT_TASK_START = "taskStartSubject";
 	public static final String SUBJECT_TASK_DUE = "taskDueSubject";
+	public static final String SUBJECT_VISIT_COMPLETED = "visitCompletedSubject";
 	
 	// Message contents (via properties file)
 	public static final String CONTENT_CASE_CLASSIFICATION_CHANGED = "caseClassificationChanged";
+	public static final String CONTENT_CASE_INVESTIGATION_DONE = "caseInvestigationDone";
 	public static final String CONTENT_LAB_RESULT_ARRIVED = "labResultArrived";
 	public static final String CONTENT_LAB_RESULT_SPECIFIED = "labResultSpecified";
 	public static final String CONTENT_CONTACT_SYMPTOMATIC = "contactSymptomatic";
@@ -41,6 +44,7 @@ public class MessagingService {
 	public static final String CONTENT_TASK_START_SPECIFIC = "taskStartSpecific";
 	public static final String CONTENT_TASK_DUE_GENERAL = "taskDueGeneral";
 	public static final String CONTENT_TASK_DUE_SPECIFIC = "taskDueSpecific";
+	public static final String CONTENT_VISIT_COMPLETED = "visitCompleted";
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessagingService.class);
 	

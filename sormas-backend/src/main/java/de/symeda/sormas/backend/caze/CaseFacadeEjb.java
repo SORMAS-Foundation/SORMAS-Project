@@ -498,6 +498,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				task.setTaskStatus(TaskStatus.REMOVED);
 				task.setStatusChangeDate(new Date());
 			}
+			
+			sendInvestigationDoneNotifications(caze);
 		} else {
 			// Remove the investigation date
 			caze.setInvestigatedDate(null);
@@ -547,6 +549,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			case DONE:
 				caze.setInvestigationStatus(InvestigationStatus.DONE);
 				caze.setInvestigatedDate(youngestTask.getStatusChangeDate());
+				sendInvestigationDoneNotifications(caze);
 				break;
 			case REMOVED:
 				caze.setInvestigationStatus(InvestigationStatus.DISCARDED);
@@ -739,6 +742,21 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
+	private void sendInvestigationDoneNotifications(Case caze) {
+		List<User> messageRecipients = userService.getAllByRegionAndUserRoles(caze.getRegion(), 
+				UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+		for (User recipient : messageRecipients) {
+			try {
+				messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_CASE_INVESTIGATION_DONE), 
+						String.format(I18nProperties.getMessage(MessagingService.CONTENT_CASE_INVESTIGATION_DONE), DataHelper.getShortUuid(caze.getUuid())), 
+						MessageType.EMAIL, MessageType.SMS);
+			} catch (NotificationDeliveryFailedException e) {
+				logger.error(String.format("NotificationDeliveryFailedException when trying to notify supervisors about the completion of a case investigation. "
+						+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
+			}
+		}
+	}
+	
 	@LocalBean
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {

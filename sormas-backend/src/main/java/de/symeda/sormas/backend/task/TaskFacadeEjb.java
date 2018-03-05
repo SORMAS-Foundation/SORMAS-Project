@@ -202,6 +202,21 @@ public class TaskFacadeEjb implements TaskFacade {
 		if (ado.getTaskType() == TaskType.CASE_INVESTIGATION) {
 			caseFacade.updateInvestigationByTask(ado.getCaze());
 		}
+		
+		if (ado.getTaskType() == TaskType.CONTACT_FOLLOW_UP && ado.getTaskStatus() == TaskStatus.DONE && ado.getContact() != null) {
+			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(ado.getContact().getCaze().getRegion(), 
+					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+			for (User recipient : messageRecipients) {
+				try {
+					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_VISIT_COMPLETED), 
+							String.format(I18nProperties.getMessage(MessagingService.CONTENT_VISIT_COMPLETED), DataHelper.getShortUuid(ado.getContact().getUuid()), DataHelper.getShortUuid(ado.getAssigneeUser().getUuid())), 
+							MessageType.EMAIL, MessageType.SMS);
+				} catch (NotificationDeliveryFailedException e) {
+					logger.error(String.format("NotificationDeliveryFailedException when trying to notify supervisors about the completion of a follow-up visit. "
+							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
+				}
+			}
+		}
 
 		return toDto(ado);	
 	}
