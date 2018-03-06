@@ -2183,10 +2183,57 @@ UPDATE schema_version SET upgradeNeeded=true WHERE version_number=95;
 GRANT SELECT, UPDATE ON TABLE schema_version TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (97, 'Add upgrade column to schema_version for backend upgrade logic #402');
-
 -- 2018-03-06 Restrict outbreak mode to CSM for now
 
 DELETE FROM outbreak WHERE NOT (disease = 'CSM');
 
 INSERT INTO schema_version (version_number, comment) VALUES (98, 'Restrict outbreak mode to CSM for now #489');
+-- 2018-03-06 Change export functions #507
+DROP FUNCTION export_database(text, text, text);
+DROP FUNCTION export_database_join(text, text, text, text, text, text);
 
+CREATE FUNCTION export_database(table_name text, file_path text)
+	RETURNS VOID
+	LANGUAGE plpgsql
+	SECURITY DEFINER
+	AS $BODY$
+		BEGIN
+			EXECUTE '
+				COPY (SELECT * FROM 
+					' || quote_ident(table_name) || '
+				) TO 
+					' || quote_literal(file_path) || '
+				WITH (
+					FORMAT CSV, DELIMITER '';'', HEADER
+				);
+			';
+		END;
+	$BODY$
+;
+
+CREATE FUNCTION export_database_join(table_name text, join_table_name text, column_name text, join_column_name text, file_path text)
+	RETURNS VOID
+	LANGUAGE plpgsql
+	SECURITY DEFINER
+	AS $BODY$
+		BEGIN
+			EXECUTE '
+				COPY (SELECT * FROM 
+					' || quote_ident(table_name) || ' 
+				INNER JOIN 
+					' || quote_ident(join_table_name) || ' 
+				ON 
+					' || column_name || ' 
+				= 
+					' || join_column_name || ' 
+				) TO 
+					' || quote_literal(file_path) || ' 
+				WITH (
+					FORMAT CSV, DELIMITER '';'', HEADER
+				);
+			';
+		END;
+	$BODY$
+;
+
+INSERT INTO schema_version (version_number, comment) VALUES (99, 'Change export functions #507');

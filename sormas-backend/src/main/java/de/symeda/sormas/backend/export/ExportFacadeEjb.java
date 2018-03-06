@@ -69,16 +69,17 @@ public class ExportFacadeEjb implements ExportFacade {
 	 */
 	private String createZipFromCsvFiles(List<DatabaseTable> databaseTables, String date, int randomNumber) throws ExportErrorException {
 		try {
-			String zipPath = configFacade.getExportPath() + "sormas_export_" + 
-					date + "_" + randomNumber + ".zip";
+			Path path = new File(configFacade.getExportPath()).toPath();
+			String name = "sormas_export_" + date + "_" + randomNumber + ".zip";
+			Path filePath = path.resolve(name);
+			String zipPath = filePath.toString();
 			FileOutputStream fos = new FileOutputStream(zipPath);
 			BufferedOutputStream bos = new BufferedOutputStream(fos);
 			ZipOutputStream zos = new ZipOutputStream(bos);
 
 			for (DatabaseTable databaseTable : databaseTables) {
-				File file = new File(configFacade.getExportPath(), "sormas_export_" + 
-						databaseTable.getFileName() + "_" + date + "_" + randomNumber + ".csv");
-				Path filePath = file.toPath();
+				name = "sormas_export_" + databaseTable.getFileName() + "_" + date + "_" + randomNumber + ".csv";
+				filePath = path.resolve(name);
 				zos.putNextEntry(new ZipEntry(databaseTable.getFileName() + ".csv"));
 				byte[] bytes = Files.readAllBytes(filePath);
 				zos.write(bytes, 0, bytes.length);

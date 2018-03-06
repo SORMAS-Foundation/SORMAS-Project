@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.statistics;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,15 +11,17 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinResponse;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -44,13 +47,13 @@ public class DatabaseExportView extends AbstractStatisticsView {
 
 		databaseTableToggles = new HashMap<>();
 		databaseExportLayout = new VerticalLayout();
+		HorizontalLayout headerLayout = new HorizontalLayout();
+		headerLayout.setSpacing(true);
 		Label infoLabel = new Label("Please select the database tables you want to export.");
-		HorizontalLayout blubb = new HorizontalLayout();
-		blubb.setSpacing(true);
-		blubb.addComponent(infoLabel);
-		blubb.setComponentAlignment(infoLabel, Alignment.MIDDLE_LEFT);
-		blubb.addComponent(createSelectionButtonsLayout());
-		databaseExportLayout.addComponent(blubb);
+		headerLayout.addComponent(infoLabel);
+		headerLayout.setComponentAlignment(infoLabel, Alignment.MIDDLE_LEFT);
+		headerLayout.addComponent(createSelectionButtonsLayout());
+		databaseExportLayout.addComponent(headerLayout);
 		databaseExportLayout.addComponent(createDatabaseTablesLayout());
 		Button exportButton = new Button("Export");
 		CssStyles.style(exportButton, ValoTheme.BUTTON_PRIMARY);
@@ -161,7 +164,6 @@ public class DatabaseExportView extends AbstractStatisticsView {
 			private static final long serialVersionUID = 1L;
 			@Override
 			protected void onConfirm() {
-				popupWindow.close();
 			}
 			@Override
 			protected void onCancel() {
@@ -173,7 +175,7 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		confirmButton.setCaption("Download");
 		CssStyles.style(confirmButton, ValoTheme.BUTTON_PRIMARY);
 		File zipFile = new File(zipPath);
-		StreamResource streamResource = DownloadUtil.createStreamResource(zipFile, zipPath.substring(zipPath.lastIndexOf("\\") + 1), "application/zip");
+		StreamResource streamResource = DownloadUtil.createStreamResource(zipFile, zipPath.substring(zipPath.lastIndexOf(File.separatorChar) + 1, zipPath.lastIndexOf("_")) + ".zip", "application/zip");
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(confirmButton);
 		

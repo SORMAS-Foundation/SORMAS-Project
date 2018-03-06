@@ -1,5 +1,8 @@
 package de.symeda.sormas.api.export;
 
+import java.io.File;
+import java.nio.file.Path;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 
@@ -83,7 +86,10 @@ public enum DatabaseTable {
 	 * that needs to be defined in the database is used. The path to save the .csv file to needs to be specified in the sormas.properties file.
 	 */
 	private String generateCsvExportQuery(String date, int randomNumber) {
-		return "SELECT export_database('" + tableName + "', '" + FacadeProvider.getConfigFacade().getExportPath() + "', '" + "sormas_export_" + fileName + "_" + date + "_" + randomNumber + ".csv');";
+		Path path = new File(FacadeProvider.getConfigFacade().getExportPath()).toPath();
+		String name = "sormas_export_" + fileName + "_" + date + "_" + randomNumber + ".csv";
+		Path filePath = path.resolve(name);
+		return "SELECT export_database('" + tableName + "', '" + filePath + "');";
 	}
 
 	/**
@@ -91,8 +97,11 @@ public enum DatabaseTable {
 	 * the symptoms of cases or visits to export two different tables for this data.
 	 */
 	private String generateCsvExportJoinQuery(String joinTableName, String columnName, String joinColumnName, String date, int randomNumber) {
+		Path path = new File(FacadeProvider.getConfigFacade().getExportPath()).toPath();
+		String name = "sormas_export_" + fileName + "_" + date + "_" + randomNumber + ".csv";
+		Path filePath = path.resolve(name);
 		return "SELECT export_database_join('" + tableName + "', '" + joinTableName + "', '" + columnName + "', '" + joinColumnName + "', '" + 
-				FacadeProvider.getConfigFacade().getExportPath() + "', '" + "sormas_export_" + fileName +  "_" + date + "_" + randomNumber + ".csv');";
+				filePath + "');";
 	}
 	
 	public DatabaseTableType getDatabaseTableType() {
