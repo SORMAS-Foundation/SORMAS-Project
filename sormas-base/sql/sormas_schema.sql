@@ -2183,3 +2183,10 @@ UPDATE schema_version SET upgradeNeeded=true WHERE version_number=95;
 GRANT SELECT, UPDATE ON TABLE schema_version TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (97, 'Add upgrade column to schema_version for backend upgrade logic #402');
+
+-- 2018-03-06 Restrict outbreak mode to CSM for now
+
+DELETE FROM outbreak WHERE NOT (disease = 'CSM');
+
+INSERT INTO schema_version (version_number, comment) VALUES (98, 'Restrict outbreak mode to CSM for now #489');
+

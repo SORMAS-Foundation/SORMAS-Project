@@ -39,61 +39,68 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 
 		user = LoginHelper.getCurrentUser();
 
-		addColumn(REGION, RegionReferenceDto.class);
+		addColumn(REGION, RegionReferenceDto.class).setMaximumWidth(200);
+		
 		for (Disease disease : Disease.values()) {
-			addColumn(disease, OutbreakRegionConfiguration.class);
-			getColumn(disease).setHeaderCaption(disease.toShortString());
-			getColumn(disease).setConverter(new Converter<String,OutbreakRegionConfiguration>() {
+			
+			if (!disease.isSupportingOutbreakMode()) {
+				continue;
+			}
+			
+			addColumn(disease, OutbreakRegionConfiguration.class)
+				.setMaximumWidth(200)
+				.setHeaderCaption(disease.toShortString())			
+				.setConverter(new Converter<String,OutbreakRegionConfiguration>() {
+					@Override
+					public OutbreakRegionConfiguration convertToModel(String value,
+							Class<? extends OutbreakRegionConfiguration> targetType, Locale locale)
+							throws ConversionException {
+				        throw new UnsupportedOperationException("Can only convert from OutbreakRegionConfiguration to String");
+					}
+	
+					@Override
+					public String convertToPresentation(OutbreakRegionConfiguration value,
+							Class<? extends String> targetType, Locale locale) throws ConversionException {
+		        		
+		        		boolean styleAsButton = LoginHelper.hasUserRight(UserRight.OUTBREAK_CONFIGURE_ALL) || 
+		        				(LoginHelper.hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED) && LoginHelper.getCurrentUser().getRegion().equals(value.getRegion()));
+		        		boolean moreThanHalfOfDistricts = value.getAffectedDistricts().size( )>= value.getTotalDistricts() / 2.0f;
+	
+	        			String styles;
+		        		if (styleAsButton) {
+		        			if (moreThanHalfOfDistricts) {
+		        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_BUTTON, CssStyles.BUTTON_CRITICAL);
+		        			} else if (!value.getAffectedDistricts().isEmpty()) {
+		        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_BUTTON, CssStyles.BUTTON_WARNING);
+		        			} else {
+		        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_BUTTON);
+		        			}
+		        			
+		        		} else {
+		        			if (moreThanHalfOfDistricts) {
+		        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_LABEL, CssStyles.LABEL_CRITICAL);
+		        			} else if (!value.getAffectedDistricts().isEmpty()) {
+		        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_LABEL, CssStyles.LABEL_WARNING);
+		        			} else {
+		        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_LABEL);
+		        			}
+		        		}
+	        			return LayoutUtil.divCss(styles, value.toString());
+					}
+	
+					@Override
+					public Class<OutbreakRegionConfiguration> getModelType() {
+						return OutbreakRegionConfiguration.class;
+					}
+	
+					@Override
+					public Class<String> getPresentationType() {
+						return String.class;
+					}
+					
+				})
+				.setRenderer(new HtmlRenderer());
 
-				@Override
-				public OutbreakRegionConfiguration convertToModel(String value,
-						Class<? extends OutbreakRegionConfiguration> targetType, Locale locale)
-						throws ConversionException {
-			        throw new UnsupportedOperationException("Can only convert from OutbreakRegionConfiguration to String");
-				}
-
-				@Override
-				public String convertToPresentation(OutbreakRegionConfiguration value,
-						Class<? extends String> targetType, Locale locale) throws ConversionException {
-	        		
-	        		boolean styleAsButton = LoginHelper.hasUserRight(UserRight.OUTBREAK_CONFIGURE_ALL) || 
-	        				(LoginHelper.hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED) && LoginHelper.getCurrentUser().getRegion().equals(value.getRegion()));
-	        		boolean moreThanHalfOfDistricts = value.getAffectedDistricts().size( )>= value.getTotalDistricts() / 2.0f;
-
-        			String styles;
-	        		if (styleAsButton) {
-	        			if (moreThanHalfOfDistricts) {
-	        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_BUTTON, CssStyles.BUTTON_CRITICAL);
-	        			} else if (!value.getAffectedDistricts().isEmpty()) {
-	        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_BUTTON, CssStyles.BUTTON_WARNING);
-	        			} else {
-	        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_BUTTON);
-	        			}
-	        			
-	        		} else {
-	        			if (moreThanHalfOfDistricts) {
-	        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_LABEL, CssStyles.LABEL_CRITICAL);
-	        			} else if (!value.getAffectedDistricts().isEmpty()) {
-	        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_LABEL, CssStyles.LABEL_WARNING);
-	        			} else {
-	        				styles = CssStyles.buildVaadinStyle(CssStyles.VAADIN_LABEL);
-	        			}
-	        		}
-        			return LayoutUtil.divCss(styles, value.toString());
-				}
-
-				@Override
-				public Class<OutbreakRegionConfiguration> getModelType() {
-					return OutbreakRegionConfiguration.class;
-				}
-
-				@Override
-				public Class<String> getPresentationType() {
-					return String.class;
-				}
-				
-			});
-			getColumn(disease).setRenderer(new HtmlRenderer());
 		}
 
 		setCellDescriptionGenerator(cell -> getCellDescription(cell));
@@ -152,6 +159,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		List<OutbreakDto> activeOutbreaks = FacadeProvider.getOutbreakFacade().getAllAfter(null);
 
 		for (OutbreakDto outbreak : activeOutbreaks) {
+			
 			DistrictReferenceDto outbreakDistrict = outbreak.getDistrict();
 			RegionReferenceDto outbreakRegion = FacadeProvider.getDistrictFacade().getDistrictByUuid(outbreakDistrict.getUuid()).getRegion();
 			Disease outbreakDisease = outbreak.getDisease();
@@ -166,6 +174,11 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		Item item = getContainerDataSource().addItem(region);
 		item.getItemProperty(REGION).setValue(region);
 		for (Disease disease : Disease.values()) {
+
+			if (!disease.isSupportingOutbreakMode()) {
+				continue;
+			}
+			
 			item.getItemProperty(disease).setValue(new OutbreakRegionConfiguration(disease, region, totalDistricts, new HashSet<>()));
 		}
 	}
