@@ -13,6 +13,9 @@ import java.util.regex.Pattern;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.joda.time.Months;
+import org.joda.time.Weeks;
 
 public final class DateHelper {
 
@@ -24,6 +27,7 @@ public final class DateHelper {
 	private static final SimpleDateFormat DATABASE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private static final SimpleDateFormat EXPORT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private static final SimpleDateFormat DATE_WITHOUT_YEAR_FORMAT = new SimpleDateFormat("dd/MM");
+	private static final SimpleDateFormat SHORT_DATE_WITHOUT_DAY_FORMAT = new SimpleDateFormat("MM/yy");
 	
 	public static String formatTime(Date date) {
 		if (date != null) {
@@ -113,6 +117,14 @@ public final class DateHelper {
 		}
 	}
 	
+	public static String formatShortDateWithoutDay(Date date) {
+		if (date != null) {
+			return clone(SHORT_DATE_WITHOUT_DAY_FORMAT).format(date);
+		} else {
+			return "";
+		}
+	}
+	
 	private static SimpleDateFormat clone(SimpleDateFormat sdf) {
 		return (SimpleDateFormat) sdf.clone();
 	}
@@ -135,7 +147,7 @@ public final class DateHelper {
      * @param year
      * @return
      */
-    public static Date getDateZero(int year, int month,int day) {
+    public static Date getDateZero(int year, int month, int day) {
         Calendar calendar = new GregorianCalendar();
         calendar.set(year,month,day,0,0,0);
         return calendar.getTime();
@@ -215,6 +227,18 @@ public final class DateHelper {
                 new LocalDate(end.getTime())).getDays();
 	}
 	
+	public static int getWeeksBetween(Date start, Date end) {
+		return Weeks.weeksBetween(
+				new LocalDate(start.getTime()),
+				new LocalDate(end.getTime())).getWeeks();
+	}
+	
+	public static int getMonthsBetween(Date start, Date end) {
+		return Months.monthsBetween(
+				new LocalDate(start.getTime()),
+				new LocalDate(end.getTime())).getMonths();
+	}
+	
 	public static Date addDays(Date date, int amountOfDays) {
 		return new LocalDate(date).plusDays(amountOfDays).toDate();
 	}
@@ -223,11 +247,53 @@ public final class DateHelper {
 		return new LocalDate(date).minusDays(amountOfDays).toDate();
 	}
 	
+	public static Date addWeeks(Date date, int amountOfWeeks) {
+		return new LocalDate(date).plusWeeks(amountOfWeeks).toDate();
+	}
+	
+	public static Date subtractWeeks(Date date, int amountOfWeeks) {
+		return new LocalDate(date).minusWeeks(amountOfWeeks).toDate();
+	}
+	
+	public static Date addMonths(Date date, int amountOfMonths) {
+		return new LocalDate(date).plusMonths(amountOfMonths).toDate();
+	}
+	
+	public static Date subtractMonths(Date date, int amountOfMonths) {
+		return new LocalDate(date).minusMonths(amountOfMonths).toDate();
+	}
+	
 	public static Date addSeconds(Date date, int amountOfSeconds) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		calendar.add(Calendar.SECOND, amountOfSeconds);
 		return calendar.getTime();
+	}
+	
+	public static Date getStartOfDay(Date date) {
+		return new LocalDateTime(date).withTime(0, 0, 0, 0).toDate();
+	}
+	
+	public static Date getEndOfDay(Date date) {
+		return new LocalDateTime(date).withTime(23, 59, 59, 999).toDate();
+	}
+	
+	public static Date getStartOfWeek(Date date) {
+		return new LocalDateTime(date).withDayOfWeek(1).toDate();
+	}
+	
+	public static Date getEndOfWeek(Date date) {
+		return new LocalDateTime(date).withDayOfWeek(7).toDate();
+	}
+	
+	public static Date getStartOfMonth(Date date) {
+		return new LocalDateTime(date).withDayOfMonth(1).toDate();
+	}
+	
+	public static Date getEndOfMonth(Date date) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		return new LocalDateTime(date).withDayOfMonth(calendar.getActualMaximum(Calendar.DAY_OF_MONTH)).toDate();
 	}
 	
 	/**

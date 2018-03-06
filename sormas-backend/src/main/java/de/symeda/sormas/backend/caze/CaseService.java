@@ -3,6 +3,8 @@ package de.symeda.sormas.backend.caze;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -17,10 +19,12 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.StatisticsCaseDto;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -142,18 +146,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		Predicate filter = createUserFilter(cb, cq, caze, user);
 
 		// Onset date > reception date > report date (use report date as a fallback if none of the other dates is available)
-		Predicate dateFilter = cb.or(
-				cb.between(symptoms.get(Symptoms.ONSET_DATE), from, to), 
-				cb.and(
-						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
-						cb.between(caze.get(Case.RECEPTION_DATE), from, to)
-				),
-				cb.and(
-						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
-						cb.isNull(caze.get(Case.RECEPTION_DATE)),
-						cb.between(caze.get(Case.REPORT_DATE), from, to)
-				)
-		);
+		Predicate dateFilter = createNewCaseFilter(cb, caze, from, to);
 		if (filter != null) {
 			filter = cb.and(filter, dateFilter);
 		} else {
@@ -317,10 +310,64 @@ public class CaseService extends AbstractAdoService<Case> {
 
 		return result;
 	}
+	
+	public Map<CaseClassification, Long> getNewCaseCountPerClassification(CaseCriteria caseCriteria, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> caze = cq.from(getElementClass());
+		
+		Predicate filter = createUserFilter(cb, cq, caze, user);
+		Predicate criteriaFilter = buildCriteriaFilter(caseCriteria, cb, caze);
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.groupBy(caze.get(Case.CASE_CLASSIFICATION));
+		cq.multiselect(caze.get(Case.CASE_CLASSIFICATION), cb.count(caze));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+		
+		Map<CaseClassification, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> (CaseClassification) e[0], e -> (Long) e[1]));
+		return resultMap;
+	}
+	
+	public Map<PresentCondition, Long> getNewCaseCountPerPersonCondition(CaseCriteria caseCriteria, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> caze = cq.from(getElementClass());
+		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
+		
+		Predicate filter = createUserFilter(cb, cq, caze, user);
+		Predicate criteriaFilter = buildCriteriaFilter(caseCriteria, cb, caze);
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.groupBy(person.get(Person.PRESENT_CONDITION));
+		cq.multiselect(person.get(Person.PRESENT_CONDITION), cb.count(caze));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+		
+		Map<PresentCondition, Long> resultMap = results.stream().collect(
+				Collectors.toMap(e -> (PresentCondition) e[0], e -> (Long) e[1]));
+		return resultMap;
+	}
 
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, User user) {
 		// National users can access all cases in the system
@@ -392,6 +439,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		return filter;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, Date date) {
 
@@ -461,7 +509,25 @@ public class CaseService extends AbstractAdoService<Case> {
 		}
 	}
 	
+	public Predicate createNewCaseFilter(CriteriaBuilder cb, Root<Case> caze, Date fromDate, Date toDate) {
+		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
+		Predicate filter = cb.or(cb.between(symptoms.get(Symptoms.ONSET_DATE), fromDate, toDate),
+				cb.and(
+						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
+						cb.between(caze.get(Case.RECEPTION_DATE), fromDate, toDate)
+				),
+				cb.and(
+						cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
+						cb.isNull(caze.get(Case.RECEPTION_DATE)),
+						cb.between(caze.get(Case.REPORT_DATE), fromDate, toDate)
+				)
+		);
+		
+		return filter;
+	}
+	
 	public Predicate buildCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, Root<Case> from) {
+		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
 			filter = and(cb, filter, cb.isMember(
@@ -473,6 +539,12 @@ public class CaseService extends AbstractAdoService<Case> {
 		}
 		if (caseCriteria.getOutcome() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
+		}
+		if (caseCriteria.getDistrict() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Case.DISTRICT), caseCriteria.getDistrict()));
+		}
+		if (caseCriteria.getNewCaseDateFrom() != null && caseCriteria.getNewCaseDateTo() != null) {
+			filter = and(cb, filter, createNewCaseFilter(cb, from, caseCriteria.getNewCaseDateFrom(), caseCriteria.getNewCaseDateTo()));
 		}
 		return filter;
 	}

@@ -1,27 +1,32 @@
 package de.symeda.sormas.ui.dashboard;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.Map;
+
+import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.DashboardCaseDto;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.highcharts.HighChart;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -33,8 +38,10 @@ public class EpiCurveComponent extends VerticalLayout {
 
 	// UI elements
 	private Label epiCurveDateLabel;
-	
+
 	// Others
+	private EpiCurveGrouping epiCurveGrouping;
+	private boolean showMinimumEntries;
 	private EpiCurveMode epiCurveMode;
 	private ClickListener externalExpandButtonListener;
 	private ClickListener externalCollapseButtonListener;
@@ -43,6 +50,8 @@ public class EpiCurveComponent extends VerticalLayout {
 		this.dashboardDataProvider = dashboardDataProvider;
 		epiCurveChart = new HighChart();
 		epiCurveChart.setSizeFull();
+		epiCurveGrouping = EpiCurveGrouping.WEEK;
+		showMinimumEntries = true;
 		epiCurveMode = EpiCurveMode.CASE_STATUS;
 		this.setMargin(true);
 
@@ -57,24 +66,34 @@ public class EpiCurveComponent extends VerticalLayout {
 		StringBuilder hcjs = new StringBuilder();
 		hcjs.append(
 				"var options = {"
-				+ "chart:{ "
-				+ " type: 'column', "
-				+ " backgroundColor: 'transparent' "
-				+ "},"
-				+ "credits:{ enabled: false },"
-				+ "exporting:{ "
-				+ " enabled: true,"
-				+ " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }"
-				+ "},"
-				+ "title:{ text: '' },"
+						+ "chart:{ "
+						+ " type: 'column', "
+						+ " backgroundColor: 'transparent' "
+						+ "},"
+						+ "credits:{ enabled: false },"
+						+ "exporting:{ "
+						+ " enabled: true,"
+						+ " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }"
+						+ "},"
+						+ "title:{ text: '' },"
 				);
 
 		// Creates and sets the labels for each day on the x-axis
 		List<Date> filteredDates = buildListOfFilteredDates();
 		List<String> newLabels = new ArrayList<>();
+		Calendar calendar = Calendar.getInstance();
 		for (Date date : filteredDates) {
-			String label = DateHelper.formatShortDate(date);
-			newLabels.add(label);
+			if (epiCurveGrouping == EpiCurveGrouping.DAY) {
+				String label = DateHelper.formatShortDate(date);
+				newLabels.add(label);
+			} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
+				calendar.setTime(date);
+				String label = DateHelper.getEpiWeek(date).toShortString();
+				newLabels.add(label);
+			} else {
+				String label = DateHelper.formatShortDateWithoutDay(date);
+				newLabels.add(label);
+			}
 		}
 
 		hcjs.append("xAxis: { categories: [");
@@ -98,51 +117,38 @@ public class EpiCurveComponent extends VerticalLayout {
 
 		if (epiCurveMode == EpiCurveMode.CASE_STATUS) {
 			// Adds the number of confirmed, probable and suspect cases for each day as data
-			List<DashboardCaseDto> cases = dashboardDataProvider.getCases();
-			List<DashboardCaseDto> confirmedCases = cases.stream()
-					.filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED)
-					.collect(Collectors.toList());
-			List<DashboardCaseDto> probableCases = cases.stream()
-					.filter(c -> c.getCaseClassification() == CaseClassification.PROBABLE)
-					.collect(Collectors.toList());
-			List<DashboardCaseDto> suspectedCases = cases.stream()
-					.filter(c -> c.getCaseClassification() == CaseClassification.SUSPECT)
-					.collect(Collectors.toList());
-			List<DashboardCaseDto> notYetClassifiedCases = cases.stream()
-					.filter(c -> c.getCaseClassification() == CaseClassification.NOT_CLASSIFIED)
-					.collect(Collectors.toList());
-	
 			int[] confirmedNumbers = new int[newLabels.size()];
 			int[] probableNumbers = new int[newLabels.size()];
 			int[] suspectNumbers = new int[newLabels.size()];
 			int[] notYetClassifiedNumbers = new int[newLabels.size()];
-	
-			
+
 			for (int i = 0; i < filteredDates.size(); i++) {
 				Date date = filteredDates.get(i);
-				
-				Predicate<DashboardCaseDto> countFilter = c -> c.getOnsetDate() != null ? DateHelper.isSameDay(c.getOnsetDate(), date) : 
-					c.getReceptionDate() != null ? DateHelper.isSameDay(c.getReceptionDate(),  date) :
-						DateHelper.isSameDay(c.getReportDate(), date);
-					
-				int confirmedCasesAtDate = (int) confirmedCases.stream()
-						.filter(countFilter)
-						.count();
-				confirmedNumbers[i] = confirmedCasesAtDate;
-				int probableCasesAtDate = (int) probableCases.stream()
-						.filter(countFilter)
-						.count();
-				probableNumbers[i] = probableCasesAtDate;
-				int suspectCasesAtDate = (int) suspectedCases.stream()
-						.filter(countFilter)
-						.count();
-				suspectNumbers[i] = suspectCasesAtDate;
-				int notYetClassifiedCasesAtDate = (int) notYetClassifiedCases.stream()
-						.filter(countFilter)
-						.count();
-				notYetClassifiedNumbers[i] = notYetClassifiedCasesAtDate;
+
+				CaseCriteria caseCriteria = new CaseCriteria()
+						.diseaseEquals(dashboardDataProvider.getDisease())
+						.districtEquals(dashboardDataProvider.getDistrict());
+				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
+					caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
+				} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
+					caseCriteria.newCaseDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date));
+				} else {
+					caseCriteria.newCaseDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date));
+				}
+
+				Map<CaseClassification, Long> caseCounts = FacadeProvider.getCaseFacade()
+						.getNewCaseCountPerClassification(caseCriteria, LoginHelper.getCurrentUser().getUuid());
+
+				Long confirmedCount = caseCounts.get(CaseClassification.CONFIRMED);
+				Long probableCount = caseCounts.get(CaseClassification.PROBABLE);
+				Long suspectCount = caseCounts.get(CaseClassification.SUSPECT);
+				Long notYetClassifiedCount = caseCounts.get(CaseClassification.NOT_CLASSIFIED);
+				confirmedNumbers[i] = confirmedCount != null ? confirmedCount.intValue() : 0;
+				probableNumbers[i] = probableCount != null ? probableCount.intValue() : 0;
+				suspectNumbers[i] = suspectCount != null ? suspectCount.intValue() : 0;
+				notYetClassifiedNumbers[i] = notYetClassifiedCount != null ? notYetClassifiedCount.intValue() : 0;
 			}
-	
+
 			hcjs.append("series: [");
 			hcjs.append("{ name: 'Confirmed', color: '#B22222', dataLabels: { allowOverlap: false }, data: [");
 			for (int i = 0; i < confirmedNumbers.length; i++) {
@@ -178,34 +184,32 @@ public class EpiCurveComponent extends VerticalLayout {
 			}
 		} else {
 			// Adds the number of alive and dead cases for each day as data
-			List<DashboardCaseDto> cases = dashboardDataProvider.getCases();
-			List<DashboardCaseDto> aliveCases = cases.stream()
-					.filter(c -> c.getCasePersonCondition() == PresentCondition.ALIVE)
-					.collect(Collectors.toList());
-			List<DashboardCaseDto> deadCases = cases.stream()
-					.filter(c -> c.getCasePersonCondition() == PresentCondition.DEAD)
-					.collect(Collectors.toList());
-			
 			int[] aliveNumbers = new int[newLabels.size()];
 			int[] deadNumbers = new int[newLabels.size()];
-			
+
 			for (int i = 0; i < filteredDates.size(); i++) {
 				Date date = filteredDates.get(i);
 
-				Predicate<DashboardCaseDto> countFilter = c -> c.getOnsetDate() != null ? DateHelper.isSameDay(c.getOnsetDate(), date) : 
-					c.getReceptionDate() != null ? DateHelper.isSameDay(c.getReceptionDate(),  date) :
-						DateHelper.isSameDay(c.getReportDate(), date);
-				
-				int aliveCasesAtDate = (int) aliveCases.stream()
-						.filter(countFilter)
-						.count();
-				aliveNumbers[i] = aliveCasesAtDate;
-				int deadCasesAtDate = (int) deadCases.stream()
-						.filter(countFilter)
-						.count();
-				deadNumbers[i] = deadCasesAtDate;
+				CaseCriteria caseCriteria = new CaseCriteria()
+						.diseaseEquals(dashboardDataProvider.getDisease())
+						.districtEquals(dashboardDataProvider.getDistrict());
+				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
+					caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
+				} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
+					caseCriteria.newCaseDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date));
+				} else {
+					caseCriteria.newCaseDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date));
+				}
+
+				Map<PresentCondition, Long> caseCounts = FacadeProvider.getCaseFacade()
+						.getNewCaseCountPerPersonCondition(caseCriteria, LoginHelper.getCurrentUser().getUuid());
+
+				Long aliveCount = caseCounts.get(PresentCondition.ALIVE);
+				Long deadCount = caseCounts.get(PresentCondition.DEAD);
+				aliveNumbers[i] = aliveCount != null ? aliveCount.intValue() : 0;
+				deadNumbers[i] = deadCount != null ? deadCount.intValue() : 0;
 			}
-			
+
 			hcjs.append("series: [");
 			hcjs.append("{ name: 'Alive', color: '#32CD32', dataLabels: { allowOverlap: false }, data: [");
 			for (int i = 0; i < aliveNumbers.length; i++) {
@@ -252,11 +256,11 @@ public class EpiCurveComponent extends VerticalLayout {
 	public void setExpandListener(ClickListener listener) {
 		externalExpandButtonListener = listener;
 	}
-	
+
 	public void setCollapseListener(ClickListener listener) {
 		externalCollapseButtonListener = listener;
 	}
-	
+
 	private HorizontalLayout createHeader() {
 		HorizontalLayout epiCurveHeaderLayout = new HorizontalLayout();
 		epiCurveHeaderLayout.setWidth(100, Unit.PERCENTAGE);
@@ -282,6 +286,41 @@ public class EpiCurveComponent extends VerticalLayout {
 		epiCurveHeaderLayout.setComponentAlignment(epiCurveLabelLayout, Alignment.BOTTOM_LEFT);
 		epiCurveHeaderLayout.setExpandRatio(epiCurveLabelLayout, 1);
 
+		// Grouping
+		PopupButton groupingDropdown = new PopupButton("Grouping");
+		CssStyles.style(groupingDropdown, CssStyles.BUTTON_SUBTLE);
+		{
+			VerticalLayout groupingLayout = new VerticalLayout();
+			groupingLayout.setMargin(true);
+			groupingLayout.setSizeUndefined();
+			groupingDropdown.setContent(groupingLayout);
+
+			// Grouping option group
+			OptionGroup groupingSelect = new OptionGroup();
+			groupingSelect.setWidth(100, Unit.PERCENTAGE);
+			groupingSelect.addItems((Object[]) EpiCurveGrouping.values());
+			groupingSelect.setValue(epiCurveGrouping);
+			groupingSelect.addValueChangeListener(e -> {
+				epiCurveGrouping = (EpiCurveGrouping) e.getProperty().getValue();
+				clearAndFillEpiCurveChart();
+			});
+			groupingLayout.addComponent(groupingSelect);
+
+			// "Always show at least 7 entries" checkbox
+			CheckBox minimumEntriesCheckbox = new CheckBox("Always show at least 7 entries");
+			CssStyles.style(minimumEntriesCheckbox, CssStyles.VSPACE_NONE);
+			minimumEntriesCheckbox.setValue(showMinimumEntries);
+			minimumEntriesCheckbox.addValueChangeListener(e -> {
+				showMinimumEntries = (boolean) e.getProperty().getValue();
+				clearAndFillEpiCurveChart();
+			});
+			groupingLayout.addComponent(minimumEntriesCheckbox);
+
+			groupingDropdown.setContent(groupingLayout);
+		}
+		epiCurveHeaderLayout.addComponent(groupingDropdown);
+		epiCurveHeaderLayout.setComponentAlignment(groupingDropdown, Alignment.MIDDLE_RIGHT);
+
 		// Epi curve mode option
 		OptionGroup epiCurveModeOptionGroup = new OptionGroup();
 		epiCurveModeOptionGroup.setMultiSelect(false);
@@ -296,10 +335,10 @@ public class EpiCurveComponent extends VerticalLayout {
 		epiCurveHeaderLayout.setComponentAlignment(epiCurveModeOptionGroup, Alignment.MIDDLE_RIGHT);
 
 		// "Expand" and "Collapse" buttons
-		Button expandEpiCurveButton = new Button("Expand epi curve", FontAwesome.EXPAND);
+		Button expandEpiCurveButton = new Button("", FontAwesome.EXPAND);
 		CssStyles.style(expandEpiCurveButton, CssStyles.BUTTON_SUBTLE);
 		expandEpiCurveButton.addStyleName(CssStyles.VSPACE_NONE);   
-		Button collapseEpiCurveButton = new Button("Collapse epi curve", FontAwesome.COMPRESS);
+		Button collapseEpiCurveButton = new Button("", FontAwesome.COMPRESS);
 		CssStyles.style(collapseEpiCurveButton, CssStyles.BUTTON_SUBTLE);
 		collapseEpiCurveButton.addStyleName(CssStyles.VSPACE_NONE);
 
@@ -322,23 +361,48 @@ public class EpiCurveComponent extends VerticalLayout {
 	}
 
 	/**
-	 * Builds a list that contains an object for each day between the from and to dates
+	 * Builds a list that contains an object for each day, week or month between the from and to dates. 
+	 * Additional previous days, weeks or months might be added when showMinimumEntries is true.
 	 * @return
 	 */
 	private List<Date> buildListOfFilteredDates() {
 		List<Date> filteredDates = new ArrayList<>();
-		if (dashboardDataProvider.getDateFilterOption() == DateFilterOption.DATE) {
-			Date currentDate = new Date(dashboardDataProvider.getFromDate().getTime());
-			while (!currentDate.after(dashboardDataProvider.getToDate())) {
+		DateFilterOption dateFilterOption = dashboardDataProvider.getDateFilterOption();
+		Date fromDate = dateFilterOption == DateFilterOption.DATE ? DateHelper.getStartOfDay(dashboardDataProvider.getFromDate()) :
+			DateHelper.getStartOfDay(DateHelper.getEpiWeekStart(dashboardDataProvider.getFromWeek()));
+		Date toDate = dateFilterOption == DateFilterOption.DATE ? DateHelper.getEndOfDay(dashboardDataProvider.getToDate()) :
+			DateHelper.getEndOfDay(DateHelper.getEpiWeekEnd(dashboardDataProvider.getToWeek()));
+		Date currentDate;
+
+		if (epiCurveGrouping == EpiCurveGrouping.DAY) {
+			if (!showMinimumEntries || DateHelper.getDaysBetween(fromDate, toDate) >= 7) {
+				currentDate = fromDate;
+			} else {
+				currentDate = DateHelper.subtractDays(toDate, 6);
+			}
+			while (!currentDate.after(toDate)) {
 				filteredDates.add(currentDate);
 				currentDate = DateHelper.addDays(currentDate, 1);
 			}
-		} else {
-			Date currentDate = DateHelper.getEpiWeekStart(dashboardDataProvider.getFromWeek());
-			Date targetDate = DateHelper.getEpiWeekEnd(dashboardDataProvider.getToWeek());
-			while (!currentDate.after(targetDate)) {
+		} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
+			if (!showMinimumEntries || DateHelper.getWeeksBetween(fromDate, toDate) >= 7) {
+				currentDate = fromDate;
+			} else {
+				currentDate = DateHelper.subtractWeeks(toDate, 6);
+			}
+			while (!currentDate.after(toDate)) {
 				filteredDates.add(currentDate);
-				currentDate = DateHelper.addDays(currentDate, 1);
+				currentDate = DateHelper.addWeeks(currentDate, 1);
+			}
+		} else if (epiCurveGrouping == EpiCurveGrouping.MONTH) {
+			if (!showMinimumEntries || DateHelper.getMonthsBetween(fromDate, toDate) >= 7) {
+				currentDate = fromDate;
+			} else {
+				currentDate = DateHelper.subtractMonths(toDate, 6);
+			}
+			while (!currentDate.after(toDate)) {
+				filteredDates.add(currentDate);
+				currentDate = DateHelper.addMonths(currentDate, 1);
 			}
 		}
 

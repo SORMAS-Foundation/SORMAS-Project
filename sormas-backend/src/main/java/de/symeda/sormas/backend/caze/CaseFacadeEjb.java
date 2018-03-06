@@ -30,6 +30,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.PlagueType;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
@@ -41,6 +42,7 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.StatisticsCaseDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -248,7 +250,21 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		return caseService.getCasesForStatistics(region, district, disease, from, to, user);
 	}
+	
+	@Override
+	public Map<CaseClassification, Long> getNewCaseCountPerClassification(CaseCriteria caseCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		return caseService.getNewCaseCountPerClassification(caseCriteria, user);
+	}
 
+	@Override
+	public Map<PresentCondition, Long> getNewCaseCountPerPersonCondition(CaseCriteria caseCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		return caseService.getNewCaseCountPerPersonCondition(caseCriteria, user);
+	}
+	
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
 		return toDto(caseService.getByUuid(uuid));
