@@ -91,7 +91,7 @@ public class EpiCurveComponent extends VerticalLayout {
 				String label = DateHelper.getEpiWeek(date).toShortString();
 				newLabels.add(label);
 			} else {
-				String label = DateHelper.formatShortDateWithoutDay(date);
+				String label = DateHelper.formatDateWithMonthAbbreviation(date);
 				newLabels.add(label);
 			}
 		}

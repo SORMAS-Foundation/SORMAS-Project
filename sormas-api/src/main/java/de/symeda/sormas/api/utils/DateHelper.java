@@ -27,7 +27,7 @@ public final class DateHelper {
 	private static final SimpleDateFormat DATABASE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private static final SimpleDateFormat EXPORT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private static final SimpleDateFormat DATE_WITHOUT_YEAR_FORMAT = new SimpleDateFormat("dd/MM");
-	private static final SimpleDateFormat SHORT_DATE_WITHOUT_DAY_FORMAT = new SimpleDateFormat("MM/yy");
+	private static final SimpleDateFormat DATE_WITH_MONTH_ABBREVIATION_FORMAT = new SimpleDateFormat("MMM YYYY");
 	
 	public static String formatTime(Date date) {
 		if (date != null) {
@@ -117,9 +117,9 @@ public final class DateHelper {
 		}
 	}
 	
-	public static String formatShortDateWithoutDay(Date date) {
+	public static String formatDateWithMonthAbbreviation(Date date) {
 		if (date != null) {
-			return clone(SHORT_DATE_WITHOUT_DAY_FORMAT).format(date);
+			return clone(DATE_WITH_MONTH_ABBREVIATION_FORMAT).format(date);
 		} else {
 			return "";
 		}
