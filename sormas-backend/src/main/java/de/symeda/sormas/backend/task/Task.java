@@ -27,6 +27,8 @@ public class Task extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -4754578341242164661L;
 
+	public static final String TABLE_NAME = "task";
+	
 	public static final String ASSIGNEE_REPLY = "assigneeReply";
 	public static final String ASSIGNEE_USER = "assigneeUser";
 	public static final String CAZE = "caze";

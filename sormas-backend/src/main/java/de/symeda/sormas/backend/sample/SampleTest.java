@@ -23,6 +23,8 @@ import de.symeda.sormas.backend.user.User;
 public class SampleTest extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 2290351143518627813L;
+
+	public static final String TABLE_NAME = "sampletest";
 	
 	public static final String SAMPLE = "sample";
 	public static final String TEST_TYPE = "testType";

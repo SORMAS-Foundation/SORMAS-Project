@@ -1,18 +1,14 @@
 package de.symeda.sormas.ui.statistics;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinResponse;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -21,17 +17,13 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.export.DatabaseTable;
 import de.symeda.sormas.api.export.DatabaseTableType;
-import de.symeda.sormas.api.utils.ExportErrorException;
-import de.symeda.sormas.ui.utils.ConfirmationComponent;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class DatabaseExportView extends AbstractStatisticsView {
 
@@ -55,25 +47,11 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		headerLayout.addComponent(createSelectionButtonsLayout());
 		databaseExportLayout.addComponent(headerLayout);
 		databaseExportLayout.addComponent(createDatabaseTablesLayout());
-		Button exportButton = new Button("Export");
+		Button exportButton = new Button("Export", FontAwesome.DOWNLOAD);
 		CssStyles.style(exportButton, ValoTheme.BUTTON_PRIMARY);
-
-		exportButton.addClickListener(e -> {
-			List<DatabaseTable> tablesToExport = new ArrayList<>();
-			for (CheckBox checkBox : databaseTableToggles.keySet()) {
-				if (checkBox.getValue() == true) {
-					tablesToExport.add(databaseTableToggles.get(checkBox));
-				}
-			}
-			
-			try {
-				String zipPath = FacadeProvider.getExportFacade().generateDatabaseExportArchive(tablesToExport);
-				showDownloadDatabaseDialog(zipPath);
-			} catch (ExportErrorException ex) {
-				new Notification("Database export failed", "Please contact an admin and notify them about this problem.", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
-			}
-		});
-
+		StreamResource streamResource = DownloadUtil.createDatabaseExportStreamResource(this, "sormas_export_" + DateHelper.formatDateForExport(new Date()) + ".zip", "application/zip");
+		FileDownloader fileDownloader = new FileDownloader(streamResource);
+		fileDownloader.extend(exportButton);
 		databaseExportLayout.addComponent(exportButton);
 		databaseExportLayout.setMargin(true);
 		databaseExportLayout.setSpacing(true);
@@ -81,9 +59,14 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		addComponent(databaseExportLayout);
 	}
 
+	public void showExportErrorNotification() {
+		new Notification("Database export failed", "Please contact an admin and notify them about this problem.", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+	}
+	
 	private HorizontalLayout createSelectionButtonsLayout() {
 		HorizontalLayout selectionButtonsLayout = new HorizontalLayout();
 		selectionButtonsLayout.setSpacing(true);
+		
 		Button selectAll = new Button("Select all");
 		CssStyles.style(selectAll, ValoTheme.BUTTON_LINK);
 		selectAll.addClickListener(e -> {
@@ -92,6 +75,18 @@ public class DatabaseExportView extends AbstractStatisticsView {
 			}
 		});
 		selectionButtonsLayout.addComponent(selectAll);
+		
+		Button selectAllSormasData = new Button("Select all SORMAS data");
+		CssStyles.style(selectAllSormasData, ValoTheme.BUTTON_LINK);
+		selectAllSormasData.addClickListener(e -> {
+			for (CheckBox checkBox : databaseTableToggles.keySet()) {
+				if (databaseTableToggles.get(checkBox).getDatabaseTableType() == DatabaseTableType.SORMAS) {
+					checkBox.setValue(true);
+				}
+			}
+		});
+		selectionButtonsLayout.addComponent(selectAllSormasData);
+		
 		Button deselectAll = new Button ("Deselect all");
 		CssStyles.style(deselectAll, ValoTheme.BUTTON_LINK);
 		deselectAll.addClickListener(e -> {
@@ -100,6 +95,7 @@ public class DatabaseExportView extends AbstractStatisticsView {
 			}
 		});
 		selectionButtonsLayout.addComponent(deselectAll);
+		
 		return selectionButtonsLayout;
 	}
 
@@ -148,49 +144,13 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		return indent;
 	}
 
-	private void showDownloadDatabaseDialog(final String zipPath) {
-		Window popupWindow = VaadinUiUtil.createPopupWindow();
-		popupWindow.setWidth(640, Unit.PIXELS);
-		popupWindow.setCaption("Download database export");
-		
-		VerticalLayout popupContent = new VerticalLayout();
-		popupContent.setSpacing(true);
-		popupContent.setMargin(true);
-		
-		Label infoLabel = new Label("The database export has been successfully generated. Please click the 'Download' button below to save the export to your computer.");
-		popupContent.addComponent(infoLabel);
-		
-		ConfirmationComponent confirmationComponent = new ConfirmationComponent() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			protected void onConfirm() {
-			}
-			@Override
-			protected void onCancel() {
-				popupWindow.close();
-			}
-		};
-
-		Button confirmButton = confirmationComponent.getConfirmButton();
-		confirmButton.setCaption("Download");
-		CssStyles.style(confirmButton, ValoTheme.BUTTON_PRIMARY);
-		File zipFile = new File(zipPath);
-		StreamResource streamResource = DownloadUtil.createStreamResource(zipFile, zipPath.substring(zipPath.lastIndexOf(File.separatorChar) + 1, zipPath.lastIndexOf("_")) + ".zip", "application/zip");
-		FileDownloader fileDownloader = new FileDownloader(streamResource);
-		fileDownloader.extend(confirmButton);
-		
-		confirmationComponent.getCancelButton().setCaption("Cancel");	
-		
-		popupContent.addComponent(confirmationComponent);
-		popupContent.setComponentAlignment(confirmationComponent, Alignment.BOTTOM_RIGHT);		
-		
-		popupWindow.setContent(popupContent);
-		getUI().addWindow(popupWindow);
-	}
-
 	@Override
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
+	}
+
+	public Map<CheckBox, DatabaseTable> getDatabaseTableToggles() {
+		return databaseTableToggles;
 	}
 
 }

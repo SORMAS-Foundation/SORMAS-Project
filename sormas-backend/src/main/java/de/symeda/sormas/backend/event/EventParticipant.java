@@ -16,6 +16,8 @@ public class EventParticipant extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -9006001699517297107L;
 
+	public static final String TABLE_NAME = "eventparticipant";
+	
 	public static final String EVENT = "event";
 	public static final String PERSON = "person";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";

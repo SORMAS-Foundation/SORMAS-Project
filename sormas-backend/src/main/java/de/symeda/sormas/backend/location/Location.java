@@ -17,6 +17,8 @@ public class Location extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = 392776645668778670L;
 
+	public static final String TABLE_NAME = "location";
+	
 	public static final String ADDRESS = "address";
 	public static final String DETAILS = "details";
 	public static final String CITY = "city";

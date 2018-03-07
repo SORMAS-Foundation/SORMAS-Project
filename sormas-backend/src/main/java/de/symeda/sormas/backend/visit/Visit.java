@@ -27,6 +27,8 @@ public class Visit extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -5731538672268784234L;
 
+	public static final String TABLE_NAME = "visit";
+	
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
 	public static final String VISIT_DATE_TIME = "visitDateTime";

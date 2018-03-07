@@ -22,6 +22,8 @@ public class Hospitalization extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -8576270649634034244L;
 
+	public static final String TABLE_NAME = "hospitalization";
+	
 	public static final String ADMISSION_DATE = "admissionDate";
 	public static final String DISCHARGE_DATE = "dischargeDate";
 	public static final String ISOLATED = "isolated";

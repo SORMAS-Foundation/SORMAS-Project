@@ -32,6 +32,8 @@ public class Contact extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
+	public static final String TABLE_NAME = "contact";
+	
 	public static final String PERSON = "person";
 	public static final String CAZE = "caze";
 	public static final String REPORT_DATE_TIME = "reportDateTime";

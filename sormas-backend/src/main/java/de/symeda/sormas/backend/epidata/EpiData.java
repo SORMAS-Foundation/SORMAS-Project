@@ -24,6 +24,8 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 public class EpiData extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -8294812479501735785L;
+
+	public static final String TABLE_NAME = "epidata";
 	
 	public static final String BURIAL_ATTENDED = "burialAttended";
 	public static final String BURIALS = "burials";

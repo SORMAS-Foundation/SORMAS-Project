@@ -20,6 +20,8 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 public class EpiDataTravel extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -4280455878066233175L;
+
+	public static final String TABLE_NAME = "epidatatravel";
 	
 	public static final String TRAVEL_TYPE = "travelType";
 	public static final String TRAVEL_DESTINATION = "travelDestination";
