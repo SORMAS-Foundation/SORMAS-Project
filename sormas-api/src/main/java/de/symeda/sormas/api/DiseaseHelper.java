@@ -4,7 +4,7 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 
 public class DiseaseHelper {
-	
+
 	/**
 	 * Checks whether the given symptoms match the clinical criteria of one of the three Plague types.
 	 * 
@@ -30,31 +30,34 @@ public class DiseaseHelper {
 
 	public static boolean hasContactFollowUp(Disease disease, PlagueType plagueType) {
 		return disease == Disease.EVD || disease == Disease.LASSA || disease == Disease.AVIAN_INFLUENCA 
-				|| disease == Disease.MONKEYPOX || (disease == Disease.PLAGUE && plagueType == PlagueType.PNEUMONIC) 
-				|| disease == Disease.OTHER;
+				|| disease == Disease.MONKEYPOX || (disease == Disease.PLAGUE) || disease == Disease.OTHER;
 	}
-	
+
 	public static int getIncubationPeriodDays(Disease disease, PlagueType plagueType) {
-		
+
 		if (disease == null) {
 			return 21; // max
 		}
 
 		switch(disease) {
 		case EVD:
+		case MEASLES:
 		case MONKEYPOX:
 		case OTHER:
 			return 21;
 		case AVIAN_INFLUENCA:
 			return 17;
+		case DENGUE:
+			return 14;
+		case CSM:
+			return 10;
 		case PLAGUE:
-			if (plagueType == PlagueType.PNEUMONIC) {
-				return 7;
-			} else {
-				return 7; // worst case
-			}
+			return 7;
 		case LASSA:
+		case YELLOW_FEVER:
 			return 6;
+		case CHOLERA:
+			return 5;
 		default:
 			return 21; // max
 		}
