@@ -44,7 +44,7 @@ public class DownloadUtil {
 					throw new RuntimeException(e.getMessage(), e);
 				} catch (ExportErrorException e) {
 					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
-					// is not automatically updated; this should be changed once Vaadin push is enabled
+					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
 					databaseExportView.showExportErrorNotification();
 					return null;
 				}

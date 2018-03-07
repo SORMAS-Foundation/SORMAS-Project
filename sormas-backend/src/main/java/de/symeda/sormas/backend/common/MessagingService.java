@@ -2,8 +2,10 @@ package de.symeda.sormas.backend.common;
 
 import java.io.IOException;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.mail.MessagingException;
 
@@ -47,6 +49,9 @@ public class MessagingService {
 	public static final String CONTENT_VISIT_COMPLETED = "visitCompleted";
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessagingService.class);
+
+	@Resource
+	private SessionContext sessionContext;
 	
 	@EJB
 	private EmailService emailService;
@@ -58,7 +63,11 @@ public class MessagingService {
 	 * email address and/or phone number. Logs an error if the email address or phone number is not set.
 	 */
 	public void sendMessage(User recipient, String subject, String messageContent, MessageType... messageTypes) throws NotificationDeliveryFailedException {
-
+		// Don't send notifications to users that initiated an action
+		if (recipient.getUserName().equals(sessionContext.getCallerPrincipal().getName())) {
+			return;
+		}
+		
 		String emailAddress = recipient.getUserEmail();
 		String phoneNumber = recipient.getPhone();
 		

@@ -147,7 +147,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	private MessagingService messagingService;
 	@EJB
 	private EventParticipantService eventParticipantService;
-	
 
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
 
@@ -313,7 +312,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}		
 
-		updateInvestigationByStatus(newCase);
+		updateInvestigationByStatus(existingCase, newCase);
 	
 		// Send an email to all responsible supervisors when the case classification has changed
 		if (existingCase != null && existingCase.getCaseClassification() != newCase.getCaseClassification()) {
@@ -557,7 +556,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		return target;
 	}
 
-	public void updateInvestigationByStatus(Case caze) {
+	public void updateInvestigationByStatus(CaseDataDto existingCase, Case caze) {
 		CaseReferenceDto caseRef = caze.toReference();
 		InvestigationStatus investigationStatus = caze.getInvestigationStatus();
 
@@ -578,7 +577,10 @@ public class CaseFacadeEjb implements CaseFacade {
 				task.setStatusChangeDate(new Date());
 			}
 			
-			sendInvestigationDoneNotifications(caze);
+			if (caze.getInvestigationStatus() == InvestigationStatus.DONE 
+					&& existingCase.getInvestigationStatus() != InvestigationStatus.DONE) {
+				sendInvestigationDoneNotifications(caze);
+			}
 		} else {
 			// Remove the investigation date
 			caze.setInvestigatedDate(null);
