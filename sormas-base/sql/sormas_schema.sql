@@ -2237,3 +2237,15 @@ CREATE FUNCTION export_database_join(table_name text, join_table_name text, colu
 ;
 
 INSERT INTO schema_version (version_number, comment) VALUES (99, 'Change export functions #507');
+
+-- 2018-03-09 Create history table for event participant #509
+ALTER TABLE eventparticipant ADD COLUMN sys_period tstzrange;
+UPDATE eventparticipant SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE eventparticipant ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE eventparticipant_history (LIKE eventparticipant);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON eventparticipant
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'eventparticipant_history', true);
+ALTER TABLE eventparticipant_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (100, 'Create history table for event participant #509');
