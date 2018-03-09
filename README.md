@@ -67,7 +67,7 @@ For information on what libs are used see pom.xml in sormas-base project: https:
     * Edit sql/sormas_schema.sql
         * ``Remove everything until after the INSERT with the read schema version``
         * ``Surround the remaining with BEGIN; and COMMIT;``
-    * Update the Database schema: ``psql -U sormas_user -W sormas_db < sql/sormas_schema.sql``
+    * Update the Database schema: ``psql -U sormas_user -h localhost -W sormas_db < sql/sormas_schema.sql``
 * If something goes wrong, restorte the database using ``pg_restore -U sormas_user -Fc -d sormas_db < sormas_db_....``
 
 #### Web Applications
