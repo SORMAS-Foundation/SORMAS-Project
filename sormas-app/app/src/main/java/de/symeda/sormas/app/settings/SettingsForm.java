@@ -1,8 +1,6 @@
 package de.symeda.sormas.app.settings;
 
 import android.accounts.AuthenticatorException;
-import android.app.Activity;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,7 +15,6 @@ import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.component.ConfirmationDialog;
 import de.symeda.sormas.app.databinding.SettingsFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -85,7 +82,7 @@ public class SettingsForm extends FormTab {
                 RetroProvider.connect(getContext());
             } catch (AuthenticatorException e) {
                 Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-            } catch (RetroProvider.ApiVersionException e) {
+            } catch (RetroProvider.IncompatibleAppVersionException e) {
                 if (e.getAppUrl() != null) {
                     AppUpdateController.getInstance().updateApp(this.getActivity(), e.getAppUrl(), e.getVersion(), true, null);
                     return;

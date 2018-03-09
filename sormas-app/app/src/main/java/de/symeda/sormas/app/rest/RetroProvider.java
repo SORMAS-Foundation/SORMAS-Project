@@ -20,11 +20,11 @@ import com.google.gson.JsonSerializer;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.ConnectException;
-import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -67,7 +67,7 @@ public final class RetroProvider {
     private WeeklyReportEntryFacadeRetro weeklyReportEntryFacadeRetro;
     private OutbreakFacadeRetro outbreakFacadeRetro;
 
-    private RetroProvider(Context context, Interceptor... additionalInterceptors) throws ApiVersionException, ConnectException, AuthenticatorException {
+    private RetroProvider(Context context, Interceptor... additionalInterceptors) throws IncompatibleAppVersionException, ConnectException, AuthenticatorException {
 
         this.context = context;
 
@@ -106,7 +106,7 @@ public final class RetroProvider {
         }
 
         // check rest api version
-        Response<String> versionResponse;
+        Response<CompatibilityCheckResponse> compatibilityResponse;
         try {
 
             retrofit = new Retrofit.Builder()
@@ -117,20 +117,20 @@ public final class RetroProvider {
 
             // make call to get version info
             infoFacadeRetro = retrofit.create(InfoFacadeRetro.class);
-            AsyncTask<Void, Void, Response<String>> asyncTask = new AsyncTask<Void, Void, Response<String>>() {
+            AsyncTask<Void, Void, Response<CompatibilityCheckResponse>> asyncTask = new AsyncTask<Void, Void, Response<CompatibilityCheckResponse>>() {
 
                 @Override
-                protected Response<String> doInBackground(Void... params) {
-                    Call<String> versionCall = infoFacadeRetro.getVersion();
+                protected Response<CompatibilityCheckResponse> doInBackground(Void... params) {
+                    Call<CompatibilityCheckResponse> compatibilityCall = infoFacadeRetro.isCompatibleToApi(InfoProvider.getVersion());
                     try {
-                        return versionCall.execute();
+                        return compatibilityCall.execute();
                     } catch (IOException e) {
                         // wrap the exception message inside a response object
                         return Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
                     }
                 }
             };
-            versionResponse = asyncTask.execute().get();
+            compatibilityResponse = asyncTask.execute().get();
 
         } catch (IllegalArgumentException e) {
             throw new ConnectException(e.getMessage());
@@ -140,19 +140,104 @@ public final class RetroProvider {
             throw new ConnectException(e.getMessage());
         }
 
+        if (compatibilityResponse.isSuccessful()) {
+            // success - now check compatibility
+            CompatibilityCheckResponse compatibilityCheckResponse = compatibilityResponse.body();
+            if (compatibilityCheckResponse == CompatibilityCheckResponse.ERROR) {
+                throw new ConnectException("Could not synchronize because there was an error determining the current server version.");
+            } else if (compatibilityCheckResponse == CompatibilityCheckResponse.TOO_NEW) {
+                throw new ConnectException("Could not synchronize because the app version is newer than the server version.");
+            } else if (compatibilityCheckResponse == CompatibilityCheckResponse.TOO_OLD) {
+                matchAppAndApiVersions(infoFacadeRetro);
+            }
+        }
+        else {
+            switch (compatibilityResponse.code()) {
+                case 401:
+                    throw new AuthenticatorException(context.getResources().getString(R.string.snackbar_http_401));
+                case 403:
+                    throw new AuthenticatorException(context.getResources().getString(R.string.snackbar_http_403));
+                case 404:
+                    throw new ConnectException(String.format(context.getResources().getString(R.string.snackbar_http_404), ConfigProvider.getServerRestUrl()));
+                default:
+                    String error;
+                    try {
+                        error = compatibilityResponse.errorBody().string();
+                    } catch (IOException e) {
+                        error = compatibilityResponse.raw().toString();
+                    }
+                    throw new ConnectException(error);
+            }
+        }
+    }
+
+    public static boolean isConnectedToNetwork(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnected();
+    }
+
+    public static boolean isConnected() {
+        return instance != null && isConnectedToNetwork(instance.context);
+    }
+
+    public static void connect(Context context) throws IncompatibleAppVersionException, ConnectException, AuthenticatorException {
+
+        if (!isConnectedToNetwork(context)) {
+            throw new ConnectException(context.getResources().getString(R.string.snackbar_no_connection));
+        }
+
+        try {
+            instance = new RetroProvider(context);
+        } catch (Exception e){
+            instance = null;
+            throw e;
+        }
+    }
+
+    public static void disconnect() {
+        instance = null;
+    }
+
+    public static void matchAppAndApiVersions(final InfoFacadeRetro localInfoFacadeRetro) throws ConnectException, IncompatibleAppVersionException {
+        // Retrieve the version
+        Response<String> versionResponse;
+        try {
+            AsyncTask<Void, Void, Response<String>> asyncTask = new AsyncTask<Void, Void, Response<String>>() {
+
+                @Override
+                protected Response<String> doInBackground(Void... params) {
+                    Call<String> versionCall = localInfoFacadeRetro != null ? localInfoFacadeRetro.getVersion() : getInfoFacade().getVersion();
+                    try {
+                        return versionCall.execute();
+                    } catch (IOException e) {
+                        // wrap the exception message inside a response object
+                        return Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
+                    }
+                }
+            };
+            versionResponse = asyncTask.execute().get();
+        } catch (IllegalArgumentException e) {
+            throw new ConnectException(e.getMessage());
+        } catch (InterruptedException e) {
+            throw new ConnectException(e.getMessage());
+        } catch (ExecutionException e) {
+            throw new ConnectException(e.getMessage());
+        }
+
         if (versionResponse.isSuccessful()) {
-            // success. now check the version
+            // Check if the versions match
             String serverApiVersion = versionResponse.body();
             String appApiVersion = InfoProvider.getVersion();
             if (!serverApiVersion.equals(appApiVersion)) {
+                // Retrieve the app URL
                 Response<String> appUrlResponse;
                 try {
-                    // make call to get app url
                     AsyncTask<Void, Void, Response<String>> asyncTask = new AsyncTask<Void, Void, Response<String>>() {
 
                         @Override
                         protected Response<String> doInBackground(Void... params) {
-                            Call<String> versionCall = infoFacadeRetro.getAppUrl();
+                            Call<String> versionCall = localInfoFacadeRetro != null ? localInfoFacadeRetro.getAppUrl() : getInfoFacade().getAppUrl();
                             try {
                                 return versionCall.execute();
                             } catch (IOException e) {
@@ -172,58 +257,12 @@ public final class RetroProvider {
                 }
 
                 if (appUrlResponse.isSuccessful()) {
-                    throw new ApiVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'", appUrlResponse.body(), serverApiVersion);
+                    throw new RetroProvider.IncompatibleAppVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'", appUrlResponse.body(), serverApiVersion);
                 } else {
-                    throw new ApiVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'");
+                    throw new RetroProvider.IncompatibleAppVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'");
                 }
             }
         }
-        else {
-            switch (versionResponse.code()) {
-                case 401:
-                    throw new AuthenticatorException(context.getResources().getString(R.string.snackbar_http_401));
-                case 403:
-                    throw new AuthenticatorException(context.getResources().getString(R.string.snackbar_http_403));
-                case 404:
-                    throw new ConnectException(String.format(context.getResources().getString(R.string.snackbar_http_404), ConfigProvider.getServerRestUrl()));
-                default:
-                    String error;
-                    try {
-                        error = versionResponse.errorBody().string();
-                    } catch (IOException e) {
-                        error = versionResponse.raw().toString();
-                    }
-                    throw new ConnectException(error);
-            }
-        }
-    }
-
-    public static boolean isConnectedToNetwork(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null && activeNetwork.isConnected();
-    }
-
-    public static boolean isConnected() {
-        return instance != null && isConnectedToNetwork(instance.context);
-    }
-
-    public static void connect(Context context) throws ApiVersionException, ConnectException, AuthenticatorException {
-
-        if (!isConnectedToNetwork(context)) {
-            throw new ConnectException(context.getResources().getString(R.string.snackbar_no_connection));
-        }
-
-        try {
-            instance = new RetroProvider(context);
-        } catch (Exception e){
-            instance = null;
-            throw e;
-        }
-    }
-
-    public static void disconnect() {
-        instance = null;
     }
 
     public static InfoFacadeRetro getInfoFacade() {
@@ -306,7 +345,7 @@ public final class RetroProvider {
         }
         return instance.userFacadeRetro;
     }
-    
+
     public static TaskFacadeRetro getTaskFacade() {
         if (instance.taskFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
@@ -417,24 +456,24 @@ public final class RetroProvider {
         return instance.outbreakFacadeRetro;
     }
 
-    public static class ApiVersionException extends Exception {
+    public static class IncompatibleAppVersionException extends Exception {
         private String appUrl;
         private String version;
-        public ApiVersionException() {
+        public IncompatibleAppVersionException() {
             super();
         }
-        public ApiVersionException(String message) {
+        public IncompatibleAppVersionException(String message) {
             super(message);
         }
-        public ApiVersionException(String message, String appUrl, String version) {
+        public IncompatibleAppVersionException(String message, String appUrl, String version) {
             super(message);
             this.appUrl = appUrl;
             this.version = version;
         }
-        public ApiVersionException(String message, Throwable cause) {
+        public IncompatibleAppVersionException(String message, Throwable cause) {
             super(message, cause);
         }
-        public ApiVersionException(Throwable cause) {
+        public IncompatibleAppVersionException(Throwable cause) {
             super(cause);
         }
         public String getAppUrl() {

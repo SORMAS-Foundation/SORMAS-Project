@@ -21,7 +21,6 @@ import java.net.ConnectException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
-import de.symeda.sormas.app.component.ConfirmationDialog;
 import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -119,7 +118,7 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
                     errorMessage = e.getMessage();
                 }
                 // switch to LoginActivity is done below
-            } catch (final RetroProvider.ApiVersionException e) {
+            } catch (final RetroProvider.IncompatibleAppVersionException e) {
                 if (showUpgradePrompt && e.getAppUrl() != null) {
                     if (swipeRefreshLayout != null) {
                         swipeRefreshLayout.setRefreshing(false);
