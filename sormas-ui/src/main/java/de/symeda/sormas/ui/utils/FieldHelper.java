@@ -167,6 +167,11 @@ public final class FieldHelper {
 			boolean required = sourceValues.contains(sourceField.getValue());
 			for(Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
+				if (!targetField.isVisible()) {
+					targetField.setRequired(false);
+					continue;
+				}
+				
 				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
 					targetField.setRequired(required);
 				}
@@ -177,6 +182,11 @@ public final class FieldHelper {
 			boolean required = sourceValues.contains(event.getProperty().getValue());
 			for(Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
+				if (!targetField.isVisible()) {
+					targetField.setRequired(false);
+					continue;
+				}
+				
 				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
 					targetField.setRequired(required);
 				}
