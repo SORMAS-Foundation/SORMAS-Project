@@ -4,9 +4,11 @@ import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.InfoProvider;
 
 @Path("/info")
@@ -24,5 +26,11 @@ public class InfoResource {
 	@Path("/appurl")
 	public String getAppUrl() {
 		return FacadeProvider.getConfigFacade().getAppUrl();
+	}
+	
+	@GET
+	@Path("/checkcompatibility")
+	public CompatibilityCheckResponse isCompatibleToApi(@QueryParam("appVersion") String appVersion) {
+		return InfoProvider.isCompatibleToApi(appVersion);
 	}
 }

@@ -565,7 +565,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         visibleTabs.addAll(Arrays.asList(CaseEditTabs.CASE_DATA, CaseEditTabs.PATIENT,
                 CaseEditTabs.HOSPITALIZATION, CaseEditTabs.SYMPTOMS, CaseEditTabs.EPIDATA));
 
-        if (user.hasUserRight(UserRight.CONTACT_VIEW) && DiseaseHelper.hasContactFollowUp(caseDataDto)) {
+        if (user.hasUserRight(UserRight.CONTACT_VIEW) && DiseaseHelper.hasContactFollowUp(caseDataDto.getDisease(), caseDataDto.getPlagueType())) {
             visibleTabs.add(CaseEditTabs.CONTACTS);
         }
 

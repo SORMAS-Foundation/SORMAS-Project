@@ -134,8 +134,8 @@ public class Case extends AbstractDomainObject {
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date vaccinationDate;
 
-	@Column
 	@Deprecated
+	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date smallpoxVaccinationDate;
 
 	@Column(length=512)

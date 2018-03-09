@@ -12,6 +12,8 @@ public class Community extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 1971053920357795693L;
 
+	public static final String TABLE_NAME = "community";
+	
 	public static final String NAME = "name";
 	public static final String DISTRICT = "district";
 

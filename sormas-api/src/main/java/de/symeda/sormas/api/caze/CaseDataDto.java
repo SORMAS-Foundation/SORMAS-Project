@@ -101,14 +101,15 @@ public class CaseDataDto extends EntityDto {
 	@Diseases({Disease.MEASLES,Disease.CSM,Disease.OTHER})
 	@Outbreaks
 	private String vaccinationDoses;
+	@Diseases({Disease.MEASLES,Disease.YELLOW_FEVER,Disease.CSM,Disease.MONKEYPOX,Disease.OTHER})
+	@Outbreaks
+	private Date vaccinationDate;
 	@Diseases({Disease.MEASLES,Disease.YELLOW_FEVER,Disease.CSM,Disease.OTHER})
 	private VaccinationInfoSource vaccinationInfoSource;
 	@Diseases({Disease.MONKEYPOX})
 	private YesNoUnknown smallpoxVaccinationScar;
 	@Diseases({Disease.MONKEYPOX})
 	private YesNoUnknown smallpoxVaccinationReceived;
-	@Diseases({Disease.MEASLES,Disease.YELLOW_FEVER,Disease.CSM,Disease.MONKEYPOX,Disease.OTHER})
-	private Date vaccinationDate;
 	
 	@Outbreaks
 	private String epidNumber;

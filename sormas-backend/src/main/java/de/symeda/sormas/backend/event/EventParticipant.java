@@ -6,6 +6,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.person.Person;
 
@@ -15,14 +16,18 @@ public class EventParticipant extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -9006001699517297107L;
 
+	public static final String TABLE_NAME = "eventparticipant";
+	
 	public static final String EVENT = "event";
 	public static final String PERSON = "person";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
+	public static final String RESULTING_CASE = "resultingCase";
 	
 	private Event event;
 	private Person person;
 	private String involvementDescription;
-	
+	private Case resultingCase;
+
 	@ManyToOne(cascade = {})
 	public Event getEvent() {
 		return event;
@@ -54,6 +59,16 @@ public class EventParticipant extends AbstractDomainObject {
 	@Override
 	public String toString() {
 		return getPerson().toString();
+	}
+
+	@ManyToOne(cascade = {})
+	@JoinColumn
+	public Case getResultingCase() {
+		return resultingCase;
+	}
+
+	public void setResultingCase(Case resultingCase) {
+		this.resultingCase = resultingCase;
 	}
 
 }

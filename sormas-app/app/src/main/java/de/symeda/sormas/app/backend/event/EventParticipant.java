@@ -26,6 +26,7 @@ public class EventParticipant extends AbstractDomainObject {
 	public static final String EVENT = "event";
 	public static final String PERSON = "person";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
+	public static final String RESULTING_CASE_UUID = "resultingCaseUuid";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false)
 	private Event event;
@@ -35,7 +36,10 @@ public class EventParticipant extends AbstractDomainObject {
 
 	@Column(length=512)
 	private String involvementDescription;
-	
+
+	@DatabaseField
+	private String resultingCaseUuid;
+
 	public Event getEvent() {
 		return event;
 	}
@@ -80,4 +84,11 @@ public class EventParticipant extends AbstractDomainObject {
 		return I18N_PREFIX;
 	}
 
+	public String getResultingCaseUuid() {
+		return resultingCaseUuid;
+	}
+
+	public void setResultingCaseUuid(String resultingCaseUuid) {
+		this.resultingCaseUuid = resultingCaseUuid;
+	}
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -19,11 +20,14 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.PlagueType;
+import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -57,13 +61,24 @@ public class ContactService extends AbstractAdoService<Contact> {
 	
 	public List<Contact> getAllByCase(Case caze) {
 
-		// TODO get user from session?
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
 		Root<Contact> from = cq.from(getElementClass());
 
 		cq.where(cb.equal(from.get(Contact.CAZE), caze));
+		cq.orderBy(cb.desc(from.get(Contact.REPORT_DATE_TIME)));
+
+		List<Contact> resultList = em.createQuery(cq).getResultList();
+		return resultList;
+	}
+	
+	public List<Contact> getAllByResultingCase(Case caze) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
+		Root<Contact> from = cq.from(getElementClass());
+
+		cq.where(cb.equal(from.get(Contact.RESULTING_CASE), caze));
 		cq.orderBy(cb.desc(from.get(Contact.REPORT_DATE_TIME)));
 
 		List<Contact> resultList = em.createQuery(cq).getResultList();
@@ -207,29 +222,85 @@ public class ContactService extends AbstractAdoService<Contact> {
 		
 		return result;
 	}
+	
+	/**
+	 * Calculates resultingCase and contact status based on: 
+	 * - existing disease cases (and classification) of the person
+	 * - the incubation period and 
+	 * - the contact classification
+	 * - the follow-up status
+	 */
+	public void udpateContactStatusAndResultingCase(Contact contact) {
 
-	public int getFollowUpDuration(Case caze) {
-		Disease disease = caze.getDisease();
-		if (disease == Disease.PLAGUE) {
-			if (caze.getPlagueType() == PlagueType.PNEUMONIC) {
-				return 7;
-			} else {
-				return 0;
-			}
-		} else {
-			switch (disease) {
-			case EVD:
-			case MONKEYPOX:
-			case OTHER:
-				return 21;
-			case AVIAN_INFLUENCA:
-				return 17;
-			case LASSA:
-				return 6;
-			default:
-				return 0;
-			}
+		ContactClassification contactClassification = contact.getContactClassification();
+		if (contactClassification == null) { // fallback
+			contactClassification = ContactClassification.UNCONFIRMED;
 		}
+		
+		switch (contactClassification) {
+		case UNCONFIRMED:
+			contact.setContactStatus(ContactStatus.ACTIVE);
+			contact.setResultingCase(null);
+			break;
+		case NO_CONTACT:
+			contact.setContactStatus(ContactStatus.DROPPED);
+			contact.setResultingCase(null);
+			break;
+		case CONFIRMED:
+			
+			// calculate the incubation period relative to the contact
+			// make sure to get the maximum time span based on report date time and last contact date
+			Date incubationPeriodStart = contact.getReportDateTime();
+			Date incubationPeriodEnd = contact.getReportDateTime();
+			if (contact.getLastContactDate() != null) {
+				if (contact.getLastContactDate().before(incubationPeriodStart)) { // whatever is earlier
+					incubationPeriodStart = contact.getLastContactDate();
+				}
+				if (contact.getLastContactDate().after(incubationPeriodEnd)) { // whatever is later
+					incubationPeriodEnd = contact.getLastContactDate();
+				}
+			}
+			incubationPeriodEnd = DateHelper.addDays(incubationPeriodEnd, 
+					DiseaseHelper.getIncubationPeriodDays(contact.getCaze().getDisease(), contact.getCaze().getPlagueType()));
+			
+			// see if any case was reported or has symptom onset within the period
+			Case resultingCase = caseService.getFirstByPersonDiseaseAndOnset(
+					contact.getCaze().getDisease(), contact.getPerson(),
+					incubationPeriodStart, incubationPeriodEnd);
+
+			// set
+			if (resultingCase != null) {
+				contact.setContactStatus(ContactStatus.CONVERTED);
+				contact.setResultingCase(resultingCase);
+			} else {
+				FollowUpStatus followUpStatus = contact.getFollowUpStatus();
+				if (followUpStatus != null) { 
+					switch (followUpStatus) {
+					case CANCELED:
+					case COMPLETED:
+					case LOST:
+					case NO_FOLLOW_UP:
+						contact.setContactStatus(ContactStatus.DROPPED);
+						break;
+					case FOLLOW_UP:
+						contact.setContactStatus(ContactStatus.ACTIVE);
+						break;
+					default:
+						throw new NoSuchElementException(followUpStatus.toString());
+					}
+				} else {
+					contact.setContactStatus(ContactStatus.ACTIVE);
+				}
+				contact.setResultingCase(null);
+			}
+			
+			break;
+		
+		default:
+			throw new NoSuchElementException(DataHelper.toStringNullable(contactClassification));
+		}
+		
+		ensurePersisted(contact);
 	}
 	
 	/**
@@ -244,16 +315,17 @@ public class ContactService extends AbstractAdoService<Contact> {
 	public void updateFollowUpUntilAndStatus(Contact contact) {
 		
 		Disease disease = contact.getCaze().getDisease();
-		int followUpDuration = getFollowUpDuration(contact.getCaze());
 		boolean changeStatus = contact.getFollowUpStatus() != FollowUpStatus.CANCELED
 				&& contact.getFollowUpStatus() != FollowUpStatus.LOST;
 
-		if (followUpDuration == 0) {
+		if (!DiseaseHelper.hasContactFollowUp(disease, contact.getCaze().getPlagueType())) {
 			contact.setFollowUpUntil(null);
 			if (changeStatus) {
 				contact.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
 			}
 		} else {
+
+			int followUpDuration = DiseaseHelper.getIncubationPeriodDays(disease, contact.getCaze().getPlagueType());
 			LocalDate beginDate = DateHelper8.toLocalDate(contact.getReportDateTime());
 			LocalDate untilDate = beginDate.plusDays(followUpDuration);
 			

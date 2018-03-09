@@ -6,7 +6,6 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -19,13 +18,9 @@ public interface ContactFacade {
 	
 	List<ContactDto> getFollowUpBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid);
 	
-	List<ContactDto> getAllByCase(CaseReferenceDto caseRef);
-	
 	ContactDto getContactByUuid(String uuid);
     
 	ContactDto saveContact(ContactDto dto);
-	
-	ContactDto updateFollowUpUntilAndStatus(ContactDto dto);
 	
 	List<ContactReferenceDto> getSelectableContacts(UserReferenceDto user);
 

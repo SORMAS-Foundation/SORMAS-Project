@@ -15,7 +15,6 @@ import java.net.ConnectException;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CasesActivity;
-import de.symeda.sormas.app.component.ConfirmationDialog;
 import de.symeda.sormas.app.contact.ContactsActivity;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -65,6 +64,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
 
             try {
                 RetroProvider.connect(getApplicationContext());
+                RetroProvider.matchAppAndApiVersions();
             } catch (AuthenticatorException e) {
                 // clearing login data is done below
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
@@ -129,6 +129,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         if (ConfigProvider.getUsername() != null) {
             try {
                 RetroProvider.connect(getApplicationContext());
+                RetroProvider.matchAppAndApiVersions();
             } catch (AuthenticatorException e) {
                 // clear login data if authentication failed
                 ConfigProvider.clearUsernameAndPassword();

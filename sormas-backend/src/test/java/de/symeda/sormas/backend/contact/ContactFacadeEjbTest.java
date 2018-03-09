@@ -17,7 +17,9 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -37,7 +39,7 @@ import de.symeda.sormas.backend.util.DateHelper8;
 public class ContactFacadeEjbTest extends AbstractBeanTest  {
 
 	@Test
-	public void testUpdateFollowUpUntil() {
+	public void testUpdateFollowUpUntilAndStatus() {
 		
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid()
@@ -65,6 +67,43 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		contact =  getContactFacade().getContactByUuid(contact.getUuid());
 		assertEquals(FollowUpStatus.COMPLETED, contact.getFollowUpStatus());
 		assertEquals(LocalDate.now().plusDays(21), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
+	}
+	
+	@Test
+	public void testUdpateContactStatusAndResultingCase() {
+		
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid()
+				,"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		Date contactDate = new Date();
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze.toReference(), contactDate, contactDate);
+		
+		assertEquals(ContactStatus.ACTIVE, contact.getContactStatus());
+		assertNull(contact.getResultingCase());
+		
+		// drop
+		contact.setContactClassification(ContactClassification.NO_CONTACT);
+		contact = getContactFacade().saveContact(contact);
+		assertEquals(ContactStatus.DROPPED, contact.getContactStatus());
+
+		// add result case
+		CaseDataDto resultingCaze = creator.createCase(user.toReference(), contactPerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, contactDate, rdcf);
+		contact.setContactClassification(ContactClassification.CONFIRMED);
+		contact = getContactFacade().saveContact(contact);
+		assertEquals(ContactStatus.CONVERTED, contact.getContactStatus());
+		assertEquals(resultingCaze.getUuid(), contact.getResultingCase().getUuid());
+		
+		// move case before contact -> can't be result any more
+		resultingCaze.getSymptoms().setOnsetDate(DateHelper.subtractDays(contactDate, 1));
+		resultingCaze = getCaseFacade().saveCase(resultingCaze);
+		contact = getContactFacade().getContactByUuid(contact.getUuid());
+		assertEquals(ContactStatus.ACTIVE, contact.getContactStatus());
+		assertNull(contact.getResultingCase());
 	}
 	
 	@Test

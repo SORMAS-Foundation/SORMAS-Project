@@ -468,7 +468,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	}
 	
 	private void updateOccupationFieldCaptions() {
-		OccupationType type = (OccupationType) ((AbstractSelect)getFieldGroup().getField(PersonDto.OCCUPATION_TYPE)).getValue();
+		OccupationType type = (OccupationType) ((AbstractSelect)getFieldGroup().getField(PersonDto.OCCUPATION_TYPE)).getValue();		
 		Field<?> od = getFieldGroup().getField(PersonDto.OCCUPATION_DETAILS);
 		switch(type) {
 			case BUSINESSMAN_WOMAN:

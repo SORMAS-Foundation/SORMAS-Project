@@ -31,6 +31,7 @@ public class ContactDto extends EntityDto {
 	public static final String RELATION_TO_CASE = "relationToCase";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
+	public static final String RESULTING_CASE = "resultingCase";
 	
 	private PersonReferenceDto person;
 	private CaseReferenceDto caze;
@@ -50,6 +51,7 @@ public class ContactDto extends EntityDto {
 	private UserReferenceDto contactOfficer;
 	private String description;
 	private ContactRelation relationToCase;
+	private CaseReferenceDto resultingCase; // read-only
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
@@ -131,6 +133,15 @@ public class ContactDto extends EntityDto {
 	}
 	public void setRelationToCase(ContactRelation relationToCase) {
 		this.relationToCase = relationToCase;
+	}
+	public CaseReferenceDto getResultingCase() {
+		return resultingCase;
+	}
+	/**
+	 * This should only be called when filling the DTO in the server backend!
+	 */
+	public void setResultingCase(CaseReferenceDto resultingCase) {
+		this.resultingCase = resultingCase;
 	}
 	public Double getReportLat() {
 		return reportLat;

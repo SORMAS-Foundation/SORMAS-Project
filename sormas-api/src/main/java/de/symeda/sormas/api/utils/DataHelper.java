@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 import java.util.Date;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.HasUuid;
 
 public final class DataHelper {
 
@@ -20,6 +21,13 @@ public final class DataHelper {
 		byte[] bytes = longToBytes(randomUuid.getLeastSignificantBits(), randomUuid.getMostSignificantBits());
 		String uuid = Base32.encode(bytes, 6);
 		return uuid;
+	}
+		
+	public static boolean isSame(HasUuid left, HasUuid right) {
+		if (left == null && right == null) {
+			return true;
+		}
+		return DataHelper.equal(left.getUuid(), right.getUuid());
 	}
 
 	/**

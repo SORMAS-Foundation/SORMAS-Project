@@ -357,6 +357,10 @@ public enum UserRight {
 	),
 	OUTBREAK_CONFIGURE_RESTRICTED(
 			SURVEILLANCE_SUPERVISOR
+	),
+	DATABASE_EXPORT_ACCESS(
+			ADMIN,
+			NATIONAL_USER
 	);
 	
 	private final Set<UserRole> userRoles;

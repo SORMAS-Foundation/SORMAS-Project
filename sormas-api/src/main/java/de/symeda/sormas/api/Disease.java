@@ -26,4 +26,12 @@ public enum Disease {
 		return this.name();
 	}
 	
+	public boolean isSupportingOutbreakMode() {
+		switch(this) {
+		case CSM:
+			return true;
+		default:
+			return false;		
+		}
+	}
 }

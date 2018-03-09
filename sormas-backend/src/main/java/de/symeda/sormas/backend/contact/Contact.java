@@ -32,6 +32,8 @@ public class Contact extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
+	public static final String TABLE_NAME = "contact";
+	
 	public static final String PERSON = "person";
 	public static final String CAZE = "caze";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
@@ -47,11 +49,14 @@ public class Contact extends AbstractDomainObject {
 	public static final String DESCRIPTION = "description";
 	public static final String TASKS = "tasks";
 	public static final String RELATION_TO_CASE = "relationToCase";
+	public static final String RESULTING_CASE = "resultingCase";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
+	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
 	
 	private Person person;
 	private Case caze;
+	private ContactRelation relationToCase;
 	private Date reportDateTime;
 	private User reportingUser;
 	private Date lastContactDate;
@@ -63,7 +68,7 @@ public class Contact extends AbstractDomainObject {
 	private Date followUpUntil;
 	private User contactOfficer;
 	private String description;
-	private ContactRelation relationToCase;
+	private Case resultingCase;
 	
 	private Double reportLat;
 	private Double reportLon;
@@ -187,7 +192,17 @@ public class Contact extends AbstractDomainObject {
 	public void setRelationToCase(ContactRelation relationToCase) {
 		this.relationToCase = relationToCase;
 	}
-	
+
+	@ManyToOne(cascade = {})
+	@JoinColumn
+	public Case getResultingCase() {
+		return resultingCase;
+	}
+
+	public void setResultingCase(Case resultingCase) {
+		this.resultingCase = resultingCase;
+	}
+
 	@Override
 	public String toString() {
 		Person contactPerson = getPerson();

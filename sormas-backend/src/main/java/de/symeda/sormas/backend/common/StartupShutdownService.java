@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.common;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -11,23 +12,24 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
-import de.symeda.sormas.backend.epidata.EpiData;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.epidata.EpiDataService;
+import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityService;
-import de.symeda.sormas.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityService;
@@ -35,11 +37,11 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.MockDataGenerator;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Singleton(name = "StartupShutdownService")
 @Startup
@@ -49,12 +51,18 @@ public class StartupShutdownService {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	protected EntityManager em;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private UserService userService;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private ContactService contactService;
+	@EJB
+	private EventParticipantService eventParticipantService;
 	@EJB
 	private EpiDataService epiDataService;
 	@EJB
@@ -81,8 +89,7 @@ public class StartupShutdownService {
 
 		initDefaultUsers();
 		
-		// TODO enable/disable via config?
-		fixMissingEntities();
+		upgrade();
 	}
 	
 	public void importAdministrativeDivisions(String countryName) {
@@ -139,26 +146,40 @@ public class StartupShutdownService {
 		}
 	}
 
-	private void fixMissingEntities() {
+	private void upgrade() {
 		
-		// don't do this when heuristically everything looks fine
-		if (caseService.count() == epiDataService.count()) {
-			return;
-		}
+		@SuppressWarnings("unchecked")
+		List<Integer> versionsNeedingUpgrade = em
+				.createNativeQuery("SELECT version_number FROM schema_version WHERE upgradeNeeded")
+				.getResultList();
 		
-		List<Case> cases = caseService.getAll();
-		for (Case caze : cases) {
-			Person person = caze.getPerson();
-			if (person.getAddress().getId() == null) 
-				person.setAddress(new Location());
-			if (caze.getSymptoms().getId() == null)
-				caze.setSymptoms(new Symptoms());
-			if (caze.getHospitalization().getId() == null)
-				caze.setHospitalization(new Hospitalization());
-			if (caze.getEpiData().getId() == null)
-				caze.setEpiData(new EpiData());
-			caseService.persist(caze);
+		for (Integer versionNeedingUpgrade : versionsNeedingUpgrade) {
+			switch (versionNeedingUpgrade) {
+				case 95:
+					// resulting case was added
+					// update follow up and status for all contacts and events
+					for (Contact contact : contactService.getAll()) {
+						contactService.udpateContactStatusAndResultingCase(contact);
+					}
+					// .. and event participants
+					for (EventParticipant eventParticipant : eventParticipantService.getAll()) {
+						eventParticipantService.udpateResultingCase(eventParticipant);
+					}
+					break;
+				
+				default:
+					throw new NoSuchElementException(DataHelper.toStringNullable(versionNeedingUpgrade)); 
+			} 
+			
+			int updatedRows = em
+				.createNativeQuery("UPDATE schema_version SET upgradeNeeded=false WHERE version_number=" + versionNeedingUpgrade)
+				.executeUpdate();
+			if (updatedRows != 1) {
+				logger.error("Could not UPDATE schema_version table. Missing user rights?");
+			}
 		}
+
+		
 	}
 
 	@PreDestroy

@@ -44,6 +44,10 @@ public class Contact extends AbstractDomainObject {
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String DESCRIPTION = "description";
 	public static final String RELATION_TO_CASE = "relationToCase";
+	public static final String RESULTING_CASE = "resultingCase";
+	public static final String REPORT_LAT = "reportLat";
+	public static final String REPORT_LON = "reportLon";
+	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;
@@ -86,6 +90,9 @@ public class Contact extends AbstractDomainObject {
 
 	@Enumerated(EnumType.STRING)
 	private ContactRelation relationToCase;
+
+	@DatabaseField
+	private String resultingCaseUuid;
 
 	@DatabaseField
 	private Double reportLat;
@@ -238,5 +245,13 @@ public class Contact extends AbstractDomainObject {
 
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
+
+	public String getResultingCaseUuid() {
+		return resultingCaseUuid;
+	}
+
+	public void setResultingCaseUuid(String resultingCaseUuid) {
+		this.resultingCaseUuid = resultingCaseUuid;
 	}
 }

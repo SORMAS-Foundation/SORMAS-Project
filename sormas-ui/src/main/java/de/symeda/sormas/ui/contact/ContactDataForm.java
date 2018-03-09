@@ -24,11 +24,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
@@ -86,7 +85,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	contactOfficerField.setNullSelectionAllowed(true);
     	
     	setReadOnly(true, ContactDto.UUID, ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME, 
-    			ContactDto.FOLLOW_UP_STATUS, ContactDto.FOLLOW_UP_UNTIL);
+    			ContactDto.CONTACT_STATUS, ContactDto.FOLLOW_UP_STATUS, ContactDto.FOLLOW_UP_UNTIL);
     	
     	FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.FOLLOW_UP_STATUS, 
     			Arrays.asList(ContactDto.FOLLOW_UP_COMMENT), 
@@ -102,9 +101,15 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     		
     	    	contactOfficerField.addItems(FacadeProvider.getUserFacade().getAssignableUsersByDistrict(caseDto.getDistrict(), false, UserRole.CONTACT_OFFICER));
     	    	
-    	    	String associatedCaseUuid = findAssociatedCaseUuid(FacadeProvider.getPersonFacade().getPersonByUuid(getValue().getPerson().getUuid()), getValue());
     	    	getContent().removeComponent(TO_CASE_BTN_LOC);
-    	    	if (associatedCaseUuid == null) {
+    	    	if (getValue().getResultingCase() != null) {
+    	    		// link to case
+    		    	Link linkToData = ControllerProvider.getCaseController().createLinkToData(getValue().getResultingCase().getUuid(), 
+    		    			"Open case of this contact person");
+    		    	getContent().addComponent(linkToData, TO_CASE_BTN_LOC);
+    	    	}
+    	    	else if (getValue().getContactClassification() == ContactClassification.CONFIRMED) {
+    	    		// only when confirmed
     	    		if (LoginHelper.hasUserRight(UserRight.CONTACT_CONVERT)) {
 	    		    	Button toCaseButton = new Button("Create a case for this contact person");
 	    				toCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
@@ -121,10 +126,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	    				
 	    				getContent().addComponent(toCaseButton, TO_CASE_BTN_LOC);
     	    		}
-    	    	} else {
-    	    		// link to case
-    		    	Link linkToData = ControllerProvider.getCaseController().createLinkToData(associatedCaseUuid, "Open case of this contact person");
-    		    	getContent().addComponent(linkToData, TO_CASE_BTN_LOC);
     	    	}
         	}
     	});
@@ -217,20 +218,5 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	@Override
 	protected String createHtmlLayout() {
 		 return HTML_LAYOUT;
-	}
-	
-	private String findAssociatedCaseUuid(PersonDto personDto, ContactDto contactDto) {
-		if(personDto == null || contactDto == null) {
-			return null;
-		}
-		
-		UserDto user = LoginHelper.getCurrentUser();
-		CaseDataDto contactCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
-		CaseDataDto caze = FacadeProvider.getCaseFacade().getByPersonAndDisease(personDto.getUuid(), contactCase.getDisease(), user.getUuid());
-		if(caze != null) {
-			return caze.getUuid();
-		} else {
-			return null;
-		}
 	}
 }

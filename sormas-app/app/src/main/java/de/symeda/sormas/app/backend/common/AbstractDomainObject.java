@@ -40,7 +40,7 @@ public abstract class AbstractDomainObject extends BaseObservable implements Ser
 	@DatabaseField(uniqueCombo=true)
 	private boolean snapshot = false;
 
-	@DatabaseField(uniqueCombo=true, canBeNull = false, width = 29)
+	@DatabaseField(uniqueCombo=true, canBeNull = false)
 	private String uuid;
 
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)

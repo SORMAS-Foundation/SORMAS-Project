@@ -2,8 +2,10 @@ package de.symeda.sormas.backend.common;
 
 import java.io.IOException;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.mail.MessagingException;
 
@@ -26,14 +28,17 @@ public class MessagingService {
 
 	// Message subjects
 	public static final String SUBJECT_CASE_CLASSIFICATION_CHANGED = "caseClassificationChangedSubject";
+	public static final String SUBJECT_CASE_INVESTIGATION_DONE = "caseInvestigationDoneSubject";
 	public static final String SUBJECT_LAB_RESULT_ARRIVED = "labResultArrivedSubject";
 	public static final String SUBJECT_LAB_RESULT_SPECIFIED = "labResultSpecifiedSubject";
 	public static final String SUBJECT_CONTACT_SYMPTOMATIC = "contactSymptomaticSubject";
 	public static final String SUBJECT_TASK_START = "taskStartSubject";
 	public static final String SUBJECT_TASK_DUE = "taskDueSubject";
+	public static final String SUBJECT_VISIT_COMPLETED = "visitCompletedSubject";
 	
 	// Message contents (via properties file)
 	public static final String CONTENT_CASE_CLASSIFICATION_CHANGED = "caseClassificationChanged";
+	public static final String CONTENT_CASE_INVESTIGATION_DONE = "caseInvestigationDone";
 	public static final String CONTENT_LAB_RESULT_ARRIVED = "labResultArrived";
 	public static final String CONTENT_LAB_RESULT_SPECIFIED = "labResultSpecified";
 	public static final String CONTENT_CONTACT_SYMPTOMATIC = "contactSymptomatic";
@@ -41,8 +46,12 @@ public class MessagingService {
 	public static final String CONTENT_TASK_START_SPECIFIC = "taskStartSpecific";
 	public static final String CONTENT_TASK_DUE_GENERAL = "taskDueGeneral";
 	public static final String CONTENT_TASK_DUE_SPECIFIC = "taskDueSpecific";
+	public static final String CONTENT_VISIT_COMPLETED = "visitCompleted";
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessagingService.class);
+
+	@Resource
+	private SessionContext sessionContext;
 	
 	@EJB
 	private EmailService emailService;
@@ -53,8 +62,12 @@ public class MessagingService {
 	 * Sends the message specified by the messageContent via mail and/or SMS, according to the messageTypes, to the specified recipient's
 	 * email address and/or phone number. Logs an error if the email address or phone number is not set.
 	 */
-	public void sendMessage(User recipient, String subject, String messageContent, MessageType... messageTypes) throws EmailDeliveryFailedException, SmsDeliveryFailedException {
-
+	public void sendMessage(User recipient, String subject, String messageContent, MessageType... messageTypes) throws NotificationDeliveryFailedException {
+		// Don't send notifications to users that initiated an action
+		if (recipient.getUserName().equals(sessionContext.getCallerPrincipal().getName())) {
+			return;
+		}
+		
 		String emailAddress = recipient.getUserEmail();
 		String phoneNumber = recipient.getPhone();
 		
@@ -68,15 +81,14 @@ public class MessagingService {
 					if (messageType == MessageType.EMAIL) {
 						emailService.sendEmail(emailAddress, subject, messageContent);
 					} else if (messageType == MessageType.SMS) {
-						// Do nothing
-						//smsService.sendSms(phoneNumber, subject, messageContent);
+						smsService.sendSms(phoneNumber, subject, messageContent);
 					}
 				} catch (MessagingException e) {
-					throw new EmailDeliveryFailedException("Email could not be sent due to an unexpected error.", e);
-//				} catch (IOException | NexmoClientException e) {
-//					throw new SmsDeliveryFailedException("SMS could not be sent due to an unexpected error.", e);
-//				} catch (InvalidPhoneNumberException e) {
-//					throw new SmsDeliveryFailedException("SMS could not be sent because of an invalid phone number.", e);
+					throw new NotificationDeliveryFailedException("Email could not be sent due to an unexpected error.", MessageType.EMAIL, e);
+				} catch (IOException | NexmoClientException e) {
+					throw new NotificationDeliveryFailedException("SMS could not be sent due to an unexpected error.", MessageType.SMS, e);
+				} catch (InvalidPhoneNumberException e) {
+					throw new NotificationDeliveryFailedException("SMS could not be sent because of an invalid phone number.", MessageType.SMS, e);
 				}
 			}
 		}

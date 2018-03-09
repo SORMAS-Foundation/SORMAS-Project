@@ -2056,4 +2056,196 @@ ALTER TABLE samples_history ADD COLUMN mainsampletest_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (92, 'Test result filter under Samples Directory #482');
 
-  
+-- 2018-02-23 Resulting case for contacts #402
+
+ALTER TABLE contact ADD COLUMN resultingcase_id bigint;
+ALTER TABLE contact ADD CONSTRAINT fk_contact_resultingcase_id FOREIGN KEY (resultingcase_id) REFERENCES cases (id);
+ALTER TABLE contact_history ADD COLUMN resultingcase_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (93, 'Resulting case for contacts #402');
+
+-- 2018-02-26 Export function for database export #507
+
+CREATE FUNCTION export_database(table_name text, path text, file_name text)
+	RETURNS VOID
+	LANGUAGE plpgsql
+	SECURITY DEFINER
+	AS $BODY$
+		BEGIN
+			EXECUTE '
+				COPY (SELECT * FROM 
+					' || quote_ident(table_name) || '
+				) TO 
+					' || quote_literal(path || file_name) || '
+				WITH (
+					FORMAT CSV, DELIMITER '';'', HEADER
+				);
+			';
+		END;
+	$BODY$
+;
+
+CREATE FUNCTION export_database_join(table_name text, join_table_name text, column_name text, join_column_name text, path text, file_name text)
+	RETURNS VOID
+	LANGUAGE plpgsql
+	SECURITY DEFINER
+	AS $BODY$
+		BEGIN
+			EXECUTE '
+				COPY (SELECT * FROM 
+					' || quote_ident(table_name) || ' 
+				INNER JOIN 
+					' || quote_ident(join_table_name) || ' 
+				ON 
+					' || column_name || ' 
+				= 
+					' || join_column_name || ' 
+				) TO 
+					' || quote_literal(path || file_name) || ' 
+				WITH (
+					FORMAT CSV, DELIMITER '';'', HEADER
+				);
+			';
+		END;
+	$BODY$
+;
+
+INSERT INTO schema_version (version_number, comment) VALUES (94, 'Export function for database export #507');
+
+-- 2018-03-01 Resulting case for event participant #402
+
+ALTER TABLE eventparticipant ADD COLUMN resultingcase_id bigint;
+ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_resultingcase_id FOREIGN KEY (resultingcase_id) REFERENCES cases (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (95, 'Resulting case for eventparticipant #402');
+
+-- 2018-03-05 SQL function to easily add new health facilities to the database #519
+
+CREATE OR REPLACE FUNCTION add_health_facility(_name character varying(512), _islaboratory boolean, _regionname character varying(512), _districtname character varying(512), _communityname character varying(512), _city character varying(512), _latitude double precision, _longitude double precision)
+RETURNS bigint AS $resultid$
+DECLARE 
+	_type character varying(512);
+	_id bigint;
+	_uuid character varying(36);
+	_region_id bigint;
+	_district_id bigint;
+	_community_id bigint;
+BEGIN
+	IF (_regionname IS NULL) THEN
+		RAISE EXCEPTION 'you need to pass a region name';
+	END IF;
+	IF (NOT(_islaboratory) AND _districtname IS NULL) THEN
+		RAISE EXCEPTION 'you need to pass a district name';
+	END IF;
+
+	IF (_islaboratory) THEN
+		_type = 'LABORATORY';
+	END IF;
+
+	SELECT region.id FROM region WHERE region.name = _regionname INTO _region_id;
+	SELECT district.id FROM district WHERE district.name = _districtname AND district.region_id = _region_id INTO _district_id;
+	SELECT community.id FROM community WHERE community.name = _communityname AND community.district_id = _district_id INTO _community_id;
+
+	IF (_regionname IS NOT NULL AND _region_id IS NULL) THEN
+		RAISE EXCEPTION 'region not found %', _regionname;
+	END IF;
+	IF (_districtname IS NOT NULL AND _district_id IS NULL) THEN
+		RAISE EXCEPTION 'district not found %', _districtname;
+	END IF;
+	IF (_communityname IS NOT NULL AND _community_id IS NULL) THEN
+		RAISE EXCEPTION 'community not found %', _communityname;
+	END IF;
+
+	_id = nextval('entity_seq');
+	-- this is not the same format as we are using in code (which is base32 with 4 seperators)
+	_uuid = upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29));
+
+	IF ((SELECT facility.id FROM facility WHERE facility.name = _name AND facility.region_id = _region_id AND facility.district_id = _district_id) IS NOT NULL) THEN
+		RAISE EXCEPTION 'facility % allready exists in district', _name;
+	END IF;
+	
+	INSERT INTO facility(
+            id, changedate, creationdate, name, publicownership, type, uuid, 
+            region_id, district_id, community_id, city, latitude, longitude)
+	VALUES (_id, now(), now(), _name, FALSE, _type, _uuid, 
+            _region_id, _district_id, _community_id, _city, _latitude, _longitude);
+
+        RETURN _id;
+END;
+$resultid$  LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (96, 'SQL function to easily add new health facilities to the database #519');
+
+-- 2018-03-05 Add upgrade column to schema_version for backend upgrade logic #402
+ALTER TABLE schema_version ADD COLUMN upgradeNeeded boolean NOT NULL DEFAULT false;
+UPDATE schema_version SET upgradeNeeded=true WHERE version_number=95;
+GRANT SELECT, UPDATE ON TABLE schema_version TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (97, 'Add upgrade column to schema_version for backend upgrade logic #402');
+
+-- 2018-03-06 Restrict outbreak mode to CSM for now
+DELETE FROM outbreak WHERE NOT (disease = 'CSM');
+
+INSERT INTO schema_version (version_number, comment) VALUES (98, 'Restrict outbreak mode to CSM for now #489');
+
+-- 2018-03-06 Change export functions #507
+DROP FUNCTION export_database(text, text, text);
+DROP FUNCTION export_database_join(text, text, text, text, text, text);
+
+CREATE FUNCTION export_database(table_name text, file_path text)
+	RETURNS VOID
+	LANGUAGE plpgsql
+	SECURITY DEFINER
+	AS $BODY$
+		BEGIN
+			EXECUTE '
+				COPY (SELECT * FROM 
+					' || quote_ident(table_name) || '
+				) TO 
+					' || quote_literal(file_path) || '
+				WITH (
+					FORMAT CSV, DELIMITER '';'', HEADER
+				);
+			';
+		END;
+	$BODY$
+;
+
+CREATE FUNCTION export_database_join(table_name text, join_table_name text, column_name text, join_column_name text, file_path text)
+	RETURNS VOID
+	LANGUAGE plpgsql
+	SECURITY DEFINER
+	AS $BODY$
+		BEGIN
+			EXECUTE '
+				COPY (SELECT * FROM 
+					' || quote_ident(table_name) || ' 
+				INNER JOIN 
+					' || quote_ident(join_table_name) || ' 
+				ON 
+					' || column_name || ' 
+				= 
+					' || join_column_name || ' 
+				) TO 
+					' || quote_literal(file_path) || ' 
+				WITH (
+					FORMAT CSV, DELIMITER '';'', HEADER
+				);
+			';
+		END;
+	$BODY$
+;
+
+INSERT INTO schema_version (version_number, comment) VALUES (99, 'Change export functions #507');
+
+-- 2018-03-09 Create history table for event participant #509
+ALTER TABLE eventparticipant ADD COLUMN sys_period tstzrange;
+UPDATE eventparticipant SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE eventparticipant ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE eventparticipant_history (LIKE eventparticipant);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON eventparticipant
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'eventparticipant_history', true);
+ALTER TABLE eventparticipant_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (100, 'Create history table for event participant #509');

@@ -36,13 +36,6 @@
                 <!--android:paddingTop="@dimen/field_padding"-->
                 <!--android:paddingBottom="@dimen/field_padding" />-->
 
-            <de.symeda.sormas.app.component.TextField
-                android:id="@+id/config_serverUrl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding" />
-
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -63,12 +56,37 @@
                 android:text="@string/action_open_syncLog"
                 android:onClick="openSyncLog"/>
 
-            <Button
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/dev_options"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <de.symeda.sormas.app.component.TextField
+                    android:id="@+id/config_serverUrl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding" />
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/config_logout"
+                    android:text="@string/action_logout"
+                    android:onClick="logout"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/sormas_version"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/config_logout"
-                android:text="@string/action_logout"
-                android:onClick="logout"/>
+                android:layout_gravity="bottom"
+                android:text="@string/label_sormas_version"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"/>
 
             <ProgressBar
                 android:id="@+id/config_progressBar"

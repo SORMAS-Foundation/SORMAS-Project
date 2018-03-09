@@ -22,6 +22,8 @@ public class Outbreak extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = 6517638433928902578L;
 	
+	public static final String TABLE_NAME = "outbreak";
+	
 	public static final String DISTRICT = "district";
 	public static final String DISEASE = "disease";
 	public static final String REPORTING_USER = "reportingUser";

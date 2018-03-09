@@ -23,6 +23,8 @@ import de.symeda.sormas.backend.location.Location;
 public class EpiDataBurial extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 866789458483672591L;
+
+	public static final String TABLE_NAME = "epidataburial";
 	
 	public static final String BURIAL_PERSON_NAME = "burialPersonName";
 	public static final String BURIAL_RELATION = "burialRelation";

@@ -8,6 +8,7 @@ import de.symeda.sormas.ui.events.EventParticipantsController;
 import de.symeda.sormas.ui.person.PersonController;
 import de.symeda.sormas.ui.samples.SampleController;
 import de.symeda.sormas.ui.samples.SampleTestController;
+import de.symeda.sormas.ui.statistics.StatisticsController;
 import de.symeda.sormas.ui.task.TaskController;
 import de.symeda.sormas.ui.user.UserController;
 import de.symeda.sormas.ui.utils.BaseControllerProvider;
@@ -29,6 +30,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final SampleController sampleController;
 	private final SampleTestController sampleTestController;
 	private final OutbreakController outbreakController;
+	private final StatisticsController statisticsController;
 
 	public ControllerProvider() {
 		super();
@@ -44,6 +46,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		sampleController = new SampleController();
 		sampleTestController = new SampleTestController();
 		outbreakController = new OutbreakController();
+		statisticsController = new StatisticsController();
 	}
 
 	protected static ControllerProvider get() {
@@ -92,6 +95,10 @@ public class ControllerProvider extends BaseControllerProvider {
 	
 	public static OutbreakController getOutbreakController() {
 		return get().outbreakController;
+	}
+	
+	public static StatisticsController getStatisticsController() {
+		return get().statisticsController;
 	}
 
 }

@@ -44,10 +44,9 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CronService;
-import de.symeda.sormas.backend.common.EmailDeliveryFailedException;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
-import de.symeda.sormas.backend.common.SmsDeliveryFailedException;
+import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -202,6 +201,21 @@ public class TaskFacadeEjb implements TaskFacade {
 		// once we have to handle additional logic this should be moved to it's own function or even class 
 		if (ado.getTaskType() == TaskType.CASE_INVESTIGATION) {
 			caseFacade.updateInvestigationByTask(ado.getCaze());
+		}
+		
+		if (ado.getTaskType() == TaskType.CONTACT_FOLLOW_UP && ado.getTaskStatus() == TaskStatus.DONE && ado.getContact() != null) {
+			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(ado.getContact().getCaze().getRegion(), 
+					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+			for (User recipient : messageRecipients) {
+				try {
+					messagingService.sendMessage(recipient, I18nProperties.getMessage(MessagingService.SUBJECT_VISIT_COMPLETED), 
+							String.format(I18nProperties.getMessage(MessagingService.CONTENT_VISIT_COMPLETED), DataHelper.getShortUuid(ado.getContact().getUuid()), DataHelper.getShortUuid(ado.getAssigneeUser().getUuid())), 
+							MessageType.EMAIL, MessageType.SMS);
+				} catch (NotificationDeliveryFailedException e) {
+					logger.error(String.format("NotificationDeliveryFailedException when trying to notify supervisors about the completion of a follow-up visit. "
+							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
+				}
+			}
 		}
 
 		return toDto(ado);	
@@ -438,12 +452,9 @@ public class TaskFacadeEjb implements TaskFacade {
 								context.toString() + " " + DataHelper.getShortUuid(associatedEntity.getUuid()));
 
 					messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL, MessageType.SMS);
-				} catch (EmailDeliveryFailedException e) {
+				} catch (NotificationDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a starting task. "
-							+ "Failed to send email to user with UUID %s.", task.getAssigneeUser().getUuid()));
-				} catch (SmsDeliveryFailedException e) {
-					logger.error(String.format("SmsDeliveryFailedException when trying to notify a user about a starting task. "
-							+ "Failed to send SMS to user with UUID %s.", task.getAssigneeUser().getUuid()));
+							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", task.getAssigneeUser().getUuid()));
 				}
 			}
 		}
@@ -463,12 +474,9 @@ public class TaskFacadeEjb implements TaskFacade {
 								context.toString() + " " + DataHelper.getShortUuid(associatedEntity.getUuid()));
 
 					messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL, MessageType.SMS);
-				} catch (EmailDeliveryFailedException e) {
+				} catch (NotificationDeliveryFailedException e) {
 						logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a due task. "
-							+ "Failed to send email to user with UUID %s.", task.getAssigneeUser().getUuid()));
-				} catch (SmsDeliveryFailedException e) {
-						logger.error(String.format("SmsDeliveryFailedException when trying to notify a user about a due task. "
-							+ "Failed to send SMS to user with UUID %s.", task.getAssigneeUser().getUuid()));
+							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", task.getAssigneeUser().getUuid()));
 				}
 			}
 		}

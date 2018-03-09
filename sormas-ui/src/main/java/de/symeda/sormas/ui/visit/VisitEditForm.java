@@ -30,15 +30,17 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
     
     private final Disease disease;
     private final ContactDto contact;
+    private final PersonDto person;
     private SymptomsForm symptomsForm;
 
-    public VisitEditForm(Disease disease, ContactDto contact, boolean create, UserRight editOrCreateUserRight) {
+    public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create, UserRight editOrCreateUserRight) {
         super(VisitDto.class, VisitDto.I18N_PREFIX, editOrCreateUserRight);
         if (create) {
         	hideValidationUntilNextCommit();
         }
 		this.disease = disease;
 		this.contact = contact;
+		this.person = person;
 		if (disease == null) {
 			throw new IllegalArgumentException("disease cannot be null");
 		}
@@ -65,7 +67,6 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
     	addField(VisitDto.VISIT_STATUS, OptionGroup.class);
     	addField(VisitDto.VISIT_REMARKS, TextField.class);
     	
-        PersonDto person = contact != null ? FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid()) : null;
     	symptomsForm = new SymptomsForm(disease, person, SymptomsContext.VISIT, UserRight.VISIT_EDIT, null);
 		getFieldGroup().bind(symptomsForm, VisitDto.SYMPTOMS);
 		getContent().addComponent(symptomsForm, VisitDto.SYMPTOMS);

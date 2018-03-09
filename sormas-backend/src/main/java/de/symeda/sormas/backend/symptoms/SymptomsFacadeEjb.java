@@ -8,7 +8,6 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
-import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "SymptomsFacade")
@@ -230,14 +229,6 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setBulgingFontanelle(source.getBulgingFontanelle());
 		
 		return target;
-	}
-
-	@Override
-	public SymptomsDto saveSymptoms(SymptomsDto dto) {
-		SymptomsHelper.updateIsSymptomatic(dto);
-		Symptoms ado = fromDto(dto);
-		service.ensurePersisted(ado);
-		return toDto(ado);	
 	}
 	
 	@LocalBean

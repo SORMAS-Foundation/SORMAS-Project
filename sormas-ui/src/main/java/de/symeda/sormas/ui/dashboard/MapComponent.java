@@ -323,10 +323,10 @@ public class MapComponent extends VerticalLayout {
 		toggleCasesWithoutGPSButtonVisibility();
 
 		// "Expand" and "Collapse" buttons
-		Button expandMapButton = new Button("Expand map", FontAwesome.EXPAND);
+		Button expandMapButton = new Button("", FontAwesome.EXPAND);
 		CssStyles.style(expandMapButton, CssStyles.BUTTON_SUBTLE);
 		expandMapButton.addStyleName(CssStyles.VSPACE_NONE);   
-		Button collapseMapButton = new Button("Collapse map", FontAwesome.COMPRESS);
+		Button collapseMapButton = new Button("", FontAwesome.COMPRESS);
 		CssStyles.style(collapseMapButton, CssStyles.BUTTON_SUBTLE);
 		collapseMapButton.addStyleName(CssStyles.VSPACE_NONE);
 

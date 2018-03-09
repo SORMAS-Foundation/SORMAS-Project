@@ -14,6 +14,7 @@ public abstract class AbstractSubNavigationView extends AbstractView {
     private String params;
 
     private SubNavigationMenu subNavigationMenu;
+    private VerticalLayout infoLayout;
     private Label infoLabel;
     private Label infoLabelSub;
     private Component subComponent;
@@ -25,7 +26,7 @@ public abstract class AbstractSubNavigationView extends AbstractView {
         addComponent(subNavigationMenu);
         setExpandRatio(subNavigationMenu, 0);
         
-        VerticalLayout infoLayout = new VerticalLayout();
+        infoLayout = new VerticalLayout();
         infoLayout.setSizeUndefined();
         CssStyles.stylePrimary(infoLayout, CssStyles.CALLOUT);
         infoLabel = new Label("");
@@ -55,6 +56,10 @@ public abstract class AbstractSubNavigationView extends AbstractView {
 	    	addComponent(subComponent, 2);
 	    	setExpandRatio(subComponent, 1);
     	}
+    }
+    
+    protected void hideInfoLabel() {
+    	infoLayout.setVisible(false);
     }
 
     public void selectInMenu() {

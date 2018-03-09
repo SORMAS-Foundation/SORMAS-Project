@@ -20,6 +20,8 @@ import de.symeda.sormas.backend.location.Location;
 public class EpiDataGathering extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 5491651166245301869L;
+
+	public static final String TABLE_NAME = "epidatagathering";
 	
 	public static final String DESCRIPTION = "description";
 	public static final String GATHERING_DATE = "gatheringDate";

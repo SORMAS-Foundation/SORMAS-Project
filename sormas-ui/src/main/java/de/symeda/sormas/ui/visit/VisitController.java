@@ -12,6 +12,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -34,14 +35,15 @@ public class VisitController {
 	public void editVisit(VisitReferenceDto visitRef, Consumer<VisitReferenceDto> doneConsumer) {
     	VisitDto dto = FacadeProvider.getVisitFacade().getVisitByUuid(visitRef.getUuid());
     	VisitReferenceDto referenceDto = dto.toReference();
-    	VisitEditForm editForm = new VisitEditForm(dto.getDisease(), null, false, UserRight.VISIT_EDIT);
+    	PersonDto visitPerson = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
+    	VisitEditForm editForm = new VisitEditForm(dto.getDisease(), null, visitPerson, false, UserRight.VISIT_EDIT);
         editForm.setValue(dto);
         final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(editForm, editForm.getFieldGroup());
         editView.setWidth(100, Unit.PERCENTAGE);
 
         Window window = VaadinUiUtil.showModalPopupWindow(editView, "Edit visit");
         // visit form is too big for typical screens
-		window.setWidth(editForm.getWidth() + 40, Unit.PIXELS); 
+		window.setWidth(editForm.getWidth() + 90, Unit.PIXELS); 
 		window.setHeight(80, Unit.PERCENTAGE); 
         
         editView.addCommitListener(new CommitListener() {
@@ -73,7 +75,9 @@ public class VisitController {
 
 	public void createVisit(ContactReferenceDto contactRef, Consumer<VisitReferenceDto> doneConsumer) {
 		VisitDto visit = createNewVisit(contactRef);
-    	VisitEditForm createForm = new VisitEditForm(visit.getDisease(), FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid()), true, UserRight.VISIT_CREATE);
+		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
+		PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+    	VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true, UserRight.VISIT_CREATE);
         createForm.setValue(visit);
         final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(createForm, createForm.getFieldGroup());
         

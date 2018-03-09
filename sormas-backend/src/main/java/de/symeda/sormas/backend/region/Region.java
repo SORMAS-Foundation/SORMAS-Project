@@ -14,6 +14,8 @@ public class Region extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = -2958216667876104358L;
 
+	public static final String TABLE_NAME = "region";
+	
 	public static final String NAME = "name";
 	public static final String EPID_CODE = "epidCode";
 	public static final String DISTRICTS = "districts";

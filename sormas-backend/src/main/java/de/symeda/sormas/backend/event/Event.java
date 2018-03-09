@@ -32,6 +32,8 @@ import de.symeda.sormas.backend.user.User;
 public class Event extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 4964495716032049582L;
+
+	public static final String TABLE_NAME = "events";
 	
 	public static final String EVENT_TYPE = "eventType";
 	public static final String EVENT_STATUS = "eventStatus";

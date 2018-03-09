@@ -45,7 +45,11 @@ public class EpiWeek implements Serializable {
 
 	@Override
 	public String toString() {
-		return week + "/" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this)) + " - " + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekEnd(this)) + ")";
+		return "Wk " + week + "-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this)) + " - " + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekEnd(this)) + ")";
+	}
+	
+	public String toShortString() {
+		return "Wk " + week + "-" + year;
 	}
 
 }

@@ -12,15 +12,12 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -99,11 +96,8 @@ public class EventParticipantsGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				EventParticipantDto eventParticipantDto = (EventParticipantDto)itemId;
-				PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(eventParticipantDto.getPerson().getUuid());
-				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipantDto.getEvent().getUuid());
-				String caseId = findAssociatedCaseId(personDto, eventDto);
-				if(caseId != null) {
-					return caseId;
+				if (eventParticipantDto.getResultingCase() != null) {
+					return eventParticipantDto.getResultingCase().getUuid();
 				} else {
 					return "";
 				}
@@ -129,13 +123,11 @@ public class EventParticipantsGrid extends Grid {
 		addItemClickListener(e -> {
 	       	EventParticipantDto eventParticipantDto = (EventParticipantDto)e.getItemId();
 	       	if(CASE_ID.equals(e.getPropertyId())) {
-	       		PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(eventParticipantDto.getPerson().getUuid());
-				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipantDto.getEvent().getUuid());
-				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(findAssociatedCaseId(personDto, eventDto));
-				if(caseDto != null) {
-					ControllerProvider.getCaseController().navigateToCase(findAssociatedCaseId(personDto, eventDto));
+				if (eventParticipantDto.getResultingCase() != null) {
+					ControllerProvider.getCaseController().navigateToCase(eventParticipantDto.getResultingCase().getUuid());
 				} else {
-					ControllerProvider.getCaseController().create(personDto.toReference(), eventDto.getDisease());
+					EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipantDto.getEvent().getUuid());
+					ControllerProvider.getCaseController().create(eventParticipantDto.getPerson().toReference(), eventDto.getDisease());
 				}
 	       	} else if(EDIT_BTN_ID.equals(e.getPropertyId())) {
 	       		ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipantDto);
@@ -155,20 +147,4 @@ public class EventParticipantsGrid extends Grid {
 		getContainer().removeAllItems();
 		getContainer().addAll(entries);
 	}
-	
-	private String findAssociatedCaseId(PersonDto personDto, EventDto eventDto) {
-		if(personDto == null || eventDto == null) {
-			return null;
-		}
-		
-		UserDto user = LoginHelper.getCurrentUser();
-		CaseDataDto caze = FacadeProvider.getCaseFacade().getByPersonAndDisease(personDto.getUuid(), eventDto.getDisease(), user.getUuid());
-		if(caze != null) {
-			return caze.getUuid();
-		} else {
-			return null;
-		}
-	}
-
-	
 }

@@ -32,6 +32,8 @@ public class Person extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = -1735038738114840087L;
 	
+	public static final String TABLE_NAME = "person";
+	
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
 	public static final String NICKNAME = "nickname";

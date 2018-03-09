@@ -19,6 +19,8 @@ public class Facility extends AbstractDomainObject {
 	
 	private static final long serialVersionUID = 8572137127616417072L;
 
+	public static final String TABLE_NAME = "facility";
+	
 	public static final String NAME = "name";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";

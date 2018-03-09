@@ -19,7 +19,7 @@ import de.symeda.sormas.backend.user.User;
 public class WeeklyReport extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 2192478891179257201L;
-	
+
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String INFORMANT = "informant";
 	public static final String REPORT_DATE_TIME = "reportDateTime";

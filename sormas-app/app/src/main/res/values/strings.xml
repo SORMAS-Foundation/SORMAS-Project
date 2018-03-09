@@ -187,6 +187,7 @@
     <string name="label_body_not_touched">Body not touched</string>
     <string name="label_pick_gps">No GPS coordinates picked</string>
     <string name="label_lesions_locations">Localisation of the lesions</string>
+    <string name="label_sormas_version">SORMAS version:</string>
 
     <string name="sample_shipmentStatus">Shipment status</string>
     <string name="sample_not_shipped">Not shipped</string>
