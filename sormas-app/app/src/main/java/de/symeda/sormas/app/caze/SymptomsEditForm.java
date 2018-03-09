@@ -423,7 +423,7 @@ public class SymptomsEditForm extends FormTab {
      * Make bulging fontanelle invisible when the person in question is older than one year
      */
     public void updateBulgingFontanelleVisibility() {
-        if (binding == null || personProvider != null) {
+        if (binding == null || personProvider == null) {
             return;
         }
         Person person = personProvider.getPerson();
