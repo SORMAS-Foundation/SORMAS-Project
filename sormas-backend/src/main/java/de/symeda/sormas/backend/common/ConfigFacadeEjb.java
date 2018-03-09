@@ -62,7 +62,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	
 	@Override
 	public String getExportPath() {
-		return getProperty(EXPORT_PATH, "/tmp/");
+		return getProperty(EXPORT_PATH, "/tmp/sormas_export/");
 	}
 
 	@Override
