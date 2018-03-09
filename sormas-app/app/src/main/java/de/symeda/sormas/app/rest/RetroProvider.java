@@ -67,7 +67,7 @@ public final class RetroProvider {
     private WeeklyReportEntryFacadeRetro weeklyReportEntryFacadeRetro;
     private OutbreakFacadeRetro outbreakFacadeRetro;
 
-    private RetroProvider(Context context, Interceptor... additionalInterceptors) throws IncompatibleAppVersionException, ConnectException, AuthenticatorException {
+    private RetroProvider(Context context, Interceptor... additionalInterceptors) throws ApiVersionException, ConnectException, AuthenticatorException {
 
         this.context = context;
 
@@ -148,6 +148,7 @@ public final class RetroProvider {
             } else if (compatibilityCheckResponse == CompatibilityCheckResponse.TOO_NEW) {
                 throw new ConnectException("Could not synchronize because the app version is newer than the server version.");
             } else if (compatibilityCheckResponse == CompatibilityCheckResponse.TOO_OLD) {
+                // get the current server version, throw an exception including the app url that is then processed in the UI
                 matchAppAndApiVersions(infoFacadeRetro);
             }
         }
@@ -181,7 +182,7 @@ public final class RetroProvider {
         return instance != null && isConnectedToNetwork(instance.context);
     }
 
-    public static void connect(Context context) throws IncompatibleAppVersionException, ConnectException, AuthenticatorException {
+    public static void connect(Context context) throws ApiVersionException, ConnectException, AuthenticatorException {
 
         if (!isConnectedToNetwork(context)) {
             throw new ConnectException(context.getResources().getString(R.string.snackbar_no_connection));
@@ -199,7 +200,11 @@ public final class RetroProvider {
         instance = null;
     }
 
-    public static void matchAppAndApiVersions(final InfoFacadeRetro localInfoFacadeRetro) throws ConnectException, IncompatibleAppVersionException {
+    public static void matchAppAndApiVersions() throws ConnectException, ApiVersionException {
+        matchAppAndApiVersions(null);
+    }
+
+    private static void matchAppAndApiVersions(final InfoFacadeRetro localInfoFacadeRetro) throws ConnectException, ApiVersionException {
         // Retrieve the version
         Response<String> versionResponse;
         try {
@@ -257,9 +262,9 @@ public final class RetroProvider {
                 }
 
                 if (appUrlResponse.isSuccessful()) {
-                    throw new RetroProvider.IncompatibleAppVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'", appUrlResponse.body(), serverApiVersion);
+                    throw new ApiVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'", appUrlResponse.body(), serverApiVersion);
                 } else {
-                    throw new RetroProvider.IncompatibleAppVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'");
+                    throw new ApiVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'");
                 }
             }
         }
@@ -456,24 +461,24 @@ public final class RetroProvider {
         return instance.outbreakFacadeRetro;
     }
 
-    public static class IncompatibleAppVersionException extends Exception {
+    public static class ApiVersionException extends Exception {
         private String appUrl;
         private String version;
-        public IncompatibleAppVersionException() {
+        public ApiVersionException() {
             super();
         }
-        public IncompatibleAppVersionException(String message) {
+        public ApiVersionException(String message) {
             super(message);
         }
-        public IncompatibleAppVersionException(String message, String appUrl, String version) {
+        public ApiVersionException(String message, String appUrl, String version) {
             super(message);
             this.appUrl = appUrl;
             this.version = version;
         }
-        public IncompatibleAppVersionException(String message, Throwable cause) {
+        public ApiVersionException(String message, Throwable cause) {
             super(message, cause);
         }
-        public IncompatibleAppVersionException(Throwable cause) {
+        public ApiVersionException(Throwable cause) {
             super(cause);
         }
         public String getAppUrl() {

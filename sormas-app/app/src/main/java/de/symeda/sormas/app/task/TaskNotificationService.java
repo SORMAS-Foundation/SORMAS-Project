@@ -71,7 +71,7 @@ public class TaskNotificationService extends Service {
                     RetroProvider.connect(getApplicationContext());
                 } catch (AuthenticatorException e) {
                     // do nothing
-                } catch (RetroProvider.IncompatibleAppVersionException e) {
+                } catch (RetroProvider.ApiVersionException e) {
                     // do nothing
                 } catch (ConnectException e) {
                     // do nothing

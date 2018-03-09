@@ -118,7 +118,7 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
                     errorMessage = e.getMessage();
                 }
                 // switch to LoginActivity is done below
-            } catch (final RetroProvider.IncompatibleAppVersionException e) {
+            } catch (final RetroProvider.ApiVersionException e) {
                 if (showUpgradePrompt && e.getAppUrl() != null) {
                     if (swipeRefreshLayout != null) {
                         swipeRefreshLayout.setRefreshing(false);

@@ -3,7 +3,6 @@ package de.symeda.sormas.app;
 import android.accounts.AuthenticatorException;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -11,12 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 
-import java.io.IOException;
 import java.net.ConnectException;
-import java.util.concurrent.ExecutionException;
 
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CasesActivity;
 import de.symeda.sormas.app.contact.ContactsActivity;
@@ -27,10 +23,6 @@ import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SyncCallback;
-import okhttp3.MediaType;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Response;
 
 /**
  * Created by Mate Strysewske on 16.05.2017.
@@ -72,11 +64,11 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
 
             try {
                 RetroProvider.connect(getApplicationContext());
-                RetroProvider.matchAppAndApiVersions(null);
+                RetroProvider.matchAppAndApiVersions();
             } catch (AuthenticatorException e) {
                 // clearing login data is done below
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-            } catch (RetroProvider.IncompatibleAppVersionException e) {
+            } catch (RetroProvider.ApiVersionException e) {
                 if (e.getAppUrl() != null) {
                     AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), false,
                             new Callback() {
@@ -137,12 +129,12 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         if (ConfigProvider.getUsername() != null) {
             try {
                 RetroProvider.connect(getApplicationContext());
-                RetroProvider.matchAppAndApiVersions(null);
+                RetroProvider.matchAppAndApiVersions();
             } catch (AuthenticatorException e) {
                 // clear login data if authentication failed
                 ConfigProvider.clearUsernameAndPassword();
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-            } catch (RetroProvider.IncompatibleAppVersionException e) {
+            } catch (RetroProvider.ApiVersionException e) {
                 if (!ignoreApiVersionConflict) {
                     if (e.getAppUrl() != null) {
                         AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), ConfigProvider.getUser() != null,

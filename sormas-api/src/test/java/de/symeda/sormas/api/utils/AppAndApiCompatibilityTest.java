@@ -41,5 +41,12 @@ public class AppAndApiCompatibilityTest {
 
 		assertEquals(InfoProvider.isCompatibleToApi(appVersion), CompatibilityCheckResponse.TOO_NEW);
 	}
+	
+	@Test
+	public void testMalformedVersionReturnsError() {
+		String appVersion = "wrong/format";
+		assertEquals(InfoProvider.isCompatibleToApi(appVersion), CompatibilityCheckResponse.ERROR);
+		assertEquals(InfoProvider.isCompatibleToApi(null), CompatibilityCheckResponse.ERROR);
+	}
 
 }

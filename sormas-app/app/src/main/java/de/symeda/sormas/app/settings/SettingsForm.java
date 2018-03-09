@@ -82,7 +82,7 @@ public class SettingsForm extends FormTab {
                 RetroProvider.connect(getContext());
             } catch (AuthenticatorException e) {
                 Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-            } catch (RetroProvider.IncompatibleAppVersionException e) {
+            } catch (RetroProvider.ApiVersionException e) {
                 if (e.getAppUrl() != null) {
                     AppUpdateController.getInstance().updateApp(this.getActivity(), e.getAppUrl(), e.getVersion(), true, null);
                     return;
