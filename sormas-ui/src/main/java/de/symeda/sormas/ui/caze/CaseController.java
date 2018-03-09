@@ -142,9 +142,7 @@ public class CaseController {
     	if(person != null) {
     		caze.setPerson(person);
     	}
-    	if(disease == null) {
-    		caze.setDisease(Disease.EVD);
-    	} else {
+    	if(disease != null) {
     		caze.setDisease(disease);
     	}
     	caze.setInvestigationStatus(InvestigationStatus.PENDING);
