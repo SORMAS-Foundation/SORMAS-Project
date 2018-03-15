@@ -47,10 +47,11 @@ public class CaseImportLayout extends VerticalLayout {
 		Resource buttonIcon = FontAwesome.DOWNLOAD;
 		String buttonCaption = "Download Import Guide";
 		CaseImportLayoutComponent importGuideComponent = new CaseImportLayoutComponent(1, headline, infoText, buttonIcon, buttonCaption);
-		importGuideComponent.getButton().addClickListener(e -> {
-			// TODO implement
-			// TODO add expected encoding to guide
-		});
+		String importGuideFilePath = FacadeProvider.getImportExportFacade().getSormasImportGuideFilePath().toString();
+		StreamResource importGuideResource = DownloadUtil.createStreamResource(null, importGuideFilePath, "SORMAS_Import_Guide.pdf", "application/pdf", "Import guide not available",
+				"The SORMAS Import Guide can not be found on the server. Please contact an admin and tell them about this issue.");
+		FileDownloader importGuideDownloader = new FileDownloader(importGuideResource);
+		importGuideDownloader.extend(importGuideComponent.getButton());
 		CssStyles.style(importGuideComponent, CssStyles.VSPACE_2);
 		addComponent(importGuideComponent);
 		
@@ -60,11 +61,11 @@ public class CaseImportLayout extends VerticalLayout {
 				+ " never use a file you have downloaded before.";
 		buttonCaption = "Download Case Import Template";
 		CaseImportLayoutComponent importTemplateComponent = new CaseImportLayoutComponent(2, headline, infoText, buttonIcon, buttonCaption);
-		String filePath = FacadeProvider.getImportExportFacade().getCaseImportTemplateFilePath().toString();
-		StreamResource streamResource = DownloadUtil.createStreamResource(null, filePath, "sormas_import_case_template.csv", "text/csv",
+		String templateFilePath = FacadeProvider.getImportExportFacade().getCaseImportTemplateFilePath().toString();
+		StreamResource templateResource = DownloadUtil.createStreamResource(null, templateFilePath, "sormas_import_case_template.csv", "text/csv",
 				"Template not available", "The template file is not available. Please contact an admin and tell them about this issue.");
-		FileDownloader fileDownloader = new FileDownloader(streamResource);
-		fileDownloader.extend(importTemplateComponent.getButton());
+		FileDownloader templateFileDownloader = new FileDownloader(templateResource);
+		templateFileDownloader.extend(importTemplateComponent.getButton());
 		CssStyles.style(importTemplateComponent, CssStyles.VSPACE_2);
 		addComponent(importTemplateComponent);
 		
@@ -136,7 +137,7 @@ public class CaseImportLayout extends VerticalLayout {
 				return new ByteArrayOutputStream();
 			}
 			// Reject all files except .csv files - we also need to accept excel files here
-			if (!mimeType.equals("text/csv") && !mimeType.equals("application/vnd.ms-excel")) {
+			if (!(mimeType.equals("text/csv") || mimeType.equals("application/vnd.ms-excel"))) {
 				new Notification("Wrong file type", "Please provide a .csv file containing the cases you want to import. It's recommended to use the case import template file as a starting point.", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
 				// Workaround because returning null here throws an uncatchable UploadException
 				return new ByteArrayOutputStream();

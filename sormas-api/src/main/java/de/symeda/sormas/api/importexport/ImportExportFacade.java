@@ -26,6 +26,8 @@ public interface ImportExportFacade {
 	
 	String getCaseImportTemplateFilePath();
 	
+	String getSormasImportGuideFilePath();
+	
 	String importCasesFromCsvFile(String csvFilePath, String userUuid) throws IOException, InvalidColumnException;
 	
 }

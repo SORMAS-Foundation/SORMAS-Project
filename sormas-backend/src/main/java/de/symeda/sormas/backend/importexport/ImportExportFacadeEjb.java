@@ -114,6 +114,7 @@ public class ImportExportFacadeEjb implements ImportExportFacade {
 	private EpiDataService epiDataService;
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = "sormas_import_case_template.csv";
+	private static final String SORMAS_IMPORT_GUIDE_FILE_NAME = "SORMAS_Import_Guide.pdf";
 	private static final String ERROR_COLUMN_NAME = "Error description";
 
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
@@ -239,6 +240,13 @@ public class ImportExportFacadeEjb implements ImportExportFacade {
 		Path filePath = exportDirectory.resolve(CASE_IMPORT_TEMPLATE_FILE_NAME);
 		return filePath.toString();
 	}
+	
+	@Override
+	public String getSormasImportGuideFilePath() {
+		Path exportDirectory = Paths.get(configFacade.getTempFilesPath());
+		Path filePath = exportDirectory.resolve(SORMAS_IMPORT_GUIDE_FILE_NAME);
+		return filePath.toString();
+	}
 
 	@Override
 	public String importCasesFromCsvFile(String csvFilePath, String userUuid) throws IOException, InvalidColumnException {
@@ -256,6 +264,8 @@ public class ImportExportFacadeEjb implements ImportExportFacade {
 			String[] headerPath = header.split("\\.");
 			headers.add(headerPath);
 		}
+		
+		// TODO NOT NULL CONSTRAINTS!
 
 		// Create error report file
 		Path exportDirectory = Paths.get(configFacade.getTempFilesPath());
