@@ -13,6 +13,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ImportIgnore;
 
 @Entity
 @Audited
@@ -124,6 +125,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.onsetDate = onsetDate;
 	}
 
+	@ImportIgnore
 	@Column(length = 255)
 	public String getPatientIllLocation() {
 		return patientIllLocation;
@@ -502,6 +504,7 @@ public class Symptoms extends AbstractDomainObject {
 		return seizures;
 	}
 
+	@ImportIgnore
 	public Boolean getSymptomatic() {
 		return symptomatic;
 	}

@@ -7,6 +7,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
@@ -29,6 +30,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -45,12 +47,27 @@ public class CasesView extends AbstractView {
 	public static final String SEARCH_FIELD = "searchField";
 
 	private CaseGrid grid;    
+	private Button importButton;
     private Button createButton;
 
 	private VerticalLayout gridLayout;
 
     public CasesView() {
     	super(VIEW_NAME);
+    	
+    	if (LoginHelper.hasUserRight(UserRight.CASE_IMPORT)) {
+    		importButton = new Button("Import");
+    		importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+    		importButton.setIcon(FontAwesome.UPLOAD);
+    		importButton.addClickListener(e -> {
+    			Window popupWindow = VaadinUiUtil.showPopupWindow(new CaseImportLayout());
+    			popupWindow.setCaption("Import cases");
+    			popupWindow.addCloseListener(c -> {
+    				grid.reload();
+    			});
+    		});
+    		addHeaderComponent(importButton);
+    	}
     	
     	if (LoginHelper.hasUserRight(UserRight.CASE_CREATE)) {
 	        createButton = new Button("New case");

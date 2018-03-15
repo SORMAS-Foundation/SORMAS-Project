@@ -97,6 +97,9 @@ public enum UserRight {
 	CASE_DELETE(
 			ADMIN
 	),
+	CASE_IMPORT(
+			ADMIN
+	),
 	SAMPLE_CREATE(
 			ADMIN,
 			NATIONAL_USER,

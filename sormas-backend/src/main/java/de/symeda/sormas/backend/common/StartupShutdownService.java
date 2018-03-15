@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.common;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -30,6 +31,7 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.importexport.ImportExportFacadeEjb.ImportExportFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityService;
@@ -77,6 +79,8 @@ public class StartupShutdownService {
 	private CommunityService communityService;
 	@EJB
 	private FacilityService facilityService;
+	@EJB
+	private ImportExportFacadeEjbLocal importExportFacade;
 
 	@PostConstruct
 	public void startup() {
@@ -90,6 +94,8 @@ public class StartupShutdownService {
 		initDefaultUsers();
 		
 		upgrade();
+		
+		createImportTemplateFiles();
 	}
 	
 	public void importAdministrativeDivisions(String countryName) {
@@ -180,6 +186,14 @@ public class StartupShutdownService {
 		}
 
 		
+	}
+	
+	private void createImportTemplateFiles() {
+		try {
+			importExportFacade.generateCaseImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create case import template .csv file.");
+		}
 	}
 
 	@PreDestroy

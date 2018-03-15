@@ -1,4 +1,4 @@
-package de.symeda.sormas.api.export;
+package de.symeda.sormas.api.importexport;
 
 import de.symeda.sormas.api.I18nProperties;
 

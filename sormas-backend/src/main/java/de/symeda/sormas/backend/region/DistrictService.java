@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -46,6 +47,19 @@ public class DistrictService extends AbstractAdoService<District> {
 		cq.where(cb.equal(from.get(District.REGION), region));
 		
 		return em.createQuery(cq).getSingleResult().intValue();
+	}
+
+	public District getByName(String name) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
+		Root<District> from = cq.from(getElementClass());
+	
+		cq.where(cb.equal(from.get(District.NAME), name));
+		try {
+			return em.createQuery(cq).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 	
 	@Override

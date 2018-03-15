@@ -53,11 +53,11 @@ public class CronService {
 	public void runAtMidnight() {
 		// Remove all files with the sormas_export prefix from the export folder that are older than two hours
 		Date now = new Date();
-		File exportFolder = new File(configFacade.getExportPath());
+		File exportFolder = new File(configFacade.getTempFilesPath());
 		int numberOfDeletedFiles = 0;
 		for (final File fileEntry : exportFolder.listFiles()) {
-			// Skip the file if it's a directory or not a sormas export file
-			if (!fileEntry.isFile() || !fileEntry.getName().startsWith("sormas_export")) {
+			// Skip the file if it's a directory or not a sormas export or import file
+			if (!fileEntry.isFile() || (!fileEntry.getName().startsWith("sormas"))) {
 				continue;
 			}
 			

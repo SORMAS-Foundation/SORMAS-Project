@@ -1,4 +1,4 @@
-package de.symeda.sormas.api.export;
+package de.symeda.sormas.api.importexport;
 
 public enum DatabaseTableType {
 

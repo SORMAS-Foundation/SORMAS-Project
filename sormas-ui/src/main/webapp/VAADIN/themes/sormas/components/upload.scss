@@ -1,0 +1,30 @@
+
+@mixin sormas-upload {
+	
+	.v-upload {
+		margin-top: -5px;
+	}
+	
+	.v-upload .v-button {
+		margin-top: 10px;
+		display: block;
+		width: 164px;
+		@extend .v-button-primary;
+		border: none;
+	}
+
+	.v-upload .v-button .v-button-caption {
+		margin-top: 8px;
+		margin-left: 38px;
+		position: absolute;
+	}
+
+	.v-upload .v-button:before {
+		content: "\f093";
+		font-family: FontAwesome;
+		left: 20px;
+		position: absolute;
+		margin-top: 7px;
+	}
+
+}

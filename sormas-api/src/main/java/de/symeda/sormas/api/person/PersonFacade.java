@@ -31,4 +31,6 @@ public interface PersonFacade {
 	List<String> getAllUuids(String userUuid);
 
 	List<PersonDto> getByUuids(List<String> uuids);
+	
+	PersonDto buildPerson();
 }
