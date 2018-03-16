@@ -8,6 +8,7 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 
 @Remote
 public interface SampleFacade {
@@ -30,7 +31,7 @@ public interface SampleFacade {
 
 	List<SampleDto> getByUuids(List<String> uuids);
 	
-	List<DashboardSampleDto> getNewSamplesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	List<DashboardSampleDto> getNewSamplesForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
 	void deleteSample(SampleReferenceDto sampleRef, String userUuid);
 

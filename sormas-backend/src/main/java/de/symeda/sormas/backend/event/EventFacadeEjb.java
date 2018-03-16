@@ -27,6 +27,7 @@ import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -39,6 +40,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
@@ -65,6 +67,8 @@ public class EventFacadeEjb implements EventFacade {
 	private TaskService taskService;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
+	@EJB
+	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
 	
@@ -116,11 +120,12 @@ public class EventFacadeEjb implements EventFacade {
 	}
 	
 	@Override
-	public List<DashboardEventDto> getNewEventsForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public List<DashboardEventDto> getNewEventsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		User user = userService.getByUuid(userUuid);
+		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 		
-		return eventService.getNewEventsForDashboard(district, disease, from, to, user);
+		return eventService.getNewEventsForDashboard(region, district, disease, from, to, user);
 	}
 	
 	@Override

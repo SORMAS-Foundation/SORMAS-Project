@@ -37,6 +37,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -56,6 +57,7 @@ import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
@@ -87,6 +89,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private VisitService visitService;
 	@EJB
 	private TaskService taskService;
+	@EJB
+	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
 	@EJB
@@ -177,8 +181,9 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<MapContactDto> getContactsForMap(DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, String userUuid, List<MapCaseDto> mapCaseDtos) {
+	public List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, String userUuid, List<MapCaseDto> mapCaseDtos) {
 		User user = userService.getByUuid(userUuid);
+		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 		List<String> caseUuids = new ArrayList<>();
 		for (MapCaseDto mapCaseDto : mapCaseDtos) {
@@ -189,7 +194,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			return Collections.emptyList();
 		}
 		
-		return contactService.getContactsForMap(district, disease, fromDate, toDate, user, caseUuids);
+		return contactService.getContactsForMap(region, district, disease, fromDate, toDate, user, caseUuids);
 	}
 	
 	@Override

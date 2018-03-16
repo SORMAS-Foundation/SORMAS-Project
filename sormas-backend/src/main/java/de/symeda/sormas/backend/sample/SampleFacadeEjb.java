@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -32,8 +33,8 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -44,6 +45,7 @@ import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
+import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.SampleTestFacadeEjb.SampleTestFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -65,6 +67,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	private UserService userService;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
 	@EJB
@@ -191,11 +195,12 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 	
 	@Override
-	public List<DashboardSampleDto> getNewSamplesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public List<DashboardSampleDto> getNewSamplesForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		User user = userService.getByUuid(userUuid);
+		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 		
-		return sampleService.getNewSamplesForDashboard(district, disease, from, to, user);
+		return sampleService.getNewSamplesForDashboard(region, district, disease, from, to, user);
 	}
 	
 	@Override

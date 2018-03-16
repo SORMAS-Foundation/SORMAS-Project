@@ -16,17 +16,15 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -73,7 +71,7 @@ public class EventService extends AbstractAdoService<Event> {
 		return resultList;
 	}
 
-	public List<DashboardEventDto> getNewEventsForDashboard(District district, Disease disease, Date from, Date to, User user) {
+	public List<DashboardEventDto> getNewEventsForDashboard(Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardEventDto> cq = cb.createQuery(DashboardEventDto.class);
 		Root<Event> event = cq.from(getElementClass());
@@ -86,6 +84,15 @@ public class EventService extends AbstractAdoService<Event> {
 			filter = cb.and(filter, dateFilter);
 		} else {
 			filter = dateFilter;
+		}
+
+		if (region != null) {
+			Predicate regionFilter = cb.equal(eventLocation.get(Location.REGION), region);
+			if (filter != null) {
+				filter = cb.and(filter, regionFilter);
+			} else {
+				filter = regionFilter;
+			}
 		}
 
 		if (district != null) {

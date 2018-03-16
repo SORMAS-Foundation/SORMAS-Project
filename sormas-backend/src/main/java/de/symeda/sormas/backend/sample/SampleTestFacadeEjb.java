@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
@@ -35,6 +36,8 @@ import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -51,6 +54,8 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	private SampleTestService sampleTestService;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
 	@EJB
@@ -109,11 +114,12 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 	}
 
 	@Override
-	public List<DashboardTestResultDto> getNewTestResultsForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public List<DashboardTestResultDto> getNewTestResultsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
 		User user = userService.getByUuid(userUuid);
+		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 
-		return sampleTestService.getNewTestResultsForDashboard(district, disease, from, to, user);
+		return sampleTestService.getNewTestResultsForDashboard(region, district, disease, from, to, user);
 	}
 
 	@Override

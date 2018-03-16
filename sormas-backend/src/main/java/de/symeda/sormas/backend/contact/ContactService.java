@@ -38,6 +38,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.DateHelper8;
@@ -139,7 +140,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return result;
 	}	
 	
-	public List<MapContactDto> getContactsForMap(District district, Disease disease, Date fromDate, Date toDate, User user, List<String> caseUuids) {
+	public List<MapContactDto> getContactsForMap(Region region, District district, Disease disease, Date fromDate, Date toDate, User user, List<String> caseUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MapContactDto> cq = cb.createQuery(MapContactDto.class);
 		Root<Contact> contact = cq.from(getElementClass());
@@ -163,6 +164,15 @@ public class ContactService extends AbstractAdoService<Contact> {
 		} else {
 			// If no cases are shown, there should also be no contacts shown
 			return Collections.emptyList();
+		}
+
+		if (region != null) {
+			Predicate regionFilter = cb.equal(caze.get(Case.REGION), region);
+			if (filter != null) {
+				filter = cb.and(filter, regionFilter);
+			} else {
+				filter = regionFilter;
+			}
 		}
 		
 		if (district != null) {

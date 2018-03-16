@@ -175,7 +175,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		return resultList;
 	}	
 
-	public List<DashboardCaseDto> getNewCasesForDashboard(District district, Disease disease, Date from, Date to, User user) {
+	public List<DashboardCaseDto> getNewCasesForDashboard(Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardCaseDto> cq = cb.createQuery(DashboardCaseDto.class);
 		Root<Case> caze = cq.from(getElementClass());
@@ -192,6 +192,15 @@ public class CaseService extends AbstractAdoService<Case> {
 			filter = dateFilter;
 		}
 
+		if (region != null) {
+			Predicate regionFilter = cb.equal(caze.get(Case.REGION), region);
+			if (filter != null) {
+				filter = cb.and(filter, regionFilter);
+			} else {
+				filter = regionFilter;
+			}
+		}
+		
 		if (district != null) {
 			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
 			if (filter != null) {
@@ -231,7 +240,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		return result;
 	}
 
-	public List<MapCaseDto> getCasesForMap(District district, Disease disease, Date from, Date to, User user) {
+	public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MapCaseDto> cq = cb.createQuery(MapCaseDto.class);
 		Root<Case> caze = cq.from(getElementClass());
@@ -247,6 +256,15 @@ public class CaseService extends AbstractAdoService<Case> {
 			filter = dateFilter;
 		}
 
+		if (region != null) {
+			Predicate regionFilter = cb.equal(caze.get(Case.REGION), region);
+			if (filter != null) {
+				filter = cb.and(filter, regionFilter);
+			} else {
+				filter = regionFilter;
+			}
+		}
+		
 		if (district != null) {
 			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
 			if (filter != null) {
@@ -567,6 +585,8 @@ public class CaseService extends AbstractAdoService<Case> {
 	
 	public Predicate buildCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, Root<Case> from) {
 		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
+		Join<Case, Region> region = from.join(Case.REGION, JoinType.LEFT);
+		Join<Case, District> district = from.join(Case.DISTRICT, JoinType.LEFT);
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
 			filter = and(cb, filter, cb.isMember(
@@ -579,8 +599,11 @@ public class CaseService extends AbstractAdoService<Case> {
 		if (caseCriteria.getOutcome() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
 		}
+		if (caseCriteria.getRegion() != null) {
+			filter = and(cb, filter, cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()));
+		}
 		if (caseCriteria.getDistrict() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Case.DISTRICT), caseCriteria.getDistrict()));
+			filter = and(cb, filter, cb.equal(district.get(District.UUID), caseCriteria.getDistrict().getUuid()));
 		}
 		if (caseCriteria.getNewCaseDateFrom() != null && caseCriteria.getNewCaseDateTo() != null) {
 			filter = and(cb, filter, createNewCaseFilter(cb, from, caseCriteria.getNewCaseDateFrom(), caseCriteria.getNewCaseDateTo()));

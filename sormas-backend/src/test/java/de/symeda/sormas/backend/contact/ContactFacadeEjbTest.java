@@ -145,7 +145,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze.toReference(), new Date(), new Date());
 		MapCaseDto mapCaseDto = new MapCaseDto(caze.getUuid(), caze.getReportDate(), caze.getCaseClassification(), caze.getDisease(), caze.getHealthFacility().getUuid(), caze.getPerson().getUuid(), caze.getReportLat(), caze.getReportLon(), caze.getReportLat(), caze.getReportLon());
 		
-		List<MapContactDto> mapContactDtos =  getContactFacade().getContactsForMap(caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid(), Arrays.asList(mapCaseDto));
+		List<MapContactDto> mapContactDtos =  getContactFacade().getContactsForMap(caze.getRegion(), caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid(), Arrays.asList(mapCaseDto));
 		
 		// List should have one entry
 		assertEquals(1, mapContactDtos.size());

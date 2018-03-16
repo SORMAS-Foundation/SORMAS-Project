@@ -8,6 +8,7 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 
@@ -32,7 +33,7 @@ public interface ContactFacade {
 
 	List<ContactDto> getByUuids(List<String> uuids);
 	
-	List<MapContactDto> getContactsForMap(DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, String userUuid, List<MapCaseDto> mapCaseDtos);
+	List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, String userUuid, List<MapCaseDto> mapCaseDtos);
 	
 	void deleteContact(ContactReferenceDto contactRef, String userUuid);
 	

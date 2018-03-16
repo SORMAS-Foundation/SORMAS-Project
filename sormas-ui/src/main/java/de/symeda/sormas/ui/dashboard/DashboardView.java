@@ -23,6 +23,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -87,6 +88,7 @@ public class DashboardView extends AbstractView {
 	private StatisticsComponent statisticsComponent;
 
 	// Filters
+	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private Disease disease;
 	private DateFilterOption dateFilterOption;
@@ -148,6 +150,7 @@ public class DashboardView extends AbstractView {
 		filterLayout.addStyleName(CssStyles.VSPACE_3);
 		filterLayout.setMargin(new MarginInfo(true, true, false, true));
 
+		ComboBox regionFilter = new ComboBox();
 		ComboBox districtFilter = new ComboBox();
 		ComboBox diseaseFilter = new ComboBox();
 		ComboBox dateFilterOptionFilter = new ComboBox();
@@ -162,6 +165,8 @@ public class DashboardView extends AbstractView {
 		applyButton.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
+				region = (RegionReferenceDto) regionFilter.getValue();
+				dashboardDataProvider.setRegion(region);
 				district = (DistrictReferenceDto) districtFilter.getValue();
 				dashboardDataProvider.setDistrict(district);
 				disease = (Disease) diseaseFilter.getValue();
@@ -183,6 +188,20 @@ public class DashboardView extends AbstractView {
 				refreshDashboard();
 			}
 		});
+		
+		// Region filter
+		if (LoginHelper.getCurrentUser().getRegion() == null) {
+			regionFilter.setWidth(200, Unit.PIXELS);
+			regionFilter.setInputPrompt("State");
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+			regionFilter.addValueChangeListener(e -> {
+				applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			});
+			regionFilter.setCaption("State");
+			filterLayout.addComponent(regionFilter);
+			region = (RegionReferenceDto) regionFilter.getValue();
+			dashboardDataProvider.setRegion(region);
+		}
 
 		// District filter
 		if (LoginHelper.getCurrentUser().getRegion() != null) {

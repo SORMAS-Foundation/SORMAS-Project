@@ -232,19 +232,21 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<DashboardCaseDto> getNewCasesForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public List<DashboardCaseDto> getNewCasesForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 		User user = userService.getByUuid(userUuid);
 
-		return caseService.getNewCasesForDashboard(district, disease, from, to, user);
+		return caseService.getNewCasesForDashboard(region, district, disease, from, to, user);
 	}
 
 	@Override
-	public List<MapCaseDto> getCasesForMap(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public List<MapCaseDto> getCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 		User user = userService.getByUuid(userUuid);
 
-		return caseService.getCasesForMap(district, disease, from, to, user);
+		return caseService.getCasesForMap(region, district, disease, from, to, user);
 	}
 
 	@Override

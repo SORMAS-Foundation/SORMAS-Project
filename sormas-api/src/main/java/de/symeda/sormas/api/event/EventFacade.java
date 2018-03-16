@@ -7,6 +7,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Remote
@@ -16,7 +17,7 @@ public interface EventFacade {
 	
 	List<EventDto> getAllEventsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid);
 	
-	List<DashboardEventDto> getNewEventsForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	List<DashboardEventDto> getNewEventsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
 	EventDto getEventByUuid(String uuid);
 	

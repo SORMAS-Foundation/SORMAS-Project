@@ -127,6 +127,7 @@ public class EpiCurveComponent extends VerticalLayout {
 
 				CaseCriteria caseCriteria = new CaseCriteria()
 						.diseaseEquals(dashboardDataProvider.getDisease())
+						.regionEquals(dashboardDataProvider.getRegion())
 						.districtEquals(dashboardDataProvider.getDistrict());
 				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
 					caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
@@ -192,6 +193,7 @@ public class EpiCurveComponent extends VerticalLayout {
 
 				CaseCriteria caseCriteria = new CaseCriteria()
 						.diseaseEquals(dashboardDataProvider.getDisease())
+						.regionEquals(dashboardDataProvider.getRegion())
 						.districtEquals(dashboardDataProvider.getDistrict());
 				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
 					caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));

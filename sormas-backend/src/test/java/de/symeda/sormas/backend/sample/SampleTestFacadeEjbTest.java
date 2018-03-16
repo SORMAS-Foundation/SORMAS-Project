@@ -38,7 +38,7 @@ public class SampleTestFacadeEjbTest extends AbstractBeanTest {
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 
-		List<DashboardSampleDto> dashboardSampleDtos = getSampleFacade().getNewSamplesForDashboard(caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
+		List<DashboardSampleDto> dashboardSampleDtos = getSampleFacade().getNewSamplesForDashboard(caze.getRegion(), caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
 
 		// List should have one entry
 		assertEquals(1, dashboardSampleDtos.size());
@@ -55,7 +55,7 @@ public class SampleTestFacadeEjbTest extends AbstractBeanTest {
 		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 		creator.createSampleTest(sample.toReference(), SampleTestType.MICROSCOPY, new Date(), rdcf.facility, user.toReference(), SampleTestResultType.POSITIVE, "Positive", true);
 
-		List<DashboardTestResultDto> dashboardTestResultDtos = getSampleTestFacade().getNewTestResultsForDashboard(caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
+		List<DashboardTestResultDto> dashboardTestResultDtos = getSampleTestFacade().getNewTestResultsForDashboard(caze.getRegion(), caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
 
 		// List should have one entry
 		assertEquals(1, dashboardTestResultDtos.size());
