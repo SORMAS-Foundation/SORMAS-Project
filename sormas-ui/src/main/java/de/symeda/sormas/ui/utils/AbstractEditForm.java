@@ -98,13 +98,16 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 						if (field instanceof OptionGroup) {
 							CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL);
 						} else if (field instanceof ComboBox) {
-							((ComboBox)field).setFilteringMode(FilteringMode.CONTAINS);
+							((ComboBox) field).setFilteringMode(FilteringMode.CONTAINS);
+							((ComboBox) field).setNullSelectionAllowed(true);
 						}
 						return field;
 					}
 				}
 				else if (AbstractSelect.class.isAssignableFrom(fieldType)) {
-					return (T) createCompatibleSelect((Class<? extends AbstractSelect>) fieldType);
+					AbstractSelect field = createCompatibleSelect((Class<? extends AbstractSelect>) fieldType);
+					field.setNullSelectionAllowed(true);
+					return (T) field;
 				} 
 				else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
 					return (T) new LocationEditForm(editOrCreateUserRight);
