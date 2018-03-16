@@ -104,8 +104,6 @@ public class CaseService extends AbstractAdoService<Case> {
     	caze.setReportDate(new Date());
     	User user = userService.getByUserName(sessionContext.getCallerPrincipal().getName());
     	caze.setReportingUser(user);
-    	caze.setRegion(user.getRegion());
-    	caze.setDistrict(user.getDistrict());
     	
     	return caze;
 	}

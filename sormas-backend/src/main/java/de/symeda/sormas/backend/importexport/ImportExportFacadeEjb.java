@@ -264,8 +264,6 @@ public class ImportExportFacadeEjb implements ImportExportFacade {
 			String[] headerPath = header.split("\\.");
 			headers.add(headerPath);
 		}
-		
-		// TODO NOT NULL CONSTRAINTS!
 
 		// Create error report file
 		Path exportDirectory = Paths.get(configFacade.getTempFilesPath());
@@ -318,6 +316,27 @@ public class ImportExportFacadeEjb implements ImportExportFacade {
 			}
 
 			if (!caseHasImportError) {
+				// Check whether any required field that does not have a not null constraint in the database is empty
+				if (newCase.getRegion() == null) {
+					hasImportError = true;
+					writeImportErrorToFile(errorReportWriter, nextLine, "You have to specify a valid region.");
+					continue;
+				}
+				if (newCase.getDistrict() == null) {
+					hasImportError = true;
+					writeImportErrorToFile(errorReportWriter, nextLine, "You have to specify a valid district.");
+					continue;
+				}
+				if (newCase.getHealthFacility() == null) {
+					hasImportError = true;
+					writeImportErrorToFile(errorReportWriter, nextLine, "You have to specify a valid health facility.");
+					continue;
+				}
+				if (newCase.getDisease() == null) {
+					hasImportError = true;
+					writeImportErrorToFile(errorReportWriter, nextLine, "You have to specify a valid disease.");
+					continue;
+				}
 				// Check whether there are any infrastructure errors
 				if (!newCase.getDistrict().getRegion().equals(newCase.getRegion())) {
 					hasImportError = true;
