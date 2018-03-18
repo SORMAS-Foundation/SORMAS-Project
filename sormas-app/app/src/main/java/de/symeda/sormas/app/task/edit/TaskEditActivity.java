@@ -9,6 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
+import java.util.ArrayList;
+
+import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
@@ -16,10 +19,6 @@ import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.NavigationHelper;
-
-import java.util.ArrayList;
-
-import de.symeda.sormas.api.task.TaskStatus;
 
 /**
  * Created by Orson on 22/01/2018.
@@ -39,9 +38,9 @@ public class TaskEditActivity extends BaseEditActivity {
 
     private TaskStatus filterStatus = null;
     private TaskStatus pageStatus = null;
-    private String taskUuid = null;
+    private String recordUuid = null;
     private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
-    private BaseEditActivityFragment activeFragment = new TaskEditFragment();
+    private BaseEditActivityFragment activeFragment = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -49,7 +48,7 @@ public class TaskEditActivity extends BaseEditActivity {
 
         SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, taskUuid);
+        SaveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -66,7 +65,7 @@ public class TaskEditActivity extends BaseEditActivity {
     protected void initializeActivity(Bundle arguments) {
         filterStatus = (TaskStatus) getFilterStatusArg(arguments);
         //pageStatus = (TaskStatus) getPageStatusArg(arguments);
-        taskUuid = getRecordUuidArg(arguments);
+        recordUuid = getRecordUuidArg(arguments);
 
         this.activeMenuItem = null;
         this.showStatusFrame = false;
@@ -75,7 +74,13 @@ public class TaskEditActivity extends BaseEditActivity {
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment() {
+    public BaseEditActivityFragment getActiveEditFragment() throws IllegalAccessException, InstantiationException {
+        if (activeFragment == null) {
+            TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(TaskEditActivity.this,
+                    recordUuid, pageStatus);
+            activeFragment = TaskEditFragment.newInstance(this, dataCapsule);
+        }
+
         return activeFragment;
     }
 

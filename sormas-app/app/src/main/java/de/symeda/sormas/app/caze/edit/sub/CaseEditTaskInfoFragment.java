@@ -3,30 +3,20 @@ package de.symeda.sormas.app.caze.edit.sub;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.view.ViewStub;
 import android.widget.Toast;
 
-import java.util.List;
-
-import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.event.Event;
-import de.symeda.sormas.app.backend.facility.Facility;
-import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.backend.region.Community;
-import de.symeda.sormas.app.backend.region.District;
-import de.symeda.sormas.app.backend.region.Region;
-import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
-import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
-import de.symeda.sormas.app.component.TeboSwitch;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentTaskEditLayoutBinding;
 import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 
 /**
  * Created by Orson on 16/02/2018.
@@ -36,7 +26,7 @@ import de.symeda.sormas.app.util.MemoryDatabaseHelper;
  * sampson.orson@technologyboard.org
  */
 
-public class CaseEditTaskInfoFragment  extends BaseEditActivityFragment<FragmentTaskEditLayoutBinding> implements OnTeboSwitchCheckedChangeListener {
+public class CaseEditTaskInfoFragment  extends BaseEditActivityFragment<FragmentTaskEditLayoutBinding, Task> {
 
     private String recordUuid = null;
     private TaskStatus pageStatus = null;
@@ -45,16 +35,10 @@ public class CaseEditTaskInfoFragment  extends BaseEditActivityFragment<Fragment
     private View.OnClickListener doneCallback;
     private View.OnClickListener notExecCallback;
 
-    private List<Region> regionList;
-    private List<District> districtList;
-    private List<Community> communityList;
-    private List<Facility> facilityList;
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -66,7 +50,6 @@ public class CaseEditTaskInfoFragment  extends BaseEditActivityFragment<Fragment
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
-        //filterStatus = (EventStatus) getFilterStatusArg(arguments);
         pageStatus = (TaskStatus) getPageStatusArg(arguments);
     }
 
@@ -76,56 +59,35 @@ public class CaseEditTaskInfoFragment  extends BaseEditActivityFragment<Fragment
     }
 
     @Override
-    public AbstractDomainObject getData() {
+    public Task getPrimaryData() {
         return record;
     }
 
-    @Override
-    public void onBeforeLayoutBinding(Bundle savedInstanceState) {
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            resultHolder.forItem().add(DatabaseHelper.getTaskDao().queryUuid(recordUuid));
+        } else {
+            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
-        regionList = MemoryDatabaseHelper.REGION.getRegions(5);
-        districtList = MemoryDatabaseHelper.DISTRICT.getDistricts(5);
-        communityList = MemoryDatabaseHelper.COMMUNITY.getCommunities(5);
-        facilityList = MemoryDatabaseHelper.FACILITY.getFacilities(5);
+            //Item Data
+            if (itemIterator.hasNext())
+                record =  itemIterator.next();
 
-        for(District d: districtList) {
-            d.setRegion(regionList.get(0));
+            setupCallback();
         }
 
-        for(Community c: communityList) {
-            c.setDistrict(districtList.get(0));
-        }
-
-        for(Facility f: facilityList) {
-            f.setCommunity(communityList.get(0));
-        }
-
-        setupCallback();
-
+        return true;
     }
 
     @Override
-    public void onLayoutBinding(ViewStub stub, View inflated, FragmentTaskEditLayoutBinding contentBinding) {
-
-        //binding = DataBindingUtil.inflate(inflater, getEditLayout(), container, true);
-        record = MemoryDatabaseHelper.TASK.getTasks(1).get(0);
-        Symptoms symptom = MemoryDatabaseHelper.SYMPTOM.getSymptoms(1).get(0);
-        Person person = MemoryDatabaseHelper.PERSON.getPersons(1).get(0);
-        Event event = MemoryDatabaseHelper.EVENT.getEvents(1).get(0);
-
+    public void onLayoutBinding(FragmentTaskEditLayoutBinding contentBinding) {
         contentBinding.setData(record);
-        contentBinding.setTest1(event);
-        contentBinding.setTest(symptom);
-        contentBinding.setSymptomState(SymptomState.class);
         contentBinding.setDoneCallback(doneCallback);
         contentBinding.setNotExecCallback(notExecCallback);
-        contentBinding.setCheckedCallback(this);
-
-        //return binding;
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentTaskEditLayoutBinding binding) {
+    public void onAfterLayoutBinding(FragmentTaskEditLayoutBinding contentBinding) {
 
     }
 
@@ -153,17 +115,12 @@ public class CaseEditTaskInfoFragment  extends BaseEditActivityFragment<Fragment
     }
 
     @Override
-    public void onCheckedChanged(TeboSwitch teboSwitch, Object checkedItem, int checkedId) {
-
-    }
-
-    @Override
     public boolean includeFabNonOverlapPadding() {
         return false;
     }
 
-    public static CaseEditTaskInfoFragment newInstance(TaskFormNavigationCapsule capsule)
+    public static CaseEditTaskInfoFragment newInstance(IActivityCommunicator activityCommunicator, TaskFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(CaseEditTaskInfoFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseEditTaskInfoFragment.class, capsule);
     }
 }

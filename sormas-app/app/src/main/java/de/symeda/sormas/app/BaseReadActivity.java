@@ -22,6 +22,8 @@ import java.util.ArrayList;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.component.menu.LandingPageMenuControl;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.component.menu.LandingPageMenuParser;
@@ -70,7 +72,23 @@ public abstract class BaseReadActivity extends AbstractSormasActivity implements
         super.onCreate(savedInstanceState);
     }
 
+    @Override
+    public void showFragmentView() {
+        if (fragmentFrame != null)
+            fragmentFrame.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideFragmentView() {
+        if (fragmentFrame != null)
+            fragmentFrame.setVisibility(View.GONE);
+    }
+
     protected void initializeBaseActivity(Bundle savedInstanceState) {
+        subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingListActivityTitle);
+        fragmentFrame = findViewById(R.id.fragment_frame);
+        pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);
+        fab = (FloatingActionButton)findViewById(R.id.fab);
 
         if (savedInstanceState == null) {
             activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
@@ -82,10 +100,6 @@ public abstract class BaseReadActivity extends AbstractSormasActivity implements
         initializeActivity(arguments);
 
 
-        subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingListActivityTitle);
-        fragmentFrame = findViewById(R.id.fragment_frame);
-        pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);
-        fab = (FloatingActionButton)findViewById(R.id.fab);
 
         try {
             if (showPageMenu()) {
@@ -336,10 +350,28 @@ public abstract class BaseReadActivity extends AbstractSormasActivity implements
         String dataUuid = dataCapsule.getRecordUuid();
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
         IStatusElaborator pageStatus = dataCapsule.getPageStatus();
+        String sampleMaterial = dataCapsule.getSampleMaterial();
+        String caseUuid = dataCapsule.getCaseUuid();
+        String taskUuid = dataCapsule.getTaskUuid();
+        String contactUuid = dataCapsule.getContactUuid();
+        String sampleUuid = dataCapsule.getSampleUuid();
+        Disease disease = dataCapsule.getDisease();
+        boolean isForVisit = dataCapsule.isForVisit();
+        boolean isVisitCooperative = dataCapsule.isVisitCooperative();
+        UserRight userRight = dataCapsule.getUserRight();
         //AbstractDomainObject record = dataCapsule.getRecord();
 
         Intent intent = new Intent(fromActivity, toActivity);
         intent.putExtra(ConstantHelper.KEY_DATA_UUID, dataUuid);
+        intent.putExtra(ConstantHelper.KEY_CASE_UUID, caseUuid);
+        intent.putExtra(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
+        intent.putExtra(ConstantHelper.KEY_TASK_UUID, taskUuid);
+        intent.putExtra(ConstantHelper.KEY_CONTACT_UUID, contactUuid);
+        intent.putExtra(ConstantHelper.KEY_SAMPLE_UUID, sampleUuid);
+        intent.putExtra(ConstantHelper.ARG_DISEASE, disease);
+        intent.putExtra(ConstantHelper.ARG_FOR_VISIT, isForVisit);
+        intent.putExtra(ConstantHelper.ARG_VISIT_COOPERATIVE, isVisitCooperative);
+        intent.putExtra(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT, userRight);
 
         if (filterStatus != null)
             intent.putExtra(ConstantHelper.ARG_FILTER_STATUS, filterStatus.getValue());
@@ -424,6 +456,105 @@ public abstract class BaseReadActivity extends AbstractSormasActivity implements
         return e;
     }
 
+    protected String getTaskUuidArg(Bundle arguments) {
+        String result = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.KEY_TASK_UUID)) {
+                result = (String) arguments.getString(ConstantHelper.KEY_TASK_UUID);
+            }
+        }
+
+        return result;
+    }
+
+    protected String getContactUuidArg(Bundle arguments) {
+        String result = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.KEY_CONTACT_UUID)) {
+                result = (String) arguments.getString(ConstantHelper.KEY_CONTACT_UUID);
+            }
+        }
+
+        return result;
+    }
+
+    protected String getCaseUuidArg(Bundle arguments) {
+        String result = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.KEY_CASE_UUID)) {
+                result = (String) arguments.getString(ConstantHelper.KEY_CASE_UUID);
+            }
+        }
+
+        return result;
+    }
+
+    protected String getSampleUuidArg(Bundle arguments) {
+        String result = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.KEY_SAMPLE_UUID)) {
+                result = (String) arguments.getString(ConstantHelper.KEY_SAMPLE_UUID);
+            }
+        }
+
+        return result;
+    }
+
+    protected Disease getDiseaseArg(Bundle arguments) {
+        Disease result = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.ARG_DISEASE)) {
+                result = (Disease) arguments.getSerializable(ConstantHelper.ARG_DISEASE);
+            }
+        }
+
+        return result;
+    }
+
+    protected boolean getForVisitArg(Bundle arguments) {
+        boolean result = false;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.ARG_FOR_VISIT)) {
+                result = (boolean) arguments.getBoolean(ConstantHelper.ARG_FOR_VISIT);
+            }
+        }
+
+        return result;
+    }
+
+    protected boolean getVisitCooperativeArg(Bundle arguments) {
+        boolean result = false;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.ARG_VISIT_COOPERATIVE)) {
+                result = (boolean) arguments.getBoolean(ConstantHelper.ARG_VISIT_COOPERATIVE);
+            }
+        }
+
+        return result;
+    }
+
+    protected UserRight getUserRightArg(Bundle arguments) {
+        UserRight e = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT)) {
+                e = (UserRight) arguments.getSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT);
+            }
+        }
+
+        return e;
+    }
+
+    protected String getSampleMaterialArg(Bundle arguments) {
+        String result = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.KEY_SAMPLE_MATERIAL)) {
+                result = (String) arguments.getString(ConstantHelper.KEY_SAMPLE_MATERIAL);
+            }
+        }
+
+        return result;
+    }
+
 
 
     protected <E extends Enum<E>> void SaveFilterStatusState(Bundle outState, E status) {
@@ -447,6 +578,60 @@ public abstract class BaseReadActivity extends AbstractSormasActivity implements
     protected void SaveActiveMenuState(Bundle outState, int activeMenuKey) {
         if (outState != null) {
             outState.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
+        }
+    }
+
+    protected void SaveTaskUuidState(Bundle outState, String taskUuid) {
+        if (outState != null) {
+            outState.putString(ConstantHelper.KEY_TASK_UUID, taskUuid);
+        }
+    }
+
+    protected void SaveContactUuidState(Bundle outState, String contactUuid) {
+        if (outState != null) {
+            outState.putString(ConstantHelper.KEY_CONTACT_UUID, contactUuid);
+        }
+    }
+
+    protected void SaveCaseUuidState(Bundle outState, String caseUuid) {
+        if (outState != null) {
+            outState.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);
+        }
+    }
+
+    protected void SaveSampleUuidState(Bundle outState, String sampleUuid) {
+        if (outState != null) {
+            outState.putString(ConstantHelper.KEY_SAMPLE_UUID, sampleUuid);
+        }
+    }
+
+    protected void SaveDiseaseState(Bundle outState, Disease disease) {
+        if (outState != null) {
+            outState.putSerializable(ConstantHelper.ARG_DISEASE, disease);
+        }
+    }
+
+    protected void SaveForVisitState(Bundle outState, boolean isForVisit) {
+        if (outState != null) {
+            outState.putBoolean(ConstantHelper.ARG_FOR_VISIT, isForVisit);
+        }
+    }
+
+    protected void SaveVisitCooperativeState(Bundle outState, boolean isVisitCooperative) {
+        if (outState != null) {
+            outState.putBoolean(ConstantHelper.ARG_VISIT_COOPERATIVE, isVisitCooperative);
+        }
+    }
+
+    protected void SaveUserRightState(Bundle outState, UserRight userRight) {
+        if (outState != null) {
+            outState.putSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT, userRight);
+        }
+    }
+
+    protected void SaveSampleMaterialState(Bundle outState, String sampleMaterial) {
+        if (outState != null) {
+            outState.putString(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
         }
     }
 

@@ -9,6 +9,7 @@ import android.databinding.BindingMethods;
 import android.databinding.InverseBindingListener;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -142,8 +143,10 @@ public class TeboTextRead extends TeboPropertyField<String> implements ITextCont
     public void setSingleLine(boolean singleLine) {
         this.singleLine = singleLine;
         txtControlInput.setSingleLine(singleLine);
+        txtControlInput.setEllipsize(TextUtils.TruncateAt.END);
         if (!singleLine) {
             txtControlInput.setMaxLines(maxLines);
+            //txtControlInput.setLines(maxLines);
         }
     }
 
@@ -306,10 +309,10 @@ public class TeboTextRead extends TeboPropertyField<String> implements ITextCont
 
     @BindingAdapter(value={"value", "valueFormat", "defaultValue"}, requireAll=false)
     public static void setValue(TeboTextRead textField, String stringValue, String valueFormat, String defaultValue) {
-        String val = defaultValue;
+        /*String val = defaultValue;
         textField.setValueFormat(valueFormat);
 
-        if (stringValue == null) {
+        if (stringValue == null || stringValue.isEmpty()) {
             textField.setValue(val);
             textField.updateControl(val);
         } else {
@@ -323,6 +326,27 @@ public class TeboTextRead extends TeboPropertyField<String> implements ITextCont
                     textField.updateControl(val);
                 }
             }
+        }*/
+        setValue(textField, stringValue, "", valueFormat, defaultValue);
+    }
+
+    @BindingAdapter(value={"value", "appendValue", "valueFormat", "defaultValue"}, requireAll=false)
+    public static void setValue(TeboTextRead textField, String stringValue, String appendValue, String valueFormat, String defaultValue) {
+        String val = defaultValue;
+        textField.setValueFormat(valueFormat);
+
+        if (stringValue == null || stringValue.isEmpty()) {
+            textField.setValue(val);
+            textField.updateControl(val);
+        } else {
+            val = stringValue;
+            textField.setValue(val);
+
+            if (valueFormat != null && valueFormat.trim() != "") {
+                textField.updateControl(String.format(valueFormat, stringValue, appendValue));
+            } else {
+                textField.updateControl(val);
+            }
         }
     }
 
@@ -331,11 +355,12 @@ public class TeboTextRead extends TeboPropertyField<String> implements ITextCont
         String val = defaultValue;
         textField.setValueFormat(valueFormat);
 
-        if (integerValue == null) {
+        if (integerValue == null || integerValue < 0) {
             textField.setValue(val);
             textField.updateControl(val);
         } else {
-            if (integerValue.toString() != textField.getValue()) {
+            String stringValue = (integerValue != null) ? integerValue.toString() : "";
+            if (stringValue != textField.getValue()) {
                 val = Integer.toString(integerValue);
                 textField.setValue(val);
 
@@ -353,7 +378,7 @@ public class TeboTextRead extends TeboPropertyField<String> implements ITextCont
         String val = defaultValue;
         textField.setValueFormat(valueFormat);
 
-        if (floatValue == null) {
+        if (floatValue == null || floatValue < 0f) {
             textField.setValue(val);
             textField.updateControl(val);
         } else {
@@ -415,28 +440,8 @@ public class TeboTextRead extends TeboPropertyField<String> implements ITextCont
     }
 
     @BindingAdapter(value={"value", "appendValue", "valueFormat", "defaultValue"}, requireAll=false)
-    public static void setValue(TeboTextRead textField, String stringValue, String appendValue, String valueFormat, String defaultValue) {
-        String val = defaultValue;
-        textField.setValueFormat(valueFormat);
-
-        if (stringValue == null) {
-            textField.setValue(val);
-            textField.updateControl(val);
-        } else {
-            val = stringValue;
-            textField.setValue(val);
-
-            if (valueFormat != null && valueFormat.trim() != "") {
-                textField.updateControl(String.format(valueFormat, stringValue, appendValue));
-            } else {
-                textField.updateControl(val);
-            }
-        }
-    }
-
-    @BindingAdapter(value={"value", "appendValue", "valueFormat", "defaultValue"}, requireAll=false)
     public static void setValue(TeboTextRead textField, Integer integerValue, String appendValue, String valueFormat, String defaultValue) {
-        setValue(textField, integerValue.toString(), appendValue, valueFormat, defaultValue);
+        setValue(textField, (integerValue != null) ? integerValue.toString() : "", appendValue, valueFormat, defaultValue);
     }
 
     @BindingAdapter(value={"stateAndLgaValue", "defaultValue"}, requireAll=false)
@@ -727,11 +732,11 @@ public class TeboTextRead extends TeboPropertyField<String> implements ITextCont
         String val = defaultValue;
         textField.setValueFormat(valueFormat);
 
-        if (person == null) {
+        if (person == null || (person.getBirthdateDD() == null || person.getBirthdateMM() == null || person.getBirthdateYYYY() == null)) {
             textField.setValue(val);
             textField.updateControl(val);
         } else {
-            val = person.getApproximateAge().toString();
+            val = (person.getApproximateAge() != null && person.getApproximateAge() >= 0)? person.getApproximateAge().toString() : "";
 
             if (val != textField.getValue()) {
                 textField.setValue(val);
@@ -751,11 +756,15 @@ public class TeboTextRead extends TeboPropertyField<String> implements ITextCont
 
                     //Dob
                     String dateFormat = textField.getContext().getResources().getString(R.string.date_format);
-                    String date = person.getBirthdateDD() != null ? person.getBirthdateDD().toString() : "1";
-                    String month = person.getBirthdateMM() != null ? String.valueOf(person.getBirthdateMM() - 1) : "0";
-                    String year = person.getBirthdateYYYY().toString();
+                    String date = "", month = "", year = "", dob = "";
 
-                    String dob = String.format(dateFormat, date, month, year);
+                    if (person.getBirthdateDD() != null && person.getBirthdateMM() != null && person.getBirthdateYYYY() != null) {
+                        date = person.getBirthdateDD() != null ? person.getBirthdateDD().toString() : "1";
+                        month = person.getBirthdateMM() != null ? String.valueOf(person.getBirthdateMM() - 1) : "0";
+                        year = person.getBirthdateYYYY() != null ? person.getBirthdateYYYY().toString() : "";
+
+                        dob = String.format(dateFormat, date, month, year);
+                    }
 
                     textField.updateControl(String.format(valueFormat, val, ageType, dob));
                 } else {
@@ -771,11 +780,11 @@ public class TeboTextRead extends TeboPropertyField<String> implements ITextCont
         String val = defaultValue;
         textField.setValueFormat(valueFormat);
 
-        if (person == null) {
+        if (person == null || person.getOccupationType() == null) {
             textField.setValue(val);
             textField.updateControl(val);
         } else {
-            val = person.getOccupationType().toString();
+            val = (person.getOccupationType() != null)? person.getOccupationType().toString() : "'";
 
             if (val != textField.getValue()) {
                 textField.setValue(val);
@@ -806,7 +815,7 @@ public class TeboTextRead extends TeboPropertyField<String> implements ITextCont
             textField.setValue(val);
             textField.updateControl(val);
         } else {
-            val = person.toString();
+            val = (person != null)? person.toString() : "";
 
             if (val != textField.getValue()) {
                 textField.setValue(val);
@@ -866,7 +875,7 @@ public class TeboTextRead extends TeboPropertyField<String> implements ITextCont
             textField.setValue(val);
             textField.updateControl(val);
         } else {
-            val = symptoms.getTemperature().toString();
+            val = (symptoms.getTemperature() != null)? symptoms.getTemperature().toString() : "";
             TemperatureSource tempSource = symptoms.getTemperatureSource();
 
             if (tempSource == null)

@@ -8,12 +8,17 @@
         <import type="de.symeda.sormas.app.core.BoxingUtil" />
         <variable name="data" type="de.symeda.sormas.app.backend.task.Task"/>
         <variable name="person" type="de.symeda.sormas.app.backend.person.Person"/>
-        <variable name="test1" type="de.symeda.sormas.app.backend.event.Event"/>
-        <variable
-            name="test"
-            type="de.symeda.sormas.app.backend.symptoms.Symptoms" />
         <variable name="callback" type="android.view.View.OnClickListener"/>
-        <variable name="symptomState" type="Class" />
+        <variable
+            name="caseLinkCallback"
+            type="de.symeda.sormas.app.component.OnLinkClickListener" />
+        <variable
+            name="contactLinkCallback"
+            type="de.symeda.sormas.app.component.OnLinkClickListener" />
+        <variable
+            name="eventLinkCallback"
+            type="de.symeda.sormas.app.component.OnLinkClickListener" />
+
         <variable
             name="showNotificationCallback"
             type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
@@ -27,23 +32,21 @@
         <variable
             name="notExecCallback"
             type="android.view.View.OnClickListener" />
-
-        <variable
-            name="checkedCallback"
-            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
     </data>
 
-
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_height="match_parent"
         >
         <ScrollView
+            android:id="@+id/mainContent"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -61,6 +64,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:maxLines="2"
+                    app:singleLine="false"
                     app:description="@string/desc_task_type"
                     app:labelCaption="@string/label_task_type"
                     app:value="@{data.taskType}"
@@ -79,6 +84,7 @@
                     app:cazeAndLocation="@{data.caze}"
                     app:defaultValue='@{@string/not_available}'
                     app:goneIfNull='@{data.caze}'
+                    app:onLinkClick="@{(view) -> caseLinkCallback.onClick(view, data)}"
                     />
 
                 <de.symeda.sormas.app.component.TeboTextLinkRead
@@ -93,6 +99,7 @@
                     app:contactAndLocation="@{data.contact}"
                     app:defaultValue='@{@string/not_available}'
                     app:goneIfNull='@{data.contact}'
+                    app:onLinkClick="@{(view) -> contactLinkCallback.onClick(view, data)}"
                     />
 
                 <de.symeda.sormas.app.component.TeboTextLinkRead
@@ -107,6 +114,29 @@
                     app:eventAndLocation="@{data.event}"
                     app:defaultValue='@{@string/not_available}'
                     app:goneIfNull='@{data.event}'
+                    app:onLinkClick="@{(view) -> eventLinkCallback.onClick(view, data)}"
+                    />
+
+                <de.symeda.sormas.app.component.TeboTextRead
+                    android:id="@+id/txtCreatorUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:labelCaption="@string/label_task_creator"
+                    app:description="@string/desc_task_creator"
+                    app:value="@{data.creatorUser}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <de.symeda.sormas.app.component.TeboTextRead
+                    android:id="@+id/txtCreatorComment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:labelCaption="@string/label_task_creator_comment"
+                    app:description="@string/desc_task_creator_comment"
+                    app:value="@{data.creatorComment}"
+                    app:defaultValue='@{@string/not_available}'
                     />
 
                 <LinearLayout
@@ -184,37 +214,13 @@
                     android:id="@+id/txtCommentOnExec"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    android:layout_marginBottom="@dimen/pageBottomControlPanel"
                     app:hint="@string/hint_task_comment_on_exc"
                     app:labelCaption="@string/label_task_comment_on_exc"
                     app:description="@string/desc_task_comment_on_exc"
                     app:required="true"
                     app:value="@={data.assigneeReply}"
                     app:imeOptions="actionNext"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
-                    />
-
-
-                <de.symeda.sormas.app.component.TeboSwitch
-                    android:id="@+id/swhAlertType"
-                    android:layout_width="180dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:paddingTop="@dimen/defaultControlVerticalPadding"
-                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
-                    app:background="@drawable/control_switch_background_border"
-                    app:borderSize="@dimen/defaultControlStrokeWidth"
-                    app:textColor="@color/control_switch_color_selector"
-                    app:hint="@string/hint_task_comment_on_exc"
-                    app:labelCaption="@string/label_task_comment_on_exc"
-                    app:description="@string/desc_task_comment_on_exc"
-                    app:required="true"
-                    app:orientation="horizontal"
-                    app:slim="false"
-                    app:enumClass="@{symptomState}"
-                    app:value="@={test.runnyNose}"
-                    app:onCheckedChangeListener="@{checkedCallback}"
                     app:onShowInputErrorListener="@{showNotificationCallback}"
                     app:onHideInputErrorListener="@{hideNotificationCallback}"
                     />
@@ -232,6 +238,10 @@
             android:paddingTop="@dimen/buttonPanelVerticalMargin"
             android:paddingBottom="@dimen/buttonPanelVerticalMargin"
             android:elevation="16dp"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
             >
 
             <de.symeda.sormas.app.component.TeboButton
@@ -267,7 +277,7 @@
                 />
 
         </RelativeLayout>
-    </LinearLayout>
+    </RelativeLayout>
 
 </layout>
 

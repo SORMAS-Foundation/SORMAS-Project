@@ -18,13 +18,14 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.StateDrawableBuilder;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.SormasColor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Orson on 06/02/2018.
@@ -83,6 +84,13 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
 
     private boolean enumClassSet = false;
 
+    private boolean initialized = false;
+    private Object defaultValue = null;
+
+    private boolean abbrevUnknown = false;
+
+    private Item unknownItem;
+
     private int mLastCheckId;
 
     private OnTeboSwitchCheckedChangeListener onCheckedChangeListener;
@@ -113,6 +121,8 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
 
     @Override
     protected void initializeViews(Context context, AttributeSet attrs, int defStyle) {
+        unknownItem = new Item(getResources().getString(R.string.unknown), null);
+
         if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(
                     attrs,
@@ -321,6 +331,18 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
         ((TeboSwitch) nextView).radioGroup.requestFocus();
     }
 
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public void setAbbrevUnknown(boolean abbrevUnknown) {
+        this.abbrevUnknown = abbrevUnknown;
+    }
+
+    public void setInitialized(boolean initialized) {
+        this.initialized = initialized;
+    }
+
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Error & Visual State">
@@ -413,26 +435,40 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
         }
     }
 
-    @BindingAdapter(value={"value", "includeUnknown", "enumClass", "onCheckedChangeListener"}, requireAll=true)
-    public static void setValue(TeboSwitch view, Object value, boolean includeUnknown, Class c, OnTeboSwitchCheckedChangeListener listener) {
+    @BindingAdapter(value={"value", "includeUnknown", "enumClass", "defaultValue", "abbrevUnknown", "onCheckedChangeListener"}, requireAll=true)
+    public static void setValue(TeboSwitch view, Object value, boolean includeUnknown, Class c, Object defaultValue, boolean abbrevUnknown, OnTeboSwitchCheckedChangeListener listener) {
+        view.setAbbrevUnknown(abbrevUnknown);
         view.setIncludeUnknown(includeUnknown);
         view.setOnCheckedChangeListener(listener);
         view.setEnumClass(c);
+        view.setDefaultValue(defaultValue);
 
-        if (value != view.getValue()) {
+        if (value == null)
+            value = defaultValue;
+
+        if (value != view.getValue() || !view.isInitialized()) {
             view.setValue(value);
         }
+
+        view.setInitialized(true);
     }
 
-    @BindingAdapter(value={"value", "includeUnknown", "enumClass"}, requireAll=true)
-    public static void setValue(TeboSwitch view, Object value, boolean includeUnknown, Class c) {
+    @BindingAdapter(value={"value", "includeUnknown", "enumClass", "defaultValue", "abbrevUnknown"}, requireAll=true)
+    public static void setValue(TeboSwitch view, Object value, boolean includeUnknown, Class c, Object defaultValue, boolean abbrevUnknown) {
+        view.setAbbrevUnknown(abbrevUnknown);
         view.setIncludeUnknown(includeUnknown);
         view.setOnCheckedChangeListener(null);
         view.setEnumClass(c);
+        view.setDefaultValue(defaultValue);
 
-        if (value != view.getValue()) {
+        if (value == null)
+            value = defaultValue;
+
+        if (value != view.getValue() || !view.isInitialized()) {
             view.setValue(value);
         }
+
+        view.setInitialized(true);
     }
 
 
@@ -467,6 +503,10 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
         }
     }
 
+    public void setDefaultValue(Object defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
     private void addItem(int index, int lastIndex, Item item) {
         //TODO: Orson Watchout
         /*if(item.getValue() == null)
@@ -474,50 +514,6 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
 
         //Create Radio Button
         final RadioButton button = createRadioButton(index, lastIndex, item);
-
-        /*button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            private TeboSwitch teboSwitch;
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-
-
-                *//*if (onCheckedChangeListener != null)
-                    onCheckedChangeListener.onCheckedChanged(teboSwitch, buttonView, isChecked);*//*
-
-
-                Object condition = teboSwitch.getValue();
-            }
-
-            private CompoundButton.OnCheckedChangeListener init(TeboSwitch teboSwitch){
-                this.teboSwitch = teboSwitch;
-                return this;
-            }
-        }.init(this));*/
-
-        /*button.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                for (int i = 0; i < radioGroup.getChildCount(); i++) {
-                    LinearLayout row = (LinearLayout)radioGroup.getChildAt(i);
-                    RadioButton button = (RadioButton)row.getChildAt(0);
-                    int buttonId = button.getId();
-
-                    if (button == v) {
-                        //radioGroup.check(buttonId);
-                        button.setChecked(true);
-                    } else {
-                        //radioGroup.clearCheck();
-                        button.setChecked(false);
-                    }
-                }
-            }
-        });*/
-
-        //wv.requestLayout();//It is necesary to refresh the screen
-
         radioGroup.addView(button);
         radioGroupElements.add(item.getValue());
     }
@@ -572,6 +568,13 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
 
         Object btnValue = item.getValue();
         String btnKey = item.getKey();
+
+        //TODO: This is a hack
+        if (abbrevUnknown) {
+            if (btnValue instanceof YesNoUnknown && btnKey == YesNoUnknown.UNKNOWN.toString()) {
+                btnKey = btnKey.substring(0, 3);
+            }
+        }
 
         if (btnKey != null)
             button.setText(btnKey);//btnValue.toString());

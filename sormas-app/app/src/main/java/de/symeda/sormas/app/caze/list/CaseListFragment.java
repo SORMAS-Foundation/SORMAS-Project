@@ -18,6 +18,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -34,6 +35,7 @@ import de.symeda.sormas.app.util.SubheadingHelper;
 
 public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> implements OnListItemClickListener {
 
+    private boolean dataLoaded = false;
     private AsyncTask searchTask;
     private List<Case> cases;
     private LinearLayoutManager linearLayoutManager;
@@ -54,6 +56,7 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
@@ -86,7 +89,7 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
 
     @Override
     public void cancelTaskExec() {
-        if (searchTask != null)
+        if (searchTask != null && !searchTask.isCancelled())
             searchTask.cancel(true);
     }
 
@@ -94,25 +97,43 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
     public void onResume() {
         super.onResume();
 
-        ISearchExecutor<Case> executor = SearchStrategyFor.CASE.selector(searchBy, filterStatus, recordUuid);
-        searchTask = executor.search(new ISearchResultCallback<Case>() {
-            @Override
-            public void searchResult(List<Case> result, BoolResult resultStatus) {
-                if (!resultStatus.isSuccess()) {
-                    String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Cases");
-                    NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
+        //TODO: Orson - reverse this relationship
+        getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Case"));
 
-                    return;
-                }
+        try {
+            if (!dataLoaded) {
+                ISearchExecutor<Case> executor = SearchStrategyFor.CASE.selector(searchBy, filterStatus, recordUuid);
+                searchTask = executor.search(new ISearchResultCallback<Case>() {
+                    @Override
+                    public void searchResult(List<Case> result, BoolResult resultStatus) {
+                        getActivityCommunicator().hidePreloader();
 
-                cases = result;
+                        if (!resultStatus.isSuccess()) {
+                            String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Cases");
+                            NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
 
-                //TODO: Orson - reverse this relationship
-                getCommunicator().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Case"));
-                CaseListFragment.this.getListAdapter().replaceAll(cases);
-                CaseListFragment.this.getListAdapter().notifyDataSetChanged();
+                            return;
+                        }
+
+                        cases = result;
+
+                        CaseListFragment.this.getListAdapter().replaceAll(cases);
+                        CaseListFragment.this.getListAdapter().notifyDataSetChanged();
+
+                        dataLoaded = true;
+                    }
+
+                    private ISearchResultCallback<Case> init() {
+                        getActivityCommunicator().showPreloader();
+
+                        return this;
+                    }
+                }.init());
             }
-        });
+        } catch (Exception ex) {
+            getActivityCommunicator().hidePreloader();
+            dataLoaded = false;
+        }
     }
 
     @Override
@@ -139,8 +160,16 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
         startActivity(intent);*/
     }
 
-    public static CaseListFragment newInstance(CaseListCapsule capsule)
+    public static CaseListFragment newInstance(IActivityCommunicator communicator, CaseListCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(CaseListFragment.class, capsule);
+        return newInstance(communicator, CaseListFragment.class, capsule);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (searchTask != null && !searchTask.isCancelled())
+            searchTask.cancel(true);
     }
 }

@@ -79,7 +79,7 @@ public class ContactEditActivity extends BaseEditActivity {
         if (activeFragment == null) {
             ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactEditActivity.this,
                     contactUuid, pageStatus);
-            activeFragment = ContactEditFragment.newInstance(dataCapsule);
+            activeFragment = ContactEditFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;
@@ -118,16 +118,16 @@ public class ContactEditActivity extends BaseEditActivity {
                 contactUuid, pageStatus);
 
         if (menuItem.getKey() == MENU_INDEX_CONTACT_INFO) {
-            activeFragment = ContactEditFragment.newInstance(dataCapsule);
+            activeFragment = ContactEditFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_PERSON_INFO) {
-            activeFragment = ContactEditPersonFragment.newInstance(dataCapsule);
+            activeFragment = ContactEditPersonFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_FOLLOWUP_VISIT) {
-            activeFragment = ContactEditFollowUpFragment.newInstance(dataCapsule);
+            activeFragment = ContactEditFollowUpVisitListFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_TASK) {
-            activeFragment = ContactEditTaskListFragment.newInstance(dataCapsule);
+            activeFragment = ContactEditTaskListFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         }
 

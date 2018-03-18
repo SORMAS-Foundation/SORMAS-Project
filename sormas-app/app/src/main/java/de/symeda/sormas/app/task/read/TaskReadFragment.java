@@ -1,38 +1,49 @@
 package de.symeda.sormas.app.task.read;
 
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-
-import de.symeda.sormas.app.BaseReadActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.databinding.FragmentTaskReadLayoutBinding;
-import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 
 import de.symeda.sormas.api.task.TaskStatus;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.caze.read.CaseReadActivity;
+import de.symeda.sormas.app.component.OnLinkClickListener;
+import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.contact.read.ContactReadActivity;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentTaskReadLayoutBinding;
+import de.symeda.sormas.app.event.EventFormNavigationCapsule;
+import de.symeda.sormas.app.event.read.EventReadActivity;
+import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
 
 /**
  * Created by Orson on 31/12/2017.
  */
 
-public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadLayoutBinding> {
+public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadLayoutBinding, Task> {
 
     private String recordUuid = null;
     private TaskStatus pageStatus = null;
     private Task record;
-    private FragmentTaskReadLayoutBinding binding;
+
+    private OnLinkClickListener caseLinkCallback;
+    private OnLinkClickListener contactLinkCallback;
+    private OnLinkClickListener eventLinkCallback;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -44,61 +55,119 @@ public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadL
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
-        //filterStatus = (EventStatus) getFilterStatusArg(arguments);
         pageStatus = (TaskStatus) getPageStatusArg(arguments);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            resultHolder.forItem().add(DatabaseHelper.getTaskDao().queryUuid(recordUuid));
+        } else {
+            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
-        binding = DataBindingUtil.inflate(inflater, getRootReadLayout(), container, false);
-        record = MemoryDatabaseHelper.TASK.getTasks(1).get(0);
+            if (itemIterator.hasNext())
+                record =  itemIterator.next();
 
-        binding.setData(record);
+            setupCallback();
+        }
 
-        return binding.getRoot();
+        return true;
+    }
+
+    @Override
+    public void onLayoutBinding(FragmentTaskReadLayoutBinding contentBinding) {
+        contentBinding.setData(record);
+        contentBinding.setCaseLinkCallback(caseLinkCallback);
+        contentBinding.setContactLinkCallback(contactLinkCallback);
+        contentBinding.setEventLinkCallback(eventLinkCallback);
+    }
+
+    @Override
+    public void onAfterLayoutBinding(FragmentTaskReadLayoutBinding contentBinding) {
+
     }
 
     @Override
     protected String getSubHeadingTitle() {
         String title = "";
 
-        if (binding != null) {
-            title = binding.getData().getTaskStatus().toString();
+        if (pageStatus != null) {
+            title = pageStatus.toString();
         }
 
         return title;
     }
 
     @Override
-    public AbstractDomainObject getData() {
-        return binding.getData();
-    }
-
-    @Override
-    public FragmentTaskReadLayoutBinding getBinding() {
-        return binding;
-    }
-
-    @Override
-    public Object getRecord() {
+    public Task getPrimaryData() {
         return record;
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
-    public int getRootReadLayout() {
+    public int getReadLayout() {
         return R.layout.fragment_task_read_layout;
     }
 
-    public static TaskReadFragment newInstance(TaskFormNavigationCapsule capsule)
+    private void setupCallback() {
+        caseLinkCallback = new OnLinkClickListener() {
+            @Override
+            public void onClick(View v, Object item) {
+                if (item == null)
+                    return;
+
+                Task task = (Task)item;
+                Case caze = task.getCaze();
+
+                if (caze == null)
+                    return;
+
+                CaseFormNavigationCapsule dataCapsule = (CaseFormNavigationCapsule)new CaseFormNavigationCapsule(getContext(),
+                        caze.getUuid()).setEditPageStatus(caze.getInvestigationStatus()).setTaskUuid(task.getUuid());
+                CaseReadActivity.goToActivity(getActivity(), dataCapsule);
+
+            }
+        };
+
+        contactLinkCallback = new OnLinkClickListener() {
+            @Override
+            public void onClick(View v, Object item) {
+                if (item == null)
+                    return;
+
+                Task task = (Task)item;
+                Contact contact = task.getContact();
+
+                if (contact == null)
+                    return;
+
+                ContactFormNavigationCapsule dataCapsule = (ContactFormNavigationCapsule)new ContactFormNavigationCapsule(getContext(),
+                        contact.getUuid(), contact.getContactClassification()).setTaskUuid(task.getUuid());
+                ContactReadActivity.goToActivity(getActivity(), dataCapsule);
+            }
+        };
+
+        eventLinkCallback = new OnLinkClickListener() {
+            @Override
+            public void onClick(View v, Object item) {
+                if (item == null)
+                    return;
+
+                Task task = (Task)item;
+                Event event = task.getEvent();
+
+                if (event == null)
+                    return;
+
+                EventFormNavigationCapsule dataCapsule = (EventFormNavigationCapsule)new EventFormNavigationCapsule(getContext(),
+                        event.getUuid(), event.getEventStatus()).setTaskUuid(task.getUuid());
+                EventReadActivity.goToActivity(getActivity(), dataCapsule);
+            }
+        };
+    }
+
+    public static TaskReadFragment newInstance(IActivityCommunicator activityCommunicator, TaskFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(TaskReadFragment.class, capsule);
+        return newInstance(activityCommunicator, TaskReadFragment.class, capsule);
     }
 
 }

@@ -6,6 +6,7 @@
     android:id="@+id/base_layout">
 
     <data>
+        <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
         <variable
             name="showNotificationCallback"
             type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
@@ -312,6 +313,8 @@
                 app:slim="false"
                 app:includeUnknown="@{true}"
                 app:enumClass="@{presentConditionClass}"
+                app:defaultValue="@{null}"
+                app:abbrevUnknown="@{false}"
                 app:value="@={data.presentCondition}"
                 app:onCheckedChangeListener="@{checkedCallback}"
                 app:onShowInputErrorListener="@{showNotificationCallback}"

@@ -4,23 +4,25 @@ import android.databinding.ObservableArrayList;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.view.ViewStub;
 
+import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
+import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
 import de.symeda.sormas.app.component.TeboSwitch;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHospitalizationLayoutBinding;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
-import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 
 /**
  * Created by Orson on 16/02/2018.
@@ -30,7 +32,7 @@ import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
  * sampson.orson@technologyboard.org
  */
 
-public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<FragmentCaseEditHospitalizationLayoutBinding> {
+public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<FragmentCaseEditHospitalizationLayoutBinding, Hospitalization> {
 
     private String recordUuid = null;
     private InvestigationStatus pageStatus = null;
@@ -43,13 +45,12 @@ public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<Fr
     private int mPreviousHospitalizationLastCheckedId = -1;
     private IEntryItemOnClickListener onAddEntryClickListener;
     private IEntryItemOnClickListener onPrevHosItemClickListener;
-    private ObservableArrayList results = new ObservableArrayList();
+    private ObservableArrayList preHospitalizations = new ObservableArrayList();
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, followUpStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -61,7 +62,6 @@ public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<Fr
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
-        //followUpStatus = (EventStatus) getFilterStatusArg(arguments);
         pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
     }
 
@@ -71,35 +71,46 @@ public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<Fr
     }
 
     @Override
-    public AbstractDomainObject getData() {
+    public Hospitalization getPrimaryData() {
         return record;
     }
 
     @Override
-    public void onBeforeLayoutBinding(Bundle savedInstanceState) {
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            Hospitalization hospitalization = null;
+            Case caze = DatabaseHelper.getCaseDao().queryUuid(recordUuid);
+            if (caze != null)
+                hospitalization = DatabaseHelper.getHospitalizationDao().queryUuid(caze.getHospitalization().getUuid());
 
-        record = MemoryDatabaseHelper.HOSPITALIZATION.getHospitalizations(1).get(0);
+            resultHolder.forItem().add(hospitalization);
+        } else {
+            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
-        loadPreviousHospitalizations();
-        setupCallback();
+            if (itemIterator.hasNext())
+                record =  itemIterator.next();
+
+            setupCallback();
+        }
+
+        return true;
     }
 
     @Override
-    public void onLayoutBinding(ViewStub stub, View inflated, FragmentCaseEditHospitalizationLayoutBinding contentBinding) {
-        //binding = DataBindingUtil.inflate(inflater, getEditLayout(), container, true);
-
+    public void onLayoutBinding(FragmentCaseEditHospitalizationLayoutBinding contentBinding) {
         contentBinding.setData(record);
         contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
         contentBinding.setIsolationCallback(onIsolationCheckedCallback);
         contentBinding.setAdmittedToFacilityCallback(onAdmittedToFacilityCheckedCallback);
         contentBinding.setPreviousHospitalizationCallback(onPreviousHospitalizationCheckedCallback);
-        contentBinding.setPreviousHospitalizationList(results);
+        contentBinding.setPreviousHospitalizationList(getPreviousHospitalizations());
         contentBinding.setPrevHosItemClickCallback(onPrevHosItemClickListener);
         contentBinding.setAddEntryClickCallback(onAddEntryClickListener);
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentCaseEditHospitalizationLayoutBinding binding) {
+    public void onAfterLayoutBinding(FragmentCaseEditHospitalizationLayoutBinding contentBinding) {
+
     }
 
     @Override
@@ -191,8 +202,7 @@ public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<Fr
         onAddEntryClickListener = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
-                //AlertDialog dialog2 = new ConfirmationDialog(CaseEditActivity.getActiveActivity()).show();
-                final PreviousHospitalization hospitalization = MemoryDatabaseHelper.PREVIOUS_HOSPITALIZATION.getHospitalizations(1).get(0);
+                final PreviousHospitalization hospitalization = DatabaseHelper.getPreviousHospitalizationDao().build();
                 final PreviousHospitalizationDialog dialog = new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), hospitalization);
                 dialog.show();
 
@@ -200,26 +210,28 @@ public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<Fr
                 dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
-                        results.add(0, hospitalization);
+                        ObservableArrayList newPreHospitalizations = new ObservableArrayList();
+                        preHospitalizations.addAll(preHospitalizations);
+                        preHospitalizations.add(0, hospitalization);
+                        getContentBinding().setPreviousHospitalizationList(newPreHospitalizations);
                     }
                 });
 
-                //results.add(0, MemoryDatabaseHelper.PREVIOUS_HOSPITALIZATION.getHospitalizations(20).get(new Random().nextInt(10)));
+                //results.add(0, MemoryDatabaseHelper.PREVIOUS_HOSPITALIZATION.getPreviousHospitalizations(20).get(new Random().nextInt(10)));
             }
         };
     }
 
-    private void loadPreviousHospitalizations() {
-        PreviousHospitalization item = MemoryDatabaseHelper.PREVIOUS_HOSPITALIZATION.getHospitalizations(1).get(0);
-        item.setRegion(null);
-        item.setCommunity(null);
-        item.setDescription(null);
-        results.add(item);
+    private ObservableArrayList getPreviousHospitalizations() {
+        if (record != null && preHospitalizations != null)
+            preHospitalizations.addAll(record.getPreviousHospitalizations());
+
+        return preHospitalizations;
     }
 
-    public static CaseEditHospitalizationFragment newInstance(CaseFormNavigationCapsule capsule)
+    public static CaseEditHospitalizationFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(CaseEditHospitalizationFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseEditHospitalizationFragment.class, capsule);
     }
 
 }

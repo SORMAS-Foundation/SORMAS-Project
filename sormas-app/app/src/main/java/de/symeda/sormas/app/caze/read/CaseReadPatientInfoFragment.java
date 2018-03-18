@@ -1,45 +1,40 @@
 package de.symeda.sormas.app.caze.read;
 
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import de.symeda.sormas.app.BaseReadActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.databinding.FragmentCaseReadPatientInfoLayoutBinding;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentCaseReadPatientInfoLayoutBinding;
 
 /**
  * Created by Orson on 08/01/2018.
  */
 
-public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<FragmentCaseReadPatientInfoLayoutBinding> {
+public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<FragmentCaseReadPatientInfoLayoutBinding, Case> {
 
-    private String caseUuid = null;
+    private String recordUuid = null;
     private InvestigationStatus filterStatus = null;
     private CaseClassification pageStatus = null;
     private Case record;
     private Person personRecord;
-    private FragmentCaseReadPatientInfoLayoutBinding binding;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, caseUuid);
+        SaveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -48,22 +43,35 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
-        caseUuid = getRecordUuidArg(arguments);
-        filterStatus = (InvestigationStatus) getFilterStatusArg(arguments);
+        recordUuid = getRecordUuidArg(arguments);
         pageStatus = (CaseClassification) getPageStatusArg(arguments);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            resultHolder.forItem().add(DatabaseHelper.getCaseDao().queryUuidReference(recordUuid));
+        } else {
+            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
-        binding = DataBindingUtil.inflate(inflater, getRootReadLayout(), container, false);
-        record = MemoryDatabaseHelper.CASE.getCases(1).get(0);
-        personRecord = record.getPerson();
+            if (itemIterator.hasNext())
+                record =  itemIterator.next();
+        }
 
-        binding.setData(personRecord);
+        return true;
+    }
 
-        return binding.getRoot();
+    @Override
+    public void onLayoutBinding(FragmentCaseReadPatientInfoLayoutBinding contentBinding) {
+
+    }
+
+    @Override
+    public void onAfterLayoutBinding(FragmentCaseReadPatientInfoLayoutBinding contentBinding) {
+        if (record != null) {
+            personRecord = record.getPerson();
+            contentBinding.setData(personRecord);
+        }
     }
 
     @Override
@@ -72,42 +80,17 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
     }
 
     @Override
-    public AbstractDomainObject getData() {
-        return binding.getData();
-    }
-
-    @Override
-    public FragmentCaseReadPatientInfoLayoutBinding getBinding() {
-        return binding;
-    }
-
-    @Override
-    public Object getRecord() {
+    public Case getPrimaryData() {
         return record;
     }
 
-    public void showRecordEditView(Event event) {
-        /*Intent intent = new Intent(getActivity(), TaskEditActivity.class);
-        intent.putExtra(Task.UUID, task.getUuid());
-        if(parentCaseUuid != null) {
-            intent.putExtra(KEY_CASE_UUID, parentCaseUuid);
-        }
-        if(parentContactUuid != null) {
-            intent.putExtra(KEY_CONTACT_UUID, parentContactUuid);
-        }
-        if(parentEventUuid != null) {
-            intent.putExtra(KEY_EVENT_UUID, parentEventUuid);
-        }
-        startActivity(intent);*/
-    }
-
     @Override
-    public int getRootReadLayout() {
+    public int getReadLayout() {
         return R.layout.fragment_case_read_patient_info_layout;
     }
 
-    public static CaseReadPatientInfoFragment newInstance(CaseFormNavigationCapsule capsule)
+    public static CaseReadPatientInfoFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(CaseReadPatientInfoFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseReadPatientInfoFragment.class, capsule);
     }
 }

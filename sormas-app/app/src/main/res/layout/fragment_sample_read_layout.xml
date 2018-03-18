@@ -213,6 +213,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/recent_test_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -243,6 +244,16 @@
                     app:layout="@{@layout/row_samples_recent_test_layout}"
                     app:callback="@{recentTestItemClickCallback}"
                     />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_recent_test"
+                    android:id="@+id/sample_no_recent_test_text"
+                    android:textColor="@android:color/tab_indicator_text"
+                    android:textSize="@dimen/field_caption_size"
+                    android:paddingBottom="10dp"
+                    android:visibility="gone" />
 
 
             </LinearLayout>

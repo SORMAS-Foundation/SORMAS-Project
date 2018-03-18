@@ -26,16 +26,33 @@
                 style="@style/ToolBarStyle">
             </android.support.v7.widget.Toolbar>
 
-            <FrameLayout
+            <android.support.percent.PercentFrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 >
-                <FrameLayout
+                <!--<FrameLayout
                     android:id="@+id/fragment_frame"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/activityBackground">
-                </FrameLayout>
+                </FrameLayout>-->
+
+                <FrameLayout
+                    android:id="@+id/fragment_frame"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/activityBackground"
+                    />
+                <ProgressBar
+                    android:id="@+id/preloader"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_gravity="center_horizontal"
+                    android:indeterminateOnly="true"
+                    android:visibility="gone"
+                    app:layout_widthPercent="@dimen/preloaderWidthPercent"
+                    app:layout_heightPercent="@dimen/preloaderHeightPercent"
+                    android:scaleY="@dimen/preloaderScaleY"
+                    />
 
                 <include
                     android:id="@+id/notificationFrame"
@@ -48,7 +65,7 @@
                 app:hideNotificationCallback="@{hideNotificationCallback}"-->
 
 
-            </FrameLayout>
+            </android.support.percent.PercentFrameLayout>
 
 
         </LinearLayout>

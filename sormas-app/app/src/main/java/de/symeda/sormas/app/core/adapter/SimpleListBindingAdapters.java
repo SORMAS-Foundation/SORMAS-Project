@@ -13,11 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-
-import java.util.List;
 
 /**
  * Created by Orson on 19/12/2017.
@@ -36,8 +36,14 @@ public class SimpleListBindingAdapters {
     public static <T> void setEntries(ViewGroup viewGroup,
                                       List<T> oldEntries, int oldLayoutId, IEntryItemOnClickListener oldCallback,
                                       List<T> newEntries, int newLayoutId, IEntryItemOnClickListener newCallback) {
+
+        /*if (newEntries.size() > 0)
+            viewGroup.setVisibility(View.VISIBLE);
+        else
+            viewGroup.setVisibility(View.GONE);*/
+
         if (oldEntries == newEntries && oldLayoutId == newLayoutId && oldCallback == newCallback) {
-            return; // nothing has changed
+            return;
         }
 
         EntryChangeListener listener =

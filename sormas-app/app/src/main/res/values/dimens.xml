@@ -181,6 +181,7 @@
     <dimen name="closelyRelatedControlMarginBottom">16dp</dimen>
     <dimen name="slimTextControlMarginBottom">24dp</dimen>
     <dimen name="controlReadTextMarginBottom">24dp</dimen>
+    <dimen name="pageBottomControlPanel">70dp</dimen>
 
     <!-- Tooltip -->
     <dimen name="tooltipDefaultPadding">20dip</dimen>
@@ -460,6 +461,8 @@
     <dimen name="dialogHeadingTextSize">20sp</dimen>
 
 
-
+    <dimen name="preloaderWidthPercent">30%</dimen>
+    <dimen name="preloaderHeightPercent">100%</dimen>
+    <dimen name="preloaderScaleY">2</dimen>
 
 </resources>

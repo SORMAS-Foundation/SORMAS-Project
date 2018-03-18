@@ -1,26 +1,32 @@
 package de.symeda.sormas.app;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.analytics.Tracker;
 
 import java.lang.ref.WeakReference;
 
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.util.Callback;
 
-public abstract class AbstractSormasActivity extends AppCompatActivity {
+public abstract class AbstractSormasActivity extends AppCompatActivity implements IActivityCommunicator {
     protected Tracker tracker;
+    private ProgressBar preloader;
 
     protected boolean isUserNeeded() {
         return true;
@@ -30,6 +36,8 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
     }
 
     private static WeakReference<AbstractSormasActivity> activeActivity;
+
+    private boolean isFirstRun;
 
     public static AbstractSormasActivity getActiveActivity() {
         if (activeActivity != null) {
@@ -46,6 +54,11 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
         tracker = application.getDefaultTracker();
 
         setContentView(getRootActivityLayout());
+
+        preloader = (ProgressBar)findViewById(R.id.preloader);
+
+        SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(this);
+        isFirstRun = wmbPreference.getBoolean("FIRSTRUN", true);
 
         Drawable drawable = ContextCompat.getDrawable(this,
                 R.drawable.selector_actionbar_back_button);
@@ -64,12 +77,40 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
 
         initializeBaseActivity(savedInstanceState);
 
+
         // Show the Enter Pin Activity if the user doesn't have access to the app
         if (!ConfigProvider.isAccessGranted()) {
             Intent intent = new Intent(this, EnterPinActivity.class);
             startActivity(intent);
             return;
         }
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
+    }
+
+    @Override
+    public ProgressBar getPreloader() {
+        return preloader;
+    }
+
+    @Override
+    public void showPreloader() {
+        if (preloader != null)
+            preloader.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hidePreloader() {
+        if (preloader != null)
+            preloader.setVisibility(View.GONE);
+    }
+
+    @Override
+    public boolean isFirstRun() {
+        return isFirstRun;
     }
 
     protected abstract void initializeBaseActivity(Bundle savedInstanceState);

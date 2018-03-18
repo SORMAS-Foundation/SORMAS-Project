@@ -1,40 +1,76 @@
 package de.symeda.sormas.app.event.read;
 
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import de.symeda.sormas.app.BaseReadActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.databinding.FragmentEventReadLayoutBinding;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
+import android.support.annotation.Nullable;
 
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentEventReadLayoutBinding;
+import de.symeda.sormas.app.event.EventFormNavigationCapsule;
 
 /**
  * Created by Orson on 24/12/2017.
  */
 
-public class EventReadFragment extends BaseReadActivityFragment<FragmentEventReadLayoutBinding> {
+public class EventReadFragment extends BaseReadActivityFragment<FragmentEventReadLayoutBinding, Event> {
 
-    private EventStatus status;
+    private String recordUuid;
+    private EventStatus pageStatus;
     private Event record;
-    private FragmentEventReadLayoutBinding binding;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        binding = DataBindingUtil.inflate(inflater, getRootReadLayout(), container, false);
-        record = MemoryDatabaseHelper.EVENT.getEvents(1).get(0);
+        SavePageStatusState(outState, pageStatus);
+        SaveRecordUuidState(outState, recordUuid);
+    }
 
-        binding.setData(record);
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        return binding.getRoot();
+        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
+
+        recordUuid = getRecordUuidArg(arguments);
+        pageStatus = (EventStatus) getPageStatusArg(arguments);
+    }
+
+    @Override
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            if (recordUuid == null || recordUuid.isEmpty()) {
+                // build a new event for empty uuid
+                resultHolder.forItem().add(DatabaseHelper.getEventDao().build());
+            } else {
+                // open the given event
+                resultHolder.forItem().add(DatabaseHelper.getEventDao().queryUuid(recordUuid));
+            }
+        } else {
+            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+
+            if (itemIterator.hasNext())
+                record = itemIterator.next();
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onLayoutBinding(FragmentEventReadLayoutBinding contentBinding) {
+        contentBinding.setData(record);
+    }
+
+    @Override
+    public void onAfterLayoutBinding(FragmentEventReadLayoutBinding contentBinding) {
+
     }
 
     @Override
@@ -43,17 +79,7 @@ public class EventReadFragment extends BaseReadActivityFragment<FragmentEventRea
     }
 
     @Override
-    public AbstractDomainObject getData() {
-        return binding.getData();
-    }
-
-    @Override
-    public FragmentEventReadLayoutBinding getBinding() {
-        return binding;
-    }
-
-    @Override
-    public Object getRecord() {
+    public Event getPrimaryData() {
         return record;
     }
 
@@ -63,8 +89,13 @@ public class EventReadFragment extends BaseReadActivityFragment<FragmentEventRea
     }
 
     @Override
-    public int getRootReadLayout() {
+    public int getReadLayout() {
         return R.layout.fragment_event_read_layout;
+    }
+
+    public static EventReadFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule)
+            throws java.lang.InstantiationException, IllegalAccessException {
+        return newInstance(activityCommunicator, EventReadFragment.class, capsule);
     }
 
 }

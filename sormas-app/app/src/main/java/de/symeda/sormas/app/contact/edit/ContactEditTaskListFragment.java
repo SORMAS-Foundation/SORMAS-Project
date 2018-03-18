@@ -5,23 +5,26 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
-import android.view.ViewStub;
 
-import de.symeda.sormas.app.BaseEditActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
-import de.symeda.sormas.app.contact.edit.sub.ContactEditTaskInfoActivity;
-import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.databinding.FragmentEditListLayoutBinding;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentEditListLayoutBinding;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
+import de.symeda.sormas.app.task.edit.TaskEditActivity;
 
 /**
  * Created by Orson on 15/02/2018.
@@ -31,10 +34,9 @@ import de.symeda.sormas.app.backend.task.Task;
  * sampson.orson@technologyboard.org
  */
 
-public class ContactEditTaskListFragment extends BaseEditActivityFragment<FragmentEditListLayoutBinding> implements OnListItemClickListener {
+public class ContactEditTaskListFragment extends BaseEditActivityFragment<FragmentEditListLayoutBinding, List<Task>> implements OnListItemClickListener {
 
     private String recordUuid;
-    //private FollowUpStatus followUpStatus;
     private ContactClassification pageStatus = null;
     private List<Task> record;
     private FragmentEditListLayoutBinding binding;
@@ -45,7 +47,6 @@ public class ContactEditTaskListFragment extends BaseEditActivityFragment<Fragme
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, followUpStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -57,7 +58,6 @@ public class ContactEditTaskListFragment extends BaseEditActivityFragment<Fragme
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
-        //followUpStatus = (FollowUpStatus) getFilterStatusArg(arguments);
         pageStatus = (ContactClassification) getPageStatusArg(arguments);
     }
 
@@ -67,41 +67,49 @@ public class ContactEditTaskListFragment extends BaseEditActivityFragment<Fragme
     }
 
     @Override
-    public AbstractDomainObject getData() {
+    public List<Task> getPrimaryData() {
         return null;
     }
 
     @Override
-    public void onBeforeLayoutBinding(Bundle savedInstanceState) {
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            Contact contact = DatabaseHelper.getContactDao().queryUuidReference(recordUuid);
 
-        //Get Data
-        record = MemoryDatabaseHelper.TASK.getTasks(20);
+            if (contact != null) {
+                resultHolder.forList().add(DatabaseHelper.getTaskDao().queryByContact(contact));
+            } else {
+                resultHolder.forList().add(new ArrayList<Task>());
+            }
+        } else {
+            ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
+            if (listIterator.hasNext()) {
+                record = listIterator.next();
 
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+            }
+        }
+
+        return true;
     }
 
     @Override
-    public void onLayoutBinding(ViewStub stub, View inflated, FragmentEditListLayoutBinding contentBinding) {
-        //Create adapter and set data
+    public void onLayoutBinding(FragmentEditListLayoutBinding contentBinding) {
         adapter = new ContactEditTaskListAdapter(this.getActivity(), R.layout.row_edit_task_list_item_layout, this, record);
 
+        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
-
-
         adapter.notifyDataSetChanged();
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentEditListLayoutBinding binding) {
+    public void onAfterLayoutBinding(FragmentEditListLayoutBinding contentBinding) {
 
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        adapter.notifyDataSetChanged();
 
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)getRootBinding().getRoot()
                 .findViewById(R.id.swiperefresh);
@@ -132,14 +140,19 @@ public class ContactEditTaskListFragment extends BaseEditActivityFragment<Fragme
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        Task r = (Task)item;
-        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(), r.getUuid(), pageStatus);
-        ContactEditTaskInfoActivity.goToActivity(getActivity(), dataCapsule);
+        Task task = (Task)item;
+        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(),
+                task.getUuid(), task.getTaskStatus());
+        TaskEditActivity.goToActivity(getActivity(), dataCapsule);
+
+        /*Task r = (Task)item;
+        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(), r.getUuid(), r.getTaskStatus());
+        ContactEditTaskInfoActivity.goToActivity(getActivity(), dataCapsule);*/
     }
 
-    public static ContactEditTaskListFragment newInstance(ContactFormNavigationCapsule capsule)
+    public static ContactEditTaskListFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(ContactEditTaskListFragment.class, capsule);
+        return newInstance(activityCommunicator, ContactEditTaskListFragment.class, capsule);
     }
 
 }

@@ -9,14 +9,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
+import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.util.NavigationHelper;
-
-import de.symeda.sormas.api.contact.ContactClassification;
 
 /**
  * Created by Orson on 15/02/2018.
@@ -35,7 +34,7 @@ public class ContactEditTaskInfoActivity extends BaseEditActivity {
     private boolean showPageMenu;
 
     private String recordUuid = null;
-    private ContactClassification pageStatus = null;
+    private TaskStatus pageStatus = null;
     private BaseEditActivityFragment activeFragment = null;
 
     @Override
@@ -59,8 +58,7 @@ public class ContactEditTaskInfoActivity extends BaseEditActivity {
 
     @Override
     protected void initializeActivity(Bundle arguments) {
-        //filterStatus = (EventStatus) getFilterStatusArg(arguments);
-        pageStatus = (ContactClassification) getPageStatusArg(arguments);
+        pageStatus = (TaskStatus) getPageStatusArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
 
         this.showStatusFrame = true;
@@ -73,7 +71,7 @@ public class ContactEditTaskInfoActivity extends BaseEditActivity {
         if (activeFragment == null) {
             TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(
                     ContactEditTaskInfoActivity.this, recordUuid, pageStatus);
-            activeFragment = ContactEditTaskInfoFragment.newInstance(dataCapsule);
+            activeFragment = ContactEditTaskInfoFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;
@@ -173,7 +171,7 @@ public class ContactEditTaskInfoActivity extends BaseEditActivity {
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level3_1_contact_task_info;
+        return R.string.heading_level4_contact_edit;
     }
 
     public static void goToActivity(Context fromActivity, TaskFormNavigationCapsule dataCapsule) {

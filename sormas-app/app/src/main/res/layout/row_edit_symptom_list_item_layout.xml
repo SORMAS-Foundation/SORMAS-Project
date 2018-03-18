@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="de.symeda.sormas.api.symptoms.SymptomState" />
         <variable
             name="showNotificationCallback"
             type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
@@ -72,6 +73,8 @@
                     app:slim="true"
                     app:includeUnknown="@{false}"
                     app:enumClass="@{symptomStateClass}"
+                    app:defaultValue="@{SymptomState.UNKNOWN}"
+                    app:abbrevUnknown="@{true}"
                     app:value="@={data.state}"
                     app:onCheckedChangeListener="@{checkedCallback}"
                     />

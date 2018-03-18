@@ -44,7 +44,7 @@
                         layout="@layout/activity_root_title_bar_layout"
                         android:visibility="gone" />
 
-                    <FrameLayout
+                    <android.support.percent.PercentFrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1">
@@ -57,6 +57,17 @@
                             >
                         </FrameLayout>
 
+                        <ProgressBar
+                            android:id="@+id/preloader"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_gravity="center_horizontal"
+                            android:indeterminateOnly="true"
+                            android:visibility="gone"
+                            app:layout_widthPercent="@dimen/preloaderWidthPercent"
+                            app:layout_heightPercent="@dimen/preloaderHeightPercent"
+                            android:scaleY="@dimen/preloaderScaleY"
+                            />
+
 
                         <android.support.design.widget.FloatingActionButton
                             android:id="@+id/fab"
@@ -67,10 +78,10 @@
                             android:scaleType="center"
                             android:visibility="gone"
                             app:backgroundTint="@color/fab"
-                            app:elevation="0dp"
+                            app:elevation="5dp"
                             />
 
-                    </FrameLayout>
+                    </android.support.percent.PercentFrameLayout>
 
                     <de.symeda.sormas.app.component.menu.LandingPageMenuControl
                         android:id="@+id/landingPageMenuControl"

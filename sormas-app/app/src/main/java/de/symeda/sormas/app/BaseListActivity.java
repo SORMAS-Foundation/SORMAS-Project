@@ -37,14 +37,25 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        initializeActivity(savedInstanceState);
+        //initializeActivity(savedInstanceState);
     }
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
 
+    @Override
+    public void showFragmentView() {
+        if (fragmentFrame != null)
+            fragmentFrame.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideFragmentView() {
+        if (fragmentFrame != null)
+            fragmentFrame.setVisibility(View.GONE);
     }
 
     protected void initializeBaseActivity(Bundle savedInstanceState) {
@@ -86,9 +97,12 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
 
         if (fragment != null) {
             fragment.setArguments(getIntent().getExtras());
-            ft.replace(R.id.fragment_frame, fragment);
+            ft.add(R.id.fragment_frame, fragment, "abc");
             ft.addToBackStack(null);
             ft.commit();
+
+
+
         }
     }
 

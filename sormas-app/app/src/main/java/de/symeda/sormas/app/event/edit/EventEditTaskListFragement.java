@@ -5,22 +5,26 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
-import android.view.ViewStub;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentEditListLayoutBinding;
 import de.symeda.sormas.app.event.EventFormNavigationCapsule;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
-import java.util.List;
-
-import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.task.edit.TaskEditActivity;
 
 /**
  * Created by Orson on 07/02/2018.
@@ -30,10 +34,9 @@ import de.symeda.sormas.app.backend.task.Task;
  * sampson.orson@technologyboard.org
  */
 
-public class EventEditTaskListFragement extends BaseEditActivityFragment<FragmentEditListLayoutBinding> implements OnListItemClickListener {
+public class EventEditTaskListFragement extends BaseEditActivityFragment<FragmentEditListLayoutBinding, List<Task>> implements OnListItemClickListener {
 
     private String recordUuid = null;
-    //private EventStatus filterStatus = null;
     private EventStatus pageStatus = null;
     private List<Task> record;
     private FragmentEditListLayoutBinding binding;
@@ -44,7 +47,6 @@ public class EventEditTaskListFragement extends BaseEditActivityFragment<Fragmen
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -56,7 +58,6 @@ public class EventEditTaskListFragement extends BaseEditActivityFragment<Fragmen
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
-        //filterStatus = (EventStatus) getFilterStatusArg(arguments);
         pageStatus = (EventStatus) getPageStatusArg(arguments);
     }
 
@@ -66,35 +67,46 @@ public class EventEditTaskListFragement extends BaseEditActivityFragment<Fragmen
     }
 
     @Override
-    public AbstractDomainObject getData() {
-        return null;
+    public List<Task> getPrimaryData() {
+        return record;
     }
 
     @Override
-    public void onBeforeLayoutBinding(Bundle savedInstanceState) {
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            Event event = DatabaseHelper.getEventDao().queryUuid(recordUuid);
 
-        //Get Data
-        record = MemoryDatabaseHelper.TASK.getTasks(20);
+            if (event != null) {
+                resultHolder.forList().add(DatabaseHelper.getTaskDao().queryByEvent(event));
+            } else {
+                resultHolder.forList().add(new ArrayList<Task>());
+            }
+        } else {
+            ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
+            if (listIterator.hasNext()) {
+                record = listIterator.next();
 
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+            }
+        }
+
+        return true;
     }
 
     @Override
-    public void onLayoutBinding(ViewStub stub, View inflated, FragmentEditListLayoutBinding contentBinding) {
+    public void onLayoutBinding(FragmentEditListLayoutBinding contentBinding) {
         //binding = DataBindingUtil.inflate(inflater, getEditLayout(), container, true);
 
         //Create adapter and set data
         adapter = new EventEditTaskListAdapter(this.getActivity(), R.layout.row_read_task_list_item_layout, this, record);
 
+        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
-
-
         adapter.notifyDataSetChanged();
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentEditListLayoutBinding binding) {
+    public void onAfterLayoutBinding(FragmentEditListLayoutBinding contentBinding) {
 
     }
 
@@ -117,9 +129,6 @@ public class EventEditTaskListFragement extends BaseEditActivityFragment<Fragmen
     public void onResume() {
         super.onResume();
 
-        //adapter.replaceAll(new ArrayList<EventParticipant>(record));
-        adapter.notifyDataSetChanged();
-
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)getRootBinding().getRoot()
                 .findViewById(R.id.swiperefresh);
 
@@ -134,10 +143,15 @@ public class EventEditTaskListFragement extends BaseEditActivityFragment<Fragmen
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        Task t = (Task)item;
+        Task task = (Task)item;
+        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(),
+                task.getUuid(), task.getTaskStatus());
+        TaskEditActivity.goToActivity(getActivity(), dataCapsule);
+
+        /*Task t = (Task)item;
         TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(),
                 t.getUuid(), t.getTaskStatus());
-        EventEditTaskInfoActivity.goToActivity(getActivity(), dataCapsule);
+        EventEditTaskInfoActivity.goToActivity(getActivity(), dataCapsule);*/
         /*Task record = (Task)item;
 
         if(record != null) {
@@ -148,8 +162,8 @@ public class EventEditTaskListFragement extends BaseEditActivityFragment<Fragmen
         }*/
     }
 
-    public static EventEditTaskListFragement newInstance(EventFormNavigationCapsule capsule)
+    public static EventEditTaskListFragement newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(EventEditTaskListFragement.class, capsule);
+        return newInstance(activityCommunicator, EventEditTaskListFragement.class, capsule);
     }
 }

@@ -9,15 +9,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
+import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.contact.ContactFormFollowUpNavigationCapsule;
+import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.util.NavigationHelper;
-
-import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.task.TaskStatus;
 
 /**
  * Created by Orson on 02/01/2018.
@@ -25,18 +23,16 @@ import de.symeda.sormas.api.task.TaskStatus;
 
 public class ContactReadTaskInfoActivity  extends BaseReadActivity {
 
-    private String taskUuid = null;
-    private FollowUpStatus followUpStatus = null;
-    private TaskStatus taskStatus = null;
+    private String recordUuid = null;
+    private TaskStatus pageStatus = null;
     private BaseReadActivityFragment activeFragment = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, followUpStatus);
-        SavePageStatusState(outState, taskStatus);
-        SaveRecordUuidState(outState, taskUuid);
+        SavePageStatusState(outState, pageStatus);
+        SaveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -51,14 +47,19 @@ public class ContactReadTaskInfoActivity  extends BaseReadActivity {
 
     @Override
     protected void initializeActivity(Bundle arguments) {
-        followUpStatus = (FollowUpStatus) getFilterStatusArg(arguments);
-        taskStatus = (TaskStatus) getPageStatusArg(arguments);
-        taskUuid = getRecordUuidArg(arguments);
+        pageStatus = (TaskStatus) getFilterStatusArg(arguments);
+        recordUuid = getRecordUuidArg(arguments);
 
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment() {
+    public BaseReadActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+        if (activeFragment == null) {
+            TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(
+                    ContactReadTaskInfoActivity.this, recordUuid, pageStatus);
+            activeFragment = ContactReadTaskInfoFragment.newInstance(this, dataCapsule);
+        }
+
         return activeFragment;
     }
 
@@ -79,11 +80,7 @@ public class ContactReadTaskInfoActivity  extends BaseReadActivity {
 
     @Override
     public Enum getPageStatus() {
-        if (followUpStatus == null) {
-            followUpStatus = (FollowUpStatus) getPageStatusArg(getIntent().getExtras());;
-        }
-
-        return followUpStatus;
+        return pageStatus;
     }
 
     @Override
@@ -154,7 +151,7 @@ public class ContactReadTaskInfoActivity  extends BaseReadActivity {
         return R.string.heading_level3_1_contact_task_info;
     }
 
-    public static void goToActivity(Context fromActivity, ContactFormFollowUpNavigationCapsule dataCapsule) {
+    public static void goToActivity(Context fromActivity, TaskFormNavigationCapsule dataCapsule) {
         BaseReadActivity.goToActivity(fromActivity, ContactReadFollowUpVisitInfoActivity.class, dataCapsule);
     }
 }

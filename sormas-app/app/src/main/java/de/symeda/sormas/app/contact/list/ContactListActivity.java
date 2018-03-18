@@ -57,7 +57,7 @@ public class ContactListActivity extends BaseListActivity {
     public BaseListActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             ContactListCapsule dataCapsule = new ContactListCapsule(ContactListActivity.this, filterStatus, searchBy);
-            activeFragment = ContactListFragment.newInstance(dataCapsule);
+            activeFragment = ContactListFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;

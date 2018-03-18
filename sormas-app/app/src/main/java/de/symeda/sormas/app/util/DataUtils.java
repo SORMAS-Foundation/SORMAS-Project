@@ -1,12 +1,11 @@
 package de.symeda.sormas.app.util;
 
-import de.symeda.sormas.app.component.Item;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.Month;
+import de.symeda.sormas.app.component.Item;
 
 /**
  * Created by Stefan Szczesny on 02.08.2016.
@@ -72,6 +71,11 @@ public class DataUtils {
             }
         }
         return listOut;
+    }
+
+    public static <E>  List<Item> addEmptyItem(List<Item> items) {
+        items.add(0, new Item<E>("", null));
+        return items;
     }
 
     public static <E>  List<Item> addItems(List<Item> items, List<E> listIn) {

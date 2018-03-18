@@ -63,7 +63,7 @@ public class TaskListActivity  extends BaseListActivity {
     public BaseListActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             TaskListCapsule dataCapsule = new TaskListCapsule(TaskListActivity.this, filterStatus, searchBy);
-            activeFragment = TaskListFragment.newInstance(dataCapsule);
+            activeFragment = TaskListFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;
@@ -132,7 +132,7 @@ public class TaskListActivity  extends BaseListActivity {
 
             // Report problem button
             case R.id.action_report:
-                /*Task task = (Task) taskForm.getData();
+                /*Task task = (Task) taskForm.getPrimaryData();
 
                 UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), task.getUuid());
                 AlertDialog dialog = userReportDialog.create();

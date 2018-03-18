@@ -21,7 +21,7 @@ import de.symeda.sormas.app.symptom.Symptom;
 @DatabaseTable(tableName = Symptoms.TABLE_NAME)
 @EmbeddedAdo
 public class Symptoms extends AbstractDomainObject {
-	
+
 	private static final long serialVersionUID = 392886645668778670L;
 
 	public static final String TABLE_NAME = "symptoms";
@@ -204,12 +204,12 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState bedridden;
 	@Enumerated(EnumType.STRING)
 	private SymptomState oralUlcers;
-    @Enumerated(EnumType.STRING)
-    private SymptomState painfulLymphadenitis;
-    @Enumerated(EnumType.STRING)
-    private SymptomState buboesGroinArmpitNeck;
-    @Enumerated(EnumType.STRING)
-    private SymptomState blackeningDeathOfTissue;
+	@Enumerated(EnumType.STRING)
+	private SymptomState painfulLymphadenitis;
+	@Enumerated(EnumType.STRING)
+	private SymptomState buboesGroinArmpitNeck;
+	@Enumerated(EnumType.STRING)
+	private SymptomState blackeningDeathOfTissue;
 	@Enumerated(EnumType.STRING)
 	private SymptomState bulgingFontanelle;
 	@Enumerated(EnumType.STRING)
@@ -855,29 +855,29 @@ public class Symptoms extends AbstractDomainObject {
 		this.oralUlcers = oralUlcers;
 	}
 
-    public SymptomState getPainfulLymphadenitis() {
-        return painfulLymphadenitis;
-    }
+	public SymptomState getPainfulLymphadenitis() {
+		return painfulLymphadenitis;
+	}
 
-    public void setPainfulLymphadenitis(SymptomState painfulLymphadenitis) {
-        this.painfulLymphadenitis = painfulLymphadenitis;
-    }
+	public void setPainfulLymphadenitis(SymptomState painfulLymphadenitis) {
+		this.painfulLymphadenitis = painfulLymphadenitis;
+	}
 
-    public SymptomState getBuboesGroinArmpitNeck() {
-        return buboesGroinArmpitNeck;
-    }
+	public SymptomState getBuboesGroinArmpitNeck() {
+		return buboesGroinArmpitNeck;
+	}
 
-    public void setBuboesGroinArmpitNeck(SymptomState buboesGroinArmpitNeck) {
-        this.buboesGroinArmpitNeck = buboesGroinArmpitNeck;
-    }
+	public void setBuboesGroinArmpitNeck(SymptomState buboesGroinArmpitNeck) {
+		this.buboesGroinArmpitNeck = buboesGroinArmpitNeck;
+	}
 
-    public SymptomState getBlackeningDeathOfTissue() {
-        return blackeningDeathOfTissue;
-    }
+	public SymptomState getBlackeningDeathOfTissue() {
+		return blackeningDeathOfTissue;
+	}
 
-    public void setBlackeningDeathOfTissue(SymptomState blackeningDeathOfTissue) {
-        this.blackeningDeathOfTissue = blackeningDeathOfTissue;
-    }
+	public void setBlackeningDeathOfTissue(SymptomState blackeningDeathOfTissue) {
+		this.blackeningDeathOfTissue = blackeningDeathOfTissue;
+	}
 
 	public SymptomState getBulgingFontanelle() {
 		return bulgingFontanelle;

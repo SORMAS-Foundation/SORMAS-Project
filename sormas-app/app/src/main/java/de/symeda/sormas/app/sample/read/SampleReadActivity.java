@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.sample.read;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Menu;
@@ -10,20 +9,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
-import de.symeda.sormas.app.AbstractSormasActivity;
+import java.util.ArrayList;
+
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.sample.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.sample.edit.SampleEditActivity;
-import de.symeda.sormas.app.sample.list.SampleListActivity;
-import de.symeda.sormas.app.sample.SampleFormNavigationCapsule;
-import de.symeda.sormas.app.util.ConstantHelper;
-
-import java.util.ArrayList;
-
-import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.util.NavigationHelper;
 
 /**
  * Created by Orson on 10/12/2017.
@@ -33,18 +29,16 @@ public class SampleReadActivity extends BaseReadActivity {
 
     private final String DATA_XML_PAGE_MENU = "";
 
-    private ShipmentStatus filterStatus = null;
     private ShipmentStatus pageStatus = null;
-    private String sampleUuid = null;
-    private BaseReadActivityFragment activeFragment = new SampleReadFragment();
+    private String recordUuid = null;
+    private BaseReadActivityFragment activeFragment = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, sampleUuid);
+        SaveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -59,13 +53,18 @@ public class SampleReadActivity extends BaseReadActivity {
 
     @Override
     protected void initializeActivity(Bundle arguments) {
-        filterStatus = (ShipmentStatus) getFilterStatusArg(arguments);
-        //pageStatus = (EventStatus) getPageStatusArg(arguments);
-        sampleUuid = getRecordUuidArg(arguments);
+        pageStatus = (ShipmentStatus) getPageStatusArg(arguments);
+        recordUuid = getRecordUuidArg(arguments);
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment() {
+    public BaseReadActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+        if (activeFragment == null) {
+            SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(SampleReadActivity.this,
+                    recordUuid, pageStatus);
+            activeFragment = SampleReadFragment.newInstance(this, dataCapsule);
+        }
+
         return activeFragment;
     }
 
@@ -134,11 +133,7 @@ public class SampleReadActivity extends BaseReadActivity {
         switch(item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                // TODO check parent activity intent as soon as the minimum API level has been increased to 16
-                Intent intent = new Intent(this, SampleListActivity.class);
-                intent.putExtra(ConstantHelper.ARG_FILTER_STATUS, filterStatus);
-                startActivity(intent);
-
+                NavigationHelper.navigateUpFrom(this);
                 return true;
 
             case R.id.action_edit:
@@ -189,10 +184,12 @@ public class SampleReadActivity extends BaseReadActivity {
         if (activeFragment == null)
             return;
 
-        Sample record = (Sample)activeFragment.getRecord();
+        Sample record = (Sample)activeFragment.getPrimaryData();
+        String sampleMaterial = (record.getSampleMaterial() != null)? record.getSampleMaterial().toString() : "";
 
-        SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(SampleReadActivity.this,
-                record.getUuid(), pageStatus);
+        SampleFormNavigationCapsule dataCapsule = (SampleFormNavigationCapsule)new SampleFormNavigationCapsule(SampleReadActivity.this,
+                record.getUuid(), pageStatus)
+                .setSampleMaterial(sampleMaterial);
         SampleEditActivity.goToActivity(this, dataCapsule);
     }
 

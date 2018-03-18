@@ -14,7 +14,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -527,6 +526,9 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 // ignore some types and specific properties
                 if (!AdoPropertyHelper.isModifiableProperty(property)
                         || parentProperty.equals(property.getName()))
+                    continue;
+
+                if (AdoPropertyHelper.isReadOnlyProperty(property))
                     continue;
 
                 // we now have to write the value from source into target and base

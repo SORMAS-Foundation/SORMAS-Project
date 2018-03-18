@@ -18,6 +18,7 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.contact.read.ContactReadActivity;
 import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -34,6 +35,7 @@ import de.symeda.sormas.app.util.SubheadingHelper;
 
 public class ContactListFragment extends BaseListActivityFragment<ContactListAdapter> implements OnListItemClickListener {
 
+    private boolean dataLoaded = false;
     private AsyncTask searchTask;
     private List<Contact> contacts;
     private LinearLayoutManager linearLayoutManager;
@@ -86,7 +88,7 @@ public class ContactListFragment extends BaseListActivityFragment<ContactListAda
 
     @Override
     public void cancelTaskExec() {
-        if (searchTask != null)
+        if (searchTask != null && !searchTask.isCancelled())
             searchTask.cancel(true);
     }
 
@@ -94,25 +96,44 @@ public class ContactListFragment extends BaseListActivityFragment<ContactListAda
     public void onResume() {
         super.onResume();
 
-        ISearchExecutor<Contact> executor = SearchStrategyFor.CONTACT.selector(searchBy, filterStatus, recordUuid);
-        searchTask = executor.search(new ISearchResultCallback<Contact>() {
-            @Override
-            public void searchResult(List<Contact> result, BoolResult resultStatus) {
-                if (!resultStatus.isSuccess()) {
-                    String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Contacts");
-                    NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
+        //TODO: Orson - reverse this relationship
+        getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Contact"));
 
-                    return;
-                }
+        try {
+            if (!dataLoaded) {
+                ISearchExecutor<Contact> executor = SearchStrategyFor.CONTACT.selector(searchBy, filterStatus, recordUuid);
+                searchTask = executor.search(new ISearchResultCallback<Contact>() {
+                    @Override
+                    public void searchResult(List<Contact> result, BoolResult resultStatus) {
+                        getActivityCommunicator().hidePreloader();
 
-                contacts = result;
+                        if (!resultStatus.isSuccess()) {
+                            String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Contacts");
+                            NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
 
-                //TODO: Orson - reverse this relationship
-                getCommunicator().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Contact"));
-                ContactListFragment.this.getListAdapter().replaceAll(contacts);
-                ContactListFragment.this.getListAdapter().notifyDataSetChanged();
+                            return;
+                        }
+
+                        contacts = result;
+
+                        ContactListFragment.this.getListAdapter().replaceAll(contacts);
+                        ContactListFragment.this.getListAdapter().notifyDataSetChanged();
+
+                        dataLoaded = true;
+                    }
+
+                    private ISearchResultCallback<Contact> init() {
+                        getActivityCommunicator().showPreloader();
+
+                        return this;
+                    }
+                }.init());
             }
-        });
+        } catch (Exception ex) {
+            getActivityCommunicator().hidePreloader();
+            dataLoaded = false;
+        }
+
     }
 
     @Override
@@ -139,8 +160,16 @@ public class ContactListFragment extends BaseListActivityFragment<ContactListAda
         startActivity(intent);*/
     }
 
-    public static ContactListFragment newInstance(ContactListCapsule capsule)
+    public static ContactListFragment newInstance(IActivityCommunicator communicator, ContactListCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(ContactListFragment.class, capsule);
+        return newInstance(communicator, ContactListFragment.class, capsule);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (searchTask != null && !searchTask.isCancelled())
+            searchTask.cancel(true);
     }
 }

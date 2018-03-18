@@ -9,38 +9,35 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
+import java.util.ArrayList;
+
+import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.NavigationHelper;
 
-import java.util.ArrayList;
-
-import de.symeda.sormas.api.task.TaskStatus;
-import de.symeda.sormas.app.backend.task.Task;
-
 /**
  * Created by Orson on 31/12/2017.
  */
 
 public class TaskReadActivity extends BaseReadActivity {
-    private TaskStatus filterStatus = null;
     private TaskStatus pageStatus = null;
-    private String taskUuid = null;
+    private String recordUuid = null;
     private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
-    private BaseReadActivityFragment activeFragment = new TaskReadFragment();
+    private BaseReadActivityFragment activeFragment = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, taskUuid);
+        SaveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -55,13 +52,18 @@ public class TaskReadActivity extends BaseReadActivity {
 
     @Override
     protected void initializeActivity(Bundle arguments) {
-        filterStatus = (TaskStatus) getFilterStatusArg(arguments);
-        //pageStatus = (TaskStatus) getPageStatusArg(arguments);
-        taskUuid = getRecordUuidArg(arguments);
+        pageStatus = (TaskStatus) getPageStatusArg(arguments);
+        recordUuid = getRecordUuidArg(arguments);
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment() {
+    public BaseReadActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+        if (activeFragment == null) {
+            TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(TaskReadActivity.this,
+                    recordUuid, pageStatus);
+            activeFragment = TaskReadFragment.newInstance(this, dataCapsule);
+        }
+
         return activeFragment;
     }
 
@@ -172,7 +174,7 @@ public class TaskReadActivity extends BaseReadActivity {
         if (activeFragment == null)
             return;
 
-        Task record = (Task)activeFragment.getRecord();
+        Task record = (Task)activeFragment.getPrimaryData();
 
         TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(TaskReadActivity.this,
                 record.getUuid(), record.getTaskStatus());

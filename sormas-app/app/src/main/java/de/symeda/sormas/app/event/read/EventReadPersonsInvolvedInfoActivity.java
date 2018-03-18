@@ -8,16 +8,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
+import java.util.ArrayList;
+
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.event.EventFormNavigationCapsule;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.NavigationHelper;
-
-import java.util.ArrayList;
-
-import de.symeda.sormas.api.event.EventStatus;
 
 /**
  * Created by Orson on 27/12/2017.
@@ -25,10 +25,10 @@ import de.symeda.sormas.api.event.EventStatus;
 
 public class EventReadPersonsInvolvedInfoActivity extends BaseReadActivity {
 
-    private String eventParticipantUuid = null;
+    private String recordUuid = null;
     private EventStatus eventStatus = null;
     private EventStatus pageStatus = null;
-    private BaseReadActivityFragment activeFragment = new EventReadPersonsInvolvedInfoFragment();
+    private BaseReadActivityFragment activeFragment = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -36,7 +36,7 @@ public class EventReadPersonsInvolvedInfoActivity extends BaseReadActivity {
 
         SaveFilterStatusState(outState, eventStatus);
         SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, eventParticipantUuid);
+        SaveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -53,11 +53,17 @@ public class EventReadPersonsInvolvedInfoActivity extends BaseReadActivity {
     protected void initializeActivity(Bundle arguments) {
         eventStatus = (EventStatus) getFilterStatusArg(arguments);
         pageStatus = (EventStatus) getPageStatusArg(arguments);
-        eventParticipantUuid = getRecordUuidArg(arguments);
+        recordUuid = getRecordUuidArg(arguments);
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment() {
+    public BaseReadActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+        if (activeFragment == null) {
+            EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventReadPersonsInvolvedInfoActivity.this,
+                    recordUuid, pageStatus);
+            activeFragment = EventReadPersonsInvolvedInfoFragment.newInstance(this, dataCapsule);
+        }
+
         return activeFragment;
     }
 

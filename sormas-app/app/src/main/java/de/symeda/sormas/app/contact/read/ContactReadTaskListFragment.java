@@ -1,45 +1,42 @@
 package de.symeda.sormas.app.contact.read;
 
-import android.content.Intent;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import de.symeda.sormas.app.BaseReadActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
-import de.symeda.sormas.app.contact.read.sub.ContactReadTaskInfoActivity;
-import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
-import de.symeda.sormas.app.databinding.FragmentContactReadTaskLayoutBinding;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.util.ConstantHelper;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentContactReadTaskLayoutBinding;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
+import de.symeda.sormas.app.task.read.TaskReadActivity;
 
 /**
  * Created by Orson on 01/01/2018.
  */
 
-public class ContactReadTaskListFragment extends BaseReadActivityFragment<FragmentContactReadTaskLayoutBinding> implements OnListItemClickListener {
+public class ContactReadTaskListFragment extends BaseReadActivityFragment<FragmentContactReadTaskLayoutBinding, List<Task>> implements OnListItemClickListener {
 
-    private String contactUuid;
+    private String recordUuid;
     private FollowUpStatus followUpStatus;
     private ContactClassification contactClassification = null;
     private List<Task> record;
-    private FragmentContactReadTaskLayoutBinding binding;
 
     private ContactReadTaskListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
@@ -52,7 +49,7 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
 
         SaveFilterStatusState(outState, followUpStatus);
         SavePageStatusState(outState, contactClassification);
-        SaveRecordUuidState(outState, contactUuid);
+        SaveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -61,34 +58,45 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
-        contactUuid = getRecordUuidArg(arguments);
+        recordUuid = getRecordUuidArg(arguments);
         followUpStatus = (FollowUpStatus) getFilterStatusArg(arguments);
         contactClassification = (ContactClassification) getPageStatusArg(arguments);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            Contact contact = DatabaseHelper.getContactDao().queryUuid(recordUuid);
+
+            if (contact != null) {
+                resultHolder.forList().add(DatabaseHelper.getTaskDao().queryByContact(contact));
+            } else {
+                resultHolder.forList().add(new ArrayList<Task>());
+            }
+        } else {
+            ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
+
+            if (listIterator.hasNext())
+                record =  listIterator.next();
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onLayoutBinding(FragmentContactReadTaskLayoutBinding contentBinding) {
+        adapter = new ContactReadTaskListAdapter(ContactReadTaskListFragment.this.getActivity(),
+                R.layout.row_read_contact_task_list_item_layout, ContactReadTaskListFragment.this, record);
 
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-
-        //Get binding
-        //binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        binding = DataBindingUtil.inflate(inflater, getRootReadLayout(), container, false);
-
-        //Get Data
-        record = MemoryDatabaseHelper.TASK.getTasks(20);
-
-        //Create adapter and set data
-        adapter = new ContactReadTaskListAdapter(this.getActivity(), R.layout.row_read_contact_task_list_item_layout, this, record);
-
-        binding.recyclerViewForList.setLayoutManager(linearLayoutManager);
-        binding.recyclerViewForList.setAdapter(adapter);
-
-
+        contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
+        contentBinding.recyclerViewForList.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+    }
 
-        return binding.getRoot();
+    @Override
+    public void onAfterLayoutBinding(FragmentContactReadTaskLayoutBinding contentBinding) {
+
     }
 
     @Override
@@ -96,14 +104,20 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
         super.onResume();
 
         //adapter.replaceAll(new ArrayList<EventParticipant>(record));
-        adapter.notifyDataSetChanged();
+        //adapter.notifyDataSetChanged();
 
-        binding.swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getBaseReadActivity().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, false, binding.swiperefresh, null);
-            }
-        });
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)getRootBinding().getRoot()
+                .findViewById(R.id.swiperefresh);
+
+        if (swiperefresh != null) {
+            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    getBaseReadActivity().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly,
+                            true, false, swiperefresh, null);
+                }
+            });
+        }
     }
 
     @Override
@@ -112,69 +126,47 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
     }
 
     @Override
-    public AbstractDomainObject getData() {
-        return null;
-    }
-
-    @Override
-    public FragmentContactReadTaskLayoutBinding getBinding() {
-        return binding;
-    }
-
-    @Override
-    public Object getRecord() {
+    public List<Task> getPrimaryData() {
         return record;
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-
-        //recyclerViewForList.setLayoutManager(linearLayoutManager);
-        //recyclerViewForList.setAdapter(adapter);
-        //binding.recyclerViewForList.setLayoutManager(linearLayoutManager);
-        //binding.recyclerViewForList.setAdapter(adapter);
-    }
-
-    public void showTaskInfoReadView(Event event) {
-        /*Intent intent = new Intent(getActivity(), TaskEditActivity.class);
-        intent.putExtra(Task.UUID, task.getUuid());
-        if(parentCaseUuid != null) {
-            intent.putExtra(KEY_CASE_UUID, parentCaseUuid);
-        }
-        if(parentContactUuid != null) {
-            intent.putExtra(KEY_CONTACT_UUID, parentContactUuid);
-        }
-        if(parentEventUuid != null) {
-            intent.putExtra(KEY_EVENT_UUID, parentEventUuid);
-        }
-        startActivity(intent);*/
-    }
-
-    @Override
-    public int getRootReadLayout() {
+    public int getReadLayout() {
         return R.layout.fragment_contact_read_task_layout;
     }
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        Task record = (Task)item;
+        Task task = (Task)item;
+        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(),
+                task.getUuid(), task.getTaskStatus());
+        TaskReadActivity.goToActivity(getActivity(), dataCapsule);
 
-        if(record != null) {
+        /*Task task = (Task)item;
+
+        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(),
+                task.getUuid(), task.getTaskStatus());
+        ContactReadTaskInfoActivity.goToActivity(getActivity(), dataCapsule);*/
+
+        /*if(record != null) {
             Intent intent = new Intent(getActivity(), ContactReadTaskInfoActivity.class);
             //intent.putExtra(ConstantHelper.ARG_FILTER_STATUS, record.getContact().getFollowUpStatus());
             intent.putExtra(ConstantHelper.KEY_DATA_UUID, record.getUuid());
+            intent.putExtra(ConstantHelper.ARG_PAGE_STATUS, record.getTaskStatus());
             intent.putExtra(IStatusElaborator.ARG_TASK_STATUS, record.getTaskStatus());
             intent.putExtra(IStatusElaborator.ARG_FOLLOW_UP_STATUS, followUpStatus);
 
             startActivity(intent);
-        }
+        }*/
     }
 
-    public static ContactReadTaskListFragment newInstance(ContactFormNavigationCapsule capsule)
+    @Override
+    public boolean includeFabNonOverlapPadding() {
+        return false;
+    }
+
+    public static ContactReadTaskListFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(ContactReadTaskListFragment.class, capsule);
+        return newInstance(activityCommunicator, ContactReadTaskListFragment.class, capsule);
     }
-
 }

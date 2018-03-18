@@ -1,71 +1,85 @@
 package de.symeda.sormas.app.contact.read.sub;
 
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.support.annotation.Nullable;
 
+import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.databinding.FragmentContactReadTaskInfoLayoutBinding;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentContactReadTaskInfoLayoutBinding;
+import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
 
 /**
  * Created by Orson on 02/01/2018.
  */
 
-public class ContactReadTaskInfoFragment extends BaseReadActivityFragment<FragmentContactReadTaskInfoLayoutBinding> {
+public class ContactReadTaskInfoFragment extends BaseReadActivityFragment<FragmentContactReadTaskInfoLayoutBinding, Task> {
 
+    private String recordUuid = null;
+    private TaskStatus pageStatus = null;
     private Task record;
-    private FragmentContactReadTaskInfoLayoutBinding binding;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        binding = DataBindingUtil.inflate(inflater, getRootReadLayout(), container, false);
-        record = MemoryDatabaseHelper.TASK.getTasks(1).get(0);
+        SavePageStatusState(outState, pageStatus);
+        SaveRecordUuidState(outState, recordUuid);
+    }
 
-        //TODO: Orson - remove, just for testing purposes only
-        binding.txtAssocContact.setVisibility(View.GONE);
-        binding.txtAssocEvent.setVisibility(View.GONE);
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        binding.setData(record);
+        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
+        recordUuid = getRecordUuidArg(arguments);
+        pageStatus = (TaskStatus) getPageStatusArg(arguments);
+    }
 
+    @Override
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            resultHolder.forItem().add(DatabaseHelper.getTaskDao().queryUuid(recordUuid));
+        } else {
+            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
-        return binding.getRoot();
+            if (itemIterator.hasNext())
+                record =  itemIterator.next();
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onLayoutBinding(FragmentContactReadTaskInfoLayoutBinding contentBinding) {
+        contentBinding.setData(record);
+    }
+
+    @Override
+    public void onAfterLayoutBinding(FragmentContactReadTaskInfoLayoutBinding contentBinding) {
+
     }
 
     @Override
     protected String getSubHeadingTitle() {
         String title = "";
 
-        if (binding != null) {
-            String taskTitle = binding.getRoot().getContext().getResources().getString(R.string.const_task);
-            title = binding.getData().getTaskContext() + " " + taskTitle;
+        if (pageStatus != null) {
+            title = pageStatus.toString();
         }
 
         return title;
     }
 
     @Override
-    public AbstractDomainObject getData() {
-        return binding.getData();
-    }
-
-    @Override
-    public FragmentContactReadTaskInfoLayoutBinding getBinding() {
-        return binding;
-    }
-
-    @Override
-    public Object getRecord() {
+    public Task getPrimaryData() {
         return record;
     }
 
@@ -74,23 +88,13 @@ public class ContactReadTaskInfoFragment extends BaseReadActivityFragment<Fragme
         super.onActivityCreated(savedInstanceState);
     }
 
-    public void showRecordEditView(EventParticipant item) {
-        /*Intent intent = new Intent(getActivity(), TaskEditActivity.class);
-        intent.putExtra(Task.UUID, task.getUuid());
-        if(parentCaseUuid != null) {
-            intent.putExtra(KEY_CASE_UUID, parentCaseUuid);
-        }
-        if(parentContactUuid != null) {
-            intent.putExtra(KEY_CONTACT_UUID, parentContactUuid);
-        }
-        if(parentEventUuid != null) {
-            intent.putExtra(KEY_EVENT_UUID, parentEventUuid);
-        }
-        startActivity(intent);*/
+    @Override
+    public int getReadLayout() {
+        return R.layout.fragment_contact_read_task_info_layout;
     }
 
-    @Override
-    public int getRootReadLayout() {
-        return R.layout.fragment_contact_read_task_info_layout;
+    public static ContactReadTaskInfoFragment newInstance(IActivityCommunicator activityCommunicator, TaskFormNavigationCapsule capsule)
+            throws java.lang.InstantiationException, IllegalAccessException {
+        return newInstance(activityCommunicator, ContactReadTaskInfoFragment.class, capsule);
     }
 }

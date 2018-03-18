@@ -2,7 +2,6 @@ package de.symeda.sormas.app.sample.list;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,8 +22,8 @@ public class SampleListActivity extends BaseListActivity {
 
     private ShipmentStatus filterStatus = null;
     private SearchBy searchBy = null;
-    private String recordUuid = null;
     private BaseListActivityFragment activeFragment = null;
+    private String recordUuid = null;
 
 
     @Override
@@ -37,27 +36,16 @@ public class SampleListActivity extends BaseListActivity {
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     protected void initializeActivity(Bundle arguments) {
         filterStatus = (ShipmentStatus) getFilterStatusArg(arguments);
         searchBy = (SearchBy) getSearchStrategyArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
     }
 
     @Override
     public BaseListActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             SampleListCapsule dataCapsule = new SampleListCapsule(SampleListActivity.this, filterStatus, searchBy);
-            activeFragment = SampleListFragment.newInstance(dataCapsule);
+            activeFragment = SampleListFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;

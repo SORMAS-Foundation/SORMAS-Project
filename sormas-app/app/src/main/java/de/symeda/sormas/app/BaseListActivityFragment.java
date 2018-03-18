@@ -1,22 +1,24 @@
 package de.symeda.sormas.app;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
+import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IListActivityAdapterDataObserverCommunicator;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
-import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.ListAdapterDataObserver;
 import de.symeda.sormas.app.core.NotImplementedException;
-import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.SearchBy;
+import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
+import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.ConstantHelper;
@@ -25,11 +27,18 @@ import de.symeda.sormas.app.util.ConstantHelper;
  * Created by Orson on 02/12/2017.
  */
 
-public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView.Adapter> extends Fragment implements IListActivityAdapterDataObserverCommunicator, OnListItemClickListener {
+public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView.Adapter> extends BaseFragment implements IListActivityAdapterDataObserverCommunicator, OnListItemClickListener {
 
     private BaseListActivity baseListActivity;
-    private IUpdateSubHeadingTitle communicator;
+    private IUpdateSubHeadingTitle subHeadingHandler;
     private TListAdapter adapter;
+    private ProgressBar preloader;
+    private IActivityCommunicator activityCommunicator;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,7 +51,7 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
         }
 
         if (getActivity() instanceof IUpdateSubHeadingTitle) {
-            this.communicator = (IUpdateSubHeadingTitle) this.getActivity();
+            this.subHeadingHandler = (IUpdateSubHeadingTitle) this.getActivity();
         } else {
             throw new NotImplementedException("Activity for fragment does not support updateSubHeadingTitle; "
                     + "implement IUpdateSubHeadingTitle");
@@ -109,9 +118,14 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
         return this.getView().findViewById(R.id.swiperefresh);
     }
 
-    public IUpdateSubHeadingTitle getCommunicator() {
-        return this.communicator;
+    public IUpdateSubHeadingTitle getSubHeadingHandler() {
+        return this.subHeadingHandler;
     }
+
+    public IActivityCommunicator getActivityCommunicator() {
+        return this.activityCommunicator;
+    }
+
 
     public BaseListActivity getBaseListActivity() {
         return this.baseListActivity;
@@ -205,8 +219,15 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
         }
     }
 
-    protected static <TFragment extends BaseListActivityFragment, TCapsule extends IListNavigationCapsule> TFragment newInstance(Class<TFragment> f, TCapsule dataCapsule) throws IllegalAccessException, java.lang.InstantiationException {
+    protected void setActivityCommunicator(IActivityCommunicator activityCommunicator) {
+        this.activityCommunicator = activityCommunicator;
+    }
+
+    protected static <TFragment extends BaseListActivityFragment, TCapsule extends IListNavigationCapsule> TFragment newInstance(IActivityCommunicator activityCommunicator, Class<TFragment> f, TCapsule dataCapsule) throws IllegalAccessException, java.lang.InstantiationException {
         TFragment fragment = f.newInstance();
+
+        fragment.setActivityCommunicator(activityCommunicator);
+
         Bundle bundle = fragment.getArguments();
         if (bundle == null) {
             bundle = new Bundle();

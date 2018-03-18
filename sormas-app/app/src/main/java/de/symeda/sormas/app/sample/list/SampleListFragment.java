@@ -15,6 +15,7 @@ import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -34,6 +35,7 @@ import de.symeda.sormas.app.util.SubheadingHelper;
 
 public class SampleListFragment extends BaseListActivityFragment<SampleListAdapter> implements OnListItemClickListener {
 
+    private boolean dataLoaded = false;
     private AsyncTask searchTask;
     private List<Sample> samples;
     private LinearLayoutManager linearLayoutManager;
@@ -59,7 +61,7 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
 
         filterStatus = (ShipmentStatus) getFilterStatusArg(arguments);
         searchBy = (SearchBy) getSearchStrategyArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
+        recordUuid = (String) getRecordUuidArg(arguments);
     }
 
     @Override
@@ -85,7 +87,7 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
 
     @Override
     public void cancelTaskExec() {
-        if (searchTask != null)
+        if (searchTask != null && !searchTask.isCancelled())
             searchTask.cancel(true);
     }
 
@@ -93,25 +95,43 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
     public void onResume() {
         super.onResume();
 
-        ISearchExecutor<Sample> executor = SearchStrategyFor.SAMPLE.selector(searchBy, filterStatus, recordUuid);
-        searchTask = executor.search(new ISearchResultCallback<Sample>() {
-            @Override
-            public void searchResult(List<Sample> result, BoolResult resultStatus) {
-                if (!resultStatus.isSuccess()) {
-                    String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Samples");
-                    NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
+        //TODO: Orson - reverse this relationship
+        getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Sample"));
 
-                    return;
-                }
+        try {
+            if (!dataLoaded) {
+                ISearchExecutor<Sample> executor = SearchStrategyFor.SAMPLE.selector(searchBy, filterStatus, recordUuid);
+                searchTask = executor.search(new ISearchResultCallback<Sample>() {
+                    @Override
+                    public void searchResult(List<Sample> result, BoolResult resultStatus) {
+                        getActivityCommunicator().hidePreloader();
 
-                samples = result;
+                        if (!resultStatus.isSuccess()) {
+                            String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Samples");
+                            NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
 
-                //TODO: Orson - reverse this relationship
-                getCommunicator().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Sample"));
-                SampleListFragment.this.getListAdapter().replaceAll(samples);
-                SampleListFragment.this.getListAdapter().notifyDataSetChanged();
+                            return;
+                        }
+
+                        samples = result;
+
+                        SampleListFragment.this.getListAdapter().replaceAll(samples);
+                        SampleListFragment.this.getListAdapter().notifyDataSetChanged();
+
+                        dataLoaded = true;
+                    }
+
+                    private ISearchResultCallback<Sample> init() {
+                        getActivityCommunicator().showPreloader();
+
+                        return this;
+                    }
+                }.init());
             }
-        });
+        } catch (Exception ex) {
+            getActivityCommunicator().hidePreloader();
+            dataLoaded = false;
+        }
     }
 
     @Override
@@ -123,8 +143,16 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
         recyclerViewForList.setAdapter(getListAdapter());
     }
 
-    public static SampleListFragment newInstance(SampleListCapsule capsule)
+    public static SampleListFragment newInstance(IActivityCommunicator communicator, SampleListCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(SampleListFragment.class, capsule);
+        return newInstance(communicator, SampleListFragment.class, capsule);
     }
+
+    /*@Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (searchTask != null && !searchTask.isCancelled())
+            searchTask.cancel(true);
+    }*/
 }

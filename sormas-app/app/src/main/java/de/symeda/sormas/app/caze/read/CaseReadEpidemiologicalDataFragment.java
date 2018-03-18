@@ -1,48 +1,46 @@
 package de.symeda.sormas.app.caze.read;
 
 import android.app.AlertDialog;
-import android.databinding.DataBindingUtil;
 import android.databinding.ObservableArrayList;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-
-import de.symeda.sormas.app.BaseReadActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.component.dialog.SimpleDialog;
-import de.symeda.sormas.app.component.tagview.Tag;
-import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.databinding.FragmentCaseReadEpidLayoutBinding;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
-import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.component.dialog.SimpleDialog;
+import de.symeda.sormas.app.component.tagview.Tag;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.IEntryItemOnClickListener;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentCaseReadEpidLayoutBinding;
 
 /**
  * Created by Orson on 08/01/2018.
  */
 
-public class CaseReadEpidemiologicalDataFragment extends BaseReadActivityFragment<FragmentCaseReadEpidLayoutBinding> {
+public class CaseReadEpidemiologicalDataFragment extends BaseReadActivityFragment<FragmentCaseReadEpidLayoutBinding, EpiData> {
 
     public static final String TAG = CaseReadEpidemiologicalDataFragment.class.getSimpleName();
 
-    private String caseUuid = null;
+    private String recordUuid = null;
     private InvestigationStatus filterStatus = null;
     private CaseClassification pageStatus = null;
     private EpiData record;
     private ObservableArrayList burials = new ObservableArrayList();
     private ObservableArrayList gatherings = new ObservableArrayList();
     private ObservableArrayList travels = new ObservableArrayList();
-    private FragmentCaseReadEpidLayoutBinding binding;
 
     private IEntryItemOnClickListener onBurialItemClickListener;
     private IEntryItemOnClickListener onSocialEventItemClickListener;
@@ -54,7 +52,7 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadActivityFragmen
 
         SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, caseUuid);
+        SaveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -63,33 +61,50 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadActivityFragmen
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
-        caseUuid = getRecordUuidArg(arguments);
+        recordUuid = getRecordUuidArg(arguments);
         filterStatus = (InvestigationStatus) getFilterStatusArg(arguments);
         pageStatus = (CaseClassification) getPageStatusArg(arguments);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            EpiData epiData = null;
+            Case caze = DatabaseHelper.getCaseDao().queryUuid(recordUuid);
+            if (caze != null)
+                epiData = DatabaseHelper.getEpiDataDao().queryUuid(caze.getEpiData().getUuid());
 
-        setupCallback();
+            resultHolder.forItem().add(epiData);
+        } else {
+            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
-        binding = DataBindingUtil.inflate(inflater, getRootReadLayout(), container, false);
-        record = MemoryDatabaseHelper.EPID_DATA.getEpidData(1).get(0);
+            if (itemIterator.hasNext())
+                record =  itemIterator.next();
 
-        binding.setData(record);
-        binding.setBurials(getBurialVisits());
-        binding.setSocialEvents(getGatherings());
-        binding.setTravels(getTravels());
-        binding.setAnimalContactYes(getAnimalContactYes());
-        binding.setAnimalContactUnknown(getAnimalContactUnknown());
-        binding.setAnimalContactNo(getAnimalContactNo());
+            setupCallback();
+        }
 
-        binding.setBurialItemClickCallback(onBurialItemClickListener);
-        binding.setSocialEventItemClickCallback(onSocialEventItemClickListener);
-        binding.setTravelItemClickCallback(onTravelItemClickListener);
+        return true;
+    }
 
-        return binding.getRoot();
+    @Override
+    public void onLayoutBinding(FragmentCaseReadEpidLayoutBinding contentBinding) {
+        contentBinding.setData(record);
+        contentBinding.setBurials(getBurialVisits());
+        contentBinding.setSocialEvents(getGatherings());
+        contentBinding.setTravels(getTravels());
+        contentBinding.setAnimalContactYes(getAnimalContactYes());
+        contentBinding.setAnimalContactUnknown(getAnimalContactUnknown());
+        contentBinding.setAnimalContactNo(getAnimalContactNo());
+
+        contentBinding.setBurialItemClickCallback(onBurialItemClickListener);
+        contentBinding.setSocialEventItemClickCallback(onSocialEventItemClickListener);
+        contentBinding.setTravelItemClickCallback(onTravelItemClickListener);
+    }
+
+    @Override
+    public void onAfterLayoutBinding(FragmentCaseReadEpidLayoutBinding contentBinding) {
+
     }
 
     @Override
@@ -98,57 +113,41 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadActivityFragmen
     }
 
     @Override
-    public AbstractDomainObject getData() {
-        return binding.getData();
-    }
-
-    @Override
-    public FragmentCaseReadEpidLayoutBinding getBinding() {
-        return binding;
-    }
-
-    @Override
-    public Object getRecord() {
+    public EpiData getPrimaryData() {
         return record;
     }
 
-    public void showRecordEditView(Event event) {
-        /*Intent intent = new Intent(getActivity(), TaskEditActivity.class);
-        intent.putExtra(Task.UUID, task.getUuid());
-        if(parentCaseUuid != null) {
-            intent.putExtra(KEY_CASE_UUID, parentCaseUuid);
-        }
-        if(parentContactUuid != null) {
-            intent.putExtra(KEY_CONTACT_UUID, parentContactUuid);
-        }
-        if(parentEventUuid != null) {
-            intent.putExtra(KEY_EVENT_UUID, parentEventUuid);
-        }
-        startActivity(intent);*/
-    }
-
     @Override
-    public int getRootReadLayout() {
+    public int getReadLayout() {
         return R.layout.fragment_case_read_epid_layout;
     }
 
-    public static CaseReadEpidemiologicalDataFragment newInstance(CaseFormNavigationCapsule capsule)
+    public static CaseReadEpidemiologicalDataFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(CaseReadEpidemiologicalDataFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseReadEpidemiologicalDataFragment.class, capsule);
     }
 
     private ObservableArrayList getBurialVisits() {
-        burials.add(MemoryDatabaseHelper.EPID_DATA_BURIAL.getBurials(1).get(0));
+        if (record != null && burials != null)
+            burials.addAll(record.getBurials());
+
+        //burials.add(MemoryDatabaseHelper.EPID_DATA_BURIAL.getBurials(1).get(0));
         return burials;
     }
 
     private ObservableArrayList getGatherings() {
-        gatherings.add(MemoryDatabaseHelper.EPID_DATA_GATHERING.getGatherings(1).get(0));
+        if (record != null && gatherings != null)
+            gatherings.addAll(record.getGatherings());
+
+        //gatherings.add(MemoryDatabaseHelper.EPID_DATA_GATHERING.getGatherings(1).get(0));
         return gatherings;
     }
 
     private ObservableArrayList getTravels() {
-        travels.add(MemoryDatabaseHelper.EPID_DATA_TRAVEL.getTravels(1).get(0));
+        if (record != null && travels != null)
+            travels.addAll(record.getTravels());
+
+        //travels.add(MemoryDatabaseHelper.EPID_DATA_TRAVEL.getTravels(1).get(0));
         return travels;
     }
 

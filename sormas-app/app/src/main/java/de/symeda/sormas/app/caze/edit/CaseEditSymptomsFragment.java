@@ -4,32 +4,34 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
-import android.view.ViewStub;
 import android.view.ViewTreeObserver;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.OnRecyclerViewReadyListener;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentCaseEditSymptomsInfoLayoutBinding;
 import de.symeda.sormas.app.symptom.OnSymptomStateChangeListener;
 import de.symeda.sormas.app.symptom.Symptom;
 import de.symeda.sormas.app.symptom.SymptomFormListAdapter;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.symptoms.SymptomState;
-import de.symeda.sormas.api.symptoms.TemperatureSource;
-import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.visit.Visit;
 
 /**
  * Created by Orson on 16/02/2018.
@@ -39,17 +41,17 @@ import de.symeda.sormas.app.backend.visit.Visit;
  * sampson.orson@technologyboard.org
  */
 
-public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentCaseEditSymptomsInfoLayoutBinding> {
+public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentCaseEditSymptomsInfoLayoutBinding, Symptoms> {
 
     private static final float DEFAULT_BODY_TEMPERATURE = 37.0f;
     private String recordUuid;
-    private VisitStatus pageStatus;
-    private Visit record;
+    private InvestigationStatus pageStatus;
+    private Symptoms record;
     private SymptomFormListAdapter symptomAdapter;
     private LinearLayoutManager linearLayoutManager;
 
     private List<Item> bodyTempList;
-    private List<TemperatureSource> tempSourceList;
+    private List<Item> tempSourceList;
     private List<Symptom> symptomList;
     private List<Symptom> yesSymptomList;
 
@@ -62,7 +64,6 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, followUpStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -74,8 +75,7 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
-        //followUpStatus = (EventStatus) getFilterStatusArg(arguments);
-        pageStatus = (VisitStatus) getPageStatusArg(arguments);
+        pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
     }
 
     @Override
@@ -84,37 +84,67 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
     }
 
     @Override
-    public AbstractDomainObject getData() {
+    public Symptoms getPrimaryData() {
         return record;
     }
 
     @Override
-    public void onBeforeLayoutBinding(Bundle savedInstanceState) {
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            Case caze = null;
+            Symptoms symptom = null;
+            if (recordUuid == null || recordUuid.isEmpty()) {
+                caze = DatabaseHelper.getCaseDao().build();
+                symptom = DatabaseHelper.getSymptomsDao().build();
+            } else {
+                caze = DatabaseHelper.getCaseDao().queryUuid(recordUuid);
+                if (caze != null) {
+                    symptom = DatabaseHelper.getSymptomsDao().queryUuid(caze.getSymptoms().getUuid());
+                    //symptom = caze.getSymptoms();
+                }
+            }
 
-        bodyTempList = MemoryDatabaseHelper.BODY_TEMPERATURE.getTemperatures(true);
-        tempSourceList = MemoryDatabaseHelper.TEMPERATURE_SOURCE.getTemperatureSources();
-        record = MemoryDatabaseHelper.VISIT.getVisits(1).get(0);
+            //resultHolder.forItem().add(caze);
+            resultHolder.forItem().add(symptom); //TODO: Do we need this
 
-        symptomList = Symptom.makeSymptoms(Disease.CHOLERA).loadState(record.getSymptoms());
-        yesSymptomList = new ArrayList<Symptom>();
+            resultHolder.forOther().add(Symptom.makeSymptoms(caze.getDisease()).loadState(symptom));
+            resultHolder.forOther().add(getTemperatures(false));
+            resultHolder.forOther().add(DataUtils.getEnumItems(TemperatureSource.class, false));
+            resultHolder.forOther().add(new ArrayList<Symptom>());
+        } else {
+            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
 
+            //Item Data
+            if (itemIterator.hasNext())
+                record = itemIterator.next();
 
+            if (otherIterator.hasNext())
+                symptomList =  otherIterator.next();
+
+            if (otherIterator.hasNext())
+                bodyTempList =  otherIterator.next();
+
+            if (otherIterator.hasNext())
+                tempSourceList =  otherIterator.next();
+
+            if (otherIterator.hasNext())
+                yesSymptomList =  otherIterator.next();
+
+            setupCallback();
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onLayoutBinding(FragmentCaseEditSymptomsInfoLayoutBinding contentBinding) {
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false) {
             @Override
             public boolean canScrollVertically() {
                 return false;
             }
         };
-
-        //linearLayoutManager.setAutoMeasureEnabled(false);
-
-        setupCallback();
-    }
-
-    @Override
-    public void onLayoutBinding(ViewStub stub, View inflated, FragmentCaseEditSymptomsInfoLayoutBinding contentBinding) {
-        //binding = DataBindingUtil.inflate(inflater, getEditLayout(), container, true);
-
         symptomAdapter = new SymptomFormListAdapter(this.getActivity(), R.layout.row_edit_symptom_list_item_layout, symptomList);
         symptomAdapter.setOnSymptomStateChangeListener(new OnSymptomStateChangeListener() {
             @Override
@@ -148,8 +178,7 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
 
         symptomAdapter.notifyDataSetChanged();
 
-
-        contentBinding.setData(record.getSymptoms());
+        contentBinding.setData(record);
         contentBinding.setClearAllCallback(clearAllCallback);
         contentBinding.setSetAllToNoCallback(setAllToNoCallback);
         contentBinding.setAddressLinkCallback(onAddressLinkClickedCallback);
@@ -157,10 +186,10 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentCaseEditSymptomsInfoLayoutBinding binding) {
-        binding.dtpSymptomOnset.initialize(getFragmentManager());
+    public void onAfterLayoutBinding(FragmentCaseEditSymptomsInfoLayoutBinding contentBinding) {
+        contentBinding.dtpSymptomOnset.initialize(getFragmentManager());
 
-        binding.spnBodyTemperature.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+        contentBinding.spnBodyTemperature.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override
             public Object getSelectedValue() {
                 return DEFAULT_BODY_TEMPERATURE;
@@ -172,7 +201,7 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
             }
         });
 
-        binding.spnBodyTemperatureSource.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+        contentBinding.spnBodyTemperatureSource.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override
             public Object getSelectedValue() {
                 return null;
@@ -180,12 +209,12 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                return (tempSourceList.size() > 0) ? DataUtils.toItems(tempSourceList)
-                        : DataUtils.toItems(tempSourceList, false);
+                return (tempSourceList.size() > 0) ? DataUtils.addEmptyItem(tempSourceList)
+                        : tempSourceList;
             }
         });
 
-        binding.spnFirstSymptoms.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+        contentBinding.spnFirstSymptoms.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override
             public Object getSelectedValue() {
                 return null;
@@ -197,16 +226,11 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
                         : DataUtils.toItems(yesSymptomList, false);
             }
         });
-
-        //binding.dtpStayStart.initialize(getFragmentManager());
-        //binding.dtpStayEnd.initialize(getFragmentManager());
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        symptomAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -272,8 +296,21 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
         return null;
     }
 
-    public static CaseEditSymptomsFragment newInstance(CaseFormNavigationCapsule capsule)
+    private List<Item> getTemperatures(boolean withNull) {
+        List<Item> temperature = new ArrayList<>();
+
+        if (withNull)
+            temperature.add(new Item("",null));
+
+        for (Float temperatureValue : SymptomsHelper.getTemperatureValues()) {
+            temperature.add(new Item(SymptomsHelper.getTemperatureString(temperatureValue),temperatureValue));
+        }
+
+        return temperature;
+    }
+
+    public static CaseEditSymptomsFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(CaseEditSymptomsFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseEditSymptomsFragment.class, capsule);
     }
 }

@@ -19,6 +19,13 @@
         <variable
             name="checkedCallback"
             type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
+        <variable
+            name="createCaseCallback"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="openCaseLinkCallback"
+            type="de.symeda.sormas.app.component.OnLinkClickListener" />
     </data>
 
 

@@ -9,6 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
+import java.util.ArrayList;
+
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
@@ -16,10 +19,6 @@ import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.event.EventFormNavigationCapsule;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.NavigationHelper;
-
-import java.util.ArrayList;
-
-import de.symeda.sormas.api.event.EventStatus;
 
 /**
  * Created by Orson on 12/02/2018.
@@ -79,7 +78,7 @@ public class EventEditPersonsInvolvedInfoActivity extends BaseEditActivity {
         if (activeFragment == null) {
             EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(
                     EventEditPersonsInvolvedInfoActivity.this, participantUuid, pageStatus);
-            activeFragment = EventEditPersonsInvolvedInfoFragment.newInstance(dataCapsule); //new EventEditTaskListFragement();
+            activeFragment = EventEditPersonsInvolvedInfoFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;

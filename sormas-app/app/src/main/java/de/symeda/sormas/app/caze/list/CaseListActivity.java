@@ -2,22 +2,16 @@ package de.symeda.sormas.app.caze.list;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
-import java.util.List;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.landing.CaseLandingToListCapsule;
@@ -30,6 +24,7 @@ import de.symeda.sormas.app.util.NavigationHelper;
 
 public class CaseListActivity extends BaseListActivity {
 
+    private AsyncTask jobTask;
     private InvestigationStatus filterStatus = null;
     private SearchBy searchBy = null;
     private String recordUuid = null;
@@ -40,39 +35,23 @@ public class CaseListActivity extends BaseListActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-
         SaveFilterStatusState(outState, filterStatus);
         SaveSearchStrategyState(outState, searchBy);
-        //SaveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        SaveRecordUuidState(outState, recordUuid);
     }
 
     @Override
     protected void initializeActivity(Bundle arguments) {
         filterStatus = (InvestigationStatus) getFilterStatusArg(arguments);
         searchBy = (SearchBy) getSearchStrategyArg(arguments);
-        //recordUuid = getRecordUuidArg(arguments);
-
-
-        List<Contact> contacts = DatabaseHelper.getContactDao().queryForAll();
-        List<Task> tasks = DatabaseHelper.getTaskDao().queryForAll();
-        List<Case> cases = DatabaseHelper.getCaseDao().queryForAll();
+        recordUuid = getRecordUuidArg(arguments);
     }
 
     @Override
     public BaseListActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             CaseListCapsule dataCapsule = new CaseListCapsule(CaseListActivity.this, filterStatus, searchBy);
-            activeFragment = CaseListFragment.newInstance(dataCapsule);
+            activeFragment = CaseListFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;

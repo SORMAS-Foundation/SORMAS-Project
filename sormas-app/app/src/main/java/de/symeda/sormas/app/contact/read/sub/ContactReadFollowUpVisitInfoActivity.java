@@ -9,18 +9,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
-import de.symeda.sormas.app.AbstractSormasActivity;
+import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.contact.ContactFormFollowUpNavigationCapsule;
-import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
-import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.NavigationHelper;
-
-import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.visit.VisitStatus;
 
 /**
  * Created by Orson on 02/01/2018.
@@ -33,18 +29,18 @@ public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity {
 
     private final String DATA_XML_PAGE_MENU = "xml/data_read_page_3_1_followup_menu.xml";
 
-    private String visitUuid = null;
-    private VisitStatus visitStatus = null;
-    private FollowUpStatus followUpStatus = null;
+    private String recordUuid = null;
+    private VisitStatus pageStatus = null;
+    private FollowUpStatus filterStatus = null;
     private BaseReadActivityFragment activeFragment = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, followUpStatus);
-        SavePageStatusState(outState, visitStatus);
-        SaveRecordUuidState(outState, visitUuid);
+        SaveFilterStatusState(outState, filterStatus);
+        SavePageStatusState(outState, pageStatus);
+        SaveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -59,17 +55,17 @@ public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity {
 
     @Override
     protected void initializeActivity(Bundle arguments) {
-        followUpStatus = (FollowUpStatus) getFilterStatusArg(arguments);
-        visitStatus = (VisitStatus) getPageStatusArg(arguments);
-        visitUuid = getRecordUuidArg(arguments);
+        filterStatus = (FollowUpStatus) getFilterStatusArg(arguments);
+        pageStatus = (VisitStatus) getPageStatusArg(arguments);
+        recordUuid = getRecordUuidArg(arguments);
     }
 
     @Override
     public BaseReadActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             ContactFormFollowUpNavigationCapsule dataCapsule = new ContactFormFollowUpNavigationCapsule(
-                    ContactReadFollowUpVisitInfoActivity.this, visitUuid, visitStatus);
-            activeFragment = ContactReadFollowUpVisitInfoFragment.newInstance(dataCapsule);
+                    ContactReadFollowUpVisitInfoActivity.this, recordUuid, pageStatus);
+            activeFragment = ContactReadFollowUpVisitInfoFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;
@@ -92,11 +88,7 @@ public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity {
 
     @Override
     public Enum getPageStatus() {
-        if (visitStatus == null) {
-            visitStatus = getVisitStatusArg(getIntent().getExtras());;
-        }
-
-        return visitStatus;
+        return pageStatus;
     }
 
     @Override
@@ -109,13 +101,13 @@ public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity {
         setActiveMenu(menuItem);
 
         ContactFormFollowUpNavigationCapsule dataCapsule = new ContactFormFollowUpNavigationCapsule(
-                ContactReadFollowUpVisitInfoActivity.this, visitUuid, visitStatus);
+                ContactReadFollowUpVisitInfoActivity.this, recordUuid, pageStatus);
 
         if (menuItem.getKey() == MENU_INDEX_VISIT_INFO) {
-            activeFragment = ContactReadFollowUpVisitInfoFragment.newInstance(dataCapsule);
+            activeFragment = ContactReadFollowUpVisitInfoFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_SYMPTOMS_INFO) {
-            activeFragment = ContactReadFollowUpSymptomsFragment.newInstance(dataCapsule);
+            activeFragment = ContactReadFollowUpSymptomsFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         }
 
@@ -180,39 +172,6 @@ public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity {
     @Override
     protected int getActivityTitle() {
         return R.string.heading_level3_1_contact_visit_info;
-    }
-
-    private VisitStatus getVisitStatusArg(Bundle arguments) {
-        VisitStatus e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(IStatusElaborator.ARG_VISIT_STATUS)) {
-                e = (VisitStatus) arguments.getSerializable(IStatusElaborator.ARG_VISIT_STATUS);
-            }
-        }
-
-        return e;
-    }
-
-    private FollowUpStatus getFollowUpStatusArg(Bundle arguments) {
-        FollowUpStatus e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(IStatusElaborator.ARG_FOLLOW_UP_STATUS)) {
-                e = (FollowUpStatus) arguments.getSerializable(IStatusElaborator.ARG_FOLLOW_UP_STATUS);
-            }
-        }
-
-        return e;
-    }
-
-    private String getTaskUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.KEY_DATA_UUID)) {
-                result = (String) arguments.getSerializable(ConstantHelper.KEY_DATA_UUID);
-            }
-        }
-
-        return result;
     }
 
     public static void goToActivity(Context fromActivity, ContactFormFollowUpNavigationCapsule dataCapsule) {

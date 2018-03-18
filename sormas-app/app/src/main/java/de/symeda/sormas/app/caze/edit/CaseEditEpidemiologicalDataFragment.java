@@ -6,36 +6,38 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
-import android.view.ViewStub;
 import android.widget.AdapterView;
-
-import de.symeda.sormas.app.BaseEditActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
-import de.symeda.sormas.app.component.TeboSpinner;
-import de.symeda.sormas.app.component.TeboSwitch;
-import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
-import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.databinding.FragmentCaseEditEpidLayoutBinding;
-import de.symeda.sormas.app.epid.AnimalContact;
-import de.symeda.sormas.app.epid.AnimalContactCategory;
-import de.symeda.sormas.app.epid.AnimalContactFormListAdapter;
-import de.symeda.sormas.app.event.edit.OnSetBindingVariableListener;
-import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 
 import java.util.List;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
+import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
+import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.component.TeboSwitch;
+import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.IEntryItemOnClickListener;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentCaseEditEpidLayoutBinding;
+import de.symeda.sormas.app.epid.AnimalContact;
+import de.symeda.sormas.app.epid.AnimalContactCategory;
+import de.symeda.sormas.app.epid.AnimalContactFormListAdapter;
+import de.symeda.sormas.app.event.edit.OnSetBindingVariableListener;
+import de.symeda.sormas.app.util.DataUtils;
 
 /**
  * Created by Orson on 16/02/2018.
@@ -45,7 +47,7 @@ import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
  * sampson.orson@technologyboard.org
  */
 
-public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragment<FragmentCaseEditEpidLayoutBinding> {
+public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragment<FragmentCaseEditEpidLayoutBinding, EpiData> {
 
     private String recordUuid = null;
     private InvestigationStatus pageStatus = null;
@@ -76,13 +78,12 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     private LinearLayoutManager linearLayoutManagerForEvnExpo;
     private List<AnimalContact> animalContactList;
     private List<AnimalContact> environmentalExposureList;
-    private List<WaterSource> drinkingWaterSourceList;
+    private List<Item> drinkingWaterSourceList;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, followUpStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -94,7 +95,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
-        //followUpStatus = (EventStatus) getFilterStatusArg(arguments);
         pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
     }
 
@@ -104,26 +104,66 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     }
 
     @Override
-    public AbstractDomainObject getData() {
+    public EpiData getPrimaryData() {
         return record;
     }
 
     @Override
-    public void onBeforeLayoutBinding(Bundle savedInstanceState) {
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            EpiData epiData = null;
+            Case caze = DatabaseHelper.getCaseDao().queryUuid(recordUuid);
+            if (caze != null)
+                epiData = DatabaseHelper.getEpiDataDao().queryUuid(caze.getEpiData().getUuid());
 
-        drinkingWaterSourceList = MemoryDatabaseHelper.WATER_SOURCE.getWaterSources();
+            resultHolder.forItem().add(epiData);
 
-        record = MemoryDatabaseHelper.EPID_DATA.getEpidData(1).get(0);
+            resultHolder.forList().add(epiData.getBurials());
+            resultHolder.forList().add(epiData.getGatherings());
+            resultHolder.forList().add(epiData.getTravels());
 
-        animalContactList = AnimalContact.makeAnimalContacts(AnimalContactCategory.GENERAL).loadState(record);
-        environmentalExposureList = AnimalContact.makeAnimalContacts(AnimalContactCategory.ENVIRONMENTAL_EXPOSURE).loadState(record);
+            resultHolder.forOther().add(DataUtils.getEnumItems(WaterSource.class, false));
 
-        for(AnimalContact ac: animalContactList) {
-            if (ac.equals(AnimalContact.OTHER_ANIMAL)) {
-                ac.getLayout().setDetailOrSpecify("abc");
+            //TODO: Talk to Martin, we need to categorize the type of Animal Contacts
+            resultHolder.forOther().add(AnimalContact.makeAnimalContacts(AnimalContactCategory.GENERAL).loadState(epiData));
+            resultHolder.forOther().add(AnimalContact.makeAnimalContacts(AnimalContactCategory.ENVIRONMENTAL_EXPOSURE).loadState(epiData));
+        } else {
+            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+            ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
+            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
+
+            if (itemIterator.hasNext())
+                record = itemIterator.next();
+
+            if (listIterator.hasNext()) {
+                burials.addAll((List<EpiDataBurial>)listIterator.next());
             }
+
+            if (listIterator.hasNext()) {
+                gatherings.addAll((List<EpiDataGathering>)listIterator.next());
+            }
+
+            if (listIterator.hasNext()) {
+                travels.addAll((List<EpiDataTravel>)listIterator.next());
+            }
+
+            if (otherIterator.hasNext())
+                drinkingWaterSourceList = otherIterator.next();
+
+            if (otherIterator.hasNext())
+                animalContactList = otherIterator.next();
+
+            if (otherIterator.hasNext())
+                environmentalExposureList = otherIterator.next();
+
+            setupCallback();
         }
 
+        return true;
+    }
+
+    @Override
+    public void onLayoutBinding(FragmentCaseEditEpidLayoutBinding contentBinding) {
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false) {
             @Override
             public boolean canScrollVertically() {
@@ -138,16 +178,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
             }
         };
 
-        loadGatherings();
-        loadTravels();
-        loadBurials();
-        setupCallback();
-    }
-
-    @Override
-    public void onLayoutBinding(ViewStub stub, View inflated, FragmentCaseEditEpidLayoutBinding contentBinding) {
-        //binding = DataBindingUtil.inflate(inflater, getEditLayout(), container, true);
-
         animalContactAdapter = new AnimalContactFormListAdapter(this.getActivity(), R.layout.row_edit_animal_contact_list_item_layout, getFragmentManager(), animalContactList);
         animalContactAdapter.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
@@ -161,11 +191,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
 
         animalContactAdapter.notifyDataSetChanged();
 
-
-
-
-
-
         environmentalExposureAdapter = new AnimalContactFormListAdapter(this.getActivity(), R.layout.row_edit_animal_contact_list_item_layout, getFragmentManager(), environmentalExposureList);
         environmentalExposureAdapter.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
@@ -178,12 +203,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
         contentBinding.recyclerViewForEnvExposureList.setLayoutManager(linearLayoutManagerForEvnExpo);
 
         environmentalExposureAdapter.notifyDataSetChanged();
-
-
-
-
-
-
 
         contentBinding.setData(record);
         contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
@@ -202,8 +221,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentCaseEditEpidLayoutBinding binding) {
-        binding.spnSourceOfDrinkingWater.initialize(new TeboSpinner.ISpinnerInitConfig() {
+    public void onAfterLayoutBinding(FragmentCaseEditEpidLayoutBinding contentBinding) {
+        contentBinding.spnSourceOfDrinkingWater.initialize(new TeboSpinner.ISpinnerInitConfig() {
             @Override
             public Object getSelectedValue() {
                 return null;
@@ -335,7 +354,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
         onAddGatheringEntryClickListener = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
-                final EpiDataGathering gathering = MemoryDatabaseHelper.EPID_DATA_GATHERING.getGatherings(1).get(0);
+                final EpiDataGathering gathering = DatabaseHelper.getEpiDataGatheringDao().build();
                 final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(CaseEditActivity.getActiveActivity(), gathering);
                 dialog.show();
 
@@ -343,18 +362,19 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
                 dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
-                        gatherings.add(0, gathering);
+                        ObservableArrayList newGatherings = new ObservableArrayList();
+                        newGatherings.addAll(gatherings);
+                        newGatherings.add(0, gathering);
+                        getContentBinding().setGatheringList(newGatherings);
                     }
                 });
-
-                //gatherings.add(0, MemoryDatabaseHelper.EPID_DATA_GATHERING.getGatherings(20).get(new Random().nextInt(10)));
             }
         };
 
         onAddTravelEntryClickListener = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
-                final EpiDataTravel travel = MemoryDatabaseHelper.EPID_DATA_TRAVEL.getTravels(1).get(0);
+                final EpiDataTravel travel = DatabaseHelper.getEpiDataTravelDao().build();
                 final EpiDataTravelDialog dialog = new EpiDataTravelDialog(CaseEditActivity.getActiveActivity(), travel);
                 dialog.show();
 
@@ -362,18 +382,19 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
                 dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
-                        travels.add(0, travel);
+                        ObservableArrayList newTravels = new ObservableArrayList();
+                        newTravels.addAll(travels);
+                        newTravels.add(0, travel);
+                        getContentBinding().setTravelList(newTravels);
                     }
                 });
-
-                //travels.add(0, MemoryDatabaseHelper.EPID_DATA_TRAVEL.getTravels(20).get(new Random().nextInt(10)));
             }
         };
 
         onAddBurialEntryClickListener = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
-                final EpiDataBurial burial = MemoryDatabaseHelper.EPID_DATA_BURIAL.getBurials(1).get(0);
+                final EpiDataBurial burial = DatabaseHelper.getEpiDataBurialDao().build();
                 final EpiDataBurialDialog dialog = new EpiDataBurialDialog(CaseEditActivity.getActiveActivity(), burial);
                 dialog.show();
 
@@ -381,32 +402,18 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
                 dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
-                        burials.add(0, burial);
+                        ObservableArrayList newBurials = new ObservableArrayList();
+                        newBurials.addAll(burials);
+                        newBurials.add(0, burial);
+                        getContentBinding().setBurialList(newBurials);
                     }
                 });
-
-                //travels.add(0, MemoryDatabaseHelper.EPID_DATA_TRAVEL.getTravels(20).get(new Random().nextInt(10)));
             }
         };
     }
 
-    private void loadGatherings() {
-        EpiDataGathering item = MemoryDatabaseHelper.EPID_DATA_GATHERING.getGatherings(1).get(0);
-        gatherings.add(item);
-    }
-
-    private void loadTravels() {
-        EpiDataTravel item = MemoryDatabaseHelper.EPID_DATA_TRAVEL.getTravels(1).get(0);
-        travels.add(item);
-    }
-
-    private void loadBurials() {
-        EpiDataBurial item = MemoryDatabaseHelper.EPID_DATA_BURIAL.getBurials(1).get(0);
-        burials.add(item);
-    }
-
-    public static CaseEditEpidemiologicalDataFragment newInstance(CaseFormNavigationCapsule capsule)
+    public static CaseEditEpidemiologicalDataFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(CaseEditEpidemiologicalDataFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseEditEpidemiologicalDataFragment.class, capsule);
     }
 }

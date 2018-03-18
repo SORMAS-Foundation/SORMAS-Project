@@ -7,9 +7,6 @@ import android.graphics.Typeface;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.timeago.TimeAgo;
-
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
@@ -19,6 +16,7 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
@@ -31,6 +29,7 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.core.timeago.TimeAgo;
 
 /**
  * Created by Orson on 27/12/2017.
@@ -159,7 +158,7 @@ public class TextViewBindingAdapters {
 
     @BindingAdapter(value={"value", "appendValue", "valueFormat", "defaultValue"}, requireAll=false)
     public static void setValue(TextView textField, Integer integerValue, String appendValue, String valueFormat, String defaultValue) {
-        setValue(textField, integerValue.toString(), appendValue, valueFormat, defaultValue);
+        setValue(textField, (integerValue != null) ? integerValue.toString() : "", appendValue, valueFormat, defaultValue);
     }
 
     @BindingAdapter(value={"diseaseValue", "valueFormat", "defaultValue"}, requireAll=false)
@@ -305,10 +304,6 @@ public class TextViewBindingAdapters {
         if (sample == null) {
             textField.setText(defaultValue);
         } else {
-
-
-
-
             String result = "";
             String valueFormat = textField.getContext().getResources().getString(R.string.person_name_format);
             Case assocCase = sample.getAssociatedCase();
@@ -354,7 +349,7 @@ public class TextViewBindingAdapters {
     public static void setDueDateValue(TextView textField, Task task, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
-        if (task == null) {
+        if (task == null || task.getDueDate() == null) {
             textField.setText(val);
         } else {
             val = DateHelper.formatDate(task.getDueDate());
@@ -379,7 +374,7 @@ public class TextViewBindingAdapters {
     public static void setDueTimeAgoValue(TextView textField, Task task, int textColor, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
-        if (task == null) {
+        if (task == null || task.getDueDate() == null) {
             textField.setText(val);
         } else {
             //val = DateHelper.formatDate(task.getDueDate());
@@ -410,7 +405,7 @@ public class TextViewBindingAdapters {
     public static void setAgeWithDateValue(TextView textField, Person person, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
-        if (person == null) {
+        if (person == null || person.getApproximateAge() == null) {
             textField.setText(val);
         } else {
             val = person.getApproximateAge().toString();
@@ -441,7 +436,7 @@ public class TextViewBindingAdapters {
     public static void setAgeWithUnit(TextView textField, Person person, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
-        if (person == null) {
+        if (person == null || person.getApproximateAge() == null) {
             textField.setText(val);
         } else {
             val = person.getApproximateAge().toString();

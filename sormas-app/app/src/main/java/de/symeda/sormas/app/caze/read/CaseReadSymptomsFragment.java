@@ -1,44 +1,44 @@
 package de.symeda.sormas.app.caze.read;
 
-import android.app.AlertDialog;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-
-import de.symeda.sormas.app.BaseReadActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.component.OnLinkClickListener;
-import de.symeda.sormas.app.component.dialog.SimpleDialog;
-import de.symeda.sormas.app.component.tagview.Tag;
-import de.symeda.sormas.app.databinding.FragmentCaseReadSymptomsLayoutBinding;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.component.OnLinkClickListener;
+import de.symeda.sormas.app.component.tagview.Tag;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentCaseReadSymptomsLayoutBinding;
+import de.symeda.sormas.app.symptom.Symptom;
 
 /**
  * Created by Orson on 08/01/2018.
  */
 
-public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentCaseReadSymptomsLayoutBinding> {
+public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentCaseReadSymptomsLayoutBinding, Symptoms> {
 
     public static final String TAG = CaseReadHospitalizationFragment.class.getSimpleName();
 
-    private String caseUuid = null;
-    private InvestigationStatus filterStatus = null;
+    private String recordUuid = null;
     private CaseClassification pageStatus = null;
     private Symptoms record;
-    private FragmentCaseReadSymptomsLayoutBinding binding;
+
+    private List<Tag> yesResult;
+    private List<Tag> noResult;
+    private List<Tag> unknownResult;
 
     private OnLinkClickListener onLinkClickListener;
 
@@ -46,9 +46,8 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, caseUuid);
+        SaveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -57,30 +56,60 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
-        caseUuid = getRecordUuidArg(arguments);
-        filterStatus = (InvestigationStatus) getFilterStatusArg(arguments);
+        recordUuid = getRecordUuidArg(arguments);
         pageStatus = (CaseClassification) getPageStatusArg(arguments);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            Symptoms symptom = null;
+            Case caze = DatabaseHelper.getCaseDao().queryUuid(recordUuid);
 
-        setupCallback();
+            if (caze != null)
+                symptom = caze.getSymptoms();
 
-        binding = DataBindingUtil.inflate(inflater, getRootReadLayout(), container, false);
-        //record = MemoryDatabaseHelper.CASE.getCases(1).get(0);
-        //caze.getSymptoms().getUuid()
+            List<Symptom> sList = Symptom.makeSymptoms(caze.getDisease()).loadState(symptom);
 
-        record = MemoryDatabaseHelper.SYMPTOM.getSymptoms(1).get(0);
+            resultHolder.forOther().add(getSymptomsYes(sList));
+            resultHolder.forOther().add(getSymptomsNo(sList));
+            resultHolder.forOther().add(getSymptomsUnknown(sList));
 
-        binding.setData(record);
-        binding.setSymptomsYes(getSymptomsYes());
-        binding.setSymptomsUnknown(getSymptomsUnknown());
-        binding.setSymptomsNo(getSymptomsNo());
-        binding.setLocationClickCallback(onLinkClickListener);
+            resultHolder.forItem().add(symptom);
+        } else {
+            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
 
-        return binding.getRoot();
+            if (itemIterator.hasNext())
+                record =  itemIterator.next();
+
+            if (otherIterator.hasNext())
+                yesResult =  otherIterator.next();
+
+            if (otherIterator.hasNext())
+                noResult =  otherIterator.next();
+
+            if (otherIterator.hasNext())
+                unknownResult =  otherIterator.next();
+
+            setupCallback();
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onLayoutBinding(FragmentCaseReadSymptomsLayoutBinding contentBinding) {
+        contentBinding.setData(record);
+        contentBinding.setSymptomsYes(yesResult);
+        contentBinding.setSymptomsUnknown(unknownResult);
+        contentBinding.setSymptomsNo(noResult);
+        contentBinding.setLocationClickCallback(onLinkClickListener);
+    }
+
+    @Override
+    public void onAfterLayoutBinding(FragmentCaseReadSymptomsLayoutBinding contentBinding) {
+
     }
 
     @Override
@@ -89,75 +118,50 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
     }
 
     @Override
-    public AbstractDomainObject getData() {
-        return binding.getData();
-    }
-
-    @Override
-    public FragmentCaseReadSymptomsLayoutBinding getBinding() {
-        return binding;
-    }
-
-    @Override
-    public Object getRecord() {
+    public Symptoms getPrimaryData() {
         return record;
     }
 
-    public void showRecordEditView(Case caze) {
-        /*Intent intent = new Intent(getActivity(), TaskEditActivity.class);
-        intent.putExtra(Task.UUID, task.getUuid());
-        if(parentCaseUuid != null) {
-            intent.putExtra(KEY_CASE_UUID, parentCaseUuid);
-        }
-        if(parentContactUuid != null) {
-            intent.putExtra(KEY_CONTACT_UUID, parentContactUuid);
-        }
-        if(parentEventUuid != null) {
-            intent.putExtra(KEY_EVENT_UUID, parentEventUuid);
-        }
-        startActivity(intent);*/
-    }
-
     @Override
-    public int getRootReadLayout() {
+    public int getReadLayout() {
         return R.layout.fragment_case_read_symptoms_layout;
     }
 
-    public static CaseReadSymptomsFragment newInstance(CaseFormNavigationCapsule capsule)
+    public static CaseReadSymptomsFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(CaseReadSymptomsFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseReadSymptomsFragment.class, capsule);
     }
 
-    private List<Tag> getSymptomsYes() {
+    private List<Tag> getSymptomsYes(List<Symptom> list) {
         List<Tag> results = new ArrayList();
-        results.add(new Tag("Chills or sweats"));
-        results.add(new Tag("Conjunctivities (red eyes)"));
-        results.add(new Tag("Cough"));
-        results.add(new Tag("Cutaneous eruption"));
-        results.add(new Tag("Pain behind eyes/sensitivity to light"));
-        results.add(new Tag("Fatigue/general weakness"));
+        for (Symptom s: list) {
+            if (s.getState() == SymptomState.YES) {
+                results.add(new Tag(s.getName()));
+            }
+        }
+
         return results;
     }
 
-    private List<Tag> getSymptomsUnknown() {
+    private List<Tag> getSymptomsUnknown(List<Symptom> list) {
         List<Tag> results = new ArrayList();
-        results.add(new Tag("Fear"));
-        results.add(new Tag("Headache"));
-        results.add(new Tag("Nausea"));
-        results.add(new Tag("Oral Ulcer"));
-        results.add(new Tag("Vomiting"));
-        results.add(new Tag("Sore throat"));
+        for (Symptom s: list) {
+            if (s.getState() == SymptomState.UNKNOWN) {
+                results.add(new Tag(s.getName()));
+            }
+        }
+
         return results;
     }
 
-    private List<Tag> getSymptomsNo() {
+    private List<Tag> getSymptomsNo(List<Symptom> list) {
         List<Tag> results = new ArrayList();
-        results.add(new Tag("Bedridden"));
-        results.add(new Tag("Lesions"));
-        results.add(new Tag("Lymphadenopathy axillary"));
-        results.add(new Tag("Lymphadenopathy cervical"));
-        results.add(new Tag("Lymphadenopathy inguinal"));
-        results.add(new Tag("Muscle pain"));
+        for (Symptom s: list) {
+            if (s.getState() == SymptomState.NO) {
+                results.add(new Tag(s.getName()));
+            }
+        }
+
         return results;
     }
 

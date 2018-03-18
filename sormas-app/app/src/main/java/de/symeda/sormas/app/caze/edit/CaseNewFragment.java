@@ -4,32 +4,31 @@ import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewStub;
 import android.widget.AdapterView;
-
-import de.symeda.sormas.app.BR;
-import de.symeda.sormas.app.BaseEditActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.TeboSpinner;
-import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
-import de.symeda.sormas.app.event.edit.OnSetBindingVariableListener;
-import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 
 import java.util.List;
 import java.util.Random;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.app.BR;
+import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
+import de.symeda.sormas.app.event.edit.OnSetBindingVariableListener;
+import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 
 /**
  * Created by Orson on 15/02/2018.
@@ -39,7 +38,7 @@ import de.symeda.sormas.app.backend.region.Region;
  * sampson.orson@technologyboard.org
  */
 
-public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLayoutBinding> {
+public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLayoutBinding, Case> {
 
     public static final String TAG = CaseNewFragment.class.getSimpleName();
 
@@ -59,7 +58,6 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, followUpStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -71,7 +69,6 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
-        //followUpStatus = (EventStatus) getFilterStatusArg(arguments);
         pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
     }
 
@@ -81,12 +78,12 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
     }
 
     @Override
-    public AbstractDomainObject getData() {
+    public Case getPrimaryData() {
         return record;
     }
 
     @Override
-    public void onBeforeLayoutBinding(Bundle savedInstanceState) {
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         record = MemoryDatabaseHelper.CASE.getCases(1).get(0);
         diseaseList = MemoryDatabaseHelper.DISEASE.getDiseases(5);
         stateList = MemoryDatabaseHelper.REGION.getRegions(5);
@@ -95,10 +92,12 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
         healthFacilityList = MemoryDatabaseHelper.FACILITY.getFacilities(5);
 
         setupCallback();
+
+        return true;
     }
 
     @Override
-    public void onLayoutBinding(ViewStub stub, View inflated, FragmentCaseNewLayoutBinding contentBinding) {
+    public void onLayoutBinding(FragmentCaseNewLayoutBinding contentBinding) {
         //binding = DataBindingUtil.inflate(inflater, getEditLayout(), container, true);
 
         healthFacilityLayoutProcessor = new HealthFacilityLayoutProcessor(getContext(), contentBinding, record);
@@ -123,8 +122,8 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentCaseNewLayoutBinding binding) {
-        binding.spnDisease.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+    public void onAfterLayoutBinding(FragmentCaseNewLayoutBinding contentBinding) {
+        contentBinding.spnDisease.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override
             public Object getSelectedValue() {
                 return null;
@@ -137,7 +136,7 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
             }
         });
 
-        binding.spnState.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+        contentBinding.spnState.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override
             public Object getSelectedValue() {
                 return null;
@@ -150,7 +149,7 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
             }
         });
 
-        binding.spnLga.initialize(binding.spnState, new TeboSpinner.ISpinnerInitSimpleConfig() {
+        contentBinding.spnLga.initialize(contentBinding.spnState, new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override
             public Object getSelectedValue() {
                 return null;
@@ -163,7 +162,7 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
             }
         });
 
-        binding.spnWard.initialize(binding.spnLga, new TeboSpinner.ISpinnerInitSimpleConfig() {
+        contentBinding.spnWard.initialize(contentBinding.spnLga, new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override
             public Object getSelectedValue() {
                 return null;
@@ -176,7 +175,7 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
             }
         });
 
-        binding.spnFacility.initialize(binding.spnWard, new TeboSpinner.ISpinnerInitConfig() {
+        contentBinding.spnFacility.initialize(contentBinding.spnWard, new TeboSpinner.ISpinnerInitConfig() {
             @Override
             public Object getSelectedValue() {
                 return null;
@@ -227,8 +226,8 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
     }
 
 
-    public static CaseNewFragment newInstance(CaseFormNavigationCapsule capsule)
+    public static CaseNewFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(CaseNewFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseNewFragment.class, capsule);
     }
 }

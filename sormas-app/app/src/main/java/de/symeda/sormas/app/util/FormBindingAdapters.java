@@ -7,19 +7,22 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.TeboTextImageRead;
-import de.symeda.sormas.app.component.TeboTextLinkRead;
-import de.symeda.sormas.app.component.TeboTextRead;
+import java.util.List;
 
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.component.TeboTextImageRead;
+import de.symeda.sormas.app.component.TeboTextLinkRead;
+import de.symeda.sormas.app.component.TeboTextRead;
 
 /**
  * Created by Orson on 19/12/2017.
@@ -216,6 +219,28 @@ public class FormBindingAdapters {
         if (o instanceof String && o == "") {
             textView.setVisibility(View.GONE);
         }
+    }
+
+    @BindingAdapter("goneIfEmpty")
+    public static <T> void setGoneIfNull(ImageView control, List<T> list) {
+        if (list == null || list.size() <= 0) {
+            control.setVisibility(View.GONE);
+        } else {
+            control.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @BindingAdapter(value={"alternateBottomMarginIfEmpty", "emptyBottomMargin", "nonEmptyBottomMargin"}, requireAll=true)
+    public static <T> void setAlternateBottomMarginIfEmpty(RelativeLayout viewGroup, List<T> list, float emptyBottomMargin, float nonEmptyBottomMargin) {
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)viewGroup.getLayoutParams();
+
+        if (list == null || list.size() <= 0) {
+            params.bottomMargin = (int)emptyBottomMargin;
+        } else {
+            params.bottomMargin = (int)nonEmptyBottomMargin;
+        }
+
+        viewGroup.setLayoutParams(params);
     }
 
     @BindingAdapter(value={"locationValue", "valueFormat", "defaultValue"}, requireAll=false)

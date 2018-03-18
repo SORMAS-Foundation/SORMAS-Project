@@ -6,6 +6,7 @@
     android:id="@+id/base_layout">
 
     <data>
+        <import type="de.symeda.sormas.api.person.PresentCondition" />
         <variable
             name="showNotificationCallback"
             type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
@@ -14,6 +15,8 @@
             type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
+
+        <variable name="person" type="de.symeda.sormas.app.backend.person.Person"/>
 
 
         <variable name="presentConditionClass" type="Class" />
@@ -236,6 +239,9 @@
                     />
 
 
+                <!--app:value="@={data.person.approximateAgeType}"-->
+
+
             </LinearLayout>
 
 
@@ -314,6 +320,8 @@
                 app:slim="false"
                 app:includeUnknown="@{true}"
                 app:enumClass="@{presentConditionClass}"
+                app:defaultValue="@{null}"
+                app:abbrevUnknown="@{false}"
                 app:value="@={data.person.presentCondition}"
                 app:onCheckedChangeListener="@{checkedCallback}"
                 app:onShowInputErrorListener="@{showNotificationCallback}"

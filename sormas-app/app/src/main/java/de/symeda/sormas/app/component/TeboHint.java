@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.databinding.InverseBindingListener;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -78,8 +79,10 @@ public class TeboHint extends TeboPropertyField<String> implements ITextControlI
     public void setSingleLine(boolean singleLine) {
         this.singleLine = singleLine;
         txtControlInput.setSingleLine(singleLine);
+        txtControlInput.setEllipsize(TextUtils.TruncateAt.END);
         if (!singleLine) {
             txtControlInput.setMaxLines(maxLines);
+            //txtControlInput.setLines(maxLines);
         }
     }
 

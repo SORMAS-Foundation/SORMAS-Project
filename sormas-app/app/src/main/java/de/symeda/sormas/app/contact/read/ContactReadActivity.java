@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.contact.read;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Menu;
@@ -9,16 +10,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.contact.edit.ContactEditActivity;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.util.NavigationHelper;
-
-import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.app.backend.contact.Contact;
 
 /**
  * Created by Orson on 01/01/2018.
@@ -33,7 +41,8 @@ public class ContactReadActivity extends BaseReadActivity {
 
     private final String DATA_XML_PAGE_MENU = "xml/data_read_page_contact_menu.xml";
 
-    private String contactUuid = null;
+    private AsyncTask jobTask;
+    private String recordUuid = null;
     //private FollowUpStatus filterStatus = null;
     private ContactClassification pageStatus = null;
     private BaseReadActivityFragment activeFragment = null;
@@ -44,7 +53,7 @@ public class ContactReadActivity extends BaseReadActivity {
 
         //SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, contactUuid);
+        SaveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -61,15 +70,15 @@ public class ContactReadActivity extends BaseReadActivity {
     protected void initializeActivity(Bundle arguments) {
         //filterStatus = (FollowUpStatus) getFilterStatusArg(arguments);
         pageStatus = (ContactClassification) getPageStatusArg(arguments);
-        contactUuid = getRecordUuidArg(arguments);
+        recordUuid = getRecordUuidArg(arguments);
     }
 
 
     @Override
     public BaseReadActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
-            ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactReadActivity.this, contactUuid, pageStatus);
-            activeFragment = ContactReadFragment.newInstance(dataCapsule);
+            ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactReadActivity.this, recordUuid, pageStatus);
+            activeFragment = ContactReadFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;
@@ -105,19 +114,19 @@ public class ContactReadActivity extends BaseReadActivity {
         setActiveMenu(menuItem);
 
         ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(
-                ContactReadActivity.this, contactUuid, pageStatus);
+                ContactReadActivity.this, recordUuid, pageStatus);
 
         if (menuItem.getKey() == MENU_INDEX_CONTACT_INFO) {
-            activeFragment = ContactReadFragment.newInstance(dataCapsule);
+            activeFragment = ContactReadFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_PERSON_INFO) {
-            activeFragment = ContactReadPersonFragment.newInstance(dataCapsule);
+            activeFragment = ContactReadPersonFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_FOLLOWUP_VISIT) {
-            activeFragment = ContactReadFollowUpVisitFragment.newInstance(dataCapsule);
+            activeFragment = ContactReadFollowUpVisitListFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_TASK) {
-            activeFragment = ContactReadTaskListFragment.newInstance(dataCapsule);
+            activeFragment = ContactReadTaskListFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         }
 
@@ -132,7 +141,7 @@ public class ContactReadActivity extends BaseReadActivity {
         inflater.inflate(R.menu.read_action_menu, menu);
 
         MenuItem readMenu = menu.findItem(R.id.action_edit);
-        readMenu.setVisible(false);
+        //readMenu.setVisible(false);
         readMenu.setTitle(R.string.action_edit_contact);
 
 
@@ -194,15 +203,61 @@ public class ContactReadActivity extends BaseReadActivity {
         if (activeFragment == null)
             return;
 
-        Contact record = (Contact)activeFragment.getRecord();
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute() {
+                    showPreloader();
+                    hideFragmentView();
+                }
 
-        ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactReadActivity.this,
-                record.getUuid(), pageStatus);
-        ContactEditActivity.goToActivity(this, dataCapsule);
+                @Override
+                public void execute(TaskResultHolder resultHolder) {
+                    Contact record = DatabaseHelper.getContactDao().queryUuid(recordUuid);
+
+                    if (record == null) {
+                        // build a new event for empty uuid
+                        resultHolder.forItem().add(DatabaseHelper.getEventDao().build());
+                    } else {
+                        resultHolder.forItem().add(record);
+                    }
+                }
+            });
+            jobTask = executor.search(new ITaskResultCallback() {
+                @Override
+                public void searchResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    hidePreloader();
+                    showFragmentView();
+
+                    if (resultHolder == null)
+                        return;
+
+                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+                    if (itemIterator.hasNext()) {
+                        Contact record = itemIterator.next();
+
+                        ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactReadActivity.this,
+                                record.getUuid(), pageStatus);
+                        ContactEditActivity.goToActivity(ContactReadActivity.this, dataCapsule);
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            hidePreloader();
+            showFragmentView();
+        }
     }
 
     public static void goToActivity(Context fromActivity, ContactFormNavigationCapsule dataCapsule) {
         BaseReadActivity.goToActivity(fromActivity, ContactReadActivity.class, dataCapsule);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (jobTask != null && !jobTask.isCancelled())
+            jobTask.cancel(true);
     }
 }
 

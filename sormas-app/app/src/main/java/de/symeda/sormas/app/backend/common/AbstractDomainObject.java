@@ -19,7 +19,7 @@ import javax.persistence.MappedSuperclass;
 import de.symeda.sormas.api.I18nProperties;
 
 @MappedSuperclass
-public abstract class AbstractDomainObject extends BaseObservable implements Serializable, Cloneable  {
+public  class AbstractDomainObject extends BaseObservable implements Serializable, Cloneable  {
 
 	public static final String ID = "id";
 	public static final String UUID = "uuid";

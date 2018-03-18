@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
+import java.util.ArrayList;
+
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
@@ -18,8 +20,6 @@ import de.symeda.sormas.app.sample.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.NavigationHelper;
-
-import java.util.ArrayList;
 
 /**
  * Created by Orson on 05/02/2018.
@@ -79,7 +79,7 @@ public class SampleEditActivity extends BaseEditActivity {
         if (activeFragment == null) {
             SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(
                     SampleEditActivity.this, recordUuid, pageStatus);
-            activeFragment = SampleEditFragment.newInstance(dataCapsule);
+            activeFragment = SampleEditFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;

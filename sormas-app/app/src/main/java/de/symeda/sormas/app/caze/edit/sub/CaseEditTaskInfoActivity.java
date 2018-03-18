@@ -73,7 +73,7 @@ public class CaseEditTaskInfoActivity extends BaseEditActivity {
         if (activeFragment == null) {
             TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(
                     CaseEditTaskInfoActivity.this, recordUuid, pageStatus);
-            activeFragment = CaseEditTaskInfoFragment.newInstance(dataCapsule);
+            activeFragment = CaseEditTaskInfoFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;

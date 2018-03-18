@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.caze.read;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Menu;
@@ -9,16 +10,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.util.NavigationHelper;
-
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.app.backend.caze.Case;
 
 /**
  * Created by Orson on 06/01/2018.
@@ -26,6 +34,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 
 public class CaseReadActivity  extends BaseReadActivity {
 
+    private AsyncTask jobTask;
     private static final int MENU_INDEX_CASE_INFO = 0;
     private static final int MENU_INDEX_PATIENT_INFO = 1;
     private static final int MENU_INDEX_HOSPITALIZATION = 2;
@@ -73,7 +82,7 @@ public class CaseReadActivity  extends BaseReadActivity {
         if (activeFragment == null) {
             CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(
                     CaseReadActivity.this, recordUuid).setReadPageStatus(pageStatus);
-            activeFragment = CaseReadFragment.newInstance(dataCapsule);
+            activeFragment = CaseReadFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;
@@ -116,28 +125,28 @@ public class CaseReadActivity  extends BaseReadActivity {
                 CaseReadActivity.this, recordUuid).setReadPageStatus(pageStatus);
 
         if (menuItem.getKey() == MENU_INDEX_CASE_INFO) {
-            activeFragment = CaseReadFragment.newInstance(dataCapsule);
+            activeFragment = CaseReadFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_PATIENT_INFO) {
-            activeFragment = CaseReadPatientInfoFragment.newInstance(dataCapsule);
+            activeFragment = CaseReadPatientInfoFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_HOSPITALIZATION) {
-            activeFragment = CaseReadHospitalizationFragment.newInstance(dataCapsule);
+            activeFragment = CaseReadHospitalizationFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_SYMPTOMS) {
-            activeFragment = CaseReadSymptomsFragment.newInstance(dataCapsule);
+            activeFragment = CaseReadSymptomsFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_EPIDEMIOLOGICAL_DATA) {
-            activeFragment = CaseReadEpidemiologicalDataFragment.newInstance(dataCapsule);
+            activeFragment = CaseReadEpidemiologicalDataFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_CONTACTS) {
-            activeFragment = CaseReadContactsFragment.newInstance(dataCapsule);
+            activeFragment = CaseReadContactListFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         }else if (menuItem.getKey() == MENU_INDEX_SAMPLES) {
-            activeFragment = CaseReadSamplesFragment.newInstance(dataCapsule);
+            activeFragment = CaseReadSamplesFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_TASKS) {
-            activeFragment = CaseReadTasksFragment.newInstance(dataCapsule);
+            activeFragment = CaseReadTaskListFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         }
 
@@ -213,14 +222,60 @@ public class CaseReadActivity  extends BaseReadActivity {
         if (activeFragment == null)
             return;
 
-        Case record = (Case)activeFragment.getRecord();
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute() {
+                    showPreloader();
+                    hideFragmentView();
+                }
 
-        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(CaseReadActivity.this,
-                record.getUuid()).setEditPageStatus(record.getInvestigationStatus());
-        CaseEditActivity.goToActivity(this, dataCapsule);
+                @Override
+                public void execute(TaskResultHolder resultHolder) {
+                    Case record = DatabaseHelper.getCaseDao().queryUuid(recordUuid);
+
+                    if (record == null) {
+                        // build a new event for empty uuid
+                        resultHolder.forItem().add(DatabaseHelper.getCaseDao().build());
+                    } else {
+                        resultHolder.forItem().add(record);
+                    }
+                }
+            });
+            jobTask = executor.search(new ITaskResultCallback() {
+                @Override
+                public void searchResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    hidePreloader();
+                    showFragmentView();
+
+                    if (resultHolder == null)
+                        return;
+
+                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+                    if (itemIterator.hasNext()) {
+                        Case record = itemIterator.next();
+
+                        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(CaseReadActivity.this,
+                                record.getUuid()).setEditPageStatus(record.getInvestigationStatus());
+                        CaseEditActivity.goToActivity(CaseReadActivity.this, dataCapsule);
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            hidePreloader();
+            showFragmentView();
+        }
     }
 
     public static void goToActivity(Context fromActivity, CaseFormNavigationCapsule dataCapsule) {
         BaseReadActivity.goToActivity(fromActivity, CaseReadActivity.class, dataCapsule);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (jobTask != null && !jobTask.isCancelled())
+            jobTask.cancel(true);
     }
 }

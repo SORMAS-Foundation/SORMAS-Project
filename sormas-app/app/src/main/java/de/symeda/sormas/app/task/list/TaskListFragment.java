@@ -16,6 +16,7 @@ import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -35,6 +36,7 @@ import de.symeda.sormas.app.util.SubheadingHelper;
 public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> implements OnListItemClickListener {
 
 
+    private boolean dataLoaded = false;
     public static final String KEY_CASE_UUID = "caseUuid";
     public static final String KEY_CONTACT_UUID = "contactUuid";
     public static final String KEY_EVENT_UUID = "eventUuid";
@@ -47,6 +49,7 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
     private List<Task> tasks;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -93,7 +96,7 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
 
     @Override
     public void cancelTaskExec() {
-        if (searchTask != null)
+        if (searchTask != null && !searchTask.isCancelled())
             searchTask.cancel(true);
     }
 
@@ -101,25 +104,42 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
     public void onResume() {
         super.onResume();
 
-        ISearchExecutor<Task> executor = SearchStrategyFor.TASK.selector(searchBy, filterStatus, recordUuid);
-        searchTask = executor.search(new ISearchResultCallback<Task>() {
-            @Override
-            public void searchResult(List<Task> result, BoolResult resultStatus) {
-                if (!resultStatus.isSuccess()) {
-                    String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Tasks");
-                    NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
+        //TODO: Orson - reverse this relationship
+        getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Task"));
 
-                    return;
-                }
+        try {
+            if (!dataLoaded) {
+                ISearchExecutor<Task> executor = SearchStrategyFor.TASK.selector(searchBy, filterStatus, recordUuid);
+                searchTask = executor.search(new ISearchResultCallback<Task>() {
+                    @Override
+                    public void searchResult(List<Task> result, BoolResult resultStatus) {
+                        getActivityCommunicator().hidePreloader();
 
-                tasks = result;
+                        if (!resultStatus.isSuccess()) {
+                            String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Tasks");
+                            NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
 
-                //TODO: Orson - reverse this relationship
-                getCommunicator().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Task"));
-                TaskListFragment.this.getListAdapter().replaceAll(tasks);
-                TaskListFragment.this.getListAdapter().notifyDataSetChanged();
+                            return;
+                        }
+
+                        tasks = result;
+
+                        TaskListFragment.this.getListAdapter().replaceAll(tasks);
+                        TaskListFragment.this.getListAdapter().notifyDataSetChanged();
+
+                        dataLoaded = true;
+                    }
+                    private ISearchResultCallback<Task> init() {
+                        getActivityCommunicator().showPreloader();
+
+                        return this;
+                    }
+                }.init());
             }
-        });
+        } catch (Exception ex) {
+            getActivityCommunicator().hidePreloader();
+            dataLoaded = false;
+        }
     }
 
     @Override
@@ -130,9 +150,17 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
         recyclerViewForList.setAdapter(getListAdapter());
     }
 
-    public static TaskListFragment newInstance(TaskListCapsule capsule)
+    public static TaskListFragment newInstance(IActivityCommunicator communicator, TaskListCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(TaskListFragment.class, capsule);
+        return newInstance(communicator, TaskListFragment.class, capsule);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (searchTask != null && !searchTask.isCancelled())
+            searchTask.cancel(true);
     }
 
 }

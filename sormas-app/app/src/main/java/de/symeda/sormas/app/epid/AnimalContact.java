@@ -42,6 +42,7 @@ public abstract class AnimalContact {
     public static final AnimalContact OTHER_ANIMAL = new OtherAnimal();
     public static final AnimalContact CONTACT_WITH_BODY_OF_WATER = new ContactWithBodyOfWater();
     public static final AnimalContact TICK_BITE = new TickBite();
+    public static final AnimalContact FLEA_BITE = new FleaBite();
 
     // </editor-fold>
 
@@ -187,6 +188,12 @@ public abstract class AnimalContact {
     private static class TickBite extends AnimalContact {
         public TickBite() {
             super(12, "Tick bite", AnimalContactLayout.NONE, AnimalContactCategory.ENVIRONMENTAL_EXPOSURE);
+        }
+    }
+
+    private static class FleaBite extends AnimalContact {
+        public FleaBite() {
+            super(13, "Flea bite", AnimalContactLayout.NONE, AnimalContactCategory.ENVIRONMENTAL_EXPOSURE);
         }
     }
 

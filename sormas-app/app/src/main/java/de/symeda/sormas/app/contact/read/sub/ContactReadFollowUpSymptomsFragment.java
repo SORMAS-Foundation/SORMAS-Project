@@ -1,46 +1,45 @@
 package de.symeda.sormas.app.contact.read.sub;
 
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import de.symeda.sormas.app.BaseReadActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.tagview.Tag;
-import de.symeda.sormas.app.contact.ContactFormFollowUpNavigationCapsule;
-import de.symeda.sormas.app.databinding.FragmentContactReadSymptomsInfoLayoutBinding;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
+import de.symeda.sormas.app.component.tagview.Tag;
+import de.symeda.sormas.app.contact.ContactFormFollowUpNavigationCapsule;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentContactReadSymptomsInfoLayoutBinding;
+import de.symeda.sormas.app.symptom.Symptom;
 
 /**
  * Created by Orson on 02/01/2018.
  */
 
-public class ContactReadFollowUpSymptomsFragment extends BaseReadActivityFragment<FragmentContactReadSymptomsInfoLayoutBinding> {
+public class ContactReadFollowUpSymptomsFragment extends BaseReadActivityFragment<FragmentContactReadSymptomsInfoLayoutBinding, Symptoms> {
 
     private String recordUuid;
     private VisitStatus pageStatus;
-    //private FollowUpStatus followUpStatus;
-    private Visit record;
-    private FragmentContactReadSymptomsInfoLayoutBinding binding;
+    private Symptoms record;
 
-    private List<Tag> results;
+    private List<Tag> yesResult;
+    private List<Tag> noResult;
+    private List<Tag> unknownResult;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, followUpStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -51,32 +50,69 @@ public class ContactReadFollowUpSymptomsFragment extends BaseReadActivityFragmen
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
-        //followUpStatus = (FollowUpStatus) getFilterStatusArg(arguments);
         pageStatus = (VisitStatus) getPageStatusArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            if (recordUuid == null || recordUuid.isEmpty()) {
+                resultHolder.forItem().add(DatabaseHelper.getSymptomsDao().build());
+            } else {
+                Visit visit = DatabaseHelper.getVisitDao().queryUuid(recordUuid);
+                //resultHolder.forItem().add(visit);
 
-        binding = DataBindingUtil.inflate(inflater, getRootReadLayout(), container, false);
-        record = MemoryDatabaseHelper.VISIT.getVisits(1).get(0);
+                if (visit != null) {
+                    Symptoms s = DatabaseHelper.getSymptomsDao().queryUuid(visit.getSymptoms().getUuid());
+                    List<Symptom> sList = Symptom.makeSymptoms(visit.getDisease()).loadState(visit.getSymptoms());
 
-        binding.setData(record.getSymptoms());
+                    resultHolder.forOther().add(getSymptomsYes(sList));
+                    resultHolder.forOther().add(getSymptomsNo(sList));
+                    resultHolder.forOther().add(getSymptomsUnknown(sList));
 
-        binding.setSymptomsYes(getSymptomsYes());
-        binding.setSymptomsUnknown(getSymptomsUnknown());
-        binding.setSymptomsNo(getSymptomsNo());
+                    //TODO: Do we need this
+                    resultHolder.forItem().add(s);
+                }
+            }
+        } else {
+            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
 
+            if (itemIterator.hasNext())
+                record = itemIterator.next();
 
-        /*binding.tvSymptomsYes.addTags(getSymptomsYes());
-        binding.tvSymptomsNo.addTags(getSymptomsUnknown());
-        binding.tvSymptomsUnknown.addTags(getSymptomsNo());*/
-        //getSymptoms(binding.tagGroup);
+            //TODO: Do we need this
+            /*if (itemIterator.hasNext())
+                symptom = itemIterator.next();*/
 
+            if (otherIterator.hasNext())
+                yesResult =  otherIterator.next();
 
-        return binding.getRoot();
+            if (otherIterator.hasNext())
+                noResult =  otherIterator.next();
+
+            if (otherIterator.hasNext())
+                unknownResult =  otherIterator.next();
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onLayoutBinding(FragmentContactReadSymptomsInfoLayoutBinding contentBinding) {
+        if (record != null) {
+            contentBinding.setData(record);
+
+            contentBinding.setSymptomsYes(yesResult);
+            contentBinding.setSymptomsUnknown(unknownResult);
+            contentBinding.setSymptomsNo(noResult);
+        }
+    }
+
+    @Override
+    public void onAfterLayoutBinding(FragmentContactReadSymptomsInfoLayoutBinding contentBinding) {
+
     }
 
     @Override
@@ -85,17 +121,7 @@ public class ContactReadFollowUpSymptomsFragment extends BaseReadActivityFragmen
     }
 
     @Override
-    public AbstractDomainObject getData() {
-        return binding.getData();
-    }
-
-    @Override
-    public FragmentContactReadSymptomsInfoLayoutBinding getBinding() {
-        return binding;
-    }
-
-    @Override
-    public Object getRecord() {
+    public Symptoms getPrimaryData() {
         return record;
     }
 
@@ -104,61 +130,46 @@ public class ContactReadFollowUpSymptomsFragment extends BaseReadActivityFragmen
         super.onActivityCreated(savedInstanceState);
     }
 
-    public void showRecordEditView(EventParticipant item) {
-        /*Intent intent = new Intent(getActivity(), TaskEditActivity.class);
-        intent.putExtra(Task.UUID, task.getUuid());
-        if(parentCaseUuid != null) {
-            intent.putExtra(KEY_CASE_UUID, parentCaseUuid);
-        }
-        if(parentContactUuid != null) {
-            intent.putExtra(KEY_CONTACT_UUID, parentContactUuid);
-        }
-        if(parentEventUuid != null) {
-            intent.putExtra(KEY_EVENT_UUID, parentEventUuid);
-        }
-        startActivity(intent);*/
-    }
-
     @Override
-    public int getRootReadLayout() {
+    public int getReadLayout() {
         return R.layout.fragment_contact_read_symptoms_info_layout;
     }
 
-    public static ContactReadFollowUpSymptomsFragment newInstance(ContactFormFollowUpNavigationCapsule capsule)
+    public static ContactReadFollowUpSymptomsFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormFollowUpNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(ContactReadFollowUpSymptomsFragment.class, capsule);
+        return newInstance(activityCommunicator, ContactReadFollowUpSymptomsFragment.class, capsule);
     }
 
-    private List<Tag> getSymptomsYes() {
+    private List<Tag> getSymptomsYes(List<Symptom> list) {
         List<Tag> results = new ArrayList();
-        results.add(new Tag("Chills or sweats"));
-        results.add(new Tag("Conjunctivities (red eyes)"));
-        results.add(new Tag("Cough"));
-        results.add(new Tag("Cutaneous eruption"));
-        results.add(new Tag("Pain behind eyes/sensitivity to light"));
-        results.add(new Tag("Fatigue/general weakness"));
+        for (Symptom s: list) {
+            if (s.getState() == SymptomState.YES) {
+                results.add(new Tag(s.getName()));
+            }
+        }
+
         return results;
     }
 
-    private List<Tag> getSymptomsUnknown() {
+    private List<Tag> getSymptomsUnknown(List<Symptom> list) {
         List<Tag> results = new ArrayList();
-        results.add(new Tag("Fear"));
-        results.add(new Tag("Headache"));
-        results.add(new Tag("Nausea"));
-        results.add(new Tag("Oral Ulcer"));
-        results.add(new Tag("Vomiting"));
-        results.add(new Tag("Sore throat"));
+        for (Symptom s: list) {
+            if (s.getState() == SymptomState.UNKNOWN) {
+                results.add(new Tag(s.getName()));
+            }
+        }
+
         return results;
     }
 
-    private List<Tag> getSymptomsNo() {
+    private List<Tag> getSymptomsNo(List<Symptom> list) {
         List<Tag> results = new ArrayList();
-        results.add(new Tag("Bedridden"));
-        results.add(new Tag("Lesions"));
-        results.add(new Tag("Lymphadenopathy axillary"));
-        results.add(new Tag("Lymphadenopathy cervical"));
-        results.add(new Tag("Lymphadenopathy inguinal"));
-        results.add(new Tag("Muscle pain"));
+        for (Symptom s: list) {
+            if (s.getState() == SymptomState.NO) {
+                results.add(new Tag(s.getName()));
+            }
+        }
+
         return results;
     }
 }

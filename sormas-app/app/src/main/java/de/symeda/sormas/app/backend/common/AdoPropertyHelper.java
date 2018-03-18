@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.persistence.Transient;
 
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.core.ReadOnly;
 
 /**
  * Contains methods that help to iterate through properties of ADO.
@@ -184,6 +185,15 @@ public final class AdoPropertyHelper {
                 || hasTransientAnnotation(property))
             return false;
         return true;
+    }
+
+    public static boolean isReadOnlyProperty(PropertyDescriptor property) {
+        ReadOnly annotation = property.getPropertyType().getAnnotation(ReadOnly.class);
+
+        if (annotation == null)
+            return false;
+
+        return annotation.value();
     }
 
 

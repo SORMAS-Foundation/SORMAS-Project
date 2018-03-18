@@ -6,11 +6,13 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.core.ReadOnly;
 
 /**
  * Created by Orson on 03/01/2018.
  */
 
+@ReadOnly
 public abstract class Symptom {
 
     private final int value;
@@ -119,6 +121,9 @@ public abstract class Symptom {
     }
 
     public void setState(SymptomState state) {
+        if (state == null)
+            state = SymptomState.UNKNOWN;
+
         this.state = state;
     }
 

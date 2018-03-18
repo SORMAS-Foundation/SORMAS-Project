@@ -30,15 +30,20 @@ import de.symeda.sormas.api.event.EventStatus;
 
 public class EventEditActivity extends BaseEditActivity {
 
+    private final String DATA_XML_PAGE_MENU = "xml/data_edit_page_alert_menu.xml";
+
+    private static final int MENU_INDEX_EVENT_INFO = 0;
+    private static final int MENU_INDEX_EVENT__PERSON_INVOLVED = 1;
+    private static final int MENU_INDEX_EVENT_TASK = 2;
+
     private boolean showStatusFrame = false;
     private boolean showTitleBar = true;
     private boolean showPageMenu = false;
-    private final String DATA_XML_PAGE_MENU = "xml/data_edit_page_alert_menu.xml";
 
     private EventStatus pageStatus = null;
     private String eventUuid = null;
     private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
-    private BaseEditActivityFragment activeFragment = null; //
+    private BaseEditActivityFragment activeFragment = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -75,7 +80,7 @@ public class EventEditActivity extends BaseEditActivity {
         if (activeFragment == null) {
             EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventEditActivity.this,
                     eventUuid, pageStatus);
-            activeFragment = EventEditFragment.newInstance(dataCapsule); //new EventEditTaskListFragement();
+            activeFragment = EventEditFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;
@@ -113,20 +118,15 @@ public class EventEditActivity extends BaseEditActivity {
         EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventEditActivity.this,
                 eventUuid, pageStatus);
 
-        if (menuItem.getKey() == 0) {
-            //activeFragment = new EventEditFragment();
-            activeFragment = EventEditFragment.newInstance(dataCapsule);
-            replaceFragment(activeFragment);
-        } else if (menuItem.getKey() == 1) {
-            //activeFragment = new EventEditPersonsInvolvedInfoFragment();
-            activeFragment = EventEditPersonsInvolvedListFragment.newInstance(dataCapsule);
-            replaceFragment(activeFragment);
-        } else if (menuItem.getKey() == 2) {
-            //activeFragment = new EventEditTaskListFragement();
-            activeFragment = EventEditTaskListFragement.newInstance(dataCapsule);
-            replaceFragment(activeFragment);
+        if (menuItem.getKey() == MENU_INDEX_EVENT_INFO) {
+            activeFragment = EventEditFragment.newInstance(this, dataCapsule);
+        } else if (menuItem.getKey() == MENU_INDEX_EVENT__PERSON_INVOLVED) {
+            activeFragment = EventEditPersonsInvolvedListFragment.newInstance(this, dataCapsule);
+        } else if (menuItem.getKey() == MENU_INDEX_EVENT_TASK) {
+            activeFragment = EventEditTaskListFragement.newInstance(this, dataCapsule);
         }
 
+        replaceFragment(activeFragment);
         updateSubHeadingTitle();
 
         return true;

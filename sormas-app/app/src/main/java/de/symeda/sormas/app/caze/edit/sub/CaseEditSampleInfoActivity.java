@@ -72,7 +72,7 @@ public class CaseEditSampleInfoActivity extends BaseEditActivity {
         if (activeFragment == null) {
             SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(
                     CaseEditSampleInfoActivity.this, recordUuid, pageStatus);
-            activeFragment = CaseEditSampleInfoFragment.newInstance(dataCapsule);
+            activeFragment = CaseEditSampleInfoFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;

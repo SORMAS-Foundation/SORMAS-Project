@@ -6,6 +6,7 @@
 
     <data>
         <import type="de.symeda.sormas.app.util.SampleHelper" />
+        <import type="de.symeda.sormas.app.core.YesNo" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.Sample"/>
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
@@ -27,6 +28,11 @@
         <variable
             name="shippedYesCallback"
             type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
+
+
+        <variable
+            name="referralLinkCallback"
+            type="de.symeda.sormas.app.component.OnLinkClickListener" />
     </data>
 
 
@@ -189,6 +195,8 @@
                     app:slim="false"
                     app:includeUnknown="@{false}"
                     app:enumClass="@{yesNoClass}"
+                    app:defaultValue="@{YesNo.NO}"
+                    app:abbrevUnknown="@{false}"
                     app:value="@={SampleHelper.isShipped(data.shipped)}"
                     app:onCheckedChangeListener="@{shippedYesCallback}"
                     app:onShowInputErrorListener="@{showNotificationCallback}"
@@ -248,10 +256,25 @@
                 app:onHideInputErrorListener="@{hideNotificationCallback}"
                 />
 
+            <de.symeda.sormas.app.component.TeboTextLinkRead
+                android:id="@+id/txtReferredTo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                app:singleLine="false"
+                app:maxLines="2"
+                app:description="@string/desc_sample_referred_to"
+                app:labelCaption="@string/label_sample_referred_to"
+                app:value="@{null}"
+                app:defaultValue='@{@string/no_referral}'
+                app:onLinkClick="@{(view) -> referralLinkCallback.onClick(view, data)}"
+                />
+
 
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/recent_test_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -282,6 +305,30 @@
                 app:layout="@{@layout/row_samples_recent_test_layout}"
                 app:callback="@{recentTestItemClickCallback}"
                 />
+
+            <!--<de.symeda.sormas.app.component.TeboHint
+                android:id="@+id/sample_no_recent_test_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:visibility="gone"
+                app:singleLine="false"
+                app:maxLines="5"
+                app:inputType="textMultiLine"
+                app:labelCaption="@string/no_recent_test"
+                app:description="@string/no_recent_test"
+                app:value="@{@string/symptoms_infoText}"
+                />-->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_recent_test"
+                android:id="@+id/sample_no_recent_test_text"
+                android:textColor="@android:color/tab_indicator_text"
+                android:textSize="@dimen/field_caption_size"
+                android:paddingBottom="10dp"
+                android:visibility="gone" />
 
 
         </LinearLayout>

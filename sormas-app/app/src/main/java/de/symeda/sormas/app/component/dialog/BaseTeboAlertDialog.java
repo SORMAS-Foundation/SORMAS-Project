@@ -424,7 +424,8 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
     }
 
     public void dismiss() {
-        dialog.dismiss();
+        if (dialog != null)
+            dialog.dismiss();
     }
 
     public Context getContext() {

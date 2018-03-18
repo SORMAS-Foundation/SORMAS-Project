@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.core.AsyncTaskResult;
+import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.BoolResult;
 
 /**

@@ -2,7 +2,6 @@ package de.symeda.sormas.app;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +27,7 @@ import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
  * Created by Orson on 11/12/2017.
  */
 
-public abstract class BaseLandingActivityFragment<E extends Enum<E>, TAdapter extends EnumMapDataBinderAdapter<E>> extends Fragment implements OnNotificationCountChangingListener, OnLandingPageMenuClickListener {
+public abstract class BaseLandingActivityFragment<E extends Enum<E>, TAdapter extends EnumMapDataBinderAdapter<E>> extends BaseFragment implements OnNotificationCountChangingListener, OnLandingPageMenuClickListener {
 
     private BaseLandingActivity baseLandingActivity;
     private RecyclerView.LayoutManager layoutManager;

@@ -16,6 +16,7 @@ import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -34,6 +35,7 @@ import de.symeda.sormas.app.util.SubheadingHelper;
 
 public class EventListFragment extends BaseListActivityFragment<EventListAdapter> implements OnListItemClickListener {
 
+    private boolean dataLoaded = false;
     private AsyncTask searchTask;
     private List<Event> events;
     private LinearLayoutManager linearLayoutManager;
@@ -86,7 +88,7 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
 
     @Override
     public void cancelTaskExec() {
-        if (searchTask != null)
+        if (searchTask != null && !searchTask.isCancelled())
             searchTask.cancel(true);
     }
 
@@ -94,25 +96,43 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
     public void onResume() {
         super.onResume();
 
-        ISearchExecutor<Event> executor = SearchStrategyFor.EVENT.selector(searchBy, filterStatus, recordUuid);
-        searchTask = executor.search(new ISearchResultCallback<Event>() {
-            @Override
-            public void searchResult(List<Event> result, BoolResult resultStatus) {
-                if (!resultStatus.isSuccess()) {
-                    String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Events");
-                    NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
+        //TODO: Orson - reverse this relationship
+        getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Event"));
 
-                    return;
-                }
+        try {
+            if (!dataLoaded) {
+                ISearchExecutor<Event> executor = SearchStrategyFor.EVENT.selector(searchBy, filterStatus, recordUuid);
+                searchTask = executor.search(new ISearchResultCallback<Event>() {
+                    @Override
+                    public void searchResult(List<Event> result, BoolResult resultStatus) {
+                        getActivityCommunicator().hidePreloader();
 
-                events = result;
+                        if (!resultStatus.isSuccess()) {
+                            String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Events");
+                            NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
 
-                //TODO: Orson - reverse this relationship
-                getCommunicator().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Event"));
-                EventListFragment.this.getListAdapter().replaceAll(events);
-                EventListFragment.this.getListAdapter().notifyDataSetChanged();
+                            return;
+                        }
+
+                        events = result;
+
+                        EventListFragment.this.getListAdapter().replaceAll(events);
+                        EventListFragment.this.getListAdapter().notifyDataSetChanged();
+
+                        dataLoaded = true;
+                    }
+
+                    private ISearchResultCallback<Event> init() {
+                        getActivityCommunicator().showPreloader();
+
+                        return this;
+                    }
+                }.init());
             }
-        });
+        } catch (Exception ex) {
+            getActivityCommunicator().hidePreloader();
+            dataLoaded = false;
+        }
     }
 
     @Override
@@ -124,9 +144,17 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
         recyclerViewForList.setAdapter(getListAdapter());
     }
 
-    public static EventListFragment newInstance(EventListCapsule capsule)
+    public static EventListFragment newInstance(IActivityCommunicator communicator, EventListCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(EventListFragment.class, capsule);
+        return newInstance(communicator, EventListFragment.class, capsule);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (searchTask != null && !searchTask.isCancelled())
+            searchTask.cancel(true);
     }
 
 }

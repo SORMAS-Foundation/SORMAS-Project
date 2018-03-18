@@ -71,7 +71,7 @@ public class EventListActivity extends BaseListActivity {
     public BaseListActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             EventListCapsule dataCapsule = new EventListCapsule(EventListActivity.this, filterStatus, searchBy);
-            activeFragment = EventListFragment.newInstance(dataCapsule);
+            activeFragment = EventListFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;

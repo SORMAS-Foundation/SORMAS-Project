@@ -66,6 +66,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.googlecode/openbeans
     compile 'com.android.support:appcompat-v7:24.2.0'
     compile 'com.android.support:design:24.2.0'
+    compile 'com.android.support:percent:24.2.1'
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     compile 'com.j256.ormlite:ormlite-core:4.48'

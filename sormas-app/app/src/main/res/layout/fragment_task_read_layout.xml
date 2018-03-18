@@ -6,6 +6,15 @@
 
     <data>
         <variable name="data" type="de.symeda.sormas.app.backend.task.Task"/>
+        <variable
+            name="caseLinkCallback"
+            type="de.symeda.sormas.app.component.OnLinkClickListener" />
+        <variable
+            name="contactLinkCallback"
+            type="de.symeda.sormas.app.component.OnLinkClickListener" />
+        <variable
+            name="eventLinkCallback"
+            type="de.symeda.sormas.app.component.OnLinkClickListener" />
     </data>
 
 
@@ -28,6 +37,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:maxLines="2"
+                app:singleLine="false"
                 app:description="@string/desc_task_type"
                 app:labelCaption="@string/label_task_type"
                 app:value="@{data.taskType}"
@@ -46,6 +57,7 @@
                 app:cazeAndLocation="@{data.caze}"
                 app:defaultValue='@{@string/not_available}'
                 app:goneIfNull='@{data.caze}'
+                app:onLinkClick="@{(view) -> caseLinkCallback.onClick(view, data)}"
                 />
 
             <de.symeda.sormas.app.component.TeboTextLinkRead
@@ -60,6 +72,7 @@
                 app:contactAndLocation="@{data.contact}"
                 app:defaultValue='@{@string/not_available}'
                 app:goneIfNull='@{data.contact}'
+                app:onLinkClick="@{(view) -> contactLinkCallback.onClick(view, data)}"
                 />
 
             <de.symeda.sormas.app.component.TeboTextLinkRead
@@ -74,6 +87,7 @@
                 app:eventAndLocation="@{data.event}"
                 app:defaultValue='@{@string/not_available}'
                 app:goneIfNull='@{data.event}'
+                app:onLinkClick="@{(view) -> eventLinkCallback.onClick(view, data)}"
                 />
 
             <LinearLayout

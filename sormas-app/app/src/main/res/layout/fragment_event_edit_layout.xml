@@ -6,6 +6,7 @@
     android:id="@+id/base_layout">
 
     <data>
+        <import type="de.symeda.sormas.api.event.EventType" />
         <variable
             name="showNotificationCallback"
             type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
@@ -126,6 +127,8 @@
             app:slim="false"
             app:includeUnknown="@{false}"
             app:enumClass="@{eventTypeClass}"
+            app:defaultValue="@{null}"
+            app:abbrevUnknown="@{false}"
             app:value="@={data.eventType}"
             app:onCheckedChangeListener="@{checkedCallback}"
             app:onShowInputErrorListener="@{showNotificationCallback}"
@@ -142,7 +145,7 @@
             app:description="@string/desc_alert_description"
             app:required="true"
             app:value="@={data.eventDesc}"
-            app:nextFocusDown="@+id/txtDisease"
+            app:nextFocusDown="@+id/spnDisease"
             app:imeOptions="actionNext"
             app:onShowInputErrorListener="@{showNotificationCallback}"
             app:onHideInputErrorListener="@{hideNotificationCallback}"
@@ -160,6 +163,23 @@
             app:required="true"
             app:spinnerMode="dialog"
             app:value="@={data.disease}"
+            app:nextFocusDown="@+id/txtOtherDisease"
+            />
+
+        <de.symeda.sormas.app.component.TeboTextInputEditText
+            android:id="@+id/txtOtherDisease"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/textControlMarginBottom"
+            app:hint="@string/hint_alert_other_disease"
+            app:labelCaption="@string/label_alert_other_disease"
+            app:description="@string/desc_alert_other_disease"
+            app:required="true"
+            app:value="@={data.diseaseDetails}"
+            app:nextFocusDown="@+id/dtpDateOfAlert"
+            app:imeOptions="actionNext"
+            app:onShowInputErrorListener="@{showNotificationCallback}"
+            app:onHideInputErrorListener="@{hideNotificationCallback}"
             />
 
 

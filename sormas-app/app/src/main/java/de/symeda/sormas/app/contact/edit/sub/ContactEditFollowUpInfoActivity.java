@@ -76,7 +76,7 @@ public class ContactEditFollowUpInfoActivity extends BaseEditActivity {
         if (activeFragment == null) {
             ContactFormFollowUpNavigationCapsule dataCapsule = new ContactFormFollowUpNavigationCapsule(
                     ContactEditFollowUpInfoActivity.this, recordUuid, pageStatus);
-            activeFragment = ContactEditFollowUpVisitInfoFragment.newInstance(dataCapsule);
+            activeFragment = ContactEditFollowUpVisitInfoFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;
@@ -115,10 +115,10 @@ public class ContactEditFollowUpInfoActivity extends BaseEditActivity {
                 ContactEditFollowUpInfoActivity.this, recordUuid, pageStatus);
 
         if (menuItem.getKey() == MENU_INDEX_VISIT_INFO) {
-            activeFragment = ContactEditFollowUpVisitInfoFragment.newInstance(dataCapsule);
+            activeFragment = ContactEditFollowUpVisitInfoFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_SYMPTOMS_INFO) {
-            activeFragment = ContactEditFollowUpSymptomsFragment.newInstance(dataCapsule);
+            activeFragment = ContactEditFollowUpSymptomsFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         }
 

@@ -1,19 +1,20 @@
 package de.symeda.sormas.app.contact.edit.sub;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.View;
-import android.view.ViewStub;
-
-import de.symeda.sormas.app.BaseEditActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.contact.ContactFormFollowUpNavigationCapsule;
-import de.symeda.sormas.app.databinding.FragmentContactEditVisitInfoLayoutBinding;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
+import de.symeda.sormas.app.contact.ContactFormFollowUpNavigationCapsule;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentContactEditVisitInfoLayoutBinding;
 
 /**
  * Created by Orson on 13/02/2018.
@@ -23,8 +24,9 @@ import de.symeda.sormas.app.backend.visit.Visit;
  * sampson.orson@technologyboard.org
  */
 
-public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragment<FragmentContactEditVisitInfoLayoutBinding> {
+public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragment<FragmentContactEditVisitInfoLayoutBinding, Visit> {
 
+    private AsyncTask jobTask;
     private String recordUuid;
     private VisitStatus pageStatus;
     private Visit record;
@@ -33,7 +35,6 @@ public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragme
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, followUpStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -45,7 +46,6 @@ public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragme
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
-        //followUpStatus = (EventStatus) getFilterStatusArg(arguments);
         pageStatus = (VisitStatus) getPageStatusArg(arguments);
     }
 
@@ -55,31 +55,40 @@ public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragme
     }
 
     @Override
-    public AbstractDomainObject getData() {
+    public Visit getPrimaryData() {
         return record;
     }
 
     @Override
-    public void onBeforeLayoutBinding(Bundle savedInstanceState) {
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            if (recordUuid == null || recordUuid.isEmpty()) {
+                resultHolder.forItem().add(DatabaseHelper.getVisitDao().build());
+            } else {
+                resultHolder.forItem().add(DatabaseHelper.getVisitDao().queryUuid(recordUuid));
+            }
+        } else {
+            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
-        record = MemoryDatabaseHelper.VISIT.getVisits(1).get(0);
+            //Item Data
+            if (itemIterator.hasNext())
+                record =  itemIterator.next();
 
-        setupCallback();
+            setupCallback();
+        }
+
+        return true;
     }
 
     @Override
-    public void onLayoutBinding(ViewStub stub, View inflated, FragmentContactEditVisitInfoLayoutBinding contentBinding) {
-        //binding = DataBindingUtil.inflate(inflater, getEditLayout(), container, true);
-
+    public void onLayoutBinding(FragmentContactEditVisitInfoLayoutBinding contentBinding) {
         contentBinding.setData(record);
         contentBinding.setVisitStatusClass(VisitStatus.class);
-        //contentBinding.setCheckedCallback(onEventTypeCheckedCallback);
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentContactEditVisitInfoLayoutBinding binding) {
-        binding.dtpDateTimeOfVisit.initialize(getFragmentManager());
-        //binding.ttpTimeOfVisit.initialize(getFragmentManager());
+    public void onAfterLayoutBinding(FragmentContactEditVisitInfoLayoutBinding contentBinding) {
+        contentBinding.dtpDateTimeOfVisit.initialize(getFragmentManager());
     }
 
     @Override
@@ -88,22 +97,11 @@ public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragme
     }
 
     private void setupCallback() {
-        /*onEventTypeCheckedCallback = new OnTeboSwitchCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(TeboSwitch teboSwitch, Object checkedItem, int checkedId) {
-                if (mLastCheckedId == checkedId) {
-                    return;
-                }
 
-                mLastCheckedId = checkedId;
-
-            }
-        };*/
     }
 
-
-    public static ContactEditFollowUpVisitInfoFragment newInstance(ContactFormFollowUpNavigationCapsule capsule)
+    public static ContactEditFollowUpVisitInfoFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormFollowUpNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(ContactEditFollowUpVisitInfoFragment.class, capsule);
+        return newInstance(activityCommunicator, ContactEditFollowUpVisitInfoFragment.class, capsule);
     }
 }

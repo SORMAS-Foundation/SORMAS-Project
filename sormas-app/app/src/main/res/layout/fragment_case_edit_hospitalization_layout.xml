@@ -6,6 +6,7 @@
     android:id="@+id/base_layout">
 
     <data>
+        <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
         <variable
             name="showNotificationCallback"
             type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
@@ -75,6 +76,8 @@
                 app:slim="false"
                 app:includeUnknown="@{false}"
                 app:enumClass="@{yesNoUnknownClass}"
+                app:defaultValue="@{YesNoUnknown.UNKNOWN}"
+                app:abbrevUnknown="@{false}"
                 app:value="@={data.admittedToHealthFacility}"
                 app:onCheckedChangeListener="@{admittedToFacilityCallback}"
                 app:onShowInputErrorListener="@{showNotificationCallback}"
@@ -143,6 +146,8 @@
                     app:slim="false"
                     app:includeUnknown="@{false}"
                     app:enumClass="@{yesNoUnknownClass}"
+                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
+                    app:abbrevUnknown="@{false}"
                     app:value="@={data.isolated}"
                     app:onCheckedChangeListener="@{isolationCallback}"
                     app:onShowInputErrorListener="@{showNotificationCallback}"
@@ -184,6 +189,8 @@
                 app:slim="false"
                 app:includeUnknown="@{false}"
                 app:enumClass="@{yesNoUnknownClass}"
+                app:defaultValue="@{YesNoUnknown.UNKNOWN}"
+                app:abbrevUnknown="@{false}"
                 app:value="@={data.admittedToHealthFacility}"
                 app:onShowInputErrorListener="@{showNotificationCallback}"
                 app:onHideInputErrorListener="@{hideNotificationCallback}"
@@ -191,6 +198,7 @@
 
         </LinearLayout>
 
+        <!--android:paddingBottom="@dimen/parentLayoutVerticalMargin"-->
         <LinearLayout
             android:id="@+id/ctrlPrevHospitalization"
             android:layout_width="match_parent"
@@ -198,7 +206,6 @@
             android:orientation="vertical"
             android:background="@color/formListSectionBackground"
             android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            android:paddingBottom="@dimen/parentLayoutVerticalMargin"
             android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
             android:paddingRight="@dimen/parentLayoutHorizontalPadding"
             >
@@ -206,7 +213,9 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
+                app:alternateBottomMarginIfEmpty="@{previousHospitalizationList}"
+                app:emptyBottomMargin="@{@dimen/parentLayoutVerticalMargin}"
+                app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}"
                 >
 
                 <TextView
@@ -236,6 +245,8 @@
             </RelativeLayout>
 
             <ImageView
+                android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
+                app:goneIfEmpty="@{previousHospitalizationList}"
                 style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
 
             <LinearLayout

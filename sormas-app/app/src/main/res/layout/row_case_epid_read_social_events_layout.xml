@@ -11,11 +11,12 @@
             type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
 
+    <!--android:layout_marginTop="@dimen/closelyRelatedControlMarginBottom"-->
     <LinearLayout
         android:id="@+id/rowListItemSocialEvent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/closelyRelatedControlMarginBottom"
+        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
         android:paddingTop="@dimen/parentLayoutVerticalPadding"
         android:paddingBottom="@dimen/parentLayoutVerticalPadding"
         android:paddingLeft="@dimen/rowListItemHorizontalMargin"

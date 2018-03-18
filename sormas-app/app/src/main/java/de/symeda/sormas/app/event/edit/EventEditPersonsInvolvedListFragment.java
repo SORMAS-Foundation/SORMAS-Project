@@ -5,21 +5,24 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
-import android.view.ViewStub;
 
-import de.symeda.sormas.app.BaseEditActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.databinding.FragmentEditListLayoutBinding;
-import de.symeda.sormas.app.event.EventFormNavigationCapsule;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentEditListLayoutBinding;
+import de.symeda.sormas.app.event.EventFormNavigationCapsule;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 
 /**
  * Created by Orson on 12/02/2018.
@@ -29,10 +32,9 @@ import de.symeda.sormas.app.backend.event.EventParticipant;
  * sampson.orson@technologyboard.org
  */
 
-public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragment<FragmentEditListLayoutBinding> implements OnListItemClickListener {
+public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragment<FragmentEditListLayoutBinding, List<EventParticipant>> implements OnListItemClickListener {
 
     private String recordUuid = null;
-    //private EventStatus filterStatus = null;
     private EventStatus pageStatus = null;
     private List<EventParticipant> record;
     private FragmentEditListLayoutBinding binding;
@@ -65,35 +67,44 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
     }
 
     @Override
-    public AbstractDomainObject getData() {
+    public List<EventParticipant> getPrimaryData() {
         return null;
     }
 
     @Override
-    public void onBeforeLayoutBinding(Bundle savedInstanceState) {
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            Event event = DatabaseHelper.getEventDao().queryUuid(recordUuid);
 
-        //Get Data
-        record = MemoryDatabaseHelper.EVENT_PARTICIPANT.getEventParticipants(20);
+            if (event != null) {
+                resultHolder.forList().add(DatabaseHelper.getEventParticipantDao().getByEvent(event));
+            } else {
+                resultHolder.forList().add(new ArrayList<EventParticipant>());
+            }
+        } else {
+            ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
+            if (listIterator.hasNext()) {
+                record = listIterator.next();
 
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+            }
+        }
+
+        return true;
     }
 
     @Override
-    public void onLayoutBinding(ViewStub stub, View inflated, FragmentEditListLayoutBinding contentBinding) {
-        //binding = DataBindingUtil.inflate(inflater, getEditLayout(), container, true);
-
+    public void onLayoutBinding(FragmentEditListLayoutBinding contentBinding) {
         //Create adapter and set data
         adapter = new EventEditPersonsInvolvedListAdapter(this.getActivity(), R.layout.row_read_persons_involved_list_item_layout, this, record);
 
+        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
-
-
         adapter.notifyDataSetChanged();
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentEditListLayoutBinding binding) {
+    public void onAfterLayoutBinding(FragmentEditListLayoutBinding contentBinding) {
 
     }
 
@@ -117,7 +128,7 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
         super.onResume();
 
         //adapter.replaceAll(new ArrayList<EventParticipant>(record));
-        adapter.notifyDataSetChanged();
+        //adapter.notifyDataSetChanged();
 
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)getRootBinding().getRoot()
                 .findViewById(R.id.swiperefresh);
@@ -139,9 +150,9 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
         EventEditPersonsInvolvedInfoActivity.goToActivity(getActivity(), dataCapsule);
     }
 
-    public static EventEditPersonsInvolvedListFragment newInstance(EventFormNavigationCapsule capsule)
+    public static EventEditPersonsInvolvedListFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(EventEditPersonsInvolvedListFragment.class, capsule);
+        return newInstance(activityCommunicator, EventEditPersonsInvolvedListFragment.class, capsule);
     }
 }
 

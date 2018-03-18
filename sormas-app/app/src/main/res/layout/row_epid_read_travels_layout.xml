@@ -15,6 +15,7 @@
         android:id="@+id/rowListItemTravel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
         android:paddingTop="@dimen/parentLayoutVerticalPadding"
         android:paddingBottom="@dimen/parentLayoutVerticalPadding"
         android:paddingLeft="@dimen/rowListItemHorizontalMargin"
@@ -62,6 +63,7 @@
 
             />
 
+        <!--android:layout_marginBottom="@dimen/contentVerticalSpacing"-->
         <TextView
             android:id="@+id/txtTravelPeriod"
             android:layout_width="wrap_content"
@@ -69,7 +71,6 @@
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
             android:gravity="left|center_vertical"
-            android:layout_marginBottom="@dimen/contentVerticalSpacing"
             android:singleLine="true"
             android:maxLines="1"
             android:ellipsize="end"

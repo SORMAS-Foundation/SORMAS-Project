@@ -74,7 +74,7 @@ public class CaseNewActivity extends BaseEditActivity {
         if (activeFragment == null) {
             CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(CaseNewActivity.this,
                     recordUuid).setEditPageStatus(pageStatus);
-            activeFragment = CaseNewFragment.newInstance(dataCapsule);
+            activeFragment = CaseNewFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;

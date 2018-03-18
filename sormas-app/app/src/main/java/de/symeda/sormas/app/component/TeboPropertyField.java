@@ -12,10 +12,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.util.ControlLabelOnTouchListener;
-
 import java.util.ArrayList;
+
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.util.ControlLabelOnTouchListener;
 
 /**
  * Created by Orson on 15/11/2017.
@@ -399,6 +402,29 @@ public abstract class TeboPropertyField<T> extends LinearLayout {
     public int getNextFocusForward() {
         return nextFocusForward;
     }
+
+    //TODO: Check enabling with UserRight
+    public void setEnabled(boolean enabled, UserRight editOrCreateUserRight) {
+        User user = ConfigProvider.getUser();
+        //setFieldEnabledStatus(enabled && user.hasUserRight(editOrCreateUserRight));
+    }
+
+    /*@Override
+    public void setEnabled(boolean enabled) {
+        if (enabled) {
+            throw new UnsupportedOperationException("If you want to enable a custom field, call setEnabled(boolean enabled, UserRight editOrCreateUserRight) instead.");
+        } else {
+            setFieldEnabledStatus(false);
+        }
+    }*/
+
+    /**
+     * Child classes need to override this method in order to set the enabled status at their
+     * encapsulated elements, e.g. an EditText for the TextField class. This method should never be
+     * called outside of the setEnabled methods in this class because it could bypass the
+     * mechanism that makes sure that fields cannot be set to enabled without the needed rights.
+     */
+    //protected abstract void setFieldEnabledStatus(boolean enabled);
 
 
 }

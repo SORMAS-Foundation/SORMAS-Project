@@ -1,48 +1,99 @@
 package de.symeda.sormas.app.sample.read;
 
-import android.databinding.DataBindingUtil;
 import android.databinding.ObservableArrayList;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.support.annotation.Nullable;
 import android.view.View;
-import android.view.ViewGroup;
 
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.databinding.FragmentSampleReadLayoutBinding;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.sample.SampleTest;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.IEntryItemOnClickListener;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentSampleReadLayoutBinding;
+import de.symeda.sormas.app.sample.SampleFormNavigationCapsule;
+import de.symeda.sormas.app.sample.ShipmentStatus;
 
 /**
  * Created by Orson on 11/12/2017.
  */
 
-public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleReadLayoutBinding> {
+public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleReadLayoutBinding, Sample> {
 
+    private String recordUuid = null;
+    private ShipmentStatus pageStatus = null;
     private Sample record;
-    private FragmentSampleReadLayoutBinding binding;
+    private SampleTest mostRecentTest;
 
     private IEntryItemOnClickListener onRecentTestItemClickListener;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        binding = DataBindingUtil.inflate(inflater, getRootReadLayout(), container, false);
-        record = MemoryDatabaseHelper.SAMPLE.getSamples(1).get(0);
+        SavePageStatusState(outState, pageStatus);
+        SaveRecordUuidState(outState, recordUuid);
+    }
 
-        setupCallback();
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        binding.setSample(record);
-        binding.setCaze(record.getAssociatedCase());
-        binding.setLab(record.getLab());
-        binding.setResults(getTestResults());
-        binding.setRecentTestItemClickCallback(onRecentTestItemClickListener);
+        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
-        return binding.getRoot();
+        recordUuid = getRecordUuidArg(arguments);
+        pageStatus = (ShipmentStatus) getPageStatusArg(arguments);
+    }
+
+    @Override
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            resultHolder.forItem().add(DatabaseHelper.getSampleDao().queryUuid(recordUuid));
+            resultHolder.forItem().add(DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record));
+        } else {
+            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+
+            //Item Data
+            if (itemIterator.hasNext())
+                record = itemIterator.next();
+
+            if (itemIterator.hasNext())
+                mostRecentTest = itemIterator.next();
+
+            setupCallback();
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onLayoutBinding(FragmentSampleReadLayoutBinding contentBinding) {
+        if (record == null)
+            return;
+
+        if (record.getSpecimenCondition() != SpecimenCondition.NOT_ADEQUATE) {
+            contentBinding.recentTestLayout.setVisibility(View.VISIBLE);
+            contentBinding.sampleNoRecentTestText.setVisibility((mostRecentTest == null) ? View.VISIBLE : View.GONE);
+        }
+
+
+        contentBinding.setSample(record);
+        contentBinding.setCaze(record.getAssociatedCase());
+        contentBinding.setLab(record.getLab());
+
+        contentBinding.setResults(getTestResults());
+        contentBinding.setRecentTestItemClickCallback(onRecentTestItemClickListener);
+    }
+
+    @Override
+    public void onAfterLayoutBinding(FragmentSampleReadLayoutBinding contentBinding) {
+
     }
 
     @Override
@@ -53,63 +104,30 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
     @Override
     protected String getSubHeadingTitle() {
         String title = "";
-        if (record != null) {
-            title = record.getSampleMaterial().name();
+
+        if (pageStatus != null) {
+            title = pageStatus.toString();
         }
 
         return title;
     }
 
     @Override
-    public AbstractDomainObject getData() {
-        return binding.getSample();
+    public Sample getPrimaryData() {
+        return getContentBinding().getSample();
     }
 
     @Override
-    public FragmentSampleReadLayoutBinding getBinding() {
-        return binding;
-    }
-
-    @Override
-    public Object getRecord() {
-        return record;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-
-        /*txtDiseaseName.setValue("Very Good");
-        txtSampleCode.setValue("Better");
-        txtSampleMaterial.setValue("Better");
-        txtDateTimeOfSampling.setValue("Very Good");
-        txtTestType.setValue("Better");*/
-    }
-
-    public void showSampleEditView(Sample sample) {
-        /*Intent intent = new Intent(getActivity(), TaskEditActivity.class);
-        intent.putExtra(Task.UUID, task.getUuid());
-        if(parentCaseUuid != null) {
-            intent.putExtra(KEY_CASE_UUID, parentCaseUuid);
-        }
-        if(parentContactUuid != null) {
-            intent.putExtra(KEY_CONTACT_UUID, parentContactUuid);
-        }
-        if(parentEventUuid != null) {
-            intent.putExtra(KEY_EVENT_UUID, parentEventUuid);
-        }
-        startActivity(intent);*/
-    }
-
-    @Override
-    public int getRootReadLayout() {
+    public int getReadLayout() {
         return R.layout.fragment_sample_read_layout;
     }
 
     private ObservableArrayList getTestResults() {
         ObservableArrayList results = new ObservableArrayList();
-        results.add(MemoryDatabaseHelper.TEST.getSampleTests(1).get(0));
+
+        if (mostRecentTest != null)
+            results.add(mostRecentTest);
+
         return results;
     }
 
@@ -122,4 +140,8 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
         };
     }
 
+    public static SampleReadFragment newInstance(IActivityCommunicator activityCommunicator, SampleFormNavigationCapsule capsule)
+            throws java.lang.InstantiationException, IllegalAccessException {
+        return newInstance(activityCommunicator, SampleReadFragment.class, capsule);
+    }
 }

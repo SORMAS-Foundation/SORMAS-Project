@@ -1,93 +1,116 @@
 package de.symeda.sormas.app.event.read;
 
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import de.symeda.sormas.app.BaseReadActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.databinding.FragmentEventReadPersonsInvolvedLayoutBinding;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.util.ConstantHelper;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
+import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentEventReadPersonsInvolvedLayoutBinding;
+import de.symeda.sormas.app.event.EventFormNavigationCapsule;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.util.ConstantHelper;
 
 /**
  * Created by Orson on 26/12/2017.
  */
 
-public class EventReadPersonsInvolvedFragment extends BaseReadActivityFragment<FragmentEventReadPersonsInvolvedLayoutBinding> implements OnListItemClickListener {
+public class EventReadPersonsInvolvedFragment extends BaseReadActivityFragment<FragmentEventReadPersonsInvolvedLayoutBinding, List<EventParticipant>> implements OnListItemClickListener {
 
+    private String recordUuid;
+    private EventStatus pageStatus;
     private List<EventParticipant> record;
-    private FragmentEventReadPersonsInvolvedLayoutBinding binding;
 
     private EventReadPersonsInvolvedAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        //SaveFilterStatusState(outState, filterStatus);
+        SavePageStatusState(outState, pageStatus);
+        SaveRecordUuidState(outState, recordUuid);
+    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
+        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
+        recordUuid = getRecordUuidArg(arguments);
+        //filterStatus = (EventStatus) getFilterStatusArg(arguments);
+        pageStatus = (EventStatus) getPageStatusArg(arguments);
+    }
 
+    @Override
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            Event event = DatabaseHelper.getEventDao().queryUuid(recordUuid);
+
+            if (event != null) {
+                resultHolder.forList().add(DatabaseHelper.getEventParticipantDao().getByEvent(event));
+            } else {
+                resultHolder.forList().add(new ArrayList<EventParticipant>());
+            }
+        } else {
+            ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
+
+            if (listIterator.hasNext())
+                record = listIterator.next();
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onLayoutBinding(FragmentEventReadPersonsInvolvedLayoutBinding contentBinding) {
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        adapter = new EventReadPersonsInvolvedAdapter(EventReadPersonsInvolvedFragment.this.getActivity(),
+                R.layout.row_read_event_persons_involved_item_layout, EventReadPersonsInvolvedFragment.this, record);
 
-        //Get binding
-        //binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        binding = DataBindingUtil.inflate(inflater, getRootReadLayout(), container, false);
-
-        //Get Data
-        record = MemoryDatabaseHelper.EVENT_PARTICIPANT.getEventParticipants(20);
-
-        //Create adapter and set data
-        adapter = new EventReadPersonsInvolvedAdapter(this.getActivity(), R.layout.row_read_event_persons_involved_item_layout, this, record);
-
-        binding.recyclerViewForList.setLayoutManager(linearLayoutManager);
-        binding.recyclerViewForList.setAdapter(adapter);
-
-
+        contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
+        contentBinding.recyclerViewForList.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+    }
 
-        //binding = DataBindingUtil.inflate(inflater, getRootReadLayout(), container, false);
+    @Override
+    public void onAfterLayoutBinding(FragmentEventReadPersonsInvolvedLayoutBinding contentBinding) {
 
-        /*record = MemoryDatabaseHelper.EVENT_PARTICIPANT.getEventParticipants(20);
-
-        adapter = new EventReadPersonsInvolvedAdapter(this.getActivity(), R.layout.row_read_event_persons_involved_item_layout, record);
-
-
-        recyclerViewForList = (RecyclerView) container.findViewById(R.id.recyclerViewForList);
-        recyclerViewForList = binding.recyclerViewForList;
-
-        binding.setEventParticipants(record);
-        binding.setLayoutManager(linearLayoutManager);*/
-
-        return binding.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        //adapter.replaceAll(new ArrayList<EventParticipant>(record));
-        adapter.notifyDataSetChanged();
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)getRootBinding().getRoot()
+                .findViewById(R.id.swiperefresh);
 
-        binding.swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getBaseReadActivity().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, false, binding.swiperefresh, null);
-            }
-        });
+        if (swiperefresh != null) {
+            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    getBaseReadActivity().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly,
+                            true, false, swiperefresh, null);
+                }
+            });
+        }
     }
 
     @Override
@@ -96,18 +119,8 @@ public class EventReadPersonsInvolvedFragment extends BaseReadActivityFragment<F
     }
 
     @Override
-    public AbstractDomainObject getData() {
+    public List<EventParticipant> getPrimaryData() {
         return null;
-    }
-
-    @Override
-    public FragmentEventReadPersonsInvolvedLayoutBinding getBinding() {
-        return binding;
-    }
-
-    @Override
-    public Object getRecord() {
-        return record;
     }
 
     @Override
@@ -120,7 +133,7 @@ public class EventReadPersonsInvolvedFragment extends BaseReadActivityFragment<F
     }
 
     @Override
-    public int getRootReadLayout() {
+    public int getReadLayout() {
         return R.layout.fragment_event_read_persons_involved_layout;
     }
 
@@ -131,8 +144,13 @@ public class EventReadPersonsInvolvedFragment extends BaseReadActivityFragment<F
         if(record != null) {
             Intent intent = new Intent(getActivity(), EventReadPersonsInvolvedInfoActivity.class);
             intent.putExtra(ConstantHelper.KEY_DATA_UUID, record.getUuid());
-            intent.putExtra(ConstantHelper.ARG_FILTER_STATUS, record.getEvent().getEventStatus());
+            intent.putExtra(ConstantHelper.ARG_PAGE_STATUS, record.getEvent().getEventStatus());
             startActivity(intent);
         }
+    }
+
+    public static EventReadPersonsInvolvedFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule)
+            throws java.lang.InstantiationException, IllegalAccessException {
+        return newInstance(activityCommunicator, EventReadPersonsInvolvedFragment.class, capsule);
     }
 }

@@ -9,6 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
+import java.util.ArrayList;
+
+import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
@@ -16,10 +19,6 @@ import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.NavigationHelper;
-
-import java.util.ArrayList;
-
-import de.symeda.sormas.api.task.TaskStatus;
 
 /**
  * Created by Orson on 12/02/2018.
@@ -38,7 +37,7 @@ public class EventEditTaskInfoActivity extends BaseEditActivity {
 
     //private EventStatus filterStatus = null;
     private TaskStatus pageStatus = null;
-    private String taskUuid = null;
+    private String recordUuid = null;
     private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
     private BaseEditActivityFragment activeFragment = null; // = new TaskEditFragment();
 
@@ -48,7 +47,7 @@ public class EventEditTaskInfoActivity extends BaseEditActivity {
 
         //SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, taskUuid);
+        SaveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -65,7 +64,7 @@ public class EventEditTaskInfoActivity extends BaseEditActivity {
     protected void initializeActivity(Bundle arguments) {
         //filterStatus = (EventStatus) getFilterStatusArg(arguments);
         pageStatus = (TaskStatus) getPageStatusArg(arguments);
-        taskUuid = getRecordUuidArg(arguments);
+        recordUuid = getRecordUuidArg(arguments);
 
         this.showStatusFrame = false;
         this.showTitleBar = true;
@@ -76,8 +75,8 @@ public class EventEditTaskInfoActivity extends BaseEditActivity {
     public BaseEditActivityFragment getActiveEditFragment() throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(
-                    EventEditTaskInfoActivity.this, taskUuid, pageStatus);
-            activeFragment = EventEditTaskInfoFragment.newInstance(dataCapsule); //new EventEditTaskListFragement();
+                    EventEditTaskInfoActivity.this, recordUuid, pageStatus);
+            activeFragment = EventEditTaskInfoFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;

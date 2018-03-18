@@ -5,20 +5,41 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewStub;
 import android.widget.AdapterView;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+
+import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
+import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
 import de.symeda.sormas.app.component.TeboSpinner;
 import de.symeda.sormas.app.component.TeboSwitch;
+import de.symeda.sormas.app.component.TeboTextRead;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentContactEditPersonLayoutBinding;
 import de.symeda.sormas.app.event.edit.OnSetBindingVariableListener;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
@@ -26,18 +47,6 @@ import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 import de.symeda.sormas.app.util.layoutprocessor.OccupationTypeLayoutProcessor;
 import de.symeda.sormas.app.util.layoutprocessor.PresentConditionLayoutProcessor;
-
-import java.util.List;
-
-import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.person.ApproximateAgeType;
-import de.symeda.sormas.api.person.OccupationType;
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.location.Location;
 
 /**
  * Created by Orson on 13/02/2018.
@@ -47,22 +56,25 @@ import de.symeda.sormas.app.backend.location.Location;
  * sampson.orson@technologyboard.org
  */
 
-public class ContactEditPersonFragment extends BaseEditActivityFragment<FragmentContactEditPersonLayoutBinding> {
+public class ContactEditPersonFragment extends BaseEditActivityFragment<FragmentContactEditPersonLayoutBinding, Contact> {
 
     public static final String TAG = ContactEditPersonFragment.class.getSimpleName();
+
+    private static final int DEFAULT_YEAR = 2000;
 
     private String recordUuid = null;
     private ContactClassification pageStatus = null;
     private Contact record;
+    private Person person;
     private OnTeboSwitchCheckedChangeListener onPresentConditionCheckedCallback;
     private IEntryItemOnClickListener onAddressLinkClickedCallback;
 
     private List<Item> dateList;
     private List<Item> monthList;
     private List<Item> yearList;
-    private List<ApproximateAgeType> ageTypeList;
-    private List<Sex> genderList;
-    private List<OccupationType> occupationTypeList;
+    private List<Item> ageTypeList;
+    private List<Item> genderList;
+    private List<Item> occupationTypeList;
     private int mLastCheckedId = -1;
 
     private OccupationTypeLayoutProcessor occupationTypeLayoutProcessor;
@@ -73,7 +85,6 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, followUpStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -85,7 +96,6 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
-        //followUpStatus = (EventStatus) getFilterStatusArg(arguments);
         pageStatus = (ContactClassification) getPageStatusArg(arguments);
     }
 
@@ -95,29 +105,69 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
     }
 
     @Override
-    public AbstractDomainObject getData() {
+    public Contact getPrimaryData() {
         return record;
     }
 
     @Override
-    public void onBeforeLayoutBinding(Bundle savedInstanceState) {
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            if (recordUuid != null && !recordUuid.isEmpty()) {
+                Person p = null;
+                Contact contact = DatabaseHelper.getContactDao().queryUuid(recordUuid);
+                if (contact != null){
+                    p = DatabaseHelper.getPersonDao().queryUuid(contact.getPerson().getUuid());
+                } else {
+                    p = DatabaseHelper.getPersonDao().build();
+                }
 
-        record = MemoryDatabaseHelper.CONTACT.getContacts(1).get(0);
-        occupationTypeList = MemoryDatabaseHelper.OCCUPATION_TYPE.getOccupationTypes(20);
-        genderList = MemoryDatabaseHelper.GENDER.getGenders();
-        ageTypeList = MemoryDatabaseHelper.AGE_TYPE.getAgeTypes();
+                resultHolder.forItem().add(contact);
+                resultHolder.forItem().add(p);
+            }
 
-        dateList = DataUtils.toItems(DateHelper.getDaysInMonth(),true);
-        monthList = DataUtils.getMonthItems(true);
-        yearList = DataUtils.toItems(DateHelper.getYearsToNow(),true);
+            resultHolder.forOther().add(DataUtils.getEnumItems(OccupationType.class, false));
+            resultHolder.forOther().add(DataUtils.getEnumItems(Sex.class, false));
+            resultHolder.forOther().add(DataUtils.getEnumItems(ApproximateAgeType.class, false));
+            resultHolder.forOther().add(DataUtils.toItems(DateHelper.getDaysInMonth(),true));
+            resultHolder.forOther().add(DataUtils.getMonthItems(true));
+            resultHolder.forOther().add(DataUtils.toItems(DateHelper.getYearsToNow(),true));
+        } else {
+            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
 
-        setupCallback();
+            //Item Data
+            if (itemIterator.hasNext())
+                record =  itemIterator.next();
+
+            if (itemIterator.hasNext())
+                person =  itemIterator.next();
+
+            if (otherIterator.hasNext())
+                occupationTypeList =  otherIterator.next();
+
+            if (otherIterator.hasNext())
+                genderList =  otherIterator.next();
+
+            if (otherIterator.hasNext())
+                ageTypeList =  otherIterator.next();
+
+            if (otherIterator.hasNext())
+                dateList =  otherIterator.next();
+
+            if (otherIterator.hasNext())
+                monthList =  otherIterator.next();
+
+            if (otherIterator.hasNext())
+                yearList =  otherIterator.next();
+
+            setupCallback();
+        }
+
+        return true;
     }
 
     @Override
-    public void onLayoutBinding(ViewStub stub, View inflated, FragmentContactEditPersonLayoutBinding contentBinding) {
-        //binding = DataBindingUtil.inflate(inflater, getEditLayout(), container, true);
-
+    public void onLayoutBinding(FragmentContactEditPersonLayoutBinding contentBinding) {
         occupationTypeLayoutProcessor = new OccupationTypeLayoutProcessor(getContext(), contentBinding, record.getPerson());
         occupationTypeLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
@@ -144,8 +194,8 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentContactEditPersonLayoutBinding binding) {
-        binding.spnOccupationType.initialize(new TeboSpinner.ISpinnerInitConfig() {
+    public void onAfterLayoutBinding(FragmentContactEditPersonLayoutBinding contentBinding) {
+        contentBinding.spnOccupationType.initialize(new TeboSpinner.ISpinnerInitConfig() {
             @Override
             public Object getSelectedValue() {
                 return null;
@@ -153,8 +203,8 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                return (occupationTypeList.size() > 0) ? DataUtils.toItems(occupationTypeList)
-                        : DataUtils.toItems(occupationTypeList, false);
+                return (occupationTypeList.size() > 0) ? DataUtils.addEmptyItem(occupationTypeList)
+                        : occupationTypeList;
             }
 
             @Override
@@ -169,7 +219,7 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
             }
         });
 
-        binding.spnGender.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+        contentBinding.spnGender.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override
             public Object getSelectedValue() {
                 return null;
@@ -177,12 +227,12 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                return (genderList.size() > 0) ? DataUtils.toItems(genderList)
-                        : DataUtils.toItems(genderList, false);
+                return (genderList.size() > 0) ? DataUtils.addEmptyItem(genderList)
+                        : genderList;
             }
         });
 
-        binding.spnAgeType.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+        contentBinding.spnAgeType.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override
             public Object getSelectedValue() {
                 return null;
@@ -190,24 +240,35 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                return (ageTypeList.size() > 0) ? DataUtils.toItems(ageTypeList)
-                        : DataUtils.toItems(ageTypeList, false);
+                return (ageTypeList.size() > 0) ? DataUtils.addEmptyItem(ageTypeList)
+                        : ageTypeList;
             }
         });
 
-        binding.spnYear.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+        contentBinding.spnYear.initialize(new TeboSpinner.ISpinnerInitConfig() {
             @Override
             public Object getSelectedValue() {
-                return null;
+                return DEFAULT_YEAR;
             }
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
                 return yearList;
             }
+
+            @Override
+            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
+                //Disease disease = (Disease)value;
+                updateApproximateAgeField();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
         });
 
-        binding.spnMonth.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+        contentBinding.spnMonth.initialize(new TeboSpinner.ISpinnerInitConfig() {
             @Override
             public Object getSelectedValue() {
                 return null;
@@ -217,9 +278,19 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
             public List<Item> getDataSource(Object parentValue) {
                 return monthList;
             }
+
+            @Override
+            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
+                updateApproximateAgeField();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
         });
 
-        binding.spnDate.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+        contentBinding.spnDate.initialize(new TeboSpinner.ISpinnerInitConfig() {
             @Override
             public Object getSelectedValue() {
                 return null;
@@ -228,6 +299,16 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
             @Override
             public List<Item> getDataSource(Object parentValue) {
                 return dateList;
+            }
+
+            @Override
+            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
+                updateApproximateAgeField();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
     }
@@ -283,10 +364,51 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
         }
     }
 
+    private void updateApproximateAgeField() {
+        Integer birthyear = record.getPerson().getBirthdateYYYY();
+        TeboTextRead approximateAgeTextField =  getContentBinding().txtAge;
+        TeboSpinner approximateAgeTypeField = getContentBinding().spnAgeType;
+
+        if(birthyear != null) {
+            //deactivateField(approximateAgeTextField);
+            //deactivateField(approximateAgeTypeField);
+
+            Integer birthday = record.getPerson().getBirthdateDD();
+            Integer birthmonth = record.getPerson().getBirthdateMM();
+
+            Calendar birthDate = new GregorianCalendar();
+            birthDate.set(birthyear, birthmonth!=null?birthmonth-1:0, birthday!=null?birthday:1);
+
+            Date to = new Date();
+            if(record.getPerson().getDeathDate() != null) {
+                to = record.getPerson().getDeathDate();
+            }
+            DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = ApproximateAgeHelper.getApproximateAge(birthDate.getTime(),to);
+            ApproximateAgeType ageType = approximateAge.getElement1();
+            Integer age = approximateAge.getElement0();
+            record.getPerson().setApproximateAge(age);
+            record.getPerson().setApproximateAgeType(ageType);
+
+            //ApproximateAgeType kkk = ApproximateAgeType.values()[ageType.ordinal()];
+
+            approximateAgeTextField.setValue(String.valueOf(age));
+            /*for (int i=0; i<approximateAgeTypeField.getCount(); i++) {
+                Item item = (Item)approximateAgeTypeField.getItemAtPosition(i);
+                if (item != null && item.getValue() != null && item.getValue().equals(ageType)) {
+                    //approximateAgeTypeField.setValue(i);
+                    break;
+                }
+            }*/
+        } else {
+            approximateAgeTextField.setEnabled(true, editOrCreateUserRight);
+            approximateAgeTypeField.setEnabled(true, editOrCreateUserRight);
+        }
+    }
+
     // </editor-fold>
 
-    public static ContactEditPersonFragment newInstance(ContactFormNavigationCapsule capsule)
+    public static ContactEditPersonFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(ContactEditPersonFragment.class, capsule);
+        return newInstance(activityCommunicator, ContactEditPersonFragment.class, capsule);
     }
 }

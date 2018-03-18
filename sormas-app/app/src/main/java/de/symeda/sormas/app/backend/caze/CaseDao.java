@@ -1,6 +1,14 @@
 package de.symeda.sormas.app.backend.caze;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.location.Location;
+import android.support.v4.app.NotificationCompat;
+import android.text.Html;
 import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
@@ -20,6 +28,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -33,6 +42,8 @@ import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.caze.read.CaseReadActivity;
+import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.LocationService;
 
 public class CaseDao extends AbstractAdoDao<Case> {
@@ -256,15 +267,22 @@ public class CaseDao extends AbstractAdoDao<Case> {
     @Override
     public Case mergeOrCreate(Case source) throws DaoException {
         //TODO: Orson investigate the need to access CaseEditActivity from here
-        /*Case currentCase = queryUuid(source.getUuid());
+        Case currentCase = queryUuid(source.getUuid());
         Case mergedCase = super.mergeOrCreate(source);
 
         // Build and send a notification when the disease has changed
         if (currentCase != null && mergedCase != null && currentCase.getDisease() != mergedCase.getDisease()) {
             Context context = DatabaseHelper.getContext();
 
-            Intent notificationIntent = new Intent(context, CaseEditActivity.class);
-            notificationIntent.putExtra(CaseEditActivity.KEY_CASE_UUID, mergedCase.getUuid());
+
+
+            //TODO: Talk to Martin about this
+            Intent notificationIntent = new Intent(context, CaseReadActivity.class);
+            notificationIntent.putExtra(ConstantHelper.KEY_DATA_UUID, mergedCase.getUuid());
+            notificationIntent.putExtra(ConstantHelper.ARG_PAGE_STATUS, mergedCase.getCaseClassification());
+
+
+
 
             StringBuilder content = new StringBuilder();
             content.append("<b>").append(mergedCase.toString()).append("</b><br/>");
@@ -285,8 +303,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
             int notificationId = mergedCase.getId().intValue();
             notificationManager.notify(notificationId, notification);
         }
-        return mergedCase;*/
-        return null;
+        return mergedCase;
     }
 
     @Override

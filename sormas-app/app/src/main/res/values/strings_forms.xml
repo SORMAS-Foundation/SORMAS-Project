@@ -51,6 +51,7 @@
     <string name="label_sample_shipping_date">Shipment Date</string>
     <string name="label_sample_shipment_details">Shipment Details</string>
     <string name="label_sample_comment">Comment</string>
+    <string name="label_sample_referred_to">Referred To</string>
 
     <!-- Description -->
     <string name="desc_sample_disease">Disease Name</string>
@@ -65,6 +66,7 @@
     <string name="desc_sample_shipping_date">Shipment Date</string>
     <string name="desc_sample_shipment_details">Shipment Details</string>
     <string name="desc_sample_comment">Result Comment</string>
+    <string name="desc_sample_referred_to">Referred To</string>
 
     <!-- Hint -->
     <string name="hint_sample_disease">Disease</string>
@@ -79,6 +81,10 @@
     <string name="hint_sample_shipping_date">Shipment Date</string>
     <string name="hint_sample_shipment_details">Shipment Details</string>
     <string name="hint_sample_comment">Comment</string>
+    <string name="hint_sample_referred_to">Referred To</string>
+
+
+    <string name="no_referral">No Referral</string>
 
     <!-- Sub Headings -->
     <string name="heading_sub_recent_tests">Recent Tests</string>
@@ -101,6 +107,7 @@
     <string name="label_alert_type_of_place">Type of Place</string>
     <string name="label_alert_other_type_of_place">Specify Other Event Place</string>
     <string name="label_alert_disease">Disease</string>
+    <string name="label_alert_other_disease">Disease Detail</string>
     <string name="label_alert_location">Alert Location</string>
     <string name="label_alert_source_firstname">First Name</string>
     <string name="label_alert_source_lastname">Last Name</string>
@@ -118,6 +125,7 @@
     <string name="desc_alert_type_of_place">Type of Place</string>
     <string name="desc_alert_other_type_of_place">Specify Other Event Place</string>
     <string name="desc_alert_disease">Disease</string>
+    <string name="desc_alert_other_disease">Disease Detail</string>
     <string name="desc_alert_location">Alert Location</string>
     <string name="desc_alert_source_firstname">First Name</string>
     <string name="desc_alert_source_lastname">Last Name</string>
@@ -135,6 +143,7 @@
     <string name="hint_alert_type_of_place">Type of Place</string>
     <string name="hint_alert_other_type_of_place">Specify Other Event Place</string>
     <string name="hint_alert_disease">Disease</string>
+    <string name="hint_alert_other_disease">Disease Detail</string>
     <string name="hint_alert_location">Alert Location</string>
     <string name="hint_alert_source_firstname">First Name</string>
     <string name="hint_alert_source_lastname">Last Name</string>
@@ -282,6 +291,8 @@
     <string name="label_task_suggested_start">Suggested Start</string>
     <string name="label_task_due_date_time">Due Date &amp; Time</string>
     <string name="label_task_comment_on_exc">Comment on Execution</string>
+    <string name="label_task_creator">Creator</string>
+    <string name="label_task_creator_comment">Creator Comment</string>
 
     <!-- Description -->
     <!-- Label -->
@@ -294,6 +305,8 @@
     <string name="desc_task_suggested_start">Suggested Start</string>
     <string name="desc_task_due_date_time">Due Date &amp; Time</string>
     <string name="desc_task_comment_on_exc">Comment on Execution</string>
+    <string name="desc_task_creator">Creator</string>
+    <string name="desc_task_creator_comment">Creator Comment</string>
     <!-- ........................................................................ -->
 
 
@@ -490,6 +503,7 @@
     <string name="hint_contact_symptoms_comment">Comment</string>
     <string name="hint_contact_symptoms_first_symptom_date">Date of Symptom Onset</string><!--Date of First Symptom-->
     <string name="hint_contact_symptoms_first_symptom">First Symptom</string>
+    <string name="hint_contact_open_case">Open case for this contact person via the Case ID link</string>
 
 
     <!-- Label -->
@@ -503,6 +517,7 @@
     <string name="label_contact_symptoms_comment">Comment</string>
     <string name="label_contact_symptoms_first_symptom_date">Date of Symptom Onset</string>
     <string name="label_contact_symptoms_first_symptom">First Symptom</string>
+    <string name="label_contact_open_case">Open Case</string>
 
     <!-- Description -->
     <string name="desc_contact_symptoms_body_temperature">Current Body Temperature (°C)</string>
@@ -515,6 +530,10 @@
     <string name="desc_contact_symptoms_comment">Comment</string>
     <string name="desc_contact_symptoms_first_symptom_date">Date of Symptom Onset</string>
     <string name="desc_contact_symptoms_first_symptom">First Symptom</string>
+    <string name="desc_contact_open_case">Open Case</string>
+
+
+
     <!-- ........................................................................ -->
 
 

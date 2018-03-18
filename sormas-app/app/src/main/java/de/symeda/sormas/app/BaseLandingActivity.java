@@ -49,6 +49,18 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
         super.onCreate(savedInstanceState);
     }
 
+    @Override
+    public void showFragmentView() {
+        if (fragmentFrame != null)
+            fragmentFrame.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideFragmentView() {
+        if (fragmentFrame != null)
+            fragmentFrame.setVisibility(View.GONE);
+    }
+
     protected void initializeBaseActivity(Bundle savedInstanceState) {
         rootView = findViewById(R.id.base_layout);
         menuDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);

@@ -3,8 +3,9 @@ package de.symeda.sormas.app;
 import android.databinding.DataBindingUtil;
 import android.databinding.OnRebindCallback;
 import android.databinding.ViewDataBinding;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,17 +13,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.component.OnHideInputErrorListener;
 import de.symeda.sormas.app.component.OnShowInputErrorListener;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
-import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.ConstantHelper;
+
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 /**
  * Created by Orson on 22/01/2018.
@@ -32,21 +45,38 @@ import de.symeda.sormas.app.util.ConstantHelper;
  * sampson.orson@technologyboard.org
  */
 
-public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding> extends Fragment
+public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding, TData> extends BaseFragment
         implements OnShowInputErrorListener, OnHideInputErrorListener {
 
     public static final String TAG = BaseEditActivityFragment.class.getSimpleName();
 
+    private AsyncTask jobTask;
     private BaseEditActivity baseEditActivity;
-    private IUpdateSubHeadingTitle communicator;
+    private IUpdateSubHeadingTitle subHeadingHandler;
     private INotificationContext notificationCommunicator;
     private TBinding contentViewStubBinding;
-    private ViewDataBinding rootBinding; //FragmentRootEditLayoutBinding
+    private ViewDataBinding rootBinding;
 
     private View contentViewStubRoot;
+    private IActivityCommunicator activityCommunicator;
+    private boolean beforeLayoutBindingAsyncReturn;
+
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        SaveUserRightState(outState, editOrCreateUserRight);
+    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
+        editOrCreateUserRight = (UserRight) getUserRightArg(arguments);
+    }
+
+    @Override
+    public final View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         if (getActivity() instanceof BaseEditActivity) {
             this.baseEditActivity = (BaseEditActivity) this.getActivity();
         } else {
@@ -54,7 +84,7 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding>
         }
 
         if (getActivity() instanceof IUpdateSubHeadingTitle) {
-            this.communicator = (IUpdateSubHeadingTitle) this.getActivity();
+            this.subHeadingHandler = (IUpdateSubHeadingTitle) this.getActivity();
         } else {
             throw new NotImplementedException("Activity for fragment does not support updateSubHeadingTitle; "
                     + "implement IUpdateSubHeadingTitle");
@@ -74,23 +104,18 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding>
         rootBinding = DataBindingUtil.inflate(inflater, getRootEditLayout(), container, false);
         View rootView = rootBinding.getRoot();
 
-        /*
-        Content View
-         */
-
         if (getEditLayout() > 0) {
+            final ViewStub vsChildFragmentFrame = (ViewStub)rootView.findViewById(R.id.vsChildFragmentFrame);
 
-            ViewStub vsChildFragmentFrame = (ViewStub)rootView.findViewById(R.id.vsChildFragmentFrame);
-            //ViewStubProxy vsChildFragmentFrameProxy = new ViewStubProxy(vsChildFragmentFrame);
-
-            //rootBinding.vsChildFragmentFrame
             vsChildFragmentFrame.setOnInflateListener(new ViewStub.OnInflateListener() {
                 @Override
                 public void onInflate(ViewStub stub, View inflated) {
+                    //onLayoutBindingHelper(stub, inflated);
+
                     contentViewStubBinding = DataBindingUtil.bind(inflated);
                     String layoutName = getResources().getResourceEntryName(getEditLayout());
                     setRootNotificationBindingVariable(contentViewStubBinding, layoutName);
-                    onLayoutBinding(stub, inflated, contentViewStubBinding);
+                    onLayoutBinding(contentViewStubBinding);
                     contentViewStubRoot = contentViewStubBinding.getRoot();
 
                     if (includeFabNonOverlapPadding()) {
@@ -100,67 +125,78 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding>
                         int bp = (int)getResources().getDimension(R.dimen.fabNonOverlapPaddingBottom);
 
                         contentViewStubRoot.setPadding(lp, tp, rp, bp);
+
+                        ViewGroup.LayoutParams params = contentViewStubRoot.getLayoutParams();
+                        params.height = MATCH_PARENT;
+
                     }
+
+                    if (makeHeightMatchParent()) {
+                        contentViewStubRoot.getLayoutParams().height = MATCH_PARENT;
+                    } else {
+                        contentViewStubRoot.getLayoutParams().height = WRAP_CONTENT;
+                    }
+
+                    //onLayoutBinding(contentViewStubBinding);
                 }
             });
 
-            //ViewStub dialogContent = rootBinding.vsChildFragmentFrame.getViewStub();
-            //dialogContent.setLayoutResource(getEditLayout());
             vsChildFragmentFrame.setLayoutResource(getEditLayout());
 
-            //Before
-            onBeforeLayoutBinding(savedInstanceState);
 
-            //View dialogContentInflated = dialogContent.inflate();
-            View dialogContentInflated = vsChildFragmentFrame.inflate();
-
-            contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
+            beforeLayoutBindingAsyncReturn = false;
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
                 @Override
-                public void onBound(ViewDataBinding binding) {
-                    super.onBound(binding);
+                public void preExecute() {
+                    getActivityCommunicator().showPreloader();
+                    getActivityCommunicator().hideFragmentView();
+                }
 
-                    //After
-                    onAfterLayoutBinding(contentViewStubBinding);
 
-
+                @Override
+                public void execute(final TaskResultHolder resultHolder) {
+                    onBeforeLayoutBinding(savedInstanceState, resultHolder, null, false);
                 }
             });
 
+            jobTask = executor.search(new ITaskResultCallback() {
+                @Override
+                public void searchResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    getActivityCommunicator().hidePreloader();
+                    getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null)
+                        return;
+
+                    beforeLayoutBindingAsyncReturn = onBeforeLayoutBinding(savedInstanceState, resultHolder, resultStatus, true);
+
+                    View dialogContentInflated = vsChildFragmentFrame.inflate();
+
+                    contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
+                        @Override
+                        public void onBound(ViewDataBinding binding) {
+                            super.onBound(binding);
+
+                            //After
+                            //onAfterLayoutBindingHelper(contentViewStubBinding);
+                            onAfterLayoutBinding(contentViewStubBinding);
+                        }
+                    });
+                }
+            });
         } else {
             throw new ExceptionInInitializerError("Child layout not specified");
-
         }
 
         return rootView;
-
-
-
-        /*ViewGroup fragmentRoot = (ViewGroup)LayoutInflater.from(getContext()).inflate(getRootEditLayout(),
-                container, false);
-
-        childFragmentFrame = (ViewGroup)fragmentRoot.findViewById(R.id.childFragmentFrame);
-
-        //Hooks
-        //--------------------------------------------------------------------------------------
-        onBeforeLayoutBinding(inflater, childFragmentFrame, savedInstanceState);
-        binding = onLayoutBinding(inflater, childFragmentFrame, savedInstanceState, getEditLayout());
-        //--------------------------------------------------------------------------------------
-
-        binding.setVariable(BR.showNotificationCallback, this);
-        binding.setVariable(BR.hideNotificationCallback, this);
-
-        onAfterLayoutBinding(binding);
-        //onAfterLayoutBinding(binding);
-
-        return fragmentRoot;*/
     }
 
     protected void setRootNotificationBindingVariable(final ViewDataBinding binding, String layoutName) {
-        if (!binding.setVariable(BR.showNotificationCallback, this)) {
+        if (!binding.setVariable(de.symeda.sormas.app.BR.showNotificationCallback, this)) {
             Log.w(TAG, "There is no variable 'showNotificationCallback' in layout " + layoutName);
         }
 
-        if (!binding.setVariable(BR.hideNotificationCallback, this)) {
+        if (!binding.setVariable(de.symeda.sormas.app.BR.hideNotificationCallback, this)) {
             Log.w(TAG, "There is no variable 'hideNotificationCallback' in layout " + layoutName);
         }
     }
@@ -168,7 +204,7 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding>
     @Override
     public void onResume() {
         super.onResume();
-        //getCommunicator().updateSubHeadingTitle(getSubHeadingTitle());
+        //getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
 
         /*final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -198,8 +234,12 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding>
         return true;
     }
 
-    public IUpdateSubHeadingTitle getCommunicator() {
-        return this.communicator;
+    public boolean makeHeightMatchParent() {
+        return false;
+    }
+
+    public IUpdateSubHeadingTitle getSubHeadingHandler() {
+        return this.subHeadingHandler;
     }
 
     public BaseEditActivity getBaseEditActivity() {
@@ -208,7 +248,7 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding>
 
     protected abstract String getSubHeadingTitle();
 
-    public abstract AbstractDomainObject getData();
+    public abstract TData getPrimaryData();
 
     public ViewDataBinding getRootBinding() {
         return rootBinding;
@@ -218,16 +258,27 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding>
         return contentViewStubBinding;
     }
 
-    public abstract void onBeforeLayoutBinding(Bundle savedInstanceState);
+    public abstract boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete);
 
-    public abstract void onLayoutBinding(ViewStub stub, View inflated, TBinding contentBinding);
+    public abstract void onLayoutBinding(TBinding contentBinding);
 
-    public abstract void onAfterLayoutBinding(TBinding binding);
+    public abstract void onAfterLayoutBinding(TBinding contentBinding);
 
     //public abstract View inflateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
 
-    protected static <TFragment extends BaseEditActivityFragment, TCapsule extends INavigationCapsule> TFragment newInstance(Class<TFragment> f, TCapsule dataCapsule) throws IllegalAccessException, java.lang.InstantiationException {
+    protected void setActivityCommunicator(IActivityCommunicator activityCommunicator) {
+        this.activityCommunicator = activityCommunicator;
+    }
+
+    public IActivityCommunicator getActivityCommunicator() {
+        return this.activityCommunicator;
+    }
+
+    protected static <TFragment extends BaseEditActivityFragment, TCapsule extends INavigationCapsule> TFragment newInstance(IActivityCommunicator activityCommunicator, Class<TFragment> f, TCapsule dataCapsule) throws IllegalAccessException, java.lang.InstantiationException {
         TFragment fragment = f.newInstance();
+
+        fragment.setActivityCommunicator(activityCommunicator);
+
         Bundle bundle = fragment.getArguments();
         if (bundle == null) {
             bundle = new Bundle();
@@ -237,9 +288,27 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding>
         String dataUuid = dataCapsule.getRecordUuid();
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
         IStatusElaborator pageStatus = dataCapsule.getPageStatus();
+        String sampleMaterial = dataCapsule.getSampleMaterial();
+        String caseUuid = dataCapsule.getCaseUuid();
+        String taskUuid = dataCapsule.getTaskUuid();
+        String contactUuid = dataCapsule.getContactUuid();
+        String sampleUuid = dataCapsule.getSampleUuid();
+        Disease disease = dataCapsule.getDisease();
+        boolean isForVisit = dataCapsule.isForVisit();
+        boolean isVisitCooperative = dataCapsule.isVisitCooperative();
+        UserRight userRight = dataCapsule.getUserRight();
         //AbstractDomainObject record = dataCapsule.getRecord();
 
         bundle.putString(ConstantHelper.KEY_DATA_UUID, dataUuid);
+        bundle.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);
+        bundle.putString(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
+        bundle.putString(ConstantHelper.KEY_TASK_UUID, taskUuid);
+        bundle.putString(ConstantHelper.KEY_CONTACT_UUID, contactUuid);
+        bundle.putString(ConstantHelper.KEY_SAMPLE_UUID, sampleUuid);
+        bundle.putSerializable(ConstantHelper.ARG_DISEASE, disease);
+        bundle.putBoolean(ConstantHelper.ARG_FOR_VISIT, isForVisit);
+        bundle.putBoolean(ConstantHelper.ARG_VISIT_COOPERATIVE, isVisitCooperative);
+        bundle.putSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT, userRight);
 
         if (filterStatus != null)
             bundle.putSerializable(ConstantHelper.ARG_FILTER_STATUS, dataCapsule.getFilterStatus().getValue());
@@ -264,6 +333,105 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding>
         if (arguments != null && !arguments.isEmpty()) {
             if(arguments.containsKey(ConstantHelper.KEY_DATA_UUID)) {
                 result = (String) arguments.getString(ConstantHelper.KEY_DATA_UUID);
+            }
+        }
+
+        return result;
+    }
+
+    protected String getTaskUuidArg(Bundle arguments) {
+        String result = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.KEY_TASK_UUID)) {
+                result = (String) arguments.getString(ConstantHelper.KEY_TASK_UUID);
+            }
+        }
+
+        return result;
+    }
+
+    protected String getContactUuidArg(Bundle arguments) {
+        String result = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.KEY_CONTACT_UUID)) {
+                result = (String) arguments.getString(ConstantHelper.KEY_CONTACT_UUID);
+            }
+        }
+
+        return result;
+    }
+
+    protected String getCaseUuidArg(Bundle arguments) {
+        String result = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.KEY_CASE_UUID)) {
+                result = (String) arguments.getString(ConstantHelper.KEY_CASE_UUID);
+            }
+        }
+
+        return result;
+    }
+
+    protected String getSampleUuidArg(Bundle arguments) {
+        String result = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.KEY_SAMPLE_UUID)) {
+                result = (String) arguments.getString(ConstantHelper.KEY_SAMPLE_UUID);
+            }
+        }
+
+        return result;
+    }
+
+    protected Disease getDiseaseArg(Bundle arguments) {
+        Disease result = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.ARG_DISEASE)) {
+                result = (Disease) arguments.getSerializable(ConstantHelper.ARG_DISEASE);
+            }
+        }
+
+        return result;
+    }
+
+    protected boolean getForVisitArg(Bundle arguments) {
+        boolean result = false;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.ARG_FOR_VISIT)) {
+                result = (boolean) arguments.getBoolean(ConstantHelper.ARG_FOR_VISIT);
+            }
+        }
+
+        return result;
+    }
+
+    protected boolean getVisitCooperativeArg(Bundle arguments) {
+        boolean result = false;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.ARG_VISIT_COOPERATIVE)) {
+                result = (boolean) arguments.getBoolean(ConstantHelper.ARG_VISIT_COOPERATIVE);
+            }
+        }
+
+        return result;
+    }
+
+    protected UserRight getUserRightArg(Bundle arguments) {
+        UserRight e = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT)) {
+                e = (UserRight) arguments.getSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT);
+            }
+        }
+
+        return e;
+    }
+
+    protected String getSampleMaterialArg(Bundle arguments) {
+        String result = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.KEY_SAMPLE_MATERIAL)) {
+                result = (String) arguments.getString(ConstantHelper.KEY_SAMPLE_MATERIAL);
             }
         }
 
@@ -338,6 +506,60 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding>
         }
     }
 
+    protected void SaveTaskUuidState(Bundle outState, String taskUuid) {
+        if (outState != null) {
+            outState.putString(ConstantHelper.KEY_TASK_UUID, taskUuid);
+        }
+    }
+
+    protected void SaveContactUuidState(Bundle outState, String contactUuid) {
+        if (outState != null) {
+            outState.putString(ConstantHelper.KEY_CONTACT_UUID, contactUuid);
+        }
+    }
+
+    protected void SaveCaseUuidState(Bundle outState, String caseUuid) {
+        if (outState != null) {
+            outState.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);
+        }
+    }
+
+    protected void SaveSampleUuidState(Bundle outState, String sampleUuid) {
+        if (outState != null) {
+            outState.putString(ConstantHelper.KEY_SAMPLE_UUID, sampleUuid);
+        }
+    }
+
+    protected void SaveDiseaseState(Bundle outState, Disease disease) {
+        if (outState != null) {
+            outState.putSerializable(ConstantHelper.ARG_DISEASE, disease);
+        }
+    }
+
+    protected void SaveForVisitState(Bundle outState, boolean isForVisit) {
+        if (outState != null) {
+            outState.putBoolean(ConstantHelper.ARG_FOR_VISIT, isForVisit);
+        }
+    }
+
+    protected void SaveVisitCooperativeState(Bundle outState, boolean isVisitCooperative) {
+        if (outState != null) {
+            outState.putBoolean(ConstantHelper.ARG_VISIT_COOPERATIVE, isVisitCooperative);
+        }
+    }
+
+    protected void SaveUserRightState(Bundle outState, UserRight userRight) {
+        if (outState != null) {
+            outState.putSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT, userRight);
+        }
+    }
+
+    protected void SaveSampleMaterialState(Bundle outState, String sampleMaterial) {
+        if (outState != null) {
+            outState.putString(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
+        }
+    }
+
     @Override
     public void onShowInputErrorShowing(View v, String message, boolean errorState) {
         //notificationCommunicator.showNotification(NotificationType.ERROR, message);
@@ -356,5 +578,13 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding>
 
     public boolean showAddAction() {
         return false;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (jobTask != null && !jobTask.isCancelled())
+            jobTask.cancel(true);
     }
 }

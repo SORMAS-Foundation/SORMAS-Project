@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.event.read;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Menu;
@@ -8,17 +9,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
-import de.symeda.sormas.app.BaseReadActivity;
-import de.symeda.sormas.app.BaseReadActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.util.ConstantHelper;
-import de.symeda.sormas.app.util.NavigationHelper;
-
 import java.util.ArrayList;
 
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.app.BaseReadActivity;
+import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.contact.read.sub.ContactReadFollowUpVisitInfoActivity;
+import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
+import de.symeda.sormas.app.util.NavigationHelper;
 
 /**
  * Created by Orson on 30/12/2017.
@@ -26,18 +27,18 @@ import de.symeda.sormas.api.task.TaskStatus;
 
 public class EventReadTaskInfoActivity  extends BaseReadActivity {
 
-    private String taskUuid = null;
-    private EventStatus eventStatus = null;
+    private String recordUuid = null;
+    private EventStatus filterStatus = null;
     private TaskStatus pageStatus = null;
-    private BaseReadActivityFragment activeFragment = new EventReadTaskInfoFragment();
+    private BaseReadActivityFragment activeFragment = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, eventStatus);
+        SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, taskUuid);
+        SaveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -52,13 +53,19 @@ public class EventReadTaskInfoActivity  extends BaseReadActivity {
 
     @Override
     protected void initializeActivity(Bundle arguments) {
-        eventStatus = (EventStatus) getFilterStatusArg(arguments);
+        filterStatus = (EventStatus) getFilterStatusArg(arguments);
         pageStatus = (TaskStatus) getPageStatusArg(arguments);
-        taskUuid = getRecordUuidArg(arguments);
+        recordUuid = getRecordUuidArg(arguments);
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment() {
+    public BaseReadActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+        if (activeFragment == null) {
+            TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(
+                    EventReadTaskInfoActivity.this, recordUuid, pageStatus);
+            activeFragment = EventReadTaskInfoFragment.newInstance(this, dataCapsule);
+        }
+
         return activeFragment;
     }
 
@@ -84,11 +91,7 @@ public class EventReadTaskInfoActivity  extends BaseReadActivity {
 
     @Override
     public Enum getPageStatus() {
-        if (eventStatus == null) {
-            eventStatus = getEventStatusArg(getIntent().getExtras());;
-        }
-
-        return eventStatus;
+        return pageStatus;
     }
 
     @Override
@@ -164,25 +167,7 @@ public class EventReadTaskInfoActivity  extends BaseReadActivity {
         return R.string.heading_level3_1_event_read_task_info;
     }
 
-    private EventStatus getEventStatusArg(Bundle arguments) {
-        EventStatus e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_FILTER_STATUS)) {
-                e = (EventStatus) arguments.getSerializable(ConstantHelper.ARG_FILTER_STATUS);
-            }
-        }
-
-        return e;
-    }
-
-    private String getTaskUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.KEY_DATA_UUID)) {
-                result = (String) arguments.getSerializable(ConstantHelper.KEY_DATA_UUID);
-            }
-        }
-
-        return result;
+    public static void goToActivity(Context fromActivity, TaskFormNavigationCapsule dataCapsule) {
+        BaseReadActivity.goToActivity(fromActivity, EventReadTaskInfoActivity.class, dataCapsule);
     }
 }

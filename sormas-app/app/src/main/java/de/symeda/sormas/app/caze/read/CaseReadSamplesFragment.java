@@ -1,41 +1,41 @@
 package de.symeda.sormas.app.caze.read;
 
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import de.symeda.sormas.app.BaseReadActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.databinding.FragmentCaseReadSampleLayoutBinding;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentCaseReadSampleLayoutBinding;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 
 /**
  * Created by Orson on 08/01/2018.
  */
 
-public class CaseReadSamplesFragment extends BaseReadActivityFragment<FragmentCaseReadSampleLayoutBinding> implements OnListItemClickListener {
+public class CaseReadSamplesFragment extends BaseReadActivityFragment<FragmentCaseReadSampleLayoutBinding, List<Sample>> implements OnListItemClickListener {
 
-    private String caseUuid = null;
+    private String recordUuid = null;
     private InvestigationStatus filterStatus = null;
     private CaseClassification pageStatus = null;
     private List<Sample> record;
-    private FragmentCaseReadSampleLayoutBinding binding;
 
     private CaseReadSampleListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
@@ -48,7 +48,7 @@ public class CaseReadSamplesFragment extends BaseReadActivityFragment<FragmentCa
 
         SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, caseUuid);
+        SaveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -57,49 +57,60 @@ public class CaseReadSamplesFragment extends BaseReadActivityFragment<FragmentCa
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
-        caseUuid = getRecordUuidArg(arguments);
+        recordUuid = getRecordUuidArg(arguments);
         filterStatus = (InvestigationStatus) getFilterStatusArg(arguments);
         pageStatus = (CaseClassification) getPageStatusArg(arguments);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
+            if (caze != null) {
+                resultHolder.forList().add(DatabaseHelper.getSampleDao().queryByCase(caze));
+            } else {
+                resultHolder.forList().add(new ArrayList<Sample>());
+            }
+        } else {
+            ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
 
+            if (listIterator.hasNext())
+                record =  listIterator.next();
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onLayoutBinding(FragmentCaseReadSampleLayoutBinding contentBinding) {
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-
-        //Get binding
-        //binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        binding = DataBindingUtil.inflate(inflater, getRootReadLayout(), container, false);
-
-        //Get Data
-        record = MemoryDatabaseHelper.SAMPLE.getSamples(20);
-
-        //Create adapter and set data
         adapter = new CaseReadSampleListAdapter(this.getActivity(), R.layout.row_read_case_sample_list_item_layout, this, record);
-
-        binding.recyclerViewForList.setLayoutManager(linearLayoutManager);
-        binding.recyclerViewForList.setAdapter(adapter);
-
-
+        contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
+        contentBinding.recyclerViewForList.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+    }
 
-        return binding.getRoot();
+    @Override
+    public void onAfterLayoutBinding(FragmentCaseReadSampleLayoutBinding contentBinding) {
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        //adapter.replaceAll(new ArrayList<EventParticipant>(record));
-        adapter.notifyDataSetChanged();
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)getRootBinding().getRoot()
+                .findViewById(R.id.swiperefresh);
 
-        binding.swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getBaseReadActivity().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, false, binding.swiperefresh, null);
-            }
-        });
+        if (swiperefresh != null) {
+            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    getBaseReadActivity().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly,
+                            true, false, swiperefresh, null);
+                }
+            });
+        }
     }
 
     @Override
@@ -108,19 +119,14 @@ public class CaseReadSamplesFragment extends BaseReadActivityFragment<FragmentCa
     }
 
     @Override
-    public AbstractDomainObject getData() {
-        return null;
-    }
-
-    @Override
-    public FragmentCaseReadSampleLayoutBinding getBinding() {
-        return binding;
-    }
-
-    @Override
-    public Object getRecord() {
+    public List<Sample> getPrimaryData() {
         return record;
     }
+
+    /*@Override
+    public FragmentCaseReadSampleLayoutBinding getBinding() {
+        return binding;
+    }*/
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -149,7 +155,7 @@ public class CaseReadSamplesFragment extends BaseReadActivityFragment<FragmentCa
     }
 
     @Override
-    public int getRootReadLayout() {
+    public int getReadLayout() {
         return R.layout.fragment_case_read_sample_layout;
     }
 
@@ -168,8 +174,8 @@ public class CaseReadSamplesFragment extends BaseReadActivityFragment<FragmentCa
         }*/
     }
 
-    public static CaseReadSamplesFragment newInstance(CaseFormNavigationCapsule capsule)
+    public static CaseReadSamplesFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(CaseReadSamplesFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseReadSamplesFragment.class, capsule);
     }
 }

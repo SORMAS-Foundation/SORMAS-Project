@@ -1,35 +1,32 @@
 package de.symeda.sormas.app.contact.read;
 
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import de.symeda.sormas.app.BaseReadActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
-import de.symeda.sormas.app.databinding.FragmentContactReadPersonInfoLayoutBinding;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentContactReadPersonInfoLayoutBinding;
 
 /**
  * Created by Orson on 01/01/2018.
  */
 
-public class ContactReadPersonFragment  extends BaseReadActivityFragment<FragmentContactReadPersonInfoLayoutBinding> {
+public class ContactReadPersonFragment  extends BaseReadActivityFragment<FragmentContactReadPersonInfoLayoutBinding, Person> {
 
-    private String contactUuid;
+    private String recordUuid;
     private FollowUpStatus followUpStatus;
     private ContactClassification contactClassification = null;
     private Person record;
-    private FragmentContactReadPersonInfoLayoutBinding binding;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -37,7 +34,7 @@ public class ContactReadPersonFragment  extends BaseReadActivityFragment<Fragmen
 
         SaveFilterStatusState(outState, followUpStatus);
         SavePageStatusState(outState, contactClassification);
-        SaveRecordUuidState(outState, contactUuid);
+        SaveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -46,21 +43,41 @@ public class ContactReadPersonFragment  extends BaseReadActivityFragment<Fragmen
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
-        contactUuid = getRecordUuidArg(arguments);
+        recordUuid = getRecordUuidArg(arguments);
         followUpStatus = (FollowUpStatus) getFilterStatusArg(arguments);
         contactClassification = (ContactClassification) getPageStatusArg(arguments);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            if (recordUuid != null && !recordUuid.isEmpty()) {
+                Person person = null;
+                Contact contact = DatabaseHelper.getContactDao().queryUuid(recordUuid);
 
-        binding = DataBindingUtil.inflate(inflater, getRootReadLayout(), container, false);
-        record = MemoryDatabaseHelper.PERSON.getPersons(1).get(0);
+                if (contact != null)
+                    person = DatabaseHelper.getPersonDao().queryUuid(contact.getPerson().getUuid());
 
-        binding.setData(record);
+                resultHolder.forItem().add(person);
+            }
+        } else {
+            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
-        return binding.getRoot();
+            if (itemIterator.hasNext())
+                record =  itemIterator.next();
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onLayoutBinding(FragmentContactReadPersonInfoLayoutBinding contentBinding) {
+
+    }
+
+    @Override
+    public void onAfterLayoutBinding(FragmentContactReadPersonInfoLayoutBinding contentBinding) {
+        contentBinding.setData(record);
     }
 
     @Override
@@ -69,17 +86,7 @@ public class ContactReadPersonFragment  extends BaseReadActivityFragment<Fragmen
     }
 
     @Override
-    public AbstractDomainObject getData() {
-        return binding.getData();
-    }
-
-    @Override
-    public FragmentContactReadPersonInfoLayoutBinding getBinding() {
-        return binding;
-    }
-
-    @Override
-    public Object getRecord() {
+    public Person getPrimaryData() {
         return record;
     }
 
@@ -88,29 +95,19 @@ public class ContactReadPersonFragment  extends BaseReadActivityFragment<Fragmen
         super.onActivityCreated(savedInstanceState);
     }
 
-    public void showRecordEditView(EventParticipant item) {
-        /*Intent intent = new Intent(getActivity(), TaskEditActivity.class);
-        intent.putExtra(Task.UUID, task.getUuid());
-        if(parentCaseUuid != null) {
-            intent.putExtra(KEY_CASE_UUID, parentCaseUuid);
-        }
-        if(parentContactUuid != null) {
-            intent.putExtra(KEY_CONTACT_UUID, parentContactUuid);
-        }
-        if(parentEventUuid != null) {
-            intent.putExtra(KEY_EVENT_UUID, parentEventUuid);
-        }
-        startActivity(intent);*/
-    }
-
     @Override
-    public int getRootReadLayout() {
+    public int getReadLayout() {
         return R.layout.fragment_contact_read_person_info_layout;
     }
 
-    public static ContactReadPersonFragment newInstance(ContactFormNavigationCapsule capsule)
+    @Override
+    public boolean includeFabNonOverlapPadding() {
+        return false;
+    }
+
+    public static ContactReadPersonFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(ContactReadPersonFragment.class, capsule);
+        return newInstance(activityCommunicator, ContactReadPersonFragment.class, capsule);
     }
 }
 

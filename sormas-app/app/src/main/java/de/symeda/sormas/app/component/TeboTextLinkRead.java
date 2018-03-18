@@ -19,7 +19,7 @@ import de.symeda.sormas.app.R;
 
 public class TeboTextLinkRead extends TeboTextRead {
 
-    private OnLinkClickListener onLinkClickListener;
+    private OnClickListener onClickListener;
 
     // <editor-fold defaultstate="collapsed" desc="Constructors">
 
@@ -68,19 +68,19 @@ public class TeboTextLinkRead extends TeboTextRead {
         txtControlInput.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (onLinkClickListener != null)
-                    onLinkClickListener.onClick(v, null);
+                if (onClickListener != null)
+                    onClickListener.onClick(v);
             }
         });
     }
 
     @BindingAdapter("onLinkClick")
-    public static void setLinkClickListener(TeboTextLinkRead view, OnLinkClickListener listener) {
+    public static void setLinkClickListener(TeboTextLinkRead view, OnClickListener listener) {
         if (listener != null)
-            view.setOnLinkClickListener(listener);
+            view.setOnClickListener(listener);
     }
 
-    public void setOnLinkClickListener(OnLinkClickListener listener) {
-        onLinkClickListener = listener;
+    public void setOnClickListener(OnClickListener listener) {
+        onClickListener = listener;
     }
 }

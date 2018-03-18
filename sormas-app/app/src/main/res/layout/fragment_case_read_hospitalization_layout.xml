@@ -129,13 +129,14 @@
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                 >
 
+                <!--android:layout_marginBottom="@dimen/parentLayoutVerticalMargin"
+                    app:removeBottomMarginIfEmpty="@{hospitalizations}"
+                    app:bottomMargin="@{@dimen/parentLayoutVerticalMargin}"-->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/parentLayoutVerticalMargin"
                     android:orientation="horizontal"
-                    app:removeBottomMarginIfEmpty="@{hospitalizations}"
-                    app:bottomMargin="@{@dimen/parentLayoutVerticalMargin}"
+                    android:layout_marginBottom="@dimen/parentLayoutVerticalMargin"
                     >
 
                     <TextView
@@ -156,7 +157,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/listBurialVisits"
+                    android:id="@+id/listPrevHospitalizations"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"

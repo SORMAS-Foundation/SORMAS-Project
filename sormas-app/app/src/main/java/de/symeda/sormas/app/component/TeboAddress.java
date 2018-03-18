@@ -136,12 +136,12 @@ public class TeboAddress extends EditTeboPropertyField<Location> implements ICon
 
         if (this.singleLine) {
             txtControlInput.setMaxLines(1);
-            txtControlInput.setLines(1);
+            //txtControlInput.setLines(1);
             txtControlInput.setInputType(inputType);
             txtControlInput.setVerticalScrollBarEnabled(false);
         } else {
             txtControlInput.setMaxLines(maxLines);
-            txtControlInput.setLines(maxLines);
+            //txtControlInput.setLines(maxLines);
             txtControlInput.setInputType(inputType);
             txtControlInput.setVerticalScrollBarEnabled(true);
         }

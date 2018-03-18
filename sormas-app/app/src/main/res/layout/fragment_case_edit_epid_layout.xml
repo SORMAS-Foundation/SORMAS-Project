@@ -6,6 +6,7 @@
     android:id="@+id/base_layout">
 
     <data>
+        <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
         <variable
             name="showNotificationCallback"
             type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
@@ -102,6 +103,8 @@
                 app:slim="false"
                 app:includeUnknown="@{false}"
                 app:enumClass="@{yesNoUnknownClass}"
+                app:defaultValue="@{YesNoUnknown.UNKNOWN}"
+                app:abbrevUnknown="@{false}"
                 app:value="@={data.burialAttended}"
                 app:onCheckedChangeListener="@{burialCallback}"
                 app:onShowInputErrorListener="@{showNotificationCallback}"
@@ -111,6 +114,7 @@
         </LinearLayout>
 
         <!-- Burial History -->
+        <!--android:paddingBottom="@dimen/parentLayoutVerticalMargin"-->
         <LinearLayout
             android:id="@+id/ctrlBurials"
             android:layout_width="match_parent"
@@ -119,7 +123,6 @@
             android:background="@color/formListSectionBackground"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
             android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            android:paddingBottom="@dimen/parentLayoutVerticalMargin"
             android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
             android:paddingRight="@dimen/parentLayoutHorizontalPadding"
             >
@@ -127,7 +130,9 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
+                app:alternateBottomMarginIfEmpty="@{burialList}"
+                app:emptyBottomMargin="@{@dimen/parentLayoutVerticalMargin}"
+                app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}"
                 >
 
                 <TextView
@@ -156,6 +161,8 @@
             </RelativeLayout>
 
             <ImageView
+                android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
+                app:goneIfEmpty="@{burialList}"
                 style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
 
             <LinearLayout
@@ -203,6 +210,8 @@
                 app:slim="false"
                 app:includeUnknown="@{false}"
                 app:enumClass="@{yesNoUnknownClass}"
+                app:defaultValue="@{YesNoUnknown.UNKNOWN}"
+                app:abbrevUnknown="@{false}"
                 app:value="@={data.gatheringAttended}"
                 app:onCheckedChangeListener="@{gatheringCallback}"
                 app:onShowInputErrorListener="@{showNotificationCallback}"
@@ -220,7 +229,6 @@
             android:background="@color/formListSectionBackground"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
             android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            android:paddingBottom="@dimen/parentLayoutVerticalMargin"
             android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
             android:paddingRight="@dimen/parentLayoutHorizontalPadding"
             >
@@ -228,7 +236,9 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
+                app:alternateBottomMarginIfEmpty="@{gatheringList}"
+                app:emptyBottomMargin="@{@dimen/parentLayoutVerticalMargin}"
+                app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}"
                 >
 
                 <TextView
@@ -257,6 +267,8 @@
             </RelativeLayout>
 
             <ImageView
+                android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
+                app:goneIfEmpty="@{gatheringList}"
                 style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
 
             <LinearLayout
@@ -302,6 +314,8 @@
                 app:slim="false"
                 app:includeUnknown="@{false}"
                 app:enumClass="@{yesNoUnknownClass}"
+                app:defaultValue="@{YesNoUnknown.UNKNOWN}"
+                app:abbrevUnknown="@{false}"
                 app:value="@={data.traveled}"
                 app:onCheckedChangeListener="@{travelCallback}"
                 app:onShowInputErrorListener="@{showNotificationCallback}"
@@ -311,6 +325,7 @@
         </LinearLayout>
 
         <!-- Travel History -->
+        <!--android:paddingBottom="@dimen/parentLayoutVerticalMargin"-->
         <LinearLayout
             android:id="@+id/ctrlTravels"
             android:layout_width="match_parent"
@@ -319,7 +334,6 @@
             android:background="@color/formListSectionBackground"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
             android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            android:paddingBottom="@dimen/parentLayoutVerticalMargin"
             android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
             android:paddingRight="@dimen/parentLayoutHorizontalPadding"
             >
@@ -327,7 +341,9 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
+                app:alternateBottomMarginIfEmpty="@{travelList}"
+                app:emptyBottomMargin="@{@dimen/parentLayoutVerticalMargin}"
+                app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}"
                 >
 
                 <TextView
@@ -356,6 +372,8 @@
             </RelativeLayout>
 
             <ImageView
+                android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
+                app:goneIfEmpty="@{travelList}"
                 style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
 
             <LinearLayout

@@ -46,7 +46,7 @@ public class CaseEditActivity extends BaseEditActivity {
 
     private InvestigationStatus pageStatus = null;
     private String recordUuid = null;
-    private BaseEditActivityFragment activeFragment = null; //
+    private BaseEditActivityFragment activeFragment = null;
 
     private MenuItem saveMenu = null;
     private MenuItem addMenu = null;
@@ -86,7 +86,7 @@ public class CaseEditActivity extends BaseEditActivity {
         if (activeFragment == null) {
             CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(CaseEditActivity.this,
                     recordUuid).setEditPageStatus(pageStatus);
-            activeFragment = CaseEditFragment.newInstance(dataCapsule); //
+            activeFragment = CaseEditFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;
@@ -125,28 +125,28 @@ public class CaseEditActivity extends BaseEditActivity {
                 recordUuid).setEditPageStatus(pageStatus);
 
         if (menuItem.getKey() == MENU_INDEX_CASE_INFO) {
-            activeFragment = CaseEditFragment.newInstance(dataCapsule);
+            activeFragment = CaseEditFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_PATIENT_INFO) {
-            activeFragment = CaseEditPatientInfoFragment.newInstance(dataCapsule);
+            activeFragment = CaseEditPatientInfoFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_HOSPITALIZATION) {
-            activeFragment = CaseEditHospitalizationFragment.newInstance(dataCapsule);
+            activeFragment = CaseEditHospitalizationFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_SYMPTOMS) {
-            activeFragment = CaseEditSymptomsFragment.newInstance(dataCapsule);
+            activeFragment = CaseEditSymptomsFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_EPIDEMIOLOGICAL_DATA) {
-            activeFragment = CaseEditEpidemiologicalDataFragment.newInstance(dataCapsule);
+            activeFragment = CaseEditEpidemiologicalDataFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_CONTACTS) {
-            activeFragment = CaseEditContactListFragment.newInstance(dataCapsule);
+            activeFragment = CaseEditContactListFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         }else if (menuItem.getKey() == MENU_INDEX_SAMPLES) {
-            activeFragment = CaseEditSampleListFragment.newInstance(dataCapsule);
+            activeFragment = CaseEditSampleListFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_TASKS) {
-            activeFragment = CaseEditTaskListFragment.newInstance(dataCapsule);
+            activeFragment = CaseEditTaskListFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         }
 

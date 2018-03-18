@@ -5,23 +5,26 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
-import android.view.ViewStub;
 
-import de.symeda.sormas.app.BaseEditActivityFragment;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.caze.edit.sub.CaseEditContactInfoActivity;
-import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
-import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.databinding.FragmentEditListLayoutBinding;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.caze.edit.sub.CaseEditContactInfoActivity;
+import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.FragmentEditListLayoutBinding;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 
 /**
  * Created by Orson on 16/02/2018.
@@ -31,13 +34,11 @@ import de.symeda.sormas.app.backend.contact.Contact;
  * sampson.orson@technologyboard.org
  */
 
-public class CaseEditContactListFragment extends BaseEditActivityFragment<FragmentEditListLayoutBinding> implements OnListItemClickListener {
+public class CaseEditContactListFragment extends BaseEditActivityFragment<FragmentEditListLayoutBinding, List<Contact>> implements OnListItemClickListener {
 
     private String recordUuid;
-    //private FollowUpStatus followUpStatus;
     private InvestigationStatus pageStatus = null;
     private List<Contact> record;
-    private FragmentEditListLayoutBinding binding;
     private CaseEditContactListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
 
@@ -45,7 +46,6 @@ public class CaseEditContactListFragment extends BaseEditActivityFragment<Fragme
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, followUpStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -57,7 +57,6 @@ public class CaseEditContactListFragment extends BaseEditActivityFragment<Fragme
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
-        //followUpStatus = (FollowUpStatus) getFilterStatusArg(arguments);
         pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
     }
 
@@ -67,39 +66,48 @@ public class CaseEditContactListFragment extends BaseEditActivityFragment<Fragme
     }
 
     @Override
-    public AbstractDomainObject getData() {
-        return null;
+    public List<Contact> getPrimaryData() {
+        return record;
     }
 
     @Override
-    public void onBeforeLayoutBinding(Bundle savedInstanceState) {
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        if (!executionComplete) {
+            Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
 
-        //Get Data
-        record = MemoryDatabaseHelper.CONTACT.getContacts(20);
+            if (caze != null) {
+                resultHolder.forList().add(DatabaseHelper.getContactDao().getByCase(caze));
+            } else {
+                resultHolder.forList().add(new ArrayList<Contact>());
+            }
+        } else {
+            ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
+            if (listIterator.hasNext()) {
+                record = listIterator.next();
+
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onLayoutBinding(FragmentEditListLayoutBinding contentBinding) {
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-    }
-
-    @Override
-    public void onLayoutBinding(ViewStub stub, View inflated, FragmentEditListLayoutBinding contentBinding) {
-        //Create adapter and set data
         adapter = new CaseEditContactListAdapter(this.getActivity(), R.layout.row_read_contact_list_item_layout, this, record);
-
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
-
         adapter.notifyDataSetChanged();
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentEditListLayoutBinding binding) {
+    public void onAfterLayoutBinding(FragmentEditListLayoutBinding contentBinding) {
 
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        adapter.notifyDataSetChanged();
 
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)getRootBinding().getRoot()
                 .findViewById(R.id.swiperefresh);
@@ -134,8 +142,8 @@ public class CaseEditContactListFragment extends BaseEditActivityFragment<Fragme
         ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(), r.getUuid(), r.getContactClassification());
         CaseEditContactInfoActivity.goToActivity(getActivity(), dataCapsule);
     }
-    public static CaseEditContactListFragment newInstance(CaseFormNavigationCapsule capsule)
+    public static CaseEditContactListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(CaseEditContactListFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseEditContactListFragment.class, capsule);
     }
 }

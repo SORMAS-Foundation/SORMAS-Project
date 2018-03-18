@@ -73,7 +73,7 @@ public class CaseEditContactInfoActivity extends BaseEditActivity {
         if (activeFragment == null) {
             ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(
                     CaseEditContactInfoActivity.this, recordUuid, pageStatus);
-            activeFragment = CaseEditContactInfoFragment.newInstance(dataCapsule);
+            activeFragment = CaseEditContactInfoFragment.newInstance(this, dataCapsule);
         }
 
         return activeFragment;

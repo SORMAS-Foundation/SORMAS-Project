@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.core;
+package de.symeda.sormas.app.core.async;
 
 /**
  * Created by Orson on 03/03/2018.
