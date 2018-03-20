@@ -55,6 +55,7 @@ public final class CssStyles {
 	public static final String INDENT_LEFT_2 = "indent-left-2";
 
 	public static final String VAADIN_LABEL = "v-label";
+	
 	// Font colors
 	public static final String LABEL_PRIMARY = "primary";
 	public static final String LABEL_SECONDARY = "secondary";

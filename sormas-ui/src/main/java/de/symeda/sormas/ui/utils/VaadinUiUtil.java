@@ -109,9 +109,9 @@ public class VaadinUiUtil {
 	public static Window showConfirmationPopup(String caption, String description, Consumer<Boolean> resultConsumer) {
 		return showConfirmationPopup(caption, description, "Confirm", "Cancel", resultConsumer);
 	}
-	
+
 	public static Window showConfirmationPopup(String caption, String description, String confirmCaption, String cancelCaption, Consumer<Boolean> resultConsumer) {
-		
+
 		Window popupWindow = VaadinUiUtil.createPopupWindow();
 		popupWindow.setWidth(400, Unit.PIXELS);
 		popupWindow.setCaption(caption);
@@ -155,4 +155,5 @@ public class VaadinUiUtil {
 		UI.getCurrent().addWindow(popupWindow);
 		return popupWindow;
 	}
+
 }
