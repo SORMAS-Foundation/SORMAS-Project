@@ -94,7 +94,11 @@ public class CaseGrid extends Grid {
         			CaseIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         
-        addItemClickListener(e -> ControllerProvider.getCaseController().navigateToCase(((CaseIndexDto)e.getItemId()).getUuid()));
+        addItemClickListener(e ->  {
+        	if (e.getPropertyId().equals(CaseIndexDto.UUID) || e.isDoubleClick()) {
+        		ControllerProvider.getCaseController().navigateToCase(((CaseIndexDto) e.getItemId()).getUuid());
+        	}
+        });
 	}
 	
 	public void setOutcomeFilter(CaseOutcome outcome) {

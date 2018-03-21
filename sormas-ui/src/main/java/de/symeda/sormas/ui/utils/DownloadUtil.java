@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -65,14 +66,16 @@ public class DownloadUtil {
 	}
 
 	@SuppressWarnings("serial")
-	public static StreamResource createGridExportStreamResource(Grid grid, String tempFilePrefix, String fileName, String mimeType) {
+	public static StreamResource createGridExportStreamResource(Grid grid, String tempFilePrefix, String fileName, String mimeType, String... ignoredPropertyIds) {
 		StreamResource streamResource = new StreamResource(new StreamSource() {
 			@Override
 			public InputStream getStream() {
 				try {
 					Indexed container = grid.getContainerDataSource();
 					List<Column> columns = new ArrayList<>(grid.getColumns());
+					List<String> ignoredPropertyIdsList = Arrays.asList(ignoredPropertyIds);
 					columns.removeIf(c -> c.isHidden());
+					columns.removeIf(c -> ignoredPropertyIdsList.contains(c.getPropertyId()));
 					Collection<?> itemIds = container.getItemIds();
 
 					List<List<String>> exportedRows = new ArrayList<>();

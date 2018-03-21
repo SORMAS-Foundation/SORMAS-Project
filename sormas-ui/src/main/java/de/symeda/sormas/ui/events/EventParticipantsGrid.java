@@ -129,7 +129,7 @@ public class EventParticipantsGrid extends Grid {
 					EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipantDto.getEvent().getUuid());
 					ControllerProvider.getCaseController().create(eventParticipantDto.getPerson().toReference(), eventDto.getDisease());
 				}
-	       	} else if(EDIT_BTN_ID.equals(e.getPropertyId())) {
+	       	} else if(EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
 	       		ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipantDto);
 	       	}
 		});	

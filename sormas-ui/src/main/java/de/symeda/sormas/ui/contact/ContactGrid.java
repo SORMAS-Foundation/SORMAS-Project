@@ -102,8 +102,10 @@ public class ContactGrid extends Grid {
         }
         
         addItemClickListener(e -> {
-	       	ContactIndexDto contactIndexDto = (ContactIndexDto)e.getItemId();
-	        ControllerProvider.getContactController().editData(contactIndexDto.getUuid());
+	       	if (e.getPropertyId().equals(ContactIndexDto.UUID) || e.isDoubleClick()) {
+		       	ContactIndexDto contactIndexDto = (ContactIndexDto)e.getItemId();
+	       		ControllerProvider.getContactController().editData(contactIndexDto.getUuid());
+	       	}
 		});	
 	}
 	

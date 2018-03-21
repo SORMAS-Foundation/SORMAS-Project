@@ -253,8 +253,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
 			default:
 				throw new IndexOutOfBoundsException(task.getTaskContext().toString());
 			}
-		} 
-		else {
+		} else if (EDIT_BTN_ID.equals(event.getPropertyId()) || event.isDoubleClick()) {
 			ControllerProvider.getTaskController().edit(task, this);
 		}
 	}

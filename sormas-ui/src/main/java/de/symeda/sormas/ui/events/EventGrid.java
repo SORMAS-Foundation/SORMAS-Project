@@ -6,7 +6,6 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 
@@ -95,8 +94,11 @@ public class EventGrid extends Grid {
 					EventIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 		
-		addItemClickListener(e -> ControllerProvider.getEventController().navigateToData(
-				((EventIndexDto)e.getItemId()).getUuid()));
+		addItemClickListener(e -> {
+	       	if (e.getPropertyId().equals(EventIndexDto.UUID) || e.isDoubleClick()) {
+	       		ControllerProvider.getEventController().navigateToData(((EventIndexDto)e.getItemId()).getUuid());
+	       	}
+		});				
 	}
 	
 	public void setStatusFilter(EventStatus eventStatus) {
