@@ -328,15 +328,20 @@ public class StatisticsComponent extends VerticalLayout {
 			newCasesComponent.addComponentToContent(caseInvestigationStatusDone);
 			newCasesComponent.addComponentToContent(caseInvestigationStatusDiscarded);
 			Label separator = new Label("<hr/>", ContentMode.HTML);
-//			separator.setWidth(100, Unit.PERCENTAGE);
-//			separator.setHeightUndefined();
-//			CssStyles.style(separator, CssStyles.SEPARATOR_HORIZONTAL, CssStyles.VSPACE_4);
 			newCasesComponent.addComponentToContent(separator);
 			HorizontalLayout fatalityLayout = new HorizontalLayout();
 			fatalityLayout.setWidth(100, Unit.PERCENTAGE);
 			VerticalLayout fatalityRateLayout = new VerticalLayout();
 			fatalityRateLayout.addComponent(caseFatalityRateLabel);
-			fatalityRateLayout.addComponent(caseFatalityRateCaption);
+			HorizontalLayout fatalityCaptionLayout = new HorizontalLayout();
+			fatalityCaptionLayout.addComponent(caseFatalityRateCaption);
+			Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+			infoLabel.setSizeUndefined();
+			infoLabel.setDescription("The fatality rate is calculated based on the number of confirmed cases. Unconfirmed, suspect and probable cases are not taken into account.");
+			CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.HSPACE_LEFT_4, CssStyles.NEGATIVE_VSPACE_TOP_5, CssStyles.LABEL_SECONDARY);
+			fatalityCaptionLayout.addComponent(infoLabel);
+			fatalityCaptionLayout.setComponentAlignment(infoLabel, Alignment.TOP_RIGHT);
+			fatalityRateLayout.addComponent(fatalityCaptionLayout);
 			fatalityLayout.addComponent(fatalityRateLayout);
 			fatalityLayout.addComponent(caseFatalities);
 			newCasesComponent.addComponentToContent(fatalityLayout);
@@ -380,7 +385,7 @@ public class StatisticsComponent extends VerticalLayout {
 				previousFatalitiesCount == 0 ? fatalitiesCount > 0 ? Float.MIN_VALUE : 0 :
 				new BigDecimal(fatalitiesCount).subtract(new BigDecimal(previousFatalitiesCount)).divide(new BigDecimal(fatalitiesCount), 1, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).floatValue();
 			float fatalityRate = fatalitiesCount == 0 ? 0 : newCasesCount == 0 ? 0 :
-				new BigDecimal(fatalitiesCount).multiply(new BigDecimal(100)).divide(new BigDecimal(newCasesCount), 1, RoundingMode.HALF_UP).floatValue();
+				new BigDecimal(fatalitiesCount).multiply(new BigDecimal(100)).divide(new BigDecimal(confirmedCasesCount), 1, RoundingMode.HALF_UP).floatValue();
 			
 			caseInvestigationStatusDone.update(investigatedCasesCount, investigatedCasesGrowth, true);
 			caseInvestigationStatusDiscarded.update(discardedCasesCount, discardedCasesGrowth, false);
