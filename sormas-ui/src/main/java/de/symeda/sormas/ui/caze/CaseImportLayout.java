@@ -167,9 +167,13 @@ public class CaseImportLayout extends VerticalLayout {
 			try {
 				String errorReportFilePath = FacadeProvider.getImportExportFacade().importCasesFromCsvFile(file.getPath(), LoginHelper.getCurrentUser().getUuid());
 				if (errorReportFilePath == null) {
-					new Notification("Import successful", "All cases have been imported. You can now close this window.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+					Notification notification = new Notification("Import successful", "All cases have been imported. You can now close this window.", Type.HUMANIZED_MESSAGE, false);
+					notification.setDelayMsec(-1);
+					notification.show(Page.getCurrent());
 				} else {
-					new Notification("Import successful", "The import has been successful, but some of the cases could not be imported due to malformed data. Please download the error report below.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+					Notification notification = new Notification("Import successful", "The import has been successful, but some of the cases could not be imported due to malformed data. Please download the error report below.", Type.WARNING_MESSAGE, false);
+					notification.setDelayMsec(-1);
+					notification.show(Page.getCurrent());
 
 					StreamResource streamResource = DownloadUtil.createStreamResource(null, errorReportFilePath, "sormas_import_error_report.csv", "text/csv",
 							"Error report not available", "The error report file is not available. Please contact an admin and tell them about this issue.");
