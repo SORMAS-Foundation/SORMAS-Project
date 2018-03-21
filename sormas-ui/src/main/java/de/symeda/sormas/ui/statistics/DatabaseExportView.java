@@ -19,8 +19,8 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.export.DatabaseTable;
-import de.symeda.sormas.api.export.DatabaseTableType;
+import de.symeda.sormas.api.importexport.DatabaseTable;
+import de.symeda.sormas.api.importexport.DatabaseTableType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;

@@ -21,5 +21,5 @@ public interface DistrictFacade {
 	List<DistrictReferenceDto> getAllAsReference();
 
 	List<String> getAllUuids(String userUuid);
-
+	
 }

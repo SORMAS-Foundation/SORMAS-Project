@@ -7,6 +7,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.user.User;
 
@@ -16,6 +17,13 @@ public class EpiDataService extends AbstractAdoService<EpiData> {
 	
 	public EpiDataService() {
 		super(EpiData.class);
+	}
+	
+	public EpiData createEpiData() {
+		EpiData epiData = new EpiData();
+		epiData.setUuid(DataHelper.createUuid());
+		
+		return epiData;
 	}
 
 	@Override

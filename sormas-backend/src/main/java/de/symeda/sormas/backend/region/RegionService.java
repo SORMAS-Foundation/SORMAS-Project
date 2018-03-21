@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -44,6 +45,19 @@ public class RegionService extends AbstractAdoService<Region> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public Region getByName(String name) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
+		Root<Region> from = cq.from(getElementClass());
+		
+		cq.where(cb.equal(from.get(Region.NAME), name));
+		try {
+			return em.createQuery(cq).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+	
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Region, Region> from, User user) {
 		// no fitler by user needed

@@ -9,6 +9,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.task.DashboardTaskDto;
@@ -19,6 +20,7 @@ import de.symeda.sormas.ui.login.LoginHelper;
 
 public class DashboardDataProvider {
 	
+	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private Disease disease;
 	private DateFilterOption dateFilterOption;
@@ -46,16 +48,16 @@ public class DashboardDataProvider {
 			Date previousFromDate = DateHelper.subtractDays(fromDate, period);
 			Date previousToDate = DateHelper.subtractDays(toDate, period);
 			// Cases
-			setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, fromDate, toDate, userUuid));
-			setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, previousFromDate, previousToDate, userUuid));
+			setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease, fromDate, toDate, userUuid));
+			setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease, previousFromDate, previousToDate, userUuid));
 			// Events
-			setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, fromDate, toDate, userUuid));
-			setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, previousFromDate, previousToDate, userUuid));
+			setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease, fromDate, toDate, userUuid));
+			setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease, previousFromDate, previousToDate, userUuid));
 			// Test results
-			setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, fromDate, toDate, userUuid));
-			setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, previousFromDate, previousToDate, userUuid));
+			setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease, fromDate, toDate, userUuid));
+			setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease, previousFromDate, previousToDate, userUuid));
 			// Samples
-			setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(district, disease, fromDate, toDate, userUuid));
+			setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(region, district, disease, fromDate, toDate, userUuid));
 		} else {
 			int period = toWeek.getWeek() - fromWeek.getWeek() + 1;
 			Date epiWeekStart = DateHelper.getEpiWeekStart(fromWeek);
@@ -63,16 +65,16 @@ public class DashboardDataProvider {
 			Date previousEpiWeekStart = DateHelper.getEpiWeekStart(DateHelper.getPreviousEpiWeek(fromWeek, period));
 			Date previousEpiWeekEnd = DateHelper.getEpiWeekEnd(DateHelper.getPreviousEpiWeek(toWeek, period));
 			// Cases
-			setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, epiWeekStart, epiWeekEnd, userUuid));
-			setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(district, disease, previousEpiWeekStart, previousEpiWeekEnd, userUuid));
+			setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease, epiWeekStart, epiWeekEnd, userUuid));
+			setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease, previousEpiWeekStart, previousEpiWeekEnd, userUuid));
 			// Events
-			setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, epiWeekStart, epiWeekEnd, userUuid));
-			setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(district, disease, previousEpiWeekStart, previousEpiWeekEnd, userUuid));
+			setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease, epiWeekStart, epiWeekEnd, userUuid));
+			setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease, previousEpiWeekStart, previousEpiWeekEnd, userUuid));
 			// Test results
-			setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, epiWeekStart, epiWeekEnd, userUuid));
-			setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(district, disease, previousEpiWeekStart, previousEpiWeekEnd, userUuid));
+			setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease, epiWeekStart, epiWeekEnd, userUuid));
+			setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease, previousEpiWeekStart, previousEpiWeekEnd, userUuid));
 			// Samples
-			setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(district, disease, epiWeekStart, epiWeekEnd, userUuid));
+			setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(region, district, disease, epiWeekStart, epiWeekEnd, userUuid));
 		}
 		// Tasks
 		setTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(null, 
@@ -133,6 +135,12 @@ public class DashboardDataProvider {
 	}
 	public void setPendingTasks(List<DashboardTaskDto> pendingTasks) {
 		this.pendingTasks = pendingTasks;
+	}
+	public RegionReferenceDto getRegion() {
+		return region;
+	}
+	public void setRegion(RegionReferenceDto region) {
+		this.region = region;
 	}
 	public DistrictReferenceDto getDistrict() {
 		return district;

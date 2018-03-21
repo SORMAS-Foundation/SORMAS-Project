@@ -21,7 +21,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	
 	private static final String APP_URL = "app.url";
 	
-	private static final String EXPORT_PATH = "export.path";
+	private static final String TEMP_FILES_PATH = "temp.path";
 	
 	private static final String EMAIL_SENDER_ADDRESS = "email.sender.address";
 	private static final String EMAIL_SENDER_NAME = "email.sender.name";
@@ -61,8 +61,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 	
 	@Override
-	public String getExportPath() {
-		return getProperty(EXPORT_PATH, "/tmp/sormas_export/");
+	public String getTempFilesPath() {
+		return getProperty(TEMP_FILES_PATH, "/opt/sormas-temp/");
 	}
 
 	@Override

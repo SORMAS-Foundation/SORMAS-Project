@@ -21,6 +21,8 @@ public final class DateHelper {
 
 	private static final SimpleDateFormat SHORT_DATE_FORMAT = new SimpleDateFormat("dd/MM/yy");
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+	private static final SimpleDateFormat DATE_FORMAT_DOTS = new SimpleDateFormat("dd.MM.yyyy");
+	private static final SimpleDateFormat DATE_FORMAT_HYPHEN = new SimpleDateFormat("dd-MM-yyyy");
 	private static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private static final SimpleDateFormat SHORT_DATE_TIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -56,6 +58,31 @@ public final class DateHelper {
 			} catch (ParseException e) {
 				return null;
 			}
+		} else {
+			return null;
+		}
+	}
+	
+	public static Date parseDateWithException(String date) throws ParseException {
+		if (date != null) {
+			try {
+				SimpleDateFormat dateFormat = clone(DATE_FORMAT);
+				dateFormat.setLenient(false);
+				return dateFormat.parse(date);
+			} catch (ParseException e) {
+				// Try next format
+			}
+			try {
+				SimpleDateFormat dateFormat = clone(DATE_FORMAT_DOTS);
+				dateFormat.setLenient(false);
+				return dateFormat.parse(date);
+			} catch (ParseException e) {
+				// Try next format
+			}
+			// If this fails, an exception is thrown
+			SimpleDateFormat dateFormat = clone(DATE_FORMAT_HYPHEN);
+			dateFormat.setLenient(false);
+			return dateFormat.parse(date);
 		} else {
 			return null;
 		}

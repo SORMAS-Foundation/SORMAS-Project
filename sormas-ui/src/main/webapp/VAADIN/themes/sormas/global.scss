@@ -44,23 +44,8 @@
   }
 
   h3, .h3 {
-    margin-bottom: 16px;
-  
-    &::before {
-      background: #EEF2F8;
-      content: "";
-      display: block;
-      position: relative;
-      top: 15px;
-      height: 2px;
-      width: 100%;
-    }
-  
-    span {
-      background: #FFF;
-      position: relative;
-      padding-right: 8px;
-    }
+    color: $s-secondary-color;
+    font-weight: 600;
   }   
     
   h4, .h4 {
@@ -114,6 +99,10 @@
   }
   .vspace-top-none {
   	margin-top: 0 !important;
+  }
+ 
+  .negative-vspace-top-5 {
+  	margin-top: -2px;
   }
  
   .hspace-left-0 {

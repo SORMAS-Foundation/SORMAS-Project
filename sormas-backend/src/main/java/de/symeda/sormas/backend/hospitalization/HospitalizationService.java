@@ -7,6 +7,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.user.User;
 
@@ -16,6 +17,13 @@ public class HospitalizationService extends AbstractAdoService<Hospitalization> 
 	
 	public HospitalizationService() {
 		super(Hospitalization.class);
+	}
+	
+	public Hospitalization createHospitalization() {
+		Hospitalization hospitalization = new Hospitalization();
+		hospitalization.setUuid(DataHelper.createUuid());
+		
+		return hospitalization;
 	}
 
 	@Override

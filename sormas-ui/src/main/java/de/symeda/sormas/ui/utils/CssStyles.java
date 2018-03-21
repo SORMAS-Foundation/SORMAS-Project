@@ -34,6 +34,8 @@ public final class CssStyles {
 	public static final String VSPACE_TOP_5 = "vspace-top-5";
 	public static final String VSPACE_TOP_NONE = "vspace-top-none";
 	
+	public static final String NEGATIVE_VSPACE_TOP_5 = "negative-vspace-top-5";
+	
 	// Horizontal space
 	public static final String HSPACE_LEFT_0 = "hspace-left-0";
 	public static final String HSPACE_LEFT_1 = "hspace-left-1";
@@ -55,6 +57,7 @@ public final class CssStyles {
 	public static final String INDENT_LEFT_2 = "indent-left-2";
 
 	public static final String VAADIN_LABEL = "v-label";
+	
 	// Font colors
 	public static final String LABEL_PRIMARY = "primary";
 	public static final String LABEL_SECONDARY = "secondary";

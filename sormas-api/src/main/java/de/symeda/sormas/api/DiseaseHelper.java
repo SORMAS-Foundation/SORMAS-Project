@@ -43,6 +43,7 @@ public class DiseaseHelper {
 		case EVD:
 		case MEASLES:
 		case MONKEYPOX:
+		case LASSA:
 		case OTHER:
 			return 21;
 		case AVIAN_INFLUENCA:
@@ -53,7 +54,6 @@ public class DiseaseHelper {
 			return 10;
 		case PLAGUE:
 			return 7;
-		case LASSA:
 		case YELLOW_FEVER:
 			return 6;
 		case CHOLERA:

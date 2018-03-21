@@ -23,6 +23,7 @@ import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -192,6 +193,14 @@ public class PersonFacadeEjb implements PersonFacade {
 		
 		return toDto(person);
 		
+	}
+	
+	@Override
+	public PersonDto buildPerson() {
+		PersonDto person = new PersonDto();
+		person.setUuid(DataHelper.createUuid());
+		
+		return person;
 	}
 	
 	public Person fromDto(@NotNull PersonDto source) {

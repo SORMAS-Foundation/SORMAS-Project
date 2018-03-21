@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.caze;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.vaadin.data.Container.Filter;
@@ -171,6 +172,11 @@ public class CaseGrid extends Grid {
 	        getContainer().addContainerFilter(filter);
     	}
     }
+	
+	public void setDateFilter(Date fromDate, Date toDate) {
+		caseCriteria.newCaseDateBetween(fromDate, toDate);
+		reload();
+	}
 	
 	public void filterByText(String text) {
 		getContainer().removeContainerFilters(CaseIndexDto.UUID);

@@ -189,6 +189,7 @@ public class MapComponent extends VerticalLayout {
 			DateHelper.getEpiWeekStart(dashboardDataProvider.getFromWeek());
 		Date toDate = dashboardDataProvider.getDateFilterOption() == DateFilterOption.DATE ? dashboardDataProvider.getToDate() :
 			DateHelper.getEpiWeekEnd(dashboardDataProvider.getToWeek());
+		RegionReferenceDto region = dashboardDataProvider.getRegion();
 		DistrictReferenceDto district = dashboardDataProvider.getDistrict();
 		Disease disease = dashboardDataProvider.getDisease();
 
@@ -196,15 +197,15 @@ public class MapComponent extends VerticalLayout {
 			showRegionsShapes(caseMeasure, fromDate, toDate, dashboardDataProvider.getDisease());
 		}
 		if (showCases) {
-			showCaseMarkers(FacadeProvider.getCaseFacade().getCasesForMap(district, disease, fromDate, toDate, LoginHelper.getCurrentUser().getUuid()));
+			showCaseMarkers(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, fromDate, toDate, LoginHelper.getCurrentUser().getUuid()));
 		}
 		if (showContacts) {
 			if (!showCases) {
 				// Case lists need to be filled even when cases are hidden because they are needed to retrieve the contacts
-				fillCaseLists(FacadeProvider.getCaseFacade().getCasesForMap(district, disease, fromDate, toDate, LoginHelper.getCurrentUser().getUuid()));
+				fillCaseLists(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, fromDate, toDate, LoginHelper.getCurrentUser().getUuid()));
 			}
 			showContactMarkers(FacadeProvider.getContactFacade()
-					.getContactsForMap(district, disease, fromDate, toDate, 
+					.getContactsForMap(region, district, disease, fromDate, toDate, 
 							LoginHelper.getCurrentUser().getUuid(), mapAndFacilityCases));
 		}
 		if (showEvents) {

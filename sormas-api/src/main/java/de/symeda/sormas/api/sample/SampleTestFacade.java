@@ -7,6 +7,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 
 @Remote
 public interface SampleTestFacade {
@@ -23,7 +24,7 @@ public interface SampleTestFacade {
 
 	List<SampleTestDto> getByUuids(List<String> uuids);
 	
-	List<DashboardTestResultDto> getNewTestResultsForDashboard(DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	List<DashboardTestResultDto> getNewTestResultsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
 	void deleteSampleTest(SampleTestReferenceDto sampleTestRef, String userUuid);
 }

@@ -27,4 +27,5 @@ public interface FacilityFacade {
 	FacilityDto getByUuid(String uuid);
 
 	List<String> getAllUuids(String userUuid);
+	
 }

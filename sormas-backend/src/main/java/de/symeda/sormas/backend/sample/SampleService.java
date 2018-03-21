@@ -85,7 +85,7 @@ public class SampleService extends AbstractAdoService<Sample> {
 		}
 	}
 	
-	public List<DashboardSampleDto> getNewSamplesForDashboard(District district, Disease disease, Date from, Date to, User user) {
+	public List<DashboardSampleDto> getNewSamplesForDashboard(Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardSampleDto> cq = cb.createQuery(DashboardSampleDto.class);
 		Root<Sample> sample = cq.from(getElementClass());
@@ -97,6 +97,15 @@ public class SampleService extends AbstractAdoService<Sample> {
 			filter = cb.and(filter, dateFilter);
 		} else {
 			filter = dateFilter;
+		}
+
+		if (region != null) {
+			Predicate regionFilter = cb.equal(caze.get(Case.REGION), region);
+			if (filter != null) {
+				filter = cb.and(filter, regionFilter);
+			} else {
+				filter = regionFilter;
+			}
 		}
 		
 		if (district != null) {

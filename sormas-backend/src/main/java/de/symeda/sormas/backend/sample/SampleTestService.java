@@ -21,6 +21,7 @@ import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -48,7 +49,7 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 		return resultList;
 	}
 	
-	public List<DashboardTestResultDto> getNewTestResultsForDashboard(District district, Disease disease, Date from, Date to, User user) {
+	public List<DashboardTestResultDto> getNewTestResultsForDashboard(Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardTestResultDto> cq = cb.createQuery(DashboardTestResultDto.class);
 		Root<SampleTest> sampleTest = cq.from(getElementClass());
@@ -61,6 +62,15 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 			filter = cb.and(filter, dateFilter);
 		} else {
 			filter = dateFilter;
+		}
+		
+		if (region != null) {
+			Predicate regionFilter = cb.equal(caze.get(Case.REGION), region);
+			if (filter != null) {
+				filter = cb.and(filter, regionFilter);
+			} else {
+				filter = regionFilter;
+			}
 		}
 		
 		if (district != null) {

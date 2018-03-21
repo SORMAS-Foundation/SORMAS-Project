@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -21,11 +23,14 @@ import javax.persistence.criteria.Subquery;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.StatisticsCaseDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -33,30 +38,45 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.backend.epidata.EpiDataGathering;
+import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
+import de.symeda.sormas.backend.hospitalization.HospitalizationService;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
 public class CaseService extends AbstractAdoService<Case> {
 
+	@Resource
+	private SessionContext sessionContext;
+	
 	@EJB
 	ContactService contactService;
 	@EJB
 	SampleService sampleService;
 	@EJB
 	PersonFacadeEjbLocal personFacade;
+	@EJB
+	PersonService personService;
+	@EJB
+	HospitalizationService hospitalizationService;
+	@EJB
+	EpiDataService epiDataService;
+	@EJB
+	UserService userService;
 
 	public CaseService() {
 		super(Case.class);
@@ -67,6 +87,25 @@ public class CaseService extends AbstractAdoService<Case> {
 		Case caze = new Case();
 		caze.setPerson(person);
 		return caze;
+	}
+	
+	public Case createCase() {
+		Case caze = new Case();
+    	caze.setUuid(DataHelper.createUuid());
+    	
+    	caze.setInvestigationStatus(InvestigationStatus.PENDING);
+    	caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+    	caze.setOutcome(CaseOutcome.NO_OUTCOME);
+    	
+    	caze.setPerson(personService.createPerson());
+    	caze.setHospitalization(hospitalizationService.createHospitalization());
+    	caze.setEpiData(epiDataService.createEpiData());
+    	
+    	caze.setReportDate(new Date());
+    	User user = userService.getByUserName(sessionContext.getCallerPrincipal().getName());
+    	caze.setReportingUser(user);
+    	
+    	return caze;
 	}
 
 	public List<Case> getAllByDisease(Disease disease, User user) {
@@ -136,7 +175,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		return resultList;
 	}	
 
-	public List<DashboardCaseDto> getNewCasesForDashboard(District district, Disease disease, Date from, Date to, User user) {
+	public List<DashboardCaseDto> getNewCasesForDashboard(Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardCaseDto> cq = cb.createQuery(DashboardCaseDto.class);
 		Root<Case> caze = cq.from(getElementClass());
@@ -153,6 +192,15 @@ public class CaseService extends AbstractAdoService<Case> {
 			filter = dateFilter;
 		}
 
+		if (region != null) {
+			Predicate regionFilter = cb.equal(caze.get(Case.REGION), region);
+			if (filter != null) {
+				filter = cb.and(filter, regionFilter);
+			} else {
+				filter = regionFilter;
+			}
+		}
+		
 		if (district != null) {
 			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
 			if (filter != null) {
@@ -192,7 +240,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		return result;
 	}
 
-	public List<MapCaseDto> getCasesForMap(District district, Disease disease, Date from, Date to, User user) {
+	public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MapCaseDto> cq = cb.createQuery(MapCaseDto.class);
 		Root<Case> caze = cq.from(getElementClass());
@@ -208,6 +256,15 @@ public class CaseService extends AbstractAdoService<Case> {
 			filter = dateFilter;
 		}
 
+		if (region != null) {
+			Predicate regionFilter = cb.equal(caze.get(Case.REGION), region);
+			if (filter != null) {
+				filter = cb.and(filter, regionFilter);
+			} else {
+				filter = regionFilter;
+			}
+		}
+		
 		if (district != null) {
 			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
 			if (filter != null) {
@@ -528,6 +585,8 @@ public class CaseService extends AbstractAdoService<Case> {
 	
 	public Predicate buildCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, Root<Case> from) {
 		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
+		Join<Case, Region> region = from.join(Case.REGION, JoinType.LEFT);
+		Join<Case, District> district = from.join(Case.DISTRICT, JoinType.LEFT);
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
 			filter = and(cb, filter, cb.isMember(
@@ -540,8 +599,11 @@ public class CaseService extends AbstractAdoService<Case> {
 		if (caseCriteria.getOutcome() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
 		}
+		if (caseCriteria.getRegion() != null) {
+			filter = and(cb, filter, cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()));
+		}
 		if (caseCriteria.getDistrict() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Case.DISTRICT), caseCriteria.getDistrict()));
+			filter = and(cb, filter, cb.equal(district.get(District.UUID), caseCriteria.getDistrict().getUuid()));
 		}
 		if (caseCriteria.getNewCaseDateFrom() != null && caseCriteria.getNewCaseDateTo() != null) {
 			filter = and(cb, filter, createNewCaseFilter(cb, from, caseCriteria.getNewCaseDateFrom(), caseCriteria.getNewCaseDateTo()));
