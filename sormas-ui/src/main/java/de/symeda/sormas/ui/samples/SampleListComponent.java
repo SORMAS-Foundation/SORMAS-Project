@@ -1,6 +1,10 @@
 package de.symeda.sormas.ui.samples;
 
+import java.util.Date;
+
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Alignment;
@@ -26,9 +30,11 @@ import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DownloadUtil;
 
 @SuppressWarnings("serial")
 public class SampleListComponent extends VerticalLayout {
@@ -131,6 +137,20 @@ public class SampleListComponent extends VerticalLayout {
 		}
 		topLayout.addComponent(buttonFilterLayout);
 
+		if (LoginHelper.hasUserRight(UserRight.SAMPLE_EXPORT)) {
+			Button exportButton = new Button("Export");
+			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			exportButton.setIcon(FontAwesome.DOWNLOAD);
+			
+			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid, "sormas_samples", "sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv", "text/csv");
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
+			
+			topLayout.addComponent(exportButton);
+			topLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
+			topLayout.setExpandRatio(exportButton, 1);
+		}
+		
     	if (LoginHelper.hasUserRight(UserRight.SAMPLE_CREATE)) {
 			Button createButton = new Button("New sample");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -138,7 +158,6 @@ public class SampleListComponent extends VerticalLayout {
 			createButton.addClickListener(e -> ControllerProvider.getSampleController().create(caseRef, grid));
 			topLayout.addComponent(createButton);
 			topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
-			topLayout.setExpandRatio(createButton, 1);
     	}
     	
 		return topLayout;
@@ -234,6 +253,10 @@ public class SampleListComponent extends VerticalLayout {
 		gridLayout.setSizeFull();
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
+	}
+	
+	public SampleGrid getGrid() {
+		return grid;
 	}
 
 }

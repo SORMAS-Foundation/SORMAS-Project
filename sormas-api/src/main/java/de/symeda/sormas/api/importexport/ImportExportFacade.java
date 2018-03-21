@@ -16,6 +16,12 @@ public interface ImportExportFacade {
 	 * to the zip archive that can then be used to offer it as a download.
 	 */
 	String generateDatabaseExportArchive(List<DatabaseTable> databaseTables) throws ExportErrorException, IOException;
+
+	/**
+	 * Exports the passed grid rows as a .csv file to the export folder specified in the
+	 * properties file and returns the path that can then be used to offer it as a download.
+	 */
+	String generateGridExportCsv(List<List<String>> exportedRows, String filePrefix, String userUuid) throws IOException;
 	
 	/**
 	 * Creates a .csv file with one row containing all relevant column names of the case entity

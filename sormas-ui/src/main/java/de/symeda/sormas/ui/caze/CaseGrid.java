@@ -200,7 +200,7 @@ public class CaseGrid extends Grid {
 	}
 	
     @SuppressWarnings("unchecked")
-	private BeanItemContainer<CaseIndexDto> getContainer() {
+	public BeanItemContainer<CaseIndexDto> getContainer() {
     	GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
         return (BeanItemContainer<CaseIndexDto>) container.getWrappedContainer();
     }
@@ -214,6 +214,5 @@ public class CaseGrid extends Grid {
     	getContainer().removeAllItems();
         getContainer().addAll(cases);
     }
+   
 }
-
-

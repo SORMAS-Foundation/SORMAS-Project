@@ -1,7 +1,11 @@
 package de.symeda.sormas.ui.caze;
 
+import java.util.Date;
+
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -19,9 +23,11 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.contact.ContactGrid;
 import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.utils.DownloadUtil;
 
 public class CaseContactsView extends AbstractCaseView {
 
@@ -73,6 +79,20 @@ public class CaseContactsView extends AbstractCaseView {
         }
         topLayout.setExpandRatio(topLayout.getComponent(topLayout.getComponentCount()-1), 1);
 
+        if (LoginHelper.hasUserRight(UserRight.CONTACT_EXPORT)) {
+			Button exportButton = new Button("Export");
+			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			exportButton.setIcon(FontAwesome.DOWNLOAD);
+			
+			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", "text/csv");
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
+			
+			topLayout.addComponent(exportButton);
+			topLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
+			topLayout.setExpandRatio(exportButton, 1);
+		}
+        
         if (LoginHelper.hasUserRight(UserRight.CONTACT_CREATE)) {
 	        newButton = new Button("New contact");
 	        newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -80,7 +100,6 @@ public class CaseContactsView extends AbstractCaseView {
 	        newButton.addClickListener(e -> ControllerProvider.getContactController().create(this.getCaseRef()));
 	        topLayout.addComponent(newButton);
 	        topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
-	        topLayout.setExpandRatio(newButton, 1);
         }
         
         topLayout.setStyleName("top-bar");

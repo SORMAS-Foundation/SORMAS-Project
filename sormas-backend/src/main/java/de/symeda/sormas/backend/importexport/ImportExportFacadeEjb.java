@@ -209,6 +209,24 @@ public class ImportExportFacadeEjb implements ImportExportFacade {
 		// Create a zip containing all created .csv files
 		return createZipFromCsvFiles(databaseTables, date, randomNumber);
 	}
+	
+	@Override
+	public String generateGridExportCsv(List<List<String>> exportedRows, String filePrefix, String userUuid) throws IOException {
+		String date = DateHelper.formatDateForExport(new Date());
+		int randomNumber = new Random().nextInt(Integer.MAX_VALUE);
+		
+		Path tempDirectory = Paths.get(configFacade.getTempFilesPath());
+		Path filePath = tempDirectory.resolve(filePrefix + "_" + DataHelper.getShortUuid(userUuid) + "_" + date + "_" + randomNumber + ".csv");
+		
+		CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()));
+		exportedRows.forEach(r -> {
+			writer.writeNext(r.toArray(new String[r.size()]));
+		});
+		
+		writer.flush();
+		writer.close();
+		return filePath.toString();
+	}
 
 	@Override
 	public void generateCaseImportTemplateFile() throws IOException {				

@@ -3,7 +3,9 @@ package de.symeda.sormas.ui.caze;
 import java.util.Date;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -36,6 +38,7 @@ import de.symeda.sormas.ui.dashboard.DateFilterOption;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -55,6 +58,7 @@ public class CasesView extends AbstractView {
 
 	private CaseGrid grid;    
 	private Button importButton;
+	private Button exportButton;
 	private Button createButton;
 
 	private VerticalLayout gridLayout;
@@ -68,6 +72,8 @@ public class CasesView extends AbstractView {
 
 	public CasesView() {
 		super(VIEW_NAME);
+		
+		grid = new CaseGrid();
 
 		if (LoginHelper.hasUserRight(UserRight.CASE_IMPORT)) {
 			importButton = new Button("Import");
@@ -83,6 +89,18 @@ public class CasesView extends AbstractView {
 			addHeaderComponent(importButton);
 		}
 
+		if (LoginHelper.hasUserRight(UserRight.CASE_EXPORT)) {
+			exportButton = new Button("Export");
+			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			exportButton.setIcon(FontAwesome.DOWNLOAD);
+			
+			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid, "sormas_cases", "sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv", "text/csv");
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
+			
+			addHeaderComponent(exportButton);
+		}
+
 		if (LoginHelper.hasUserRight(UserRight.CASE_CREATE)) {
 			createButton = new Button("New case");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -90,8 +108,6 @@ public class CasesView extends AbstractView {
 			createButton.addClickListener(e -> ControllerProvider.getCaseController().create());
 			addHeaderComponent(createButton);
 		}
-
-		grid = new CaseGrid();
 
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createTopBar());
