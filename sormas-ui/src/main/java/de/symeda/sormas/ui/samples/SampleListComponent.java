@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.samples;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
@@ -43,6 +44,9 @@ public class SampleListComponent extends VerticalLayout {
 	public static final String SEARCH_FIELD = "searchField";
 
 	private SampleGrid grid;
+	
+	private HashMap<Button, String> statusButtons;
+	private Button activeStatusButton;
 
 	private VerticalLayout gridLayout;
 
@@ -52,8 +56,8 @@ public class SampleListComponent extends VerticalLayout {
 		grid = new SampleGrid();
 
 		gridLayout = new VerticalLayout();
-		gridLayout.addComponent(createTopBar());
 		gridLayout.addComponent(createFilterBar());
+		gridLayout.addComponent(createShipmentFilterBar());
 		gridLayout.addComponent(grid);
 
 		styleGridLayout(gridLayout);
@@ -70,7 +74,7 @@ public class SampleListComponent extends VerticalLayout {
 		grid.setHeightMode(HeightMode.ROW);
 
 		gridLayout = new VerticalLayout();
-		gridLayout.addComponent(createTopBarForCase(caseRef));
+		gridLayout.addComponent(createShipmentFilterBarForCase(caseRef));
 		gridLayout.addComponent(grid);
 
 		gridLayout.setMargin(new MarginInfo(true, false, false, false));
@@ -79,95 +83,10 @@ public class SampleListComponent extends VerticalLayout {
 		addComponent(gridLayout);
 	}
 
-	public HorizontalLayout createTopBar() {
-		HorizontalLayout topLayout = new HorizontalLayout();
-		topLayout.setSpacing(true);
-		topLayout.setSizeUndefined();
-		topLayout.addStyleName(CssStyles.VSPACE_3);
-
-		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
-		{
-			Button statusAll = new Button("all", e -> grid.clearShipmentFilters(true));
-			statusAll.setStyleName(ValoTheme.BUTTON_LINK);
-			buttonFilterLayout.addComponent(statusAll);
-			
-			Button notShippedButton = new Button("not shipped", e -> grid.filterForNotShipped());
-			notShippedButton.setStyleName(ValoTheme.BUTTON_LINK);
-			buttonFilterLayout.addComponent(notShippedButton);
-			Button shippedButton = new Button("shipped", e -> grid.filterForShipped());
-			shippedButton.setStyleName(ValoTheme.BUTTON_LINK);
-			buttonFilterLayout.addComponent(shippedButton);
-			Button receivedButton = new Button("received", e -> grid.filterForReceived());
-			receivedButton.setStyleName(ValoTheme.BUTTON_LINK);
-			buttonFilterLayout.addComponent(receivedButton);
-			Button referredButton = new Button("referred to other lab", e -> grid.filterForReferred());
-			referredButton.setStyleName(ValoTheme.BUTTON_LINK);
-			buttonFilterLayout.addComponent(referredButton);
-		}
-
-		topLayout.addComponent(buttonFilterLayout);
-
-		return topLayout;
-	}
-
-	public HorizontalLayout createTopBarForCase(CaseReferenceDto caseRef) {
-		HorizontalLayout topLayout = new HorizontalLayout();
-		topLayout.setSpacing(true);
-		topLayout.setWidth(100, Unit.PERCENTAGE);
-		topLayout.addStyleName(CssStyles.VSPACE_3);
-
-		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
-		{
-			Button statusAll = new Button("all", e -> grid.clearShipmentFilters(true));
-			statusAll.setStyleName(ValoTheme.BUTTON_LINK);
-			buttonFilterLayout.addComponent(statusAll);
-
-			Button notShippedButton = new Button("not shipped", e -> grid.filterForNotShipped());
-			notShippedButton.setStyleName(ValoTheme.BUTTON_LINK);
-			buttonFilterLayout.addComponent(notShippedButton);
-			Button shippedButton = new Button("shipped", e -> grid.filterForShipped());
-			shippedButton.setStyleName(ValoTheme.BUTTON_LINK);
-			buttonFilterLayout.addComponent(shippedButton);
-			Button receivedButton = new Button("received", e -> grid.filterForReceived());
-			receivedButton.setStyleName(ValoTheme.BUTTON_LINK);
-			buttonFilterLayout.addComponent(receivedButton);
-			Button referredButton = new Button("referred to other lab", e -> grid.filterForReferred());
-			referredButton.setStyleName(ValoTheme.BUTTON_LINK);
-			buttonFilterLayout.addComponent(referredButton);
-		}
-		topLayout.addComponent(buttonFilterLayout);
-
-		if (LoginHelper.hasUserRight(UserRight.SAMPLE_EXPORT)) {
-			Button exportButton = new Button("Export");
-			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			exportButton.setIcon(FontAwesome.DOWNLOAD);
-			
-			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid, "sormas_samples", "sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv", "text/csv", SampleGrid.EDIT_BTN_ID);
-			FileDownloader fileDownloader = new FileDownloader(streamResource);
-			fileDownloader.extend(exportButton);
-			
-			topLayout.addComponent(exportButton);
-			topLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
-			topLayout.setExpandRatio(exportButton, 1);
-		}
-		
-    	if (LoginHelper.hasUserRight(UserRight.SAMPLE_CREATE)) {
-			Button createButton = new Button("New sample");
-			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getSampleController().create(caseRef, grid));
-			topLayout.addComponent(createButton);
-			topLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
-    	}
-    	
-		return topLayout;
-	}
-
 	public HorizontalLayout createFilterBar() {
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
-		filterLayout.addStyleName(CssStyles.VSPACE_3);
 
         UserDto user = LoginHelper.getCurrentUser();
         
@@ -175,21 +94,30 @@ public class SampleListComponent extends VerticalLayout {
         testResultFilter.setWidth(140, Unit.PIXELS);
         testResultFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleTestDto.I18N_PREFIX, SampleTestDto.TEST_RESULT));
         testResultFilter.addItems((Object[])SampleTestResultType.values());
-        testResultFilter.addValueChangeListener(e->grid.setTestResultFilter(((SampleTestResultType)e.getProperty().getValue())));
+        testResultFilter.addValueChangeListener(e -> {
+        	grid.setTestResultFilter(((SampleTestResultType)e.getProperty().getValue()));
+        	updateActiveStatusButtonCaption();
+        });
         filterLayout.addComponent(testResultFilter);        
 
         ComboBox specimenConditionFilter = new ComboBox();
         specimenConditionFilter.setWidth(140, Unit.PIXELS);
         specimenConditionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleDto.I18N_PREFIX, SampleDto.SPECIMEN_CONDITION));
         specimenConditionFilter.addItems((Object[])SpecimenCondition.values());
-        specimenConditionFilter.addValueChangeListener(e->grid.setSpecimenConditionFilter(((SpecimenCondition)e.getProperty().getValue())));
+        specimenConditionFilter.addValueChangeListener(e -> {
+        	grid.setSpecimenConditionFilter(((SpecimenCondition)e.getProperty().getValue()));
+        	updateActiveStatusButtonCaption();
+        });
         filterLayout.addComponent(specimenConditionFilter);        
 
         ComboBox classificationFilter = new ComboBox();
         classificationFilter.setWidth(140, Unit.PIXELS);
         classificationFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
         classificationFilter.addItems((Object[])CaseClassification.values());
-        classificationFilter.addValueChangeListener(e->grid.setCaseClassificationFilter(((CaseClassification)e.getProperty().getValue())));
+        classificationFilter.addValueChangeListener(e -> {
+        	grid.setCaseClassificationFilter(((CaseClassification)e.getProperty().getValue()));
+        	updateActiveStatusButtonCaption();
+        });
         filterLayout.addComponent(classificationFilter);        
 
         ComboBox regionFilter = new ComboBox();
@@ -200,6 +128,7 @@ public class SampleListComponent extends VerticalLayout {
             regionFilter.addValueChangeListener(e -> {
             	RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
             	grid.setRegionFilter(region);
+            	updateActiveStatusButtonCaption();
             });
             filterLayout.addComponent(regionFilter);
         }
@@ -208,7 +137,10 @@ public class SampleListComponent extends VerticalLayout {
         districtFilter.setWidth(140, Unit.PIXELS);
         districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
         districtFilter.setDescription("Select a district in the state");
-        districtFilter.addValueChangeListener(e->grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue())));
+        districtFilter.addValueChangeListener(e -> {
+        	grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue()));
+        	updateActiveStatusButtonCaption();
+        });
 
         if (user.getRegion() != null) {
             districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
@@ -232,20 +164,111 @@ public class SampleListComponent extends VerticalLayout {
 		labFilter.setWidth(140, Unit.PIXELS);
 		labFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.LAB));
 		labFilter.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
-		labFilter.addValueChangeListener(e->grid.setLabFilter(((FacilityReferenceDto)e.getProperty().getValue())));
+		labFilter.addValueChangeListener(e -> {
+			grid.setLabFilter(((FacilityReferenceDto)e.getProperty().getValue()));
+        	updateActiveStatusButtonCaption();
+		});
 		filterLayout.addComponent(labFilter);
 
 		TextField searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleIndexDto.I18N_PREFIX, SEARCH_FIELD));
-		searchField.addTextChangeListener(e->grid.filterByText(e.getText()));
+		searchField.addTextChangeListener(e -> {
+			grid.filterByText(e.getText());
+        	updateActiveStatusButtonCaption();
+		});
 		filterLayout.addComponent(searchField);
 
 		return filterLayout;
 	}
 
+	public HorizontalLayout createShipmentFilterBar() {
+		HorizontalLayout shipmentFilterLayout = new HorizontalLayout();
+		shipmentFilterLayout.setSpacing(true);
+		shipmentFilterLayout.setSizeUndefined();
+		shipmentFilterLayout.addStyleName(CssStyles.VSPACE_3);
+
+		statusButtons = new HashMap<>();
+		
+		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
+		buttonFilterLayout.setSpacing(true);
+		{
+			Button statusAll = new Button("All", e -> processStatusChange(false, false, false, false, e.getButton()));
+			initializeStatusButton(statusAll, buttonFilterLayout, "All");
+			CssStyles.removeStyles(statusAll, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			activeStatusButton = statusAll;
+			
+			Button notShippedButton = new Button("Not shipped", e -> processStatusChange(true, false, false, false, e.getButton()));
+			initializeStatusButton(notShippedButton, buttonFilterLayout, "Not shipped");
+			Button shippedButton = new Button("Shipped", e -> processStatusChange(false, true, false, false, e.getButton()));
+			initializeStatusButton(shippedButton, buttonFilterLayout, "Shipped");
+			Button receivedButton = new Button("Received", e -> processStatusChange(false, false, true, false, e.getButton()));
+			initializeStatusButton(receivedButton, buttonFilterLayout, "Received");
+			Button referredButton = new Button("Referred to other lab", e -> processStatusChange(false, false, false, true, e.getButton()));
+			initializeStatusButton(referredButton, buttonFilterLayout, "Referred to other lab");
+		}
+
+		shipmentFilterLayout.addComponent(buttonFilterLayout);
+
+		return shipmentFilterLayout;
+	}
+	
+	public HorizontalLayout createShipmentFilterBarForCase(CaseReferenceDto caseRef) {
+		HorizontalLayout shipmentFilterLayout = new HorizontalLayout();
+		shipmentFilterLayout.setSpacing(true);
+		shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
+		shipmentFilterLayout.addStyleName(CssStyles.VSPACE_3);
+
+		statusButtons = new HashMap<>();
+		
+		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
+		buttonFilterLayout.setSpacing(true);
+		{
+			Button statusAll = new Button("All", e -> processStatusChange(false, false, false, false, e.getButton()));
+			initializeStatusButton(statusAll, buttonFilterLayout, "All");
+			CssStyles.removeStyles(statusAll, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			activeStatusButton = statusAll;
+			
+			Button notShippedButton = new Button("Not shipped", e -> processStatusChange(true, false, false, false, e.getButton()));
+			initializeStatusButton(notShippedButton, buttonFilterLayout, "Not shipped");
+			Button shippedButton = new Button("Shipped", e -> processStatusChange(false, true, false, false, e.getButton()));
+			initializeStatusButton(shippedButton, buttonFilterLayout, "Shipped");
+			Button receivedButton = new Button("Received", e -> processStatusChange(false, false, true, false, e.getButton()));
+			initializeStatusButton(receivedButton, buttonFilterLayout, "Received");
+			Button referredButton = new Button("Referred to other lab", e -> processStatusChange(false, false, false, true, e.getButton()));
+			initializeStatusButton(referredButton, buttonFilterLayout, "Referred to other lab");
+		}
+		shipmentFilterLayout.addComponent(buttonFilterLayout);
+
+		if (LoginHelper.hasUserRight(UserRight.SAMPLE_EXPORT)) {
+			Button exportButton = new Button("Export");
+			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			exportButton.setIcon(FontAwesome.DOWNLOAD);
+			
+			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid, "sormas_samples", "sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv", "text/csv", SampleGrid.EDIT_BTN_ID);
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
+			
+			shipmentFilterLayout.addComponent(exportButton);
+			shipmentFilterLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
+			shipmentFilterLayout.setExpandRatio(exportButton, 1);
+		}
+		
+    	if (LoginHelper.hasUserRight(UserRight.SAMPLE_CREATE)) {
+			Button createButton = new Button("New sample");
+			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			createButton.setIcon(FontAwesome.PLUS_CIRCLE);
+			createButton.addClickListener(e -> ControllerProvider.getSampleController().create(caseRef, grid));
+			shipmentFilterLayout.addComponent(createButton);
+			shipmentFilterLayout.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
+    	}
+    	
+		return shipmentFilterLayout;
+	}
+	
 	public void reload() {
 		grid.reload();
+		updateActiveStatusButtonCaption();
 	}
 
 	private void styleGridLayout(VerticalLayout gridLayout) {
@@ -257,6 +280,41 @@ public class SampleListComponent extends VerticalLayout {
 	
 	public SampleGrid getGrid() {
 		return grid;
+	}
+
+	public void updateActiveStatusButtonCaption() {
+		if (activeStatusButton != null) {
+			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + "<span class=\"" + CssStyles.BADGE + "\">" + grid.getContainer().size() + "</span>");
+		}
+	}
+	
+	private void processStatusChange(boolean notShipped, boolean shipped, boolean received, boolean referred, Button button) {
+		if (notShipped) {
+			grid.filterForNotShipped();
+		} else if (shipped) {
+			grid.filterForShipped();
+		} else if (received) {
+			grid.filterForReceived();
+		} else if (referred) {
+			grid.filterForReferred();
+		} else {
+			grid.clearShipmentFilters(true);
+		}
+		
+		statusButtons.keySet().forEach(b -> {
+			CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			b.setCaption(statusButtons.get(b));
+		});
+		CssStyles.removeStyles(button, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		activeStatusButton = button;
+		updateActiveStatusButtonCaption();
+	}
+	
+	private void initializeStatusButton(Button button, HorizontalLayout filterLayout, String caption) {
+		CssStyles.style(button, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		button.setCaptionAsHtml(true);
+		filterLayout.addComponent(button);
+		statusButtons.put(button, caption);
 	}
 
 }

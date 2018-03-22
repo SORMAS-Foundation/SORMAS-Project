@@ -195,7 +195,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
     }
 
     @SuppressWarnings("unchecked")
-	private BeanItemContainer<TaskIndexDto> getContainer() {
+	public BeanItemContainer<TaskIndexDto> getContainer() {
     	GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
         return (BeanItemContainer<TaskIndexDto>) container.getWrappedContainer();
     }

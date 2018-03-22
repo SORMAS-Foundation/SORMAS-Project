@@ -43,6 +43,7 @@ public class CaseGrid extends Grid {
 	public static final String NUMBER_OF_PENDING_TASKS = "numberOfPendingTasks";
 	
 	private CaseCriteria caseCriteria = new CaseCriteria();
+	private boolean reloadEnabled = false;
 	
 	public CaseGrid() {
         setSizeFull();
@@ -210,13 +211,22 @@ public class CaseGrid extends Grid {
     }
     
     public void reload() {
-    	
-    	List<CaseIndexDto> cases = FacadeProvider.getCaseFacade().getIndexList(
-    			LoginHelper.getCurrentUser().getUuid(), 
-    			caseCriteria);
-
-    	getContainer().removeAllItems();
-        getContainer().addAll(cases);
+    	if (reloadEnabled) {
+	    	List<CaseIndexDto> cases = FacadeProvider.getCaseFacade().getIndexList(
+	    			LoginHelper.getCurrentUser().getUuid(), 
+	    			caseCriteria);
+	
+	    	getContainer().removeAllItems();
+	        getContainer().addAll(cases);
+    	}
     }
+
+	public boolean isReloadEnabled() {
+		return reloadEnabled;
+	}
+
+	public void setReloadEnabled(boolean reloadEnabled) {
+		this.reloadEnabled = reloadEnabled;
+	}
    
 }

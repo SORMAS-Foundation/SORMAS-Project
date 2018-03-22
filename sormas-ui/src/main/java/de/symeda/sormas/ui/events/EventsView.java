@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.events;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -34,6 +35,8 @@ public class EventsView extends AbstractView {
 	
 	private EventGrid grid;
 	private Button createButton;
+	private HashMap<Button, String> statusButtons;
+	private Button activeStatusButton;
 	
 	private VerticalLayout gridLayout;
 	
@@ -43,8 +46,8 @@ public class EventsView extends AbstractView {
 		grid = new EventGrid();
 		
 		gridLayout = new VerticalLayout();
-		gridLayout.addComponent(createTopBar());
 		gridLayout.addComponent(createFilterBar());
+		gridLayout.addComponent(createStatusFilterBar());
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -74,44 +77,30 @@ public class EventsView extends AbstractView {
 			addHeaderComponent(createButton);
     	}
 	}
-	
-	public HorizontalLayout createTopBar() {
-		HorizontalLayout topLayout = new HorizontalLayout();
-		topLayout.setSpacing(true);
-		topLayout.setSizeUndefined();
-		topLayout.addStyleName(CssStyles.VSPACE_3);
-		
-		Button statusAll = new Button("all", e -> grid.setStatusFilter(null));
-		statusAll.setStyleName(ValoTheme.BUTTON_LINK);
-		topLayout.addComponent(statusAll);
-		
-		for(EventStatus status : EventStatus.values()) {
-			Button statusButton = new Button(status.toString(), e -> grid.setStatusFilter(status));
-			statusButton.setStyleName(ValoTheme.BUTTON_LINK);
-			topLayout.addComponent(statusButton);
-		}
-		
-		return topLayout;
-	}
-	
+
 	public HorizontalLayout createFilterBar() {
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
-		filterLayout.addStyleName(CssStyles.VSPACE_3);
 		
 		ComboBox typeFilter = new ComboBox();
 		typeFilter.setWidth(140, Unit.PIXELS);
 		typeFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.EVENT_TYPE));
 		typeFilter.addItems((Object[])EventType.values());
-		typeFilter.addValueChangeListener(e -> grid.setEventTypeFilter(((EventType)e.getProperty().getValue())));
+		typeFilter.addValueChangeListener(e -> {
+			grid.setEventTypeFilter(((EventType)e.getProperty().getValue()));
+			updateActiveStatusButtonCaption();
+		});
 		filterLayout.addComponent(typeFilter);
 		
 		ComboBox diseaseFilter = new ComboBox();
 		diseaseFilter.setWidth(140, Unit.PIXELS);
 		diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.DISEASE));
 		diseaseFilter.addItems((Object[])Disease.values());
-		diseaseFilter.addValueChangeListener(e -> grid.setDiseaseFilter(((Disease)e.getProperty().getValue())));
+		diseaseFilter.addValueChangeListener(e -> {
+			grid.setDiseaseFilter(((Disease)e.getProperty().getValue()));
+			updateActiveStatusButtonCaption();
+		});
 		filterLayout.addComponent(diseaseFilter);
         
         ComboBox reportedByFilter = new ComboBox();
@@ -120,15 +109,60 @@ public class EventsView extends AbstractView {
         reportedByFilter.addItems((Object[]) UserRole.values());
         reportedByFilter.addValueChangeListener(e -> {
         	grid.setReportedByFilter((UserRole) e.getProperty().getValue());
+			updateActiveStatusButtonCaption();
         });
         filterLayout.addComponent(reportedByFilter);
         
 		return filterLayout;
 	}
 	
+	public HorizontalLayout createStatusFilterBar() {
+		HorizontalLayout statusFilterLayout = new HorizontalLayout();
+		statusFilterLayout.setSpacing(true);
+		statusFilterLayout.setSizeUndefined();
+		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
+
+		statusButtons = new HashMap<>();
+		
+		Button statusAll = new Button("All", e -> processStatusChange(null, e.getButton()));
+		CssStyles.style(statusAll, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED);
+		statusAll.setCaptionAsHtml(true);
+		statusFilterLayout.addComponent(statusAll);
+		statusButtons.put(statusAll, "All");
+		
+		for(EventStatus status : EventStatus.values()) {
+			Button statusButton = new Button(status.toString(), e -> processStatusChange(status, e.getButton()));
+			CssStyles.style(statusButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			statusButton.setCaptionAsHtml(true);
+			statusFilterLayout.addComponent(statusButton);
+			statusButtons.put(statusButton, status.toString());
+		}
+		
+		activeStatusButton = statusAll;
+		return statusFilterLayout;
+	}
+
+	private void updateActiveStatusButtonCaption() {
+		if (activeStatusButton != null) {
+			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + "<span class=\"" + CssStyles.BADGE + "\">" + grid.getContainer().size() + "</span>");
+		}
+	}
+	
+	private void processStatusChange(EventStatus eventStatus, Button button) {
+		grid.setStatusFilter(eventStatus);
+		statusButtons.keySet().forEach(b -> {
+			CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			b.setCaption(statusButtons.get(b));
+		});
+		CssStyles.removeStyles(button, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		activeStatusButton = button;
+		updateActiveStatusButtonCaption();
+	}
+	
 	@Override
 	public void enter(ViewChangeEvent event) {
 		grid.reload();
+		updateActiveStatusButtonCaption();
 	}
 
 }

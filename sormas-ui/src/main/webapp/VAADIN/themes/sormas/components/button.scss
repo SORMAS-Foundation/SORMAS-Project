@@ -25,5 +25,22 @@
       @include valo-button-style($background-color: $s-warning-color);
       border-color: darken($s-warning-color, 25%)
     }
+   
+    &.v-button-link-highlighted {
+      background-color: $v-focus-color;
+      text-decoration: none;
+      text-transform: none;
+  	  font-weight: bold;
+      color: $v-font-color;
+      
+      &.v-button-link-highlighted-light {
+        background-color: $v-focus-light-color !important;
+        
+        &.v-button-link-highlighted-light:hover {
+          background-color: $v-focus-color !important;
+        }
+      }
+    }
+   
   }
 }

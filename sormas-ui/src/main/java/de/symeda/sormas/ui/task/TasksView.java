@@ -21,5 +21,6 @@ public class TasksView extends AbstractView {
     @Override
     public void enter(ViewChangeEvent event) {
     	taskListComponent.reload();
+    	taskListComponent.updateActiveStatusButtonCaption();
     }
 }

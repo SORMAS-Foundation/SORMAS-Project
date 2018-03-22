@@ -199,7 +199,7 @@ public class ContactGrid extends Grid {
 	
 	
     @SuppressWarnings("unchecked")
-	private BeanItemContainer<ContactIndexDto> getContainer() {
+	public BeanItemContainer<ContactIndexDto> getContainer() {
     	GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
         return (BeanItemContainer<ContactIndexDto>) container.getWrappedContainer();
     }

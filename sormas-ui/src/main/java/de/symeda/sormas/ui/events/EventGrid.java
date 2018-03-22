@@ -122,7 +122,7 @@ public class EventGrid extends Grid {
     }
     
 	@SuppressWarnings("unchecked")
-	private BeanItemContainer<EventIndexDto> getContainer() {
+	public BeanItemContainer<EventIndexDto> getContainer() {
 		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
 		return (BeanItemContainer<EventIndexDto>) container.getWrappedContainer();
 	}

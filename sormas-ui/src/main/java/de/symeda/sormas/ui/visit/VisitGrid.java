@@ -67,7 +67,7 @@ public class VisitGrid extends Grid {
 	}
 
 	@SuppressWarnings("unchecked")
-	private BeanItemContainer<VisitDto> getContainer() {
+	public BeanItemContainer<VisitDto> getContainer() {
 		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
 		return (BeanItemContainer<VisitDto>) container.getWrappedContainer();
 	}

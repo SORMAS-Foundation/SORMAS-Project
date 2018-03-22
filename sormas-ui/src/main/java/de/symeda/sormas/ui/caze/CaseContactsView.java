@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.caze;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -27,6 +28,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.contact.ContactGrid;
 import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 
 public class CaseContactsView extends AbstractCaseView {
@@ -41,6 +43,8 @@ public class CaseContactsView extends AbstractCaseView {
 	private ComboBox officerFilter;
     private Button newButton;
 	private VerticalLayout gridLayout;
+	private HashMap<Button, String> statusButtons;
+	private Button activeStatusButton;
 
     public CaseContactsView() {
     	super(VIEW_NAME);
@@ -49,8 +53,8 @@ public class CaseContactsView extends AbstractCaseView {
         grid = new ContactGrid();
 
         gridLayout = new VerticalLayout();
-        gridLayout.addComponent(createTopBar());
         gridLayout.addComponent(createFilterBar());
+        gridLayout.addComponent(createStatusFilterBar());
         gridLayout.addComponent(grid);
         gridLayout.setMargin(true);
         gridLayout.setSpacing(false);
@@ -58,52 +62,6 @@ public class CaseContactsView extends AbstractCaseView {
         gridLayout.setExpandRatio(grid, 1);
         
         setSubComponent(gridLayout);
-    }
-
-	public HorizontalLayout createTopBar() {
-    	HorizontalLayout topLayout = new HorizontalLayout();
-    	topLayout.setSpacing(true);
-    	topLayout.setWidth("100%");
-    	
-    	Button statusAll = new Button("all", e -> grid.setStatusFilter(null));
-        statusAll.setStyleName(ValoTheme.BUTTON_LINK);
-        topLayout.addComponent(statusAll);
-        
-        for (ContactStatus status : ContactStatus.values()) {
-	    	Button statusButton = new Button(status.toString(), e -> {
-	    		grid.setStatusFilter(status);
-	    		grid.reload();
-	    	});
-	    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
-	        topLayout.addComponent(statusButton);
-        }
-        topLayout.setExpandRatio(topLayout.getComponent(topLayout.getComponentCount()-1), 1);
-
-        if (LoginHelper.hasUserRight(UserRight.CONTACT_EXPORT)) {
-			Button exportButton = new Button("Export");
-			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			exportButton.setIcon(FontAwesome.DOWNLOAD);
-			
-			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", "text/csv");
-			FileDownloader fileDownloader = new FileDownloader(streamResource);
-			fileDownloader.extend(exportButton);
-			
-			topLayout.addComponent(exportButton);
-			topLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
-			topLayout.setExpandRatio(exportButton, 1);
-		}
-        
-        if (LoginHelper.hasUserRight(UserRight.CONTACT_CREATE)) {
-	        newButton = new Button("New contact");
-	        newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-	        newButton.setIcon(FontAwesome.PLUS_CIRCLE);
-	        newButton.addClickListener(e -> ControllerProvider.getContactController().create(this.getCaseRef()));
-	        topLayout.addComponent(newButton);
-	        topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
-        }
-        
-        topLayout.setStyleName("top-bar");
-        return topLayout;
     }
 
 	public HorizontalLayout createFilterBar() {
@@ -117,6 +75,7 @@ public class CaseContactsView extends AbstractCaseView {
     	classificationFilter.addValueChangeListener(e -> {
         	ContactClassification classification = (ContactClassification) e.getProperty().getValue();
         	grid.setClassificationFilter(classification);
+			updateActiveStatusButtonCaption();
         });
         topLayout.addComponent(classificationFilter);
     	
@@ -126,6 +85,7 @@ public class CaseContactsView extends AbstractCaseView {
         districtFilter.addValueChangeListener(e -> {
         	DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
         	grid.setDistrictFilter(district != null ? district.getUuid() : null);
+			updateActiveStatusButtonCaption();
         });
         topLayout.addComponent(districtFilter);
 
@@ -135,11 +95,65 @@ public class CaseContactsView extends AbstractCaseView {
         officerFilter.addValueChangeListener(e -> {
         	UserReferenceDto officer = (UserReferenceDto) e.getProperty().getValue();
         	grid.setContactOfficerFilter(officer != null ? officer.getUuid() : null);
+			updateActiveStatusButtonCaption();
         });
         topLayout.addComponent(officerFilter);
 
         topLayout.setExpandRatio(officerFilter, 1);
         return topLayout;
+    }
+	
+	public HorizontalLayout createStatusFilterBar() {
+    	HorizontalLayout statusFilterLayout = new HorizontalLayout();
+    	statusFilterLayout.setSpacing(true);
+    	statusFilterLayout.setWidth("100%");
+    	statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
+
+		statusButtons = new HashMap<>();
+		
+    	Button statusAll = new Button("All", e -> processStatusChange(null, e.getButton()));
+		CssStyles.style(statusAll, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED);
+		statusAll.setCaptionAsHtml(true);
+		statusFilterLayout.addComponent(statusAll);
+		statusButtons.put(statusAll, "All");
+        
+        for (ContactStatus status : ContactStatus.values()) {
+	    	Button statusButton = new Button(status.toString(), e -> {
+	    		processStatusChange(status, e.getButton());
+	    	});
+	    	CssStyles.style(statusButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			statusButton.setCaptionAsHtml(true);
+			statusFilterLayout.addComponent(statusButton);
+			statusButtons.put(statusButton, status.toString());
+        }
+        statusFilterLayout.setExpandRatio(statusFilterLayout.getComponent(statusFilterLayout.getComponentCount()-1), 1);
+
+        if (LoginHelper.hasUserRight(UserRight.CONTACT_EXPORT)) {
+			Button exportButton = new Button("Export");
+			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			exportButton.setIcon(FontAwesome.DOWNLOAD);
+			
+			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", "text/csv");
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
+			
+			statusFilterLayout.addComponent(exportButton);
+			statusFilterLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
+			statusFilterLayout.setExpandRatio(exportButton, 1);
+		}
+        
+        if (LoginHelper.hasUserRight(UserRight.CONTACT_CREATE)) {
+	        newButton = new Button("New contact");
+	        newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+	        newButton.setIcon(FontAwesome.PLUS_CIRCLE);
+	        newButton.addClickListener(e -> ControllerProvider.getContactController().create(this.getCaseRef()));
+	        statusFilterLayout.addComponent(newButton);
+	        statusFilterLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
+        }
+
+        statusFilterLayout.addStyleName("top-bar");
+		activeStatusButton = statusAll;
+        return statusFilterLayout;
     }
 	
 	private void update() {
@@ -161,6 +175,24 @@ public class CaseContactsView extends AbstractCaseView {
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
     	update();
+		updateActiveStatusButtonCaption();
     }
+    
+    private void updateActiveStatusButtonCaption() {
+		if (activeStatusButton != null) {
+			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + "<span class=\"" + CssStyles.BADGE + "\">" + grid.getContainer().size() + "</span>");
+		}
+	}
+	
+	private void processStatusChange(ContactStatus contactStatus, Button button) {
+		grid.setStatusFilter(contactStatus);
+		statusButtons.keySet().forEach(b -> {
+			CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			b.setCaption(statusButtons.get(b));
+		});
+		CssStyles.removeStyles(button, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		activeStatusButton = button;
+		updateActiveStatusButtonCaption();
+	}
 
 }

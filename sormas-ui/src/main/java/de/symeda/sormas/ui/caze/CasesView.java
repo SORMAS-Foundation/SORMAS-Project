@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.caze;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -60,6 +61,8 @@ public class CasesView extends AbstractView {
 	private Button importButton;
 	private Button exportButton;
 	private Button createButton;
+	private HashMap<Button, String> statusButtons;
+	private Button activeStatusButton;
 
 	private VerticalLayout gridLayout;
 	private HorizontalLayout firstFilterRowLayout;
@@ -72,8 +75,17 @@ public class CasesView extends AbstractView {
 
 	public CasesView() {
 		super(VIEW_NAME);
-		
+
 		grid = new CaseGrid();
+		gridLayout = new VerticalLayout();
+		gridLayout.addComponent(createFilterBar());
+		gridLayout.addComponent(createStatusFilterBar());
+		gridLayout.addComponent(grid);
+		gridLayout.setMargin(true);
+		gridLayout.setSpacing(false);
+		gridLayout.setSizeFull();
+		gridLayout.setExpandRatio(grid, 1);
+		gridLayout.setStyleName("crud-main-layout");
 
 		if (LoginHelper.hasUserRight(UserRight.CASE_IMPORT)) {
 			importButton = new Button("Import");
@@ -108,44 +120,14 @@ public class CasesView extends AbstractView {
 			createButton.addClickListener(e -> ControllerProvider.getCaseController().create());
 			addHeaderComponent(createButton);
 		}
-
-		gridLayout = new VerticalLayout();
-		gridLayout.addComponent(createTopBar());
-		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(grid);
-		gridLayout.setMargin(true);
-		gridLayout.setSpacing(false);
-		gridLayout.setSizeFull();
-		gridLayout.setExpandRatio(grid, 1);
-		gridLayout.setStyleName("crud-main-layout");
-
+		
 		addComponent(gridLayout);
-	}
-
-
-	public HorizontalLayout createTopBar() {
-		HorizontalLayout topLayout = new HorizontalLayout();
-		topLayout.setSpacing(true);
-		topLayout.setSizeUndefined();
-		topLayout.addStyleName(CssStyles.VSPACE_3);
-
-		Button statusAll = new Button("all", e -> grid.setInvestigationFilter(null));
-		statusAll.setStyleName(ValoTheme.BUTTON_LINK);
-		topLayout.addComponent(statusAll);
-
-		for (InvestigationStatus status : InvestigationStatus.values()) {
-			Button statusButton = new Button(status.toString(), e -> grid.setInvestigationFilter(status));
-			statusButton.setStyleName(ValoTheme.BUTTON_LINK);
-			topLayout.addComponent(statusButton);
-		}
-
-		return topLayout;
+		grid.setReloadEnabled(true);
 	}
 
 	public VerticalLayout createFilterBar() {
 		VerticalLayout filterLayout = new VerticalLayout();
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
-		filterLayout.addStyleName(CssStyles.VSPACE_3);
 
 		firstFilterRowLayout = new HorizontalLayout();
 		firstFilterRowLayout.setSpacing(true);
@@ -155,7 +137,10 @@ public class CasesView extends AbstractView {
 			outcomeFilter.setWidth(140, Unit.PIXELS);
 			outcomeFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME));
 			outcomeFilter.addItems((Object[]) CaseOutcome.values());
-			outcomeFilter.addValueChangeListener(e -> grid.setOutcomeFilter(((CaseOutcome) e.getProperty().getValue())));
+			outcomeFilter.addValueChangeListener(e -> {
+				grid.setOutcomeFilter(((CaseOutcome) e.getProperty().getValue()));
+				updateActiveStatusButtonCaption();
+			});
 			firstFilterRowLayout.addComponent(outcomeFilter);
 			outcomeFilter.setValue(CaseOutcome.NO_OUTCOME);
 
@@ -163,20 +148,29 @@ public class CasesView extends AbstractView {
 			diseaseFilter.setWidth(140, Unit.PIXELS);
 			diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 			diseaseFilter.addItems((Object[])Disease.values());
-			diseaseFilter.addValueChangeListener(e->grid.setDiseaseFilter(((Disease)e.getProperty().getValue())));
+			diseaseFilter.addValueChangeListener(e -> {
+				grid.setDiseaseFilter(((Disease)e.getProperty().getValue()));
+				updateActiveStatusButtonCaption();
+			});
 			firstFilterRowLayout.addComponent(diseaseFilter);
 
 			ComboBox classificationFilter = new ComboBox();
 			classificationFilter.setWidth(140, Unit.PIXELS);
 			classificationFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
 			classificationFilter.addItems((Object[])CaseClassification.values());
-			classificationFilter.addValueChangeListener(e->grid.setClassificationFilter(((CaseClassification)e.getProperty().getValue())));
+			classificationFilter.addValueChangeListener(e -> {
+				grid.setClassificationFilter(((CaseClassification)e.getProperty().getValue()));
+				updateActiveStatusButtonCaption();
+			});
 			firstFilterRowLayout.addComponent(classificationFilter);
 
 			TextField searchField = new TextField();
 			searchField.setWidth(200, Unit.PIXELS);
 			searchField.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, SEARCH_FIELD));
-			searchField.addTextChangeListener(e->grid.filterByText(e.getText()));
+			searchField.addTextChangeListener(e -> {
+				grid.filterByText(e.getText());
+				updateActiveStatusButtonCaption();
+			});
 			firstFilterRowLayout.addComponent(searchField);
 
 			addShowMoreOrLessFiltersButtons(firstFilterRowLayout);
@@ -191,7 +185,10 @@ public class CasesView extends AbstractView {
 			presentConditionFilter.setWidth(140, Unit.PIXELS);
 			presentConditionFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
 			presentConditionFilter.addItems((Object[])PresentCondition.values());
-			presentConditionFilter.addValueChangeListener(e->grid.setPresentConditionFilter(((PresentCondition)e.getProperty().getValue())));
+			presentConditionFilter.addValueChangeListener(e -> {
+				grid.setPresentConditionFilter(((PresentCondition)e.getProperty().getValue()));
+				updateActiveStatusButtonCaption();
+			});
 			secondFilterRowLayout.addComponent(presentConditionFilter);      
 
 			UserDto user = LoginHelper.getCurrentUser();
@@ -204,6 +201,7 @@ public class CasesView extends AbstractView {
 				regionFilter.addValueChangeListener(e -> {
 					RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
 					grid.setRegionFilter(region);
+					updateActiveStatusButtonCaption();
 				});
 				secondFilterRowLayout.addComponent(regionFilter);
 			}
@@ -212,7 +210,10 @@ public class CasesView extends AbstractView {
 			districtFilter.setWidth(140, Unit.PIXELS);
 			districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
 			districtFilter.setDescription("Select a district in the state");
-			districtFilter.addValueChangeListener(e->grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue())));
+			districtFilter.addValueChangeListener(e -> {
+				grid.setDistrictFilter(((DistrictReferenceDto)e.getProperty().getValue()));
+				updateActiveStatusButtonCaption();
+			});
 
 			if (user.getRegion() != null) {
 				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
@@ -236,7 +237,10 @@ public class CasesView extends AbstractView {
 			facilityFilter.setWidth(140, Unit.PIXELS);
 			facilityFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
 			facilityFilter.setDescription("Select a facility in the LGA");
-			facilityFilter.addValueChangeListener(e->grid.setHealthFacilityFilter(((FacilityReferenceDto)e.getProperty().getValue())));
+			facilityFilter.addValueChangeListener(e -> {
+				grid.setHealthFacilityFilter(((FacilityReferenceDto)e.getProperty().getValue()));
+				updateActiveStatusButtonCaption();
+			});
 			facilityFilter.setEnabled(false);
 			secondFilterRowLayout.addComponent(facilityFilter);
 
@@ -257,7 +261,10 @@ public class CasesView extends AbstractView {
 			if (user.getRegion() != null) {
 				officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
 			}
-			officerFilter.addValueChangeListener(e->grid.setSurveillanceOfficerFilter(((UserReferenceDto)e.getProperty().getValue())));
+			officerFilter.addValueChangeListener(e -> {
+				grid.setSurveillanceOfficerFilter(((UserReferenceDto)e.getProperty().getValue()));
+				updateActiveStatusButtonCaption();
+			});
 			secondFilterRowLayout.addComponent(officerFilter);
 
 			ComboBox reportedByFilter = new ComboBox();
@@ -266,6 +273,7 @@ public class CasesView extends AbstractView {
 			reportedByFilter.addItems((Object[]) UserRole.values());
 			reportedByFilter.addValueChangeListener(e -> {
 				grid.setReportedByFilter((UserRole) e.getProperty().getValue());
+				updateActiveStatusButtonCaption();
 			});
 			secondFilterRowLayout.addComponent(reportedByFilter);
 		}
@@ -297,12 +305,43 @@ public class CasesView extends AbstractView {
 				}
 				applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
 				grid.setDateFilter(fromDate, toDate);
+				updateActiveStatusButtonCaption();
 			});
 		}
 		filterLayout.addComponent(dateFilterRowLayout);
 		dateFilterRowLayout.setVisible(false);
 
 		return filterLayout;
+	}
+
+	public HorizontalLayout createStatusFilterBar() {
+		HorizontalLayout statusFilterLayout = new HorizontalLayout();
+		statusFilterLayout.setSpacing(true);
+		statusFilterLayout.setSizeUndefined();
+		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
+		
+		statusButtons = new HashMap<>();
+		
+		Button statusAll = new Button("All", e -> {
+			processStatusChange(null, e.getButton());
+		});
+		CssStyles.style(statusAll, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED);
+		statusAll.setCaptionAsHtml(true);
+		statusFilterLayout.addComponent(statusAll);
+		statusButtons.put(statusAll, "All");
+
+		for (InvestigationStatus status : InvestigationStatus.values()) {
+			Button statusButton = new Button(status.toString(), e -> {
+				processStatusChange(status, e.getButton());
+			});
+			CssStyles.style(statusButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			statusButton.setCaptionAsHtml(true);
+			statusFilterLayout.addComponent(statusButton);
+			statusButtons.put(statusButton, status.toString());
+		}
+
+		activeStatusButton = statusAll;
+		return statusFilterLayout;
 	}
 
 	private void addShowMoreOrLessFiltersButtons(HorizontalLayout parentLayout) {
@@ -337,9 +376,28 @@ public class CasesView extends AbstractView {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		grid.reload();
+		updateActiveStatusButtonCaption();
 	}
 
 	public void clearSelection() {
 		grid.getSelectionModel().reset();
 	}
+	
+	private void updateActiveStatusButtonCaption() {
+		if (activeStatusButton != null) {
+			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + "<span class=\"" + CssStyles.BADGE + "\">" + grid.getContainer().size() + "</span>");
+		}
+	}
+	
+	private void processStatusChange(InvestigationStatus investigationStatus, Button button) {
+		grid.setInvestigationFilter(investigationStatus);
+		statusButtons.keySet().forEach(b -> {
+			CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			b.setCaption(statusButtons.get(b));
+		});
+		CssStyles.removeStyles(button, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		activeStatusButton = button;
+		updateActiveStatusButtonCaption();
+	}
+	
 }

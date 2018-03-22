@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.contact;
 
+import java.util.HashMap;
+
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
@@ -25,6 +27,8 @@ public class ContactVisitsView extends AbstractContactView {
 	private VisitGrid grid;    
     private Button newButton;
 	private VerticalLayout gridLayout;
+	private HashMap<Button, String> statusButtons;
+	private Button activeStatusButton;
 
     public ContactVisitsView() {
     	super(VIEW_NAME);
@@ -49,19 +53,27 @@ public class ContactVisitsView extends AbstractContactView {
     	HorizontalLayout topLayout = new HorizontalLayout();
     	topLayout.setSpacing(true);
     	topLayout.setWidth(100, Unit.PERCENTAGE);
-    	
-    	Button contactButton = new Button("contact related", e -> {
-    		grid.reload(getContactRef());
-    	});
-    	contactButton.setStyleName(ValoTheme.BUTTON_LINK);
-        topLayout.addComponent(contactButton);
 
-    	Button personButton = new Button("all visits of contact person", e -> {
+		statusButtons = new HashMap<>();
+		
+    	Button contactButton = new Button("Contact related", e -> {
+    		grid.reload(getContactRef());
+    		processStatusChangeVisuals(e.getButton());
+    	});
+		CssStyles.style(contactButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED);
+		contactButton.setCaptionAsHtml(true);
+		topLayout.addComponent(contactButton);
+		statusButtons.put(contactButton, "Contact related");
+
+    	Button personButton = new Button("All visits of contact person", e -> {
     		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
     		grid.reload(contact.getPerson());
+    		processStatusChangeVisuals(e.getButton());
     	});
-    	personButton.setStyleName(ValoTheme.BUTTON_LINK);
-        topLayout.addComponent(personButton);
+    	CssStyles.style(personButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+    	personButton.setCaptionAsHtml(true);
+    	topLayout.addComponent(personButton);
+		statusButtons.put(personButton, "All visits of contact person");
 
         topLayout.setExpandRatio(topLayout.getComponent(topLayout.getComponentCount()-1), 1);
         
@@ -78,12 +90,31 @@ public class ContactVisitsView extends AbstractContactView {
     	}
     	
         topLayout.addStyleName(CssStyles.VSPACE_3);
+		activeStatusButton = contactButton;
         return topLayout;
     }
 
+
+	private void updateActiveStatusButtonCaption() {
+		if (activeStatusButton != null) {
+			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + "<span class=\"" + CssStyles.BADGE + "\">" + grid.getContainer().size() + "</span>");
+		}
+	}
+	
+	private void processStatusChangeVisuals(Button button) {
+		statusButtons.keySet().forEach(b -> {
+			CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			b.setCaption(statusButtons.get(b));
+		});
+		CssStyles.removeStyles(button, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		activeStatusButton = button;
+		updateActiveStatusButtonCaption();
+	}
+	
     @Override
     public void enter(ViewChangeEvent event) {
     	super.enter(event);
     	grid.reload(getContactRef());
+    	updateActiveStatusButtonCaption();
     }
 }

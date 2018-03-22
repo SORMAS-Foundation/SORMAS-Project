@@ -201,7 +201,7 @@ public class SampleGrid extends Grid {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private BeanItemContainer<SampleIndexDto> getContainer() {
+	public BeanItemContainer<SampleIndexDto> getContainer() {
 		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
 		return (BeanItemContainer<SampleIndexDto>) container.getWrappedContainer();
 	}

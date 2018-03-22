@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -50,11 +51,23 @@ public class ContactsView extends AbstractView {
 
 	private ContactGrid grid;    
 	private VerticalLayout gridLayout;
+	
+	private HashMap<Button, String> statusButtons;
+	private Button activeStatusButton;
 
     public ContactsView() {
     	super(VIEW_NAME);
     	
-        grid = new ContactGrid();
+        grid = new ContactGrid();        
+        gridLayout = new VerticalLayout();
+        gridLayout.addComponent(createFilterBar());
+        gridLayout.addComponent(createStatusFilterBar());
+        gridLayout.addComponent(grid);
+        gridLayout.setMargin(true);
+        gridLayout.setSpacing(false);
+        gridLayout.setSizeFull();
+        gridLayout.setExpandRatio(grid, 1);
+        gridLayout.setStyleName("crud-main-layout");
 
         if (LoginHelper.hasUserRight(UserRight.CONTACT_EXPORT)) {
 			Button exportButton = new Button("Export");
@@ -68,57 +81,32 @@ public class ContactsView extends AbstractView {
 			addHeaderComponent(exportButton);
 		}
         
-        gridLayout = new VerticalLayout();
-        gridLayout.addComponent(createTopBar());
-        gridLayout.addComponent(createFilterBar());
-        gridLayout.addComponent(grid);
-        gridLayout.setMargin(true);
-        gridLayout.setSpacing(false);
-        gridLayout.setSizeFull();
-        gridLayout.setExpandRatio(grid, 1);
-        gridLayout.setStyleName("crud-main-layout");
-        
         addComponent(gridLayout);
-    }
-
-
-	public HorizontalLayout createTopBar() {
-    	HorizontalLayout topLayout = new HorizontalLayout();
-    	topLayout.setSpacing(true);
-    	topLayout.setSizeUndefined();
-    	topLayout.addStyleName(CssStyles.VSPACE_3);
-    	
-    	Button statusAll = new Button("all", e -> grid.setStatusFilter(null));
-        statusAll.setStyleName(ValoTheme.BUTTON_LINK);
-        topLayout.addComponent(statusAll);
-        
-        for (ContactStatus status : ContactStatus.values()) {
-	    	Button statusButton = new Button(status.toString(), e -> grid.setStatusFilter(status));
-	    	statusButton.setStyleName(ValoTheme.BUTTON_LINK);
-	    	topLayout.addComponent(statusButton);
-        }
-        
-        return topLayout;
     }
 
 	public HorizontalLayout createFilterBar() {
     	HorizontalLayout filterLayout = new HorizontalLayout();
     	filterLayout.setSpacing(true);
     	filterLayout.setSizeUndefined();
-    	filterLayout.addStyleName(CssStyles.VSPACE_3);
     	
     	ComboBox classificationFilter = new ComboBox();
     	classificationFilter.setWidth(140, Unit.PIXELS);
     	classificationFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
     	classificationFilter.addItems((Object[]) ContactClassification.values());
-    	classificationFilter.addValueChangeListener(e -> grid.setClassificationFilter((ContactClassification) e.getProperty().getValue()));
+    	classificationFilter.addValueChangeListener(e -> {
+    		grid.setClassificationFilter((ContactClassification) e.getProperty().getValue());
+    		updateActiveStatusButtonCaption();
+    	});
     	filterLayout.addComponent(classificationFilter);
     	
         ComboBox diseaseFilter = new ComboBox();
         diseaseFilter.setWidth(140, Unit.PIXELS);
         diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISEASE));
         diseaseFilter.addItems((Object[])Disease.values());
-        diseaseFilter.addValueChangeListener(e -> grid.setDiseaseFilter(((Disease)e.getProperty().getValue())));
+        diseaseFilter.addValueChangeListener(e -> {
+        	grid.setDiseaseFilter(((Disease)e.getProperty().getValue()));
+			updateActiveStatusButtonCaption();
+        });
         filterLayout.addComponent(diseaseFilter);
 
         UserDto user = LoginHelper.getCurrentUser();
@@ -131,6 +119,7 @@ public class ContactsView extends AbstractView {
             regionFilter.addValueChangeListener(e -> {
             	RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
             	grid.setRegionFilter(region != null ? region.getUuid() : null);
+				updateActiveStatusButtonCaption();
             });
             filterLayout.addComponent(regionFilter);
         }
@@ -142,6 +131,7 @@ public class ContactsView extends AbstractView {
         districtFilter.addValueChangeListener(e -> {
         	DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
         	grid.setDistrictFilter(district != null ? district.getUuid() : null);
+			updateActiveStatusButtonCaption();
         });
 
         if (user.getRegion() != null) {
@@ -169,6 +159,7 @@ public class ContactsView extends AbstractView {
         facilityFilter.addValueChangeListener(e -> {
         	FacilityReferenceDto facility = (FacilityReferenceDto) e.getProperty().getValue();
         	grid.setHealthFacilityFilter(facility != null ? facility.getUuid() : null);
+			updateActiveStatusButtonCaption();
         });
         facilityFilter.setEnabled(false);
         filterLayout.addComponent(facilityFilter);
@@ -193,6 +184,7 @@ public class ContactsView extends AbstractView {
         officerFilter.addValueChangeListener(e -> {
         	UserReferenceDto officer = (UserReferenceDto) e.getProperty().getValue();
         	grid.setContactOfficerFilter(officer != null ? officer.getUuid() : null);
+			updateActiveStatusButtonCaption();
         });
         filterLayout.addComponent(officerFilter);
         
@@ -200,7 +192,10 @@ public class ContactsView extends AbstractView {
         followUpStatusFilter.setWidth(140, Unit.PIXELS);
         followUpStatusFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.FOLLOW_UP_STATUS));
         followUpStatusFilter.addItems((Object[])FollowUpStatus.values());
-        followUpStatusFilter.addValueChangeListener(e -> grid.setFollowUpStatusFilter(((FollowUpStatus)e.getProperty().getValue())));
+        followUpStatusFilter.addValueChangeListener(e -> {
+        	grid.setFollowUpStatusFilter(((FollowUpStatus)e.getProperty().getValue()));
+			updateActiveStatusButtonCaption();
+        });
         filterLayout.addComponent(followUpStatusFilter);
                 
         ComboBox reportedByFilter = new ComboBox();
@@ -209,20 +204,68 @@ public class ContactsView extends AbstractView {
         reportedByFilter.addItems((Object[]) UserRole.values());
         reportedByFilter.addValueChangeListener(e -> {
         	grid.setReportedByFilter((UserRole) e.getProperty().getValue());
+			updateActiveStatusButtonCaption();
         });
         filterLayout.addComponent(reportedByFilter);
         
         TextField searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, SEARCH_FIELD));
-		searchField.addTextChangeListener(e -> grid.filterByText(e.getText()));
+		searchField.addTextChangeListener(e -> {
+			grid.filterByText(e.getText());
+			updateActiveStatusButtonCaption();
+		});
 		filterLayout.addComponent(searchField);
 
         return filterLayout;
     }
+	
+	public HorizontalLayout createStatusFilterBar() {
+    	HorizontalLayout statusFilterLayout = new HorizontalLayout();
+    	statusFilterLayout.setSpacing(true);
+    	statusFilterLayout.setSizeUndefined();
+    	statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
+
+		statusButtons = new HashMap<>();
+		
+    	Button statusAll = new Button("All", e -> processStatusChange(null, e.getButton()));
+		CssStyles.style(statusAll, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED);
+		statusAll.setCaptionAsHtml(true);
+		statusFilterLayout.addComponent(statusAll);
+		statusButtons.put(statusAll, "All");
+        
+        for (ContactStatus status : ContactStatus.values()) {
+	    	Button statusButton = new Button(status.toString(), e -> processStatusChange(status, e.getButton()));
+	    	CssStyles.style(statusButton, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			statusButton.setCaptionAsHtml(true);
+			statusFilterLayout.addComponent(statusButton);
+			statusButtons.put(statusButton, status.toString());
+        }
+
+		activeStatusButton = statusAll;
+        return statusFilterLayout;
+    }
+	
+	private void updateActiveStatusButtonCaption() {
+		if (activeStatusButton != null) {
+			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + "<span class=\"" + CssStyles.BADGE + "\">" + grid.getContainer().size() + "</span>");
+		}
+	}
+	
+	private void processStatusChange(ContactStatus contactStatus, Button button) {
+		grid.setStatusFilter(contactStatus);
+		statusButtons.keySet().forEach(b -> {
+			CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+			b.setCaption(statusButtons.get(b));
+		});
+		CssStyles.removeStyles(button, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		activeStatusButton = button;
+		updateActiveStatusButtonCaption();
+	}
 
     @Override
     public void enter(ViewChangeEvent event) {
     	grid.reload();
+		updateActiveStatusButtonCaption();
     }
 }
