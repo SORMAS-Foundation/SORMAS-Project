@@ -217,13 +217,13 @@
                 android:value="@={caze.healthFacilityDetails}"/>
 
             <TextView
-                android:id="@+id/caseData_move"
+                android:id="@+id/caseData_transfer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
                 android:paddingBottom="@dimen/field_padding"
-                android:text="@string/case_move"
-                android:onClick="moveCase"
+                android:text="@string/case_transfer"
+                android:onClick="transferCase"
                 android:visibility="gone"/>
 
             <!-- ============= CASE_ADMINISTRATION =============

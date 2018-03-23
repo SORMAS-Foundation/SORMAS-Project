@@ -368,7 +368,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public CaseDataDto moveCase(CaseReferenceDto cazeRef, CommunityReferenceDto communityDto, FacilityReferenceDto facilityDto, String facilityDetails,
+	public CaseDataDto transferCase(CaseReferenceDto cazeRef, CommunityReferenceDto communityDto, FacilityReferenceDto facilityDto, String facilityDetails,
 			UserReferenceDto officerDto) {
 		Case caze = fromDto(getCaseDataByUuid(cazeRef.getUuid()));
 

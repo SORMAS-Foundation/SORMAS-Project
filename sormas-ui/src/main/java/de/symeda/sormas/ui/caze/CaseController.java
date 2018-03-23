@@ -284,23 +284,23 @@ public class CaseController {
 			}, I18nProperties.getFieldCaption("Case"));
 		}
         
-        // Initialize 'Move case to another health facility' button
-        if (LoginHelper.hasUserRight(UserRight.CASE_MOVE)) {
-	        Button moveCaseButton = new Button();
-	        moveCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
-	        moveCaseButton.setCaption("Move case to another health facility");
-	        moveCaseButton.addClickListener(new ClickListener() {
+        // Initialize 'Transfer case' button
+        if (LoginHelper.hasUserRight(UserRight.CASE_TRANSFER)) {
+	        Button transferCaseButton = new Button();
+	        transferCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
+	        transferCaseButton.setCaption("Transfer case");
+	        transferCaseButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void buttonClick(ClickEvent event) {
 					editView.commit();
 					CaseDataDto cazeDto = findCase(cazeRef.getUuid());
-					moveCase(cazeDto);
+					transferCase(cazeDto);
 				}
 			});
 	        
-	        editView.getButtonsPanel().addComponentAsFirst(moveCaseButton);
-	        editView.getButtonsPanel().setComponentAlignment(moveCaseButton, Alignment.BOTTOM_LEFT);
+	        editView.getButtonsPanel().addComponentAsFirst(transferCaseButton);
+	        editView.getButtonsPanel().setComponentAlignment(transferCaseButton, Alignment.BOTTOM_LEFT);
         }
 	}
 
@@ -357,6 +357,7 @@ public class CaseController {
 						"The symptoms selected match the clinical criteria for " + resultDto.getPlagueType().toString() + ". "
 								+ "The plague type will be set to " + resultDto.getPlagueType().toString() + " for this case.");
 			window.addCloseListener(new CloseListener() {
+				private static final long serialVersionUID = 1L;
 				@Override
 				public void windowClose(CloseEvent e) {
 					Notification.show("Case saved", Type.WARNING_MESSAGE);
@@ -390,24 +391,24 @@ public class CaseController {
 		return editView;
 	}
 	
-	public void moveCase(CaseDataDto caze) {
-		CaseFacilityChangeForm facilityChangeForm = new CaseFacilityChangeForm(UserRight.CASE_MOVE);
+	public void transferCase(CaseDataDto caze) {
+		CaseFacilityChangeForm facilityChangeForm = new CaseFacilityChangeForm(UserRight.CASE_TRANSFER);
 		facilityChangeForm.setValue(caze);
 		CommitDiscardWrapperComponent<CaseFacilityChangeForm> facilityChangeView = new CommitDiscardWrapperComponent<CaseFacilityChangeForm>(facilityChangeForm, facilityChangeForm.getFieldGroup());
-		facilityChangeView.getCommitButton().setCaption("Move case");
+		facilityChangeView.getCommitButton().setCaption("Transfer case");
 		facilityChangeView.setMargin(true);
 		
 		Window popupWindow = VaadinUiUtil.showPopupWindow(facilityChangeView);
-		popupWindow.setCaption("Move case to another health facility");
+		popupWindow.setCaption("Transfer case");
 		
 		facilityChangeView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
 				if (!facilityChangeForm.getFieldGroup().isModified()) {
 					CaseDataDto dto = facilityChangeForm.getValue();
-					FacadeProvider.getCaseFacade().moveCase(FacadeProvider.getCaseFacade().getReferenceByUuid(dto.getUuid()), dto.getCommunity(), dto.getHealthFacility(), dto.getHealthFacilityDetails(), dto.getSurveillanceOfficer());
+					FacadeProvider.getCaseFacade().transferCase(FacadeProvider.getCaseFacade().getReferenceByUuid(dto.getUuid()), dto.getCommunity(), dto.getHealthFacility(), dto.getHealthFacilityDetails(), dto.getSurveillanceOfficer());
 					popupWindow.close();
-					Notification.show("Case has been moved to the new facility", Type.WARNING_MESSAGE);
+					Notification.show("Case has been transfered to another health facility.", Type.WARNING_MESSAGE);
 					navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null);
 				}
 			}

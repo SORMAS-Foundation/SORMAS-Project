@@ -25,7 +25,7 @@ import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
-import de.symeda.sormas.app.databinding.MoveCaseFragmentLayoutBinding;
+import de.symeda.sormas.app.databinding.TransferCaseFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
@@ -38,7 +38,7 @@ public class FacilityChangeDialogBuilder extends AlertDialog.Builder {
 
     public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 
-    private final MoveCaseFragmentLayoutBinding binding;
+    private final TransferCaseFragmentLayoutBinding binding;
     private final Consumer callback;
     private final Tracker tracker;
 
@@ -46,8 +46,8 @@ public class FacilityChangeDialogBuilder extends AlertDialog.Builder {
 
     public FacilityChangeDialogBuilder(FragmentActivity activity, final Case formCase, final Consumer callback) {
         super(activity);
-        this.setTitle(activity.getResources().getString(R.string.headline_move_case));
-        binding = DataBindingUtil.inflate(activity.getLayoutInflater(), R.layout.move_case_fragment_layout, null, false);
+        this.setTitle(activity.getResources().getString(R.string.headline_transfer_case));
+        binding = DataBindingUtil.inflate(activity.getLayoutInflater(), R.layout.transfer_case_fragment_layout, null, false);
         tracker = ((SormasApplication) activity.getApplication()).getDefaultTracker();
 
         // Need to retrieve the case from the database because we don't want to change the actual bounded case
@@ -165,24 +165,24 @@ public class FacilityChangeDialogBuilder extends AlertDialog.Builder {
             }
         });
 
-        this.setPositiveButton(activity.getResources().getString(R.string.action_move), null);
+        this.setPositiveButton(activity.getResources().getString(R.string.action_transfer), null);
         this.setNegativeButton(activity.getResources().getString(R.string.action_cancel), null);
 
-        CaseValidator.setRequiredHintsForMoveCaseData(binding);
+        CaseValidator.setRequiredHintsForTransferCaseData(binding);
     }
 
     public void setButtonListeners(final AlertDialog dialog, final Activity activity) {
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CaseValidator.clearErrorsForMoveCaseData(binding);
-                if (CaseValidator.validateMoveCaseData(binding)) {
+                CaseValidator.clearErrorsForTransferCaseData(binding);
+                if (CaseValidator.validateTransferCaseData(binding)) {
                     try {
-                        DatabaseHelper.getCaseDao().moveCase(caze);
+                        DatabaseHelper.getCaseDao().transferCase(caze);
                         callback.accept(true);
                     } catch (NullPointerException | DaoException e) {
                         // TODO Remove the NullPointerException here as soon as bug #381 has been fixed!
-                        Log.e(getClass().getName(), "Error while trying to move case", e);
+                        Log.e(getClass().getName(), "Error while trying to transfer case", e);
                         ErrorReportingHelper.sendCaughtException(tracker, e, caze, true);
                         callback.accept(false);
                     }

@@ -73,7 +73,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		TaskDto doneTask = creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.DONE, caze.toReference(), null, new Date(), user.toReference());
 
 		RDCF newRDCF = creator.createRDCF("New Region", "New District", "New Community", "New Facility");
-		getCaseFacade().moveCase(caze.toReference(), getCommunityFacade().getCommunityReferenceByUuid(newRDCF.community.getUuid()), getFacilityFacade().getFacilityReferenceByUuid(newRDCF.facility.getUuid()), caze.getHealthFacilityDetails(), caseOfficer.toReference());
+		getCaseFacade().transferCase(caze.toReference(), getCommunityFacade().getCommunityReferenceByUuid(newRDCF.community.getUuid()), getFacilityFacade().getFacilityReferenceByUuid(newRDCF.facility.getUuid()), caze.getHealthFacilityDetails(), caseOfficer.toReference());
 
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		pendingTask = getTaskFacade().getByUuid(pendingTask.getUuid());
