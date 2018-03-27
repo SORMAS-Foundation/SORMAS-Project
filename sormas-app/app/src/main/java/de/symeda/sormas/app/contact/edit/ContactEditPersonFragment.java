@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.contact.edit;
 
+import android.content.res.Resources;
 import android.databinding.ViewDataBinding;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -132,7 +133,8 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_person_information);
     }
 
     @Override
@@ -175,7 +177,6 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
             ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
 
-            //Item Data
             if (itemIterator.hasNext())
                 record =  itemIterator.next();
 

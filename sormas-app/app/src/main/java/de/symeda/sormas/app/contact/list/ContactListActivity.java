@@ -80,14 +80,18 @@ public class ContactListActivity extends BaseListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        super.onCreateOptionsMenu(menu);
+        getNewMenu().setTitle(R.string.action_new_contact);
+
+        return true;
+        /*MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.list_action_bar, menu);
 
         MenuItem listMenu = menu.findItem(R.id.action_new);
         listMenu.setVisible(false);
         listMenu.setTitle(R.string.action_new_contact);
 
-        return true;
+        return true;*/
     }
 
     @Override

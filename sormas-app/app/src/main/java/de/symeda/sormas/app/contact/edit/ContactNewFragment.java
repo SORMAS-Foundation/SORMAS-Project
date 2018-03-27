@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.contact.edit;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -69,7 +70,8 @@ public class ContactNewFragment extends BaseEditActivityFragment<FragmentContact
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_new_contact);
     }
 
     @Override

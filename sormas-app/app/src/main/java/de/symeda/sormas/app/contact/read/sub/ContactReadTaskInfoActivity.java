@@ -4,16 +4,14 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.util.NavigationHelper;
 
@@ -21,7 +19,7 @@ import de.symeda.sormas.app.util.NavigationHelper;
  * Created by Orson on 02/01/2018.
  */
 
-public class ContactReadTaskInfoActivity  extends BaseReadActivity {
+public class ContactReadTaskInfoActivity  extends BaseReadActivity<Task> {
 
     private String recordUuid = null;
     private TaskStatus pageStatus = null;
@@ -53,56 +51,40 @@ public class ContactReadTaskInfoActivity  extends BaseReadActivity {
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+    protected Task getActivityRootData(String recordUuid) {
+        return DatabaseHelper.getTaskDao().queryUuid(recordUuid);
+    }
+
+    @Override
+    protected Task getActivityRootDataIfRecordUuidNull() {
+        return null;
+    }
+
+    @Override
+    public BaseReadActivityFragment getActiveReadFragment(Task activityRootData) throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(
                     ContactReadTaskInfoActivity.this, recordUuid, pageStatus);
-            activeFragment = ContactReadTaskInfoFragment.newInstance(this, dataCapsule);
+            activeFragment = ContactReadTaskInfoFragment.newInstance(this, dataCapsule, activityRootData);
         }
 
         return activeFragment;
     }
 
     @Override
-    public boolean showStatusFrame() {
-        return true;
-    }
-
-    @Override
-    public boolean showTitleBar() {
-        return true;
-    }
-
-    @Override
-    public boolean showPageMenu() {
-        return false;
-    }
-
-    @Override
-    public Enum getPageStatus() {
-        return pageStatus;
-    }
-
-    @Override
-    public String getPageMenuData() {
-        return null;
-    }
-
-    @Override
-    public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) {
-        return false;
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        super.onCreateOptionsMenu(menu);
+        getEditMenu().setTitle(R.string.action_edit_contact);
+
+        return true;
+        /*MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.read_action_menu, menu);
 
         MenuItem readMenu = menu.findItem(R.id.action_edit);
         readMenu.setVisible(false);
         readMenu.setTitle(R.string.action_edit_contact);
 
-        return true;
+        return true;*/
     }
 
     @Override

@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.event.read;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -35,7 +36,7 @@ import de.symeda.sormas.app.task.read.TaskReadActivity;
  * Created by Orson on 26/12/2017.
  */
 
-public class EventReadTaskListFragement extends BaseReadActivityFragment<FragmentEventReadTaskLayoutBinding, List<Task>> implements OnListItemClickListener {
+public class EventReadTaskListFragement extends BaseReadActivityFragment<FragmentEventReadTaskLayoutBinding, List<Task>, Event> implements OnListItemClickListener {
 
     private AsyncTask onResumeTask;
     private String recordUuid;
@@ -66,13 +67,18 @@ public class EventReadTaskListFragement extends BaseReadActivityFragment<Fragmen
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            Event event = DatabaseHelper.getEventDao().queryUuid(recordUuid);
+            Event event = getActivityRootData();
+            List<Task> taskList = new ArrayList<Task>();
 
+            //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
             if (event != null) {
-                resultHolder.forList().add(DatabaseHelper.getTaskDao().queryByEvent(event));
-            } else {
-                resultHolder.forList().add(new ArrayList<Task>());
+                if (event.isUnreadOrChildUnread())
+                    DatabaseHelper.getEventDao().markAsRead(event);
+
+                taskList = DatabaseHelper.getTaskDao().queryByEvent(event);
             }
+
+            resultHolder.forList().add(taskList);
         } else {
             ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
             if (listIterator.hasNext())
@@ -123,18 +129,18 @@ public class EventReadTaskListFragement extends BaseReadActivityFragment<Fragmen
 
                 @Override
                 public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    if (recordUuid == null || recordUuid.isEmpty()) {
-                        resultHolder.forList().add(new ArrayList<Task>());
-                        return;
-                    }
+                    Event event = getActivityRootData();
+                    List<Task> taskList = new ArrayList<Task>();
 
-                    Event event = DatabaseHelper.getEventDao().queryUuid(recordUuid);
-
+                    //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
                     if (event != null) {
-                        resultHolder.forList().add(DatabaseHelper.getTaskDao().queryByEvent(event));
-                    } else {
-                        resultHolder.forList().add(new ArrayList<Task>());
+                        if (event.isUnreadOrChildUnread())
+                            DatabaseHelper.getEventDao().markAsRead(event);
+
+                        taskList = DatabaseHelper.getTaskDao().queryByEvent(event);
                     }
+
+                    resultHolder.forList().add(taskList);
                 }
             });
             onResumeTask = executor.execute(new ITaskResultCallback() {
@@ -162,8 +168,14 @@ public class EventReadTaskListFragement extends BaseReadActivityFragment<Fragmen
     }
 
     @Override
+    protected void updateUI(FragmentEventReadTaskLayoutBinding contentBinding, List<Task> tasks) {
+
+    }
+
+    @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_event_tasks);
     }
 
     @Override
@@ -194,9 +206,9 @@ public class EventReadTaskListFragement extends BaseReadActivityFragment<Fragmen
         return false;
     }
 
-    public static EventReadTaskListFragement newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule)
+    public static EventReadTaskListFragement newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, EventReadTaskListFragement.class, capsule);
+        return newInstance(activityCommunicator, EventReadTaskListFragement.class, capsule, activityRootData);
     }
 
     @Override

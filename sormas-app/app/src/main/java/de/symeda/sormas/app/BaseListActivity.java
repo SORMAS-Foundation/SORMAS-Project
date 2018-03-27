@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,8 +33,9 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
     private View applicationTitleBar = null;
     private TextView subHeadingListActivityTitle;
     private View fragmentFrame = null;
-    private BaseListActivityFragment fragment;
     private View rootView;
+    private MenuItem newMenu = null;
+    private BaseListActivityFragment activeFragment = null;
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -93,15 +97,39 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
 
     public void replaceFragment(BaseListActivityFragment f) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        fragment = f;
+        activeFragment = f;
 
-        if (fragment != null) {
-            fragment.setArguments(getIntent().getExtras());
+        if (activeFragment != null) {
+            activeFragment.setArguments(getIntent().getExtras());
             ft.setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout);
-            ft.add(R.id.fragment_frame, fragment, "abc");
+            ft.replace(R.id.fragment_frame, activeFragment);
             ft.addToBackStack(null);
             ft.commit();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.list_action_bar, menu);
+
+        newMenu = menu.findItem(R.id.action_new);
+
+        processActionbarMenu();
+
+        return true;
+    }
+
+    private void processActionbarMenu() {
+        if (activeFragment == null)
+            return;
+
+        if (newMenu != null)
+            newMenu.setVisible(activeFragment.showNewAction());
+    }
+
+    public MenuItem getNewMenu() {
+        return newMenu;
     }
 
     @Override
@@ -142,6 +170,11 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
 
         if (subHeadingListActivityTitle != null)
             subHeadingListActivityTitle.setText(t);
+    }
+
+    @Override
+    public void updateSubHeadingTitle() {
+        throw new UnsupportedOperationException();
     }
 
     @Override

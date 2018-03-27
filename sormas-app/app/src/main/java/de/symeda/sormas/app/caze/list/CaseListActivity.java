@@ -5,17 +5,16 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.landing.CaseLandingToListCapsule;
 import de.symeda.sormas.app.core.SearchBy;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.NavigationHelper;
 
 /**
@@ -74,14 +73,18 @@ public class CaseListActivity extends BaseListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        super.onCreateOptionsMenu(menu);
+        getNewMenu().setTitle(R.string.action_new_case);
+
+        return true;
+        /*MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.list_action_bar, menu);
 
         MenuItem listMenu = menu.findItem(R.id.action_new);
         //listMenu.setVisible(false);
         listMenu.setTitle(R.string.action_new_case);
 
-        return true;
+        return true;*/
     }
 
     @Override

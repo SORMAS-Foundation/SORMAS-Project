@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.contact.read;
 
+import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -17,7 +19,11 @@ import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.OnLinkClickListener;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentContactReadLayoutBinding;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
@@ -27,8 +33,9 @@ import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
  * Created by Orson on 01/01/2018.
  */
 
-public class ContactReadFragment extends BaseReadActivityFragment<FragmentContactReadLayoutBinding, Contact> {
+public class ContactReadFragment extends BaseReadActivityFragment<FragmentContactReadLayoutBinding, Contact, Contact> {
 
+    private AsyncTask onResumeTask;
     private String recordUuid = null;
     private ContactClassification pageStatus = null;
     private Contact record;
@@ -57,24 +64,23 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            if (recordUuid == null || recordUuid.isEmpty()) {
-                resultHolder.forItem().add(DatabaseHelper.getContactDao().build());
-                resultHolder.forItem().add(DatabaseHelper.getCaseDao().build());
-            } else {
-                Case caze = null;
-                Contact contact = DatabaseHelper.getContactDao().queryUuid(recordUuid);
-                resultHolder.forItem().add(contact);
+            Case _associatedCase = null;
+            Contact contact = getActivityRootData();
 
-                if (contact != null)
-                    caze = findAssociatedCase(contact.getPerson(), contact.getCaze().getDisease());
+            if (contact != null) {
+                if (contact.isUnreadOrChildUnread())
+                    DatabaseHelper.getContactDao().markAsRead(contact);
 
-                resultHolder.forItem().add(caze);
+                _associatedCase = findAssociatedCase(contact.getPerson(), contact.getCaze().getDisease());
             }
+
+            resultHolder.forItem().add(contact);
+            resultHolder.forItem().add(_associatedCase);
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
             if (itemIterator.hasNext())
-                record =  itemIterator.next();
+                record = itemIterator.next();
 
             if (itemIterator.hasNext())
                 associatedCase = itemIterator.next();
@@ -100,15 +106,75 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
     }
 
     @Override
+    protected void updateUI(FragmentContactReadLayoutBinding contentBinding, Contact contact) {
+
+    }
+
+    @Override
     public void onPageResume(FragmentContactReadLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
+
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    Case _associatedCase = null;
+                    Contact contact = getActivityRootData();
+
+                    if (contact != null) {
+                        if (contact.isUnreadOrChildUnread())
+                            DatabaseHelper.getContactDao().markAsRead(contact);
+
+                        _associatedCase = findAssociatedCase(contact.getPerson(), contact.getCaze().getDisease());
+                    }
+
+                    resultHolder.forItem().add(contact);
+                    resultHolder.forItem().add(_associatedCase);
+                }
+            });
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+
+                    if (itemIterator.hasNext())
+                        record = itemIterator.next();
+
+                    if (itemIterator.hasNext())
+                        associatedCase = itemIterator.next();
+
+                    if (record != null)
+                        requestLayoutRebind();
+                    else {
+                        getActivity().finish();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
 
     }
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_contact_information);
     }
 
     @Override
@@ -166,9 +232,17 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
         return false;
     }
 
-    public static ContactReadFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule)
+    public static ContactReadFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule, Contact activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, ContactReadFragment.class, capsule);
+        return newInstance(activityCommunicator, ContactReadFragment.class, capsule, activityRootData);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (onResumeTask != null && !onResumeTask.isCancelled())
+            onResumeTask.cancel(true);
     }
 
 }

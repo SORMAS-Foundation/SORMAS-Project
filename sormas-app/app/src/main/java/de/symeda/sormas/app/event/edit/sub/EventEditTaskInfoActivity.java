@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import de.symeda.sormas.api.task.TaskStatus;
@@ -13,7 +12,6 @@ import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.NavigationHelper;
@@ -117,13 +115,12 @@ public class EventEditTaskInfoActivity extends BaseEditActivity<Task> {
     }
 
     @Override
-    protected BaseEditActivityFragment getNextFragment(LandingPageMenuItem menuItem, Task activityRootData) {
-        return null;
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        super.onCreateOptionsMenu(menu);
+        getSaveMenu().setTitle(R.string.action_save_task);
+
+        return true;
+        /*MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.edit_action_menu, menu);
 
         saveMenu = menu.findItem(R.id.action_save);
@@ -133,7 +130,7 @@ public class EventEditTaskInfoActivity extends BaseEditActivity<Task> {
 
         processActionbarMenu();
 
-        return true;
+        return true;*/
     }
 
     @Override

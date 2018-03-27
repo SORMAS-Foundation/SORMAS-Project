@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.caze.read;
 
+import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
@@ -10,23 +12,32 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentCaseReadPatientInfoLayoutBinding;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 
 /**
  * Created by Orson on 08/01/2018.
  */
 
-public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<FragmentCaseReadPatientInfoLayoutBinding, Case> {
+public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<FragmentCaseReadPatientInfoLayoutBinding, Case, Case> {
 
+
+    public static final String TAG = CaseReadPatientInfoFragment.class.getSimpleName();
+
+    private AsyncTask onResumeTask;
     private String recordUuid = null;
     private InvestigationStatus filterStatus = null;
     private CaseClassification pageStatus = null;
     private Case record;
+    private Case caze;
     private Person personRecord;
 
     @Override
@@ -50,12 +61,29 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            resultHolder.forItem().add(DatabaseHelper.getCaseDao().queryUuidReference(recordUuid));
+            Case caze = getActivityRootData();
+
+            if (caze != null) {
+                if (caze.isUnreadOrChildUnread())
+                    DatabaseHelper.getCaseDao().markAsRead(caze);
+
+                if (caze.getPerson() == null) {
+                    caze.setPerson(DatabaseHelper.getPersonDao().build());
+                } else {
+                    caze.setPerson(DatabaseHelper.getPersonDao().queryUuid(caze.getPerson().getUuid()));
+                }
+            }
+
+            resultHolder.forItem().add(caze.getPerson());
+            resultHolder.forItem().add(caze);
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
             if (itemIterator.hasNext())
                 record =  itemIterator.next();
+
+            if (itemIterator.hasNext())
+                caze = itemIterator.next();
         }
 
         return true;
@@ -71,6 +99,64 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    Case caze = getActivityRootData();
+
+                    if (caze != null) {
+                        if (caze.isUnreadOrChildUnread())
+                            DatabaseHelper.getCaseDao().markAsRead(caze);
+
+                        if (caze.getPerson() == null) {
+                            caze.setPerson(DatabaseHelper.getPersonDao().build());
+                        } else {
+                            caze.setPerson(DatabaseHelper.getPersonDao().queryUuid(caze.getPerson().getUuid()));
+                        }
+                    }
+
+                    resultHolder.forItem().add(caze.getPerson());
+                    resultHolder.forItem().add(caze);
+                }
+            });
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+
+                    if (itemIterator.hasNext())
+                        record = itemIterator.next();
+
+                    if (itemIterator.hasNext())
+                        caze = itemIterator.next();
+
+                    if (record != null)
+                        requestLayoutRebind();
+                    else {
+                        getActivity().finish();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
+
+
     }
 
     @Override
@@ -82,8 +168,14 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
     }
 
     @Override
+    protected void updateUI(FragmentCaseReadPatientInfoLayoutBinding contentBinding, Case aCase) {
+
+    }
+
+    @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_patient_information);
     }
 
     @Override
@@ -101,8 +193,16 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
         return false;
     }
 
-    public static CaseReadPatientInfoFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)
+    public static CaseReadPatientInfoFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, CaseReadPatientInfoFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseReadPatientInfoFragment.class, capsule, activityRootData);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (onResumeTask != null && !onResumeTask.isCancelled())
+            onResumeTask.cancel(true);
     }
 }

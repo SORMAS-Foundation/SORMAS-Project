@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.event.edit.sub;
 
 import android.app.AlertDialog;
+import android.content.res.Resources;
 import android.databinding.ViewDataBinding;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -129,7 +130,8 @@ public class EventEditPersonsInvolvedInfoFragment extends BaseEditActivityFragme
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.heading_level4_1_event_edit_person_involved_info);
+        Resources r = getResources();
+        return r.getString(R.string.caption_person_involved);
     }
 
     @Override

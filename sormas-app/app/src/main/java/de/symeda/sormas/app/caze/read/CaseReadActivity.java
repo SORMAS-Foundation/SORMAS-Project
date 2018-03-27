@@ -4,11 +4,9 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.app.BaseReadActivity;
@@ -16,7 +14,6 @@ import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.BoolResult;
@@ -26,13 +23,16 @@ import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.NavigationHelper;
 
 /**
  * Created by Orson on 06/01/2018.
  */
 
-public class CaseReadActivity  extends BaseReadActivity {
+public class CaseReadActivity  extends BaseReadActivity<Case> {
+
+    public static final String TAG = CaseReadActivity.class.getSimpleName();
 
     private AsyncTask jobTask;
     private static final int MENU_INDEX_CASE_INFO = 0;
@@ -88,38 +88,24 @@ public class CaseReadActivity  extends BaseReadActivity {
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+    protected Case getActivityRootData(String recordUuid) {
+        return DatabaseHelper.getCaseDao().queryUuid(recordUuid);
+    }
+
+    @Override
+    protected Case getActivityRootDataIfRecordUuidNull() {
+        return DatabaseHelper.getCaseDao().build(DatabaseHelper.getPersonDao().build());
+    }
+
+    @Override
+    public BaseReadActivityFragment getActiveReadFragment(Case activityRootData) throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(
                     CaseReadActivity.this, recordUuid).setReadPageStatus(pageStatus);
-            activeFragment = CaseReadFragment.newInstance(this, dataCapsule);
+            activeFragment = CaseReadFragment.newInstance(this, dataCapsule, activityRootData);
         }
 
         return activeFragment;
-    }
-
-    @Override
-    public boolean showStatusFrame() {
-        return true;
-    }
-
-    @Override
-    public boolean showTitleBar() {
-        return true;
-    }
-
-    @Override
-    public boolean showPageMenu() {
-        return true;
-    }
-
-    @Override
-    public Enum getPageStatus() {
-        if (pageStatus == null) {
-            pageStatus = (CaseClassification) getPageStatusArg(getIntent().getExtras());;
-        }
-
-        return pageStatus;
     }
 
     @Override
@@ -128,53 +114,53 @@ public class CaseReadActivity  extends BaseReadActivity {
     }
 
     @Override
-    public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-        setActiveMenu(menuItem);
-
+    protected BaseReadActivityFragment getNextFragment(LandingPageMenuItem menuItem, Case activityRootData) {
         CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(
                 CaseReadActivity.this, recordUuid).setReadPageStatus(pageStatus);
 
-        if (menuItem.getKey() == MENU_INDEX_CASE_INFO) {
-            activeFragment = CaseReadFragment.newInstance(this, dataCapsule);
-            replaceFragment(activeFragment);
-        } else if (menuItem.getKey() == MENU_INDEX_PATIENT_INFO) {
-            activeFragment = CaseReadPatientInfoFragment.newInstance(this, dataCapsule);
-            replaceFragment(activeFragment);
-        } else if (menuItem.getKey() == MENU_INDEX_HOSPITALIZATION) {
-            activeFragment = CaseReadHospitalizationFragment.newInstance(this, dataCapsule);
-            replaceFragment(activeFragment);
-        } else if (menuItem.getKey() == MENU_INDEX_SYMPTOMS) {
-            activeFragment = CaseReadSymptomsFragment.newInstance(this, dataCapsule);
-            replaceFragment(activeFragment);
-        } else if (menuItem.getKey() == MENU_INDEX_EPIDEMIOLOGICAL_DATA) {
-            activeFragment = CaseReadEpidemiologicalDataFragment.newInstance(this, dataCapsule);
-            replaceFragment(activeFragment);
-        } else if (menuItem.getKey() == MENU_INDEX_CONTACTS) {
-            activeFragment = CaseReadContactListFragment.newInstance(this, dataCapsule);
-            replaceFragment(activeFragment);
-        }else if (menuItem.getKey() == MENU_INDEX_SAMPLES) {
-            activeFragment = CaseReadSampleListFragment.newInstance(this, dataCapsule);
-            replaceFragment(activeFragment);
-        } else if (menuItem.getKey() == MENU_INDEX_TASKS) {
-            activeFragment = CaseReadTaskListFragment.newInstance(this, dataCapsule);
-            replaceFragment(activeFragment);
+        try {
+            if (menuItem.getKey() == MENU_INDEX_CASE_INFO) {
+                activeFragment = CaseReadFragment.newInstance(this, dataCapsule, activityRootData);
+            } else if (menuItem.getKey() == MENU_INDEX_PATIENT_INFO) {
+                activeFragment = CaseReadPatientInfoFragment.newInstance(this, dataCapsule, activityRootData);
+            } else if (menuItem.getKey() == MENU_INDEX_HOSPITALIZATION) {
+                activeFragment = CaseReadHospitalizationFragment.newInstance(this, dataCapsule, activityRootData);
+            } else if (menuItem.getKey() == MENU_INDEX_SYMPTOMS) {
+                activeFragment = CaseReadSymptomsFragment.newInstance(this, dataCapsule, activityRootData);
+            } else if (menuItem.getKey() == MENU_INDEX_EPIDEMIOLOGICAL_DATA) {
+                activeFragment = CaseReadEpidemiologicalDataFragment.newInstance(this, dataCapsule, activityRootData);
+            } else if (menuItem.getKey() == MENU_INDEX_CONTACTS) {
+                activeFragment = CaseReadContactListFragment.newInstance(this, dataCapsule, activityRootData);
+            }else if (menuItem.getKey() == MENU_INDEX_SAMPLES) {
+                activeFragment = CaseReadSampleListFragment.newInstance(this, dataCapsule, activityRootData);
+            } else if (menuItem.getKey() == MENU_INDEX_TASKS) {
+                activeFragment = CaseReadTaskListFragment.newInstance(this, dataCapsule, activityRootData);
+            }
+
+            //processActionbarMenu();
+        } catch (InstantiationException e) {
+            Log.e(TAG, e.getMessage());
+        } catch (IllegalAccessException e) {
+            Log.e(TAG, e.getMessage());
         }
 
-        updateSubHeadingTitle();
-
-        return true;
+        return activeFragment;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        super.onCreateOptionsMenu(menu);
+        getEditMenu().setTitle(R.string.action_edit_case);
+
+        return true;
+        /*MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.read_action_menu, menu);
 
         MenuItem readMenu = menu.findItem(R.id.action_edit);
         //readMenu.setVisible(false);
         readMenu.setTitle(R.string.action_edit_case);
 
-        return true;
+        return true;*/
     }
 
     @Override

@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.contact.edit.sub;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -92,7 +93,8 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_symptom_information);
     }
 
     @Override
@@ -283,24 +285,21 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
 
                 @Override
                 public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    if (recordUuid != null && !recordUuid.isEmpty()) {
-                        Symptoms symptom = null;
-                        Visit visit = DatabaseHelper.getVisitDao().queryUuid(recordUuid);
+                    Symptoms _symptom = null;
+                    Visit visit = getActivityRootData();
 
-                        if (visit != null) {
-                            //symptom = DatabaseHelper.getSymptomsDao().queryUuid(visit.getSymptoms().getUuid());
-                            symptom = visit.getSymptoms();
-                        }
+                    if (visit != null) {
+                        if (visit.isUnreadOrChildUnread())
+                            DatabaseHelper.getVisitDao().markAsRead(visit);
 
-                        if (symptom != null && symptom.isUnreadOrChildUnread())
-                            DatabaseHelper.getSymptomsDao().markAsRead(symptom);
-
-                        resultHolder.forItem().add(visit);
-                        resultHolder.forItem().add(symptom);
+                        //symptom = DatabaseHelper.getSymptomsDao().queryUuid(visit.getSymptoms().getUuid());
+                        _symptom = visit.getSymptoms();
                     } else {
-                        resultHolder.forItem().add(null);
-                        resultHolder.forItem().add(null);
+                        _symptom = DatabaseHelper.getSymptomsDao().build();
                     }
+
+                    resultHolder.forItem().add(visit);
+                    resultHolder.forItem().add(_symptom); //TODO: Do we need this
                 }
             });
             onResumeTask = executor.execute(new ITaskResultCallback() {

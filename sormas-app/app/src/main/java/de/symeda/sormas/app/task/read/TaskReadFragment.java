@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.task.read;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -35,7 +36,7 @@ import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
  * Created by Orson on 31/12/2017.
  */
 
-public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadLayoutBinding, Task> {
+public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadLayoutBinding, Task, Task> {
 
     private AsyncTask onResumeTask;
     private String recordUuid = null;
@@ -67,11 +68,14 @@ public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadL
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            if (recordUuid != null && !recordUuid.isEmpty()) {
-                resultHolder.forItem().add(DatabaseHelper.getTaskDao().queryUuid(recordUuid));
-            } else {
-                resultHolder.forItem().add(null);
+            Task task = getActivityRootData();
+
+            if (task != null) {
+                if (task.isUnreadOrChildUnread())
+                    DatabaseHelper.getTaskDao().markAsRead(task);
             }
+
+            resultHolder.forItem().add(task);
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
@@ -102,6 +106,11 @@ public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadL
     }
 
     @Override
+    protected void updateUI(FragmentTaskReadLayoutBinding contentBinding, Task task) {
+
+    }
+
+    @Override
     public void onPageResume(FragmentTaskReadLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
@@ -116,11 +125,14 @@ public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadL
 
                 @Override
                 public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    if (recordUuid != null && !recordUuid.isEmpty()) {
-                        resultHolder.forItem().add(DatabaseHelper.getTaskDao().queryUuid(recordUuid));
-                    } else {
-                        resultHolder.forItem().add(null);
+                    Task task = getActivityRootData();
+
+                    if (task != null) {
+                        if (task.isUnreadOrChildUnread())
+                            DatabaseHelper.getTaskDao().markAsRead(task);
                     }
+
+                    resultHolder.forItem().add(task);
                 }
             });
             onResumeTask = executor.execute(new ITaskResultCallback() {
@@ -153,13 +165,8 @@ public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadL
 
     @Override
     protected String getSubHeadingTitle() {
-        String title = "";
-
-        if (pageStatus != null) {
-            title = pageStatus.toString();
-        }
-
-        return title;
+        Resources r = getResources();
+        return r.getString(R.string.caption_task_information);
     }
 
     @Override
@@ -229,9 +236,9 @@ public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadL
         };
     }
 
-    public static TaskReadFragment newInstance(IActivityCommunicator activityCommunicator, TaskFormNavigationCapsule capsule)
+    public static TaskReadFragment newInstance(IActivityCommunicator activityCommunicator, TaskFormNavigationCapsule capsule, Task activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, TaskReadFragment.class, capsule);
+        return newInstance(activityCommunicator, TaskReadFragment.class, capsule, activityRootData);
     }
 
     @Override

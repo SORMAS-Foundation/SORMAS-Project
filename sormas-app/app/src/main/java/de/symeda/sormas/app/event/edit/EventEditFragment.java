@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.event.edit;
 
 import android.app.AlertDialog;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -83,7 +84,8 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_event_information);
     }
 
     @Override

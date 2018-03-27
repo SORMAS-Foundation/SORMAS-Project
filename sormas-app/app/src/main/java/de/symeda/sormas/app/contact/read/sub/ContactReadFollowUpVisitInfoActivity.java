@@ -3,17 +3,17 @@ package de.symeda.sormas.app.contact.read.sub;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.shared.ContactFormFollowUpNavigationCapsule;
 import de.symeda.sormas.app.util.NavigationHelper;
@@ -22,7 +22,9 @@ import de.symeda.sormas.app.util.NavigationHelper;
  * Created by Orson on 02/01/2018.
  */
 
-public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity {
+public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity<Visit> {
+
+    public static final String TAG = ContactReadFollowUpVisitInfoActivity.class.getSimpleName();
 
     private static final int MENU_INDEX_VISIT_INFO = 0;
     private static final int MENU_INDEX_SYMPTOMS_INFO = 1;
@@ -61,34 +63,24 @@ public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity {
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+    protected Visit getActivityRootData(String recordUuid) {
+        return DatabaseHelper.getVisitDao().queryUuid(recordUuid);
+    }
+
+    @Override
+    protected Visit getActivityRootDataIfRecordUuidNull() {
+        return null;
+    }
+
+    @Override
+    public BaseReadActivityFragment getActiveReadFragment(Visit activityRootData) throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             ContactFormFollowUpNavigationCapsule dataCapsule = new ContactFormFollowUpNavigationCapsule(
                     ContactReadFollowUpVisitInfoActivity.this, recordUuid, pageStatus);
-            activeFragment = ContactReadFollowUpVisitInfoFragment.newInstance(this, dataCapsule);
+            activeFragment = ContactReadFollowUpVisitInfoFragment.newInstance(this, dataCapsule, activityRootData);
         }
 
         return activeFragment;
-    }
-
-    @Override
-    public boolean showStatusFrame() {
-        return true;
-    }
-
-    @Override
-    public boolean showTitleBar() {
-        return true;
-    }
-
-    @Override
-    public boolean showPageMenu() {
-        return true;
-    }
-
-    @Override
-    public Enum getPageStatus() {
-        return pageStatus;
     }
 
     @Override
@@ -97,35 +89,39 @@ public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity {
     }
 
     @Override
-    public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-        setActiveMenu(menuItem);
-
+    protected BaseReadActivityFragment getNextFragment(LandingPageMenuItem menuItem, Visit activityRootData) {
         ContactFormFollowUpNavigationCapsule dataCapsule = new ContactFormFollowUpNavigationCapsule(
                 ContactReadFollowUpVisitInfoActivity.this, recordUuid, pageStatus);
 
-        if (menuItem.getKey() == MENU_INDEX_VISIT_INFO) {
-            activeFragment = ContactReadFollowUpVisitInfoFragment.newInstance(this, dataCapsule);
-            replaceFragment(activeFragment);
-        } else if (menuItem.getKey() == MENU_INDEX_SYMPTOMS_INFO) {
-            activeFragment = ContactReadFollowUpSymptomsFragment.newInstance(this, dataCapsule);
-            replaceFragment(activeFragment);
+        try {
+            if (menuItem.getKey() == MENU_INDEX_VISIT_INFO) {
+                activeFragment = ContactReadFollowUpVisitInfoFragment.newInstance(this, dataCapsule, activityRootData);
+            } else if (menuItem.getKey() == MENU_INDEX_SYMPTOMS_INFO) {
+                activeFragment = ContactReadFollowUpSymptomsFragment.newInstance(this, dataCapsule, activityRootData);
+            }
+        } catch (InstantiationException e) {
+            Log.e(TAG, e.getMessage());
+        } catch (IllegalAccessException e) {
+            Log.e(TAG, e.getMessage());
         }
 
-        updateSubHeadingTitle();
-
-        return true;
+        return activeFragment;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        super.onCreateOptionsMenu(menu);
+        getEditMenu().setTitle(R.string.action_edit_contact);
+
+        return true;
+        /*MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.read_action_menu, menu);
 
         MenuItem readMenu = menu.findItem(R.id.action_edit);
         readMenu.setVisible(false);
         readMenu.setTitle(R.string.action_edit_contact);
 
-        return true;
+        return true;*/
     }
 
     @Override

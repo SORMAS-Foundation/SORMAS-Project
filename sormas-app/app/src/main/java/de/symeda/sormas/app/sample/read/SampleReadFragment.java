@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.sample.read;
 
+import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,13 +32,15 @@ import de.symeda.sormas.app.shared.ShipmentStatus;
  * Created by Orson on 11/12/2017.
  */
 
-public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleReadLayoutBinding, Sample> {
+public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleReadLayoutBinding, Sample, Sample> {
 
     private AsyncTask onResumeTask;
     private String recordUuid = null;
+    private String caseUuid = null;
     private ShipmentStatus pageStatus = null;
     private Sample record;
     private SampleTest mostRecentTest;
+    private String sampleMaterial = null;
 
     private IEntryItemOnClickListener onRecentTestItemClickListener;
 
@@ -47,6 +50,8 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
 
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
+        SaveCaseUuidState(outState, caseUuid);
+        SaveSampleMaterialState(outState, sampleMaterial);
     }
 
     @Override
@@ -57,14 +62,25 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
 
         recordUuid = getRecordUuidArg(arguments);
         pageStatus = (ShipmentStatus) getPageStatusArg(arguments);
+        caseUuid = getCaseUuidArg(arguments);
+        sampleMaterial = getSampleMaterialArg(arguments);
     }
 
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            Sample s = DatabaseHelper.getSampleDao().queryUuid(recordUuid);
-            resultHolder.forItem().add(s);
-            resultHolder.forItem().add(DatabaseHelper.getSampleTestDao().queryMostRecentBySample(s));
+            SampleTest sampleTest = null;
+            Sample sample = getActivityRootData();
+
+            if (sample != null) {
+                if (sample.isUnreadOrChildUnread())
+                    DatabaseHelper.getSampleDao().markAsRead(sample);
+
+                sampleTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(sample);
+            }
+
+            resultHolder.forItem().add(sample);
+            resultHolder.forItem().add(sampleTest);
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
@@ -126,6 +142,11 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
     }
 
     @Override
+    protected void updateUI(FragmentSampleReadLayoutBinding contentBinding, Sample sample) {
+
+    }
+
+    @Override
     public void onPageResume(FragmentSampleReadLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
@@ -140,15 +161,18 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
 
                 @Override
                 public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    if (recordUuid != null && !recordUuid.isEmpty()) {
-                        Sample s = DatabaseHelper.getSampleDao().queryUuid(recordUuid);
-                        resultHolder.forItem().add(s);
-                        resultHolder.forItem().add(DatabaseHelper.getSampleTestDao().queryMostRecentBySample(s));
-                    } else {
-                        resultHolder.forItem().add(null);
-                        resultHolder.forItem().add(null);
+                    SampleTest sampleTest = null;
+                    Sample sample = getActivityRootData();
+
+                    if (sample != null) {
+                        if (sample.isUnreadOrChildUnread())
+                            DatabaseHelper.getSampleDao().markAsRead(sample);
+
+                        sampleTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(sample);
                     }
 
+                    resultHolder.forItem().add(sample);
+                    resultHolder.forItem().add(sampleTest);
                 }
             });
             onResumeTask = executor.execute(new ITaskResultCallback() {
@@ -184,13 +208,8 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
 
     @Override
     protected String getSubHeadingTitle() {
-        String title = "";
-
-        if (pageStatus != null) {
-            title = pageStatus.toString();
-        }
-
-        return title;
+        Resources r = getResources();
+        return r.getString(R.string.caption_sample_information);
     }
 
     @Override
@@ -226,9 +245,9 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
         return false;
     }
 
-    public static SampleReadFragment newInstance(IActivityCommunicator activityCommunicator, SampleFormNavigationCapsule capsule)
+    public static SampleReadFragment newInstance(IActivityCommunicator activityCommunicator, SampleFormNavigationCapsule capsule, Sample activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, SampleReadFragment.class, capsule);
+        return newInstance(activityCommunicator, SampleReadFragment.class, capsule, activityRootData);
     }
 
     @Override

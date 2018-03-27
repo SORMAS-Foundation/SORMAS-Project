@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.contact.edit.sub;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -59,7 +60,8 @@ public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragme
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_followup_information);
     }
 
     @Override

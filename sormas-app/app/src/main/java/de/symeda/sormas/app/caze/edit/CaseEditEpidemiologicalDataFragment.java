@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.caze.edit;
 
+import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
 import android.databinding.ViewDataBinding;
 import android.os.AsyncTask;
@@ -56,6 +57,8 @@ import de.symeda.sormas.app.util.DataUtils;
 
 public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragment<FragmentCaseEditEpidLayoutBinding, EpiData, Case> {
 
+    public static final String TAG = CaseEditEpidemiologicalDataFragment.class.getSimpleName();
+
     private AsyncTask onResumeTask;
     private String recordUuid = null;
     private InvestigationStatus pageStatus = null;
@@ -108,7 +111,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_epidemiological_information);
     }
 
     @Override
@@ -299,17 +303,22 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
 
                 @Override
                 public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    Case caze = null;
-                    EpiData epiData = null;
+                    Case caze = getActivityRootData();
 
-                    if (recordUuid != null && !recordUuid.isEmpty()) {
-                        caze = DatabaseHelper.getCaseDao().queryUuid(recordUuid);
-                        if (caze != null)
-                            epiData = DatabaseHelper.getEpiDataDao().queryUuid(caze.getEpiData().getUuid());
+                    if (caze != null) {
+                        if (caze.isUnreadOrChildUnread())
+                            DatabaseHelper.getCaseDao().markAsRead(caze);
 
+                        if (caze.getPerson() == null) {
+                            caze.setPerson(DatabaseHelper.getPersonDao().build());
+                        }
+
+                        //TODO: Do we really need to do this
+                        if (caze.getEpiData() != null)
+                            caze.setEpiData(DatabaseHelper.getEpiDataDao().queryUuid(caze.getEpiData().getUuid()));
                     }
 
-                    resultHolder.forItem().add(epiData);
+                    resultHolder.forItem().add(caze.getEpiData());
                 }
             });
             onResumeTask = executor.execute(new ITaskResultCallback() {

@@ -3,18 +3,14 @@ package de.symeda.sormas.app.event.read.sub;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-
-import java.util.ArrayList;
 
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.NavigationHelper;
@@ -23,7 +19,7 @@ import de.symeda.sormas.app.util.NavigationHelper;
  * Created by Orson on 27/12/2017.
  */
 
-public class EventReadPersonsInvolvedInfoActivity extends BaseReadActivity {
+public class EventReadPersonsInvolvedInfoActivity extends BaseReadActivity<EventParticipant> {
 
     private String recordUuid = null;
     private EventStatus eventStatus = null;
@@ -57,70 +53,40 @@ public class EventReadPersonsInvolvedInfoActivity extends BaseReadActivity {
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+    protected EventParticipant getActivityRootData(String recordUuid) {
+        return DatabaseHelper.getEventParticipantDao().queryUuid(recordUuid);
+    }
+
+    @Override
+    protected EventParticipant getActivityRootDataIfRecordUuidNull() {
+        return null;
+    }
+
+    @Override
+    public BaseReadActivityFragment getActiveReadFragment(EventParticipant activityRootData) throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventReadPersonsInvolvedInfoActivity.this,
                     recordUuid, pageStatus);
-            activeFragment = EventReadPersonsInvolvedInfoFragment.newInstance(this, dataCapsule);
+            activeFragment = EventReadPersonsInvolvedInfoFragment.newInstance(this, dataCapsule, activityRootData);
         }
 
         return activeFragment;
     }
 
     @Override
-    public LandingPageMenuItem getActiveMenuItem() {
-        return null;
-    }
-
-    @Override
-    public boolean showStatusFrame() {
-        return true;
-    }
-
-    @Override
-    public boolean showTitleBar() {
-        return true;
-    }
-
-    @Override
-    public boolean showPageMenu() {
-        return false;
-    }
-
-    @Override
-    public Enum getPageStatus() {
-        if (eventStatus == null) {
-            eventStatus = getEventStatusArg(getIntent().getExtras());;
-        }
-
-        return eventStatus;
-    }
-
-    @Override
-    public String getPageMenuData() {
-        return null;
-    }
-
-    @Override
-    public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) {
-        return false;
-    }
-
-    @Override
-    public LandingPageMenuItem onSelectInitialActiveMenuItem(ArrayList<LandingPageMenuItem> menuList) {
-        return null;
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        super.onCreateOptionsMenu(menu);
+        getEditMenu().setTitle(R.string.action_edit_event);
+
+        return true;
+        /*MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.read_action_menu, menu);
 
         MenuItem readMenu = menu.findItem(R.id.action_edit);
         readMenu.setVisible(false);
         readMenu.setTitle(R.string.action_edit_event);
 
-        return true;
+        return true;*/
     }
 
     @Override

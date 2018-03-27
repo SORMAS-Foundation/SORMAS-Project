@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.caze.read;
 
+import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,14 +18,18 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentCaseReadTaskLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.task.read.TaskReadActivity;
 
@@ -31,8 +37,9 @@ import de.symeda.sormas.app.task.read.TaskReadActivity;
  * Created by Orson on 08/01/2018.
  */
 
-public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentCaseReadTaskLayoutBinding, List<Task>> implements OnListItemClickListener {
+public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentCaseReadTaskLayoutBinding, List<Task>, Case> implements OnListItemClickListener {
 
+    private AsyncTask onResumeTask;
     private String recordUuid = null;
     private InvestigationStatus filterStatus = null;
     private CaseClassification pageStatus = null;
@@ -40,8 +47,6 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentC
 
     private CaseReadTaskListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
-
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -64,13 +69,22 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentC
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            Case caze = DatabaseHelper.getCaseDao().queryUuid(recordUuid);
+            Case caze = getActivityRootData();
+            List<Task> taskList = new ArrayList<Task>();
 
+            //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
             if (caze != null) {
-                resultHolder.forList().add(DatabaseHelper.getTaskDao().queryByCase(caze));
-            } else {
-                resultHolder.forList().add(new ArrayList<Task>());
+                if (caze.isUnreadOrChildUnread())
+                    DatabaseHelper.getCaseDao().markAsRead(caze);
+
+                if (caze.getPerson() == null) {
+                    caze.setPerson(DatabaseHelper.getPersonDao().build());
+                }
+
+                taskList = DatabaseHelper.getTaskDao().queryByCase(caze);
             }
+
+            resultHolder.forList().add(taskList);
         } else {
             ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
             if (listIterator.hasNext())
@@ -95,6 +109,11 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentC
     }
 
     @Override
+    protected void updateUI(FragmentCaseReadTaskLayoutBinding contentBinding, List<Task> tasks) {
+
+    }
+
+    @Override
     public void onPageResume(FragmentCaseReadTaskLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
@@ -109,11 +128,67 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentC
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    Case caze = getActivityRootData();
+                    List<Task> taskList = new ArrayList<Task>();
+
+                    //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
+                    if (caze != null) {
+                        if (caze.isUnreadOrChildUnread())
+                            DatabaseHelper.getCaseDao().markAsRead(caze);
+
+                        if (caze.getPerson() == null) {
+                            caze.setPerson(DatabaseHelper.getPersonDao().build());
+                        }
+
+                        taskList = DatabaseHelper.getTaskDao().queryByCase(caze);
+                    }
+
+                    resultHolder.forList().add(taskList);
+                }
+            });
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
+
+                    if (listIterator.hasNext())
+                        record = listIterator.next();
+
+                    if (record != null)
+                        requestLayoutRebind();
+                    else {
+                        getActivity().finish();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
+
     }
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_case_tasks);
     }
 
     @Override
@@ -168,8 +243,16 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentC
         return false;
     }
 
-    public static CaseReadTaskListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)
+    public static CaseReadTaskListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, CaseReadTaskListFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseReadTaskListFragment.class, capsule, activityRootData);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (onResumeTask != null && !onResumeTask.isCancelled())
+            onResumeTask.cancel(true);
     }
 }

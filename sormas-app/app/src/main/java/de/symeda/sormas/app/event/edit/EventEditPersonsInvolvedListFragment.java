@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.event.edit;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -68,7 +69,8 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_persons_involved);
     }
 
     @Override

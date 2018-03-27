@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.contact.edit;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -79,7 +80,8 @@ public class ContactEditFragment extends BaseEditActivityFragment<FragmentContac
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_contact_information);
     }
 
     @Override
@@ -108,7 +110,6 @@ public class ContactEditFragment extends BaseEditActivityFragment<FragmentContac
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
             ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
 
-            //Item Data
             if (itemIterator.hasNext())
                 record = itemIterator.next();
 
@@ -194,16 +195,18 @@ public class ContactEditFragment extends BaseEditActivityFragment<FragmentContac
 
                 @Override
                 public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    if (recordUuid != null && !recordUuid.isEmpty()) {
-                        Contact contact = DatabaseHelper.getContactDao().queryUuid(recordUuid);
+                    Case _associatedCase = null;
+                    Contact contact = getActivityRootData();
 
-                        if (contact != null && contact.isUnreadOrChildUnread())
+                    if (contact != null) {
+                        if (contact.isUnreadOrChildUnread())
                             DatabaseHelper.getContactDao().markAsRead(contact);
 
-                        resultHolder.forItem().add(contact);
-                    } else {
-                        resultHolder.forItem().add(null);
+                        _associatedCase = findAssociatedCase(contact.getPerson(), contact.getCaze().getDisease());
                     }
+
+                    resultHolder.forItem().add(contact);
+                    resultHolder.forItem().add(_associatedCase);
                 }
             });
             onResumeTask = executor.execute(new ITaskResultCallback() {
@@ -220,6 +223,9 @@ public class ContactEditFragment extends BaseEditActivityFragment<FragmentContac
 
                     if (itemIterator.hasNext())
                         record = itemIterator.next();
+
+                    if (itemIterator.hasNext())
+                        associatedCase = itemIterator.next();
 
                     if (record != null)
                         requestLayoutRebind();

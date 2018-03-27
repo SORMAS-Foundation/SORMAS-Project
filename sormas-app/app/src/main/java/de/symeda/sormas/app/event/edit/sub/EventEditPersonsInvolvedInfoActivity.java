@@ -6,10 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-
-import java.util.ArrayList;
 
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -145,18 +142,12 @@ public class EventEditPersonsInvolvedInfoActivity extends BaseEditActivity<Event
     }
 
     @Override
-    protected BaseEditActivityFragment getNextFragment(LandingPageMenuItem menuItem, EventParticipant activityRootData) {
-        return null;
-    }
-
-    @Override
-    public LandingPageMenuItem onSelectInitialActiveMenuItem(ArrayList<LandingPageMenuItem> menuList) {
-        return null;
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        super.onCreateOptionsMenu(menu);
+        getSaveMenu().setTitle(R.string.action_save_participant);
+
+        return true;
+        /*MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.edit_action_menu, menu);
 
         saveMenu = menu.findItem(R.id.action_save);
@@ -166,7 +157,7 @@ public class EventEditPersonsInvolvedInfoActivity extends BaseEditActivity<Event
 
         processActionbarMenu();
 
-        return true;
+        return true;*/
     }
 
     @Override

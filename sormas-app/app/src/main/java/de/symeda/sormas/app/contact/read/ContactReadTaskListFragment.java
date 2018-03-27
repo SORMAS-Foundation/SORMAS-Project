@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.contact.read;
 
+import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,14 +18,18 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.task.Task;
-import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentContactReadTaskLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.task.read.TaskReadActivity;
 
@@ -31,8 +37,9 @@ import de.symeda.sormas.app.task.read.TaskReadActivity;
  * Created by Orson on 01/01/2018.
  */
 
-public class ContactReadTaskListFragment extends BaseReadActivityFragment<FragmentContactReadTaskLayoutBinding, List<Task>> implements OnListItemClickListener {
+public class ContactReadTaskListFragment extends BaseReadActivityFragment<FragmentContactReadTaskLayoutBinding, List<Task>, Contact> implements OnListItemClickListener {
 
+    private AsyncTask onResumeTask;
     private String recordUuid;
     private FollowUpStatus followUpStatus;
     private ContactClassification contactClassification = null;
@@ -66,13 +73,18 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            Contact contact = DatabaseHelper.getContactDao().queryUuid(recordUuid);
+            Contact contact = getActivityRootData();
+            List<Task> taskList = new ArrayList<Task>();
 
+            //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
             if (contact != null) {
-                resultHolder.forList().add(DatabaseHelper.getTaskDao().queryByContact(contact));
-            } else {
-                resultHolder.forList().add(new ArrayList<Task>());
+                if (contact.isUnreadOrChildUnread())
+                    DatabaseHelper.getContactDao().markAsRead(contact);
+
+                taskList = DatabaseHelper.getTaskDao().queryByContact(contact);
             }
+
+            resultHolder.forList().add(taskList);
         } else {
             ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
 
@@ -100,6 +112,11 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
     }
 
     @Override
+    protected void updateUI(FragmentContactReadTaskLayoutBinding contentBinding, List<Task> tasks) {
+
+    }
+
+    @Override
     public void onPageResume(FragmentContactReadTaskLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
@@ -114,11 +131,58 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    Contact contact = getActivityRootData();
+                    List<Task> taskList = new ArrayList<Task>();
+
+                    //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
+                    if (contact != null) {
+                        if (contact.isUnreadOrChildUnread())
+                            DatabaseHelper.getContactDao().markAsRead(contact);
+
+                        taskList = DatabaseHelper.getTaskDao().queryByContact(contact);
+                    }
+
+                    resultHolder.forList().add(taskList);
+                }
+            });
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
+                    if (listIterator.hasNext())
+                        record = listIterator.next();
+
+                    requestLayoutRebind();
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
+
     }
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_contact_tasks);
     }
 
     @Override
@@ -142,23 +206,6 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
         TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(),
                 task.getUuid(), task.getTaskStatus());
         TaskReadActivity.goToActivity(getActivity(), dataCapsule);
-
-        /*Task task = (Task)item;
-
-        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(),
-                task.getUuid(), task.getTaskStatus());
-        ContactReadTaskInfoActivity.goToActivity(getActivity(), dataCapsule);*/
-
-        /*if(record != null) {
-            Intent intent = new Intent(getActivity(), ContactReadTaskInfoActivity.class);
-            //intent.putExtra(ConstantHelper.ARG_FILTER_STATUS, record.getContact().getFollowUpStatus());
-            intent.putExtra(ConstantHelper.KEY_DATA_UUID, record.getUuid());
-            intent.putExtra(ConstantHelper.ARG_PAGE_STATUS, record.getTaskStatus());
-            intent.putExtra(IStatusElaborator.ARG_TASK_STATUS, record.getTaskStatus());
-            intent.putExtra(IStatusElaborator.ARG_FOLLOW_UP_STATUS, followUpStatus);
-
-            startActivity(intent);
-        }*/
     }
 
     @Override
@@ -166,8 +213,16 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
         return false;
     }
 
-    public static ContactReadTaskListFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule)
+    public static ContactReadTaskListFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule, Contact activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, ContactReadTaskListFragment.class, capsule);
+        return newInstance(activityCommunicator, ContactReadTaskListFragment.class, capsule, activityRootData);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (onResumeTask != null && !onResumeTask.isCancelled())
+            onResumeTask.cancel(true);
     }
 }

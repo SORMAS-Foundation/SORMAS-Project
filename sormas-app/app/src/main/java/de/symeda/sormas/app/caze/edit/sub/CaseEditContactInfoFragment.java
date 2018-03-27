@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.caze.edit.sub;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -74,7 +75,8 @@ public class CaseEditContactInfoFragment extends BaseEditActivityFragment<Fragme
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.heading_case_contact_info);
+        Resources r = getResources();
+        return r.getString(R.string.caption_contact_information);
     }
 
     @Override

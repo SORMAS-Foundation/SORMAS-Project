@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.caze.edit.sub;
 
+import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -87,7 +88,8 @@ public class CaseEditSampleInfoFragment extends BaseEditActivityFragment<Fragmen
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.heading_level4_1_case_sample_info);
+        Resources r = getResources();
+        return r.getString(R.string.caption_sample_information);
     }
 
     @Override

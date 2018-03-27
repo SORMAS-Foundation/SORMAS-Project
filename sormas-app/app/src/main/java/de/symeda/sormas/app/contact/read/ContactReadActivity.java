@@ -4,20 +4,23 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
+
+import java.util.Date;
 
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.contact.edit.ContactEditActivity;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.async.IJobDefinition;
@@ -26,13 +29,16 @@ import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.util.NavigationHelper;
 
 /**
  * Created by Orson on 01/01/2018.
  */
 
-public class ContactReadActivity extends BaseReadActivity {
+public class ContactReadActivity extends BaseReadActivity<Contact> {
+
+    public static final String TAG = ContactReadActivity.class.getSimpleName();
 
     private static final int MENU_INDEX_CONTACT_INFO = 0;
     private static final int MENU_INDEX_PERSON_INFO = 1;
@@ -51,7 +57,6 @@ public class ContactReadActivity extends BaseReadActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -68,76 +73,73 @@ public class ContactReadActivity extends BaseReadActivity {
 
     @Override
     protected void initializeActivity(Bundle arguments) {
-        //filterStatus = (FollowUpStatus) getFilterStatusArg(arguments);
         pageStatus = (ContactClassification) getPageStatusArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
     }
 
+    @Override
+    protected Contact getActivityRootData(String recordUuid) {
+        Contact _contact = DatabaseHelper.getContactDao().queryUuid(recordUuid);
+        return _contact;
+    }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+    protected Contact getActivityRootDataIfRecordUuidNull() {
+        Person _person = DatabaseHelper.getPersonDao().build();
+        Contact _contact = DatabaseHelper.getContactDao().build();
+
+        _contact.setPerson(_person);
+        _contact.setReportDateTime(new Date());
+        _contact.setContactClassification(ContactClassification.UNCONFIRMED);
+        _contact.setContactStatus(ContactStatus.ACTIVE);
+        _contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
+        _contact.setReportingUser(ConfigProvider.getUser());
+
+        return _contact;
+    }
+
+    @Override
+    public BaseReadActivityFragment getActiveReadFragment(Contact activityRootData) throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactReadActivity.this, recordUuid, pageStatus);
-            activeFragment = ContactReadFragment.newInstance(this, dataCapsule);
+            activeFragment = ContactReadFragment.newInstance(this, dataCapsule, activityRootData);
         }
 
         return activeFragment;
     }
 
     @Override
-    public boolean showStatusFrame() {
-        return true;
-    }
-
-    @Override
-    public boolean showTitleBar() {
-        return true;
-    }
-
-    @Override
-    public boolean showPageMenu() {
-        return true;
-    }
-
-    @Override
-    public Enum getPageStatus() {
-        return pageStatus;
-    }
-
-    @Override
-    public String getPageMenuData() {
-        return DATA_XML_PAGE_MENU;
-    }
-
-    @Override
-    public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-        setActiveMenu(menuItem);
-
+    protected BaseReadActivityFragment getNextFragment(LandingPageMenuItem menuItem, Contact activityRootData) {
         ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(
                 ContactReadActivity.this, recordUuid, pageStatus);
 
-        if (menuItem.getKey() == MENU_INDEX_CONTACT_INFO) {
-            activeFragment = ContactReadFragment.newInstance(this, dataCapsule);
-            replaceFragment(activeFragment);
-        } else if (menuItem.getKey() == MENU_INDEX_PERSON_INFO) {
-            activeFragment = ContactReadPersonFragment.newInstance(this, dataCapsule);
-            replaceFragment(activeFragment);
-        } else if (menuItem.getKey() == MENU_INDEX_FOLLOWUP_VISIT) {
-            activeFragment = ContactReadFollowUpVisitListFragment.newInstance(this, dataCapsule);
-            replaceFragment(activeFragment);
-        } else if (menuItem.getKey() == MENU_INDEX_TASK) {
-            activeFragment = ContactReadTaskListFragment.newInstance(this, dataCapsule);
-            replaceFragment(activeFragment);
+        try {
+            if (menuItem.getKey() == MENU_INDEX_CONTACT_INFO) {
+                activeFragment = ContactReadFragment.newInstance(this, dataCapsule, activityRootData);
+            } else if (menuItem.getKey() == MENU_INDEX_PERSON_INFO) {
+                activeFragment = ContactReadPersonFragment.newInstance(this, dataCapsule, activityRootData);
+            } else if (menuItem.getKey() == MENU_INDEX_FOLLOWUP_VISIT) {
+                activeFragment = ContactReadFollowUpVisitListFragment.newInstance(this, dataCapsule, activityRootData);
+            } else if (menuItem.getKey() == MENU_INDEX_TASK) {
+                activeFragment = ContactReadTaskListFragment.newInstance(this, dataCapsule, activityRootData);
+            }
+
+        } catch (InstantiationException e) {
+            Log.e(TAG, e.getMessage());
+        } catch (IllegalAccessException e) {
+            Log.e(TAG, e.getMessage());
         }
 
-        updateSubHeadingTitle();
-
-        return true;
+        return activeFragment;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        super.onCreateOptionsMenu(menu);
+        getEditMenu().setTitle(R.string.action_edit_contact);
+
+        return true;
+        /*MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.read_action_menu, menu);
 
         MenuItem readMenu = menu.findItem(R.id.action_edit);
@@ -145,7 +147,7 @@ public class ContactReadActivity extends BaseReadActivity {
         readMenu.setTitle(R.string.action_edit_contact);
 
 
-        return true;
+        return true;*/
     }
 
     @Override

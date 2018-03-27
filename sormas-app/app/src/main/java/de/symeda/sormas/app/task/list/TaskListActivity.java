@@ -4,17 +4,15 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.task.landing.TaskLandingToListCapsule;
 import de.symeda.sormas.app.util.NavigationHelper;
-
-import de.symeda.sormas.api.task.TaskStatus;
 
 /**
  * Created by Orson on 01/12/2017.
@@ -26,9 +24,9 @@ public class TaskListActivity  extends BaseListActivity {
     private SearchBy searchBy = null;
     private String recordUuid = null;
     private BaseListActivityFragment activeFragment = null;
-
     private boolean showStatusFrame;
     private boolean showTitleBar;
+    private MenuItem newMenu = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -86,14 +84,18 @@ public class TaskListActivity  extends BaseListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        super.onCreateOptionsMenu(menu);
+        getNewMenu().setTitle(R.string.action_new_task);
+
+        return true;
+        /*MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.list_action_bar, menu);
 
         MenuItem listMenu = menu.findItem(R.id.action_new);
         listMenu.setVisible(false);
         listMenu.setTitle(R.string.action_new_task);
 
-        return true;
+        return true;*/
     }
 
     @Override

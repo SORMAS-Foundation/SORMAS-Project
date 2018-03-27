@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.caze.edit;
 
+import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,7 +21,11 @@ import de.symeda.sormas.app.contact.edit.ContactEditActivity;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentEditListLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -36,6 +42,9 @@ import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 
 public class CaseEditContactListFragment extends BaseEditActivityFragment<FragmentEditListLayoutBinding, List<Contact>, Case> implements OnListItemClickListener {
 
+    public static final String TAG = CaseEditContactListFragment.class.getSimpleName();
+
+    private AsyncTask onResumeTask;
     private String recordUuid;
     private InvestigationStatus pageStatus = null;
     private List<Contact> record;
@@ -62,7 +71,8 @@ public class CaseEditContactListFragment extends BaseEditActivityFragment<Fragme
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_case_contacts);
     }
 
     @Override
@@ -134,6 +144,61 @@ public class CaseEditContactListFragment extends BaseEditActivityFragment<Fragme
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    Case caze = getActivityRootData();
+                    List<Contact> contactList = new ArrayList<Contact>();
+
+                    //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
+                    if (caze != null) {
+                        if (caze.isUnreadOrChildUnread())
+                            DatabaseHelper.getCaseDao().markAsRead(caze);
+
+                        if (caze.getPerson() == null) {
+                            caze.setPerson(DatabaseHelper.getPersonDao().build());
+                        }
+
+                        contactList = DatabaseHelper.getContactDao().getByCase(caze);
+                    }
+
+                    resultHolder.forList().add(contactList);
+                }
+            });
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
+
+                    if (listIterator.hasNext())
+                        record = listIterator.next();
+
+                    if (record != null)
+                        requestLayoutRebind();
+                    else {
+                        getActivity().finish();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
+
     }
 
     @Override
@@ -177,5 +242,13 @@ public class CaseEditContactListFragment extends BaseEditActivityFragment<Fragme
     public static CaseEditContactListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
         return newInstance(activityCommunicator, CaseEditContactListFragment.class, capsule, activityRootData);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (onResumeTask != null && !onResumeTask.isCancelled())
+            onResumeTask.cancel(true);
     }
 }

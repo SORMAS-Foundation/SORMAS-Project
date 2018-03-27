@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.event.read;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -24,7 +25,7 @@ import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
  * Created by Orson on 24/12/2017.
  */
 
-public class EventReadFragment extends BaseReadActivityFragment<FragmentEventReadLayoutBinding, Event> {
+public class EventReadFragment extends BaseReadActivityFragment<FragmentEventReadLayoutBinding, Event, Event> {
 
     private AsyncTask onResumeTask;
     private String recordUuid;
@@ -52,13 +53,14 @@ public class EventReadFragment extends BaseReadActivityFragment<FragmentEventRea
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            if (recordUuid == null || recordUuid.isEmpty()) {
-                // build a new event for empty uuid
-                resultHolder.forItem().add(DatabaseHelper.getEventDao().build());
-            } else {
-                // open the given event
-                resultHolder.forItem().add(DatabaseHelper.getEventDao().queryUuid(recordUuid));
+            Event event = getActivityRootData();
+
+            if (event != null) {
+                if (event.isUnreadOrChildUnread())
+                    DatabaseHelper.getEventDao().markAsRead(event);
             }
+
+            resultHolder.forItem().add(event);
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
@@ -80,6 +82,11 @@ public class EventReadFragment extends BaseReadActivityFragment<FragmentEventRea
     }
 
     @Override
+    protected void updateUI(FragmentEventReadLayoutBinding contentBinding, Event event) {
+
+    }
+
+    @Override
     public void onPageResume(FragmentEventReadLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
@@ -94,9 +101,14 @@ public class EventReadFragment extends BaseReadActivityFragment<FragmentEventRea
 
                 @Override
                 public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    if (recordUuid != null && !recordUuid.isEmpty()) {
-                        resultHolder.forItem().add(DatabaseHelper.getEventDao().queryUuid(recordUuid));
+                    Event event = getActivityRootData();
+
+                    if (event != null) {
+                        if (event.isUnreadOrChildUnread())
+                            DatabaseHelper.getEventDao().markAsRead(event);
                     }
+
+                    resultHolder.forItem().add(event);
                 }
             });
             onResumeTask = executor.execute(new ITaskResultCallback() {
@@ -129,7 +141,8 @@ public class EventReadFragment extends BaseReadActivityFragment<FragmentEventRea
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_event_information);
     }
 
     @Override
@@ -152,9 +165,9 @@ public class EventReadFragment extends BaseReadActivityFragment<FragmentEventRea
         return false;
     }
 
-    public static EventReadFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule)
+    public static EventReadFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, EventReadFragment.class, capsule);
+        return newInstance(activityCommunicator, EventReadFragment.class, capsule, activityRootData);
     }
 
     @Override

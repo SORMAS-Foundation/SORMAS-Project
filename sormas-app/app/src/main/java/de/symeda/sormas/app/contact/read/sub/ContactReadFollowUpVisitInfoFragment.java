@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.contact.read.sub;
 
+import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
@@ -8,20 +10,26 @@ import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.shared.ContactFormFollowUpNavigationCapsule;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentContactReadVisitInfoLayoutBinding;
+import de.symeda.sormas.app.shared.ContactFormFollowUpNavigationCapsule;
 
 /**
  * Created by Orson on 02/01/2018.
  */
 
-public class ContactReadFollowUpVisitInfoFragment extends BaseReadActivityFragment<FragmentContactReadVisitInfoLayoutBinding, Visit> {
+public class ContactReadFollowUpVisitInfoFragment extends BaseReadActivityFragment<FragmentContactReadVisitInfoLayoutBinding, Visit, Visit> {
 
+    private AsyncTask onResumeTask;
     private String recordUuid;
+    private String contactUuid = null;
     private VisitStatus pageStatus;
     private Visit record;
 
@@ -31,6 +39,7 @@ public class ContactReadFollowUpVisitInfoFragment extends BaseReadActivityFragme
 
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
+        SaveContactUuidState(outState, contactUuid);
     }
 
     @Override
@@ -41,12 +50,20 @@ public class ContactReadFollowUpVisitInfoFragment extends BaseReadActivityFragme
 
         pageStatus = (VisitStatus) getPageStatusArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
+        contactUuid = getContactUuidArg(arguments);
     }
 
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            resultHolder.forItem().add(DatabaseHelper.getVisitDao().queryUuid(recordUuid));
+            Visit visit = getActivityRootData();
+
+            if (visit != null) {
+                if (visit.isUnreadOrChildUnread())
+                    DatabaseHelper.getVisitDao().markAsRead(visit);
+            }
+
+            resultHolder.forItem().add(visit);
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
@@ -68,15 +85,67 @@ public class ContactReadFollowUpVisitInfoFragment extends BaseReadActivityFragme
     }
 
     @Override
-    public void onPageResume(FragmentContactReadVisitInfoLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
-        if (!hasBeforeLayoutBindingAsyncReturn)
-            return;
+    protected void updateUI(FragmentContactReadVisitInfoLayoutBinding contentBinding, Visit visit) {
 
     }
 
     @Override
+    public void onPageResume(FragmentContactReadVisitInfoLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    Visit visit = getActivityRootData();
+
+                    if (visit != null) {
+                        if (visit.isUnreadOrChildUnread())
+                            DatabaseHelper.getVisitDao().markAsRead(visit);
+                    }
+
+                    resultHolder.forItem().add(visit);
+                }
+            });
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+
+                    if (itemIterator.hasNext())
+                        record = itemIterator.next();
+
+                    if (record != null)
+                        requestLayoutRebind();
+                    else {
+                        getActivity().finish();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
+    }
+
+    @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_followup_information);
     }
 
     @Override
@@ -104,10 +173,16 @@ public class ContactReadFollowUpVisitInfoFragment extends BaseReadActivityFragme
         return false;
     }
 
-    public static ContactReadFollowUpVisitInfoFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormFollowUpNavigationCapsule capsule)
+    public static ContactReadFollowUpVisitInfoFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormFollowUpNavigationCapsule capsule, Visit activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, ContactReadFollowUpVisitInfoFragment.class, capsule);
+        return newInstance(activityCommunicator, ContactReadFollowUpVisitInfoFragment.class, capsule, activityRootData);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
 
+        if (onResumeTask != null && !onResumeTask.isCancelled())
+            onResumeTask.cancel(true);
+    }
 }

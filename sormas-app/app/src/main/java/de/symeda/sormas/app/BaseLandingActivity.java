@@ -5,6 +5,8 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
@@ -35,7 +37,8 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
 
 
     private View fragmentFrame = null;
-    private BaseLandingActivityFragment fragment;
+    private BaseLandingActivityFragment activeFragment;
+    private MenuItem newMenu = null;
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -104,14 +107,14 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
     public abstract BaseLandingActivityFragment getActiveLandingFragment() throws IllegalAccessException, InstantiationException;
 
     public void replaceFragment(BaseLandingActivityFragment f) {
-        fragment = f;
+        activeFragment = f;
 
-        if (fragment != null) {
+        if (activeFragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            fragment.setArguments(getIntent().getExtras());
-            ft.replace(R.id.fragment_frame, fragment);
+            activeFragment.setArguments(getIntent().getExtras());
+            ft.replace(R.id.fragment_frame, activeFragment);
 
-            if (fragment.getFragmentMenuIndex() > 0)
+            if (activeFragment.getFragmentMenuIndex() > 0)
                 ft.addToBackStack(null);
 
             ft.commit();
@@ -121,14 +124,38 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
     @Override
     protected void onResume() {
         super.onResume();
-        if (fragment != null)
-            fragment.onResume();
+        if (activeFragment != null)
+            activeFragment.onResume();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         //outState.putInt(KEY_PAGE, currentTab);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.landing_action_bar, menu);
+
+        newMenu = menu.findItem(R.id.action_new);
+
+        processActionbarMenu();
+
+        return true;
+    }
+
+    private void processActionbarMenu() {
+        if (activeFragment == null)
+            return;
+
+        if (newMenu != null)
+            newMenu.setVisible(activeFragment.showNewAction());
+    }
+
+    public MenuItem getNewMenu() {
+        return newMenu;
     }
 
     @Override

@@ -4,17 +4,15 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.event.landing.EventLandingToListCapsule;
 import de.symeda.sormas.app.util.NavigationHelper;
-
-import de.symeda.sormas.api.event.EventStatus;
 
 /**
  * Created by Orson on 07/12/2017.
@@ -94,14 +92,18 @@ public class EventListActivity extends BaseListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        super.onCreateOptionsMenu(menu);
+        getNewMenu().setTitle(R.string.action_new_event);
+
+        return true;
+        /*MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.list_action_bar, menu);
 
         MenuItem listMenu = menu.findItem(R.id.action_new);
         listMenu.setVisible(false);
         listMenu.setTitle(R.string.action_new_event);
 
-        return true;
+        return true;*/
     }
 
     @Override

@@ -150,4 +150,8 @@ public abstract class BaseLandingActivityFragment<E extends Enum<E>, TAdapter ex
         fragment.setArguments(bundle);*/
         return fragment;
     }
+
+    public boolean showNewAction() {
+        return true;
+    }
 }

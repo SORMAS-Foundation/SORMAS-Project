@@ -3,7 +3,6 @@ package de.symeda.sormas.app.event.landing;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import de.symeda.sormas.app.BaseLandingActivity;
@@ -39,7 +38,11 @@ public class EventsLandingActivity extends BaseLandingActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        final Menu _menu = menu;
+        super.onCreateOptionsMenu(menu);
+        getNewMenu().setTitle(R.string.action_new_event);
+
+        return true;
+        /*final Menu _menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.landing_action_bar, menu);
 
@@ -47,7 +50,7 @@ public class EventsLandingActivity extends BaseLandingActivity {
         newMenu.setVisible(false);
         newMenu.setTitle(R.string.action_new_event);
 
-        return true;
+        return true;*/
     }
 
     @Override

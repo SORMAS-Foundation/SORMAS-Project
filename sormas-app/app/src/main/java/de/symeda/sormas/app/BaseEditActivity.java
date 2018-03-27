@@ -12,6 +12,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -66,7 +68,6 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
     private View fragmentFrame = null;
     private View statusFrame = null;
     private View applicationTitleBar = null;
-    private BaseEditActivityFragment fragment;
     private TextView subHeadingListActivityTitle;
     private LandingPageMenuControl pageMenu = null;
     private FloatingActionButton fab = null;
@@ -75,9 +76,13 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
     private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
     private View rootView;
     private TActivityRootData storedActivityRootData = null;
+    private BaseEditActivityFragment activeFragment = null;
 
     private Enum pageStatus;
     private String recordUuid;
+
+    private MenuItem saveMenu = null;
+    private MenuItem addMenu = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -120,15 +125,15 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         fab = (FloatingActionButton)findViewById(R.id.fab);
         notificationFrame = (LinearLayout)findViewById(R.id.notificationFrame);
 
-        if (savedInstanceState == null) {
+        /*if (savedInstanceState == null) {
             activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
         } else {
             activeMenuKey = RestoreActiveMenuState(savedInstanceState);
-        }
-        Bundle kkk = getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
+        }*/
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
 
+        activeMenuKey = getActiveMenuArg(arguments);
         pageStatus = getPageStatusArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
         initializeActivity(arguments);
@@ -210,7 +215,7 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
                 @Override
                 public void result(TActivityRootData result) {
                     try {
-                        BaseEditActivityFragment activeFragment = getActiveEditFragment(result);
+                        activeFragment = getActiveEditFragment(result);
                         replaceFragment(activeFragment);
                         firstTimeReplaceFragment = true;
                     } catch (IllegalAccessException e) {
@@ -283,26 +288,21 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
 
     protected abstract TActivityRootData getActivityRootDataIfRecordUuidNull();
 
-
-
-    protected abstract void initializeActivity(Bundle arguments);
-
     protected TActivityRootData getStoredActivityRootData() {
         return storedActivityRootData;
     }
 
+    protected abstract void initializeActivity(Bundle arguments);
+
     @Override
     public void onAttachFragment(Fragment fragment) {
         super.onAttachFragment(fragment);
-        updateSubHeadingTitle();
+        //updateSubHeadingTitle();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        /*if (firstTimeReplaceFragment)
-            updateSubHeadingTitle();*/
 
         if (applicationTitleBar != null) {
             if (showTitleBar()) {
@@ -340,11 +340,12 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
             subHeadingListActivityTitle.setText(t);
     }
 
+    @Override
     public void updateSubHeadingTitle() {
         String subHeadingTitle = "";
 
-        if (fragment != null) {
-            subHeadingTitle = (activeMenu == null)? fragment.getSubHeadingTitle() : activeMenu.getTitle();
+        if (activeFragment != null) {
+            subHeadingTitle = (activeMenu == null)? activeFragment.getSubHeadingTitle() : activeMenu.getTitle();
         }
 
         setSubHeadingTitle(subHeadingTitle);
@@ -387,8 +388,34 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.edit_action_menu, menu);
+
+        saveMenu = menu.findItem(R.id.action_save);
+        addMenu = menu.findItem(R.id.action_new);
+
+        processActionbarMenu();
 
         return true;
+    }
+
+    private void processActionbarMenu() {
+        if (activeFragment == null)
+            return;
+
+        if (saveMenu != null)
+            saveMenu.setVisible(activeFragment.showSaveAction());
+
+        if (addMenu != null)
+            addMenu.setVisible(activeFragment.showAddAction());
+    }
+
+    public MenuItem getSaveMenu() {
+        return saveMenu;
+    }
+
+    public MenuItem getAddMenu() {
+        return addMenu;
     }
 
     public String getStatusName(Context context) {
@@ -417,13 +444,13 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
 
     public void replaceFragment(BaseEditActivityFragment f) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        fragment = f;
+        activeFragment = f;
 
-        if (fragment != null) {
-            if (fragment.getArguments() == null)
-                fragment.setArguments(getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA));
+        if (activeFragment != null) {
+            if (activeFragment.getArguments() == null)
+                activeFragment.setArguments(getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA));
 
-            ft.replace(R.id.fragment_frame, fragment);
+            ft.replace(R.id.fragment_frame, activeFragment);
             ft.addToBackStack(null);
             ft.commit();
         }
@@ -440,29 +467,6 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         drw.setTint(fab.getContext().getResources().getColor(R.color.fabIcon));
         fab.setImageDrawable(drw);
     }
-
-    /*protected static <TActivity extends AbstractSormasActivity, TCapsule extends IReadToEditNavigationCapsule>
-    void goToActivity(Context fromActivity, Class<TActivity> toActivity, TCapsule dataCapsule) {
-
-        String dataUuid = dataCapsule.getRecordUuid();
-        IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
-        IStatusElaborator pageStatus = dataCapsule.getPageStatus();
-
-        Intent intent = new Intent(fromActivity, toActivity);
-        intent.putExtra(ConstantHelper.KEY_DATA_UUID, dataUuid);
-
-        if (filterStatus != null)
-            intent.putExtra(ConstantHelper.ARG_FILTER_STATUS, filterStatus.getValue());
-
-        if (pageStatus != null)
-            intent.putExtra(ConstantHelper.ARG_PAGE_STATUS, pageStatus.getValue());
-
-        for (IStatusElaborator e: dataCapsule.getOtherStatus()) {
-            if (e != null)
-                intent.putExtra(e.getStatekey(), e.getValue());
-        }
-        fromActivity.startActivity(intent);
-    }*/
 
     protected static <TActivity extends AbstractSormasActivity, TCapsule extends INavigationCapsule>
     void goToActivity(Context fromActivity, Class<TActivity> toActivity, TCapsule dataCapsule) {
@@ -531,34 +535,6 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         return activeMenu;
     }
 
-    /*@Override
-    public void showNotification(NotificationType type, String message) {
-        NotificationHelper.showNotification(rootView, type, message);
-        *//*if (notificationFrame == null)
-            return;
-
-        if (tvNotificationMessage == null)
-            return;
-
-        int backgroundColor = getResources().getColor(type.getBackgroundColor());
-        int textColor = getResources().getColor(type.getTextColor());
-
-        notificationFrame.setBackgroundColor(backgroundColor);
-        tvNotificationMessage.setTextColor(textColor);
-        tvNotificationMessage.setText(message);
-
-        notificationFrame.setVisibility(View.VISIBLE);*//*
-    }
-
-    @Override
-    public void hideNotification() {
-        NotificationHelper.hideNotification(rootView);
-        *//*if (notificationFrame == null)
-            return;
-
-        notificationFrame.setVisibility(View.GONE);*//*
-    }*/
-
     @Override
     public View getRootView() {
         return rootView;
@@ -593,7 +569,9 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         setActiveMenu(menuItem);
         replaceFragment(newActiveFragment);
 
-        updateSubHeadingTitle();
+        processActionbarMenu();
+        //updateSubHeadingTitle();
+
 
         return true;
     }
@@ -625,7 +603,10 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
 
         replaceFragment(newActiveFragment);
 
-        updateSubHeadingTitle();
+        //this.activeFragment = newActiveFragment;
+
+        processActionbarMenu();
+        //updateSubHeadingTitle();
 
         return true;
     }
@@ -640,6 +621,9 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
 
         replaceFragment(newActiveFragment);
 
+        //this.activeFragment = newActiveFragment;
+
+        processActionbarMenu();
         //updateSubHeadingTitle();
 
         return true;
@@ -701,7 +685,7 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
     }
 
     protected int getActiveMenuArg(Bundle arguments) {
-        int result = 0;
+        int result = ConstantHelper.INDEX_FIRST_MENU;
         if (arguments != null && !arguments.isEmpty()) {
             if(arguments.containsKey(ConstantHelper.KEY_ACTIVE_MENU)) {
                 result = (int) arguments.getInt(ConstantHelper.KEY_ACTIVE_MENU);

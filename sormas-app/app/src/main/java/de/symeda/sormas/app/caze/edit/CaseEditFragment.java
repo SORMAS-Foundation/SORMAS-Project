@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.caze.edit;
 
+import android.content.res.Resources;
 import android.databinding.ViewDataBinding;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -45,7 +46,11 @@ import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -67,6 +72,7 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
 
     public static final String TAG = CaseEditFragment.class.getSimpleName();
 
+    private AsyncTask onResumeTask;
     private AsyncTask moveCaseTask;
     private String recordUuid = null;
     private InvestigationStatus pageStatus = null;
@@ -102,7 +108,8 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_case_information);
     }
 
     @Override
@@ -349,7 +356,60 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
 
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    Case caze = getActivityRootData();
+
+                    if (caze != null) {
+                        if (caze.isUnreadOrChildUnread())
+                            DatabaseHelper.getCaseDao().markAsRead(caze);
+
+                        if (caze.getPerson() == null) {
+                            caze.setPerson(DatabaseHelper.getPersonDao().build());
+                        }
+                    }
+
+                    resultHolder.forItem().add(caze);
+                    resultHolder.forItem().add(ConfigProvider.getUser());
+                }
+            });
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+
+                    if (itemIterator.hasNext())
+                        record =  itemIterator.next();
+
+                    if (itemIterator.hasNext())
+                        user = itemIterator.next();
+
+                    if (record != null)
+                        requestLayoutRebind();
+                    else {
+                        getActivity().finish();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
     }
 
     @Override
@@ -448,7 +508,11 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
     public void onDestroy() {
         super.onDestroy();
 
+        if (onResumeTask != null && !onResumeTask.isCancelled())
+            onResumeTask.cancel(true);
+
         if (moveCaseTask != null && !moveCaseTask.isCancelled())
             moveCaseTask.cancel(true);
     }
+
 }

@@ -236,4 +236,8 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
         fragment.setArguments(bundle);
         return fragment;
     }
+
+    public boolean showNewAction() {
+        return true;
+    }
 }

@@ -6,10 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import de.symeda.sormas.api.utils.DataHelper;
@@ -161,13 +159,12 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
     }
 
     @Override
-    public LandingPageMenuItem onSelectInitialActiveMenuItem(ArrayList<LandingPageMenuItem> menuList) {
-        return null;
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        super.onCreateOptionsMenu(menu);
+        getSaveMenu().setTitle(R.string.action_save_sample);
+
+        return true;
+        /*MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.edit_action_menu, menu);
 
         saveMenu = menu.findItem(R.id.action_save);
@@ -177,7 +174,7 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
 
         processActionbarMenu();
 
-        return true;
+        return true;*/
     }
 
     @Override

@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.caze.edit;
 
+import android.content.res.Resources;
 import android.databinding.ViewDataBinding;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -132,7 +133,8 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_patient_information);
     }
 
     @Override
@@ -455,20 +457,22 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
 
                 @Override
                 public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    if (recordUuid != null && !recordUuid.isEmpty()) {
-                        Person p = null;
-                        Case caze = DatabaseHelper.getCaseDao().queryUuid(recordUuid);
 
-                        if (caze != null) {
-                            p = DatabaseHelper.getPersonDao().queryUuid(caze.getPerson().getUuid());
+                    Case caze = getActivityRootData();
+
+                    if (caze != null) {
+                        if (caze.isUnreadOrChildUnread())
+                            DatabaseHelper.getCaseDao().markAsRead(caze);
+
+                        if (caze.getPerson() == null) {
+                            caze.setPerson(DatabaseHelper.getPersonDao().build());
+                        } else {
+                            caze.setPerson(DatabaseHelper.getPersonDao().queryUuid(caze.getPerson().getUuid()));
                         }
-
-                        resultHolder.forItem().add(p);
-                        resultHolder.forItem().add(caze);
-                    } else {
-                        resultHolder.forItem().add(null);
-                        resultHolder.forItem().add(null);
                     }
+
+                    resultHolder.forItem().add(caze.getPerson());
+                    resultHolder.forItem().add(caze);
                 }
             });
             onResumeTask = executor.execute(new ITaskResultCallback() {

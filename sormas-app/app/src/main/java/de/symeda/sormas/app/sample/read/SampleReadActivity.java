@@ -4,33 +4,31 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-
-import java.util.ArrayList;
 
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.sample.edit.SampleEditActivity;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
-import de.symeda.sormas.app.sample.edit.SampleEditActivity;
 import de.symeda.sormas.app.util.NavigationHelper;
 
 /**
  * Created by Orson on 10/12/2017.
  */
 
-public class SampleReadActivity extends BaseReadActivity {
+public class SampleReadActivity extends BaseReadActivity<Sample> {
 
     private final String DATA_XML_PAGE_MENU = "";
 
     private ShipmentStatus pageStatus = null;
     private String recordUuid = null;
+    private String caseUuid = null;
     private BaseReadActivityFragment activeFragment = null;
 
     @Override
@@ -39,6 +37,7 @@ public class SampleReadActivity extends BaseReadActivity {
 
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
+        SaveCaseUuidState(outState, caseUuid);
     }
 
     @Override
@@ -55,14 +54,33 @@ public class SampleReadActivity extends BaseReadActivity {
     protected void initializeActivity(Bundle arguments) {
         pageStatus = (ShipmentStatus) getPageStatusArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
+        caseUuid = getCaseUuidArg(arguments);
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+    protected Sample getActivityRootData(String recordUuid) {
+        Sample sample;
+        if (caseUuid != null && !caseUuid.isEmpty()) {
+            Case associatedCase = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+            sample = DatabaseHelper.getSampleDao().build(associatedCase);
+        } else {
+            sample = DatabaseHelper.getSampleDao().queryUuid(recordUuid);
+        }
+
+        return sample;
+    }
+
+    @Override
+    protected Sample getActivityRootDataIfRecordUuidNull() {
+        return null;
+    }
+
+    @Override
+    public BaseReadActivityFragment getActiveReadFragment(Sample activityRootData) throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(SampleReadActivity.this,
                     recordUuid, pageStatus);
-            activeFragment = SampleReadFragment.newInstance(this, dataCapsule);
+            activeFragment = SampleReadFragment.newInstance(this, dataCapsule, activityRootData);
         }
 
         return activeFragment;
@@ -99,33 +117,24 @@ public class SampleReadActivity extends BaseReadActivity {
     }
 
     @Override
-    public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) {
-        return true;
-    }
-
-    @Override
-    public LandingPageMenuItem onSelectInitialActiveMenuItem(ArrayList<LandingPageMenuItem> menuList) {
-        LandingPageMenuItem activeMenu = menuList.get(0);
-
-        for(LandingPageMenuItem m: menuList){
-            if (m.getKey() == 0){
-                activeMenu = m;
-            }
-        }
-
-        return activeMenu;
+    protected BaseReadActivityFragment getNextFragment(LandingPageMenuItem menuItem, Sample activityRootData) {
+        return null;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        super.onCreateOptionsMenu(menu);
+        getEditMenu().setTitle(R.string.action_edit_sample);
+
+        return true;
+        /*MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.read_action_menu, menu);
 
         MenuItem readMenu = menu.findItem(R.id.action_edit);
         //readMenu.setVisible(false);
         readMenu.setTitle(R.string.action_edit_sample);
 
-        return true;
+        return true;*/
     }
 
     @Override

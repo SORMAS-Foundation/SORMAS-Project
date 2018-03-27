@@ -39,7 +39,11 @@ public class ContactsLandingActivity extends BaseLandingActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        final Menu _menu = menu;
+        super.onCreateOptionsMenu(menu);
+        getNewMenu().setTitle(R.string.action_new_contact);
+
+        return true;
+        /*final Menu _menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.landing_action_bar, menu);
 
@@ -47,7 +51,7 @@ public class ContactsLandingActivity extends BaseLandingActivity {
         newMenu.setVisible(false);
         newMenu.setTitle(R.string.action_new_contact);
 
-        return true;
+        return true;*/
     }
 
     @Override

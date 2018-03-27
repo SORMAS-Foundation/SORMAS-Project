@@ -5,7 +5,9 @@ import android.databinding.OnRebindCallback;
 import android.databinding.ViewDataBinding;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import android.view.ViewStub;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.INavigationCapsule;
@@ -33,7 +36,9 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
  * Created by Orson on 11/12/2017.
  */
 
-public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding, TData> extends BaseFragment {
+public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding, TData, TActivityRootData extends AbstractDomainObject> extends BaseFragment {
+
+    public static final String TAG = BaseReadActivityFragment.class.getSimpleName();
 
     private AsyncTask jobTask;
     private BaseReadActivity baseReadActivity;
@@ -43,6 +48,22 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
     private ViewDataBinding rootBinding;
     private View contentViewStubRoot;
     private boolean beforeLayoutBindingAsyncReturn;
+    private boolean skipAfterLayoutBinding = false;
+    private TActivityRootData activityRootData;
+
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        SaveUserRightState(outState, editOrCreateUserRight);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
+        editOrCreateUserRight = (UserRight) getUserRightArg(arguments);
+    }
 
     @Override
     public final View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
@@ -138,7 +159,12 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
 
                             //After
                             //onAfterLayoutBindingHelper(contentViewStubBinding);
-                            onAfterLayoutBinding(contentViewStubBinding);
+                            if (!skipAfterLayoutBinding)
+                                onAfterLayoutBinding(contentViewStubBinding);
+
+                            skipAfterLayoutBinding = false;
+
+                            getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
                         }
                     });
                 }
@@ -159,6 +185,8 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
     public abstract void onLayoutBinding(TBinding contentBinding);
 
     public abstract void onAfterLayoutBinding(TBinding contentBinding);
+
+    protected abstract void updateUI(TBinding contentBinding, TData data);
 
     protected void setRootNotificationBindingVariable(final ViewDataBinding binding, String layoutName) {
         /*if (!binding.setVariable(de.symeda.sormas.app.BR.showNotificationCallback, this)) {
@@ -224,7 +252,17 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         return this.baseReadActivity;
     }
 
-    protected abstract String getSubHeadingTitle();
+    protected String getSubHeadingTitle() {
+        return null;
+    }
+
+    protected void setActivityRootData(TActivityRootData activityRootData) {
+        this.activityRootData = activityRootData;
+    }
+
+    protected TActivityRootData getActivityRootData() {
+        return this.activityRootData;
+    }
 
     public abstract TData getPrimaryData();
 
@@ -249,7 +287,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
     }
 
     protected static <TFragment extends BaseReadActivityFragment, TCapsule extends INavigationCapsule>
-    TFragment newInstance(IActivityCommunicator activityCommunicator, Class<TFragment> f, TCapsule dataCapsule) throws IllegalAccessException, java.lang.InstantiationException {
+    TFragment newInstance(IActivityCommunicator activityCommunicator, Class<TFragment> f, TCapsule dataCapsule, AbstractDomainObject activityRootData) throws IllegalAccessException, java.lang.InstantiationException {
         TFragment fragment = f.newInstance();
 
         fragment.setActivityCommunicator(activityCommunicator);
@@ -304,6 +342,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         }*/
 
         fragment.setArguments(bundle);
+        fragment.setActivityRootData(activityRootData);
         return fragment;
     }
 
@@ -539,6 +578,27 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
         }
+    }
+
+    public boolean showEditAction() {
+        return true;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (jobTask != null && !jobTask.isCancelled())
+            jobTask.cancel(true);
+    }
+
+    protected void updateUI() {
+        this.skipAfterLayoutBinding = true;
+        if (!getContentBinding().setVariable(BR.data, getPrimaryData())) {
+            Log.e(TAG, "There is no variable 'data' in layout " + getReadLayout());
+        }
+
+        updateUI(getContentBinding(), getPrimaryData());
     }
 
 }

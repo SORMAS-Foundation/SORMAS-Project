@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.task.edit;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -90,13 +91,8 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
 
     @Override
     protected String getSubHeadingTitle() {
-        String title = "";
-
-        if (pageStatus != null) {
-            title = pageStatus.toString();
-        }
-
-        return title;
+        Resources r = getResources();
+        return r.getString(R.string.caption_task_information);
     }
 
     @Override
@@ -118,7 +114,6 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
-            //Item Data
             if (itemIterator.hasNext())
                 record =  itemIterator.next();
 

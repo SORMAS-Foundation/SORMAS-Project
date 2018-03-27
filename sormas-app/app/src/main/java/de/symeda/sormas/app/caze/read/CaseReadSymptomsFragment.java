@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.caze.read;
 
+import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -14,24 +16,29 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.component.OnLinkClickListener;
 import de.symeda.sormas.app.component.tagview.Tag;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentCaseReadSymptomsLayoutBinding;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.symptom.Symptom;
 
 /**
  * Created by Orson on 08/01/2018.
  */
 
-public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentCaseReadSymptomsLayoutBinding, Symptoms> {
+public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentCaseReadSymptomsLayoutBinding, Symptoms, Case> {
 
-    public static final String TAG = CaseReadHospitalizationFragment.class.getSimpleName();
+    public static final String TAG = CaseReadSymptomsFragment.class.getSimpleName();
 
+    private AsyncTask onResumeTask;
     private String recordUuid = null;
     private CaseClassification pageStatus = null;
     private Symptoms record;
@@ -63,19 +70,25 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            Symptoms symptom = null;
-            Case caze = DatabaseHelper.getCaseDao().queryUuid(recordUuid);
+            Symptoms _symptom = null;
+            Case caze = getActivityRootData();
+            List<Symptom> sList = new ArrayList<>();
 
-            if (caze != null)
-                symptom = caze.getSymptoms();
+            if (caze != null) {
+                if (caze.isUnreadOrChildUnread())
+                    DatabaseHelper.getCaseDao().markAsRead(caze);
 
-            List<Symptom> sList = Symptom.makeSymptoms(caze.getDisease()).loadState(symptom);
+                _symptom = caze.getSymptoms();
+                //_symptom = DatabaseHelper.getSymptomsDao().queryUuid(visit.getSymptoms().getUuid());
+
+                sList = Symptom.makeSymptoms(caze.getDisease()).loadState(_symptom);
+            }
+
+            resultHolder.forItem().add(_symptom);
 
             resultHolder.forOther().add(getSymptomsYes(sList));
             resultHolder.forOther().add(getSymptomsNo(sList));
             resultHolder.forOther().add(getSymptomsUnknown(sList));
-
-            resultHolder.forItem().add(symptom);
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
             ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
@@ -113,15 +126,76 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
     }
 
     @Override
+    protected void updateUI(FragmentCaseReadSymptomsLayoutBinding contentBinding, Symptoms symptoms) {
+
+    }
+
+    @Override
     public void onPageResume(FragmentCaseReadSymptomsLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
+
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    Symptoms _symptom = null;
+                    Case caze = getActivityRootData();
+                    List<Symptom> sList = new ArrayList<>();
+
+                    if (caze != null) {
+                        if (caze.isUnreadOrChildUnread())
+                            DatabaseHelper.getCaseDao().markAsRead(caze);
+
+                        _symptom = caze.getSymptoms();
+                        //_symptom = DatabaseHelper.getSymptomsDao().queryUuid(visit.getSymptoms().getUuid());
+
+                        //sList = Symptom.makeSymptoms(caze.getDisease()).loadState(_symptom);
+                    }
+
+                    resultHolder.forItem().add(_symptom);
+                }
+            });
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+                    ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
+
+                    if (itemIterator.hasNext())
+                        record = itemIterator.next();
+
+                    if (record != null)
+                        requestLayoutRebind();
+                    else {
+                        getActivity().finish();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
 
     }
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_symptom_information);
     }
 
     @Override
@@ -134,9 +208,9 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
         return R.layout.fragment_case_read_symptoms_layout;
     }
 
-    public static CaseReadSymptomsFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)
+    public static CaseReadSymptomsFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, CaseReadSymptomsFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseReadSymptomsFragment.class, capsule, activityRootData);
     }
 
     private List<Tag> getSymptomsYes(List<Symptom> list) {
@@ -188,5 +262,13 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
     @Override
     public boolean includeFabNonOverlapPadding() {
         return false;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (onResumeTask != null && !onResumeTask.isCancelled())
+            onResumeTask.cancel(true);
     }
 }

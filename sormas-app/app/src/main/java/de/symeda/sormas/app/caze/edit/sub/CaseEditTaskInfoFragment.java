@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.caze.edit.sub;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -61,7 +62,8 @@ public class CaseEditTaskInfoFragment  extends BaseEditActivityFragment<Fragment
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.heading_level4_1_case_task_info);
+        Resources r = getResources();
+        return r.getString(R.string.caption_task_information);
     }
 
     @Override

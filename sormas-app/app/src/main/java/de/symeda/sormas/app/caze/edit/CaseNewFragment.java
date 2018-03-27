@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.caze.edit;
 
+import android.content.res.Resources;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -101,7 +102,8 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.heading_case_new);
+        Resources r = getResources();
+        return r.getString(R.string.caption_new_case);
     }
 
     @Override

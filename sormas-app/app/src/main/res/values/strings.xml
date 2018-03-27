@@ -627,11 +627,11 @@
     <string name="heading_level1_events_landing">Event Directory</string>
     <string name="heading_level1_samples_landing">Sample Directory</string>
 
-    <string name="heading_level2_tasks_list">Tasks</string>
-    <string name="heading_level2_cases_list">Cases</string>
-    <string name="heading_level2_contacts_list">Contacts</string>
-    <string name="heading_level2_events_list">Events</string>
-    <string name="heading_level2_samples_list">Samples</string>
+    <string name="heading_level2_tasks_list">Task Listing</string>
+    <string name="heading_level2_cases_list">Case Listing</string>
+    <string name="heading_level2_contacts_list">Contact Listing</string>
+    <string name="heading_level2_events_list">Event Listing</string>
+    <string name="heading_level2_samples_list">Sample Listing</string>
 
 
     <string name="heading_level2_1_tasks_list_by_case">Case (%1$s)</string>
@@ -643,11 +643,11 @@
     <string name="heading_list_by_contact">%1$s by Contact</string>
     <string name="heading_list_by_event">%1$s by Event</string>
 
-    <string name="heading_level3_task_read">Task</string>
-    <string name="heading_level3_case_read">Case</string>
-    <string name="heading_level3_contact_read">Contact</string>
-    <string name="heading_level3_event_read">Event</string>
-    <string name="heading_level3_sample_read">Sample</string>
+    <string name="heading_level3_task_read">Read Task</string>
+    <string name="heading_level3_case_read">Read Case</string>
+    <string name="heading_level3_contact_read">Read Contact</string>
+    <string name="heading_level3_event_read">Read Event</string>
+    <string name="heading_level3_sample_read">Read Sample</string>
 
 
     <string name="heading_level3_1_event_read_person_involved_info">Person Involved</string>
@@ -658,11 +658,11 @@
 
     <string name="heading_level3_1_case_task_info">Case Task</string>
 
-    <string name="heading_level4_task_edit">Task</string>
-    <string name="heading_level4_case_edit">Case</string>
-    <string name="heading_level4_contact_edit">Contact</string>
-    <string name="heading_level4_event_edit">Event</string>
-    <string name="heading_level4_sample_edit">Sample</string>
+    <string name="heading_level4_task_edit">Edit Task</string>
+    <string name="heading_level4_case_edit">Edit Case</string>
+    <string name="heading_level4_contact_edit">Edit Contact</string>
+    <string name="heading_level4_event_edit">Edit Event</string>
+    <string name="heading_level4_sample_edit">Edit Sample</string>
 
 
     <string name="heading_sub_event_person_involved_new">For Event: %1$s</string>
@@ -692,6 +692,31 @@
 
     <string name="heading_no_record_found">No Record</string>
     <string name="heading_all_records">All Records</string>
+
+    <string name="caption_person_involved">Person Involved</string>
+    <string name="caption_event_task_information">Event Task Information</string>
+    <string name="caption_task_information">Task Information</string>
+    <string name="caption_sample_information">Sample Information</string>
+    <string name="caption_event_information">Event Information</string>
+    <string name="caption_persons_involved">Persons Involved</string>
+    <string name="caption_event_tasks">Event Tasks</string>
+    <string name="caption_new_contact">New Contact</string>
+    <string name="caption_contact_tasks">Contact Tasks</string>
+    <string name="caption_case_tasks">Case Tasks</string>
+    <string name="caption_person_information">Person Information</string>
+    <string name="caption_contact_information">Contact Information</string>
+    <string name="caption_followup_information">Follow-Up Information</string>
+    <string name="caption_symptom_information">Symptom Information</string>
+    <string name="caption_new_case">New Case</string>
+    <string name="caption_case_samples">Case Samples</string>
+    <string name="caption_patient_information">Patient Information</string>
+    <string name="caption_hospitalization_information">Hospitalization Info</string>
+    <string name="caption_case_information">Case Information</string>
+    <string name="caption_epidemiological_information">Epidemilogical Info</string>
+    <string name="caption_visit_information">Visit Information</string>
+    <string name="caption_case_contacts">Case Contacts</string>
+
+
 
 
 

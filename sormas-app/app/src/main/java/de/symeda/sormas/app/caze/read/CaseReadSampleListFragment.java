@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.caze.read;
 
+import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,7 +21,11 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentCaseReadSampleLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -32,8 +38,9 @@ import de.symeda.sormas.app.util.SampleHelper;
  * Created by Orson on 08/01/2018.
  */
 
-public class CaseReadSampleListFragment extends BaseReadActivityFragment<FragmentCaseReadSampleLayoutBinding, List<Sample>> implements OnListItemClickListener {
+public class CaseReadSampleListFragment extends BaseReadActivityFragment<FragmentCaseReadSampleLayoutBinding, List<Sample>, Case> implements OnListItemClickListener {
 
+    private AsyncTask onResumeTask;
     private String recordUuid = null;
     private InvestigationStatus filterStatus = null;
     private CaseClassification pageStatus = null;
@@ -48,7 +55,7 @@ public class CaseReadSampleListFragment extends BaseReadActivityFragment<Fragmen
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
+
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -60,19 +67,28 @@ public class CaseReadSampleListFragment extends BaseReadActivityFragment<Fragmen
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
-        filterStatus = (InvestigationStatus) getFilterStatusArg(arguments);
         pageStatus = (CaseClassification) getPageStatusArg(arguments);
     }
 
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
+            Case caze = getActivityRootData();
+            List<Sample> sampleListList = new ArrayList<Sample>();
+
+            //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
             if (caze != null) {
-                resultHolder.forList().add(DatabaseHelper.getSampleDao().queryByCase(caze));
-            } else {
-                resultHolder.forList().add(new ArrayList<Sample>());
+                if (caze.isUnreadOrChildUnread())
+                    DatabaseHelper.getCaseDao().markAsRead(caze);
+
+                if (caze.getPerson() == null) {
+                    caze.setPerson(DatabaseHelper.getPersonDao().build());
+                }
+
+                sampleListList = DatabaseHelper.getSampleDao().queryByCase(caze);
             }
+
+            resultHolder.forList().add(sampleListList);
         } else {
             ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
 
@@ -98,6 +114,11 @@ public class CaseReadSampleListFragment extends BaseReadActivityFragment<Fragmen
     }
 
     @Override
+    protected void updateUI(FragmentCaseReadSampleLayoutBinding contentBinding, List<Sample> samples) {
+
+    }
+
+    @Override
     public void onPageResume(FragmentCaseReadSampleLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
@@ -112,11 +133,66 @@ public class CaseReadSampleListFragment extends BaseReadActivityFragment<Fragmen
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    Case caze = getActivityRootData();
+                    List<Sample> sampleListList = new ArrayList<Sample>();
+
+                    //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
+                    if (caze != null) {
+                        if (caze.isUnreadOrChildUnread())
+                            DatabaseHelper.getCaseDao().markAsRead(caze);
+
+                        if (caze.getPerson() == null) {
+                            caze.setPerson(DatabaseHelper.getPersonDao().build());
+                        }
+
+                        sampleListList = DatabaseHelper.getSampleDao().queryByCase(caze);
+                    }
+
+                    resultHolder.forList().add(sampleListList);
+                }
+            });
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
+
+                    if (listIterator.hasNext())
+                        record = listIterator.next();
+
+                    if (record != null)
+                        requestLayoutRebind();
+                    else {
+                        getActivity().finish();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
     }
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_case_samples);
     }
 
     @Override
@@ -155,19 +231,6 @@ public class CaseReadSampleListFragment extends BaseReadActivityFragment<Fragmen
         Sample s = (Sample)item;
         SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(getContext(), s.getUuid(), SampleHelper.getShipmentStatus(s));
         SampleReadActivity.goToActivity(getActivity(), dataCapsule);
-
-
-        /*Task record = (Task)item;
-
-        if(record != null) {
-            Intent intent = new Intent(getActivity(), CaseReadTaskInfoActivity.class);
-            //intent.putExtra(ConstantHelper.ARG_FILTER_STATUS, record.getContact().getFollowUpStatus());
-            intent.putExtra(ConstantHelper.KEY_DATA_UUID, record.getUuid());
-            intent.putExtra(IStatusElaborator.ARG_TASK_STATUS, record.getTaskStatus());
-            intent.putExtra(IStatusElaborator.ARG_FOLLOW_UP_STATUS, followUpStatus);
-
-            startActivity(intent);
-        }*/
     }
 
     @Override
@@ -175,8 +238,16 @@ public class CaseReadSampleListFragment extends BaseReadActivityFragment<Fragmen
         return false;
     }
 
-    public static CaseReadSampleListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)
+    public static CaseReadSampleListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, CaseReadSampleListFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseReadSampleListFragment.class, capsule, activityRootData);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (onResumeTask != null && !onResumeTask.isCancelled())
+            onResumeTask.cancel(true);
     }
 }

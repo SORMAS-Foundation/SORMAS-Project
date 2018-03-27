@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.event.read;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -36,7 +37,7 @@ import de.symeda.sormas.app.util.ConstantHelper;
  * Created by Orson on 26/12/2017.
  */
 
-public class EventReadPersonsInvolvedFragment extends BaseReadActivityFragment<FragmentEventReadPersonsInvolvedLayoutBinding, List<EventParticipant>> implements OnListItemClickListener {
+public class EventReadPersonsInvolvedListFragment extends BaseReadActivityFragment<FragmentEventReadPersonsInvolvedLayoutBinding, List<EventParticipant>, Event> implements OnListItemClickListener {
 
     private AsyncTask onResumeTask;
     private String recordUuid;
@@ -50,7 +51,6 @@ public class EventReadPersonsInvolvedFragment extends BaseReadActivityFragment<F
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -62,20 +62,24 @@ public class EventReadPersonsInvolvedFragment extends BaseReadActivityFragment<F
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
-        //filterStatus = (EventStatus) getFilterStatusArg(arguments);
         pageStatus = (EventStatus) getPageStatusArg(arguments);
     }
 
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            Event event = DatabaseHelper.getEventDao().queryUuid(recordUuid);
+            Event event = getActivityRootData();
+            List<EventParticipant> eventParticipantList = new ArrayList<EventParticipant>();
 
+            //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
             if (event != null) {
-                resultHolder.forList().add(DatabaseHelper.getEventParticipantDao().getByEvent(event));
-            } else {
-                resultHolder.forList().add(new ArrayList<EventParticipant>());
+                if (event.isUnreadOrChildUnread())
+                    DatabaseHelper.getEventDao().markAsRead(event);
+
+                eventParticipantList = DatabaseHelper.getEventParticipantDao().getByEvent(event);
             }
+
+            resultHolder.forList().add(eventParticipantList);
         } else {
             ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
 
@@ -89,8 +93,8 @@ public class EventReadPersonsInvolvedFragment extends BaseReadActivityFragment<F
     @Override
     public void onLayoutBinding(FragmentEventReadPersonsInvolvedLayoutBinding contentBinding) {
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        adapter = new EventReadPersonsInvolvedAdapter(EventReadPersonsInvolvedFragment.this.getActivity(),
-                R.layout.row_read_event_persons_involved_item_layout, EventReadPersonsInvolvedFragment.this, record);
+        adapter = new EventReadPersonsInvolvedAdapter(EventReadPersonsInvolvedListFragment.this.getActivity(),
+                R.layout.row_read_event_persons_involved_item_layout, EventReadPersonsInvolvedListFragment.this, record);
 
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
@@ -99,6 +103,11 @@ public class EventReadPersonsInvolvedFragment extends BaseReadActivityFragment<F
 
     @Override
     public void onAfterLayoutBinding(FragmentEventReadPersonsInvolvedLayoutBinding contentBinding) {
+
+    }
+
+    @Override
+    protected void updateUI(FragmentEventReadPersonsInvolvedLayoutBinding contentBinding, List<EventParticipant> eventParticipants) {
 
     }
 
@@ -127,18 +136,18 @@ public class EventReadPersonsInvolvedFragment extends BaseReadActivityFragment<F
 
                 @Override
                 public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    if (recordUuid == null || recordUuid.isEmpty()) {
-                        resultHolder.forList().add(new ArrayList<EventParticipant>());
-                        return;
-                    }
+                    Event event = getActivityRootData();
+                    List<EventParticipant> eventParticipantList = new ArrayList<EventParticipant>();
 
-                    Event event = DatabaseHelper.getEventDao().queryUuid(recordUuid);
-
+                    //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
                     if (event != null) {
-                        resultHolder.forList().add(DatabaseHelper.getEventParticipantDao().getByEvent(event));
-                    } else {
-                        resultHolder.forList().add(new ArrayList<EventParticipant>());
+                        if (event.isUnreadOrChildUnread())
+                            DatabaseHelper.getEventDao().markAsRead(event);
+
+                        eventParticipantList = DatabaseHelper.getEventParticipantDao().getByEvent(event);
                     }
+
+                    resultHolder.forList().add(eventParticipantList);
                 }
             });
             onResumeTask = executor.execute(new ITaskResultCallback() {
@@ -167,7 +176,8 @@ public class EventReadPersonsInvolvedFragment extends BaseReadActivityFragment<F
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_persons_involved);
     }
 
     @Override
@@ -211,9 +221,9 @@ public class EventReadPersonsInvolvedFragment extends BaseReadActivityFragment<F
         return false;
     }
 
-    public static EventReadPersonsInvolvedFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule)
+    public static EventReadPersonsInvolvedListFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, EventReadPersonsInvolvedFragment.class, capsule);
+        return newInstance(activityCommunicator, EventReadPersonsInvolvedListFragment.class, capsule, activityRootData);
     }
 
     @Override

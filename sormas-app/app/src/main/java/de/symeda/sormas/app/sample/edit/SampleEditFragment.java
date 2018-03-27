@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.sample.edit;
 
+import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -95,13 +96,8 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
 
     @Override
     protected String getSubHeadingTitle() {
-        String title = "";
-
-        if (sampleMaterial != null) {
-            title = sampleMaterial;
-        }
-
-        return title;
+        Resources r = getResources();
+        return r.getString(R.string.caption_sample_information);
     }
 
     @Override

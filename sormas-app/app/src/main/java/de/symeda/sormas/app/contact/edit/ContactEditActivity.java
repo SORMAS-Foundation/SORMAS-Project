@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import java.util.Date;
@@ -92,7 +91,6 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
     @Override
     protected void initializeActivity(Bundle arguments) {
-        //filterStatus = (EventStatus) getFilterStatusArg(arguments);
         pageStatus = (ContactClassification) getPageStatusArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
 
@@ -134,26 +132,6 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
     }
 
     @Override
-    public boolean showStatusFrame() {
-        return showStatusFrame;
-    }
-
-    @Override
-    public boolean showTitleBar() {
-        return showTitleBar;
-    }
-
-    @Override
-    public boolean showPageMenu() {
-        return showPageMenu;
-    }
-
-    @Override
-    public Enum getPageStatus() {
-        return pageStatus;
-    }
-
-    @Override
     public String getPageMenuData() {
         return DATA_XML_PAGE_MENU;
     }
@@ -174,7 +152,6 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
                 activeFragment = ContactEditTaskListFragment.newInstance(this, dataCapsule, activityRootData);
             }
 
-            processActionbarMenu();
         } catch (InstantiationException e) {
             Log.e(TAG, e.getMessage());
         } catch (IllegalAccessException e) {
@@ -186,7 +163,11 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        super.onCreateOptionsMenu(menu);
+        getSaveMenu().setTitle(R.string.action_save_contact);
+
+        return true;
+        /*MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.edit_action_menu, menu);
 
         saveMenu = menu.findItem(R.id.action_save);
@@ -196,7 +177,7 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
         processActionbarMenu();
 
-        return true;
+        return true;*/
     }
 
     @Override

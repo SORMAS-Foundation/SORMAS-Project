@@ -4,13 +4,9 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-
-import java.util.ArrayList;
 
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.BaseReadActivity;
@@ -26,8 +22,8 @@ import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.event.edit.EventEditActivity;
+import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.NavigationHelper;
 
@@ -35,7 +31,9 @@ import de.symeda.sormas.app.util.NavigationHelper;
  * Created by Orson on 24/12/2017.
  */
 
-public class EventReadActivity extends BaseReadActivity {
+public class EventReadActivity extends BaseReadActivity<Event> {
+
+    public static final String TAG = EventReadActivity.class.getSimpleName();
 
     private final String DATA_XML_PAGE_MENU = "xml/data_read_page_alert_menu.xml";
 
@@ -96,11 +94,21 @@ public class EventReadActivity extends BaseReadActivity {
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+    protected Event getActivityRootData(String recordUuid) {
+        return DatabaseHelper.getEventDao().queryUuid(recordUuid);
+    }
+
+    @Override
+    protected Event getActivityRootDataIfRecordUuidNull() {
+        return null;
+    }
+
+    @Override
+    public BaseReadActivityFragment getActiveReadFragment(Event activityRootData) throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventReadActivity.this,
                     recordUuid, pageStatus);
-            activeFragment = EventReadFragment.newInstance(this, dataCapsule);
+            activeFragment = EventReadFragment.newInstance(this, dataCapsule, activityRootData);
         }
 
         return activeFragment;
@@ -137,49 +145,43 @@ public class EventReadActivity extends BaseReadActivity {
     }
 
     @Override
-    public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-        setActiveMenu(menuItem);
-
+    protected BaseReadActivityFragment getNextFragment(LandingPageMenuItem menuItem, Event activityRootData) {
         EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventReadActivity.this,
                 recordUuid, pageStatus);
 
-        if (menuItem.getKey() == MENU_INDEX_EVENT_INFO) {
-            activeFragment = EventReadFragment.newInstance(this, dataCapsule);
-        } else if (menuItem.getKey() == MENU_INDEX_EVENT__PERSON_INVOLVED) {
-            activeFragment = EventReadPersonsInvolvedFragment.newInstance(this, dataCapsule);
-        } else if (menuItem.getKey() == MENU_INDEX_EVENT_TASK) {
-            activeFragment = EventReadTaskListFragement.newInstance(this, dataCapsule);
-        }
-
-        replaceFragment(activeFragment);
-        updateSubHeadingTitle();
-
-        return true;
-    }
-
-    @Override
-    public LandingPageMenuItem onSelectInitialActiveMenuItem(ArrayList<LandingPageMenuItem> menuList) {
-        activeMenuItem = menuList.get(0);
-
-        for(LandingPageMenuItem m: menuList){
-            if (m.getKey() == activeMenuKey){
-                activeMenuItem = m;
+        try {
+            if (menuItem.getKey() == MENU_INDEX_EVENT_INFO) {
+                activeFragment = EventReadFragment.newInstance(this, dataCapsule, activityRootData);
+            } else if (menuItem.getKey() == MENU_INDEX_EVENT__PERSON_INVOLVED) {
+                activeFragment = EventReadPersonsInvolvedListFragment.newInstance(this, dataCapsule, activityRootData);
+            } else if (menuItem.getKey() == MENU_INDEX_EVENT_TASK) {
+                activeFragment = EventReadTaskListFragement.newInstance(this, dataCapsule, activityRootData);
             }
+
+            //processActionbarMenu();
+        } catch (InstantiationException e) {
+            Log.e(TAG, e.getMessage());
+        } catch (IllegalAccessException e) {
+            Log.e(TAG, e.getMessage());
         }
 
-        return activeMenuItem;
+        return activeFragment;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        super.onCreateOptionsMenu(menu);
+        getEditMenu().setTitle(R.string.action_edit_event);
+
+        return true;
+        /*MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.read_action_menu, menu);
 
         MenuItem readMenu = menu.findItem(R.id.action_edit);
         //readMenu.setVisible(false);
         readMenu.setTitle(R.string.action_edit_event);
 
-        return true;
+        return true;*/
     }
 
     @Override

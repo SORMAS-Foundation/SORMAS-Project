@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.contact.edit.sub;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -79,7 +80,8 @@ public class ContactEditTaskInfoFragment extends BaseEditActivityFragment<Fragme
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.heading_contact_task_info);
+        Resources r = getResources();
+        return r.getString(R.string.caption_task_information);
     }
 
     @Override

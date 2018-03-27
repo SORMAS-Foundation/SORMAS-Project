@@ -133,7 +133,11 @@ public class CaseEditSampleInfoActivity extends BaseEditActivity<Sample> {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        super.onCreateOptionsMenu(menu);
+        getSaveMenu().setTitle(R.string.action_save_sample);
+
+        return true;
+        /*MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.edit_action_menu, menu);
 
         saveMenu = menu.findItem(R.id.action_save);
@@ -143,7 +147,7 @@ public class CaseEditSampleInfoActivity extends BaseEditActivity<Sample> {
 
         processActionbarMenu();
 
-        return true;
+        return true;*/
     }
 
     @Override

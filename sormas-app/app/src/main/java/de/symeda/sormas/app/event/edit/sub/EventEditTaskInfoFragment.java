@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.event.edit.sub;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -89,7 +90,8 @@ public class EventEditTaskInfoFragment extends BaseEditActivityFragment<Fragment
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.heading_level4_1_event_edit_task_info);
+        Resources r = getResources();
+        return r.getString(R.string.caption_task_information);
     }
 
     @Override
@@ -110,7 +112,6 @@ public class EventEditTaskInfoFragment extends BaseEditActivityFragment<Fragment
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
-            //Item Data
             if (itemIterator.hasNext())
                 record =  itemIterator.next();
 

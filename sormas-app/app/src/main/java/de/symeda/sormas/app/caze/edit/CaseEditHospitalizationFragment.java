@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.caze.edit;
 
+import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -75,7 +76,8 @@ public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<Fr
 
     @Override
     protected String getSubHeadingTitle() {
-        return null;
+        Resources r = getResources();
+        return r.getString(R.string.caption_hospitalization_information);
     }
 
     @Override
@@ -179,16 +181,22 @@ public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<Fr
 
                 @Override
                 public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    Hospitalization hospitalization = null;
-                    Case caze = null;
+                    Case caze = getActivityRootData();
 
-                    if (recordUuid != null && !recordUuid.isEmpty()) {
-                        caze = DatabaseHelper.getCaseDao().queryUuid(recordUuid);
-                        if (caze != null)
-                            hospitalization = DatabaseHelper.getHospitalizationDao().queryUuid(caze.getHospitalization().getUuid());
+                    if (caze != null) {
+                        if (caze.isUnreadOrChildUnread())
+                            DatabaseHelper.getCaseDao().markAsRead(caze);
+
+                        if (caze.getPerson() == null) {
+                            caze.setPerson(DatabaseHelper.getPersonDao().build());
+                        }
+
+                        //TODO: Do we really need to do this
+                        if (caze.getHospitalization() != null)
+                            caze.setHospitalization(DatabaseHelper.getHospitalizationDao().queryUuid(caze.getHospitalization().getUuid()));
                     }
 
-                    resultHolder.forItem().add(hospitalization);
+                    resultHolder.forItem().add(caze.getHospitalization());
                     resultHolder.forItem().add(caze);
                 }
             });
