@@ -6,20 +6,26 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 
-import de.symeda.sormas.app.BR;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.TeboButtonType;
-import de.symeda.sormas.app.component.TeboSpinner;
-import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
-import de.symeda.sormas.app.util.DataUtils;
+import com.android.databinding.library.baseAdapters.BR;
 
 import java.util.List;
 
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.TeboButtonType;
+import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.IEntryItemOnClickListener;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
+import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.LocationService;
 
 /**
  * Created by Orson on 02/02/2018.
@@ -34,6 +40,12 @@ public class LocationDialog extends BaseTeboAlertDialog {
     public static final String TAG = LocationDialog.class.getSimpleName();
 
     private Location data;
+    private FragmentActivity activity;
+    private DialogLocationLayoutBinding mContentBinding;
+
+    private Double latitude;
+    private Double longitude;
+    private Float latLonAccuracy;
 
     private IRegionLoader regionLoader;
     private IDistrictLoader districtLoader;
@@ -42,6 +54,8 @@ public class LocationDialog extends BaseTeboAlertDialog {
     private List<Region> regionList;
     private List<District> districtList;
     private List<Community> communityList;
+
+    private IEntryItemOnClickListener pickGpsCallback;
 
     public LocationDialog(final FragmentActivity activity, Location location) {
         this(activity, R.string.heading_location_dialog, -1, null, null, null, location);
@@ -59,56 +73,80 @@ public class LocationDialog extends BaseTeboAlertDialog {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_location_layout,
                 R.layout.dialog_root_two_button_panel_layout, headingResId, subHeadingResId);
 
-        this.regionLoader = regionLoader == null? RegionLoader.getInstance() : regionLoader;
-        this.districtLoader = districtLoader == null? DistrictLoader.getInstance() : districtLoader;
-        this.communityLoader = communityLoader == null? CommunityLoader.getInstance() : communityLoader;
 
+        this.activity = activity;
         this.data = location;
 
-        //Here for performace
-        /*regionList = MemoryDatabaseHelper.REGION.getRegions(5);
-        districtList = MemoryDatabaseHelper.DISTRICT.getDistricts(5);
-        communityList = MemoryDatabaseHelper.COMMUNITY.getCommunities(5);*/
+        this.latitude = location.getLatitude();
+        this.longitude = location.getLongitude();
+        this.latLonAccuracy = location.getLatLonAccuracy();
 
-        /*for(District d: districtList) {
-            d.setRegion(regionList.get(0));
-        }
-
-        for(Community c: communityList) {
-            c.setDistrict(districtList.get(0));
-        }*/
+        setupCallbacks();
+        updateGpsTextView();
     }
 
     @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
         DialogLocationLayoutBinding _contentBinding = (DialogLocationLayoutBinding)contentBinding;
 
-        //_contentBinding.txtAddressLandmark.enableErrorState("Hello");
+        data.setLatitude(latitude);
+        data.setLongitude(longitude);
+        data.setLatLonAccuracy(latLonAccuracy);
+
+        callback.result(null);
     }
 
     @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
-
+    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+        callback.result(null);
     }
 
     @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+        callback.result(null);
+    }
 
+    @Override
+    protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
+        this.mContentBinding = (DialogLocationLayoutBinding)binding;
     }
 
     @Override
     protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
         if (!binding.setVariable(BR.data, data)) {
-            Log.w(TAG, "There is no variable 'data' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
+        }
+
+        if (!binding.setVariable(BR.pickGpsCallback, pickGpsCallback)) {
+            Log.e(TAG, "There is no variable 'pickGpsCallback' in layout " + layoutName);
+        }
+    }
+
+    @Override
+    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
+        if (!executionComplete) {
+            resultHolder.forOther().add(regionLoader == null? RegionLoader.getInstance() : regionLoader);
+            resultHolder.forOther().add(districtLoader == null? DistrictLoader.getInstance() : districtLoader);
+            resultHolder.forOther().add(communityLoader == null? CommunityLoader.getInstance() : communityLoader);
+        } else {
+            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
+
+            if (otherIterator.hasNext())
+                this.regionLoader = otherIterator.next();
+
+            if (otherIterator.hasNext())
+                this.districtLoader = otherIterator.next();
+
+            if (otherIterator.hasNext())
+                this.communityLoader = otherIterator.next();
         }
     }
 
     @Override
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        DialogLocationLayoutBinding _contentBinding = (DialogLocationLayoutBinding)contentBinding;
+        mContentBinding = (DialogLocationLayoutBinding)contentBinding;
 
-
-        _contentBinding.spnState.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+        mContentBinding.spnState.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override
             public Object getSelectedValue() {
                 return data.getRegion();
@@ -123,18 +161,19 @@ public class LocationDialog extends BaseTeboAlertDialog {
 
                 //return DataUtils.toItems(communityList);
 
-                List<Region> regions = regionLoader.load();
-
-                //TODO: Remove, Just for testing
-                if (regions.size() > 0 && regions.get(0) != null)
-                    data.setRegion(regions.get(0));
+                List<Item> regions = regionLoader.load();
 
 
-                return (regions.size() > 0) ? DataUtils.toItems(regions) : DataUtils.toItems(regions, false);
+                return (regions.size() > 0) ? DataUtils.addEmptyItem(regions) : regions;
+            }
+
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
             }
         });
 
-        _contentBinding.spnLga.initialize(_contentBinding.spnState, new TeboSpinner.ISpinnerInitSimpleConfig() {
+        mContentBinding.spnLga.initialize(mContentBinding.spnState, new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override
             public Object getSelectedValue() {
                 return data.getDistrict();
@@ -142,18 +181,19 @@ public class LocationDialog extends BaseTeboAlertDialog {
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                List<District> districts = districtLoader.load((Region)parentValue);
+                List<Item> districts = districtLoader.load((Region)parentValue);
 
-                //TODO: Remove, Just for testing
-                if (districts.size() > 0 && districts.get(0) != null)
-                    data.setDistrict(districts.get(0));
+                return (districts.size() > 0) ? DataUtils.addEmptyItem(districts) : districts;
 
-                return (districts.size() > 0) ? DataUtils.toItems(districts) : DataUtils.toItems(districts, false);
+            }
 
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
             }
         });
 
-        _contentBinding.spnWard.initialize(_contentBinding.spnLga, new TeboSpinner.ISpinnerInitSimpleConfig() {
+        mContentBinding.spnWard.initialize(mContentBinding.spnLga, new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override
             public Object getSelectedValue() {
                 return data.getCommunity();
@@ -161,13 +201,14 @@ public class LocationDialog extends BaseTeboAlertDialog {
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                List<Community> communities = communityLoader.load((District)parentValue);
+                List<Item> communities = communityLoader.load((District)parentValue);
 
-                //TODO: Remove, Just for testing
-                if (communities.size() > 0 && communities.get(0) != null)
-                    data.setCommunity(communities.get(0));
+                return (communities.size() > 0) ? DataUtils.addEmptyItem(communities) : communities;
+            }
 
-                return (communities.size() > 0) ? DataUtils.toItems(communities) : DataUtils.toItems(communities, false);
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
             }
         });
     }
@@ -195,6 +236,45 @@ public class LocationDialog extends BaseTeboAlertDialog {
     @Override
     public TeboButtonType okButtonType() {
         return TeboButtonType.BTN_LINE_PRIMARY;
+    }
+
+    private void updateGpsTextView() {
+        if (mContentBinding == null)
+            return;
+
+        if (latitude == null || longitude == null) {
+            mContentBinding.txtGpsLatLon.setValue(""); //getContext().getString(R.string.label_pick_gps)
+        }
+        else {
+            if (latLonAccuracy != null) {
+                mContentBinding.txtGpsLatLon.setValue(android.location.Location.convert(latitude, android.location.Location.FORMAT_DEGREES)
+                        + ", " + android.location.Location.convert(longitude, android.location.Location.FORMAT_DEGREES)
+                        + " +-" + Math.round(latLonAccuracy) + "m");
+            } else {
+                mContentBinding.txtGpsLatLon.setValue(android.location.Location.convert(latitude, android.location.Location.FORMAT_DEGREES)
+                        + ", " + android.location.Location.convert(longitude, android.location.Location.FORMAT_DEGREES));
+            }
+        }
+    }
+
+    private void setupCallbacks() {
+        pickGpsCallback = new IEntryItemOnClickListener() {
+
+            @Override
+            public void onClick(View v, Object item) {
+                android.location.Location phoneLocation = LocationService.instance().getLocation(activity);
+                if (phoneLocation != null) {
+                    latitude = phoneLocation.getLatitude();
+                    longitude = phoneLocation.getLongitude();
+                    latLonAccuracy = phoneLocation.getAccuracy();
+                } else {
+                    latitude = null;
+                    longitude = null;
+                    latLonAccuracy = null;
+                }
+                updateGpsTextView();
+            }
+        };
     }
 
 }

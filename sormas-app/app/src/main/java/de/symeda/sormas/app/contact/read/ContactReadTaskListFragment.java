@@ -16,7 +16,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.task.Task;
-import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -24,7 +24,7 @@ import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentContactReadTaskLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
+import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.task.read.TaskReadActivity;
 
 /**
@@ -100,24 +100,20 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        //adapter.replaceAll(new ArrayList<EventParticipant>(record));
-        //adapter.notifyDataSetChanged();
-
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)getRootBinding().getRoot()
-                .findViewById(R.id.swiperefresh);
-
+    public void onPageResume(FragmentContactReadTaskLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getBaseReadActivity().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly,
-                            true, false, swiperefresh, null);
+                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, false, true, swiperefresh, null);
                 }
             });
         }
+
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
     }
 
     @Override
@@ -128,6 +124,11 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
     @Override
     public List<Task> getPrimaryData() {
         return record;
+    }
+
+    @Override
+    public int getRootReadLayout() {
+        return R.layout.fragment_root_list_edit_layout;
     }
 
     @Override

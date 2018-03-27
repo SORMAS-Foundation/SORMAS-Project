@@ -91,6 +91,129 @@ public class TextViewBindingAdapters {
         }
     }
 
+    @BindingAdapter(value={"value", "prependValue", "valueFormat", "defaultValue"}, requireAll=true)
+    public static void setValueWithPrepend(TextView textField, String stringValue, String prependValue, String valueFormat, String defaultValue) {
+        String val = defaultValue;
+
+        if (stringValue == null) {
+            textField.setText(prependValue + ": " + val);
+        } else {
+            val = stringValue;
+            //textField.setText(val);
+
+            if (valueFormat != null && valueFormat.trim() != "") {
+                textField.setText(String.format(valueFormat, prependValue, stringValue));
+            } else {
+                textField.setText(val);
+            }
+        }
+    }
+
+    @BindingAdapter(value={"value", "prependValue", "valueFormat", "defaultValue"}, requireAll=true)
+    public static void setValueWithPrepend(TextView textField, Enum enumValue, String prependValue, String valueFormat, String defaultValue) {
+        String val = defaultValue;
+
+        if (enumValue == null) {
+            textField.setText(prependValue + ": " + val);
+        } else {
+            val = enumValue.toString();
+
+            if (valueFormat != null && valueFormat.trim() != "") {
+                textField.setText(String.format(valueFormat, prependValue, val));
+            } else {
+                textField.setText(prependValue + ": " + val);
+            }
+        }
+    }
+
+    @BindingAdapter(value={"value", "prependValue", "appendValue", "valueFormat", "defaultValue"}, requireAll=true)
+    public static void setValueWithPrepend(TextView textField, Integer integerValue, String prependValue, String appendValue, String valueFormat, String defaultValue) {
+        String val = defaultValue;
+        String stringValue = (integerValue != null) ? integerValue.toString() : "";
+
+        if (integerValue == null) {
+            textField.setText(prependValue + ": " + val);
+        } else {
+            val = stringValue;
+            //textField.setText(val);
+
+            if (valueFormat != null && valueFormat.trim() != "") {
+                textField.setText(String.format(valueFormat, prependValue, stringValue, appendValue));
+            } else {
+                textField.setText(prependValue + ": " + val);
+            }
+        }
+    }
+
+    @BindingAdapter(value={"locationValue", "prependValue", "valueFormat", "defaultValue"}, requireAll=true)
+    public static void setLocationValueWithPrepend(TextView textField, Location location, String prependValue, String valueFormat, String defaultValue) {
+        String val = defaultValue;
+
+        if (location == null || location.toString().isEmpty()) {
+            textField.setText(prependValue + ": " + val);
+        } else {
+            val = location.getCompleteString();
+
+            if (valueFormat != null && valueFormat.trim() != "") {
+                textField.setText(String.format(valueFormat, prependValue, val));
+            } else {
+                textField.setText(prependValue + ": " + val);
+            }
+
+
+            textField.setText(location.toString());
+        }
+    }
+
+    @BindingAdapter(value={"ageWithDateValue", "prependValue", "valueFormat", "defaultValue"}, requireAll=true)
+    public static void setAgeWithDateValueAndPrepend(TextView textField, Person person, String prependValue, String valueFormat, String defaultValue) {
+        String val = defaultValue;
+
+        if (person == null || person.getApproximateAge() == null) {
+            textField.setText(prependValue + ": " + val);
+        } else {
+            val = person.getApproximateAge().toString();
+
+            if (valueFormat != null && valueFormat.trim() != "") {
+                //Age
+
+                //Year or Month
+                String ageType = person.getApproximateAgeType().toString();
+
+                //Dob
+                String dateFormat = textField.getContext().getResources().getString(R.string.date_format);
+                String date = person.getBirthdateDD() != null ? person.getBirthdateDD().toString() : "1";
+                String month = person.getBirthdateMM() != null ? String.valueOf(person.getBirthdateMM() - 1) : "0";
+                String year = person.getBirthdateYYYY().toString();
+
+                String dob = String.format(dateFormat, date, month, year);
+
+
+                textField.setText(String.format(valueFormat,prependValue, val, ageType, dob));
+            } else {
+                textField.setText(prependValue + ": " + val);
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @BindingAdapter(value={"value", "appendValue", "valueFormat", "defaultValue"}, requireAll=false)
     public static void setValue(TextView textField, String stringValue, String appendValue, String valueFormat, String defaultValue) {
         String val = defaultValue;
@@ -231,7 +354,7 @@ public class TextViewBindingAdapters {
 
     @BindingAdapter(value={"value", "defaultValue"}, requireAll=true)
     public static void setValue(TextView textField, Enum enumValue, String defaultValue) {
-        setValue(textField, enumValue, defaultValue);
+        setValue(textField, enumValue, defaultValue, null);
     }
 
     @BindingAdapter(value={"value", "valueFormat", "defaultValue"}, requireAll=false)

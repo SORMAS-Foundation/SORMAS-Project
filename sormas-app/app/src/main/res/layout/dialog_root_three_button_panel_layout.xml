@@ -7,6 +7,8 @@
     <data>
         <import type="android.view.View" />
         <import type="de.symeda.sormas.app.component.TeboButtonType"/>
+        <import type="de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog" />
+        <import type="java.lang.Object" />
         <variable name="data" type="Object"/>
         <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
         <variable name="dialog" type="de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog" />

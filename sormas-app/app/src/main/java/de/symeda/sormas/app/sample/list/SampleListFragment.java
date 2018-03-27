@@ -3,6 +3,7 @@ package de.symeda.sormas.app.sample.list;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,12 +22,13 @@ import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
-import de.symeda.sormas.app.sample.SampleFormNavigationCapsule;
-import de.symeda.sormas.app.sample.ShipmentStatus;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.sample.read.SampleReadActivity;
 import de.symeda.sormas.app.searchstrategy.ISearchExecutor;
 import de.symeda.sormas.app.searchstrategy.ISearchResultCallback;
 import de.symeda.sormas.app.searchstrategy.SearchStrategyFor;
+import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
+import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.util.SubheadingHelper;
 
 /**
@@ -99,9 +101,16 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
         getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Sample"));
 
         try {
+            dataLoaded = false;
             if (!dataLoaded) {
                 ISearchExecutor<Sample> executor = SearchStrategyFor.SAMPLE.selector(searchBy, filterStatus, recordUuid);
                 searchTask = executor.search(new ISearchResultCallback<Sample>() {
+                    @Override
+                    public void preExecute() {
+                        getActivityCommunicator().showPreloader();
+                        getActivityCommunicator().hideFragmentView();
+                    }
+
                     @Override
                     public void searchResult(List<Sample> result, BoolResult resultStatus) {
                         getActivityCommunicator().hidePreloader();
@@ -119,6 +128,9 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
                         SampleListFragment.this.getListAdapter().notifyDataSetChanged();
 
                         dataLoaded = true;
+
+                        getActivityCommunicator().hidePreloader();
+                        getActivityCommunicator().showFragmentView();
                     }
 
                     private ISearchResultCallback<Sample> init() {
@@ -131,6 +143,16 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
         } catch (Exception ex) {
             getActivityCommunicator().hidePreloader();
             dataLoaded = false;
+        }
+
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
+        if (swiperefresh != null) {
+            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, false, true, swiperefresh, null);
+                }
+            });
         }
     }
 

@@ -22,7 +22,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.core.CompositeOnFocusChangeListener;
 
 /**
@@ -384,7 +387,7 @@ public class TeboPassword extends EditTeboPropertyField<String> implements IText
 
 
     @Override
-    public void changeVisualState(final VisualState state) {
+    public void changeVisualState(final VisualState state, UserRight editOrCreateUserRight) {
         int labelColor = getResources().getColor(state.getLabelColor(VisualStateControl.EDIT_TEXT));
         Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControl.EDIT_TEXT));
         //Drawable drawable = getResources().getDrawable(R.drawable.selector_text_control_edit_error);
@@ -409,9 +412,10 @@ public class TeboPassword extends EditTeboPropertyField<String> implements IText
         }
 
         if (state == VisualState.NORMAL || state == VisualState.ENABLED) {
+            User user = ConfigProvider.getUser();
             lblControlLabel.setTextColor(labelColor);
             setBackground(drawable);
-            txtControlInput.setEnabled(true);
+            txtControlInput.setEnabled(true && (editOrCreateUserRight != null)? user.hasUserRight(editOrCreateUserRight) : true);
             return;
         }
     }

@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.view.Menu;
@@ -32,9 +34,17 @@ import de.symeda.sormas.app.component.menu.LandingPageMenuParser;
 import de.symeda.sormas.app.component.menu.OnLandingPageMenuClickListener;
 import de.symeda.sormas.app.component.menu.OnSelectInitialActiveMenuItemListener;
 import de.symeda.sormas.app.component.menu.PageMenuNavAdapter;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.util.ConstantHelper;
@@ -47,8 +57,10 @@ import de.symeda.sormas.app.util.ConstantHelper;
  * sampson.orson@technologyboard.org
  */
 
-public abstract class BaseEditActivity extends AbstractSormasActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, INotificationContext {
+public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainObject> extends AbstractSormasActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, INotificationContext {
 
+    private AsyncTask processActivityRootDataTask;
+    private boolean firstTimeReplaceFragment;
     private LinearLayout notificationFrame;
     private TextView tvNotificationMessage;
     private View fragmentFrame = null;
@@ -59,8 +71,13 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
     private LandingPageMenuControl pageMenu = null;
     private FloatingActionButton fab = null;
     private LandingPageMenuItem activeMenu = null;
+    private ArrayList<LandingPageMenuItem> menuList;
     private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
     private View rootView;
+    private TActivityRootData storedActivityRootData = null;
+
+    private Enum pageStatus;
+    private String recordUuid;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -95,6 +112,7 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
     }
 
     protected void initializeBaseActivity(Bundle savedInstanceState) {
+        menuList = new ArrayList<LandingPageMenuItem>();
         rootView = findViewById(R.id.base_layout);
         subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingListActivityTitle);
         fragmentFrame = findViewById(R.id.fragment_frame);
@@ -107,9 +125,14 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
         } else {
             activeMenuKey = RestoreActiveMenuState(savedInstanceState);
         }
+        Bundle kkk = getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getExtras();
+        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
+
+        pageStatus = getPageStatusArg(arguments);
+        recordUuid = getRecordUuidArg(arguments);
         initializeActivity(arguments);
+
 
         if (notificationFrame != null) {
             //notificationFrame.getViewTreeObserver().addOnGlobalLayoutListener(new OnViewGlobalLayoutListener(notificationFrame));
@@ -180,29 +203,106 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
             statusFrame = findViewById(R.id.statusFrame);
         }
 
-        if (fragmentFrame != null) {
-            try {
-                if (savedInstanceState == null) {
-                    // setting the fragment_frame
-                    BaseEditActivityFragment activeFragment = null;
-                    activeFragment = getActiveEditFragment();
-                    replaceFragment(activeFragment);
+        if (fragmentFrame != null && savedInstanceState == null) {
+            // setting the fragment_frame
+            //BaseEditActivityFragment activeFragment = null;
+            processActivityRootData(new ICallback<TActivityRootData>() {
+                @Override
+                public void result(TActivityRootData result) {
+                    try {
+                        BaseEditActivityFragment activeFragment = getActiveEditFragment(result);
+                        replaceFragment(activeFragment);
+                        firstTimeReplaceFragment = true;
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InstantiationException e) {
+                        e.printStackTrace();
+                    }
                 }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            }
+            });
+
+
         }
     }
 
+
+    private void processActivityRootData(final ICallback<TActivityRootData> callback) {
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    showPreloader();
+                    hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    resultHolder.forItem().add(getActivityRootDataProxy());
+                }
+            });
+            processActivityRootDataTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    hidePreloader();
+                    showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+
+                    if (itemIterator.hasNext())
+                        storedActivityRootData = itemIterator.next();
+
+                    callback.result(storedActivityRootData);
+                }
+            });
+        } catch (Exception ex) {
+            hidePreloader();
+            showFragmentView();
+        }
+    }
+
+    private TActivityRootData getActivityRootDataProxy() {
+        TActivityRootData result;
+        if (recordUuid != null && !recordUuid.isEmpty()) {
+            result = getActivityRootData(recordUuid);
+
+            if (result == null) {
+                result = getActivityRootDataIfRecordUuidNull();
+            }
+        } else {
+            result = getActivityRootDataIfRecordUuidNull();
+        }
+
+        return result;
+    }
+
+    protected abstract TActivityRootData getActivityRootData(String recordUuid);
+
+    protected abstract TActivityRootData getActivityRootDataIfRecordUuidNull();
+
+
+
     protected abstract void initializeActivity(Bundle arguments);
+
+    protected TActivityRootData getStoredActivityRootData() {
+        return storedActivityRootData;
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+        updateSubHeadingTitle();
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        updateSubHeadingTitle();
+        /*if (firstTimeReplaceFragment)
+            updateSubHeadingTitle();*/
 
         if (applicationTitleBar != null) {
             if (showTitleBar()) {
@@ -231,26 +331,6 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
         } else {
             applicationTitleBar.setVisibility(View.GONE);
         }
-
-        /*try {
-            if (this.pageMenu != null && showPageMenu()) {
-
-                Context menuControlContext = this.pageMenu.getContext();
-
-                this.pageMenu.setAdapter(new PageMenuNavAdapter(menuControlContext));
-                this.pageMenu.setMenuParser(new LandingPageMenuParser(menuControlContext));
-                this.pageMenu.setMenuData(getPageMenuData());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        }*/
-
-
-        fragment.onResume();
     }
 
     public void setSubHeadingTitle(String title) {
@@ -282,6 +362,11 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
 
     @Override
     public LandingPageMenuItem onSelectInitialActiveMenuItem(ArrayList<LandingPageMenuItem> menuList) {
+        if (menuList == null || menuList.size() <= 0)
+            return null;
+
+        this.menuList = menuList;
+
         activeMenu = menuList.get(0);
 
         for(LandingPageMenuItem m: menuList){
@@ -292,6 +377,8 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
 
         return activeMenu;
     }
+
+
 
     @Override
     protected int getRootActivityLayout() {
@@ -333,7 +420,9 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
         fragment = f;
 
         if (fragment != null) {
-            fragment.setArguments(getIntent().getExtras());
+            if (fragment.getArguments() == null)
+                fragment.setArguments(getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA));
+
             ft.replace(R.id.fragment_frame, fragment);
             ft.addToBackStack(null);
             ft.commit();
@@ -378,11 +467,14 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
     protected static <TActivity extends AbstractSormasActivity, TCapsule extends INavigationCapsule>
     void goToActivity(Context fromActivity, Class<TActivity> toActivity, TCapsule dataCapsule) {
 
+        int activeMenuKey = dataCapsule.getActiveMenuKey();
         String dataUuid = dataCapsule.getRecordUuid();
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
         IStatusElaborator pageStatus = dataCapsule.getPageStatus();
         String sampleMaterial = dataCapsule.getSampleMaterial();
+        String personUuid = dataCapsule.getPersonUuid();
         String caseUuid = dataCapsule.getCaseUuid();
+        String eventUuid = dataCapsule.getEventUuid();
         String taskUuid = dataCapsule.getTaskUuid();
         String contactUuid = dataCapsule.getContactUuid();
         String sampleUuid = dataCapsule.getSampleUuid();
@@ -393,22 +485,30 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
         //AbstractDomainObject record = dataCapsule.getRecord();
 
         Intent intent = new Intent(fromActivity, toActivity);
-        intent.putExtra(ConstantHelper.KEY_DATA_UUID, dataUuid);
-        intent.putExtra(ConstantHelper.KEY_CASE_UUID, caseUuid);
-        intent.putExtra(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
-        intent.putExtra(ConstantHelper.KEY_TASK_UUID, taskUuid);
-        intent.putExtra(ConstantHelper.KEY_CONTACT_UUID, contactUuid);
-        intent.putExtra(ConstantHelper.KEY_SAMPLE_UUID, sampleUuid);
-        intent.putExtra(ConstantHelper.ARG_DISEASE, disease);
-        intent.putExtra(ConstantHelper.ARG_FOR_VISIT, isForVisit);
-        intent.putExtra(ConstantHelper.ARG_VISIT_COOPERATIVE, isVisitCooperative);
-        intent.putExtra(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT, userRight);
+
+        Bundle bundle = new Bundle();
+
+        bundle.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
+        bundle.putString(ConstantHelper.KEY_DATA_UUID, dataUuid);
+        bundle.putString(ConstantHelper.KEY_PERSON_UUID, personUuid);
+        bundle.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);
+        bundle.putString(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
+        bundle.putString(ConstantHelper.KEY_EVENT_UUID, eventUuid);
+        bundle.putString(ConstantHelper.KEY_TASK_UUID, taskUuid);
+        bundle.putString(ConstantHelper.KEY_CONTACT_UUID, contactUuid);
+        bundle.putString(ConstantHelper.KEY_SAMPLE_UUID, sampleUuid);
+        bundle.putSerializable(ConstantHelper.ARG_DISEASE, disease);
+        bundle.putBoolean(ConstantHelper.ARG_FOR_VISIT, isForVisit);
+        bundle.putBoolean(ConstantHelper.ARG_VISIT_COOPERATIVE, isVisitCooperative);
+        bundle.putSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT, userRight);
 
         if (filterStatus != null)
-            intent.putExtra(ConstantHelper.ARG_FILTER_STATUS, filterStatus.getValue());
+            bundle.putSerializable(ConstantHelper.ARG_FILTER_STATUS, filterStatus.getValue());
 
         if (pageStatus != null)
-            intent.putExtra(ConstantHelper.ARG_PAGE_STATUS, pageStatus.getValue());
+            bundle.putSerializable(ConstantHelper.ARG_PAGE_STATUS, pageStatus.getValue());
+
+        intent.putExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA, bundle);
 
         /*if (record != null)
             intent.putExtra(ConstantHelper.ARG_PAGE_RECORD, (Serializable)record);*/
@@ -420,7 +520,7 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
         fromActivity.startActivity(intent);
     }
 
-    public abstract BaseEditActivityFragment getActiveEditFragment() throws IllegalAccessException, InstantiationException;
+    public abstract BaseEditActivityFragment getActiveEditFragment(TActivityRootData activityRootData) throws IllegalAccessException, InstantiationException;
 
     protected void setActiveMenu(LandingPageMenuItem menuItem) {
         activeMenu = menuItem;
@@ -464,17 +564,86 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
         return rootView;
     }
 
-    public abstract boolean showStatusFrame();
+    public boolean showStatusFrame() {
+        return true;
+    }
 
-    public abstract boolean showTitleBar();
+    public boolean showTitleBar() {
+        return true;
+    }
 
-    public abstract boolean showPageMenu();
+    public boolean showPageMenu() {
+        return getPageMenuData() != null && !getPageMenuData().isEmpty();
+    }
 
-    public abstract Enum getPageStatus();
+    public Enum getPageStatus() {
+        return pageStatus;
+    }
 
-    public abstract String getPageMenuData();
+    public String getPageMenuData() {
+        return null;
+    }
 
-    public abstract boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException;
+    public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
+        BaseEditActivityFragment newActiveFragment = getNextFragment(menuItem, storedActivityRootData);
+
+        if (newActiveFragment == null)
+            return false;
+
+        setActiveMenu(menuItem);
+        replaceFragment(newActiveFragment);
+
+        updateSubHeadingTitle();
+
+        return true;
+    }
+
+    protected boolean goToNextMenu() {
+        if (pageMenu == null)
+            return false;
+
+        if (menuList == null || menuList.size() <= 0)
+            return false;
+        int lastMenuKey = menuList.size() - 1;
+
+        if (activeMenuKey == lastMenuKey)
+            return false;
+
+        int newMenukey = activeMenuKey + 1;
+
+        LandingPageMenuItem m = menuList.get(newMenukey);
+        setActiveMenu(m);
+
+        BaseEditActivityFragment newActiveFragment = getNextFragment(m, storedActivityRootData);
+
+        if (newActiveFragment == null)
+            return false;
+
+        setActiveMenu(m);
+
+        pageMenu.markActiveMenuItem(m);
+
+        replaceFragment(newActiveFragment);
+
+        updateSubHeadingTitle();
+
+        return true;
+    }
+
+    protected BaseEditActivityFragment getNextFragment(LandingPageMenuItem menuItem, TActivityRootData activityRootData) {
+        return null;
+    }
+
+    protected boolean changeFragment(BaseEditActivityFragment newActiveFragment) {
+        if (newActiveFragment == null)
+            return false;
+
+        replaceFragment(newActiveFragment);
+
+        //updateSubHeadingTitle();
+
+        return true;
+    }
 
     protected String getRecordUuidArg(Bundle arguments) {
         String result = null;
@@ -529,6 +698,28 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
         }
 
         return e;
+    }
+
+    protected int getActiveMenuArg(Bundle arguments) {
+        int result = 0;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.KEY_ACTIVE_MENU)) {
+                result = (int) arguments.getInt(ConstantHelper.KEY_ACTIVE_MENU);
+            }
+        }
+
+        return result;
+    }
+
+    protected String getEventUuidArg(Bundle arguments) {
+        String result = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.KEY_EVENT_UUID)) {
+                result = (String) arguments.getString(ConstantHelper.KEY_EVENT_UUID);
+            }
+        }
+
+        return result;
     }
 
     protected String getTaskUuidArg(Bundle arguments) {
@@ -662,6 +853,12 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
         }
     }
 
+    protected void SaveEventUuidState(Bundle outState, String eventUuid) {
+        if (outState != null) {
+            outState.putString(ConstantHelper.KEY_EVENT_UUID, eventUuid);
+        }
+    }
+
     protected void SaveTaskUuidState(Bundle outState, String taskUuid) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_TASK_UUID, taskUuid);
@@ -756,6 +953,14 @@ public abstract class BaseEditActivity extends AbstractSormasActivity implements
         }
 
         return -1;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (processActivityRootDataTask != null && !processActivityRootDataTask.isCancelled())
+            processActivityRootDataTask.cancel(true);
     }
 
 }

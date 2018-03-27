@@ -3,7 +3,7 @@ package de.symeda.sormas.app.util;
 import android.databinding.InverseMethod;
 
 import de.symeda.sormas.app.core.YesNo;
-import de.symeda.sormas.app.sample.ShipmentStatus;
+import de.symeda.sormas.app.shared.ShipmentStatus;
 
 import de.symeda.sormas.app.backend.sample.Sample;
 

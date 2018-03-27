@@ -15,16 +15,19 @@ import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
  * Created by Orson on 09/01/2018.
  */
 
-public class BaseFormNavigationCapsule<T extends AbstractDomainObject> implements INavigationCapsule<T> {// IListToReadNavigationCapsule {
+public class BaseFormNavigationCapsule<T extends AbstractDomainObject, TFormNavigationCapsule extends BaseFormNavigationCapsule> implements INavigationCapsule<T> {
 
     private Context context;
     private IStatusElaborator filterStatus;
     private Enum pageStatus;
     private List<IStatusElaborator> otherStatus = new ArrayList<>();
+    private int activeMenuKey;
     private String recordUuid;
     private T record;
     private String sampleMaterial;
+    private String personUuid;
     private String caseUuid;
+    private String eventUuid;
     private String taskUuid;
     private String contactUuid;
     private String sampleUuid;
@@ -83,61 +86,92 @@ public class BaseFormNavigationCapsule<T extends AbstractDomainObject> implement
         return record;
     }
 
+    @Override
+    public int getActiveMenuKey() {
+        return activeMenuKey;
+    }
+
+    @SuppressWarnings("unchecked")
+    public TFormNavigationCapsule setActiveMenu(int activeMenuKey) {
+        this.activeMenuKey = activeMenuKey;
+        return (TFormNavigationCapsule) this;
+        //return this;
+    }
+
     public void setPageStatus(Enum pageStatus) {
         this.pageStatus = pageStatus;
     }
 
-    public BaseFormNavigationCapsule<T> setSampleMaterial(String sampleMaterial) {
+    public TFormNavigationCapsule setSampleMaterial(String sampleMaterial) {
         this.sampleMaterial = sampleMaterial;
-        return this;
+        return (TFormNavigationCapsule) this;
     }
 
-    public BaseFormNavigationCapsule<T> setCaseUuid(String caseUuid) {
+    public TFormNavigationCapsule setPersonUuid(String personUuid) {
+        this.personUuid = personUuid;
+        return (TFormNavigationCapsule) this;
+    }
+
+    public TFormNavigationCapsule setCaseUuid(String caseUuid) {
         this.caseUuid = caseUuid;
-        return this;
+        return (TFormNavigationCapsule) this;
     }
 
-    public BaseFormNavigationCapsule<T> setTaskUuid(String taskUuid) {
+    public TFormNavigationCapsule setEventUuid(String eventUuid) {
+        this.eventUuid = eventUuid;
+        return (TFormNavigationCapsule) this;
+    }
+
+    public TFormNavigationCapsule setTaskUuid(String taskUuid) {
         this.taskUuid = taskUuid;
-        return this;
+        return (TFormNavigationCapsule) this;
     }
 
-    public BaseFormNavigationCapsule<T> setContactUuid(String contactUuid) {
+    public TFormNavigationCapsule setContactUuid(String contactUuid) {
         this.contactUuid = contactUuid;
-        return this;
+        return (TFormNavigationCapsule) this;
     }
 
-    public BaseFormNavigationCapsule<T> setSampleUuid(String sampleUuid) {
+    public TFormNavigationCapsule setSampleUuid(String sampleUuid) {
         this.sampleUuid = sampleUuid;
-        return this;
+        return (TFormNavigationCapsule) this;
     }
 
-    public BaseFormNavigationCapsule<T> setDisease(Disease disease) {
+    public TFormNavigationCapsule setDisease(Disease disease) {
         this.disease = disease;
-        return this;
+        return (TFormNavigationCapsule) this;
     }
 
-    public BaseFormNavigationCapsule<T> setForVisitStatus(boolean forVisit) {
+    public TFormNavigationCapsule setForVisitStatus(boolean forVisit) {
         this.forVisit = forVisit;
-        return this;
+        return (TFormNavigationCapsule) this;
     }
 
-    public BaseFormNavigationCapsule<T> setVisitCooerativeStatus(boolean visitCoorporative) {
+    public TFormNavigationCapsule setVisitCooerativeStatus(boolean visitCoorporative) {
         this.visitCoorporative = visitCoorporative;
-        return this;
+        return (TFormNavigationCapsule) this;
     }
 
-    public BaseFormNavigationCapsule<T> setUserRight(UserRight userRight) {
+    public TFormNavigationCapsule setUserRight(UserRight userRight) {
         this.userRight = userRight;
-        return this;
+        return (TFormNavigationCapsule) this;
     }
 
     public String getSampleMaterial() {
         return sampleMaterial;
     }
 
+    public String getPersonUuid() {
+        return personUuid;
+    }
+
     public String getCaseUuid() {
         return caseUuid;
+    }
+
+    @Override
+    public String getEventUuid() {
+        return eventUuid;
     }
 
     public String getTaskUuid() {

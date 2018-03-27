@@ -15,9 +15,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.caze.edit.sub.CaseEditContactInfoActivity;
-import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.contact.edit.ContactEditActivity;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -25,6 +23,8 @@ import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentEditListLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 
 /**
  * Created by Orson on 16/02/2018.
@@ -34,7 +34,7 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
  * sampson.orson@technologyboard.org
  */
 
-public class CaseEditContactListFragment extends BaseEditActivityFragment<FragmentEditListLayoutBinding, List<Contact>> implements OnListItemClickListener {
+public class CaseEditContactListFragment extends BaseEditActivityFragment<FragmentEditListLayoutBinding, List<Contact>, Case> implements OnListItemClickListener {
 
     private String recordUuid;
     private InvestigationStatus pageStatus = null;
@@ -73,13 +73,22 @@ public class CaseEditContactListFragment extends BaseEditActivityFragment<Fragme
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
+            Case caze = getActivityRootData();
+            List<Contact> contactList = new ArrayList<Contact>();
 
+            //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
             if (caze != null) {
-                resultHolder.forList().add(DatabaseHelper.getContactDao().getByCase(caze));
-            } else {
-                resultHolder.forList().add(new ArrayList<Contact>());
+                if (caze.isUnreadOrChildUnread())
+                    DatabaseHelper.getCaseDao().markAsRead(caze);
+
+                if (caze.getPerson() == null) {
+                    caze.setPerson(DatabaseHelper.getPersonDao().build());
+                }
+
+                contactList = DatabaseHelper.getContactDao().getByCase(caze);
             }
+
+            resultHolder.forList().add(contactList);
         } else {
             ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
             if (listIterator.hasNext()) {
@@ -106,19 +115,25 @@ public class CaseEditContactListFragment extends BaseEditActivityFragment<Fragme
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    protected void updateUI(FragmentEditListLayoutBinding contentBinding, List<Contact> contacts) {
 
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)getRootBinding().getRoot()
-                .findViewById(R.id.swiperefresh);
+    }
 
-        swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getBaseEditActivity().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly,
-                        true, false, swiperefresh, null);
-            }
-        });
+    @Override
+    public void onPageResume(FragmentEditListLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
+        if (swiperefresh != null) {
+            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, false, true, true, swiperefresh, null);
+                }
+            });
+        }
+
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
     }
 
     @Override
@@ -137,13 +152,30 @@ public class CaseEditContactListFragment extends BaseEditActivityFragment<Fragme
     }
 
     @Override
-    public void onListItemClick(View view, int position, Object item) {
-        Contact r = (Contact)item;
-        ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(), r.getUuid(), r.getContactClassification());
-        CaseEditContactInfoActivity.goToActivity(getActivity(), dataCapsule);
+    public boolean showSaveAction() {
+        return false;
     }
-    public static CaseEditContactListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)
+
+    @Override
+    public boolean showAddAction() {
+        return true;
+    }
+
+    @Override
+    public void onListItemClick(View view, int position, Object item) {
+        Contact c = (Contact)item;
+        ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(),
+                c.getUuid(), c.getContactClassification());
+        ContactEditActivity.goToActivity(getActivity(), dataCapsule);
+
+
+        /*Contact r = (Contact)item;
+        ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(), r.getUuid(), r.getContactClassification());
+        CaseEditContactInfoActivity.goToActivity(getActivity(), dataCapsule);*/
+    }
+
+    public static CaseEditContactListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, CaseEditContactListFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseEditContactListFragment.class, capsule, activityRootData);
     }
 }

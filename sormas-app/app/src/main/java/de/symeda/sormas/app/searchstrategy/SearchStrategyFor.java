@@ -11,7 +11,7 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.SearchBy;
-import de.symeda.sormas.app.sample.ShipmentStatus;
+import de.symeda.sormas.app.shared.ShipmentStatus;
 
 /**
  * Created by Orson on 03/03/2018.

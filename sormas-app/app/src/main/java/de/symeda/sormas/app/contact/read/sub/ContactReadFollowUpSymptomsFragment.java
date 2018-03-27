@@ -14,7 +14,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.tagview.Tag;
-import de.symeda.sormas.app.contact.ContactFormFollowUpNavigationCapsule;
+import de.symeda.sormas.app.shared.ContactFormFollowUpNavigationCapsule;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -116,6 +116,13 @@ public class ContactReadFollowUpSymptomsFragment extends BaseReadActivityFragmen
     }
 
     @Override
+    public void onPageResume(FragmentContactReadSymptomsInfoLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
+    }
+
+    @Override
     protected String getSubHeadingTitle() {
         return null;
     }
@@ -133,6 +140,11 @@ public class ContactReadFollowUpSymptomsFragment extends BaseReadActivityFragmen
     @Override
     public int getReadLayout() {
         return R.layout.fragment_contact_read_symptoms_info_layout;
+    }
+
+    @Override
+    public boolean includeFabNonOverlapPadding() {
+        return false;
     }
 
     public static ContactReadFollowUpSymptomsFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormFollowUpNavigationCapsule capsule)

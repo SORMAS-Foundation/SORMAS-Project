@@ -17,9 +17,9 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.TeboSpinner;
-import de.symeda.sormas.app.event.edit.OnSetBindingVariableListener;
+import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 
 /**
  * Created by Orson on 13/02/2018.
@@ -31,7 +31,8 @@ import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 
 public class CauseOfDeathLayoutProcessor {
 
-    private List<Disease> diseaseList;
+    private List<Item> diseaseList;
+    private List<Item> deathPlaceTypeList;
     private Context context;
     private ViewDataBinding contentBinding;
     private LinearLayout rootChildLayout;
@@ -43,12 +44,13 @@ public class CauseOfDeathLayoutProcessor {
     private Disease initialCauseOfDeathDisease;
     private String initialCauseOfDeathDetails;
 
-    public CauseOfDeathLayoutProcessor(Context context, ViewDataBinding contentBinding, Person record) {
+    public CauseOfDeathLayoutProcessor(Context context, ViewDataBinding contentBinding, Person record, List<Item> deathPlaceTypeList, List<Item> diseaseList) {
         this.context = context;
         this.contentBinding = contentBinding;
         this.record = record;
 
-        this.diseaseList = MemoryDatabaseHelper.DISEASE.getDiseases(5);
+        this.deathPlaceTypeList = deathPlaceTypeList;
+        this.diseaseList = diseaseList;
 
         this.initialDeathCause = record.getCauseOfDeath();
         this.initialCauseOfDeathDisease = record.getCauseOfDeathDisease();
@@ -100,7 +102,10 @@ public class CauseOfDeathLayoutProcessor {
             public void onBound(ViewDataBinding binding) {
                 super.onBound(binding);
 
-                if (causeOfDeath == CauseOfDeath.EPIDEMIC_DISEASE && spnDisease != null) {
+                if (spnDisease == null)
+                    return;
+
+                if (causeOfDeath == CauseOfDeath.EPIDEMIC_DISEASE) {
                     spnDisease.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
                         @Override
                         public Object getSelectedValue() {
@@ -109,8 +114,13 @@ public class CauseOfDeathLayoutProcessor {
 
                         @Override
                         public List<Item> getDataSource(Object parentValue) {
-                            return (diseaseList.size() > 0) ? DataUtils.toItems(diseaseList)
-                                    : DataUtils.toItems(diseaseList, false);
+                            return (diseaseList.size() > 0) ? DataUtils.addEmptyItem(diseaseList)
+                                    : diseaseList;
+                        }
+
+                        @Override
+                        public VisualState getInitVisualState() {
+                            return null;
                         }
                     });
                 }

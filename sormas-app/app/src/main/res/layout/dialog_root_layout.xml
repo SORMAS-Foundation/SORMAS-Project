@@ -7,14 +7,25 @@
     <data>
         <import type="android.view.View" />
         <import type="android.view.Gravity" />
+        <import type="java.lang.Object" />
+        <variable name="data" type="Object"/>
         <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
         <variable name="dialog" type="de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog" />
+        <variable
+            name="deleteCallback"
+            type="de.symeda.sormas.app.component.dialog.IDialogDeleteOnClickListener" />
         <variable
             name="dismissCallback"
             type="de.symeda.sormas.app.component.dialog.IDialogDismissOnClickListener" />
         <variable
             name="okCallback"
             type="de.symeda.sormas.app.component.dialog.IDialogOkOnClickListener" />
+        <variable
+            name="showNotificationCallback"
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
     </data>
 
     <ScrollView
@@ -76,6 +87,7 @@
             android:layout_height="match_parent"
             android:paddingLeft="@dimen/rowListItemHorizontalMargin"
             android:paddingRight="@dimen/rowListItemHorizontalMargin"
+
             />
 
         <ViewStub android:id="@+id/vsDialogButtonPanel"

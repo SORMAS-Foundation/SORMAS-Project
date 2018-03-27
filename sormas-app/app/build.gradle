@@ -15,6 +15,7 @@ android {
         versionName "$sormasVersion"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", "sormas")
+        multiDexEnabled true
     }
     signingConfigs {
         release  {

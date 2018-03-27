@@ -47,7 +47,7 @@
             app:description="@string/desc_event_pinvolv_occupation_facility_state"
             app:required="true"
             app:spinnerMode="dialog"
-            app:value="@={data.occupationFacility}"
+            app:value="@={data.occupationRegion}"
             />
 
         <de.symeda.sormas.app.component.TeboSpinner
@@ -60,7 +60,7 @@
             app:description="@string/desc_event_pinvolv_occupation_facility_lga"
             app:required="true"
             app:spinnerMode="dialog"
-            app:value="@={data.occupationFacility}"
+            app:value="@={data.occupationDistrict}"
             />
 
         <de.symeda.sormas.app.component.TeboSpinner
@@ -73,7 +73,7 @@
             app:description="@string/desc_event_pinvolv_occupation_facility_ward"
             app:required="true"
             app:spinnerMode="dialog"
-            app:value="@={data.occupationFacility}"
+            app:value="@={data.occupationCommunity}"
             />
 
         <de.symeda.sormas.app.component.TeboSpinner

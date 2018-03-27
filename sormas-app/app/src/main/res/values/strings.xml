@@ -233,6 +233,7 @@
     <!--<string name="sync_error">Synchronization failed. Please try again later.</string>-->
     <!--<string name="server_connection_error">Could not connect to SORMAS server. Synchronization canceled. Try again later.</string>-->
 
+    <string name="snackbar_save_success_couldnot_sync">%1$s saved successfully, but was unable to synchronize.</string>
     <string name="snackbar_save_success">%1$s saved successfully.</string>
     <string name="snackbar_create_success">%1$s created successfully.</string>
     <string name="snackbar_save_error">%1$s could not be saved because of an internal error.</string>
@@ -278,9 +279,9 @@
     <string name="snackbar_person_first_last_name">Please enter a first and last name for the new person.</string>
     <!--<string name="snackbar_report_sent">Problem report successfully sent.</string>-->
     <string name="snackbar_no_app_url_report_sent">Problem report successfully sent. Please wait until your supervisor contacts you. You can now close the app.</string>
-    <string name="snackbar_task_status">Task status could not be edited because of an internal error.</string>
+    <string name="snackbar_task_status_change_error">Task status could not be edited because of an internal error.</string>
     <string name="snackbar_task_reply">An assignee reply is required when setting the task status to not executable.</string>
-    <string name="snackbar_task_case_classification">Please specify the classification of the case associated with this task before you mark it as Done.</string>
+    <string name="snackbar_task_case_classification_error">Please specify the classification of the case associated with this task before you mark it as Done.</string>
 <!--    <string name="snackbar_pin_not_matching">The PINs you\'ve entered do not match. Please try again.</string>
     <string name="snackbar_pin_correct_loading">PIN correct. Starting SORMAS ...</string>
     <string name="snackbar_pin_wrong">You\'ve entered an incorrect PIN.</string>
@@ -299,6 +300,8 @@
     <string name="snackbar_weekly_report_error">Confirmation of weekly report has failed.</string>
 
     <string name="entity_case">Case</string>
+    <string name="entity_case_symptoms">Case Symptoms</string>
+    <string name="entity_case_patient">Case Patient</string>
     <string name="entity_contact">Contact</string>
     <string name="entity_event">Event</string>
     <string name="entity_event_person">Event person</string>
@@ -392,7 +395,7 @@
     <string name="main_menu_tasks">Tasks</string>
     <string name="main_menu_cases">Cases</string>
     <string name="main_menu_contacts">Contacts</string>
-    <string name="main_menu_events">Alerts</string>
+    <string name="main_menu_events">Events</string>
     <string name="main_menu_samples">Samples</string>
     <string name="main_menu_reports">Reports</string>
 
@@ -491,6 +494,7 @@
     <string name="alert_encryption">SORMAS requires device encryption to be activated on your device to ensure data security.\n\nPlease note that you cannot use the application as long as device encryption is disabled.</string>
 
     <!-- actions -->
+    <string name="action_select">Select</string>
     <string name="action_ok">Ok</string>
     <string name="action_move">Move</string>
     <string name="action_add">Add new entry</string>
@@ -661,7 +665,11 @@
     <string name="heading_level4_sample_edit">Sample</string>
 
 
-    <string name="heading_level4_case_new">New Case</string>
+    <string name="heading_sub_event_person_involved_new">For Event: %1$s</string>
+    <string name="heading_person_involved_new">New Person Involved</string>
+    <string name="heading_person_new">New Person</string>
+    <string name="heading_case_new">New Case</string>
+    <string name="heading_contact_new">New Contact</string>
     <string name="heading_level4_1_case_create_new_contact_info">Create New Contact</string>
 
 
@@ -792,7 +800,9 @@
 
     <string name="action_login">Sign In</string>
     <string name="action_done">Done</string>
+    <string name="action_move_to_another_health_facility">Move to another Health Facility</string>
     <string name="action_create_case">Create Case</string>
+    <string name="action_open_case">Open Case</string>
     <string name="action_not_executable">Not Executable</string>
     <string name="action_clear">Clear</string>
     <string name="action_clear_all">Clear All</string>
@@ -814,5 +824,25 @@
     <string name="notification_empty_password">Please enter a password.</string>
     <string name="notification_saved_settings">Application settings has been changed.</string>
     <string name="notification_records_not_retrieved">Unable to retrieve %1$s</string>
+
+
+    <string name="notification_save_task_successful">Task saved successful</string>
+    <string name="notification_save_task_failed">Task could not be saved</string>
+    <string name="notification_reach_last_menu">You are at the last page. Use the navigation menu to view a specify page or the back button to visit the previous page.</string>
+    <string name="notification_error_init_move_case">There was an internal problem while attempting to initiate a move case.</string>
+    <string name="notification_case_move_error">%1$s could not be moved because of an internal error.</string>
+    <string name="notification_case_move_validation_error">%1$s could not be moved because of a validation error.</string>
+    <string name="validation_record_error">%1$s could not be processed because of a validation error.</string>
+
+    <string name="label_gender">Gender</string>
+    <string name="label_age">Age</string>
+    <string name="label_present_condition">Present Condition</string>
+    <string name="label_birthdate">Birth Date</string>
+    <string name="label_address">Address</string>
+
+
+    <string name="select_or_create_person_infoText">Select anyone of the persons below that match by tapping.</string>
+    <string name="select_or_create_person_no_records_infoText">No records found matching the first and last name.</string>
+    <string name="tag_row_item_select_or_create_person">rowItemSelectOrCreatePerson</string>
 
 </resources>

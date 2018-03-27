@@ -11,7 +11,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -90,6 +90,13 @@ public class CaseReadHospitalizationFragment extends BaseReadActivityFragment<Fr
     }
 
     @Override
+    public void onPageResume(FragmentCaseReadHospitalizationLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
+    }
+
+    @Override
     protected String getSubHeadingTitle() {
         return null;
     }
@@ -115,5 +122,10 @@ public class CaseReadHospitalizationFragment extends BaseReadActivityFragment<Fr
 
         //preHospitalizations.addAll(MemoryDatabaseHelper.PREVIOUS_HOSPITALIZATION.getHospitalizations(2));
         return preHospitalizations;
+    }
+
+    @Override
+    public boolean includeFabNonOverlapPadding() {
+        return false;
     }
 }

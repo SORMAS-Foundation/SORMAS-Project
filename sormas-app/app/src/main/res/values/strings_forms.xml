@@ -45,6 +45,7 @@
     <string name="label_sample_other_material">Specify Other Material</string>
     <string name="label_sample_date_time_sampling">Date &amp; Time of Sampling</string>
     <string name="label_sample_test_type">Suggested Test Type</string>
+    <string name="label_sample_source">Sample Source</string>
     <string name="label_sample_laboratory">Laboratory</string>
     <string name="label_sample_shipping_status">Shipping Status</string>
     <string name="label_sample_received_status">Received Status</string>
@@ -52,6 +53,10 @@
     <string name="label_sample_shipment_details">Shipment Details</string>
     <string name="label_sample_comment">Comment</string>
     <string name="label_sample_referred_to">Referred To</string>
+    <string name="label_sample_lab_id">Lab Sample ID</string>
+    <string name="label_sample_received_date">Recieved Date</string>
+    <string name="label_sample_specimen_condition">Specimen Condition</string>
+    <string name="label_sample_test_possible_reason">Reason</string>
 
     <!-- Description -->
     <string name="desc_sample_disease">Disease Name</string>
@@ -60,6 +65,7 @@
     <string name="desc_sample_other_material">Specify Other Material</string>
     <string name="desc_sample_date_time_sampling">Date &amp; Time of Sampling</string>
     <string name="desc_sample_test_type">Suggested Test Type</string>
+    <string name="desc_sample_source">Sample Source</string>
     <string name="desc_sample_laboratory">Laboratory Name</string>
     <string name="desc_sample_shipping_status">Shipping Status</string>
     <string name="desc_sample_received_status">Received Status</string>
@@ -67,6 +73,10 @@
     <string name="desc_sample_shipment_details">Shipment Details</string>
     <string name="desc_sample_comment">Result Comment</string>
     <string name="desc_sample_referred_to">Referred To</string>
+    <string name="desc_sample_lab_id">Lab Sample ID</string>
+    <string name="desc_sample_received_date">Recieved Date</string>
+    <string name="desc_sample_specimen_condition">Specimen Condition</string>
+    <string name="desc_sample_test_possible_reason">Reason</string>
 
     <!-- Hint -->
     <string name="hint_sample_disease">Disease</string>
@@ -75,6 +85,7 @@
     <string name="hint_sample_other_material">Specify Other Material</string>
     <string name="hint_sample_date_time_sampling">Date &amp; Time of Sampling</string>
     <string name="hint_sample_test_type">Suggested Test Type</string>
+    <string name="hint_sample_source">Sample Source</string>
     <string name="hint_sample_laboratory">Laboratory</string>
     <string name="hint_sample_shipping_status">Shipping Status</string>
     <string name="hint_sample_received_status">Received Status</string>
@@ -82,11 +93,16 @@
     <string name="hint_sample_shipment_details">Shipment Details</string>
     <string name="hint_sample_comment">Comment</string>
     <string name="hint_sample_referred_to">Referred To</string>
+    <string name="hint_sample_lab_id">Lab Sample ID</string>
+    <string name="hint_sample_received_date">Recieved Date</string>
+    <string name="hint_sample_specimen_condition">Specimen Condition</string>
+    <string name="hint_sample_test_possible_reason">Reason</string>
 
 
     <string name="no_referral">No Referral</string>
 
     <!-- Sub Headings -->
+    <string name="heading_sub_sample_received">Received</string>
     <string name="heading_sub_recent_tests">Recent Tests</string>
     <!-- ........................................................................ -->
 
@@ -401,7 +417,7 @@
     <string name="hint_contact_person_death_cause">Cause of Death</string>
     <string name="hint_contact_person_death_place">Death Place Type</string>
     <string name="hint_contact_person_death_place_desc">Death Place Description</string>
-    <string name="hint_contact_person_burial_date">Death of Burial</string>
+    <string name="hint_contact_person_burial_date">Date of Burial</string>
     <string name="hint_contact_person_burial_conductor">Burial Conductor</string>
     <string name="hint_contact_person_burial_place_desc">Burial Place Description</string>
     <string name="hint_contact_person_perm_resident_address">Permanent Residence of Person</string>
@@ -423,7 +439,7 @@
     <string name="label_contact_person_death_cause">Cause of Death</string>
     <string name="label_contact_person_death_place">Death Place Type</string>
     <string name="label_contact_person_death_place_desc">Death Place Description</string>
-    <string name="label_contact_person_burial_date">Death of Burial</string>
+    <string name="label_contact_person_burial_date">Date of Burial</string>
     <string name="label_contact_person_burial_conductor">Burial Conductor</string>
     <string name="label_contact_person_burial_place_desc">Burial Place Description</string>
     <string name="label_contact_person_perm_resident_address">Permanent Residence of Person</string>
@@ -444,7 +460,7 @@
     <string name="desc_contact_person_death_cause">Cause of Death</string>
     <string name="desc_contact_person_death_place">Death Place Type</string>
     <string name="desc_contact_person_death_place_desc">Death Place Description</string>
-    <string name="desc_contact_person_burial_date">Death of Burial</string>
+    <string name="desc_contact_person_burial_date">Date of Burial</string>
     <string name="desc_contact_person_burial_conductor">Burial Conductor</string>
     <string name="desc_contact_person_burial_place_desc">Burial Place Description</string>
     <string name="desc_contact_person_perm_resident_address">Permanent Residence of Person</string>
@@ -553,6 +569,7 @@
     <string name="label_case_id">Case ID</string>
     <string name="label_case_epid_number">EPID Number</string>
     <string name="label_case_disease">Disease</string>
+    <string name="label_case_disease_detail">Disease Detail</string>
     <string name="label_case_reporting_user">Reporting User</string>
     <string name="label_case_reporting_date">Report Date</string>
     <string name="label_case_state_and_lga">State - LGA</string>
@@ -570,6 +587,12 @@
     <string name="label_case_measles_vaccination_info_source">Measles Vaccination Info Source</string>
     <string name="label_case_yellow_fever_vaccination">Yellow Fever Vaccination</string>
     <string name="label_case_yellow_fever_vaccination_info_source">Yellow Fever Vaccination Info Source</string>
+    <string name="label_case_plague_type">Plague Type</string>
+    <string name="label_case_vaccination_received">Received Vaccination</string>
+    <string name="label_case_number_valid_doses">Number of Valid Doses</string>
+    <string name="label_case_last_vaccination_date">Last Vaccination Date</string>
+    <string name="label_case_vaccination_info_source">Vaccination Information Source</string>
+    <string name="label_case_smallpox_vaccination_received">Was a smallpox vaccination received in the past?</string>
 
     <!-- Description -->
     <!-- Label -->
@@ -580,6 +603,7 @@
     <string name="desc_case_id">Case ID</string>
     <string name="desc_case_epid_number">EPID Number</string>
     <string name="desc_case_disease">Disease</string>
+    <string name="desc_case_disease_detail">Disease Detail</string>
     <string name="desc_case_reporting_user">Reporting User</string>
     <string name="desc_case_reporting_date">Report Date</string>
     <string name="desc_case_state_and_lga">State - LGA</string>
@@ -597,6 +621,12 @@
     <string name="desc_case_measles_vaccination_info_source">Measles Vaccination Info Source</string>
     <string name="desc_case_yellow_fever_vaccination">Yellow Fever Vaccination</string>
     <string name="desc_case_yellow_fever_vaccination_info_source">Yellow Fever Vaccination Info Source</string>
+    <string name="desc_case_plague_type">Plague Type</string>
+    <string name="desc_case_vaccination_received">Received Vaccination</string>
+    <string name="desc_case_number_valid_doses">Number of Valid Doses</string>
+    <string name="desc_case_last_vaccination_date">Last Vaccination Date</string>
+    <string name="desc_case_vaccination_info_source">Vaccination Information Source</string>
+    <string name="desc_case_smallpox_vaccination_received">Was a smallpox vaccination received in the past?</string>
 
     <!-- Hint -->
     <string name="hint_case_investigation_status">Investigation Status</string>
@@ -606,6 +636,7 @@
     <string name="hint_case_id">Case ID</string>
     <string name="hint_case_epid_number">EPID Number</string>
     <string name="hint_case_disease">Disease</string>
+    <string name="hint_case_disease_detail">Disease Detail</string>
     <string name="hint_case_reporting_user">Reporting User</string>
     <string name="hint_case_reporting_date">Report Date</string>
     <string name="hint_case_state_and_lga">State - LGA</string>
@@ -623,6 +654,13 @@
     <string name="hint_case_measles_vaccination_info_source">Measles Vaccination Info Source</string>
     <string name="hint_case_yellow_fever_vaccination">Yellow Fever Vaccination</string>
     <string name="hint_case_yellow_fever_vaccination_info_source">Yellow Fever Vaccination Info Source</string>
+    <string name="hint_case_plague_type">Plague Type</string>
+
+    <string name="hint_case_vaccination_received">Received Vaccination</string>
+    <string name="hint_case_number_valid_doses">Number of Valid Doses</string>
+    <string name="hint_case_last_vaccination_date">Last Vaccination Date</string>
+    <string name="hint_case_vaccination_info_source">Vaccination Information Source</string>
+    <string name="hint_case_smallpox_vaccination_received">Was a smallpox vaccination received in the past?</string>
 
 
     <!-- Sub Headings -->
@@ -932,6 +970,8 @@
     <string name="label_case_patient_facility_ward">Facility Ward</string>
     <string name="label_case_patient_facility_name">Occupation Facility</string>
 
+    <string name="label_case_patient_possible_duplicate">Possible Duplicate</string>
+
 
     <!-- Description -->
     <string name="desc_case_patient_last_name">Last Name</string>
@@ -960,10 +1000,42 @@
     <string name="desc_case_patient_facility_ward">Facility Ward</string>
     <string name="desc_case_patient_facility_name">Occupation Facility</string>
 
+    <string name="desc_case_patient_possible_duplicate">Possible Duplicate</string>
+
+
+    <!-- Hint -->
+    <string name="hint_case_patient_last_name">Last Name</string>
+    <string name="hint_case_patient_first_name">First Name</string>
+    <string name="hint_case_patient_nickname">Nickname</string>
+    <string name="hint_case_patient_mother_maiden_name">Mother\'s Maiden Name</string>
+    <string name="hint_case_patient_age_and_dob">Age (Birth Date)</string>
+    <string name="hint_case_patient_gender">Gender</string>
+    <string name="hint_case_patient_present_condition">Gender</string>
+
+    <string name="hint_case_patient_death_date">Date of Death</string>
+    <string name="hint_case_patient_death_place_type">Death Place Type</string>
+    <string name="hint_case_patient_death_desc">Death Description</string>
+
+    <string name="hint_case_patient_burial_date">Burial Date</string>
+    <string name="hint_case_patient_burial_conductor">Burial Conductor</string>
+    <string name="hint_case_patient_burial_place_desc">Burial Place Description</string>
+
+    <string name="hint_case_patient_phone_number">Phone Number</string>
+    <string name="hint_case_patient_owner_of_phone">Owner of Phone</string>
+    <string name="hint_case_patient_perm_residence">Permanent Residence of Person</string>
+
+    <string name="hint_case_patient_occupation">Occupation</string>
+    <string name="hint_case_patient_facility_state">Facility State</string>
+    <string name="hint_case_patient_facility_lga">Facility LGA</string>
+    <string name="hint_case_patient_facility_ward">Facility Ward</string>
+    <string name="hint_case_patient_facility_name">Occupation Facility</string>
+
+    <string name="hint_case_patient_possible_duplicate">Possible Duplicate</string>
 
     <!-- Sub Headings -->
     <string name="heading_sub_case_patient_occupation">Occupation</string>
     <string name="heading_sub_case_patient_occupation_facility">Occupation Facility</string>
+    <string name="heading_sub_case_existing_persons">Existing Persons</string>
     <!-- ........................................................................ -->
 
 
@@ -1074,6 +1146,12 @@
     <!-- Move Case Dialog -->
     <!-- ........................................................................ -->
     <string name="heading_move_case_dialog">Move Case</string>
+    <!-- ........................................................................ -->
+
+
+    <!-- Select or Create Person -->
+    <!-- ........................................................................ -->
+    <string name="heading_pick_or_create_person_dialog">Pick or create person</string>
     <!-- ........................................................................ -->
 
 

@@ -55,12 +55,12 @@
             android:maxLines="1"
             android:singleLine="true"
             android:textColor="@color/controlTextColor"
-            android:textColorHint="@color/controlTextViewHint"
             android:textCursorDrawable="@drawable/cursor"
             android:textIsSelectable="false"
             android:textSize="@dimen/defaultControlTextSize"
             />
 
+        <!--android:textColorHint="@color/controlTextViewHint"-->
         <!--style="@style/DatePickerEditTextViewSingleRowStyle"-->
 
     </LinearLayout>

@@ -34,26 +34,22 @@
             type="android.view.View.OnClickListener" />
     </data>
 
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
-        <ScrollView
-            android:id="@+id/mainContent"
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentBottom="false"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/parentLayoutVerticalMargin"
             >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="@dimen/parentLayoutVerticalMargin"
-                android:paddingBottom="@dimen/parentLayoutVerticalMargin"
                 android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
                 >
@@ -214,7 +210,7 @@
                     android:id="@+id/txtCommentOnExec"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/pageBottomControlPanel"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     app:hint="@string/hint_task_comment_on_exc"
                     app:labelCaption="@string/label_task_comment_on_exc"
                     app:description="@string/desc_task_comment_on_exc"
@@ -226,58 +222,56 @@
                     />
             </LinearLayout>
 
-        </ScrollView>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@drawable/background_notification_dialog"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            android:paddingTop="@dimen/buttonPanelVerticalMargin"
-            android:paddingBottom="@dimen/buttonPanelVerticalMargin"
-            android:elevation="16dp"
-            android:layout_alignParentTop="false"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            >
-
-            <de.symeda.sormas.app.component.TeboButton
-                android:id="@+id/btnNotExecutable"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:id="@+id/taskButtonPanel"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toLeftOf="@+id/btnDivider"
-                app:text="@string/action_not_executable"
-                app:buttonType="line_danger"
-                app:rounded="true"
-                app:drawableLeft="@drawable/ic_block_black_24dp"
-                app:onButtonOnClick="@{notExecCallback}"
-                />
+                android:orientation="horizontal"
+                android:background="@drawable/background_notification_dialog"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                android:paddingTop="@dimen/buttonPanelVerticalMargin"
+                android:paddingBottom="@dimen/buttonPanelVerticalMargin"
+                android:elevation="16dp"
+                >
+
+                <de.symeda.sormas.app.component.TeboButton
+                    android:id="@+id/btnNotExecutable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/btnDivider"
+                    app:text="@string/action_not_executable"
+                    app:buttonType="line_danger"
+                    app:rounded="true"
+                    app:drawableLeft="@drawable/ic_block_black_24dp"
+                    app:onButtonOnClick="@{notExecCallback}"
+                    />
 
 
-            <ImageView
-                android:id="@+id/btnDivider"
-                android:layout_toLeftOf="@+id/btnDone"
-                android:layout_centerVertical="true"
-                style="@style/FormButtonDividerStyle"
-                />
+                <ImageView
+                    android:id="@+id/btnDivider"
+                    android:layout_toLeftOf="@+id/btnDone"
+                    android:layout_centerVertical="true"
+                    style="@style/FormButtonDividerStyle"
+                    />
 
-            <de.symeda.sormas.app.component.TeboButton
-                android:id="@+id/btnDone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                app:text="@string/action_done"
-                app:buttonType="line_primary"
-                app:rounded="true"
-                app:drawableLeft="@drawable/ic_done_black_24dp"
-                app:onButtonOnClick="@{doneCallback}"
-                />
+                <de.symeda.sormas.app.component.TeboButton
+                    android:id="@+id/btnDone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    app:text="@string/action_done"
+                    app:buttonType="line_primary"
+                    app:rounded="true"
+                    app:drawableLeft="@drawable/ic_done_black_24dp"
+                    app:onButtonOnClick="@{doneCallback}"
+                    />
 
-        </RelativeLayout>
-    </RelativeLayout>
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </layout>
 

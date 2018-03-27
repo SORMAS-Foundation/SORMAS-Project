@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.event.edit;
 
+import android.app.AlertDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -11,6 +13,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -20,16 +23,21 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
 import de.symeda.sormas.app.component.TeboSpinner;
 import de.symeda.sormas.app.component.TeboSwitch;
+import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentEventEditLayoutBinding;
-import de.symeda.sormas.app.event.EventFormNavigationCapsule;
-import de.symeda.sormas.app.task.edit.TaskEditActivity;
+import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 
 /**
@@ -40,8 +48,9 @@ import de.symeda.sormas.app.util.DataUtils;
  * sampson.orson@technologyboard.org
  */
 
-public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEditLayoutBinding, Event> {
+public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEditLayoutBinding, Event, Event> {
 
+    private AsyncTask onResumeTask;
     private String recordUuid = null;
     private EventStatus pageStatus = null;
     private Event record;
@@ -85,13 +94,14 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            if (recordUuid == null || recordUuid.isEmpty()) {
-                // build a new event for empty uuid
-                resultHolder.forItem().add(DatabaseHelper.getEventDao().build());
-            } else {
-                // open the given event
-                resultHolder.forItem().add(DatabaseHelper.getEventDao().queryUuid(recordUuid));
+            Event event = getActivityRootData();
+
+            if (event != null) {
+                if (event.isUnreadOrChildUnread())
+                    DatabaseHelper.getEventDao().markAsRead(event);
             }
+
+            resultHolder.forItem().add(event);
 
             resultHolder.forOther().add(DataUtils.getEnumItems(Disease.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(TypeOfPlace.class, false));
@@ -102,6 +112,9 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
             //Item Data
             if (itemIterator.hasNext())
                 record =  itemIterator.next();
+
+            if (record == null)
+                getActivity().finish();
 
             if (otherIterator.hasNext())
                 diseaseList =  otherIterator.next();
@@ -117,8 +130,6 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
 
     @Override
     public void onLayoutBinding(FragmentEventEditLayoutBinding contentBinding) {
-        //binding = DataBindingUtil.inflate(inflater, getEditLayout(), container, true);
-
         // init fields
         //toggleTypeOfPlaceTextField();
 
@@ -143,6 +154,11 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
             public List<Item> getDataSource(Object parentValue) {
                 return (diseaseList.size() > 0) ? DataUtils.addEmptyItem(diseaseList)
                         : diseaseList;
+            }
+
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
             }
 
             @Override
@@ -175,6 +191,11 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
             }
 
             @Override
+            public VisualState getInitVisualState() {
+                return null;
+            }
+
+            @Override
             public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
                 toggleTypeOfPlaceTextField();
             }
@@ -188,8 +209,82 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
     }
 
     @Override
+    protected void updateUI(FragmentEventEditLayoutBinding contentBinding, Event event) {
+        contentBinding.spnDisease.setValue(event.getDisease(), true);
+        contentBinding.spnTypeOfPlace.setValue(event.getTypeOfPlace(), true);
+    }
+
+    @Override
+    public void onPageResume(FragmentEventEditLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    Event event = getActivityRootData();
+
+                    if (event != null) {
+                        if (event.isUnreadOrChildUnread())
+                            DatabaseHelper.getEventDao().markAsRead(event);
+                    }
+
+                    resultHolder.forItem().add(event);
+                }
+            });
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+
+                    if (itemIterator.hasNext())
+                        record =  itemIterator.next();
+
+                    if (record != null)
+                        requestLayoutRebind();
+                    else {
+                        getActivity().finish();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
+    }
+
+    @Override
     public int getEditLayout() {
         return R.layout.fragment_event_edit_layout;
+    }
+
+    @Override
+    public boolean includeFabNonOverlapPadding() {
+        return false;
+    }
+
+    @Override
+    public boolean showSaveAction() {
+        return true;
+    }
+
+    @Override
+    public boolean showAddAction() {
+        return false;
     }
 
     private void setupCallback() {
@@ -202,24 +297,31 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
 
                 mLastCheckedId = checkedId;
 
+
+
             }
         };
 
         onAddressLinkClickedCallback = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
-                //getContentBinding().txtSourceLastName.enableErrorState("HOIOIOO");
-                //final Location location = MemoryDatabaseHelper.LOCATION.getLocations(1).get(0);
                 final Location location = record.getEventLocation();
-                final LocationDialog locationDialog = new LocationDialog(TaskEditActivity.getActiveActivity(), location);
-                locationDialog.show();
-
+                final LocationDialog locationDialog = new LocationDialog(AbstractSormasActivity.getActiveActivity(), location);
 
                 locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
                         getContentBinding().txtAddress.setValue(location.toString());
+                        record.setEventLocation(location);
+
                         locationDialog.dismiss();
+                    }
+                });
+
+                locationDialog.show(new ICallback<AlertDialog>() {
+                    @Override
+                    public void result(AlertDialog result) {
+
                     }
                 });
             }
@@ -237,8 +339,16 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
         }
     }
 
-    public static EventEditFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule)
+    public static EventEditFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, EventEditFragment.class, capsule);
+        return newInstance(activityCommunicator, EventEditFragment.class, capsule, activityRootData);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (onResumeTask != null && !onResumeTask.isCancelled())
+            onResumeTask.cancel(true);
     }
 }

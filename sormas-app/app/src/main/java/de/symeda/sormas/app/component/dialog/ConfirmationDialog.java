@@ -12,6 +12,9 @@ import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.component.TeboButtonType;
+import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.DialogConfirmationLayoutBinding;
 
 /**
  * Created by Orson on 18/02/2018.
@@ -30,6 +33,7 @@ public class ConfirmationDialog extends de.symeda.sormas.app.component.dialog.Ba
     private Tracker tracker;
     private de.symeda.sormas.app.component.dialog.DialogViewConfig data;
     private String subHeading;
+    private DialogConfirmationLayoutBinding mContentBinding;
 
     public ConfirmationDialog(final FragmentActivity activity) {
         this(activity, "", "");
@@ -37,6 +41,17 @@ public class ConfirmationDialog extends de.symeda.sormas.app.component.dialog.Ba
 
     public ConfirmationDialog(final FragmentActivity activity, String viewName, String uuid) {
         this(activity, R.string.heading_confirmation_dialog, R.string.heading_sub_confirmation_notification_dialog, viewName, uuid);
+    }
+
+    public ConfirmationDialog(final FragmentActivity activity, int headingResId, String subHeading, String viewName, String uuid) {
+        super(activity, R.layout.dialog_root_layout, R.layout.dialog_confirmation_layout,
+                R.layout.dialog_root_two_button_panel_edge_aligned_layout, headingResId, subHeading);
+
+        this.uuid = uuid;
+        this.viewName = viewName;
+        this.tracker = ((SormasApplication) activity.getApplication()).getDefaultTracker();
+
+        this.data = null;
     }
 
     public ConfirmationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId, String viewName, String uuid) {
@@ -51,7 +66,7 @@ public class ConfirmationDialog extends de.symeda.sormas.app.component.dialog.Ba
     }
 
     @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
         /*TeboTextInputEditText txtMessage = (TeboTextInputEditText)rootView.findViewById(R.id.txtMessage);
         txtMessage.enableErrorState("Hello");*/
         /*String description = this.data.getHeading();
@@ -65,24 +80,35 @@ public class ConfirmationDialog extends de.symeda.sormas.app.component.dialog.Ba
                 .build());
         Snackbar.make(activity.findViewById(R.id.base_layout),
                 activity.getString(R.string.snackbar_report_sent), Snackbar.LENGTH_LONG).show();*/
+        callback.result(null);
 
     }
 
     @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
-
+    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+        callback.result(null);
     }
 
     @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+        callback.result(null);
+    }
 
+    @Override
+    protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
+        this.mContentBinding = (DialogConfirmationLayoutBinding)binding;
     }
 
     @Override
     protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
         if (!binding.setVariable(BR.data, data)) {
-            Log.w(TAG, "There is no variable 'data' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
+    }
+
+    @Override
+    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
+
     }
 
     @Override

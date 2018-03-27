@@ -6,11 +6,20 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 
-import de.symeda.sormas.app.BR;
+import com.android.databinding.library.baseAdapters.BR;
+
+import java.util.List;
+
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.TeboButtonType;
 import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
 import de.symeda.sormas.app.component.dialog.CommunityLoader;
 import de.symeda.sormas.app.component.dialog.DistrictLoader;
@@ -20,17 +29,10 @@ import de.symeda.sormas.app.component.dialog.IDistrictLoader;
 import de.symeda.sormas.app.component.dialog.IFacilityLoader;
 import de.symeda.sormas.app.component.dialog.IRegionLoader;
 import de.symeda.sormas.app.component.dialog.RegionLoader;
+import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
-
-import java.util.List;
-
-import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.facility.Facility;
-import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
-import de.symeda.sormas.app.backend.region.Community;
-import de.symeda.sormas.app.backend.region.District;
-import de.symeda.sormas.app.backend.region.Region;
 
 /**
  * Created by Orson on 18/02/2018.
@@ -45,6 +47,7 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
     public static final String TAG = PreviousHospitalizationDialog.class.getSimpleName();
 
     private PreviousHospitalization data;
+    private DialogPreviousHospitalizationLayoutBinding mContentBinding;
 
 
     private IRegionLoader regionLoader;
@@ -80,43 +83,53 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
         /*DialogPreviousHospitalizationLayoutBinding _contentBinding = (DialogPreviousHospitalizationLayoutBinding)contentBinding;
 
         _contentBinding.spnState.enableErrorState("Hello");*/
-        dismiss();
+        callback.result(null);
     }
 
     @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
-
+    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+        callback.result(null);
     }
 
     @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+        callback.result(null);
+    }
 
+    @Override
+    protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
+        this.mContentBinding = (DialogPreviousHospitalizationLayoutBinding)binding;
     }
 
     @Override
     protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
         if (!binding.setVariable(BR.data, data)) {
-            Log.w(TAG, "There is no variable 'data' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
 
         if (!binding.setVariable(BR.yesNoUnknownClass, YesNoUnknown.class)) {
-            Log.w(TAG, "There is no variable 'data' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'yesNoUnknownClass' in layout " + layoutName);
         }
     }
 
     @Override
+    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
+
+    }
+
+    @Override
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        DialogPreviousHospitalizationLayoutBinding _contentBinding = (DialogPreviousHospitalizationLayoutBinding)contentBinding;
+        //DialogPreviousHospitalizationLayoutBinding _contentBinding = (DialogPreviousHospitalizationLayoutBinding)contentBinding;
 
-        _contentBinding.dtpDateOfAdmission.initialize(getFragmentManager());
-        _contentBinding.dtpDateOfDischarge.initialize(getFragmentManager());
+        mContentBinding.dtpDateOfAdmission.initialize(getFragmentManager());
+        mContentBinding.dtpDateOfDischarge.initialize(getFragmentManager());
 
 
-        _contentBinding.spnState.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+        mContentBinding.spnState.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override
             public Object getSelectedValue() {
                 return data.getRegion();
@@ -124,25 +137,17 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                /*Community comm = DatabaseHelper.getCommunityDao().queryForAll().get(0);
-                return DataUtils.toItems(DatabaseHelper.getFacilityDao()
-                        .getHealthFacilitiesByCommunity(comm, false));*/
+                List<Item> regions = regionLoader.load();
+                return (regions.size() > 0) ? DataUtils.addEmptyItem(regions) : regions;
+            }
 
-
-                //return DataUtils.toItems(communityList);
-
-                List<Region> regions = regionLoader.load();
-
-                //TODO: Remove, Just for testing
-                if (regions.size() > 0 && regions.get(0) != null)
-                    data.setRegion(regions.get(0));
-
-
-                return (regions.size() > 0) ? DataUtils.toItems(regions) : DataUtils.toItems(regions, false);
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
             }
         });
 
-        _contentBinding.spnLga.initialize(_contentBinding.spnState, new TeboSpinner.ISpinnerInitSimpleConfig() {
+        mContentBinding.spnLga.initialize(mContentBinding.spnState, new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override
             public Object getSelectedValue() {
                 return data.getDistrict();
@@ -150,18 +155,18 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                List<District> districts = districtLoader.load((Region)parentValue);
+                List<Item> districts = districtLoader.load((Region)parentValue);
+                return (districts.size() > 0) ? DataUtils.addEmptyItem(districts) : districts;
 
-                //TODO: Remove, Just for testing
-                if (districts.size() > 0 && districts.get(0) != null)
-                    data.setDistrict(districts.get(0));
+            }
 
-                return (districts.size() > 0) ? DataUtils.toItems(districts) : DataUtils.toItems(districts, false);
-
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
             }
         });
 
-        _contentBinding.spnWard.initialize(_contentBinding.spnLga, new TeboSpinner.ISpinnerInitSimpleConfig() {
+        mContentBinding.spnWard.initialize(mContentBinding.spnLga, new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override
             public Object getSelectedValue() {
                 return data.getCommunity();
@@ -169,17 +174,17 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                List<Community> communities = communityLoader.load((District)parentValue);
+                List<Item> communities = communityLoader.load((District)parentValue);
+                return (communities.size() > 0) ? DataUtils.addEmptyItem(communities) : communities;
+            }
 
-                //TODO: Remove, Just for testing
-                if (communities.size() > 0 && communities.get(0) != null)
-                    data.setCommunity(communities.get(0));
-
-                return (communities.size() > 0) ? DataUtils.toItems(communities) : DataUtils.toItems(communities, false);
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
             }
         });
 
-        _contentBinding.spnFacility.initialize(_contentBinding.spnWard, new TeboSpinner.ISpinnerInitSimpleConfig() {
+        mContentBinding.spnFacility.initialize(mContentBinding.spnWard, new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override
             public Object getSelectedValue() {
                 return null;
@@ -187,13 +192,13 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                List<Facility> facilities = facilityLoader.load((Community)parentValue);
+                List<Item> facilities = facilityLoader.load((Community)parentValue, false);
+                return (facilities.size() > 0) ? DataUtils.addEmptyItem(facilities) : facilities;
+            }
 
-                //TODO: Remove, Just for testing
-                if (facilities.size() > 0 && facilities.get(0) != null)
-                    data.setHealthFacility(facilities.get(0));
-
-                return (facilities.size() > 0) ? DataUtils.toItems(facilities) : DataUtils.toItems(facilities, false);
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
             }
         });
     }

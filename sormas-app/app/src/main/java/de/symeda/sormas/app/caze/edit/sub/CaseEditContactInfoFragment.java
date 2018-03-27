@@ -17,18 +17,20 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnLinkClickListener;
 import de.symeda.sormas.app.component.TeboSpinner;
-import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 
 /**
@@ -39,13 +41,14 @@ import de.symeda.sormas.app.util.DataUtils;
  * sampson.orson@technologyboard.org
  */
 
-public class CaseEditContactInfoFragment extends BaseEditActivityFragment<FragmentContactEditLayoutBinding, Contact> {
+public class CaseEditContactInfoFragment extends BaseEditActivityFragment<FragmentContactEditLayoutBinding, Contact, Contact> {
 
     private String recordUuid = null;
     private ContactClassification pageStatus = null;
     private Contact record;
     private Case associatedCase;
     private View.OnClickListener createCaseCallback;
+    private View.OnClickListener openCaseCallback;
     private OnLinkClickListener openCaseLinkCallback;
 
     private List<Item> relationshipList;
@@ -82,14 +85,18 @@ public class CaseEditContactInfoFragment extends BaseEditActivityFragment<Fragme
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            if (recordUuid != null && !recordUuid.isEmpty()) {
-                Contact contact = DatabaseHelper.getContactDao().queryUuid(recordUuid);
-                resultHolder.forItem().add(contact);
+            Case _associatedCase = null;
+            Contact contact = getActivityRootData();
 
-                if (contact != null) {
-                    resultHolder.forItem().add(findAssociatedCase(contact.getPerson(), contact.getCaze().getDisease()));
-                }
+            if (contact != null) {
+                if (contact.isUnreadOrChildUnread())
+                    DatabaseHelper.getContactDao().markAsRead(contact);
+
+                _associatedCase = findAssociatedCase(contact.getPerson(), contact.getCaze().getDisease());
             }
+
+            resultHolder.forItem().add(contact);
+            resultHolder.forItem().add(_associatedCase);
 
             resultHolder.forOther().add(DataUtils.getEnumItems(ContactRelation.class, false));
         } else {
@@ -118,11 +125,7 @@ public class CaseEditContactInfoFragment extends BaseEditActivityFragment<Fragme
         //FieldHelper.initSpinnerField(binding.contactContactStatus, ContactStatus.class);
         //FieldHelper.initSpinnerField(binding.contactRelationToCase, ContactRelation.class);
 
-        if (associatedCase == null) {
-            contentBinding.associatedCaseLayout.setVisibility(View.GONE);
-        } else {
-            contentBinding.contactPageBottomCtrlPanel.setVisibility(View.GONE);
-        }
+        updateBottonPanel();
 
         setVisibilityByDisease(ContactDto.class, record.getCaze().getDisease(), contentBinding.mainContent);
 
@@ -149,10 +152,27 @@ public class CaseEditContactInfoFragment extends BaseEditActivityFragment<Fragme
                 return (relationshipList.size() > 0) ? DataUtils.addEmptyItem(relationshipList)
                         : relationshipList;
             }
+
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
+            }
         });
 
 
         contentBinding.dtpDateOfLastContact.initialize(getFragmentManager());
+    }
+
+    @Override
+    protected void updateUI(FragmentContactEditLayoutBinding contentBinding, Contact contact) {
+
+    }
+
+    @Override
+    public void onPageResume(FragmentContactEditLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
     }
 
     @Override
@@ -165,8 +185,14 @@ public class CaseEditContactInfoFragment extends BaseEditActivityFragment<Fragme
             @Override
             public void onClick(View v) {
                 CaseFormNavigationCapsule dataCapsule = (CaseFormNavigationCapsule)new CaseFormNavigationCapsule(getContext(),
-                        "").setContactUuid(recordUuid);
+                        null).setContactUuid(recordUuid).setPersonUuid(record.getPerson().getUuid());
                 CaseNewActivity.goToActivity(getContext(), dataCapsule);
+            }
+        };
+        openCaseCallback = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openCase();
             }
         };
 
@@ -195,14 +221,34 @@ public class CaseEditContactInfoFragment extends BaseEditActivityFragment<Fragme
         }
     }
 
+    private void openCase() {
+        if (associatedCase != null) {
+            CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(),
+                    associatedCase.getUuid()).setReadPageStatus(associatedCase.getCaseClassification());
+            CaseEditActivity.goToActivity(getActivity(), dataCapsule);
+        }
+    }
+
+    private void updateBottonPanel() {
+        if (associatedCase == null) {
+            getContentBinding().btnOpenCase.setVisibility(View.GONE);
+        } else {
+            getContentBinding().btnCreateCase.setVisibility(View.GONE);
+        }
+
+        if (getContentBinding().btnOpenCase.getVisibility() == View.GONE && getContentBinding().btnOpenCase.getVisibility() == View.GONE) {
+            getContentBinding().contactPageBottomCtrlPanel.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     public boolean includeFabNonOverlapPadding() {
         return false;
     }
 
-    public static CaseEditContactInfoFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule)
+    public static CaseEditContactInfoFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule, Contact activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, CaseEditContactInfoFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseEditContactInfoFragment.class, capsule, activityRootData);
     }
 
 }

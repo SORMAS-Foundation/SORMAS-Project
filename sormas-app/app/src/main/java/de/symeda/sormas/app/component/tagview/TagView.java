@@ -224,7 +224,7 @@ public class TagView extends TeboPropertyField<String> {
         ViewDataBinding binding = DataBindingUtil.inflate(inflater, layoutId, parent, false);
         if (!binding.setVariable(BR.data, entry)) {
             String layoutName = parent.getResources().getResourceEntryName(layoutId);
-            Log.w(TAG, "There is no variable 'data' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
 
         return binding;

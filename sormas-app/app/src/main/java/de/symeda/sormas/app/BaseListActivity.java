@@ -97,12 +97,10 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
 
         if (fragment != null) {
             fragment.setArguments(getIntent().getExtras());
+            ft.setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout);
             ft.add(R.id.fragment_frame, fragment, "abc");
             ft.addToBackStack(null);
             ft.commit();
-
-
-
         }
     }
 

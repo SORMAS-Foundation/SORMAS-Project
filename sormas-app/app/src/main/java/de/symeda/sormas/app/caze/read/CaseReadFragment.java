@@ -9,7 +9,7 @@ import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -72,6 +72,13 @@ public class CaseReadFragment extends BaseReadActivityFragment<FragmentCaseReadL
     }
 
     @Override
+    public void onPageResume(FragmentCaseReadLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
+    }
+
+    @Override
     protected String getSubHeadingTitle() {
         return null;
     }
@@ -89,5 +96,10 @@ public class CaseReadFragment extends BaseReadActivityFragment<FragmentCaseReadL
     public static CaseReadFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
         return newInstance(activityCommunicator, CaseReadFragment.class, capsule);
+    }
+
+    @Override
+    public boolean includeFabNonOverlapPadding() {
+        return false;
     }
 }

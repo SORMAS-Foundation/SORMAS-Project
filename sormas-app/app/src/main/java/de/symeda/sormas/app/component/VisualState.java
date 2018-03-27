@@ -10,6 +10,7 @@ import de.symeda.sormas.app.R;
  * sampson.orson@technologyboard.org
  */
 
+//TODO: Redesign this class
 public abstract class VisualState {
     private final int value;
     private final String displayName;
@@ -29,6 +30,10 @@ public abstract class VisualState {
 
     public abstract int getLabelColor(VisualStateControl control);
 
+    public abstract int getTextColor(VisualStateControl control);
+
+    public abstract int getHintColor(VisualStateControl control);
+
     private static class NormalState extends VisualState
     {
         public NormalState() {
@@ -43,6 +48,8 @@ public abstract class VisualState {
                 return R.drawable.selector_text_control_edit;
             } else if (control == VisualStateControl.SPINNER) {
                 return R.drawable.selector_spinner;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.drawable.control_switch_background_border;
             }
 
             throw new UnsupportedOperationException();
@@ -56,6 +63,38 @@ public abstract class VisualState {
                 return R.color.controlLabelColor;
             } else if (control == VisualStateControl.SPINNER) {
                 return R.color.controlLabelColor;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.color.controlLabelColor;
+            }
+
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int getTextColor(VisualStateControl control) {
+            if (control == VisualStateControl.EDIT_TEXT) {
+                return R.color.controlTextColor;
+            } else if (control == VisualStateControl.CHECKBOX) {
+                return R.color.controlTextColor;
+            } else if (control == VisualStateControl.SPINNER) {
+                return R.color.controlTextColor;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.color.controlTextColor;
+            }
+
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int getHintColor(VisualStateControl control) {
+            if (control == VisualStateControl.EDIT_TEXT) {
+                return R.color.controlTextViewHint;
+            } else if (control == VisualStateControl.CHECKBOX) {
+                return R.color.controlTextViewHint;
+            } else if (control == VisualStateControl.SPINNER) {
+                return R.color.controlTextViewHint;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.color.controlTextViewHint;
             }
 
             throw new UnsupportedOperationException();
@@ -76,6 +115,8 @@ public abstract class VisualState {
                 return R.drawable.selector_text_control_edit;
             } else if (control == VisualStateControl.SPINNER) {
                 return R.drawable.selector_spinner;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.drawable.selector_text_control_edit;
             }
 
             throw new UnsupportedOperationException();
@@ -89,6 +130,38 @@ public abstract class VisualState {
                 return R.color.colorControlActivated;
             } else if (control == VisualStateControl.SPINNER) {
                 return R.color.colorControlActivated;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.color.colorControlActivated;
+            }
+
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int getTextColor(VisualStateControl control) {
+            if (control == VisualStateControl.EDIT_TEXT) {
+                return R.color.controlTextColor;
+            } else if (control == VisualStateControl.CHECKBOX) {
+                return R.color.controlTextColor;
+            } else if (control == VisualStateControl.SPINNER) {
+                return R.color.controlTextColor;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.color.controlTextColor;
+            }
+
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int getHintColor(VisualStateControl control) {
+            if (control == VisualStateControl.EDIT_TEXT) {
+                return R.color.controlTextViewHint;
+            } else if (control == VisualStateControl.CHECKBOX) {
+                return R.color.controlTextViewHint;
+            } else if (control == VisualStateControl.SPINNER) {
+                return R.color.controlTextViewHint;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.color.controlTextViewHint;
             }
 
             throw new UnsupportedOperationException();
@@ -109,6 +182,8 @@ public abstract class VisualState {
                 return R.drawable.selector_text_control_edit;
             } else if (control == VisualStateControl.SPINNER) {
                 return R.drawable.selector_spinner;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.drawable.selector_text_control_edit;
             }
 
             throw new UnsupportedOperationException();
@@ -122,6 +197,38 @@ public abstract class VisualState {
                 return R.color.controlLabelColor;
             } else if (control == VisualStateControl.SPINNER) {
                 return R.color.controlLabelColor;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.color.controlLabelColor;
+            }
+
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int getTextColor(VisualStateControl control) {
+            if (control == VisualStateControl.EDIT_TEXT) {
+                return R.color.controlTextColor;
+            } else if (control == VisualStateControl.CHECKBOX) {
+                return R.color.controlTextColor;
+            } else if (control == VisualStateControl.SPINNER) {
+                return R.color.controlTextColor;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.color.controlTextColor;
+            }
+
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int getHintColor(VisualStateControl control) {
+            if (control == VisualStateControl.EDIT_TEXT) {
+                return R.color.controlTextViewHint;
+            } else if (control == VisualStateControl.CHECKBOX) {
+                return R.color.controlTextViewHint;
+            } else if (control == VisualStateControl.SPINNER) {
+                return R.color.controlTextViewHint;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.color.controlTextViewHint;
             }
 
             throw new UnsupportedOperationException();
@@ -142,6 +249,8 @@ public abstract class VisualState {
                 return R.drawable.selector_text_control_edit;
             } else if (control == VisualStateControl.SPINNER) {
                 return R.drawable.selector_spinner;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.drawable.selector_text_control_edit;
             }
 
             throw new UnsupportedOperationException();
@@ -155,6 +264,38 @@ public abstract class VisualState {
                 return R.color.colorControlDisabled;
             } else if (control == VisualStateControl.SPINNER) {
                 return R.color.colorControlDisabled;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.color.colorControlDisabled;
+            }
+
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int getTextColor(VisualStateControl control) {
+            if (control == VisualStateControl.EDIT_TEXT) {
+                return R.color.colorControlDisabled;
+            } else if (control == VisualStateControl.CHECKBOX) {
+                return R.color.colorControlDisabled;
+            } else if (control == VisualStateControl.SPINNER) {
+                return R.color.colorControlDisabled;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.color.colorControlDisabled;
+            }
+
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int getHintColor(VisualStateControl control) {
+            if (control == VisualStateControl.EDIT_TEXT) {
+                return R.color.colorControlDisabledHint;
+            } else if (control == VisualStateControl.CHECKBOX) {
+                return R.color.colorControlDisabledHint;
+            } else if (control == VisualStateControl.SPINNER) {
+                return R.color.colorControlDisabledHint;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.color.colorControlDisabledHint;
             }
 
             throw new UnsupportedOperationException();
@@ -175,6 +316,8 @@ public abstract class VisualState {
                 return R.drawable.selector_text_control_edit_error;
             } else if (control == VisualStateControl.SPINNER) {
                 return R.drawable.selector_spinner_error;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.drawable.control_switch_background_border_error;
             }
 
             throw new UnsupportedOperationException();
@@ -188,9 +331,44 @@ public abstract class VisualState {
                 return R.color.colorControlError;
             } else if (control == VisualStateControl.SPINNER) {
                 return R.color.colorControlError;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.color.colorControlError;
             }
 
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public int getTextColor(VisualStateControl control) {
+            return -1;
+        }
+
+        @Override
+        public int getHintColor(VisualStateControl control) {
+            return -1;
+        }
     }
+
+    // <editor-fold defaultstate="collapsed" desc="Overrides">
+
+    @Override
+    public int hashCode() {
+        return value + 37 * value;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof VisualState)) {
+            return false;
+        }
+        VisualState other = (VisualState) obj;
+        return value == other.value;
+    }
+
+    @Override
+    public String toString() {
+        return displayName;
+    }
+
+    // </editor-fold>
 }

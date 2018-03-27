@@ -20,12 +20,15 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.DisplayMetricsHelper;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.DisplayMetricsHelper;
 
 /**
  * Created by Orson on 26/01/2018.
@@ -220,6 +223,12 @@ public class TeboRadioGroup extends EditTeboPropertyField<Object> {
         }
     }
 
+    public void setItems(List<Item> items) {
+        for (int i = 0; i < items.size(); i++) {
+            this.addItem(i, items.get(i));
+        }
+    }
+
     public void addItem(int index, Item item) {
         if(item.getValue() == null)
             return;
@@ -267,6 +276,12 @@ public class TeboRadioGroup extends EditTeboPropertyField<Object> {
     @BindingAdapter(value={"value", "enumClass"}, requireAll=true)
     public static void setValue(TeboRadioGroup view, Object value, Class c) {
         view.setEnumClass(c);
+        view.setValue(value);
+    }
+
+    @BindingAdapter(value={"value", "items"}, requireAll=true)
+    public static void setValue(TeboRadioGroup view, Object value, List<Item> list) {
+        view.setItems(list);
         view.setValue(value);
     }
 
@@ -514,7 +529,7 @@ public class TeboRadioGroup extends EditTeboPropertyField<Object> {
     }
 
     @Override
-    public void changeVisualState(VisualState state) {
+    public void changeVisualState(VisualState state, UserRight editOrCreateUserRight) {
         int labelColor = getResources().getColor(state.getLabelColor(VisualStateControl.CHECKBOX));
         Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControl.CHECKBOX));
 
@@ -540,9 +555,10 @@ public class TeboRadioGroup extends EditTeboPropertyField<Object> {
 
 
         if (state == VisualState.NORMAL || state == VisualState.ENABLED) {
+            User user = ConfigProvider.getUser();
             lblControlLabel.setTextColor(labelColor);
             setStateColor(checkedStateColor, uncheckedStateColor);
-            setEnabled(true);
+            setEnabled(true && (editOrCreateUserRight != null)? user.hasUserRight(editOrCreateUserRight) : true);
             return;
         }
     }

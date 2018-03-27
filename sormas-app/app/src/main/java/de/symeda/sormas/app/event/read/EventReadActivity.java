@@ -26,7 +26,7 @@ import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.event.EventFormNavigationCapsule;
+import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.event.edit.EventEditActivity;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.NavigationHelper;
@@ -241,13 +241,13 @@ public class EventReadActivity extends BaseReadActivity {
         try {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
                 @Override
-                public void preExecute() {
-                    showPreloader();
-                    hideFragmentView();
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //showPreloader();
+                    //hideFragmentView();
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
                     Event record = DatabaseHelper.getEventDao().queryUuid(recordUuid);
 
                     if (record == null) {
@@ -258,11 +258,11 @@ public class EventReadActivity extends BaseReadActivity {
                     }
                 }
             });
-            jobTask = executor.search(new ITaskResultCallback() {
+            jobTask = executor.execute(new ITaskResultCallback() {
                 @Override
-                public void searchResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    hidePreloader();
-                    showFragmentView();
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //hidePreloader();
+                    //showFragmentView();
 
                     if (resultHolder == null)
                         return;
@@ -278,8 +278,8 @@ public class EventReadActivity extends BaseReadActivity {
                 }
             });
         } catch (Exception ex) {
-            hidePreloader();
-            showFragmentView();
+            //hidePreloader();
+            //showFragmentView();
         }
     }
 

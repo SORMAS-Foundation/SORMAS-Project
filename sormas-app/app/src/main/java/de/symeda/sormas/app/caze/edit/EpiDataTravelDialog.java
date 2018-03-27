@@ -1,29 +1,33 @@
 package de.symeda.sormas.app.caze.edit;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.databinding.ViewDataBinding;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 
-import de.symeda.sormas.app.BR;
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.TeboButtonType;
-import de.symeda.sormas.app.component.TeboSpinner;
-import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
-import de.symeda.sormas.app.component.dialog.LocationDialog;
-import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
-import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.databinding.DialogEpidTravelsLayoutBinding;
-import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
+import com.android.databinding.library.baseAdapters.BR;
 
 import java.util.List;
 
 import de.symeda.sormas.api.epidata.TravelType;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.TeboButtonType;
+import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
+import de.symeda.sormas.app.component.dialog.LocationDialog;
+import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
+import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.IEntryItemOnClickListener;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.DialogEpidTravelsLayoutBinding;
+import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 
 /**
  * Created by Orson on 19/02/2018.
@@ -39,6 +43,7 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
 
     private EpiDataTravel data;
     private IEntryItemOnClickListener onAddressLinkClickedCallback;
+    private DialogEpidTravelsLayoutBinding mContentBinding;
 
     private List<TravelType> travelTypeList;
 
@@ -59,7 +64,7 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
         /*DialogEpiDataTravelLayoutBinding _contentBinding = (DialogEpiDataTravelLayoutBinding)contentBinding;
 
         _contentBinding.spnState.enableErrorState("Hello");*/
@@ -67,34 +72,44 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
 
     }
 
     @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
 
+    }
+
+    @Override
+    protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
+        this.mContentBinding = (DialogEpidTravelsLayoutBinding)binding;
     }
 
     @Override
     protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
         if (!binding.setVariable(BR.data, data)) {
-            Log.w(TAG, "There is no variable 'data' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
 
         if (!binding.setVariable(BR.addressLinkCallback, onAddressLinkClickedCallback)) {
-            Log.w(TAG, "There is no variable 'addressLinkCallback' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'addressLinkCallback' in layout " + layoutName);
         }
     }
 
     @Override
+    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
+
+    }
+
+    @Override
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        DialogEpidTravelsLayoutBinding _contentBinding = (DialogEpidTravelsLayoutBinding)contentBinding;
+        //DialogEpidTravelsLayoutBinding _contentBinding = (DialogEpidTravelsLayoutBinding)contentBinding;
 
-        _contentBinding.dtpTravelFromDate.initialize(getFragmentManager());
-        _contentBinding.dtpTravelToDate.initialize(getFragmentManager());
+        mContentBinding.dtpTravelFromDate.initialize(getFragmentManager());
+        mContentBinding.dtpTravelToDate.initialize(getFragmentManager());
 
-        _contentBinding.spnTravelType.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+        mContentBinding.spnTravelType.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
 
             @Override
             public Object getSelectedValue() {
@@ -105,6 +120,11 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
             public List<Item> getDataSource(Object parentValue) {
                 return (travelTypeList.size() > 0) ? DataUtils.toItems(travelTypeList)
                         : DataUtils.toItems(travelTypeList, false);
+            }
+
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
             }
         });
     }
@@ -150,7 +170,12 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
             public void onClick(View v, Object item) {
                 final Location location = MemoryDatabaseHelper.LOCATION.getLocations(1).get(0);
                 final LocationDialog locationDialog = new LocationDialog(getActivity(), location);
-                locationDialog.show();
+                locationDialog.show(new ICallback<AlertDialog>() {
+                    @Override
+                    public void result(AlertDialog result) {
+
+                    }
+                });
 
 
                 locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {

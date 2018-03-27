@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.contact.edit;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -15,16 +16,20 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.contact.ContactFormFollowUpNavigationCapsule;
-import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.contact.edit.sub.ContactEditFollowUpInfoActivity;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentEditListLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.shared.ContactFormFollowUpNavigationCapsule;
+import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 
 /**
  * Created by Orson on 13/02/2018.
@@ -34,8 +39,9 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
  * sampson.orson@technologyboard.org
  */
 
-public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragment<FragmentEditListLayoutBinding, List<Visit>> implements OnListItemClickListener {
+public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragment<FragmentEditListLayoutBinding, List<Visit>, Contact> implements OnListItemClickListener {
 
+    private AsyncTask onResumeTask;
     private String recordUuid;
     private ContactClassification pageStatus = null;
     private List<Visit> record;
@@ -75,13 +81,18 @@ public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragme
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            Contact contact = DatabaseHelper.getContactDao().queryUuid(recordUuid);
+            Contact contact = getActivityRootData();
+            List<Visit> visitList = new ArrayList<Visit>();
 
+            //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
             if (contact != null) {
-                resultHolder.forList().add(DatabaseHelper.getVisitDao().getByContact(contact));
-            } else {
-                resultHolder.forList().add(new ArrayList<Visit>());
+                if (contact.isUnreadOrChildUnread())
+                    DatabaseHelper.getContactDao().markAsRead(contact);
+
+                visitList = DatabaseHelper.getVisitDao().getByContact(contact);
             }
+
+            resultHolder.forList().add(visitList);
         } else {
             ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
             if (listIterator.hasNext()) {
@@ -110,19 +121,71 @@ public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragme
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    protected void updateUI(FragmentEditListLayoutBinding contentBinding, List<Visit> visits) {
 
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)getRootBinding().getRoot()
-                .findViewById(R.id.swiperefresh);
+    }
 
-        swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getBaseEditActivity().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly,
-                        true, false, swiperefresh, null);
-            }
-        });
+    @Override
+    public void onPageResume(FragmentEditListLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
+        if (swiperefresh != null) {
+            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, false, true, swiperefresh, null);
+                }
+            });
+        }
+
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    Contact contact = getActivityRootData();
+                    List<Visit> visitList = new ArrayList<Visit>();
+
+                    //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
+                    if (contact != null) {
+                        if (contact.isUnreadOrChildUnread())
+                            DatabaseHelper.getContactDao().markAsRead(contact);
+
+                        visitList = DatabaseHelper.getVisitDao().getByContact(contact);
+                    }
+
+                    resultHolder.forList().add(visitList);
+                }
+            });
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
+                    if (listIterator.hasNext())
+                        record = listIterator.next();
+
+                    requestLayoutRebind();
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
+
     }
 
     @Override
@@ -141,15 +204,34 @@ public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragme
     }
 
     @Override
+    public boolean showSaveAction() {
+        return false;
+    }
+
+    @Override
+    public boolean showAddAction() {
+        return false;
+    }
+
+    @Override
     public void onListItemClick(View view, int position, Object item) {
         Visit record = (Visit)item;
-        ContactFormFollowUpNavigationCapsule dataCapsule = new ContactFormFollowUpNavigationCapsule(getContext(), record.getUuid(), record.getVisitStatus());
+        ContactFormFollowUpNavigationCapsule dataCapsule = (ContactFormFollowUpNavigationCapsule)new ContactFormFollowUpNavigationCapsule(getContext(),
+                record.getUuid(), record.getVisitStatus()).setContactUuid(recordUuid);
         ContactEditFollowUpInfoActivity.goToActivity(getActivity(), dataCapsule);
     }
 
-    public static ContactEditFollowUpVisitListFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule)
+    public static ContactEditFollowUpVisitListFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule, Contact activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, ContactEditFollowUpVisitListFragment.class, capsule);
+        return newInstance(activityCommunicator, ContactEditFollowUpVisitListFragment.class, capsule, activityRootData);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (onResumeTask != null && !onResumeTask.isCancelled())
+            onResumeTask.cancel(true);
     }
 
 }

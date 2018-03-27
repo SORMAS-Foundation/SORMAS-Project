@@ -6,17 +6,16 @@ import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
+import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.util.NavigationHelper;
-
-import de.symeda.sormas.api.caze.InvestigationStatus;
 
 /**
  * Created by Orson on 16/02/2018.
@@ -26,7 +25,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
  * sampson.orson@technologyboard.org
  */
 
-public class CaseEditTaskInfoActivity extends BaseEditActivity {
+public class CaseEditTaskInfoActivity extends BaseEditActivity<Task> {
 
     private final String DATA_XML_PAGE_MENU = null;
 
@@ -37,6 +36,9 @@ public class CaseEditTaskInfoActivity extends BaseEditActivity {
     private String recordUuid = null;
     private InvestigationStatus pageStatus = null;
     private BaseEditActivityFragment activeFragment = null;
+
+    private MenuItem saveMenu = null;
+    private MenuItem addMenu = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -69,11 +71,21 @@ public class CaseEditTaskInfoActivity extends BaseEditActivity {
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment() throws IllegalAccessException, InstantiationException {
+    protected Task getActivityRootData(String recordUuid) {
+        return DatabaseHelper.getTaskDao().queryUuid(recordUuid);
+    }
+
+    @Override
+    protected Task getActivityRootDataIfRecordUuidNull() {
+        return null;
+    }
+
+    @Override
+    public BaseEditActivityFragment getActiveEditFragment(Task activityRootData) throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(
                     CaseEditTaskInfoActivity.this, recordUuid, pageStatus);
-            activeFragment = CaseEditTaskInfoFragment.newInstance(this, dataCapsule);
+            activeFragment = CaseEditTaskInfoFragment.newInstance(this, dataCapsule, activityRootData);
         }
 
         return activeFragment;
@@ -105,8 +117,8 @@ public class CaseEditTaskInfoActivity extends BaseEditActivity {
     }
 
     @Override
-    public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-        return false;
+    protected BaseEditActivityFragment getNextFragment(LandingPageMenuItem menuItem, Task activityRootData) {
+        return null;
     }
 
     @Override
@@ -114,13 +126,12 @@ public class CaseEditTaskInfoActivity extends BaseEditActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.edit_action_menu, menu);
 
-        MenuItem saveMenu = menu.findItem(R.id.action_save);
-        MenuItem addMenu = menu.findItem(R.id.action_new);
-
-        saveMenu.setVisible(true);
-        addMenu.setVisible(false);
+        saveMenu = menu.findItem(R.id.action_save);
+        addMenu = menu.findItem(R.id.action_new);
 
         saveMenu.setTitle(R.string.action_save_task);
+
+        processActionbarMenu();
 
         return true;
     }
@@ -174,6 +185,17 @@ public class CaseEditTaskInfoActivity extends BaseEditActivity {
     @Override
     protected int getActivityTitle() {
         return R.string.heading_level4_1_case_task;
+    }
+
+    private void processActionbarMenu() {
+        if (activeFragment == null)
+            return;
+
+        if (saveMenu != null)
+            saveMenu.setVisible(activeFragment.showSaveAction());
+
+        if (addMenu != null)
+            addMenu.setVisible(activeFragment.showAddAction());
     }
 
     public static void goToActivity(Context fromActivity, TaskFormNavigationCapsule dataCapsule) {

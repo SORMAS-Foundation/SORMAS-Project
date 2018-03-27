@@ -19,7 +19,10 @@ import android.widget.SpinnerAdapter;
 
 import java.util.List;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 
 /**
  * Created by Orson on 29/01/2018.
@@ -150,6 +153,8 @@ public class TeboSpinner extends EditTeboPropertyField<Object> implements IContr
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
+        ViewGroup.LayoutParams param = spnControlInput.getLayoutParams();
+
         if (isSlim()) {
             float slimControlTextSize = getContext().getResources().getDimension(R.dimen.slimControlTextSize);
             //float width = spnControlInput.getWidth();
@@ -159,7 +164,6 @@ public class TeboSpinner extends EditTeboPropertyField<Object> implements IContr
             int paddingLeft = spnControlInput.getPaddingLeft();
             int paddingRight = spnControlInput.getPaddingRight();
 
-            ViewGroup.LayoutParams param = spnControlInput.getLayoutParams();
 
             param.height = (int)height;
 
@@ -167,6 +171,10 @@ public class TeboSpinner extends EditTeboPropertyField<Object> implements IContr
             //spnControlInput.setLayoutParams(param);
             //spnControlInput.setMinimumHeight(DisplayMetricsHelper.dpToPixels(getContext(), heightInPixel));
             //spnControlInput.text  .setTextSize(TypedValue.COMPLEX_UNIT_PX, slimControlTextSize);
+        } else {
+            param.height = getContext().getResources().getDimensionPixelSize(R.dimen.maxSpinnerHeight);
+            //spnControlInput.hei .setHeight(getContext().getResources().getDimensionPixelSize(R.dimen.maxControlHeight));
+            //spnControlInput.setMaxHeight(getContext().getResources().getDimensionPixelSize(R.dimen.maxControlHeight));
         }
 
         if (this.mOnTeboSpinnerAttachedToWindowListener != null)
@@ -209,6 +217,13 @@ public class TeboSpinner extends EditTeboPropertyField<Object> implements IContr
         //setSelectedItem(value);
     }
 
+    public void setValue(Object value, boolean selectValue) {
+        this.valueOnBind = value;
+
+        if (selectValue)
+            setSelectedItem(value);
+    }
+
     @Override
     public Object getValue() {
         if (this.valueOnBind == null && spnControlInput.getSelectedItem() == null)
@@ -234,9 +249,20 @@ public class TeboSpinner extends EditTeboPropertyField<Object> implements IContr
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
-        spnControlInput.setEnabled(enabled);
-        lblControlLabel.setEnabled(enabled);
 
+        //spnControlInput.getSelectedView().setEnabled(false);
+        //spnControlInput.getRootView().setEnabled(false);
+
+        spnControlInput.setEnabled(enabled);
+        spnControlInput.setClickable(enabled);
+        spnControlInput.setFocusable(enabled);
+
+        lblControlLabel.setEnabled(enabled);
+        lblControlLabel.setClickable(enabled);
+        lblControlLabel.setFocusable(enabled);
+
+        //invalidate();
+        //requestLayout();
     }
 
     @Override
@@ -258,7 +284,7 @@ public class TeboSpinner extends EditTeboPropertyField<Object> implements IContr
     }
 
     @Override
-    public void changeVisualState(VisualState state) {
+    public void changeVisualState(VisualState state, UserRight editOrCreateUserRight) {
         int labelColor = getResources().getColor(state.getLabelColor(VisualStateControl.SPINNER));
         Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControl.SPINNER));
 
@@ -282,9 +308,10 @@ public class TeboSpinner extends EditTeboPropertyField<Object> implements IContr
         }
 
         if (state == VisualState.NORMAL || state == VisualState.ENABLED) {
+            User user = ConfigProvider.getUser();
             lblControlLabel.setTextColor(labelColor);
             setBackground(drawable);
-            spnControlInput.setEnabled(true);
+            spnControlInput.setEnabled(true && (editOrCreateUserRight != null)? user.hasUserRight(editOrCreateUserRight) : true);
             return;
         }
     }
@@ -382,6 +409,9 @@ public class TeboSpinner extends EditTeboPropertyField<Object> implements IContr
             } else {
                 setSelectedItem(config.getSelectedValue());
             }
+
+            VisualState visualState = config.getInitVisualState();
+            changeVisualState(visualState == null? VisualState.NORMAL : visualState);
         }
 
         if (this.parent != null) {
@@ -417,6 +447,9 @@ public class TeboSpinner extends EditTeboPropertyField<Object> implements IContr
                     nSelf.spinnerFieldListener.onItemSelected(nSelf.spnControlInput,
                             nSelf.spnControlInput.findViewById(R.id.spinnerText),
                             nSelfItemPosition, nSelfItemPosition);
+
+                    VisualState visualState = nConfig.getInitVisualState();
+                    changeVisualState(visualState == null? VisualState.NORMAL : visualState);
                 }
 
                 @Override
@@ -504,7 +537,7 @@ public class TeboSpinner extends EditTeboPropertyField<Object> implements IContr
             return;
         }
 
-        changeVisualState(VisualState.NORMAL);
+        //changeVisualState(VisualState.NORMAL);
 
         spinnerAdapter = new TeboSpinnerAdapter(
                 this,
@@ -654,6 +687,8 @@ public class TeboSpinner extends EditTeboPropertyField<Object> implements IContr
 
         List<Item> getDataSource(Object parentValue);
 
+        VisualState getInitVisualState();
+
         void onItemSelected(TeboSpinner view, Object value, int position, long id);
 
         void onNothingSelected(AdapterView<?> parent);
@@ -664,6 +699,8 @@ public class TeboSpinner extends EditTeboPropertyField<Object> implements IContr
         Object getSelectedValue();
 
         List<Item> getDataSource(Object parentValue);
+
+        VisualState getInitVisualState();
     }
 
     // </editor-fold>

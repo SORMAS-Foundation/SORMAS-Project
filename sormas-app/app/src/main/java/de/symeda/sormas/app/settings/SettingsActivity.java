@@ -14,9 +14,10 @@ import de.symeda.sormas.app.BaseLandingActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.dialog.UserReportDialog;
+import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationPosition;
 import de.symeda.sormas.app.core.notification.NotificationType;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.AppUpdateController;
 
 /**
@@ -29,6 +30,8 @@ public class SettingsActivity extends BaseLandingActivity {
     //TODO: Create an abstract method to set root layout
     //TODO: Create an interface to set Activity Title
     //TODO: Method to access the Form
+
+    //TODO: Fix issues when you change address to api (works but behave strangely)
 
     private SettingsFragment settingsFragment;
 
@@ -69,7 +72,12 @@ public class SettingsActivity extends BaseLandingActivity {
             // Report problem button
             case R.id.action_report:
                 UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
-                AlertDialog dialog = userReportDialog.show();
+                userReportDialog.show(new ICallback<AlertDialog>() {
+                    @Override
+                    public void result(AlertDialog result) {
+
+                    }
+                });
                 return true;
 
             case R.id.action_save:

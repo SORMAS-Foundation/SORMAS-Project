@@ -221,17 +221,21 @@ public class TeboTextRead extends TeboPropertyField<String> implements ITextCont
 
         if (formStyle) {
             Drawable background = getResources().getDrawable(R.drawable.background_control_text_read_form_style);
-            int paddingTop = getResources().getDimensionPixelSize(R.dimen.textViewTopPadding);
-            int paddingBottom = getResources().getDimensionPixelSize(R.dimen.textViewBottomPadding);
+            int paddingTop = getResources().getDimensionPixelSize(R.dimen.teboTextReadVerticalPadding);
+            int paddingBottom = getResources().getDimensionPixelSize(R.dimen.teboTextReadVerticalPadding);
+            //int paddingTop = 0;
+            //int paddingBottom = 0;
             int paddingRight = getResources().getDimensionPixelSize(R.dimen.textViewRightPadding);
             int paddingLeft = getResources().getDimensionPixelSize(R.dimen.textViewLeftPadding);
 
             txtControlInput.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
 
+            updateControlHeight();
             setBackground(background);
 
             lblControlLabel.setIncludeFontPadding(true);
             txtControlInput.setIncludeFontPadding(true);
+
         } else {
             int backgroundColor = getResources().getColor(R.color.controlReadTextViewBackground);
             setBackground(null);
@@ -259,6 +263,23 @@ public class TeboTextRead extends TeboPropertyField<String> implements ITextCont
         setSingleLine(singleLine);
     }
 
+    private void updateControlHeight() {
+        if(!formStyle)
+            return;
+
+        if (isSlim()) {
+            int heightInPixel = getContext().getResources().getDimensionPixelSize(R.dimen.slimControlHeight);
+            txtControlInput.setHeight(heightInPixel);
+            txtControlInput.setMinHeight(heightInPixel);
+            txtControlInput.setMaxHeight(heightInPixel);
+        } else {
+            int heightInPixel = getContext().getResources().getDimensionPixelSize(R.dimen.maxControlHeight);
+            txtControlInput.setHeight(heightInPixel);
+            txtControlInput.setMinHeight(heightInPixel);
+            txtControlInput.setMaxHeight(heightInPixel);
+        }
+    }
+
     // <editor-fold defaultstate="collapsed" desc="Overriden from Base">
 
     @Override
@@ -271,6 +292,8 @@ public class TeboTextRead extends TeboPropertyField<String> implements ITextCont
         txtControlInput.setBackgroundResource(resid);
 
         txtControlInput.setPadding(pl, pt, pr, pb);
+
+        updateControlHeight();
     }
 
     @Override
@@ -283,6 +306,8 @@ public class TeboTextRead extends TeboPropertyField<String> implements ITextCont
         txtControlInput.setBackground(background);
 
         txtControlInput.setPadding(pl, pt, pr, pb);
+
+        updateControlHeight();
     }
 
     @Override
@@ -342,7 +367,7 @@ public class TeboTextRead extends TeboPropertyField<String> implements ITextCont
             val = stringValue;
             textField.setValue(val);
 
-            if (valueFormat != null && valueFormat.trim() != "") {
+            if (valueFormat != null && valueFormat.trim() != "" && appendValue != null && !appendValue.isEmpty()) {
                 textField.updateControl(String.format(valueFormat, stringValue, appendValue));
             } else {
                 textField.updateControl(val);

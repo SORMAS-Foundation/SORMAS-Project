@@ -10,7 +10,7 @@ import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.SearchBy;
-import de.symeda.sormas.app.sample.ShipmentStatus;
+import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.sample.landing.SampleLandingToListCapsule;
 import de.symeda.sormas.app.util.NavigationHelper;
 

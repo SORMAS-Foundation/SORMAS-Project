@@ -2,7 +2,6 @@ package de.symeda.sormas.app.settings;
 
 import android.accounts.AuthenticatorException;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -23,6 +22,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.component.dialog.TeboProgressDialog;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -128,7 +128,12 @@ public class SettingsFragment extends BaseLandingActivityFragment {
         }
 
         if (RetroProvider.isConnected()) {
-            progressDialog.show();
+            progressDialog.show(new ICallback<AlertDialog>() {
+                @Override
+                public void result(AlertDialog result) {
+
+                }
+            });
             //binding.configProgressBar.setVisibility(View.VISIBLE);
 
             SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.CompleteAndRepull, getContext(), new SyncCallback() {

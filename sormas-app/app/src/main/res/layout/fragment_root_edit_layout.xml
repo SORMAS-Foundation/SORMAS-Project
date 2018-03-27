@@ -6,10 +6,12 @@
 
     <data></data>
 
-    <ScrollView
+    <!--android:fillViewport="true"-->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:orientation="vertical"
+        >
 
         <ViewStub android:id="@+id/vsChildFragmentFrame"
             android:inflatedId="@+id/childFragmentFrame"
@@ -17,6 +19,6 @@
             android:layout_height="wrap_content"
             />
 
-    </ScrollView>
+    </LinearLayout>
 </layout>
 

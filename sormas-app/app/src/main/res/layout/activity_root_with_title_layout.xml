@@ -67,7 +67,7 @@
                             android:background="@color/activityBackground"
                             />
                         <!--android:progressDrawable="@drawable/background_progress_bar"-->
-                        <ProgressBar
+                        <!--<ProgressBar
                             android:id="@+id/preloader"
                             style="?android:attr/progressBarStyleHorizontal"
                             android:layout_gravity="center_horizontal"
@@ -76,6 +76,20 @@
                             app:layout_widthPercent="@dimen/preloaderWidthPercent"
                             app:layout_heightPercent="@dimen/preloaderHeightPercent"
                             android:scaleY="@dimen/preloaderScaleY"
+                            />-->
+                        <!--@dimen/preloaderHeightPercent
+                            android:scaleY="@dimen/preloaderScaleY"
+                            android:scaleY="@dimen/preloaderScaleY"
+                            android:scaleX="@dimen/preloaderScaleY"
+                        -->
+                        <ProgressBar
+                            android:id="@+id/preloader"
+                            android:layout_gravity="center"
+                            android:indeterminateOnly="true"
+                            android:visibility="gone"
+                            app:layout_widthPercent="@dimen/preloaderWidthPercent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="@dimen/preloaderMinHeight"
                             />
                     </android.support.percent.PercentFrameLayout>
 

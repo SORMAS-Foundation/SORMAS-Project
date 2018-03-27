@@ -29,6 +29,7 @@ import de.symeda.sormas.app.util.UncaughtExceptionParser;
 public class SormasApplication extends Application implements Application.ActivityLifecycleCallbacks {
     private static final String PROPERTY_ID = "UA-98128295-1";
 
+    //private AsyncTask loaderTask;
     private Tracker tracker;
 
     synchronized public Tracker getDefaultTracker() {
@@ -116,6 +117,7 @@ public class SormasApplication extends Application implements Application.Activi
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-
+        /*if (loaderTask != null && !loaderTask.isCancelled())
+            loaderTask.cancel(true);*/
     }
 }

@@ -22,10 +22,10 @@ public class TaskExecutor<ADO1 extends AbstractDomainObject, ADO2 extends Abstra
     }
 
     @Override
-    public AsyncTask search(ITaskResultCallback resultCallback) {
+    public AsyncTask execute(ITaskResultCallback resultCallback) {
         try {
             if (this.jobDefinition == null){
-                resultCallback.searchResult(new BoolResult(false, "No job execute to execute"), TaskResultHolder.EMPTY);
+                resultCallback.taskResult(new BoolResult(false, "No job execute to execute"), TaskResultHolder.EMPTY);
                 return null;
             }
 
@@ -33,7 +33,7 @@ public class TaskExecutor<ADO1 extends AbstractDomainObject, ADO2 extends Abstra
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         } catch (Exception e) {
-            resultCallback.searchResult(new BoolResult(false, e.getMessage()), TaskResultHolder.EMPTY);
+            resultCallback.taskResult(new BoolResult(false, e.getMessage()), TaskResultHolder.EMPTY);
         }
 
         return task;

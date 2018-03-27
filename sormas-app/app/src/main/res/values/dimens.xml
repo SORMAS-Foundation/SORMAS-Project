@@ -108,6 +108,7 @@
 
 
     <!-- Controls -->
+    <dimen name="swithControlTextSize">14sp</dimen>
     <dimen name="slimControlTextSize">14sp</dimen>
     <dimen name="firstControlTopMargin">16dp</dimen>
     <dimen name="loginActivityFirstControlTopMargin">16dp</dimen>
@@ -168,12 +169,17 @@
 
 
     <!-- Text View Dimensions -->
+    <!-- Ractify -->
+    <dimen name="maxSwitchButtonHeight">42dp</dimen>
+    <dimen name="maxSpinnerHeight">48dp</dimen>
+    <dimen name="maxControlHeight">48dp</dimen>
     <dimen name="textViewHeight">48dp</dimen>
     <dimen name="textViewRadius">@dimen/defaultControlRadius</dimen>
     <dimen name="textViewLeftPadding">@dimen/defaultControlHorizontalPadding</dimen>
     <dimen name="textViewRightPadding">@dimen/defaultControlHorizontalPadding</dimen>
     <dimen name="textViewTopPadding">@dimen/defaultControlVerticalPadding</dimen>
     <dimen name="textViewBottomPadding">@dimen/defaultControlVerticalPadding</dimen>
+    <dimen name="teboTextReadVerticalPadding">14dp</dimen>
     <dimen name="slimTextViewTopPadding">8dp</dimen>
     <dimen name="slimTextViewBottomPadding">8dp</dimen>
     <dimen name="textViewBorder">@dimen/defaultControlStrokeWidth</dimen>
@@ -362,6 +368,7 @@
 
     <dimen name="sectionListRowStrokeWidth">1dp</dimen>
     <dimen name="sectionListRowRadius">@dimen/defaultControlRadius</dimen>
+    <dimen name="sectionListRowSelectedStrokeSize">1.5dp</dimen>
 
 
 
@@ -461,8 +468,9 @@
     <dimen name="dialogHeadingTextSize">20sp</dimen>
 
 
-    <dimen name="preloaderWidthPercent">30%</dimen>
+    <dimen name="preloaderWidthPercent">100%</dimen>
     <dimen name="preloaderHeightPercent">100%</dimen>
     <dimen name="preloaderScaleY">2</dimen>
+    <dimen name="preloaderMinHeight">150dp</dimen>
 
 </resources>

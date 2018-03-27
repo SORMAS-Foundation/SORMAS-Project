@@ -21,6 +21,8 @@ import android.widget.RadioGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.StateDrawableBuilder;
@@ -48,9 +50,6 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
     private static final int BUTTON_4 = 3;
 
     private static final float DEFAULT_SCALE = 1.0f;
-
-    private static final int CHECKED_STATE_COLOR = SormasColor.CTRL_FOCUS;
-    private static final int UNCHECKED_STATE_COLOR = SormasColor.CTRL_NORMAL;
 
     private static final String CAPTION_FONT_FAMILY_NAME = "sans-serif-medium";
     private static final float DEFAULT_TEXT_SIZE = 23f;
@@ -157,13 +156,13 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
             }
         }
 
-        normalDrawable = TeboSwitchState.NORMAL.getDefaultDrawable();
-        pressedDrawable = TeboSwitchState.PRESSED.getDefaultDrawable();
-        checkedDrawable = TeboSwitchState.CHECKED.getDefaultDrawable();
+        normalDrawable = TeboSwitchState.NORMAL.getDefaultDrawable(false);
+        pressedDrawable = TeboSwitchState.PRESSED.getDefaultDrawable(false);
+        checkedDrawable = TeboSwitchState.CHECKED.getDefaultDrawable(false);
 
-        normalDrawableLast = TeboSwitchState.NORMAL.getDrawableForLastPosition();
-        pressedDrawableLast = TeboSwitchState.PRESSED.getDrawableForLastPosition();
-        checkedDrawableLast = TeboSwitchState.CHECKED.getDrawableForLastPosition();
+        normalDrawableLast = TeboSwitchState.NORMAL.getDrawableForLastPosition(false);
+        pressedDrawableLast = TeboSwitchState.PRESSED.getDrawableForLastPosition(false);
+        checkedDrawableLast = TeboSwitchState.CHECKED.getDrawableForLastPosition(false);
     }
 
     @Override
@@ -178,11 +177,6 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
         super.onFinishInflate();
 
         radioGroup = (RadioGroup) this.findViewById(R.id.rbTeboSwitch);
-
-
-
-
-
         radioGroup.setOrientation(orientation);
 
         /*radioGroup.setNextFocusLeftId(getNextFocusLeft());
@@ -323,7 +317,13 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
         super.setEnabled(enabled);
         radioGroup.setEnabled(enabled);
         radioGroup.setFocusable(enabled);
+        radioGroup.setClickable(enabled);
+
         lblControlLabel.setEnabled(enabled);
+        lblControlLabel.setFocusable(enabled);
+        lblControlLabel.setClickable(enabled);
+
+        syncChildViewsEnableState();
     }
 
     @Override
@@ -347,7 +347,7 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
 
     // <editor-fold defaultstate="collapsed" desc="Error & Visual State">
 
-    public void setStateColor(int checkedColor, int uncheckedColor) {
+    public void setStateColorBackground(int checkedColor, int uncheckedColor) {
         int[][] states = new int[][] {
                 new int[] {-android.R.attr.state_checked},
                 new int[] {android.R.attr.state_checked},
@@ -358,41 +358,87 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
                 checkedColor,
         };
 
+        ColorStateList colorStateListBackground = new ColorStateList(states, thumbColors);
+        radioGroup.setBackgroundTintList(colorStateListBackground);
+        for (int i = 0; i < radioGroup.getChildCount(); i++) {
+            radioGroup.getChildAt(i).setBackgroundTintList(colorStateListBackground);
+        }
+    }
 
-        radioGroup.setBackgroundTintList(new ColorStateList(states, thumbColors));
+    public void setStateColorText(ColorStateList colorStateListText) {
+        /*int[][] states = new int[][] {
+                new int[] {-android.R.attr.state_checked},
+                new int[] {android.R.attr.state_checked},
+        };
+
+        int[] thumbColors = new int[] {
+                uncheckedColor,
+                checkedColor,
+        };
+
+        ColorStateList colorStateListText = new ColorStateList(states, thumbColors);*/
+        for (int i = 0; i < radioGroup.getChildCount(); i++) {
+            ((RadioButton)radioGroup.getChildAt(i)).setTextColor(colorStateListText);
+        }
     }
 
     @Override
-    public void changeVisualState(VisualState state) {
-        int labelColor = getResources().getColor(state.getLabelColor(VisualStateControl.CHECKBOX));
-        Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControl.CHECKBOX));
+    public void changeVisualState(VisualState state, UserRight editOrCreateUserRight) {
+        int labelColor = getResources().getColor(state.getLabelColor(VisualStateControl.SWITCH));
+        Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControl.SWITCH));
 
         if (state == VisualState.DISABLED) {
+            changeRadioButtonState(false);
+            Drawable disabledStateDrawable = getResources().getDrawable(R.drawable.control_switch_background_border_disabled);
             lblControlLabel.setTextColor(labelColor);
-            setStateColor(labelColor, labelColor);
-            //setBackground(drawable);
+            radioGroup.setBackground(disabledStateDrawable.mutate());
+            setStateColorText(textColor);
             setEnabled(false);
             return;
         }
 
         if (state == VisualState.ERROR) {
+            changeRadioButtonState(true);
+            Drawable errorStateDrawable = getResources().getDrawable(R.drawable.control_switch_background_border_error);
             lblControlLabel.setTextColor(labelColor);
-            setStateColor(labelColor, labelColor);
+            radioGroup.setBackground(errorStateDrawable.mutate());
+            ColorStateList textColorError = getResources().getColorStateList(R.color.control_switch_color_selector_error);
+            setStateColorText(textColorError);
+
+
             return;
         }
 
         if (state == VisualState.FOCUSED) {
+            changeRadioButtonState(false);
             lblControlLabel.setTextColor(labelColor);
-            setStateColor(CHECKED_STATE_COLOR, UNCHECKED_STATE_COLOR);
+            //setStateColorBackground(SormasColor.BLUE, SormasColor.TRANSPARENT);
+            radioGroup.setBackground(background.mutate());
+            setStateColorText(textColor);
             return;
         }
 
 
         if (state == VisualState.NORMAL || state == VisualState.ENABLED) {
+            changeRadioButtonState(false);
             lblControlLabel.setTextColor(labelColor);
-            setStateColor(CHECKED_STATE_COLOR, UNCHECKED_STATE_COLOR);
+            radioGroup.setBackground(background.mutate());
+            setStateColorText(textColor);
             setEnabled(true);
             return;
+        }
+    }
+
+    private void changeRadioButtonState(boolean errorState) {
+        int lastIndex = radioGroup.getChildCount() - 1;
+        for (int i = 0; i < radioGroup.getChildCount(); i++) {
+            RadioButton button = (RadioButton)radioGroup.getChildAt(i);
+
+            if (i != lastIndex)
+                button.setBackground(errorState ? getDefaultButtonDrawableError() : getDefaultButtonDrawable());
+
+            if (i == lastIndex)
+                button.setBackground(errorState ?  getLastButtonDrawableError() : getLastButtonDrawable());
         }
     }
 
@@ -507,6 +553,14 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
         this.defaultValue = defaultValue;
     }
 
+    private void syncChildViewsEnableState() {
+        for (int i = 0; i < radioGroup.getChildCount(); i++) {
+            radioGroup.getChildAt(i).setEnabled(radioGroup.isEnabled());
+            radioGroup.getChildAt(i).setFocusable(radioGroup.isEnabled());
+            radioGroup.getChildAt(i).setClickable(radioGroup.isEnabled());
+        }
+    }
+
     private void addItem(int index, int lastIndex, Item item) {
         //TODO: Orson Watchout
         /*if(item.getValue() == null)
@@ -516,6 +570,9 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
         final RadioButton button = createRadioButton(index, lastIndex, item);
         radioGroup.addView(button);
         radioGroupElements.add(item.getValue());
+
+        //Enable or Disable children
+        syncChildViewsEnableState();
     }
 
     @NonNull
@@ -542,17 +599,30 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
             paddingTop = getContext().getResources().getDimensionPixelSize(R.dimen.slimTextViewTopPadding);
             paddingBottom = getContext().getResources().getDimensionPixelSize(R.dimen.slimTextViewBottomPadding);
 
-            button.setHeight(getContext().getResources().getDimensionPixelSize(R.dimen.slimControlHeight));
+            int heightInPixel = getContext().getResources().getDimensionPixelSize(R.dimen.slimControlHeight);
+            button.setHeight(heightInPixel);
+            button.setMinHeight(heightInPixel);
+            button.setMaxHeight(heightInPixel);
+        } else {
+            textSize = getContext().getResources().getDimension(R.dimen.swithControlTextSize);
+            paddingTop = 0;
+            paddingBottom = 0;
+
+            int heightInPixel = getContext().getResources().getDimensionPixelSize(R.dimen.maxSwitchButtonHeight);
+            button.setHeight(heightInPixel);
+            button.setMinHeight(heightInPixel);
+            button.setMaxHeight(heightInPixel);
         }
 
         button.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
 
         //Set button background
         if (index != lastIndex)
-            button.setBackground(getDefaultButtonDrawable());
+            button.setBackground(inErrorState() ? getDefaultButtonDrawableError() : getDefaultButtonDrawable());
 
         if (index == lastIndex)
-            button.setBackground(getLastButtonDrawable());
+            button.setBackground(inErrorState() ?  getLastButtonDrawableError() : getLastButtonDrawable());
+
 
         button.setButtonDrawable(null);
         button.setGravity(Gravity.CENTER);
@@ -571,7 +641,11 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
 
         //TODO: This is a hack
         if (abbrevUnknown) {
-            if (btnValue instanceof YesNoUnknown && btnKey == YesNoUnknown.UNKNOWN.toString()) {
+            if (btnValue instanceof YesNoUnknown && btnKey.equals(YesNoUnknown.UNKNOWN.toString())) {
+                btnKey = btnKey.substring(0, 3);
+            }
+
+            if (btnValue instanceof SymptomState && btnKey.equals(SymptomState.UNKNOWN.toString())) {
                 btnKey = btnKey.substring(0, 3);
             }
         }
@@ -584,18 +658,42 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
 
     private Drawable getDefaultButtonDrawable() {
         return new StateDrawableBuilder()
-                .setNormalDrawable(normalDrawable)
-                .setCheckedDrawable(checkedDrawable)
-                .setPressedDrawable(pressedDrawable)
+                .setCheckedAndDisabledDrawable(TeboSwitchState.DISABLED.getDefaultDrawable(false))
+                .setPressedDrawable(TeboSwitchState.PRESSED.getDefaultDrawable(false))
+                .setCheckedDrawable(TeboSwitchState.CHECKED.getDefaultDrawable(false))
+                .setNormalDrawable(TeboSwitchState.NORMAL.getDefaultDrawable(false))
                 .build();
+                //.setCheckedAndDisabledDrawable(TeboSwitchState.DISABLED.getDefaultDrawable(false))
     }
 
     private Drawable getLastButtonDrawable() {
         return new StateDrawableBuilder()
-                .setNormalDrawable(normalDrawableLast)
-                .setCheckedDrawable(checkedDrawableLast)
-                .setPressedDrawable(pressedDrawableLast)
+                .setCheckedAndDisabledDrawable(TeboSwitchState.DISABLED.getDrawableForLastPosition(false))
+                .setPressedDrawable(TeboSwitchState.PRESSED.getDrawableForLastPosition(false))
+                .setCheckedDrawable(TeboSwitchState.CHECKED.getDrawableForLastPosition(false))
+                .setNormalDrawable(TeboSwitchState.NORMAL.getDrawableForLastPosition(false))
                 .build();
+                //.setCheckedAndDisabledDrawable(TeboSwitchState.DISABLED.getDrawableForLastPosition(false))
+    }
+
+    private Drawable getDefaultButtonDrawableError() {
+        return new StateDrawableBuilder()
+                .setCheckedAndDisabledDrawable(TeboSwitchState.DISABLED.getDefaultDrawable(true))
+                .setPressedDrawable(TeboSwitchState.PRESSED.getDefaultDrawable(true))
+                .setCheckedDrawable(TeboSwitchState.CHECKED.getDefaultDrawable(true))
+                .setNormalDrawable(TeboSwitchState.NORMAL.getDefaultDrawable(true))
+                .build();
+                //.setCheckedAndDisabledDrawable(TeboSwitchState.DISABLED.getDefaultDrawable(true))
+    }
+
+    private Drawable getLastButtonDrawableError() {
+        return new StateDrawableBuilder()
+                .setCheckedAndDisabledDrawable(TeboSwitchState.DISABLED.getDrawableForLastPosition(true))
+                .setPressedDrawable(TeboSwitchState.PRESSED.getDrawableForLastPosition(true))
+                .setCheckedDrawable(TeboSwitchState.CHECKED.getDrawableForLastPosition(true))
+                .setNormalDrawable(TeboSwitchState.NORMAL.getDrawableForLastPosition(true))
+                .build();
+                //.setCheckedAndDisabledDrawable(TeboSwitchState.DISABLED.getDrawableForLastPosition(true))
     }
 
     public void removeAllItems() {

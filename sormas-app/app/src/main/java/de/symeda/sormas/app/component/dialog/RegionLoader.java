@@ -1,11 +1,10 @@
 package de.symeda.sormas.app.component.dialog;
 
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
-import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.util.DataUtils;
 
 /**
  * Created by Orson on 18/02/2018.
@@ -17,11 +16,12 @@ import de.symeda.sormas.app.backend.region.Region;
 
 public class RegionLoader implements IRegionLoader {
 
-    List<Region> regionList;
+    List<Item> regionList;
     private static RegionLoader sSoleInstance;
 
     private RegionLoader() {
-        this.regionList = new ArrayList<>(MemoryDatabaseHelper.REGION.getRegions(5));
+        this.regionList = DataUtils.toItems(DatabaseHelper.getRegionDao().queryForAll(), false);
+        //this.regionList = new ArrayList<>(MemoryDatabaseHelper.REGION.getRegions(5));
     }
 
     public static RegionLoader getInstance(){
@@ -33,7 +33,7 @@ public class RegionLoader implements IRegionLoader {
     }
 
     @Override
-    public List<Region> load() {
+    public List<Item> load() {
         return regionList;
     }
 }

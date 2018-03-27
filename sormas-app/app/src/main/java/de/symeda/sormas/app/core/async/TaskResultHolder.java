@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.core.BoolResult;
 
 /**
  * Created by Orson on 09/03/2018.
@@ -17,6 +18,8 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
 public class TaskResultHolder {
     public static final TaskResultHolder EMPTY = new EmptyTaskResultHolder();
+
+    private BoolResult resultStatus = BoolResult.TRUE;
 
     private List<Object> otherHolder;
     private List<AbstractDomainObject> itemHolder;
@@ -212,6 +215,12 @@ public class TaskResultHolder {
         }
     }
 
+    public BoolResult getResultStatus() {
+        return resultStatus;
+    }
 
+    public void setResultStatus(BoolResult resultStatus) {
+        this.resultStatus = resultStatus;
+    }
 
 }

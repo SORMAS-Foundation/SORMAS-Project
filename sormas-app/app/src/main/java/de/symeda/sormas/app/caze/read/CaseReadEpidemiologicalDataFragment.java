@@ -16,7 +16,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.component.dialog.SimpleDialog;
 import de.symeda.sormas.app.component.tagview.Tag;
 import de.symeda.sormas.app.core.BoolResult;
@@ -104,6 +104,13 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadActivityFragmen
 
     @Override
     public void onAfterLayoutBinding(FragmentCaseReadEpidLayoutBinding contentBinding) {
+
+    }
+
+    @Override
+    public void onPageResume(FragmentCaseReadEpidLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
 
     }
 
@@ -199,5 +206,10 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadActivityFragmen
                 AlertDialog dialog = simpleDialog.show();
             }
         };
+    }
+
+    @Override
+    public boolean includeFabNonOverlapPadding() {
+        return false;
     }
 }

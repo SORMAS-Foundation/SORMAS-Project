@@ -9,12 +9,16 @@ import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.contact.ContactFormFollowUpNavigationCapsule;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentContactEditVisitInfoLayoutBinding;
+import de.symeda.sormas.app.shared.ContactFormFollowUpNavigationCapsule;
 
 /**
  * Created by Orson on 13/02/2018.
@@ -24,10 +28,12 @@ import de.symeda.sormas.app.databinding.FragmentContactEditVisitInfoLayoutBindin
  * sampson.orson@technologyboard.org
  */
 
-public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragment<FragmentContactEditVisitInfoLayoutBinding, Visit> {
+public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragment<FragmentContactEditVisitInfoLayoutBinding, Visit, Visit> {
 
+    private AsyncTask onResumeTask;
     private AsyncTask jobTask;
     private String recordUuid;
+    private String contactUuid = null;
     private VisitStatus pageStatus;
     private Visit record;
 
@@ -37,6 +43,7 @@ public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragme
 
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
+        SaveContactUuidState(outState, contactUuid);
     }
 
     @Override
@@ -46,6 +53,7 @@ public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragme
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
+        contactUuid = getContactUuidArg(arguments);
         pageStatus = (VisitStatus) getPageStatusArg(arguments);
     }
 
@@ -62,15 +70,17 @@ public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragme
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            if (recordUuid == null || recordUuid.isEmpty()) {
-                resultHolder.forItem().add(DatabaseHelper.getVisitDao().build());
-            } else {
-                resultHolder.forItem().add(DatabaseHelper.getVisitDao().queryUuid(recordUuid));
+            Visit visit = getActivityRootData();
+
+            if (visit != null) {
+                if (visit.isUnreadOrChildUnread())
+                    DatabaseHelper.getVisitDao().markAsRead(visit);
             }
+
+            resultHolder.forItem().add(visit);
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
-            //Item Data
             if (itemIterator.hasNext())
                 record =  itemIterator.next();
 
@@ -92,16 +102,93 @@ public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragme
     }
 
     @Override
+    protected void updateUI(FragmentContactEditVisitInfoLayoutBinding contentBinding, Visit visit) {
+
+    }
+
+    @Override
+    public void onPageResume(FragmentContactEditVisitInfoLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    Visit visit = getActivityRootData();
+
+                    if (visit != null) {
+                        if (visit.isUnreadOrChildUnread())
+                            DatabaseHelper.getVisitDao().markAsRead(visit);
+                    }
+
+                    resultHolder.forItem().add(visit);
+                }
+            });
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+
+                    if (itemIterator.hasNext())
+                        record = itemIterator.next();
+
+                    if (record != null)
+                        requestLayoutRebind();
+                    else {
+                        getActivity().finish();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
+
+    }
+
+    @Override
     public int getEditLayout() {
         return R.layout.fragment_contact_edit_visit_info_layout;
+    }
+
+    @Override
+    public boolean showSaveAction() {
+        return true;
+    }
+
+    @Override
+    public boolean showAddAction() {
+        return false;
     }
 
     private void setupCallback() {
 
     }
 
-    public static ContactEditFollowUpVisitInfoFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormFollowUpNavigationCapsule capsule)
+    public static ContactEditFollowUpVisitInfoFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormFollowUpNavigationCapsule capsule, Visit activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, ContactEditFollowUpVisitInfoFragment.class, capsule);
+        return newInstance(activityCommunicator, ContactEditFollowUpVisitInfoFragment.class, capsule, activityRootData);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (onResumeTask != null && !onResumeTask.isCancelled())
+            onResumeTask.cancel(true);
     }
 }

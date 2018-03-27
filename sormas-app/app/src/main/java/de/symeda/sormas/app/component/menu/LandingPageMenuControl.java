@@ -14,8 +14,6 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.NotImplementedException;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -23,6 +21,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import javax.xml.parsers.ParserConfigurationException;
+
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.core.NotImplementedException;
 
 
 /**
@@ -296,7 +297,7 @@ public class LandingPageMenuControl extends LinearLayout {
     }
 
 
-    private void markActiveMenuItem(LandingPageMenuItem menuItem) {
+    public void markActiveMenuItem(LandingPageMenuItem menuItem) {
         for(LandingPageMenuItem m: menuList) {
             m.setActive(false);
         }

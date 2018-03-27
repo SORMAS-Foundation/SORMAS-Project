@@ -19,7 +19,7 @@ import de.symeda.sormas.app.component.TeboSwitch;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.databinding.RowEditAnimalContactListItemLayoutBinding;
-import de.symeda.sormas.app.event.edit.OnSetBindingVariableListener;
+import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -178,15 +178,15 @@ public class AnimalContactFormListAdapter  extends DataBoundAdapter<RowEditAnima
 
     private void setLocalBindingVariable(final ViewDataBinding binding, String layoutName, AnimalContact animalContactRecord) {
         if (!binding.setVariable(BR.data, animalContactRecord)) {
-            Log.w(TAG, "There is no variable 'data' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
 
         if (!binding.setVariable(BR.yesNoUnknownClass, YesNoUnknown.class)) {
-            Log.w(TAG, "There is no variable 'yesNoUnknownClass' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'yesNoUnknownClass' in layout " + layoutName);
         }
 
         if (!binding.setVariable(BR.checkedCallback, checkedCallback)) {
-            Log.w(TAG, "There is no variable 'yesNoUnknownClass' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'yesNoUnknownClass' in layout " + layoutName);
         }
     }
 

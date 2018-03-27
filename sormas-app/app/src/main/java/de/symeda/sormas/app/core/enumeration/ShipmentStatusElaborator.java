@@ -3,7 +3,7 @@ package de.symeda.sormas.app.core.enumeration;
 import android.content.res.Resources;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.sample.ShipmentStatus;
+import de.symeda.sormas.app.shared.ShipmentStatus;
 
 /**
  * Created by Orson on 25/12/2017.

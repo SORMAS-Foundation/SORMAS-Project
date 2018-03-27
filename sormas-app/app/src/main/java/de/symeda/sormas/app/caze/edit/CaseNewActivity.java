@@ -1,23 +1,50 @@
 package de.symeda.sormas.app.caze.edit;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.component.dialog.SelectOrCreatePersonDialog;
+import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
+import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.NavigationHelper;
-
-import de.symeda.sormas.api.caze.InvestigationStatus;
 
 /**
  * Created by Orson on 15/02/2018.
@@ -27,23 +54,25 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
  * sampson.orson@technologyboard.org
  */
 
-public class CaseNewActivity extends BaseEditActivity {
+public class CaseNewActivity extends BaseEditActivity<Case> {
 
-    private final String DATA_XML_PAGE_MENU = null;
+    public static final String TAG = CaseNewActivity.class.getSimpleName();
 
-    private boolean showStatusFrame;
-    private boolean showTitleBar;
-    private boolean showPageMenu;
+    private AsyncTask createPersonTask;
+    private AsyncTask selectPersonTask;
+    private AsyncTask saveTask;
 
     private InvestigationStatus pageStatus = null;
     private String recordUuid = null;
-    private BaseEditActivityFragment activeFragment = null; //
+    private BaseEditActivityFragment activeFragment = null;
+
+    private MenuItem saveMenu = null;
+    private MenuItem addMenu = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -60,54 +89,32 @@ public class CaseNewActivity extends BaseEditActivity {
 
     @Override
     protected void initializeActivity(Bundle arguments) {
-        //filterStatus = (EventStatus) getFilterStatusArg(arguments);
         pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
-
-        this.showStatusFrame = true;
-        this.showTitleBar = true;
-        this.showPageMenu = false;
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment() throws IllegalAccessException, InstantiationException {
+    protected Case getActivityRootData(String recordUuid) {
+        return DatabaseHelper.getCaseDao().queryUuid(recordUuid);
+    }
+
+    @Override
+    protected Case getActivityRootDataIfRecordUuidNull() {
+        Person _person = DatabaseHelper.getPersonDao().build();
+        Case _case = DatabaseHelper.getCaseDao().build(_person);
+
+        return _case;
+    }
+
+    @Override
+    public BaseEditActivityFragment getActiveEditFragment(Case activityRootData) throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(CaseNewActivity.this,
                     recordUuid).setEditPageStatus(pageStatus);
-            activeFragment = CaseNewFragment.newInstance(this, dataCapsule);
+            activeFragment = CaseNewFragment.newInstance(this, dataCapsule, activityRootData);
         }
 
         return activeFragment;
-    }
-
-    @Override
-    public boolean showStatusFrame() {
-        return showStatusFrame;
-    }
-
-    @Override
-    public boolean showTitleBar() {
-        return showTitleBar;
-    }
-
-    @Override
-    public boolean showPageMenu() {
-        return showPageMenu;
-    }
-
-    @Override
-    public Enum getPageStatus() {
-        return pageStatus;
-    }
-
-    @Override
-    public String getPageMenuData() {
-        return DATA_XML_PAGE_MENU;
-    }
-
-    @Override
-    public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-        return false;
     }
 
     @Override
@@ -115,9 +122,12 @@ public class CaseNewActivity extends BaseEditActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.edit_action_menu, menu);
 
-        MenuItem editMenu = menu.findItem(R.id.action_save);
-        //editMenu.setVisible(false);
-        editMenu.setTitle(R.string.action_save_case);
+        saveMenu = menu.findItem(R.id.action_save);
+        addMenu = menu.findItem(R.id.action_new);
+
+        saveMenu.setTitle(R.string.action_save_case);
+
+        processActionbarMenu();
 
         return true;
     }
@@ -131,7 +141,7 @@ public class CaseNewActivity extends BaseEditActivity {
                 return true;
 
             case R.id.action_save:
-                //synchronizeChangedData();
+                saveData();
                 return true;
 
             case R.id.option_menu_action_sync:
@@ -170,12 +180,217 @@ public class CaseNewActivity extends BaseEditActivity {
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_level4_case_edit;
+        return R.string.heading_case_new;
+    }
+
+    private void saveData() {
+        if (activeFragment == null)
+            return;
+
+        final Case aCase = getStoredActivityRootData();
+        final Person person = aCase.getPerson();
+
+        if (aCase == null || person == null)
+            return;
+
+        //TODO: Validation
+        /*CaseValidator.clearErrorsForNewCase(binding);
+        if (!CaseValidator.validateNewCase(caze, binding)) {
+            return true;
+        }*/
+
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(person.getFirstName(), person.getLastName());
+                    resultHolder.forList().add(existingPersons);
+                }
+            });
+            saveTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    List<Person> existingPersons = new ArrayList<>();
+                    ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
+
+                    if (listIterator.hasNext())
+                        existingPersons = listIterator.next();
+
+                    if (existingPersons.size() > 0) {
+                        final SelectOrCreatePersonDialog personDialog = new SelectOrCreatePersonDialog(AbstractSormasActivity.getActiveActivity(), person, existingPersons);
+                        personDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                            @Override
+                            public void onOkClick(View v, Object item, View viewRoot) {
+                                personDialog.dismiss();
+
+                                //Select
+                                if (item instanceof Person) {
+                                    //TODO: Talk to Martin; we need to know this person's case info
+                                    /*Case caze = DatabaseHelper.getCaseDao().getByPersonAndDisease(_person, aCase.getDisease());
+                                    CaseDao caseDao;
+                                    caseDao.getByPersonAndDisease(_person, aCase.getDisease());*/
+
+                                    aCase.setPerson((Person)item);
+                                    savePersonAndCase(aCase);
+                                }
+
+                            }
+                        });
+
+                        personDialog.setOnCreateClickListener(new TeboAlertDialogInterface.CreateOnClickListener() {
+                            @Override
+                            public void onCreateClick(View v, Object item, View viewRoot) {
+                                personDialog.dismiss();
+
+                                if (item instanceof Person) {
+                                    aCase.setPerson((Person)item);
+                                    savePersonAndCase(aCase);
+                                }
+                            }
+                        });
+
+                        personDialog.setOnCancelClickListener(new TeboAlertDialogInterface.CancelOnClickListener() {
+
+                            @Override
+                            public void onCancelClick(View v, Object item, View viewRoot) {
+                                personDialog.dismiss();
+                            }
+                        });
+
+                        personDialog.show(null);
+                    } else {
+                        savePersonAndCase(aCase);
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
+
+    }
+
+    private void showCaseEditView(Case caze) {
+        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(),
+                caze.getUuid()).setEditPageStatus(caze.getInvestigationStatus());
+        CaseEditActivity.goToActivity(CaseNewActivity.this, dataCapsule);
+    }
+
+    private void savePersonAndCase(final Case caze) {
+
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                private PersonDao personDao;
+                private String saveUnsuccessful;
+
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    showPreloader();
+                    hideFragmentView();
+
+                    personDao = DatabaseHelper.getPersonDao();
+                    saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_case));
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    try {
+                        personDao.saveAndSnapshot(caze.getPerson());
+
+                        caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+                        caze.setInvestigationStatus(InvestigationStatus.PENDING);
+
+                        User user = ConfigProvider.getUser();
+                        caze.setReportingUser(user);
+                        if (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+                            caze.setSurveillanceOfficer(user);
+                        } else if (user.hasUserRole(UserRole.INFORMANT)) {
+                            caze.setSurveillanceOfficer(user.getAssociatedOfficer());
+                        }
+                        caze.setReportDate(new Date());
+
+                        Calendar calendar = Calendar.getInstance();
+                        String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
+                        caze.setEpidNumber(caze.getRegion().getEpidCode() != null ? caze.getRegion().getEpidCode() : ""
+                                + "-" + caze.getDistrict().getEpidCode() != null ? caze.getDistrict().getEpidCode() : ""
+                                + "-" + year + "-");
+
+                        CaseDao caseDao = DatabaseHelper.getCaseDao();
+                        caseDao.saveAndSnapshot(caze);
+                    } catch (DaoException e) {
+                        Log.e(getClass().getName(), "Error while trying to save case", e);
+                        resultHolder.setResultStatus(new BoolResult(false, saveUnsuccessful));
+                        ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
+                    }
+                }
+            });
+            createPersonTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    hidePreloader();
+                    showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    if (!resultStatus.isSuccess()) {
+                        NotificationHelper.showNotification(CaseNewActivity.this, NotificationType.ERROR, resultStatus.getMessage());
+                        return;
+                    } else {
+                        Resources r = getResources();
+                        NotificationHelper.showNotification(CaseNewActivity.this, NotificationType.SUCCESS, String.format(r.getString(R.string.snackbar_create_success), r.getString(R.string.entity_case)));
+                        showCaseEditView(caze);
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            hidePreloader();
+            showFragmentView();
+        }
+
+    }
+
+    private void processActionbarMenu() {
+        if (activeFragment == null)
+            return;
+
+        if (saveMenu != null)
+            saveMenu.setVisible(activeFragment.showSaveAction());
+
+        if (addMenu != null)
+            addMenu.setVisible(activeFragment.showAddAction());
     }
 
     public static <TActivity extends AbstractSormasActivity> void
     goToActivity(Context fromActivity, CaseFormNavigationCapsule dataCapsule) {
         BaseEditActivity.goToActivity(fromActivity, CaseNewActivity.class, dataCapsule);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (saveTask != null && !saveTask.isCancelled())
+            saveTask.cancel(true);
+
+        if (createPersonTask != null && !createPersonTask.isCancelled())
+            createPersonTask.cancel(true);
+
+        if (selectPersonTask != null && !selectPersonTask.isCancelled())
+            selectPersonTask.cancel(true);
     }
 
 }

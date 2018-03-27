@@ -106,21 +106,21 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
             beforeLayoutBindingAsyncReturn = false;
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
                 @Override
-                public void preExecute() {
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
                     getActivityCommunicator().showPreloader();
                     getActivityCommunicator().hideFragmentView();
                 }
 
 
                 @Override
-                public void execute(final TaskResultHolder resultHolder) {
+                public void execute(BoolResult resultStatus, final TaskResultHolder resultHolder) {
                     onBeforeLayoutBinding(savedInstanceState, resultHolder, null, false);
                 }
             });
 
-            jobTask = executor.search(new ITaskResultCallback() {
+            jobTask = executor.execute(new ITaskResultCallback() {
                 @Override
-                public void searchResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
                     getActivityCommunicator().hidePreloader();
                     getActivityCommunicator().showFragmentView();
 
@@ -150,6 +150,10 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         return rootView;
     }
 
+    public void requestLayoutRebind() {
+        onLayoutBinding(contentViewStubBinding);
+    }
+
     public abstract boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete);
 
     public abstract void onLayoutBinding(TBinding contentBinding);
@@ -158,11 +162,11 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
 
     protected void setRootNotificationBindingVariable(final ViewDataBinding binding, String layoutName) {
         /*if (!binding.setVariable(de.symeda.sormas.app.BR.showNotificationCallback, this)) {
-            Log.w(TAG, "There is no variable 'showNotificationCallback' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'showNotificationCallback' in layout " + layoutName);
         }
 
         if (!binding.setVariable(de.symeda.sormas.app.BR.hideNotificationCallback, this)) {
-            Log.w(TAG, "There is no variable 'hideNotificationCallback' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'hideNotificationCallback' in layout " + layoutName);
         }*/
     }
 
@@ -174,11 +178,15 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         return false;
     }
 
+    /*public boolean hasBeforeLayoutBindingAsyncReturned() {
+        return beforeLayoutBindingAsyncReturn;
+    }*/
+
     @Override
-    public void onResume() {
+    public final void onResume() {
         super.onResume();
 
-
+        onPageResume(getContentBinding(), beforeLayoutBindingAsyncReturn);
 
 
         //getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
@@ -191,6 +199,8 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
             }
         });*/
     }
+
+    public abstract void onPageResume(TBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn);
 
     protected void reloadFragment() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -254,7 +264,9 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
         IStatusElaborator pageStatus = dataCapsule.getPageStatus();
         String sampleMaterial = dataCapsule.getSampleMaterial();
+        String personUuid = dataCapsule.getPersonUuid();
         String caseUuid = dataCapsule.getCaseUuid();
+        String eventUuid = dataCapsule.getEventUuid();
         String taskUuid = dataCapsule.getTaskUuid();
         String contactUuid = dataCapsule.getContactUuid();
         String sampleUuid = dataCapsule.getSampleUuid();
@@ -265,8 +277,10 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         //AbstractDomainObject record = dataCapsule.getRecord();
 
         bundle.putString(ConstantHelper.KEY_DATA_UUID, dataUuid);
+        bundle.putString(ConstantHelper.KEY_PERSON_UUID, personUuid);
         bundle.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);
         bundle.putString(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
+        bundle.putString(ConstantHelper.KEY_EVENT_UUID, eventUuid);
         bundle.putString(ConstantHelper.KEY_TASK_UUID, taskUuid);
         bundle.putString(ConstantHelper.KEY_CONTACT_UUID, contactUuid);
         bundle.putString(ConstantHelper.KEY_SAMPLE_UUID, sampleUuid);
@@ -335,6 +349,17 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         }
 
         return e;
+    }
+
+    protected String getEventUuidArg(Bundle arguments) {
+        String result = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.KEY_EVENT_UUID)) {
+                result = (String) arguments.getString(ConstantHelper.KEY_EVENT_UUID);
+            }
+        }
+
+        return result;
     }
 
     protected String getTaskUuidArg(Bundle arguments) {
@@ -453,6 +478,12 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
     protected void SaveRecordUuidState(Bundle outState, String recordUuid) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_DATA_UUID, recordUuid);
+        }
+    }
+
+    protected void SaveEventUuidState(Bundle outState, String eventUuid) {
+        if (outState != null) {
+            outState.putString(ConstantHelper.KEY_EVENT_UUID, eventUuid);
         }
     }
 

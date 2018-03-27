@@ -3,6 +3,7 @@ package de.symeda.sormas.app.core.async;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.core.BoolResult;
 
 /**
@@ -19,6 +20,8 @@ public class GenericTask extends AsyncTask<Void, Void, AsyncTaskResult<TaskResul
 
     private ITaskResultCallback callback;
     private IJobDefinition jobDefinition;
+    private BoolResult mResultStatus = BoolResult.TRUE;
+    private TaskResultHolder resultHolder;
     //private TaskResultHolder resultHolder;
 
     public GenericTask(IJobDefinition jobDefinition, ITaskResultCallback callback) {
@@ -29,20 +32,30 @@ public class GenericTask extends AsyncTask<Void, Void, AsyncTaskResult<TaskResul
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        //resultHolder = new TaskResultHolder();
-
-        jobDefinition.preExecute();
+        resultHolder = new TaskResultHolder();
+        try {
+            jobDefinition.preExecute(mResultStatus, resultHolder);
+        } catch (DaoException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     protected AsyncTaskResult<TaskResultHolder> doInBackground(Void... voids) {
+        BoolResult _resultStatus = resultHolder.getResultStatus();
+
+        if (!_resultStatus.isSuccess())
+            return new AsyncTaskResult<TaskResultHolder>(_resultStatus, resultHolder);
+
         try {
-            TaskResultHolder resultHolder = new TaskResultHolder();
-            jobDefinition.execute(resultHolder);
-            return new AsyncTaskResult<TaskResultHolder>(resultHolder);
+            jobDefinition.execute(_resultStatus, resultHolder);
+
+            _resultStatus = resultHolder.getResultStatus();
+
+            return new AsyncTaskResult<TaskResultHolder>(_resultStatus, resultHolder);
         } catch (Exception e) {
             Log.w(TAG, (e != null)? e.getMessage() : "Error executing a job definition!");
-            return new AsyncTaskResult<TaskResultHolder>(e);
+            return new AsyncTaskResult<TaskResultHolder>(mResultStatus, e);
         }
     }
 
@@ -53,18 +66,20 @@ public class GenericTask extends AsyncTask<Void, Void, AsyncTaskResult<TaskResul
 
     @Override
     protected void onPostExecute(AsyncTaskResult<TaskResultHolder> result) {
-        BoolResult resultStatus = BoolResult.FALSE;
+        BoolResult resultStatus = result.getResultStatus();
         TaskResultHolder taskResultHolder = result.getResult();
 
-        if (result.getError() != null) {
-            callback.searchResult(new BoolResult(false, result.getError().getMessage()), taskResultHolder);
+        if (!resultStatus.isSuccess()) {
+            callback.taskResult(resultStatus, taskResultHolder);
+        } else if (result.getError() != null) {
+            callback.taskResult(new BoolResult(false, result.getError().getMessage()), taskResultHolder);
         }  else if ( isCancelled()) {
-            callback.searchResult(new BoolResult(false, "Listing search has been cancelled"), taskResultHolder);
+            callback.taskResult(new BoolResult(false, "Listing search has been cancelled"), taskResultHolder);
         } else {
             if (taskResultHolder != null)
                 resultStatus = BoolResult.TRUE;
 
-            callback.searchResult(resultStatus, taskResultHolder);
+            callback.taskResult(resultStatus, taskResultHolder);
         }
     }
 

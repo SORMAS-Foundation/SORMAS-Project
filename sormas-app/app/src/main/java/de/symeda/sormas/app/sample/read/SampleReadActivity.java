@@ -16,8 +16,8 @@ import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.sample.SampleFormNavigationCapsule;
-import de.symeda.sormas.app.sample.ShipmentStatus;
+import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
+import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.sample.edit.SampleEditActivity;
 import de.symeda.sormas.app.util.NavigationHelper;
 

@@ -4,11 +4,12 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.INotificationContext;
-import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.core.VibrationHelper;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
 
 /**
  * Created by Orson on 28/01/2018.
@@ -85,43 +86,40 @@ public abstract class EditTeboPropertyField<T> extends TeboPropertyField<T> {
 
     }
 
-
-    /*public void enableErrorState(int messageResId) {
+    public void enableErrorState(INotificationContext communicator, int messageResId, boolean showNotification) {
         if (messageResId <= 0)
             return;
 
         String message  = getResources().getString(messageResId);
 
+        this.communicator = communicator;
         this.errorState = true;
         this.errorMessage = message;
         //this.txtControlInput.setError(this.errorMessage);
 
+        if (showNotification) {
+
+        }
 
         if (this.onInputErrorListener != null)
             this.onInputErrorListener.onInputErrorChange(this, this.errorMessage, errorState);
 
     }
 
-    public void enableErrorState(String message) {
+    public void enableErrorState(INotificationContext communicator, String message, boolean showNotification) {
+        this.communicator = communicator;
         this.errorState = true;
         this.errorMessage = message;
         //this.txtControlInput.setError(this.errorMessage);
 
+        if (showNotification) {
+
+        }
 
         if (this.onInputErrorListener != null)
             this.onInputErrorListener.onInputErrorChange(this, this.errorMessage, errorState);
 
-    }*/
-
-    /*public void disableErrorState() {
-        this.errorState = false;
-        this.errorMessage = "";
-        //this.txtControlInput.setError(null);
-
-        if (this.onInputErrorListener != null)
-            this.onInputErrorListener.onInputErrorChange(this, this.errorMessage, errorState);
-
-    }*/
+    }
 
     public void disableErrorState(INotificationContext communicator) {
         this.communicator = communicator;
@@ -140,6 +138,20 @@ public abstract class EditTeboPropertyField<T> extends TeboPropertyField<T> {
             return;
 
         NotificationHelper.showNotification(communicator, NotificationType.ERROR, errorMessage);
+
+        if (onShowInputErrorListener != null) {
+            onShowInputErrorListener.onShowInputErrorShowing(this, errorMessage, errorState);
+        }
+    }
+
+    protected void showNotification(boolean showNotification) {
+        if (!errorState || communicator == null || errorMessage == null || errorMessage.isEmpty())
+            return;
+
+
+        if (showNotification) {
+            NotificationHelper.showNotification(communicator, NotificationType.ERROR, errorMessage);
+        }
 
         if (onShowInputErrorListener != null) {
             onShowInputErrorListener.onShowInputErrorShowing(this, errorMessage, errorState);
@@ -195,7 +207,11 @@ public abstract class EditTeboPropertyField<T> extends TeboPropertyField<T> {
         });
     }
 
-    public abstract void changeVisualState(VisualState state);
+    public void changeVisualState(VisualState state) {
+        changeVisualState(state, null);
+    }
+
+    public abstract void changeVisualState(VisualState state, UserRight editOrCreateUserRight);
 
     @Override
     public int getCaptionColor() {

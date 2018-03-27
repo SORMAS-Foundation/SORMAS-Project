@@ -116,6 +116,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
+                android:visibility="gone"
                 app:slim="true"
                 app:hint="@string/hint_case_health_facility_desc"
                 app:description="@string/desc_case_health_facility_desc"

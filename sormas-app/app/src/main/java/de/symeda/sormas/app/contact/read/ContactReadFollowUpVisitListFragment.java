@@ -15,8 +15,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.contact.ContactFormFollowUpNavigationCapsule;
-import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.shared.ContactFormFollowUpNavigationCapsule;
+import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.contact.read.sub.ContactReadFollowUpVisitInfoActivity;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
@@ -96,21 +96,20 @@ public class ContactReadFollowUpVisitListFragment extends BaseReadActivityFragme
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)getRootBinding().getRoot()
-                .findViewById(R.id.swiperefresh);
-
+    public void onPageResume(FragmentContactReadFollowupLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getBaseReadActivity().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly,
-                            true, false, swiperefresh, null);
+                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, false, true, swiperefresh, null);
                 }
             });
         }
+
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
     }
 
     @Override
@@ -135,6 +134,11 @@ public class ContactReadFollowUpVisitListFragment extends BaseReadActivityFragme
     }
 
     @Override
+    public int getRootReadLayout() {
+        return R.layout.fragment_root_list_edit_layout;
+    }
+
+    @Override
     public int getReadLayout() {
         return R.layout.fragment_contact_read_followup_layout;
     }
@@ -152,6 +156,11 @@ public class ContactReadFollowUpVisitListFragment extends BaseReadActivityFragme
             //TODO: Receive Contact Information Here from Parent
             startActivity(intent);
         }*/
+    }
+
+    @Override
+    public boolean includeFabNonOverlapPadding() {
+        return false;
     }
 
     public static ContactReadFollowUpVisitListFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule)

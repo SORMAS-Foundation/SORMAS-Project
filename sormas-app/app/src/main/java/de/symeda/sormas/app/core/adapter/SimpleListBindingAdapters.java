@@ -81,12 +81,12 @@ public class SimpleListBindingAdapters {
         String layoutName = parent.getResources().getResourceEntryName(layoutId);
 
         if (!binding.setVariable(BR.data, entry)) {
-            Log.w(TAG, "There is no variable 'data' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
 
         if (callback != null) {
             if (!binding.setVariable(BR.callback, callback)) {
-                Log.w(TAG, "There is no variable 'callback' in layout " + layoutName);
+                Log.e(TAG, "There is no variable 'callback' in layout " + layoutName);
             }
         }
 

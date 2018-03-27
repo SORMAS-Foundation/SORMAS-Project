@@ -14,7 +14,8 @@ public enum VisualStateControl {
 
     EDIT_TEXT,
     CHECKBOX,
-    SPINNER;
+    SPINNER,
+    SWITCH;
 
     public String toString() {
         return I18nProperties.getEnumCaption(this);

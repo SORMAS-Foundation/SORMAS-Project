@@ -20,6 +20,7 @@ import de.symeda.sormas.app.component.OnHideInputErrorListener;
 import de.symeda.sormas.app.component.OnShowInputErrorListener;
 import de.symeda.sormas.app.contact.landing.ContactsLandingActivity;
 import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.ActivityLoginLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -28,7 +29,6 @@ import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.LocationService;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
 //import android.support.design.widget.Snackbar;
@@ -50,7 +50,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         }
 
         //TODO: Orson Remove this later
-        //processLogout();
+        //LoginHelper.processLogout();
 
         loginViewModel = new LoginViewModel();
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login_layout);
@@ -242,13 +242,6 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     @Override
     public void onInputErrorHiding(View v, boolean errorState) {
         NotificationHelper.hideNotification(binding);
-    }
-
-    //TODO: Orson Remove this later
-    private void processLogout() {
-        ConfigProvider.clearUsernameAndPassword();
-        ConfigProvider.clearPin();
-        ConfigProvider.setAccessGranted(false);
     }
 
     @Override

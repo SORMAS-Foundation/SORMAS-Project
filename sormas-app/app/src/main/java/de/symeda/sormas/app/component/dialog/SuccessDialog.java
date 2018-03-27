@@ -12,6 +12,9 @@ import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.component.TeboButtonType;
+import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.DialogSuccessLayoutBinding;
 
 /**
  * Created by Orson on 03/02/2018.
@@ -30,6 +33,7 @@ public class SuccessDialog extends BaseTeboAlertDialog {
     private Tracker tracker;
     private DialogViewConfig data;
     private String subHeading;
+    private DialogSuccessLayoutBinding mContentBinding;
 
 
     public SuccessDialog(final FragmentActivity activity, String viewName, String uuid) {
@@ -48,7 +52,7 @@ public class SuccessDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
         /*TeboTextInputEditText txtMessage = (TeboTextInputEditText)rootView.findViewById(R.id.txtMessage);
         txtMessage.enableErrorState("Hello");*/
         /*String description = this.data.getHeading();
@@ -66,20 +70,30 @@ public class SuccessDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
 
     }
 
     @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
 
+    }
+
+    @Override
+    protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
+        this.mContentBinding = (DialogSuccessLayoutBinding)binding;
     }
 
     @Override
     protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
         if (!binding.setVariable(BR.data, data)) {
-            Log.w(TAG, "There is no variable 'data' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
+    }
+
+    @Override
+    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
+
     }
 
     @Override

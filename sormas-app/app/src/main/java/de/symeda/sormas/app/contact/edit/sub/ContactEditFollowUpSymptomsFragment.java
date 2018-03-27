@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.contact.edit.sub;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,21 +14,30 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.TeboSpinner;
-import de.symeda.sormas.app.contact.ContactFormFollowUpNavigationCapsule;
+import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.component.dialog.LocationDialog;
+import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.OnRecyclerViewReadyListener;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentContactEditSymptomsInfoLayoutBinding;
+import de.symeda.sormas.app.shared.ContactFormFollowUpNavigationCapsule;
 import de.symeda.sormas.app.symptom.OnSymptomStateChangeListener;
 import de.symeda.sormas.app.symptom.Symptom;
 import de.symeda.sormas.app.symptom.SymptomFormListAdapter;
@@ -41,12 +51,14 @@ import de.symeda.sormas.app.util.DataUtils;
  * sampson.orson@technologyboard.org
  */
 
-public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragment<FragmentContactEditSymptomsInfoLayoutBinding, Symptoms> {
+public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragment<FragmentContactEditSymptomsInfoLayoutBinding, Visit, Visit> {
 
     private static final float DEFAULT_BODY_TEMPERATURE = 37.0f;
+    private AsyncTask onResumeTask;
     private String recordUuid;
     private VisitStatus pageStatus;
-    private Symptoms record;
+    private Visit record;
+    private Symptoms symptom;
     private SymptomFormListAdapter symptomAdapter;
     private LinearLayoutManager linearLayoutManager;
 
@@ -84,28 +96,31 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
     }
 
     @Override
-    public Symptoms getPrimaryData() {
+    public Visit getPrimaryData() {
+        if (symptom != null)
+            record.setSymptoms(symptom);
+
         return record;
     }
 
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            Visit visit = null;
-            Symptoms symptom = null;
-            if (recordUuid == null || recordUuid.isEmpty()) {
-                visit = DatabaseHelper.getVisitDao().build();
-                symptom = DatabaseHelper.getSymptomsDao().build();
+            Symptoms _symptom = null;
+            Visit visit = getActivityRootData();
+
+            if (visit != null) {
+                if (visit.isUnreadOrChildUnread())
+                    DatabaseHelper.getVisitDao().markAsRead(visit);
+
+                //symptom = DatabaseHelper.getSymptomsDao().queryUuid(visit.getSymptoms().getUuid());
+                _symptom = visit.getSymptoms();
             } else {
-                visit = DatabaseHelper.getVisitDao().queryUuid(recordUuid);
-                if (visit != null) {
-                    //symptom = DatabaseHelper.getSymptomsDao().queryUuid(visit.getSymptoms().getUuid());
-                    symptom = visit.getSymptoms();
-                }
+                _symptom = DatabaseHelper.getSymptomsDao().build();
             }
 
-            //resultHolder.forItem().add(visit);
-            resultHolder.forItem().add(symptom); //TODO: Do we need this
+            resultHolder.forItem().add(visit);
+            resultHolder.forItem().add(_symptom); //TODO: Do we need this
 
             resultHolder.forOther().add(Symptom.makeSymptoms(visit.getDisease()).loadState(symptom));
             resultHolder.forOther().add(getTemperatures(false));
@@ -118,6 +133,9 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
             //Item Data
             if (itemIterator.hasNext())
                 record = itemIterator.next();
+
+            if (itemIterator.hasNext())
+                symptom = itemIterator.next();
 
             if (otherIterator.hasNext())
                 symptomList =  otherIterator.next();
@@ -178,8 +196,10 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
 
         symptomAdapter.notifyDataSetChanged();
 
+        //For Visit
+        contentBinding.txtSymptomaticLocation.setVisibility(View.GONE);
 
-        contentBinding.setData(record);
+        contentBinding.setData(symptom);
         contentBinding.setClearAllCallback(clearAllCallback);
         contentBinding.setSetAllToNoCallback(setAllToNoCallback);
         contentBinding.setAddressLinkCallback(onAddressLinkClickedCallback);
@@ -199,6 +219,11 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
             public List<Item> getDataSource(Object parentValue) {
                 return bodyTempList;
             }
+
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
+            }
         });
 
         contentBinding.spnBodyTemperatureSource.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
@@ -211,6 +236,11 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
             public List<Item> getDataSource(Object parentValue) {
                 return (tempSourceList.size() > 0) ? DataUtils.addEmptyItem(tempSourceList)
                         : tempSourceList;
+            }
+
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
             }
         });
 
@@ -225,17 +255,104 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
                 return (yesSymptomList.size() > 0) ? DataUtils.toItems(yesSymptomList)
                         : DataUtils.toItems(yesSymptomList, false);
             }
+
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
+            }
         });
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    protected void updateUI(FragmentContactEditSymptomsInfoLayoutBinding contentBinding, Visit visit) {
+
+    }
+
+    @Override
+    public void onPageResume(FragmentContactEditSymptomsInfoLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    if (recordUuid != null && !recordUuid.isEmpty()) {
+                        Symptoms symptom = null;
+                        Visit visit = DatabaseHelper.getVisitDao().queryUuid(recordUuid);
+
+                        if (visit != null) {
+                            //symptom = DatabaseHelper.getSymptomsDao().queryUuid(visit.getSymptoms().getUuid());
+                            symptom = visit.getSymptoms();
+                        }
+
+                        if (symptom != null && symptom.isUnreadOrChildUnread())
+                            DatabaseHelper.getSymptomsDao().markAsRead(symptom);
+
+                        resultHolder.forItem().add(visit);
+                        resultHolder.forItem().add(symptom);
+                    } else {
+                        resultHolder.forItem().add(null);
+                        resultHolder.forItem().add(null);
+                    }
+                }
+            });
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+
+                    if (itemIterator.hasNext())
+                        record = itemIterator.next();
+
+                    if (itemIterator.hasNext())
+                        symptom = itemIterator.next();
+
+                    if (record != null && symptom != null)
+                        requestLayoutRebind();
+                    else {
+                        getActivity().finish();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
+
     }
 
     @Override
     public int getEditLayout() {
         return R.layout.fragment_contact_edit_symptoms_info_layout;
+    }
+
+    @Override
+    public boolean includeFabNonOverlapPadding() {
+        return false;
+    }
+
+    @Override
+    public boolean showSaveAction() {
+        return true;
+    }
+
+    @Override
+    public boolean showAddAction() {
+        return false;
     }
 
     private void setupCallback() {
@@ -275,7 +392,20 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
         onAddressLinkClickedCallback = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
+                final Location location = new Location();
+                final LocationDialog locationDialog = new LocationDialog(AbstractSormasActivity.getActiveActivity(), location);
 
+                locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                    @Override
+                    public void onOkClick(View v, Object item, View viewRoot) {
+                        getContentBinding().txtSymptomaticLocation.setValue(location.toString());
+                        symptom.setPatientIllLocation(location.toString());
+
+                        locationDialog.dismiss();
+                    }
+                });
+
+                locationDialog.show(null);
             }
         };
     }
@@ -309,8 +439,16 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
         return temperature;
     }
 
-    public static ContactEditFollowUpSymptomsFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormFollowUpNavigationCapsule capsule)
+    public static ContactEditFollowUpSymptomsFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormFollowUpNavigationCapsule capsule, Visit activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, ContactEditFollowUpSymptomsFragment.class, capsule);
+        return newInstance(activityCommunicator, ContactEditFollowUpSymptomsFragment.class, capsule, activityRootData);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (onResumeTask != null && !onResumeTask.isCancelled())
+            onResumeTask.cancel(true);
     }
 }

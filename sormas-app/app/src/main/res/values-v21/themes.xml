@@ -25,6 +25,7 @@
         <item name="android:colorControlHighlight">@color/colorControlHighlight</item>
         <item name="colorControlActivated">@color/textSelectionHandle</item>
 
+        <item name="android:windowActivityTransitions">true</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
         <item name="android:windowAllowReturnTransitionOverlap">true</item>

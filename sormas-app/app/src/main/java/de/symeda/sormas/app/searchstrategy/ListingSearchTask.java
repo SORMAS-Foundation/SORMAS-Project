@@ -29,14 +29,16 @@ public class ListingSearchTask<ADO extends AbstractDomainObject> extends AsyncTa
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        callback.preExecute();
     }
 
     @Override
     protected AsyncTaskResult<List<ADO>> doInBackground(Void... voids) {
+        BoolResult resultStatus = BoolResult.TRUE;
         try {
-            return new AsyncTaskResult<List<ADO>>(searchStrategy.search());
+            return new AsyncTaskResult<List<ADO>>(resultStatus, searchStrategy.search());
         } catch (Exception e) {
-            return new AsyncTaskResult<List<ADO>>(e);
+            return new AsyncTaskResult<List<ADO>>(resultStatus, e);
         }
     }
 
@@ -47,10 +49,12 @@ public class ListingSearchTask<ADO extends AbstractDomainObject> extends AsyncTa
 
     @Override
     protected void onPostExecute(AsyncTaskResult<List<ADO>> result) {
-        BoolResult resultStatus = BoolResult.FALSE;
+        BoolResult resultStatus = result.getResultStatus();
         List<ADO> list = result.getResult();
 
-        if (result.getError() != null) {
+        if (resultStatus == BoolResult.FALSE) {
+            callback.searchResult(list, resultStatus);
+        } else if (result.getError() != null) {
             callback.searchResult(list, new BoolResult(false, result.getError().getMessage()));
         }  else if ( isCancelled()) {
             callback.searchResult(list, new BoolResult(false, "Listing search has been cancelled"));

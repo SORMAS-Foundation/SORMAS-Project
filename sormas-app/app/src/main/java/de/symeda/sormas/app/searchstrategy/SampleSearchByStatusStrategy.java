@@ -5,7 +5,7 @@ import java.util.List;
 
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.sample.ShipmentStatus;
+import de.symeda.sormas.app.shared.ShipmentStatus;
 
 /**
  * Created by Orson on 03/03/2018.

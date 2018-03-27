@@ -14,7 +14,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.component.OnLinkClickListener;
 import de.symeda.sormas.app.component.tagview.Tag;
 import de.symeda.sormas.app.core.BoolResult;
@@ -113,6 +113,13 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
     }
 
     @Override
+    public void onPageResume(FragmentCaseReadSymptomsLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
+    }
+
+    @Override
     protected String getSubHeadingTitle() {
         return null;
     }
@@ -176,5 +183,10 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
                 //Toast.makeText(getContext(), "Hurray!", Toast.LENGTH_SHORT).show();
             }
         };
+    }
+
+    @Override
+    public boolean includeFabNonOverlapPadding() {
+        return false;
     }
 }

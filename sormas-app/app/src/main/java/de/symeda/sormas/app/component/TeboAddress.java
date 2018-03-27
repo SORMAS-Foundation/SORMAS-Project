@@ -16,9 +16,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
-
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.user.User;
 
 /**
  * Created by Orson on 19/02/2018.
@@ -249,6 +251,10 @@ public class TeboAddress extends EditTeboPropertyField<Location> implements ICon
         txtControlInput.setOnFocusChangeListener(new NotificationVisibilityOnFocusChangeHandler(this));
         txtControlInput.setOnClickListener(new NotificationVisibilityOnClickHandler());
 
+
+        updateControlDimensions();
+
+
         if (isSlim()) {
             float slimControlTextSize = getContext().getResources().getDimension(R.dimen.slimControlTextSize);
             int heightInPixel = getContext().getResources().getDimensionPixelSize(R.dimen.slimControlHeight);
@@ -305,8 +311,44 @@ public class TeboAddress extends EditTeboPropertyField<Location> implements ICon
 
     }
 
+    private void updateControlDimensions() {
+        if (isSlim()) {
+            float slimControlTextSize = getContext().getResources().getDimension(R.dimen.slimControlTextSize);
+            int paddingTop = getContext().getResources().getDimensionPixelSize(R.dimen.slimTextViewTopPadding);
+            int paddingBottom = getContext().getResources().getDimensionPixelSize(R.dimen.slimTextViewBottomPadding);
+            int paddingLeft = txtControlInput.getPaddingLeft();
+            int paddingRight = txtControlInput.getPaddingRight();
+
+            txtControlInput.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+            txtControlInput.setTextSize(TypedValue.COMPLEX_UNIT_PX, slimControlTextSize);
+        } else {
+            int paddingTop = 0;
+            int paddingBottom = 0;
+            int paddingLeft = txtControlInput.getPaddingLeft();
+            int paddingRight = txtControlInput.getPaddingRight();
+
+            txtControlInput.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+        }
+
+        updateControlHeight();
+    }
+
+    private void updateControlHeight() {
+        if (isSlim()) {
+            int heightInPixel = getContext().getResources().getDimensionPixelSize(R.dimen.slimControlHeight);
+            txtControlInput.setHeight(heightInPixel);
+            txtControlInput.setMinHeight(heightInPixel);
+            txtControlInput.setMaxHeight(heightInPixel);
+        } else {
+            int heightInPixel = getContext().getResources().getDimensionPixelSize(R.dimen.maxControlHeight);
+            txtControlInput.setHeight(heightInPixel);
+            txtControlInput.setMinHeight(heightInPixel);
+            txtControlInput.setMaxHeight(heightInPixel);
+        }
+    }
+
     @Override
-    public void changeVisualState(final VisualState state) {
+    public void changeVisualState(final VisualState state, UserRight editOrCreateUserRight) {
         int labelColor = getResources().getColor(state.getLabelColor(VisualStateControl.EDIT_TEXT));
         Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControl.EDIT_TEXT));
         //Drawable drawable = getResources().getDrawable(R.drawable.selector_text_control_edit_error);
@@ -331,9 +373,10 @@ public class TeboAddress extends EditTeboPropertyField<Location> implements ICon
         }
 
         if (state == VisualState.NORMAL || state == VisualState.ENABLED) {
+            User user = ConfigProvider.getUser();
             lblControlLabel.setTextColor(labelColor);
             setBackground(drawable);
-            txtControlInput.setEnabled(true);
+            txtControlInput.setEnabled(true && (editOrCreateUserRight != null)? user.hasUserRight(editOrCreateUserRight) : true);
             return;
         }
     }
@@ -348,6 +391,7 @@ public class TeboAddress extends EditTeboPropertyField<Location> implements ICon
         txtControlInput.setBackgroundResource(resid);
 
         txtControlInput.setPadding(pl, pt, pr, pb);
+        updateControlHeight();
     }
 
     @Override
@@ -360,6 +404,7 @@ public class TeboAddress extends EditTeboPropertyField<Location> implements ICon
         txtControlInput.setBackground(background);
 
         txtControlInput.setPadding(pl, pt, pr, pb);
+        updateControlHeight();
     }
 
     @Override

@@ -3,6 +3,7 @@ package de.symeda.sormas.app.event.list;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,11 +23,12 @@ import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
-import de.symeda.sormas.app.event.EventFormNavigationCapsule;
 import de.symeda.sormas.app.event.read.EventReadActivity;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.searchstrategy.ISearchExecutor;
 import de.symeda.sormas.app.searchstrategy.ISearchResultCallback;
 import de.symeda.sormas.app.searchstrategy.SearchStrategyFor;
+import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.util.SubheadingHelper;
 
 /**
@@ -100,9 +102,16 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
         getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Event"));
 
         try {
+            dataLoaded = false;
             if (!dataLoaded) {
                 ISearchExecutor<Event> executor = SearchStrategyFor.EVENT.selector(searchBy, filterStatus, recordUuid);
                 searchTask = executor.search(new ISearchResultCallback<Event>() {
+                    @Override
+                    public void preExecute() {
+                        getActivityCommunicator().showPreloader();
+                        getActivityCommunicator().hideFragmentView();
+                    }
+
                     @Override
                     public void searchResult(List<Event> result, BoolResult resultStatus) {
                         getActivityCommunicator().hidePreloader();
@@ -120,6 +129,9 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
                         EventListFragment.this.getListAdapter().notifyDataSetChanged();
 
                         dataLoaded = true;
+
+                        getActivityCommunicator().hidePreloader();
+                        getActivityCommunicator().showFragmentView();
                     }
 
                     private ISearchResultCallback<Event> init() {
@@ -132,6 +144,16 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
         } catch (Exception ex) {
             getActivityCommunicator().hidePreloader();
             dataLoaded = false;
+        }
+
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
+        if (swiperefresh != null) {
+            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, false, true, swiperefresh, null);
+                }
+            });
         }
     }
 

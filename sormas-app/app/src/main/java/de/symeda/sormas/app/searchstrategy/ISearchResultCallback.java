@@ -15,5 +15,6 @@ import de.symeda.sormas.app.core.BoolResult;
 
 public interface ISearchResultCallback<ADO extends AbstractDomainObject> {
 
+    void preExecute();
     void searchResult(List<ADO> result, BoolResult resultStatus);
 }

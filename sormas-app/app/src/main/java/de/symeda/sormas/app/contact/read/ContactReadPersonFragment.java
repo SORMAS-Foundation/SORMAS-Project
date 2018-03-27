@@ -10,7 +10,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -78,6 +78,13 @@ public class ContactReadPersonFragment  extends BaseReadActivityFragment<Fragmen
     @Override
     public void onAfterLayoutBinding(FragmentContactReadPersonInfoLayoutBinding contentBinding) {
         contentBinding.setData(record);
+    }
+
+    @Override
+    public void onPageResume(FragmentContactReadPersonInfoLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
     }
 
     @Override

@@ -22,9 +22,15 @@ public interface INavigationCapsule<T extends AbstractDomainObject> {
 
     T getRecord();
 
+    int getActiveMenuKey();
+
+    String getPersonUuid();
+
     String getSampleMaterial();
 
     String getCaseUuid();
+
+    String getEventUuid();
 
     String getTaskUuid();
 

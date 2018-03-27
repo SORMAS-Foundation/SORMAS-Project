@@ -6,17 +6,15 @@ import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-
-import java.util.ArrayList;
 
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
+import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.NavigationHelper;
 
@@ -28,25 +26,25 @@ import de.symeda.sormas.app.util.NavigationHelper;
  * sampson.orson@technologyboard.org
  */
 
-public class TaskEditActivity extends BaseEditActivity {
+public class TaskEditActivity extends BaseEditActivity<Task> {
 
-    private LandingPageMenuItem activeMenuItem = null;
     private boolean showStatusFrame = false;
     private boolean showTitleBar = true;
     private boolean showPageMenu = false;
     private final String DATA_XML_PAGE_MENU = null;
 
-    private TaskStatus filterStatus = null;
     private TaskStatus pageStatus = null;
     private String recordUuid = null;
     private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
     private BaseEditActivityFragment activeFragment = null;
 
+    private MenuItem saveMenu = null;
+    private MenuItem addMenu = null;
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -63,30 +61,33 @@ public class TaskEditActivity extends BaseEditActivity {
 
     @Override
     protected void initializeActivity(Bundle arguments) {
-        filterStatus = (TaskStatus) getFilterStatusArg(arguments);
-        //pageStatus = (TaskStatus) getPageStatusArg(arguments);
+        pageStatus = (TaskStatus) getPageStatusArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
 
-        this.activeMenuItem = null;
         this.showStatusFrame = false;
         this.showTitleBar = true;
         this.showPageMenu = false;
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment() throws IllegalAccessException, InstantiationException {
-        if (activeFragment == null) {
-            TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(TaskEditActivity.this,
-                    recordUuid, pageStatus);
-            activeFragment = TaskEditFragment.newInstance(this, dataCapsule);
-        }
-
-        return activeFragment;
+    protected Task getActivityRootData(String recordUuid) {
+        return DatabaseHelper.getTaskDao().queryUuid(recordUuid);
     }
 
     @Override
-    public LandingPageMenuItem getActiveMenuItem() {
-        return activeMenuItem;
+    protected Task getActivityRootDataIfRecordUuidNull() {
+        return null;
+    }
+
+    @Override
+    public BaseEditActivityFragment getActiveEditFragment(Task activityRootData) throws IllegalAccessException, InstantiationException {
+        if (activeFragment == null) {
+            TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(TaskEditActivity.this,
+                    recordUuid, pageStatus);
+            activeFragment = TaskEditFragment.newInstance(this, dataCapsule, activityRootData);
+        }
+
+        return activeFragment;
     }
 
     @Override
@@ -115,12 +116,7 @@ public class TaskEditActivity extends BaseEditActivity {
     }
 
     @Override
-    public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) {
-        return false;
-    }
-
-    @Override
-    public LandingPageMenuItem onSelectInitialActiveMenuItem(ArrayList<LandingPageMenuItem> menuList) {
+    protected BaseEditActivityFragment getNextFragment(LandingPageMenuItem menuItem, Task activityRootData) {
         return null;
     }
 
@@ -129,13 +125,12 @@ public class TaskEditActivity extends BaseEditActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.edit_action_menu, menu);
 
-        MenuItem saveMenu = menu.findItem(R.id.action_save);
-        MenuItem addMenu = menu.findItem(R.id.action_new);
-
-        saveMenu.setVisible(true);
-        addMenu.setVisible(false);
+        saveMenu = menu.findItem(R.id.action_save);
+        addMenu = menu.findItem(R.id.action_new);
 
         saveMenu.setTitle(R.string.action_save_task);
+
+        processActionbarMenu();
 
         return true;
     }
@@ -189,6 +184,17 @@ public class TaskEditActivity extends BaseEditActivity {
     @Override
     protected int getActivityTitle() {
         return R.string.heading_level4_task_edit;
+    }
+
+    private void processActionbarMenu() {
+        if (activeFragment == null)
+            return;
+
+        if (saveMenu != null)
+            saveMenu.setVisible(activeFragment.showSaveAction());
+
+        if (addMenu != null)
+            addMenu.setVisible(activeFragment.showAddAction());
     }
 
     public static void goToActivity(Context fromActivity, TaskFormNavigationCapsule dataCapsule) {

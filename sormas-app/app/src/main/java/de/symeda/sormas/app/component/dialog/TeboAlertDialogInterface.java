@@ -27,4 +27,14 @@ public interface TeboAlertDialogInterface {
 
         void onDeleteClick(View v, Object item, View viewRoot);
     }
+
+    interface CancelOnClickListener {
+
+        void onCancelClick(View v, Object item, View viewRoot);
+    }
+
+    interface CreateOnClickListener {
+
+        void onCreateClick(View v, Object item, View viewRoot);
+    }
 }

@@ -24,7 +24,7 @@
     <color name="infoBackground">@color/blue</color>
     <color name="successBackground">@color/green</color>
     <color name="errorBackground">@color/watchOut</color>
-    <color name="warningBackground">@color/lightOrange</color>
+    <color name="warningBackground">@color/orange</color>
 
     <color name="infoTextColor">@color/whiteOpaque</color>
     <color name="successTextColor">@color/whiteOpaque</color>
@@ -48,6 +48,7 @@
     <color name="orange20">#33f99135</color>
     <color name="orange40">#66f99135</color>
     <color name="lightOrange">#99f99135</color>
+    <color name="lightOrangeOpaque">#FFf99135</color>
     <color name="noColor">@color/transparent</color>
     <color name="blue">#FF005a9c</color>
     <color name="blue10">#1A005a9c</color>
@@ -77,6 +78,7 @@
     <color name="brightBlue">#ff46c8e5</color>
     <color name="brightYellow">#fff7de7c</color>
     <color name="disabled">#4D374b5a</color>
+    <color name="disabled50">#80374b5a</color>
 
     <color name="listItemPressed">#fff3f6fa</color>
 
@@ -101,10 +103,15 @@
     <color name="controlStrokeDisabled">@color/disabled</color>
     <color name="controlStrokeError">@color/watchOut</color>
 
+    <color name="switchDisabledBackground">@color/disabled</color>
     <color name="switchCheckedBackground">@color/lighterBlue</color>
     <color name="switchUnheckedBackground">@color/transparent</color>
     <color name="switchCheckedText">@color/blue</color>
     <color name="switchUnheckedText">@color/normalText</color>
+    <color name="switchCheckedTextError">@color/whiteOpaque</color>
+    <color name="switchUnheckedTextError">@color/normalText</color>
+    <color name="switchCheckedDisabledText">@color/whiteOpaque</color>
+    <color name="switchUnheckedDisabledText">@color/disabled</color>
 
 
 
@@ -179,6 +186,7 @@
     <color name="colorControlActivated">@color/blue</color>
     <color name="colorControlHighlight">@color/lightBlue</color>
     <color name="colorControlDisabled">@color/disabled</color>
+    <color name="colorControlDisabledHint">@color/disabled50</color>
     <color name="colorControlReadOnly">@color/lighterBlue40</color>
     <color name="colorControlError">@color/watchOut</color>
     <color name="textSelectionHandle">@color/blue</color>
@@ -448,9 +456,12 @@
 
     <color name="sectionListRowStroke">@color/lightBlue50</color>
     <color name="sectionListRowBackground">@color/whiteOpaque</color>
-    <color name="sectionListRowPressedBackground">@color/listItemPressed</color>
-    <color name="sectionListRowFocusedBackground">@color/listItemPressed</color>
-    <color name="sectionListRowSelectedBackground">@color/listItemPressed</color>
+    <color name="sectionListRowPressedBackground">@color/whiteOpaque</color>
+    <color name="sectionListRowFocusedBackground">@color/whiteOpaque</color>
+    <color name="sectionListRowSelectedBackground">@color/whiteOpaque</color>
+    <color name="sectionListRowPressedBorder">@color/lightBlue</color>
+    <color name="sectionListRowFocusedBorder">@color/lightBlue</color>
+    <color name="sectionListRowSelectedBorder">@color/blue</color>
 
 
     <color name="samplePositive">@color/watchOut</color>
@@ -493,7 +504,7 @@
 
 
     <!-- Dialog -->
-    <color name="warningNotificationDialogIcon">@color/lightOrange</color>
+    <color name="warningNotificationDialogIcon">@color/orange</color>
     <color name="errorNotificationDialogIcon">@color/watchOut</color>
     <color name="successNotificationDialogIcon">@color/green</color>
 

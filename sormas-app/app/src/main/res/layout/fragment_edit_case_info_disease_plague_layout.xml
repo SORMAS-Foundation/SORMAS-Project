@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable
+            name="showNotificationCallback"
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
+        <variable name="plagueTypeClass" type="Class" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/formListSectionBackground"
+        android:paddingTop="@dimen/parentLayoutVerticalMargin"
+        android:paddingBottom="@dimen/parentLayoutVerticalMargin"
+        android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+        android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+        >
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/heading_sub_case_addition_med_info"
+            style="@style/ReadActivitySubHeadingStyle"
+            />
+
+        <de.symeda.sormas.app.component.TeboSpinner
+            android:id="@+id/spnPlague"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/textControlMarginBottom"
+            app:hint="@string/hint_case_plague_type"
+            app:labelCaption="@string/label_case_plague_type"
+            app:description="@string/desc_case_plague_type"
+            app:required="true"
+            app:spinnerMode="dialog"
+            app:value="@={data.plagueType}"
+            app:onShowInputErrorListener="@{showNotificationCallback}"
+            app:onHideInputErrorListener="@{hideNotificationCallback}"
+            />
+
+        <!--<de.symeda.sormas.app.component.TeboSwitch
+            android:id="@+id/swhPlague"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/textControlMarginBottom"
+            app:paddingTop="@dimen/defaultControlVerticalPadding"
+            app:paddingBottom="@dimen/defaultControlVerticalPadding"
+            app:background="@drawable/control_switch_background_border"
+            app:borderSize="@dimen/defaultControlStrokeWidth"
+            app:textColor="@color/control_switch_color_selector"
+            app:hint="@string/hint_case_plague_type"
+            app:labelCaption="@string/label_case_plague_type"
+            app:description="@string/desc_case_plague_type"
+            app:required="true"
+            app:orientation="horizontal"
+            app:slim="false"
+            app:includeUnknown="@{false}"
+            app:enumClass="@{plagueTypeClass}"
+            app:defaultValue="@{null}"
+            app:abbrevUnknown="@{false}"
+            app:value="@={data.plagueType}"
+            app:onCheckedChangeListener="@{null}"
+            app:onShowInputErrorListener="@{showNotificationCallback}"
+            app:onHideInputErrorListener="@{hideNotificationCallback}"
+            />-->
+
+    </LinearLayout>
+
+</layout>
+

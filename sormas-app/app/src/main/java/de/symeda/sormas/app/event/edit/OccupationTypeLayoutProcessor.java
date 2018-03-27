@@ -2,17 +2,31 @@ package de.symeda.sormas.app.event.edit;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.databinding.OnRebindCallback;
 import android.databinding.ViewDataBinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.databinding.FragmentEventEditPersonInfoLayoutBinding;
+import java.util.List;
 
 import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.component.dialog.ICommunityLoader;
+import de.symeda.sormas.app.component.dialog.IDistrictLoader;
+import de.symeda.sormas.app.component.dialog.IFacilityLoader;
+import de.symeda.sormas.app.component.dialog.IRegionLoader;
+import de.symeda.sormas.app.core.OnSetBindingVariableListener;
+import de.symeda.sormas.app.databinding.FragmentEventEditPersonInfoLayoutBinding;
+import de.symeda.sormas.app.util.DataUtils;
 
 /**
  * Created by Orson on 11/02/2018.
@@ -33,15 +47,35 @@ public class OccupationTypeLayoutProcessor {
     private Person record;
     private OccupationType initialOccupationType;
     private String initialOccupationDetail;
+    private IRegionLoader regionLoader;
+    private IDistrictLoader districtLoader;
+    private ICommunityLoader communityLoader;
+    private IFacilityLoader facilityLoader;
+
+    /*private List<Item> regionList;
+    private List<Item> districtList;
+    private List<Item> communityList;
+    private List<Item> facilityList;*/
+
+    private TeboSpinner spnFacilityState;
+    private TeboSpinner spnFacilityLga;
+    private TeboSpinner spnFacilityWard;
+    private TeboSpinner spnHealthCareFacility;
 
     private OnSetBindingVariableListener mOnSetBindingVariableListener;
 
 
-    public OccupationTypeLayoutProcessor(Context context, FragmentEventEditPersonInfoLayoutBinding contentBinding, Person record) {
+    public OccupationTypeLayoutProcessor(Context context, FragmentEventEditPersonInfoLayoutBinding contentBinding, Person record,
+                                         IRegionLoader regionLoader, IDistrictLoader districtLoader, ICommunityLoader communityLoader, IFacilityLoader facilityLoader) {
         this.mLastLayoutResId = -1;
         this.context = context;
         this.contentBinding = contentBinding;
         this.record = record;
+
+        this.regionLoader = regionLoader;
+        this.districtLoader = districtLoader;
+        this.communityLoader = communityLoader;
+        this.facilityLoader = facilityLoader;
 
         this.initialOccupationType = record.getOccupationType();
         this.initialOccupationDetail = record.getOccupationDetails();
@@ -105,6 +139,104 @@ public class OccupationTypeLayoutProcessor {
     private boolean initializeChildLayout(ViewDataBinding binding) {
         View innerRootLayout = binding.getRoot();
 
+        spnFacilityState = (TeboSpinner)innerRootLayout.findViewById(R.id.spnFacilityState);
+        spnFacilityLga = (TeboSpinner)innerRootLayout.findViewById(R.id.spnFacilityLga);
+        spnFacilityWard = (TeboSpinner)innerRootLayout.findViewById(R.id.spnFacilityWard);
+        spnHealthCareFacility = (TeboSpinner)innerRootLayout.findViewById(R.id.spnHealthCareFacility);
+
+        binding.addOnRebindCallback(new OnRebindCallback() {
+            @Override
+            public void onBound(ViewDataBinding binding) {
+                super.onBound(binding);
+
+                if (spnFacilityState != null) {
+                    spnFacilityState.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+                        @Override
+                        public Object getSelectedValue() {
+                            return null;
+                        }
+
+                        @Override
+                        public List<Item> getDataSource(Object parentValue) {
+                            List<Item> regionList = regionLoader.load();
+
+                            return (regionList.size() > 0) ? DataUtils.addEmptyItem(regionList)
+                                    : regionList;
+                        }
+
+                        @Override
+                        public VisualState getInitVisualState() {
+                            return null;
+                        }
+                    });
+                }
+
+                if (spnFacilityLga != null) {
+                    spnFacilityLga.initialize(spnFacilityState, new TeboSpinner.ISpinnerInitSimpleConfig() {
+                        @Override
+                        public Object getSelectedValue() {
+                            return null;
+                        }
+
+                        @Override
+                        public List<Item> getDataSource(Object parentValue) {
+                            List<Item> districts = districtLoader.load((Region)parentValue);
+                            return (districts.size() > 0) ? DataUtils.addEmptyItem(districts) : districts;
+                        }
+
+                        @Override
+                        public VisualState getInitVisualState() {
+                            return null;
+                        }
+                    });
+                }
+
+                if (spnFacilityWard != null) {
+                    spnFacilityWard.initialize(spnFacilityLga, new TeboSpinner.ISpinnerInitSimpleConfig() {
+                        @Override
+                        public Object getSelectedValue() {
+                            return null;
+                        }
+
+                        @Override
+                        public List<Item> getDataSource(Object parentValue) {
+                            List<Item> communities = communityLoader.load((District)parentValue);
+
+                            return (communities.size() > 0) ? DataUtils.addEmptyItem(communities) : communities;
+                        }
+
+                        @Override
+                        public VisualState getInitVisualState() {
+                            return null;
+                        }
+                    });
+                }
+
+
+                if (spnHealthCareFacility != null) {
+                    spnHealthCareFacility.initialize(spnFacilityWard, new TeboSpinner.ISpinnerInitSimpleConfig() {
+                        @Override
+                        public Object getSelectedValue() {
+                            return null;
+                        }
+
+                        @Override
+                        public List<Item> getDataSource(Object parentValue) {
+                            List<Item> facilities = facilityLoader.load((Community)parentValue, false);
+                            return (facilities.size() > 0) ? DataUtils.addEmptyItem(facilities) : facilities;
+                        }
+
+                        @Override
+                        public VisualState getInitVisualState() {
+                            return null;
+                        }
+                    });
+                }
+
+
+            }
+        });
+
         if (getRootChildLayout() != null) {
             getRootChildLayout().removeAllViews();
             getRootChildLayout().addView(innerRootLayout);
@@ -164,8 +296,6 @@ public class OccupationTypeLayoutProcessor {
         getRootChildLayout().setVisibility(View.GONE);
         getRootChildLayout().removeAllViews();
     }
-
-
 
     public void setOnSetBindingVariable(OnSetBindingVariableListener listener) {
         this.mOnSetBindingVariableListener = listener;

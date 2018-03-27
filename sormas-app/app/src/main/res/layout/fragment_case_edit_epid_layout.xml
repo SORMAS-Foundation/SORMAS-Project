@@ -55,446 +55,453 @@
             type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-
-        <!-- Burial Controls -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            >
+            android:orientation="vertical">
 
-            <de.symeda.sormas.app.component.TeboHint
-                android:id="@+id/txtEpidTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="5"
-                app:inputType="textMultiLine"
-                app:showCaption="false"
-                app:labelCaption="@string/label_case_epid_info"
-                app:description="@string/desc_case_epid_info"
-                app:value="@{@string/epiData_infoText}"
-                />
 
-            <de.symeda.sormas.app.component.TeboSwitch
-                android:id="@+id/swhBurial"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:paddingTop="@dimen/defaultControlVerticalPadding"
-                app:paddingBottom="@dimen/defaultControlVerticalPadding"
-                app:background="@drawable/control_switch_background_border"
-                app:borderSize="@dimen/defaultControlStrokeWidth"
-                app:textColor="@color/control_switch_color_selector"
-                app:hint="@string/hint_case_epid_visited_burial"
-                app:labelCaption="@string/label_case_epid_visited_burial"
-                app:description="@string/desc_case_epid_visited_burial"
-                app:required="true"
-                app:orientation="horizontal"
-                app:slim="false"
-                app:includeUnknown="@{false}"
-                app:enumClass="@{yesNoUnknownClass}"
-                app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                app:abbrevUnknown="@{false}"
-                app:value="@={data.burialAttended}"
-                app:onCheckedChangeListener="@{burialCallback}"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
-                />
-
-        </LinearLayout>
-
-        <!-- Burial History -->
-        <!--android:paddingBottom="@dimen/parentLayoutVerticalMargin"-->
-        <LinearLayout
-            android:id="@+id/ctrlBurials"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/formListSectionBackground"
-            android:layout_marginBottom="@dimen/textControlMarginBottom"
-            android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            >
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:alternateBottomMarginIfEmpty="@{burialList}"
-                app:emptyBottomMargin="@{@dimen/parentLayoutVerticalMargin}"
-                app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}"
-                >
-
-                <TextView
-                    android:id="@+id/hBurial"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:text="@string/heading_sub_case_epid_burial_visited"
-                    style="@style/ReadActivitySubHeadingNoBMarginStyle"
-                    />
-
-                <de.symeda.sormas.app.component.TeboButton
-                    android:id="@+id/btnNewBurialEntry"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    app:text="@string/action_new"
-                    app:buttonType="line_primary"
-                    app:rounded="true"
-                    app:slim="true"
-                    app:drawableLeft="@drawable/ic_add_24dp"
-                    app:onButtonOnClick="@{(view) -> addBurialEntryClickCallback.onClick(view, data)}"
-                    />
-
-            </RelativeLayout>
-
-            <ImageView
-                android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
-                app:goneIfEmpty="@{burialList}"
-                style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
-
+            <!-- Burial Controls -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:clipToPadding="false"
-                android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
-                android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
-                android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
-                android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
-                app:entries="@{burialList}"
-                app:layout="@{@layout/row_case_epid_read_burial_layout}"
-                app:callback="@{burialItemClickCallback}"
-                />
-
-
-        </LinearLayout>
-
-
-        <!-- Social Event Controls -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            >
-
-            <de.symeda.sormas.app.component.TeboSwitch
-                android:id="@+id/swhGathering"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:paddingTop="@dimen/defaultControlVerticalPadding"
-                app:paddingBottom="@dimen/defaultControlVerticalPadding"
-                app:background="@drawable/control_switch_background_border"
-                app:borderSize="@dimen/defaultControlStrokeWidth"
-                app:textColor="@color/control_switch_color_selector"
-                app:hint="@string/hint_case_epid_visited_social_event"
-                app:labelCaption="@string/label_case_epid_visited_social_event"
-                app:description="@string/desc_case_epid_visited_social_event"
-                app:required="true"
-                app:orientation="horizontal"
-                app:slim="false"
-                app:includeUnknown="@{false}"
-                app:enumClass="@{yesNoUnknownClass}"
-                app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                app:abbrevUnknown="@{false}"
-                app:value="@={data.gatheringAttended}"
-                app:onCheckedChangeListener="@{gatheringCallback}"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
-                />
-
-        </LinearLayout>
-
-        <!-- Social Event History -->
-        <LinearLayout
-            android:id="@+id/ctrlGatherings"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/formListSectionBackground"
-            android:layout_marginBottom="@dimen/textControlMarginBottom"
-            android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            >
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:alternateBottomMarginIfEmpty="@{gatheringList}"
-                app:emptyBottomMargin="@{@dimen/parentLayoutVerticalMargin}"
-                app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
                 >
 
-                <TextView
-                    android:id="@+id/hGathering"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:text="@string/heading_sub_case_epid_social_events"
-                    style="@style/ReadActivitySubHeadingNoBMarginStyle"
-                    />
-
-                <de.symeda.sormas.app.component.TeboButton
-                    android:id="@+id/btnNewGatheringEntry"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    app:text="@string/action_new"
-                    app:buttonType="line_primary"
-                    app:rounded="true"
-                    app:slim="true"
-                    app:drawableLeft="@drawable/ic_add_24dp"
-                    app:onButtonOnClick="@{(view) -> addGatheringEntryClickCallback.onClick(view, data)}"
-                    />
-
-            </RelativeLayout>
-
-            <ImageView
-                android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
-                app:goneIfEmpty="@{gatheringList}"
-                style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:clipToPadding="false"
-                android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
-                android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
-                android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
-                android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
-                app:entries="@{gatheringList}"
-                app:layout="@{@layout/row_case_epid_read_social_events_layout}"
-                app:callback="@{gatheringItemClickCallback}"
-                />
-
-
-        </LinearLayout>
-
-        <!-- Travel Controls -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            >
-            <de.symeda.sormas.app.component.TeboSwitch
-                android:id="@+id/swhTraveled"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:paddingTop="@dimen/defaultControlVerticalPadding"
-                app:paddingBottom="@dimen/defaultControlVerticalPadding"
-                app:background="@drawable/control_switch_background_border"
-                app:borderSize="@dimen/defaultControlStrokeWidth"
-                app:textColor="@color/control_switch_color_selector"
-                app:hint="@string/hint_case_epid_travel"
-                app:labelCaption="@string/label_case_epid_travel"
-                app:description="@string/desc_case_epid_travel"
-                app:required="true"
-                app:orientation="horizontal"
-                app:slim="false"
-                app:includeUnknown="@{false}"
-                app:enumClass="@{yesNoUnknownClass}"
-                app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                app:abbrevUnknown="@{false}"
-                app:value="@={data.traveled}"
-                app:onCheckedChangeListener="@{travelCallback}"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
-                />
-
-        </LinearLayout>
-
-        <!-- Travel History -->
-        <!--android:paddingBottom="@dimen/parentLayoutVerticalMargin"-->
-        <LinearLayout
-            android:id="@+id/ctrlTravels"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/formListSectionBackground"
-            android:layout_marginBottom="@dimen/textControlMarginBottom"
-            android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            >
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:alternateBottomMarginIfEmpty="@{travelList}"
-                app:emptyBottomMargin="@{@dimen/parentLayoutVerticalMargin}"
-                app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}"
-                >
-
-                <TextView
-                    android:id="@+id/hTravel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:text="@string/heading_sub_case_epid_travels"
-                    style="@style/ReadActivitySubHeadingNoBMarginStyle"
-                    />
-
-                <de.symeda.sormas.app.component.TeboButton
-                    android:id="@+id/btnNewTravelEntry"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    app:text="@string/action_new"
-                    app:buttonType="line_primary"
-                    app:rounded="true"
-                    app:slim="true"
-                    app:drawableLeft="@drawable/ic_add_24dp"
-                    app:onButtonOnClick="@{(view) -> addTravelEntryClickCallback.onClick(view, data)}"
-                    />
-
-            </RelativeLayout>
-
-            <ImageView
-                android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
-                app:goneIfEmpty="@{travelList}"
-                style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:clipToPadding="false"
-                android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
-                android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
-                android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
-                android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
-                app:entries="@{travelList}"
-                app:layout="@{@layout/row_case_epid_read_travel_layout}"
-                app:callback="@{travelItemClickCallback}"
-                />
-
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            >
-
-
-            <android.support.v4.widget.NestedScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                >
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recyclerViewForList"
+                <de.symeda.sormas.app.component.TeboHint
+                    android:id="@+id/txtEpidTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/listActivityRowBackground"
-                    android:nestedScrollingEnabled="false"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:singleLine="false"
+                    app:maxLines="5"
+                    app:inputType="textMultiLine"
+                    app:showCaption="false"
+                    app:labelCaption="@string/label_case_epid_info"
+                    app:description="@string/desc_case_epid_info"
+                    app:value="@{@string/epiData_infoText}"
                     />
 
-
-            </android.support.v4.widget.NestedScrollView>
-
-        </LinearLayout>
-
-
-        <!-- Environmental Exposure -->
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            >
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/heading_sub_case_epid_environmental_exposure"
-                style="@style/ReadActivitySubHeadingStyle"
-                />
-
-
-            <de.symeda.sormas.app.component.TeboSpinner
-                android:id="@+id/spnSourceOfDrinkingWater"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_case_epid_source_of_drinking_water"
-                app:labelCaption="@string/label_case_epid_source_of_drinking_water"
-                app:description="@string/desc_case_epid_source_of_drinking_water"
-                app:required="true"
-                app:spinnerMode="dialog"
-                app:value="@={data.waterSource}"
-                />
-
-
-            <de.symeda.sormas.app.component.TeboTextInputEditText
-                android:id="@+id/txtSourceOfDrinkingWaterOther"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                android:visibility="gone"
-                app:hint="@string/hint_case_epid_source_of_drinking_water"
-                app:labelCaption="@string/label_case_epid_source_of_drinking_water"
-                app:description="@string/desc_case_epid_source_of_drinking_water"
-                app:required="true"
-                app:value="@={data.waterSourceOther}"
-                app:nextFocusDown="@+id/txtControl1"
-                app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
-                />
-
-
-            <android.support.v4.widget.NestedScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                >
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recyclerViewForEnvExposureList"
+                <de.symeda.sormas.app.component.TeboSwitch
+                    android:id="@+id/swhBurial"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/listActivityRowBackground"
-                    android:nestedScrollingEnabled="false"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:paddingTop="@dimen/defaultControlVerticalPadding"
+                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                    app:background="@drawable/control_switch_background_border"
+                    app:borderSize="@dimen/defaultControlStrokeWidth"
+                    app:textColor="@color/control_switch_color_selector"
+                    app:hint="@string/hint_case_epid_visited_burial"
+                    app:labelCaption="@string/label_case_epid_visited_burial"
+                    app:description="@string/desc_case_epid_visited_burial"
+                    app:required="true"
+                    app:orientation="horizontal"
+                    app:slim="false"
+                    app:includeUnknown="@{false}"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
+                    app:abbrevUnknown="@{false}"
+                    app:value="@={data.burialAttended}"
+                    app:onCheckedChangeListener="@{burialCallback}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+            </LinearLayout>
+
+            <!-- Burial History -->
+            <!--android:paddingBottom="@dimen/parentLayoutVerticalMargin"-->
+            <LinearLayout
+                android:id="@+id/ctrlBurials"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/formListSectionBackground"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                >
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:alternateBottomMarginIfEmpty="@{burialList}"
+                    app:emptyBottomMargin="@{@dimen/parentLayoutVerticalMargin}"
+                    app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}"
+                    >
+
+                    <TextView
+                        android:id="@+id/hBurial"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/heading_sub_case_epid_burial_visited"
+                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        />
+
+                    <de.symeda.sormas.app.component.TeboButton
+                        android:id="@+id/btnNewBurialEntry"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        app:text="@string/action_new"
+                        app:buttonType="line_primary"
+                        app:rounded="true"
+                        app:slim="true"
+                        app:drawableLeft="@drawable/ic_add_24dp"
+                        app:onButtonOnClick="@{(view) -> addBurialEntryClickCallback.onClick(view, data)}"
+                        />
+
+                </RelativeLayout>
+
+                <ImageView
+                    android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
+                    app:goneIfEmpty="@{burialList}"
+                    style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:clipToPadding="false"
+                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
+                    android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
+                    app:entries="@{burialList}"
+                    app:layout="@{@layout/row_case_epid_read_burial_layout}"
+                    app:callback="@{burialItemClickCallback}"
                     />
 
 
-            </android.support.v4.widget.NestedScrollView>
+            </LinearLayout>
+
+
+            <!-- Social Event Controls -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                >
+
+                <de.symeda.sormas.app.component.TeboSwitch
+                    android:id="@+id/swhGathering"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:paddingTop="@dimen/defaultControlVerticalPadding"
+                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                    app:background="@drawable/control_switch_background_border"
+                    app:borderSize="@dimen/defaultControlStrokeWidth"
+                    app:textColor="@color/control_switch_color_selector"
+                    app:hint="@string/hint_case_epid_visited_social_event"
+                    app:labelCaption="@string/label_case_epid_visited_social_event"
+                    app:description="@string/desc_case_epid_visited_social_event"
+                    app:required="true"
+                    app:orientation="horizontal"
+                    app:slim="false"
+                    app:includeUnknown="@{false}"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
+                    app:abbrevUnknown="@{false}"
+                    app:value="@={data.gatheringAttended}"
+                    app:onCheckedChangeListener="@{gatheringCallback}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+            </LinearLayout>
+
+            <!-- Social Event History -->
+            <LinearLayout
+                android:id="@+id/ctrlGatherings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/formListSectionBackground"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                >
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:alternateBottomMarginIfEmpty="@{gatheringList}"
+                    app:emptyBottomMargin="@{@dimen/parentLayoutVerticalMargin}"
+                    app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}"
+                    >
+
+                    <TextView
+                        android:id="@+id/hGathering"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/heading_sub_case_epid_social_events"
+                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        />
+
+                    <de.symeda.sormas.app.component.TeboButton
+                        android:id="@+id/btnNewGatheringEntry"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        app:text="@string/action_new"
+                        app:buttonType="line_primary"
+                        app:rounded="true"
+                        app:slim="true"
+                        app:drawableLeft="@drawable/ic_add_24dp"
+                        app:onButtonOnClick="@{(view) -> addGatheringEntryClickCallback.onClick(view, data)}"
+                        />
+
+                </RelativeLayout>
+
+                <ImageView
+                    android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
+                    app:goneIfEmpty="@{gatheringList}"
+                    style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:clipToPadding="false"
+                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
+                    android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
+                    app:entries="@{gatheringList}"
+                    app:layout="@{@layout/row_case_epid_read_social_events_layout}"
+                    app:callback="@{gatheringItemClickCallback}"
+                    />
+
+
+            </LinearLayout>
+
+            <!-- Travel Controls -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                >
+                <de.symeda.sormas.app.component.TeboSwitch
+                    android:id="@+id/swhTraveled"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:paddingTop="@dimen/defaultControlVerticalPadding"
+                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                    app:background="@drawable/control_switch_background_border"
+                    app:borderSize="@dimen/defaultControlStrokeWidth"
+                    app:textColor="@color/control_switch_color_selector"
+                    app:hint="@string/hint_case_epid_travel"
+                    app:labelCaption="@string/label_case_epid_travel"
+                    app:description="@string/desc_case_epid_travel"
+                    app:required="true"
+                    app:orientation="horizontal"
+                    app:slim="false"
+                    app:includeUnknown="@{false}"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
+                    app:abbrevUnknown="@{false}"
+                    app:value="@={data.traveled}"
+                    app:onCheckedChangeListener="@{travelCallback}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+            </LinearLayout>
+
+            <!-- Travel History -->
+            <!--android:paddingBottom="@dimen/parentLayoutVerticalMargin"-->
+            <LinearLayout
+                android:id="@+id/ctrlTravels"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/formListSectionBackground"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                >
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:alternateBottomMarginIfEmpty="@{travelList}"
+                    app:emptyBottomMargin="@{@dimen/parentLayoutVerticalMargin}"
+                    app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}"
+                    >
+
+                    <TextView
+                        android:id="@+id/hTravel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/heading_sub_case_epid_travels"
+                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        />
+
+                    <de.symeda.sormas.app.component.TeboButton
+                        android:id="@+id/btnNewTravelEntry"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        app:text="@string/action_new"
+                        app:buttonType="line_primary"
+                        app:rounded="true"
+                        app:slim="true"
+                        app:drawableLeft="@drawable/ic_add_24dp"
+                        app:onButtonOnClick="@{(view) -> addTravelEntryClickCallback.onClick(view, data)}"
+                        />
+
+                </RelativeLayout>
+
+                <ImageView
+                    android:layout_marginBottom="@dimen/closelyRelatedControlMarginBottom"
+                    app:goneIfEmpty="@{travelList}"
+                    style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:clipToPadding="false"
+                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
+                    android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
+                    app:entries="@{travelList}"
+                    app:layout="@{@layout/row_case_epid_read_travel_layout}"
+                    app:callback="@{travelItemClickCallback}"
+                    />
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                >
+
+
+                <android.support.v4.widget.NestedScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    >
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recyclerViewForList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/listActivityRowBackground"
+                        android:nestedScrollingEnabled="false"
+                        />
+
+
+                </android.support.v4.widget.NestedScrollView>
+
+            </LinearLayout>
+
+
+            <!-- Environmental Exposure -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                >
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/heading_sub_case_epid_environmental_exposure"
+                    style="@style/ReadActivitySubHeadingStyle"
+                    />
+
+
+                <de.symeda.sormas.app.component.TeboSpinner
+                    android:id="@+id/spnSourceOfDrinkingWater"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:hint="@string/hint_case_epid_source_of_drinking_water"
+                    app:labelCaption="@string/label_case_epid_source_of_drinking_water"
+                    app:description="@string/desc_case_epid_source_of_drinking_water"
+                    app:required="true"
+                    app:spinnerMode="dialog"
+                    app:value="@={data.waterSource}"
+                    />
+
+
+                <de.symeda.sormas.app.component.TeboTextInputEditText
+                    android:id="@+id/txtSourceOfDrinkingWaterOther"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    android:visibility="gone"
+                    app:hint="@string/hint_case_epid_source_of_drinking_water"
+                    app:labelCaption="@string/label_case_epid_source_of_drinking_water"
+                    app:description="@string/desc_case_epid_source_of_drinking_water"
+                    app:required="true"
+                    app:value="@={data.waterSourceOther}"
+                    app:nextFocusDown="@+id/txtControl1"
+                    app:imeOptions="actionNext"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+
+                <android.support.v4.widget.NestedScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    >
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recyclerViewForEnvExposureList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/listActivityRowBackground"
+                        android:nestedScrollingEnabled="false"
+                        />
+
+
+                </android.support.v4.widget.NestedScrollView>
+            </LinearLayout>
+
+
+
         </LinearLayout>
 
 
-
-    </LinearLayout>
+    </ScrollView>
 
 </layout>
 

@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.caze.edit.sub;
 
 import android.databinding.ObservableArrayList;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -14,7 +15,6 @@ import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -25,16 +25,21 @@ import de.symeda.sormas.app.component.OnLinkClickListener;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
 import de.symeda.sormas.app.component.TeboSpinner;
 import de.symeda.sormas.app.component.TeboSwitch;
+import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.YesNo;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentSampleEditLayoutBinding;
-import de.symeda.sormas.app.sample.SampleFormNavigationCapsule;
-import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.sample.edit.SampleEditActivity;
+import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
+import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.util.DataUtils;
 
 /**
@@ -45,8 +50,9 @@ import de.symeda.sormas.app.util.DataUtils;
  * sampson.orson@technologyboard.org
  */
 
-public class CaseEditSampleInfoFragment extends BaseEditActivityFragment<FragmentSampleEditLayoutBinding, Sample> implements OnTeboSwitchCheckedChangeListener {
+public class CaseEditSampleInfoFragment extends BaseEditActivityFragment<FragmentSampleEditLayoutBinding, Sample, Sample> implements OnTeboSwitchCheckedChangeListener {
 
+    private AsyncTask onResumeTask;
     private String caseUuid = null;
     private String recordUuid = null;
     private ShipmentStatus pageStatus;
@@ -92,14 +98,18 @@ public class CaseEditSampleInfoFragment extends BaseEditActivityFragment<Fragmen
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            if (caseUuid != null && !caseUuid.isEmpty()) {
-                Case associatedCase = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
-                resultHolder.forItem().add(DatabaseHelper.getSampleDao().build(associatedCase));
-                resultHolder.forItem().add(DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record));
-            } else {
-                resultHolder.forItem().add(DatabaseHelper.getSampleDao().queryUuid(recordUuid));
-                resultHolder.forItem().add(DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record));
+            SampleTest sampleTest = null;
+            Sample sample = getActivityRootData();
+
+            if (sample != null) {
+                if (sample.isUnreadOrChildUnread())
+                    DatabaseHelper.getSampleDao().markAsRead(sample);
+
+                sampleTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(sample);
             }
+
+            resultHolder.forItem().add(sample);
+            resultHolder.forItem().add(sampleTest);
 
             resultHolder.forOther().add(DataUtils.getEnumItems(SampleMaterial.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(SampleTestType.class, false));
@@ -113,6 +123,9 @@ public class CaseEditSampleInfoFragment extends BaseEditActivityFragment<Fragmen
             //Item Data
             if (itemIterator.hasNext())
                 record =  itemIterator.next();
+
+            if (record == null)
+                getActivity().finish();
 
             if (itemIterator.hasNext())
                 mostRecentTest = itemIterator.next();
@@ -219,6 +232,11 @@ public class CaseEditSampleInfoFragment extends BaseEditActivityFragment<Fragmen
                 return (testTypeList.size() > 0) ? DataUtils.addEmptyItem(testTypeList)
                         : testTypeList;
             }
+
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
+            }
         });
 
         contentBinding.spnSampleMaterial.initialize(new TeboSpinner.ISpinnerInitConfig() {
@@ -231,6 +249,11 @@ public class CaseEditSampleInfoFragment extends BaseEditActivityFragment<Fragmen
             public List<Item> getDataSource(Object parentValue) {
                 return (sampleMaterialList.size() > 0) ? DataUtils.addEmptyItem(sampleMaterialList)
                         : sampleMaterialList;
+            }
+
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
             }
 
             @Override
@@ -262,10 +285,81 @@ public class CaseEditSampleInfoFragment extends BaseEditActivityFragment<Fragmen
                 return (labList.size() > 0) ? DataUtils.toItems(labList)
                         : DataUtils.toItems(labList, false);
             }
+
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
+            }
         });
 
         contentBinding.dtpDateAndTimeOfSampling.initialize(getFragmentManager());
         contentBinding.dtpShipmentDate.initialize(getFragmentManager());
+    }
+
+    @Override
+    protected void updateUI(FragmentSampleEditLayoutBinding contentBinding, Sample sample) {
+
+    }
+
+    @Override
+    public void onPageResume(FragmentSampleEditLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    SampleTest sampleTest = null;
+                    Sample sample = getActivityRootData();
+
+                    if (sample != null) {
+                        if (sample.isUnreadOrChildUnread())
+                            DatabaseHelper.getSampleDao().markAsRead(sample);
+
+                        sampleTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(sample);
+                    }
+
+                    resultHolder.forItem().add(sample);
+                    resultHolder.forItem().add(sampleTest);
+                }
+            });
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+
+                    if (itemIterator.hasNext())
+                        record = itemIterator.next();
+
+                    if (itemIterator.hasNext())
+                        mostRecentTest = itemIterator.next();
+
+                    if (record != null)
+                        requestLayoutRebind();
+                    else {
+                        getActivity().finish();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
+
     }
 
     @Override
@@ -308,9 +402,9 @@ public class CaseEditSampleInfoFragment extends BaseEditActivityFragment<Fragmen
         return false;
     }
 
-    public static CaseEditSampleInfoFragment newInstance(IActivityCommunicator activityCommunicator, SampleFormNavigationCapsule capsule)
+    public static CaseEditSampleInfoFragment newInstance(IActivityCommunicator activityCommunicator, SampleFormNavigationCapsule capsule, Sample activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, CaseEditSampleInfoFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseEditSampleInfoFragment.class, capsule, activityRootData);
     }
 
     @Override
@@ -337,5 +431,13 @@ public class CaseEditSampleInfoFragment extends BaseEditActivityFragment<Fragmen
             getContentBinding().divShippingStatusTop.setVisibility(View.GONE);
             getContentBinding().divShippingStatusBottom.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (onResumeTask != null && !onResumeTask.isCancelled())
+            onResumeTask.cancel(true);
     }
 }

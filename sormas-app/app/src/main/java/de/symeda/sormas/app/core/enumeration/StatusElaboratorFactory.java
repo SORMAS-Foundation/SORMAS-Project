@@ -3,7 +3,7 @@ package de.symeda.sormas.app.core.enumeration;
 import android.content.Context;
 import android.content.res.Resources;
 
-import de.symeda.sormas.app.sample.ShipmentStatus;
+import de.symeda.sormas.app.shared.ShipmentStatus;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;

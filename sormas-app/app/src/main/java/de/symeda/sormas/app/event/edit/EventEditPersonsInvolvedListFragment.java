@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.event.edit;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -18,11 +19,16 @@ import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentEditListLayoutBinding;
-import de.symeda.sormas.app.event.EventFormNavigationCapsule;
+import de.symeda.sormas.app.event.edit.sub.EventEditPersonsInvolvedInfoActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 
 /**
  * Created by Orson on 12/02/2018.
@@ -32,8 +38,9 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
  * sampson.orson@technologyboard.org
  */
 
-public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragment<FragmentEditListLayoutBinding, List<EventParticipant>> implements OnListItemClickListener {
+public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragment<FragmentEditListLayoutBinding, List<EventParticipant>, Event> implements OnListItemClickListener {
 
+    private AsyncTask onResumeTask;
     private String recordUuid = null;
     private EventStatus pageStatus = null;
     private List<EventParticipant> record;
@@ -45,7 +52,6 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
     }
@@ -57,7 +63,6 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
-        //filterStatus = (EventStatus) getFilterStatusArg(arguments);
         pageStatus = (EventStatus) getPageStatusArg(arguments);
     }
 
@@ -74,18 +79,22 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            Event event = DatabaseHelper.getEventDao().queryUuid(recordUuid);
+            Event event = getActivityRootData();
+            List<EventParticipant> eventParticipantList = new ArrayList<EventParticipant>();
 
+            //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
             if (event != null) {
-                resultHolder.forList().add(DatabaseHelper.getEventParticipantDao().getByEvent(event));
-            } else {
-                resultHolder.forList().add(new ArrayList<EventParticipant>());
+                if (event.isUnreadOrChildUnread())
+                    DatabaseHelper.getEventDao().markAsRead(event);
+
+                eventParticipantList = DatabaseHelper.getEventParticipantDao().getByEvent(event);
             }
+
+            resultHolder.forList().add(eventParticipantList);
         } else {
             ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
             if (listIterator.hasNext()) {
                 record = listIterator.next();
-
             }
         }
 
@@ -109,6 +118,73 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
     }
 
     @Override
+    protected void updateUI(FragmentEditListLayoutBinding contentBinding, List<EventParticipant> eventParticipants) {
+
+    }
+
+    @Override
+    public void onPageResume(FragmentEditListLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
+        if (swiperefresh != null) {
+            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, false, true, swiperefresh, null);
+                }
+            });
+        }
+
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    Event event = getActivityRootData();
+                    List<EventParticipant> eventParticipantList = new ArrayList<EventParticipant>();
+
+                    //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
+                    if (event != null) {
+                        if (event.isUnreadOrChildUnread())
+                            DatabaseHelper.getEventDao().markAsRead(event);
+
+                        eventParticipantList = DatabaseHelper.getEventParticipantDao().getByEvent(event);
+                    }
+
+                    resultHolder.forList().add(eventParticipantList);
+                }
+            });
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
+                    if (listIterator.hasNext())
+                        record = listIterator.next();
+
+                    requestLayoutRebind();
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
+    }
+
+    @Override
     public int getRootEditLayout() {
         return R.layout.fragment_root_list_edit_layout;
     }
@@ -124,22 +200,13 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public boolean showSaveAction() {
+        return false;
+    }
 
-        //adapter.replaceAll(new ArrayList<EventParticipant>(record));
-        //adapter.notifyDataSetChanged();
-
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)getRootBinding().getRoot()
-                .findViewById(R.id.swiperefresh);
-
-        swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getBaseEditActivity().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly,
-                        true, false, swiperefresh, null);
-            }
-        });
+    @Override
+    public boolean showAddAction() {
+        return true;
     }
 
     @Override
@@ -150,9 +217,17 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
         EventEditPersonsInvolvedInfoActivity.goToActivity(getActivity(), dataCapsule);
     }
 
-    public static EventEditPersonsInvolvedListFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule)
+    public static EventEditPersonsInvolvedListFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, EventEditPersonsInvolvedListFragment.class, capsule);
+        return newInstance(activityCommunicator, EventEditPersonsInvolvedListFragment.class, capsule, activityRootData);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (onResumeTask != null && !onResumeTask.isCancelled())
+            onResumeTask.cancel(true);
     }
 }
 

@@ -13,16 +13,15 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.OnLinkClickListener;
-import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentContactReadLayoutBinding;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 
 /**
  * Created by Orson on 01/01/2018.
@@ -34,7 +33,7 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
     private ContactClassification pageStatus = null;
     private Contact record;
     private Case associatedCase;
-    private View.OnClickListener createCaseCallback;
+    //private View.OnClickListener createCaseCallback;
     private OnLinkClickListener openCaseLinkCallback;
 
     @Override
@@ -88,21 +87,22 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
 
     @Override
     public void onLayoutBinding(FragmentContactReadLayoutBinding contentBinding) {
-        if (associatedCase == null) {
-            contentBinding.associatedCaseLayout.setVisibility(View.GONE);
-        } else {
-            contentBinding.contactPageBottomCtrlPanel.setVisibility(View.GONE);
-        }
-
         setVisibilityByDisease(ContactDto.class, record.getCaze().getDisease(), contentBinding.mainContent);
 
-        contentBinding.setCreateCaseCallback(createCaseCallback);
+        //contentBinding.setCreateCaseCallback(createCaseCallback);
         contentBinding.setOpenCaseLinkCallback(openCaseLinkCallback);
         contentBinding.setData(record);
     }
 
     @Override
     public void onAfterLayoutBinding(FragmentContactReadLayoutBinding contentBinding) {
+
+    }
+
+    @Override
+    public void onPageResume(FragmentContactReadLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
 
     }
 
@@ -140,14 +140,14 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
     }
 
     private void setupCallback() {
-        createCaseCallback = new View.OnClickListener() {
+        /*createCaseCallback = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 CaseFormNavigationCapsule dataCapsule = (CaseFormNavigationCapsule)new CaseFormNavigationCapsule(getContext(),
                         "").setContactUuid(recordUuid);
                 CaseNewActivity.goToActivity(getContext(), dataCapsule);
             }
-        };
+        };*/
 
         openCaseLinkCallback = new OnLinkClickListener() {
             @Override

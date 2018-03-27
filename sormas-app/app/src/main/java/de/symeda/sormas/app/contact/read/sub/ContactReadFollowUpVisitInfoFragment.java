@@ -8,7 +8,7 @@ import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.contact.ContactFormFollowUpNavigationCapsule;
+import de.symeda.sormas.app.shared.ContactFormFollowUpNavigationCapsule;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -68,6 +68,13 @@ public class ContactReadFollowUpVisitInfoFragment extends BaseReadActivityFragme
     }
 
     @Override
+    public void onPageResume(FragmentContactReadVisitInfoLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
+    }
+
+    @Override
     protected String getSubHeadingTitle() {
         return null;
     }
@@ -90,6 +97,11 @@ public class ContactReadFollowUpVisitInfoFragment extends BaseReadActivityFragme
     @Override
     public int getReadLayout() {
         return R.layout.fragment_contact_read_visit_info_layout;
+    }
+
+    @Override
+    public boolean includeFabNonOverlapPadding() {
+        return false;
     }
 
     public static ContactReadFollowUpVisitInfoFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormFollowUpNavigationCapsule capsule)

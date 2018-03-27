@@ -10,7 +10,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -67,6 +67,13 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
     }
 
     @Override
+    public void onPageResume(FragmentCaseReadPatientInfoLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
+    }
+
+    @Override
     public void onAfterLayoutBinding(FragmentCaseReadPatientInfoLayoutBinding contentBinding) {
         if (record != null) {
             personRecord = record.getPerson();
@@ -87,6 +94,11 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
     @Override
     public int getReadLayout() {
         return R.layout.fragment_case_read_patient_info_layout;
+    }
+
+    @Override
+    public boolean includeFabNonOverlapPadding() {
+        return false;
     }
 
     public static CaseReadPatientInfoFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)

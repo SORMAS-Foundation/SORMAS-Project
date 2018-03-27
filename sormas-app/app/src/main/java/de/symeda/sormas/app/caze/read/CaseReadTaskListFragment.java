@@ -16,7 +16,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -24,7 +24,7 @@ import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentCaseReadTaskLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
+import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.task.read.TaskReadActivity;
 
 /**
@@ -95,21 +95,20 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentC
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)getRootBinding().getRoot()
-                .findViewById(R.id.swiperefresh);
-
+    public void onPageResume(FragmentCaseReadTaskLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getBaseReadActivity().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly,
-                            true, false, swiperefresh, null);
+                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, false, true, swiperefresh, null);
                 }
             });
         }
+
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
     }
 
     @Override
@@ -131,6 +130,11 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentC
         //recyclerViewForList.setAdapter(adapter);
         //binding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         //binding.recyclerViewForList.setAdapter(adapter);
+    }
+
+    @Override
+    public int getRootReadLayout() {
+        return R.layout.fragment_root_list_edit_layout;
     }
 
     @Override
@@ -157,6 +161,11 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentC
 
             startActivity(intent);
         }*/
+    }
+
+    @Override
+    public boolean includeFabNonOverlapPadding() {
+        return false;
     }
 
     public static CaseReadTaskListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)

@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.component;
 
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
@@ -22,6 +23,7 @@ public abstract class TeboSwitchState {
     public static final TeboSwitchState NORMAL = new NormalState();
     public static final TeboSwitchState PRESSED = new PressedState();
     public static final TeboSwitchState CHECKED = new CheckedState();
+    public static final TeboSwitchState DISABLED = new DisabledState();
 
     private static final int DRAWABLE_SHAPE = GradientDrawable.RECTANGLE;
     private static final int STROKE_COLOR = SormasColor.SWITCH_CHECKED_BG;
@@ -38,19 +40,21 @@ public abstract class TeboSwitchState {
         this.displayName = displayName;
     }
 
-    private static Drawable createDrawable(TeboSwitch.ButtonPosition last, int backgroundColor) {
+    private static Drawable createDrawable(TeboSwitch.ButtonPosition last, int backgroundColor, boolean errorState, int backgroundColorError) {
         if (last == TeboSwitch.ButtonPosition.LAST) {
             GradientDrawable drawable = new GradientDrawable();
             drawable.setShape(DRAWABLE_SHAPE);
-            drawable.setColor(backgroundColor);
+            drawable.setColor((errorState)? backgroundColorError : backgroundColor);
 
             return drawable;
         }
 
         GradientDrawable innerDrawable = new GradientDrawable();
         innerDrawable.setShape(DRAWABLE_SHAPE);
-        innerDrawable.setColor(backgroundColor);
-        innerDrawable.setStroke(BUTTON_DIVIDER_WIDTH, STROKE_COLOR);
+        innerDrawable.setColor((errorState)? backgroundColorError : backgroundColor);
+        //innerDrawable.setStroke(BUTTON_DIVIDER_WIDTH, STROKE_COLOR); //
+        //(errorState)? backgroundColorError : backgroundColor
+        innerDrawable.setStroke(BUTTON_DIVIDER_WIDTH, (errorState)? getStrokeButtonDividerError() : getStrokeButtonDivider());
 
         LayerDrawable drawable = new LayerDrawable(new Drawable[] {innerDrawable});
         drawable.setLayerInset(0, LAST_BG_INSET_LEFT, LAST_BG_INSET_TOP,
@@ -60,15 +64,47 @@ public abstract class TeboSwitchState {
 
     }
 
-    public Drawable getDefaultDrawable() {
-        return getDrawable(TeboSwitch.ButtonPosition.NOT_LAST);
+    private static ColorStateList getStrokeButtonDividerError() {
+        int[][] states = new int[][] {
+                new int[] {-android.R.attr.state_checked, -android.R.attr.state_enabled, -android.R.attr.state_checkable, -android.R.attr.state_focused},
+                new int[] {-android.R.attr.state_enabled},
+                new int[] {android.R.attr.state_enabled},
+        };
+
+        int[] thumbColors = new int[] {
+                SormasColor.SWITCH_CHECKED_DISABLED_BG,
+                SormasColor.SWITCH_CHECKED_DISABLED_BG,
+                SormasColor.WATCHOUT,
+        };
+
+        return new ColorStateList(states, thumbColors);
     }
 
-    public Drawable getDrawableForLastPosition() {
-        return getDrawable(TeboSwitch.ButtonPosition.LAST);
+    private static ColorStateList getStrokeButtonDivider() {
+        int[][] states = new int[][] {
+                new int[] {-android.R.attr.state_checked, -android.R.attr.state_enabled, -android.R.attr.state_checkable, -android.R.attr.state_focused},
+                new int[] {-android.R.attr.state_enabled},
+                new int[] {android.R.attr.state_enabled},
+        };
+
+        int[] thumbColors = new int[] {
+                SormasColor.SWITCH_CHECKED_DISABLED_BG,
+                SormasColor.SWITCH_CHECKED_DISABLED_BG,
+                STROKE_COLOR,
+        };
+
+        return new ColorStateList(states, thumbColors);
     }
 
-    public abstract Drawable getDrawable(TeboSwitch.ButtonPosition last);
+    public Drawable getDefaultDrawable(boolean errorState) {
+        return getDrawable(TeboSwitch.ButtonPosition.NOT_LAST, errorState);
+    }
+
+    public Drawable getDrawableForLastPosition(boolean errorState) {
+        return getDrawable(TeboSwitch.ButtonPosition.LAST, errorState);
+    }
+
+    public abstract Drawable getDrawable(TeboSwitch.ButtonPosition last, boolean errorState);
 
     private static class NormalState extends TeboSwitchState {
 
@@ -77,8 +113,8 @@ public abstract class TeboSwitchState {
         }
 
         @Override
-        public Drawable getDrawable(TeboSwitch.ButtonPosition last) {
-            return createDrawable(last, SormasColor.SWITCH_UNCHECKED_BG);
+        public Drawable getDrawable(TeboSwitch.ButtonPosition last, boolean errorState) {
+            return createDrawable(last, SormasColor.SWITCH_UNCHECKED_BG, errorState, SormasColor.SWITCH_UNCHECKED_BG);
         }
     }
 
@@ -89,8 +125,8 @@ public abstract class TeboSwitchState {
         }
 
         @Override
-        public Drawable getDrawable(TeboSwitch.ButtonPosition last) {
-            return createDrawable(last, SormasColor.SWITCH_UNCHECKED_BG);
+        public Drawable getDrawable(TeboSwitch.ButtonPosition last, boolean errorState) {
+            return createDrawable(last, SormasColor.SWITCH_UNCHECKED_BG, errorState, SormasColor.SWITCH_UNCHECKED_BG);
         }
     }
 
@@ -101,8 +137,20 @@ public abstract class TeboSwitchState {
         }
 
         @Override
-        public Drawable getDrawable(TeboSwitch.ButtonPosition last) {
-            return createDrawable(last, SormasColor.SWITCH_CHECKED_BG);
+        public Drawable getDrawable(TeboSwitch.ButtonPosition last, boolean errorState) {
+            return createDrawable(last, SormasColor.SWITCH_CHECKED_BG, errorState, SormasColor.WATCHOUT);
+        }
+    }
+
+    private static class DisabledState extends TeboSwitchState {
+
+        public DisabledState() {
+            super(3, "Disabled");
+        }
+
+        @Override
+        public Drawable getDrawable(TeboSwitch.ButtonPosition last, boolean errorState) {
+            return createDrawable(last, SormasColor.SWITCH_CHECKED_DISABLED_BG, false, SormasColor.SWITCH_CHECKED_DISABLED_BG);
         }
     }
 

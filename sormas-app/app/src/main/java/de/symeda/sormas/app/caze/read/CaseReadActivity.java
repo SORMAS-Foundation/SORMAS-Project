@@ -16,7 +16,7 @@ import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.BoolResult;
@@ -75,6 +75,16 @@ public class CaseReadActivity  extends BaseReadActivity {
         //filterStatus = (InvestigationStatus) getFilterStatusArg(arguments);
         pageStatus = (CaseClassification) getPageStatusArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
     }
 
     @Override
@@ -143,7 +153,7 @@ public class CaseReadActivity  extends BaseReadActivity {
             activeFragment = CaseReadContactListFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         }else if (menuItem.getKey() == MENU_INDEX_SAMPLES) {
-            activeFragment = CaseReadSamplesFragment.newInstance(this, dataCapsule);
+            activeFragment = CaseReadSampleListFragment.newInstance(this, dataCapsule);
             replaceFragment(activeFragment);
         } else if (menuItem.getKey() == MENU_INDEX_TASKS) {
             activeFragment = CaseReadTaskListFragment.newInstance(this, dataCapsule);
@@ -225,13 +235,13 @@ public class CaseReadActivity  extends BaseReadActivity {
         try {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
                 @Override
-                public void preExecute() {
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
                     showPreloader();
                     hideFragmentView();
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
                     Case record = DatabaseHelper.getCaseDao().queryUuid(recordUuid);
 
                     if (record == null) {
@@ -242,9 +252,9 @@ public class CaseReadActivity  extends BaseReadActivity {
                     }
                 }
             });
-            jobTask = executor.search(new ITaskResultCallback() {
+            jobTask = executor.execute(new ITaskResultCallback() {
                 @Override
-                public void searchResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
                     hidePreloader();
                     showFragmentView();
 

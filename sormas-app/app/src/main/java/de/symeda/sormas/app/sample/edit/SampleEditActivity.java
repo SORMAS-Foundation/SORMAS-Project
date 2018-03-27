@@ -1,25 +1,45 @@
 package de.symeda.sormas.app.sample.edit;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 
 import java.util.ArrayList;
+import java.util.Date;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.sample.SampleDao;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.sample.SampleFormNavigationCapsule;
-import de.symeda.sormas.app.sample.ShipmentStatus;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
+import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.util.ConstantHelper;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.NavigationHelper;
+import de.symeda.sormas.app.util.SyncCallback;
 
 /**
  * Created by Orson on 05/02/2018.
@@ -29,8 +49,9 @@ import de.symeda.sormas.app.util.NavigationHelper;
  * sampson.orson@technologyboard.org
  */
 
-public class SampleEditActivity extends BaseEditActivity {
+public class SampleEditActivity extends BaseEditActivity<Sample> {
 
+    private AsyncTask saveTask;
     private LandingPageMenuItem activeMenuItem = null;
     private boolean showStatusFrame = false;
     private boolean showTitleBar = true;
@@ -40,8 +61,12 @@ public class SampleEditActivity extends BaseEditActivity {
     //private ShipmentStatus filterStatus = null;
     private ShipmentStatus pageStatus = null;
     private String recordUuid = null;
+    private String caseUuid = null;
     private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
-    private BaseEditActivityFragment activeFragment = null;;
+    private BaseEditActivityFragment activeFragment = null;
+
+    private MenuItem saveMenu = null;
+    private MenuItem addMenu = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -50,6 +75,7 @@ public class SampleEditActivity extends BaseEditActivity {
         //SaveFilterStatusState(outState, filterStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
+        SaveCaseUuidState(outState, caseUuid);
     }
 
     @Override
@@ -67,6 +93,7 @@ public class SampleEditActivity extends BaseEditActivity {
         //filterStatus = (ShipmentStatus) getFilterStatusArg(arguments);
         pageStatus = (ShipmentStatus) getPageStatusArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
+        caseUuid = getCaseUuidArg(arguments);
 
         this.activeMenuItem = null;
         this.showStatusFrame = true;
@@ -75,11 +102,29 @@ public class SampleEditActivity extends BaseEditActivity {
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment() throws IllegalAccessException, InstantiationException {
+    protected Sample getActivityRootData(String recordUuid) {
+        Sample sample;
+        if (caseUuid != null && !caseUuid.isEmpty()) {
+            Case associatedCase = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+            sample = DatabaseHelper.getSampleDao().build(associatedCase);
+        } else {
+            sample = DatabaseHelper.getSampleDao().queryUuid(recordUuid);
+        }
+
+        return sample;
+    }
+
+    @Override
+    protected Sample getActivityRootDataIfRecordUuidNull() {
+        return null;
+    }
+
+    @Override
+    public BaseEditActivityFragment getActiveEditFragment(Sample activityRootData) throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
-            SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(
-                    SampleEditActivity.this, recordUuid, pageStatus);
-            activeFragment = SampleEditFragment.newInstance(this, dataCapsule);
+            SampleFormNavigationCapsule dataCapsule = (SampleFormNavigationCapsule)new SampleFormNavigationCapsule(
+                    SampleEditActivity.this, recordUuid, pageStatus).setCaseUuid(caseUuid);
+            activeFragment = SampleEditFragment.newInstance(this, dataCapsule, activityRootData);
         }
 
         return activeFragment;
@@ -111,8 +156,8 @@ public class SampleEditActivity extends BaseEditActivity {
     }
 
     @Override
-    public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) {
-        return false;
+    protected BaseEditActivityFragment getNextFragment(LandingPageMenuItem menuItem, Sample activityRootData) {
+        return null;
     }
 
     @Override
@@ -125,13 +170,12 @@ public class SampleEditActivity extends BaseEditActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.edit_action_menu, menu);
 
-        MenuItem saveMenu = menu.findItem(R.id.action_save);
-        MenuItem addMenu = menu.findItem(R.id.action_new);
-
-        saveMenu.setVisible(true);
-        addMenu.setVisible(false);
+        saveMenu = menu.findItem(R.id.action_save);
+        addMenu = menu.findItem(R.id.action_new);
 
         saveMenu.setTitle(R.string.action_save_sample);
+
+        processActionbarMenu();
 
         return true;
     }
@@ -145,7 +189,7 @@ public class SampleEditActivity extends BaseEditActivity {
                 return true;
 
             case R.id.action_save:
-                //synchronizeChangedData();
+                saveData();
                 return true;
 
             case R.id.option_menu_action_sync:
@@ -187,9 +231,137 @@ public class SampleEditActivity extends BaseEditActivity {
         return R.string.heading_level4_sample_edit;
     }
 
+    private void processActionbarMenu() {
+        if (activeFragment == null)
+            return;
+
+        if (saveMenu != null)
+            saveMenu.setVisible(activeFragment.showSaveAction());
+
+        if (addMenu != null)
+            addMenu.setVisible(activeFragment.showAddAction());
+    }
+
+    private void saveData() {
+        if (activeFragment == null)
+            return;
+
+        SampleDao sampleDao = DatabaseHelper.getSampleDao();
+        Sample record = (Sample)activeFragment.getPrimaryData();
+
+        if (record == null)
+            return;
+
+        if (record.getReportingUser() == null) {
+            record.setReportingUser(ConfigProvider.getUser());
+        }
+        if (record.getReportDateTime() == null) {
+            record.setReportDateTime(new Date());
+        }
+
+        //TODO: Validation
+        /*FragmentSampleEditLayoutBinding binding = (FragmentSampleEditLayoutBinding)activeFragment.getContentBinding();
+        SampleValidator.clearErrorsForSampleData(binding);
+        if (!SampleValidator.validateSampleData(record, binding)) {
+            return true;
+        }*/
+
+
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                private SampleDao dao;
+                private Sample sample;
+                private String saveUnsuccessful;
+
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+
+                    saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_sample));
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    try {
+                        this.dao.saveAndSnapshot(this.sample);
+                    } catch (DaoException e) {
+                        Log.e(getClass().getName(), "Error while trying to save sample", e);
+                        resultHolder.setResultStatus(new BoolResult(false, saveUnsuccessful));
+                        ErrorReportingHelper.sendCaughtException(tracker, e, sample, true);
+                    }
+                }
+
+                private IJobDefinition init(SampleDao dao, Sample sample) {
+                    this.dao = dao;
+                    this.sample = sample;
+
+                    return this;
+                }
+
+            }.init(sampleDao, record));
+            saveTask = executor.execute(new ITaskResultCallback() {
+                private Sample sample;
+
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    if (!resultStatus.isSuccess()) {
+                        NotificationHelper.showNotification(SampleEditActivity.this, NotificationType.ERROR, resultStatus.getMessage());
+                        return;
+                    } else {
+                        NotificationHelper.showNotification(SampleEditActivity.this, NotificationType.SUCCESS, "Sample " + DataHelper.getShortUuid(sample.getUuid()) + " saved");
+                    }
+
+                    if (RetroProvider.isConnected()) {
+                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, SampleEditActivity.this, new SyncCallback() {
+                            @Override
+                            public void call(boolean syncFailed, String syncFailedMessage) {
+                                if (syncFailed) {
+                                    NotificationHelper.showNotification(SampleEditActivity.this, NotificationType.WARNING, String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_sample)));
+                                } else {
+                                    NotificationHelper.showNotification(SampleEditActivity.this, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_sample)));
+                                }
+                                finish();
+                            }
+                        });
+                    } else {
+                        NotificationHelper.showNotification(SampleEditActivity.this, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_sample)));
+                        finish();
+                    }
+
+                }
+
+                private ITaskResultCallback init(Sample sample) {
+                    this.sample = sample;
+
+                    return this;
+                }
+
+            }.init(record));
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
+    }
+
     public static <TActivity extends AbstractSormasActivity> void
     goToActivity(Context fromActivity, SampleFormNavigationCapsule dataCapsule) {
         BaseEditActivity.goToActivity(fromActivity, SampleEditActivity.class, dataCapsule);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (saveTask != null && !saveTask.isCancelled())
+            saveTask.cancel(true);
     }
 
 }

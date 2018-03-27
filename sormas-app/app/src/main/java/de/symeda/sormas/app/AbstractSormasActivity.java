@@ -1,5 +1,7 @@
 package de.symeda.sormas.app;
 
+import android.accounts.AuthenticatorException;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -17,12 +20,23 @@ import android.widget.ProgressBar;
 import com.google.android.gms.analytics.Tracker;
 
 import java.lang.ref.WeakReference;
+import java.net.ConnectException;
 
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.login.LoginActivity;
+import de.symeda.sormas.app.login.LoginHelper;
+import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
+import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.SyncCallback;
 
 public abstract class AbstractSormasActivity extends AppCompatActivity implements IActivityCommunicator {
     protected Tracker tracker;
@@ -128,25 +142,28 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
             activeActivity = null;
     }
 
+    @Override
     public void synchronizeCompleteData() {
         SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        synchronizeData(SynchronizeDataAsync.SyncMode.Complete, true, refreshLayout == null, refreshLayout, null);
+        synchronizeData(SynchronizeDataAsync.SyncMode.Complete, true, refreshLayout == null, true, refreshLayout, null);
     }
 
+    @Override
     public void synchronizeChangedData() {
         SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, refreshLayout == null, refreshLayout, null);
+        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, refreshLayout == null, true, refreshLayout, null);
     }
 
+    @Override
     public void synchronizeChangedData(Callback callback) {
         SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, refreshLayout == null, refreshLayout, callback);
+        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, refreshLayout == null, false, refreshLayout, callback);
     }
 
-    public void synchronizeData(SynchronizeDataAsync.SyncMode syncMode, final boolean showResultSnackbar, final boolean showProgressDialog, final SwipeRefreshLayout swipeRefreshLayout, final Callback callback) {
-        swipeRefreshLayout.setRefreshing(false);
-        //TODO: Orson - Uncomment synchronizeData
-        /*if (swipeRefreshLayout != null) {
+    @Override
+    public void synchronizeData(final SynchronizeDataAsync.SyncMode syncMode, final boolean showResultSnackbar, final boolean showProgressDialog, boolean showUpgradePrompt, final SwipeRefreshLayout swipeRefreshLayout, final Callback callback) {
+
+        if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setRefreshing(true);
         }
 
@@ -160,18 +177,33 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
                 RetroProvider.connect(getApplicationContext());
             } catch (AuthenticatorException e) {
                 if (showResultSnackbar) {
-                    Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                    //Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                    NotificationHelper.showNotification((INotificationContext) this, NotificationType.ERROR, e.getMessage());
                     errorMessage = e.getMessage();
                 }
                 // switch to LoginActivity is done below
-            } catch (RetroProvider.ApiVersionException e) {
-                if (showResultSnackbar) {
-                    Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
+            } catch (final RetroProvider.ApiVersionException e) {
+                if (showUpgradePrompt && e.getAppUrl() != null) {
+                    if (swipeRefreshLayout != null) {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                    AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), true,
+                            new Callback() {
+                                @Override
+                                public void call() {
+                                    synchronizeData(syncMode, showResultSnackbar, showProgressDialog, false, swipeRefreshLayout, callback);
+                                }
+                            });
+                    return;
+                } else if (showResultSnackbar) {
+                    //Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                    NotificationHelper.showNotification((INotificationContext) this, NotificationType.ERROR, e.getMessage());
                     errorMessage = e.getMessage();
                 }
             } catch (ConnectException e) {
                 if (showResultSnackbar) {
-                    Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                    //Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                    NotificationHelper.showNotification((INotificationContext) this, NotificationType.ERROR, e.getMessage());
                     errorMessage = e.getMessage();
                 }
             }
@@ -188,9 +220,9 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
 
         if (RetroProvider.isConnected()) {
 
-            final TeboProgressDialog progressDialog;
+            final ProgressDialog progressDialog;
             if (showProgressDialog) {
-                progressDialog = TeboProgressDialog.show(this, getString(R.string.headline_synchronization),
+                progressDialog = ProgressDialog.show(this, getString(R.string.headline_synchronization),
                         getString(R.string.hint_synchronization), true);
             } else {
                 progressDialog = null;
@@ -222,10 +254,12 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
                             if (syncLogCountAfter > syncLogCountBefore) {
                                 showConflictSnackbar();
                             } else {
-                                Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
+                                //Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
+                                NotificationHelper.showNotification((INotificationContext) AbstractSormasActivity.this, NotificationType.SUCCESS, R.string.snackbar_sync_success);
                             }
                         } else {
-                            Snackbar.make(findViewById(android.R.id.content), syncFailedMessage, Snackbar.LENGTH_LONG).show();
+                            //Snackbar.make(findViewById(android.R.id.content), syncFailedMessage, Snackbar.LENGTH_LONG).show();
+                            NotificationHelper.showNotification((INotificationContext) AbstractSormasActivity.this, NotificationType.ERROR, syncFailedMessage);
                         }
                     } else {
                         if (syncLogCountAfter > syncLogCountBefore) {
@@ -245,9 +279,10 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
             }
 
             if (showResultSnackbar) {
-                Snackbar.make(findViewById(android.R.id.content), errorMessage, Snackbar.LENGTH_LONG).show();
+                //Snackbar.make(findViewById(android.R.id.content), errorMessage, Snackbar.LENGTH_LONG).show();
+                NotificationHelper.showNotification((INotificationContext) AbstractSormasActivity.this, NotificationType.ERROR, errorMessage);
             }
-        }*/
+        }
     }
 
     private void showConflictSnackbar() {
@@ -259,6 +294,10 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
             }
         });
         snackbar.show();*/
+    }
+
+    public void logout(View view) {
+        LoginHelper.processLogout();
     }
 
     public void goToSettings(View view) {

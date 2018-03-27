@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.caze.edit.sub;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -13,10 +14,14 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentTaskEditLayoutBinding;
-import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
+import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 
 /**
  * Created by Orson on 16/02/2018.
@@ -26,8 +31,9 @@ import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
  * sampson.orson@technologyboard.org
  */
 
-public class CaseEditTaskInfoFragment  extends BaseEditActivityFragment<FragmentTaskEditLayoutBinding, Task> {
+public class CaseEditTaskInfoFragment  extends BaseEditActivityFragment<FragmentTaskEditLayoutBinding, Task, Task> {
 
+    private AsyncTask onResumeTask;
     private String recordUuid = null;
     private TaskStatus pageStatus = null;
     private Task record;
@@ -65,13 +71,24 @@ public class CaseEditTaskInfoFragment  extends BaseEditActivityFragment<Fragment
 
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            resultHolder.forItem().add(DatabaseHelper.getTaskDao().queryUuid(recordUuid));
+            Task task = getActivityRootData();
+
+            if (task != null) {
+                if (task.isUnreadOrChildUnread())
+                    DatabaseHelper.getTaskDao().markAsRead(task);
+            }
+
+            resultHolder.forItem().add(task);
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
             //Item Data
             if (itemIterator.hasNext())
                 record =  itemIterator.next();
+
+            if (record == null) {
+                getActivity().finish();
+            }
 
             setupCallback();
         }
@@ -88,6 +105,65 @@ public class CaseEditTaskInfoFragment  extends BaseEditActivityFragment<Fragment
 
     @Override
     public void onAfterLayoutBinding(FragmentTaskEditLayoutBinding contentBinding) {
+
+    }
+
+    @Override
+    protected void updateUI(FragmentTaskEditLayoutBinding contentBinding, Task task) {
+
+    }
+
+    @Override
+    public void onPageResume(FragmentTaskEditLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    Task task = getActivityRootData();
+
+                    if (task != null) {
+                        if (task.isUnreadOrChildUnread())
+                            DatabaseHelper.getTaskDao().markAsRead(task);
+                    }
+
+                    resultHolder.forItem().add(task);
+                }
+            });
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+
+                    if (itemIterator.hasNext())
+                        record =  itemIterator.next();
+
+                    if (record != null)
+                        requestLayoutRebind();
+                    else {
+                        getActivity().finish();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
 
     }
 
@@ -119,8 +195,16 @@ public class CaseEditTaskInfoFragment  extends BaseEditActivityFragment<Fragment
         return false;
     }
 
-    public static CaseEditTaskInfoFragment newInstance(IActivityCommunicator activityCommunicator, TaskFormNavigationCapsule capsule)
+    public static CaseEditTaskInfoFragment newInstance(IActivityCommunicator activityCommunicator, TaskFormNavigationCapsule capsule, Task activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, CaseEditTaskInfoFragment.class, capsule);
+        return newInstance(activityCommunicator, CaseEditTaskInfoFragment.class, capsule, activityRootData);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (onResumeTask != null && !onResumeTask.isCancelled())
+            onResumeTask.cancel(true);
     }
 }

@@ -26,8 +26,7 @@
                 android:paddingLeft="@dimen/contentHorizontalSpacing"
                 android:text="*"
                 android:textColor="@color/watchOut"
-                android:textSize="@dimen/controlLabelSize"
-                android:fontFamily="sans-serif-medium"/>
+                android:textSize="@dimen/controlLabelSize"/>
         </LinearLayout>
 
         <RadioGroup

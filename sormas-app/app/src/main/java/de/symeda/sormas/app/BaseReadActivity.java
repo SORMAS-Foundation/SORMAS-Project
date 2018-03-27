@@ -31,6 +31,7 @@ import de.symeda.sormas.app.component.menu.OnLandingPageMenuClickListener;
 import de.symeda.sormas.app.component.menu.OnSelectInitialActiveMenuItemListener;
 import de.symeda.sormas.app.component.menu.PageMenuNavAdapter;
 import de.symeda.sormas.app.core.INavigationCapsule;
+import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
@@ -40,7 +41,7 @@ import de.symeda.sormas.app.util.ConstantHelper;
  * Created by Orson on 10/12/2017.
  */
 
-public abstract class BaseReadActivity extends AbstractSormasActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener {
+public abstract class BaseReadActivity extends AbstractSormasActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, INotificationContext {
 
     private View fragmentFrame = null;
     private View statusFrame = null;
@@ -51,6 +52,7 @@ public abstract class BaseReadActivity extends AbstractSormasActivity implements
     private FloatingActionButton fab = null;
     private LandingPageMenuItem activeMenu = null;
     private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
+    private View rootView;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -85,6 +87,7 @@ public abstract class BaseReadActivity extends AbstractSormasActivity implements
     }
 
     protected void initializeBaseActivity(Bundle savedInstanceState) {
+        rootView = findViewById(R.id.base_layout);
         subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingListActivityTitle);
         fragmentFrame = findViewById(R.id.fragment_frame);
         pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);
@@ -96,10 +99,8 @@ public abstract class BaseReadActivity extends AbstractSormasActivity implements
             activeMenuKey = RestoreActiveMenuState(savedInstanceState);
         }
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getExtras();
+        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
         initializeActivity(arguments);
-
-
 
         try {
             if (showPageMenu()) {
@@ -247,7 +248,8 @@ public abstract class BaseReadActivity extends AbstractSormasActivity implements
         }*/
 
 
-        fragment.onResume();
+        //TODO: Verify this is ok
+        //fragment.onResume();
     }
 
     public void setSubHeadingTitle(String title) {
@@ -325,7 +327,9 @@ public abstract class BaseReadActivity extends AbstractSormasActivity implements
         fragment = f;
 
         if (fragment != null) {
-            fragment.setArguments(getIntent().getExtras());
+            if (fragment.getArguments() == null)
+                fragment.setArguments(getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA));
+
             ft.replace(R.id.fragment_frame, fragment);
             ft.addToBackStack(null);
             ft.commit();
@@ -347,11 +351,14 @@ public abstract class BaseReadActivity extends AbstractSormasActivity implements
     protected static <TActivity extends AbstractSormasActivity, TCapsule extends INavigationCapsule>
     void goToActivity(Context fromActivity, Class<TActivity> toActivity, TCapsule dataCapsule) {
 
+        int activeMenuKey = dataCapsule.getActiveMenuKey();
         String dataUuid = dataCapsule.getRecordUuid();
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
         IStatusElaborator pageStatus = dataCapsule.getPageStatus();
         String sampleMaterial = dataCapsule.getSampleMaterial();
+        String personUuid = dataCapsule.getPersonUuid();
         String caseUuid = dataCapsule.getCaseUuid();
+        String eventUuid = dataCapsule.getEventUuid();
         String taskUuid = dataCapsule.getTaskUuid();
         String contactUuid = dataCapsule.getContactUuid();
         String sampleUuid = dataCapsule.getSampleUuid();
@@ -362,22 +369,30 @@ public abstract class BaseReadActivity extends AbstractSormasActivity implements
         //AbstractDomainObject record = dataCapsule.getRecord();
 
         Intent intent = new Intent(fromActivity, toActivity);
-        intent.putExtra(ConstantHelper.KEY_DATA_UUID, dataUuid);
-        intent.putExtra(ConstantHelper.KEY_CASE_UUID, caseUuid);
-        intent.putExtra(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
-        intent.putExtra(ConstantHelper.KEY_TASK_UUID, taskUuid);
-        intent.putExtra(ConstantHelper.KEY_CONTACT_UUID, contactUuid);
-        intent.putExtra(ConstantHelper.KEY_SAMPLE_UUID, sampleUuid);
-        intent.putExtra(ConstantHelper.ARG_DISEASE, disease);
-        intent.putExtra(ConstantHelper.ARG_FOR_VISIT, isForVisit);
-        intent.putExtra(ConstantHelper.ARG_VISIT_COOPERATIVE, isVisitCooperative);
-        intent.putExtra(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT, userRight);
+
+        Bundle bundle = new Bundle();
+
+        bundle.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
+        bundle.putString(ConstantHelper.KEY_DATA_UUID, dataUuid);
+        bundle.putString(ConstantHelper.KEY_PERSON_UUID, personUuid);
+        bundle.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);
+        bundle.putString(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
+        bundle.putString(ConstantHelper.KEY_EVENT_UUID, eventUuid);
+        bundle.putString(ConstantHelper.KEY_TASK_UUID, taskUuid);
+        bundle.putString(ConstantHelper.KEY_CONTACT_UUID, contactUuid);
+        bundle.putString(ConstantHelper.KEY_SAMPLE_UUID, sampleUuid);
+        bundle.putSerializable(ConstantHelper.ARG_DISEASE, disease);
+        bundle.putBoolean(ConstantHelper.ARG_FOR_VISIT, isForVisit);
+        bundle.putBoolean(ConstantHelper.ARG_VISIT_COOPERATIVE, isVisitCooperative);
+        bundle.putSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT, userRight);
 
         if (filterStatus != null)
-            intent.putExtra(ConstantHelper.ARG_FILTER_STATUS, filterStatus.getValue());
+            bundle.putSerializable(ConstantHelper.ARG_FILTER_STATUS, filterStatus.getValue());
 
         if (pageStatus != null)
-            intent.putExtra(ConstantHelper.ARG_PAGE_STATUS, pageStatus.getValue());
+            bundle.putSerializable(ConstantHelper.ARG_PAGE_STATUS, pageStatus.getValue());
+
+        intent.putExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA, bundle);
 
         /*if (record != null)
             intent.putExtra(ConstantHelper.ARG_PAGE_RECORD, record);*/
@@ -398,6 +413,11 @@ public abstract class BaseReadActivity extends AbstractSormasActivity implements
 
     public LandingPageMenuItem getActiveMenuItem() {
         return activeMenu;
+    }
+
+    @Override
+    public View getRootView() {
+        return rootView;
     }
 
     public abstract boolean showStatusFrame();
@@ -454,6 +474,28 @@ public abstract class BaseReadActivity extends AbstractSormasActivity implements
         }
 
         return e;
+    }
+
+    protected int getActiveMenuArg(Bundle arguments) {
+        int result = 0;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.KEY_ACTIVE_MENU)) {
+                result = (int) arguments.getInt(ConstantHelper.KEY_ACTIVE_MENU);
+            }
+        }
+
+        return result;
+    }
+
+    protected String getEventUuidArg(Bundle arguments) {
+        String result = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.KEY_EVENT_UUID)) {
+                result = (String) arguments.getString(ConstantHelper.KEY_EVENT_UUID);
+            }
+        }
+
+        return result;
     }
 
     protected String getTaskUuidArg(Bundle arguments) {
@@ -578,6 +620,12 @@ public abstract class BaseReadActivity extends AbstractSormasActivity implements
     protected void SaveActiveMenuState(Bundle outState, int activeMenuKey) {
         if (outState != null) {
             outState.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
+        }
+    }
+
+    protected void SaveEventUuidState(Bundle outState, String eventUuid) {
+        if (outState != null) {
+            outState.putString(ConstantHelper.KEY_EVENT_UUID, eventUuid);
         }
     }
 

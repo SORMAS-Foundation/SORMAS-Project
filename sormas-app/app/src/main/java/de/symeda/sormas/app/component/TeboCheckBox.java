@@ -12,7 +12,10 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 
 /**
  * Created by Orson on 25/01/2018.
@@ -214,7 +217,7 @@ public class TeboCheckBox extends EditTeboPropertyField<Boolean> {
     }
 
     @Override
-    public void changeVisualState(VisualState state) {
+    public void changeVisualState(VisualState state, UserRight editOrCreateUserRight) {
         int labelColor = getResources().getColor(state.getLabelColor(VisualStateControl.CHECKBOX));
         Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControl.CHECKBOX));
 
@@ -247,10 +250,11 @@ public class TeboCheckBox extends EditTeboPropertyField<Boolean> {
 
 
         if (state == VisualState.NORMAL || state == VisualState.ENABLED) {
+            User user = ConfigProvider.getUser();
             lblControlLabel.setTextColor(labelColor);
             setStateColor(checkedStateColor, uncheckedStateColor);
             //setBackground(drawable);
-            checkBox.setEnabled(true);
+            checkBox.setEnabled(true && (editOrCreateUserRight != null)? user.hasUserRight(editOrCreateUserRight) : true);
             return;
         }
     }

@@ -9,10 +9,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.event.edit.OnSetBindingVariableListener;
-
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 
 /**
  * Created by Orson on 15/02/2018.
@@ -121,6 +120,22 @@ public class HealthFacilityLayoutProcessor {
     }
 
     private void ensureCauseOfDeathDataIntegrity(Facility facility) {
+        if (facility == null)
+            return;
+
+        if (initialHealthFacility == null)
+            return;
+
+        if (facility.getUuid() == null || facility.getUuid().isEmpty()) {
+            record.setHealthFacilityDetails(null);
+            return;
+        }
+
+        if (initialHealthFacility.getUuid() == null || initialHealthFacility.getUuid().isEmpty()) {
+            record.setHealthFacilityDetails(null);
+            return;
+        }
+
         if (initialHealthFacility.getUuid() == facility.getUuid()) {
             record.setHealthFacilityDetails(initialHealthFacilityDetails);
         } else {

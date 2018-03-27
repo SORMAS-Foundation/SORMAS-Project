@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/switchCheckedDisabledText" android:state_checked="true" android:state_enabled="false" />
+    <item android:color="@color/switchUnheckedDisabledText" android:state_pressed="true" android:state_enabled="false" />
+    <item android:color="@color/switchCheckedTextError" android:state_checked="true" android:state_enabled="true" />
+    <item android:color="@color/switchUnheckedTextError" android:state_pressed="true" android:state_enabled="true" />
+    <item android:color="@color/switchUnheckedText" />
+</selector>

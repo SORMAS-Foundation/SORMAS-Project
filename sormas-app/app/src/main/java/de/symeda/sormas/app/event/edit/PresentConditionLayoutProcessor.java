@@ -11,20 +11,22 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 
-import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.TeboDatePicker;
-import de.symeda.sormas.app.component.TeboSpinner;
-import de.symeda.sormas.app.databinding.FragmentEventEditPersonInfoLayoutBinding;
-import de.symeda.sormas.api.person.CauseOfDeath;
-import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.TeboDatePicker;
+import de.symeda.sormas.app.component.TeboPropertyField;
+import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.core.OnSetBindingVariableListener;
+import de.symeda.sormas.app.databinding.FragmentEventEditPersonInfoLayoutBinding;
+import de.symeda.sormas.app.shared.OnDateOfDeathChangeListener;
+import de.symeda.sormas.app.util.DataUtils;
 
 /**
  * Created by Orson on 12/02/2018.
@@ -47,21 +49,29 @@ public class PresentConditionLayoutProcessor {
     private Date initialDeathDate;
     private CauseOfDeath initialDeathCause;
 
-    private List<CauseOfDeath> causeOfDeathList;
+    private List<Item> causeOfDeathList;
+    private List<Item> deathPlaceTypeList;
+    private List<Item> diseaseList;
     private OnSetBindingVariableListener mOnSetBindingVariableListener;
     private CauseOfDeathLayoutProcessor causeOfDeathProcessor;
+    private OnDateOfDeathChangeListener mOnDateOfDeathChangeListener;
 
     private FragmentManager fragmentManager;
+    private TeboSpinner spnCauseOfDeath;
+    private TeboDatePicker dtpDateOfDeath;
 
 
     public PresentConditionLayoutProcessor(Context context, FragmentManager fragmentManager,
-                                           FragmentEventEditPersonInfoLayoutBinding contentBinding, Person record) {
+                                           FragmentEventEditPersonInfoLayoutBinding contentBinding, Person record,
+                                           List<Item> causeOfDeathList, List<Item> deathPlaceTypeList, List<Item> diseaseList) {
         this.mLastLayoutResId = -1;
         this.context = context;
         this.contentBinding = contentBinding;
         this.record = record;
 
-        this.causeOfDeathList = MemoryDatabaseHelper.DEATH_CAUSE.getDeathCauses(5);
+        this.causeOfDeathList = causeOfDeathList;
+        this.deathPlaceTypeList = deathPlaceTypeList;
+        this.diseaseList = diseaseList;
 
         this.initialPresentCondition = record.getPresentCondition();
         this.initialDeathDate = record.getDeathDate();
@@ -113,7 +123,7 @@ public class PresentConditionLayoutProcessor {
 
 
 
-        this.causeOfDeathProcessor = new CauseOfDeathLayoutProcessor(context, binding, record);
+        this.causeOfDeathProcessor = new CauseOfDeathLayoutProcessor(context, binding, record, this.deathPlaceTypeList, this.diseaseList);
         this.causeOfDeathProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
             public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
@@ -128,13 +138,28 @@ public class PresentConditionLayoutProcessor {
 
     }
 
+    private void notifyDateOfDeathChanged(TeboDatePicker view, Date value) {
+        if (this.mOnDateOfDeathChangeListener != null)
+            this.mOnDateOfDeathChangeListener.onChange(view, value);
+    }
+
+    public void setOnDateOfDeathChange(OnDateOfDeathChangeListener listener) {
+        this.mOnDateOfDeathChangeListener = listener;
+    }
+
     private boolean initializeChildLayout(ViewDataBinding binding) {
         View innerRootLayout = binding.getRoot();
-        final TeboSpinner spnCauseOfDeath = (TeboSpinner)innerRootLayout.findViewById(R.id.spnCauseOfDeath);
-        TeboDatePicker dtpDateOfDeath = (TeboDatePicker)innerRootLayout.findViewById(R.id.dtpDateOfDeath);
+        spnCauseOfDeath = (TeboSpinner)innerRootLayout.findViewById(R.id.spnCauseOfDeath);
+        dtpDateOfDeath = (TeboDatePicker)innerRootLayout.findViewById(R.id.dtpDateOfDeath);
 
 
         dtpDateOfDeath.initialize(fragmentManager);
+        dtpDateOfDeath.addValueChangedListener(new TeboPropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(TeboPropertyField field) {
+                notifyDateOfDeathChanged(dtpDateOfDeath, dtpDateOfDeath.getValue());
+            }
+        });
 
         binding.addOnRebindCallback(new OnRebindCallback() {
             @Override
@@ -152,8 +177,13 @@ public class PresentConditionLayoutProcessor {
 
                     @Override
                     public List<Item> getDataSource(Object parentValue) {
-                        return (causeOfDeathList.size() > 0) ? DataUtils.toItems(causeOfDeathList)
-                                : DataUtils.toItems(causeOfDeathList, false);
+                        return (causeOfDeathList.size() > 0) ? DataUtils.addEmptyItem(causeOfDeathList)
+                                : causeOfDeathList;
+                    }
+
+                    @Override
+                    public VisualState getInitVisualState() {
+                        return null;
                     }
 
                     @Override

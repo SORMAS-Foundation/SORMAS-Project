@@ -13,6 +13,11 @@
         <variable
             name="hideNotificationCallback"
             type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
+
+
+        <variable
+            name="pickGpsCallback"
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
 
 
@@ -190,6 +195,7 @@
                     app:drawableLeft="@drawable/ic_gps_fixed_black_24dp"
                     app:buttonType="secondary"
                     app:text="@string/action_pick_gps"
+                    app:onButtonOnClick="@{(view) -> pickGpsCallback.onClick(view, data)}"
                     />
 
                 <de.symeda.sormas.app.component.TeboTextRead
@@ -201,7 +207,7 @@
                     android:paddingLeft="@dimen/formLayoutGutterSize"
                     app:description="@string/desc_pick_gps"
                     app:labelCaption="@string/label_pick_gps"
-                    app:value="@{data.community.name}"
+                    app:value="@{null}"
                     app:defaultValue='@{@string/hint_pick_gps}'
                     />
 

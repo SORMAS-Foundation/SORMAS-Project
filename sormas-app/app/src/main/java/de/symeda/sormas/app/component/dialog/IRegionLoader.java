@@ -2,7 +2,7 @@ package de.symeda.sormas.app.component.dialog;
 
 import java.util.List;
 
-import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.component.Item;
 
 /**
  * Created by Orson on 03/02/2018.
@@ -13,5 +13,5 @@ import de.symeda.sormas.app.backend.region.Region;
  */
 
 public interface IRegionLoader {
-    List<Region> load();
+    List<Item> load();
 }

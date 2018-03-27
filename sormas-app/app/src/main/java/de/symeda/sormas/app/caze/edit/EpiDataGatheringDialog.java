@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.caze.edit;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.databinding.ViewDataBinding;
 import android.support.v4.app.FragmentActivity;
@@ -8,16 +9,17 @@ import android.view.View;
 
 import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.TeboButtonType;
 import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
+import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.DialogEpidSocialEventsLayoutBinding;
 import de.symeda.sormas.app.util.MemoryDatabaseHelper;
-
-import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
-import de.symeda.sormas.app.backend.location.Location;
 
 /**
  * Created by Orson on 19/02/2018.
@@ -33,6 +35,7 @@ public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
 
     private EpiDataGathering data;
     private IEntryItemOnClickListener onAddressLinkClickedCallback;
+    private DialogEpidSocialEventsLayoutBinding mContentBinding;
 
 
     public EpiDataGatheringDialog(final FragmentActivity activity, EpiDataGathering epiDataGathering) {
@@ -49,7 +52,7 @@ public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
         /*DialogEpiDataGatheringLayoutBinding _contentBinding = (DialogEpiDataGatheringLayoutBinding)contentBinding;
 
         _contentBinding.spnState.enableErrorState("Hello");*/
@@ -57,31 +60,41 @@ public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
 
     }
 
     @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
 
+    }
+
+    @Override
+    protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
+        this.mContentBinding = (DialogEpidSocialEventsLayoutBinding)binding;
     }
 
     @Override
     protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
         if (!binding.setVariable(BR.data, data)) {
-            Log.w(TAG, "There is no variable 'data' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
 
         if (!binding.setVariable(BR.addressLinkCallback, onAddressLinkClickedCallback)) {
-            Log.w(TAG, "There is no variable 'addressLinkCallback' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'addressLinkCallback' in layout " + layoutName);
         }
     }
 
     @Override
-    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        DialogEpidSocialEventsLayoutBinding _contentBinding = (DialogEpidSocialEventsLayoutBinding)contentBinding;
+    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
 
-        _contentBinding.dtpDateOfEvent.initialize(getFragmentManager());
+    }
+
+    @Override
+    protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
+        //DialogEpidSocialEventsLayoutBinding _contentBinding = (DialogEpidSocialEventsLayoutBinding)contentBinding;
+
+        mContentBinding.dtpDateOfEvent.initialize(getFragmentManager());
     }
 
     @Override
@@ -125,7 +138,12 @@ public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
             public void onClick(View v, Object item) {
                 final Location location = MemoryDatabaseHelper.LOCATION.getLocations(1).get(0);
                 final LocationDialog locationDialog = new LocationDialog(getActivity(), location);
-                locationDialog.show();
+                locationDialog.show(new ICallback<AlertDialog>() {
+                    @Override
+                    public void result(AlertDialog result) {
+
+                    }
+                });
 
 
                 locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {

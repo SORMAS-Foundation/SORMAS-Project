@@ -17,7 +17,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.contact.edit.ContactEditActivity;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.async.IJobDefinition;
@@ -206,13 +206,13 @@ public class ContactReadActivity extends BaseReadActivity {
         try {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
                 @Override
-                public void preExecute() {
-                    showPreloader();
-                    hideFragmentView();
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //showPreloader();
+                    //hideFragmentView();
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
                     Contact record = DatabaseHelper.getContactDao().queryUuid(recordUuid);
 
                     if (record == null) {
@@ -223,11 +223,11 @@ public class ContactReadActivity extends BaseReadActivity {
                     }
                 }
             });
-            jobTask = executor.search(new ITaskResultCallback() {
+            jobTask = executor.execute(new ITaskResultCallback() {
                 @Override
-                public void searchResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    hidePreloader();
-                    showFragmentView();
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //hidePreloader();
+                    //showFragmentView();
 
                     if (resultHolder == null)
                         return;
@@ -243,8 +243,8 @@ public class ContactReadActivity extends BaseReadActivity {
                 }
             });
         } catch (Exception ex) {
-            hidePreloader();
-            showFragmentView();
+            //hidePreloader();
+            //showFragmentView();
         }
     }
 

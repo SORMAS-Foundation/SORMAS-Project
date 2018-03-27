@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.backend.person.Person" />
+
+        <variable
+            name="callback"
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/rowListItemPerson"
+        android:tag="@string/tag_row_item_select_or_create_person"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+        android:paddingTop="@dimen/parentLayoutVerticalPadding"
+        android:paddingBottom="@dimen/parentLayoutVerticalPadding"
+        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+        android:paddingRight="@dimen/rowListItemHorizontalMargin"
+        android:orientation="vertical"
+        android:background="@drawable/selector_list_section_row_background"
+        android:elevation="2dp"
+        android:onClickListener="@{(view) -> callback.onClick(view, data)}"
+        >
+        <!--android:background="@drawable/selector_list_section_row_background"
+        android:background="@{data.isSelected? @drawable/selector_list_section_row_background_selected : @drawable/selector_list_section_row_background}"-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtPatientName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/listActivityRowSecondaryTextMarginBottom"
+                android:textSize="@dimen/listActivityRowPrimaryTextSize"
+                android:textColor="@color/listActivityRowPrimaryText"
+                android:fontFamily="sans-serif-medium"
+                android:scrollHorizontally="true"
+                android:maxLines="1"
+                android:ellipsize="end"
+                app:personValue="@{data}"
+                app:defaultValue='@{@string/person_unknown}'
+                />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <TextView
+                    android:id="@+id/txtGender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:textSize="@dimen/listActivityRowSecondaryTextSize"
+                    android:textColor="@color/listActivityRowSecondaryText"
+                    app:value="@{data.sex}"
+                    app:prependValue="@{@string/label_gender}"
+                    app:defaultValue='@{@string/not_available}'
+                    app:valueFormat='@{@string/title_detail_format}'
+                    />
+
+                <TextView
+                    android:id="@+id/txtAge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:textSize="@dimen/listActivityRowSecondaryTextSize"
+                    android:textColor="@color/listActivityRowSecondaryText"
+                    app:ageWithDateValue="@{data}"
+                    app:prependValue="@{@string/label_age}"
+                    app:defaultValue='@{@string/not_available}'
+                    app:valueFormat='@{@string/age_with_dob_and_prepend_format}'
+                    />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/txtPresentCondition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:textSize="@dimen/listActivityRowSecondaryTextSize"
+                android:textColor="@color/listActivityRowSecondaryText"
+                app:value="@{data.presentCondition}"
+                app:prependValue="@{@string/label_present_condition}"
+                app:defaultValue='@{@string/not_available}'
+                app:valueFormat='@{@string/title_detail_format}'
+                />
+
+            <TextView
+                android:id="@+id/txtAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:textSize="@dimen/listActivityRowSecondaryTextSize"
+                android:textColor="@color/listActivityRowSecondaryText"
+                android:singleLine="false"
+                android:maxLines="5"
+                app:locationValue="@{data.address}"
+                app:prependValue="@{@string/label_address}"
+                app:defaultValue='@{@string/not_available}'
+                app:valueFormat='@{@string/title_detail_format}'
+                />
+
+            <!--<LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+
+
+                <TextView
+                    android:id="@+id/txtReporter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top|left"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:fontFamily="sans-serif-medium"
+                    app:userValue="@{caze.reportingUser}"
+                    app:defaultValue='@{@string/person_unknown}'
+                    />
+
+
+
+
+                <TextView
+                    android:id="@+id/txtReportDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="top|end"
+                    android:textSize="@dimen/listActivityRowDateTextSize"
+                    android:textColor="@color/listActivityRowDateText"
+                    android:fontFamily="sans-serif"
+                    android:textAlignment="viewEnd"
+                    app:timeAgoValue="@{caze.reportDate}"
+                    app:defaultValue='@{@string/report_date_unknown}'
+                    />
+
+            </LinearLayout>-->
+
+        </LinearLayout>
+    </LinearLayout>
+</layout>

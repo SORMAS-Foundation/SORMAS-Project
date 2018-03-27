@@ -15,17 +15,21 @@ public class DialogViewConfig {
     private String positiveButtonText;
     private String negativeButtonText;
     private String deleteButtonText;
+    private String cancelButtonText;
+    private String createButtonText;
 
     public DialogViewConfig(String heading) {
         this.heading = heading;
     }
 
-    public DialogViewConfig(String heading, String subHeading, String positiveButtonText, String negativeButtonText, String deleteButtonText) {
+    public DialogViewConfig(String heading, String subHeading, String positiveButtonText, String negativeButtonText, String deleteButtonText, String cancelButtonText, String createButtonText) {
         this.heading = heading;
         this.subHeading = subHeading;
         this.positiveButtonText = positiveButtonText;
         this.negativeButtonText = negativeButtonText;
         this.deleteButtonText = deleteButtonText;
+        this.cancelButtonText = cancelButtonText;
+        this.createButtonText = createButtonText;
     }
 
     public String getHeading() {
@@ -66,5 +70,21 @@ public class DialogViewConfig {
 
     public void setDeleteButtonText(String deleteButtonText) {
         this.deleteButtonText = deleteButtonText;
+    }
+
+    public String getCancelButtonText() {
+        return cancelButtonText;
+    }
+
+    public void setCancelButtonText(String cancelButtonText) {
+        this.cancelButtonText = cancelButtonText;
+    }
+
+    public String getCreateButtonText() {
+        return createButtonText;
+    }
+
+    public void setCreateButtonText(String createButtonText) {
+        this.createButtonText = createButtonText;
     }
 }

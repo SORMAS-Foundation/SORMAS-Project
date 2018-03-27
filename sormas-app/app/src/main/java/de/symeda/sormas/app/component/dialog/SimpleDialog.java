@@ -64,11 +64,11 @@ public class SimpleDialog extends AlertDialog.Builder implements IEntryItemOnCli
         String layoutName = context.getResources().getResourceEntryName(layoutId);
 
         if (!binding.setVariable(BR.data, data)) {
-            Log.w(TAG, "There is no variable 'data' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
 
         if (!binding.setVariable(BR.callback, onDialogDismissClickListener)) {
-            Log.w(TAG, "There is no variable 'callback' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'callback' in layout " + layoutName);
         }
 
         return binding;

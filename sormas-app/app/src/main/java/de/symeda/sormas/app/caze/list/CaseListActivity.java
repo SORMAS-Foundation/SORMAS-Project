@@ -12,7 +12,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.landing.CaseLandingToListCapsule;
 import de.symeda.sormas.app.core.SearchBy;
@@ -187,8 +187,8 @@ public class CaseListActivity extends BaseListActivity {
     }
 
     private void gotoNewView() {
-        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(CaseListActivity.this,
-                "").setEditPageStatus(filterStatus);
+        CaseFormNavigationCapsule dataCapsule = (CaseFormNavigationCapsule)new CaseFormNavigationCapsule(CaseListActivity.this,
+                null).setEditPageStatus(filterStatus).setPersonUuid(null);
         CaseNewActivity.goToActivity(this, dataCapsule);
     }
 

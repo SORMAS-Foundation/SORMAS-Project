@@ -23,11 +23,15 @@ public class SormasColor {
     @ColorInt public static final int LTBLUE      = 0xFF6691C4;
     @ColorInt public static final int LTERBLUE    = 0xFFCDD8EC;
     @ColorInt public static final int LTESTBLUE   = 0xFFE1E7F0;
+    @ColorInt public static final int WATCHOUT    = 0xFFE10002;
+    @ColorInt public static final int DISABLED    = 0x4D374B5A;
     @ColorInt public static final int CTRL_NORMAL = LTERBLUE;
     @ColorInt public static final int CTRL_FOCUS  = BLUE;
     @ColorInt public static final int TEXT_NORMAL               = 0xFF374b5a;
     @ColorInt public static final int SWITCH_CHECKED_BG         = LTERBLUE;
     @ColorInt public static final int SWITCH_UNCHECKED_BG       = TRANSPARENT;
+    @ColorInt public static final int SWITCH_UNCHECKED_DISABLED_BG        = TRANSPARENT;
+    @ColorInt public static final int SWITCH_CHECKED_DISABLED_BG        = DISABLED;
     @ColorInt public static final int SWITCH_CHECKED_TEXT       = BLUE;
     @ColorInt public static final int SWITCH_UNCHECKED_TEXT     = TEXT_NORMAL;
 

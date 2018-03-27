@@ -22,11 +22,13 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.TeboDatePicker;
+import de.symeda.sormas.app.component.TeboPropertyField;
 import de.symeda.sormas.app.component.TeboSpinner;
 import de.symeda.sormas.app.component.TeboTextInputEditText;
-import de.symeda.sormas.app.event.edit.OnSetBindingVariableListener;
+import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.core.OnSetBindingVariableListener;
+import de.symeda.sormas.app.shared.OnDateOfDeathChangeListener;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 
 /**
  * Created by Orson on 13/02/2018.
@@ -54,24 +56,34 @@ public class PresentConditionLayoutProcessor {
     private BurialConductor initialBurialConductor;
     private String initialBurialPlaceDesc;
 
-    private List<CauseOfDeath> causeOfDeathList;
-    private List<DeathPlaceType> deathPlaceList;
-    private List<BurialConductor> burialConductorList;
+    private List<Item> causeOfDeathList;
+    private List<Item> deathPlaceTypeList;
+    private List<Item> diseaseList;
+    private List<Item> burialConductorList;
     private OnSetBindingVariableListener mOnSetBindingVariableListener;
     private CauseOfDeathLayoutProcessor causeOfDeathProcessor;
+    private OnDateOfDeathChangeListener mOnDateOfDeathChangeListener;
 
     private FragmentManager fragmentManager;
+    private TeboSpinner spnCauseOfDeath;
+    private TeboSpinner spnDeathPlaceType;
+    private TeboSpinner spnBurialConductor;
+    private TeboDatePicker dtpDateOfDeath;
+    private TeboDatePicker dtpBurialDate;
 
     public PresentConditionLayoutProcessor(Context context, FragmentManager fragmentManager,
-                                           ViewDataBinding contentBinding, Person record) {
+                                           ViewDataBinding contentBinding, Person record,
+                                           List<Item> causeOfDeathList, List<Item> deathPlaceTypeList,
+                                           List<Item> diseaseList, List<Item> burialConductorList) {
         this.mLastLayoutResId = -1;
         this.context = context;
         this.contentBinding = contentBinding;
         this.record = record;
 
-        this.causeOfDeathList = MemoryDatabaseHelper.DEATH_CAUSE.getDeathCauses(5);
-        this.deathPlaceList = MemoryDatabaseHelper.DEATH_PLACE.getDeathPlaceTypes();
-        this.burialConductorList = MemoryDatabaseHelper.BURIAL_CONDUCTOR.getBurialConductors();
+        this.causeOfDeathList = causeOfDeathList;
+        this.deathPlaceTypeList = deathPlaceTypeList;
+        this.diseaseList = diseaseList;
+        this.burialConductorList = burialConductorList;
 
         this.initialPresentCondition = record.getPresentCondition();
         this.initialDeathDate = record.getDeathDate();
@@ -132,7 +144,7 @@ public class PresentConditionLayoutProcessor {
         ViewGroup layout = (ViewGroup) inflater.inflate(layoutResId, null);
         ViewDataBinding binding = DataBindingUtil.bind(layout);
 
-        this.causeOfDeathProcessor = new CauseOfDeathLayoutProcessor(context, binding, record);
+        this.causeOfDeathProcessor = new CauseOfDeathLayoutProcessor(context, binding, record, this.deathPlaceTypeList, this.diseaseList);
         this.causeOfDeathProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
             public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
@@ -143,14 +155,35 @@ public class PresentConditionLayoutProcessor {
         return binding;
     }
 
+    private void notifyDateOfDeathChanged(TeboDatePicker view, Date value) {
+        if (this.mOnDateOfDeathChangeListener != null)
+            this.mOnDateOfDeathChangeListener.onChange(view, value);
+    }
+
+    public void setOnDateOfDeathChange(OnDateOfDeathChangeListener listener) {
+        this.mOnDateOfDeathChangeListener = listener;
+    }
+
     private View initializeChildLayout(ViewDataBinding binding) {
         final View innerLayout = binding.getRoot();
-        final TeboSpinner spnCauseOfDeath = (TeboSpinner)innerLayout.findViewById(R.id.spnCauseOfDeath);
-        final TeboSpinner spnDeathPlaceType = (TeboSpinner)innerLayout.findViewById(R.id.spnDeathPlaceType);
-        final TeboSpinner spnBurialConductor = (TeboSpinner)innerLayout.findViewById(R.id.spnBurialConductor);
-        TeboDatePicker dtpDateOfDeath = (TeboDatePicker)innerLayout.findViewById(R.id.dtpDateOfDeath);
+        spnCauseOfDeath = (TeboSpinner)innerLayout.findViewById(R.id.spnCauseOfDeath);
+        spnDeathPlaceType = (TeboSpinner)innerLayout.findViewById(R.id.spnDeathPlaceType);
+        spnBurialConductor = (TeboSpinner)innerLayout.findViewById(R.id.spnBurialConductor);
+        dtpDateOfDeath = (TeboDatePicker)innerLayout.findViewById(R.id.dtpDateOfDeath);
+        dtpBurialDate = (TeboDatePicker)innerLayout.findViewById(R.id.dtpBurialDate);
 
-        dtpDateOfDeath.initialize(fragmentManager);
+        if (dtpBurialDate != null)
+            dtpBurialDate.initialize(fragmentManager);
+
+        if (dtpBurialDate != null) {
+            dtpDateOfDeath.initialize(fragmentManager);
+            dtpDateOfDeath.addValueChangedListener(new TeboPropertyField.ValueChangeListener() {
+                @Override
+                public void onChange(TeboPropertyField field) {
+                    notifyDateOfDeathChanged(dtpDateOfDeath, dtpDateOfDeath.getValue());
+                }
+            });
+        }
 
         binding.addOnRebindCallback(new OnRebindCallback() {
             @Override
@@ -166,8 +199,13 @@ public class PresentConditionLayoutProcessor {
 
                         @Override
                         public List<Item> getDataSource(Object parentValue) {
-                            return (causeOfDeathList.size() > 0) ? DataUtils.toItems(causeOfDeathList)
-                                    : DataUtils.toItems(causeOfDeathList, false);
+                            return (causeOfDeathList.size() > 0) ? DataUtils.addEmptyItem(causeOfDeathList)
+                                    : causeOfDeathList;
+                        }
+
+                        @Override
+                        public VisualState getInitVisualState() {
+                            return null;
                         }
 
                         @Override
@@ -183,6 +221,7 @@ public class PresentConditionLayoutProcessor {
                     });
                 }
 
+
                 if (spnDeathPlaceType != null) {
                     spnDeathPlaceType.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
                         @Override
@@ -192,8 +231,13 @@ public class PresentConditionLayoutProcessor {
 
                         @Override
                         public List<Item> getDataSource(Object parentValue) {
-                            return (deathPlaceList.size() > 0) ? DataUtils.toItems(deathPlaceList)
-                                    : DataUtils.toItems(deathPlaceList, false);
+                            return (deathPlaceTypeList.size() > 0) ? DataUtils.addEmptyItem(deathPlaceTypeList)
+                                    : deathPlaceTypeList;
+                        }
+
+                        @Override
+                        public VisualState getInitVisualState() {
+                            return null;
                         }
                     });
                 }
@@ -208,8 +252,13 @@ public class PresentConditionLayoutProcessor {
 
                         @Override
                         public List<Item> getDataSource(Object parentValue) {
-                            return (burialConductorList.size() > 0) ? DataUtils.toItems(burialConductorList)
-                                    : DataUtils.toItems(burialConductorList, false);
+                            return (burialConductorList.size() > 0) ? DataUtils.addEmptyItem(burialConductorList)
+                                    : burialConductorList;
+                        }
+
+                        @Override
+                        public VisualState getInitVisualState() {
+                            return null;
                         }
                     });
                 }

@@ -6,11 +6,14 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.android.databinding.library.baseAdapters.BR;
 import com.google.android.gms.analytics.Tracker;
 
-import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
+import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.databinding.DialogProgressLayoutBinding;
 
 /**
  * Created by Orson on 02/03/2018.
@@ -29,6 +32,7 @@ public class TeboProgressDialog extends BaseTeboAlertDialog {
     private Tracker tracker;
     private DialogViewConfig data;
     private String subHeading;
+    private DialogProgressLayoutBinding mContentBinding;
 
     public TeboProgressDialog(final FragmentActivity activity) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_progress_layout, -1, -1, -1);
@@ -41,7 +45,7 @@ public class TeboProgressDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
         /*TeboTextInputEditText txtMessage = (TeboTextInputEditText)rootView.findViewById(R.id.txtMessage);
         txtMessage.enableErrorState("Hello");*/
         /*String description = this.data.getHeading();
@@ -59,20 +63,30 @@ public class TeboProgressDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
 
     }
 
     @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding) {
+    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
 
+    }
+
+    @Override
+    protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
+        this.mContentBinding = (DialogProgressLayoutBinding)binding;
     }
 
     @Override
     protected void setBindingVariable(Context context, ViewDataBinding binding, String layoutName) {
         if (!binding.setVariable(BR.data, data)) {
-            Log.w(TAG, "There is no variable 'data' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
+    }
+
+    @Override
+    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
+
     }
 
     @Override

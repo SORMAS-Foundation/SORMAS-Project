@@ -6,15 +6,16 @@ import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.sample.SampleFormNavigationCapsule;
-import de.symeda.sormas.app.sample.ShipmentStatus;
+import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
+import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.util.NavigationHelper;
 
 /**
@@ -25,7 +26,7 @@ import de.symeda.sormas.app.util.NavigationHelper;
  * sampson.orson@technologyboard.org
  */
 
-public class CaseEditSampleInfoActivity extends BaseEditActivity {
+public class CaseEditSampleInfoActivity extends BaseEditActivity<Sample> {
 
     private final String DATA_XML_PAGE_MENU = null;
 
@@ -34,16 +35,20 @@ public class CaseEditSampleInfoActivity extends BaseEditActivity {
     private boolean showPageMenu;
 
     private String recordUuid = null;
+    private String caseUuid = null;
     private ShipmentStatus pageStatus = null;
     private BaseEditActivityFragment activeFragment = null;
+
+    private MenuItem saveMenu = null;
+    private MenuItem addMenu = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, followUpStatus);
         SavePageStatusState(outState, pageStatus);
         SaveRecordUuidState(outState, recordUuid);
+        SaveCaseUuidState(outState, caseUuid);
     }
 
     @Override
@@ -58,9 +63,9 @@ public class CaseEditSampleInfoActivity extends BaseEditActivity {
 
     @Override
     protected void initializeActivity(Bundle arguments) {
-        //filterStatus = (EventStatus) getFilterStatusArg(arguments);
         pageStatus = (ShipmentStatus) getPageStatusArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
+        caseUuid = getCaseUuidArg(arguments);
 
         this.showStatusFrame = true;
         this.showTitleBar = true;
@@ -68,11 +73,29 @@ public class CaseEditSampleInfoActivity extends BaseEditActivity {
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment() throws IllegalAccessException, InstantiationException {
+    protected Sample getActivityRootData(String recordUuid) {
+        Sample sample;
+        if (caseUuid != null && !caseUuid.isEmpty()) {
+            Case associatedCase = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+            sample = DatabaseHelper.getSampleDao().build(associatedCase);
+        } else {
+            sample = DatabaseHelper.getSampleDao().queryUuid(recordUuid);
+        }
+
+        return sample;
+    }
+
+    @Override
+    protected Sample getActivityRootDataIfRecordUuidNull() {
+        return null;
+    }
+
+    @Override
+    public BaseEditActivityFragment getActiveEditFragment(Sample activityRootData) throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
-            SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(
-                    CaseEditSampleInfoActivity.this, recordUuid, pageStatus);
-            activeFragment = CaseEditSampleInfoFragment.newInstance(this, dataCapsule);
+            SampleFormNavigationCapsule dataCapsule = (SampleFormNavigationCapsule)new SampleFormNavigationCapsule(
+                    CaseEditSampleInfoActivity.this, recordUuid, pageStatus).setCaseUuid(caseUuid);
+            activeFragment = CaseEditSampleInfoFragment.newInstance(this, dataCapsule, activityRootData);
         }
 
         return activeFragment;
@@ -104,8 +127,8 @@ public class CaseEditSampleInfoActivity extends BaseEditActivity {
     }
 
     @Override
-    public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-        return false;
+    protected BaseEditActivityFragment getNextFragment(LandingPageMenuItem menuItem, Sample activityRootData) {
+        return null;
     }
 
     @Override
@@ -113,13 +136,12 @@ public class CaseEditSampleInfoActivity extends BaseEditActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.edit_action_menu, menu);
 
-        MenuItem saveMenu = menu.findItem(R.id.action_save);
-        MenuItem addMenu = menu.findItem(R.id.action_new);
-
-        saveMenu.setVisible(true);
-        addMenu.setVisible(false);
+        saveMenu = menu.findItem(R.id.action_save);
+        addMenu = menu.findItem(R.id.action_new);
 
         saveMenu.setTitle(R.string.action_save_sample);
+
+        processActionbarMenu();
 
         return true;
     }
@@ -173,6 +195,17 @@ public class CaseEditSampleInfoActivity extends BaseEditActivity {
     @Override
     protected int getActivityTitle() {
         return R.string.heading_level4_case_edit;
+    }
+
+    private void processActionbarMenu() {
+        if (activeFragment == null)
+            return;
+
+        if (saveMenu != null)
+            saveMenu.setVisible(activeFragment.showSaveAction());
+
+        if (addMenu != null)
+            addMenu.setVisible(activeFragment.showAddAction());
     }
 
     public static void goToActivity(Context fromActivity, SampleFormNavigationCapsule dataCapsule) {

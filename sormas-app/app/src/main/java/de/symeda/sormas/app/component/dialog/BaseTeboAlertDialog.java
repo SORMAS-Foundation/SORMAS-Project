@@ -8,6 +8,7 @@ import android.databinding.ViewDataBinding;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -21,7 +22,16 @@ import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.OnHideInputErrorListener;
 import de.symeda.sormas.app.component.OnShowInputErrorListener;
+import de.symeda.sormas.app.component.TeboButton;
 import de.symeda.sormas.app.component.TeboButtonType;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogRootLayoutBinding;
 
@@ -36,10 +46,12 @@ import de.symeda.sormas.app.databinding.DialogRootLayoutBinding;
 
 
 public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.component.dialog.IDialogDismissOnClickListener,
-        de.symeda.sormas.app.component.dialog.IDialogOkOnClickListener, de.symeda.sormas.app.component.dialog.IDialogDeleteOnClickListener, OnShowInputErrorListener, OnHideInputErrorListener {
+        de.symeda.sormas.app.component.dialog.IDialogOkOnClickListener, de.symeda.sormas.app.component.dialog.IDialogDeleteOnClickListener,
+        OnShowInputErrorListener, OnHideInputErrorListener, IDialogCancelOnClickListener, IDialogCreateOnClickListener, INotificationContext {
 
     public static final String TAG = BaseTeboAlertDialog.class.getSimpleName();
 
+    private AsyncTask dialogTask;
     private FragmentActivity activity;
     private int rootLayoutId;
     AlertDialog.Builder builder;
@@ -54,6 +66,41 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
     private de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface.NegativeOnClickListener onNegativeClickListener;
     private de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface.PositiveOnClickListener onPositiveClickListener;
     private de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface.DeleteOnClickListener onDeleteClickListener;
+    private TeboAlertDialogInterface.CancelOnClickListener onCancelClickListener;
+    private TeboAlertDialogInterface.CreateOnClickListener onCreateClickListener;
+
+    public BaseTeboAlertDialog(final FragmentActivity activity, int rootLayoutId, int contentLayoutResourceId,
+                               int btnPanelLayoutResourceId, int headingResId, String subHeading) {
+
+        this.builder = new AlertDialog.Builder(activity);
+        this.activity = activity;
+        this.rootLayoutId = rootLayoutId;
+        this.contentLayoutResourceId = contentLayoutResourceId;
+        this.btnPanelLayoutResourceId = btnPanelLayoutResourceId;
+
+
+        String heading;
+
+        if (headingResId <= 0)
+            heading = activity.getResources().getString(R.string.heading_dialog_placeholder);
+        else
+            heading = activity.getResources().getString(headingResId);
+
+
+        if (subHeading == null || subHeading.isEmpty())
+            subHeading = activity.getResources().getString(R.string.heading_sub_dialog_placeholder);
+
+
+        Resources resources = activity.getResources();
+
+        String positiveLabel = resources.getString(getPositiveButtonText());
+        String negativeLabel = resources.getString(getNegativeButtonText());
+        String deleteLabel = resources.getString(getDeleteButtonText());
+        String cancelLabel = resources.getString(getCancelButtonText());
+        String createLabel = resources.getString(getCreateButtonText());
+
+        this.config = new de.symeda.sormas.app.component.dialog.DialogViewConfig(heading, subHeading, positiveLabel, negativeLabel, deleteLabel, cancelLabel, createLabel);
+    }
 
     public BaseTeboAlertDialog(final FragmentActivity activity, int rootLayoutId, int contentLayoutResourceId,
                                int btnPanelLayoutResourceId, int headingResId, int subHeadingResId) {
@@ -84,8 +131,10 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
         String positiveLabel = resources.getString(getPositiveButtonText());
         String negativeLabel = resources.getString(getNegativeButtonText());
         String deleteLabel = resources.getString(getDeleteButtonText());
+        String cancelLabel = resources.getString(getCancelButtonText());
+        String createLabel = resources.getString(getCreateButtonText());
 
-        this.config = new de.symeda.sormas.app.component.dialog.DialogViewConfig(heading, subHeading, positiveLabel, negativeLabel, deleteLabel);
+        this.config = new de.symeda.sormas.app.component.dialog.DialogViewConfig(heading, subHeading, positiveLabel, negativeLabel, deleteLabel, cancelLabel, createLabel);
     }
 
     // <editor-fold defaultstate="collapsed" desc="Overrides">
@@ -94,10 +143,78 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
     public void onOkClick(View v, Object item) {
         View viewRoot = getRoot();
 
-        onOkClicked(v, item, viewRoot, contentViewStubBinding);
+        onOkClicked(v, item, viewRoot, contentViewStubBinding, new ICallback() {
+            private View _v;
+            private Object _item;
+            private View _viewRoot;
 
-        if (onPositiveClickListener != null)
-            onPositiveClickListener.onOkClick(v, item, viewRoot);
+            @Override
+            public void result(Object result) {
+                if (onPositiveClickListener != null)
+                    onPositiveClickListener.onOkClick(this._v, (result != null)? result : this._item, this._viewRoot);
+            }
+
+            private ICallback init(View v, Object item, View viewRoot) {
+                this._v = v;
+                this._item = item;
+                this._viewRoot = viewRoot;
+
+                return this;
+            }
+        }.init(v, item, viewRoot));
+
+    }
+
+    @Override
+    public void onCancelClick(View v, Object item) {
+        View viewRoot = getRoot();
+
+        onCancelClicked(v, item, viewRoot, contentViewStubBinding, new ICallback() {
+            private View _v;
+            private Object _item;
+            private View _viewRoot;
+
+            @Override
+            public void result(Object result) {
+                if (onCancelClickListener != null)
+                    onCancelClickListener.onCancelClick(this._v, (result != null)? result : this._item, this._viewRoot);
+            }
+
+            private ICallback init(View v, Object item, View viewRoot) {
+                this._v = v;
+                this._item = item;
+                this._viewRoot = viewRoot;
+
+                return this;
+            }
+        }.init(v, item, viewRoot));
+
+    }
+
+    @Override
+    public void onCreateClick(View v, Object item) {
+        View viewRoot = getRoot();
+
+        onCreateClicked(v, item, viewRoot, contentViewStubBinding, new ICallback() {
+            private View _v;
+            private Object _item;
+            private View _viewRoot;
+
+            @Override
+            public void result(Object result) {
+                if (onCreateClickListener != null)
+                    onCreateClickListener.onCreateClick(this._v, (result != null)? result : this._item, this._viewRoot);
+            }
+
+            private ICallback init(View v, Object item, View viewRoot) {
+                this._v = v;
+                this._item = item;
+                this._viewRoot = viewRoot;
+
+                return this;
+            }
+        }.init(v, item, viewRoot));
+
     }
 
     @Override
@@ -141,38 +258,68 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
 
     }
 
-
-
-
     @Override
     public void onDismissClick(View v, Object item) {
         dialog.dismiss();
 
         View viewRoot = getRoot();
 
-        onDismissClicked(v, item, viewRoot, contentViewStubBinding);
+        onDismissClicked(v, item, viewRoot, contentViewStubBinding, new ICallback() {
+            private View _v;
+            private Object _item;
+            private View _viewRoot;
 
-        if (onNegativeClickListener != null)
-            onNegativeClickListener.onDismissClick(v, item, viewRoot);
+            @Override
+            public void result(Object result) {
+                if (onNegativeClickListener != null)
+                    onNegativeClickListener.onDismissClick(this._v, (result != null)? result : this._item, this._viewRoot);
+            }
+
+            private ICallback init(View v, Object item, View viewRoot) {
+                this._v = v;
+                this._item = item;
+                this._viewRoot = viewRoot;
+
+                return this;
+            }
+        }.init(v, item, viewRoot));
     }
     @Override
-    public void onDeleteClick(View v, Object item) {
+    public void onDeleteClick(View v, final Object item) {
         final ConfirmationDialog confirmationDialog = new ConfirmationDialog(this.activity, R.string.heading_confirmation_dialog,
                 R.string.heading_sub_confirmation_notification_dialog_delete, "", "");
 
         confirmationDialog.setOnPositiveClickListener(new de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface.PositiveOnClickListener() {
             @Override
-            public void onOkClick(View v, Object item, View viewRoot) {
-                onDeleteClicked(v, item, viewRoot, contentViewStubBinding);
-
-                if (onDeleteClickListener != null)
-                    onDeleteClickListener.onDeleteClick(v, item, viewRoot);
-
+            public void onOkClick(View v, Object confirmationItem, View viewRoot) {
                 confirmationDialog.dismiss();
+
+                onDeleteClicked(v, item, viewRoot, contentViewStubBinding, new ICallback() {
+                    private View _v;
+                    private Object _item;
+                    private View _viewRoot;
+
+                    @Override
+                    public void result(Object result) {
+                        if (onDeleteClickListener != null)
+                            onDeleteClickListener.onDeleteClick(this._v, (result != null)? result : this._item, this._viewRoot);
+
+
+                    }
+
+                    private ICallback init(View v, Object item, View viewRoot) {
+                        this._v = v;
+                        this._item = item;
+                        this._viewRoot = viewRoot;
+
+                        return this;
+                    }
+                }.init(v, item, viewRoot));
+
             }
         });
 
-        confirmationDialog.show();
+        confirmationDialog.show(null);
 
     }
 
@@ -225,6 +372,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
             @Override
             public void onInflate(ViewStub stub, View inflated) {
                 contentViewStubBinding = DataBindingUtil.bind(inflated);
+                recieveViewDataBinding(context, contentViewStubBinding);
                 String layoutName = context.getResources().getResourceEntryName(contentLayoutResourceId);
                 bindConfig(context, contentViewStubBinding, layoutName);
                 bindNotificationCallbacks(context, contentViewStubBinding, layoutName);
@@ -245,10 +393,10 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
             public void onInflate(ViewStub stub, View inflated) {
                 btnPanelViewStubBinding = DataBindingUtil.bind(inflated);
                 String layoutName = context.getResources().getResourceEntryName(btnPanelLayoutResourceId);
-                bindDialog(context, btnPanelViewStubBinding, layoutName);
                 bindConfig(context, btnPanelViewStubBinding, layoutName);
-                bindButtonCallbacks(context, btnPanelViewStubBinding, layoutName);
                 setBindingVariable(context, btnPanelViewStubBinding, layoutName);
+                bindDialog(context, btnPanelViewStubBinding, layoutName);
+                bindButtonCallbacks(context, btnPanelViewStubBinding, layoutName);
             }
         });
 
@@ -278,45 +426,53 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
 
     private void bindDialog(final Context context, final ViewDataBinding binding, String layoutName) {
         if (!binding.setVariable(BR.dialog, this)) {
-            Log.w(TAG, "There is no variable 'data' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'dialog' in layout " + layoutName);
         }
     }
 
     private void bindConfig(final Context context, final ViewDataBinding binding, String layoutName) {
         if (!binding.setVariable(BR.config, this.config)) {
-            Log.w(TAG, "There is no variable 'data' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'config' in layout " + layoutName);
         }
     }
 
     private void bindButtonCallbacks(final Context context, final ViewDataBinding binding, String layoutName) {
         if (!binding.setVariable(BR.dismissCallback, this)) {
-            Log.w(TAG, "There is no variable 'dismissCallback' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'dismissCallback' in layout " + layoutName);
         }
 
         /*if (!binding.setVariable(BR.showNotificationCallback, this)) {
-            Log.w(TAG, "There is no variable 'showNotificationCallback' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'showNotificationCallback' in layout " + layoutName);
         }
 
         if (!binding.setVariable(BR.hideNotificationCallback, this)) {
-            Log.w(TAG, "There is no variable 'hideNotificationCallback' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'hideNotificationCallback' in layout " + layoutName);
         }*/
 
         if (!binding.setVariable(BR.okCallback, this)) {
-            Log.w(TAG, "There is no variable 'okCallback' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'okCallback' in layout " + layoutName);
         }
 
         if (!binding.setVariable(BR.deleteCallback, this)) {
-            Log.w(TAG, "There is no variable 'deleteCallback' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'deleteCallback' in layout " + layoutName);
+        }
+
+        if (!binding.setVariable(BR.cancelCallback, this)) {
+            Log.e(TAG, "There is no variable 'cancelCallback' in layout " + layoutName);
+        }
+
+        if (!binding.setVariable(BR.createCallback, this)) {
+            Log.e(TAG, "There is no variable 'createCallback' in layout " + layoutName);
         }
     }
 
     private void bindNotificationCallbacks(final Context context, final ViewDataBinding binding, String layoutName) {
         if (!binding.setVariable(BR.showNotificationCallback, this)) {
-            Log.w(TAG, "There is no variable 'showNotificationCallback' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'showNotificationCallback' in layout " + layoutName);
         }
 
         if (!binding.setVariable(BR.hideNotificationCallback, this)) {
-            Log.w(TAG, "There is no variable 'hideNotificationCallback' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'hideNotificationCallback' in layout " + layoutName);
         }
     }
 
@@ -377,13 +533,25 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
 
     // <editor-fold defaultstate="collapsed" desc="Abstract Methods">
 
-    protected abstract void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding);
+    protected abstract void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback);
 
-    protected abstract void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding);
+    protected abstract void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback);
 
-    protected abstract void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding);
+    protected abstract void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback);
+
+    protected void onCancelClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+
+    }
+
+    protected void onCreateClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+
+    }
+
+    protected abstract void recieveViewDataBinding(Context context, ViewDataBinding binding);
 
     protected abstract void setBindingVariable(Context context, ViewDataBinding binding, String layoutName);
+
+    protected abstract void initializeData(TaskResultHolder resultHolder, boolean executionComplete);
 
     protected abstract void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding);
 
@@ -403,27 +571,71 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
         this.onDeleteClickListener = listener;
     }
 
-    public AlertDialog show() {
+    public void setOnCancelClickListener(TeboAlertDialogInterface.CancelOnClickListener onCancelClickListener) {
+        this.onCancelClickListener = onCancelClickListener;
+    }
+
+    public void setOnCreateClickListener(TeboAlertDialogInterface.CreateOnClickListener onCreateClickListener) {
+        this.onCreateClickListener = onCreateClickListener;
+    }
+
+    //AlertDialog
+    public void show(final ICallback callback) {
         this.rootBinding = bindRootLayout(activity);
-        initializeContentView(rootBinding, contentViewStubBinding, btnPanelViewStubBinding);
-        dialog = builder.show();
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    initializeData(resultHolder, false);
+                }
+            });
+            dialogTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    initializeData(resultHolder, true);
+
+                    initializeContentView(rootBinding, contentViewStubBinding, btnPanelViewStubBinding);
+                    dialog = builder.show();
 
 
-        float width = getWidth();
-        float height = getHeight();
+                    float width = getWidth();
+                    float height = getHeight();
 
-        if (width <= 0)
-            width = WindowManager.LayoutParams.WRAP_CONTENT;
+                    if (width <= 0)
+                        width = WindowManager.LayoutParams.WRAP_CONTENT;
 
-        if (height <= 0)
-            height = WindowManager.LayoutParams.WRAP_CONTENT;
+                    if (height <= 0)
+                        height = WindowManager.LayoutParams.WRAP_CONTENT;
 
-        dialog.getWindow().setLayout((int) width, (int) height);
+                    dialog.getWindow().setLayout((int) width, (int) height);
 
-        return dialog;
+                    if (callback != null)
+                        callback.result(dialog);
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
     }
 
     public void dismiss() {
+        if (dialogTask != null && !dialogTask.isCancelled())
+            dialogTask.cancel(true);
+
         if (dialog != null)
             dialog.dismiss();
     }
@@ -436,6 +648,76 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
         return this.activity.getSupportFragmentManager();
     }
 
+    public TeboButton getOkButton() {
+        if (btnPanelViewStubBinding == null)
+            return null;
+
+        View btnPanelRootView = btnPanelViewStubBinding.getRoot();
+
+        if (btnPanelRootView == null)
+            return null;
+
+        TeboButton btn = (TeboButton) btnPanelRootView.findViewById(R.id.btnOk);
+
+        return btn;
+    }
+
+    public TeboButton getDismissButton() {
+        if (btnPanelViewStubBinding == null)
+            return null;
+
+        View btnPanelRootView = btnPanelViewStubBinding.getRoot();
+
+        if (btnPanelRootView == null)
+            return null;
+
+        TeboButton btn = (TeboButton) btnPanelRootView.findViewById(R.id.btnDismiss);
+
+        return btn;
+    }
+
+    public TeboButton getDeleteButton() {
+        if (btnPanelViewStubBinding == null)
+            return null;
+
+        View btnPanelRootView = btnPanelViewStubBinding.getRoot();
+
+        if (btnPanelRootView == null)
+            return null;
+
+        TeboButton btn = (TeboButton) btnPanelRootView.findViewById(R.id.btnDelete);
+
+        return btn;
+    }
+
+    public TeboButton getCancelButton() {
+        if (btnPanelViewStubBinding == null)
+            return null;
+
+        View btnPanelRootView = btnPanelViewStubBinding.getRoot();
+
+        if (btnPanelRootView == null)
+            return null;
+
+        TeboButton btn = (TeboButton) btnPanelRootView.findViewById(R.id.btnCancel);
+
+        return btn;
+    }
+
+    public TeboButton getCreateButton() {
+        if (btnPanelViewStubBinding == null)
+            return null;
+
+        View btnPanelRootView = btnPanelViewStubBinding.getRoot();
+
+        if (btnPanelRootView == null)
+            return null;
+
+        TeboButton btn = (TeboButton) btnPanelRootView.findViewById(R.id.btnCreate);
+
+        return btn;
+    }
+
     public boolean isOkButtonVisible() {
         return true;
     }
@@ -446,6 +728,14 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
 
     public boolean isDeleteButtonVisible() {
         return false;
+    }
+
+    public boolean isCancelButtonVisible() {
+        return true;
+    }
+
+    public boolean isCreateButtonVisible() {
+        return true;
     }
 
     public boolean isHeadingVisible() {
@@ -500,6 +790,14 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
         return TeboButtonType.BTN_DANGER;
     }
 
+    public TeboButtonType cancelButtonType() {
+        return TeboButtonType.BTN_LINE_PRIMARY;
+    }
+
+    public TeboButtonType createButtonType() {
+        return TeboButtonType.BTN_LINE_PRIMARY;
+    }
+
     public int getPositiveButtonText() {
         return R.string.action_ok;
     }
@@ -510,6 +808,43 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
 
     public int getDeleteButtonText() {
         return R.string.action_delete;
+    }
+
+    public int getCancelButtonText() {
+        return R.string.action_cancel;
+    }
+
+    public int getCreateButtonText() {
+        return R.string.action_create;
+    }
+
+    @Override
+    public View getRootView() {
+        return rootBinding.getRoot();
+    }
+
+    public void showNotification(View v, String message, boolean errorState) {
+        if (rootBinding.notificationFrame == null)
+            return;
+
+        if (rootBinding.tvNotificationMessage == null)
+            return;
+
+        NotificationType type = NotificationType.ERROR;
+
+        int backgroundColor = activity.getResources().getColor(type.getInverseBackgroundColor());
+        int textColor = activity.getResources().getColor(type.getInverseTextColor());
+
+        LayerDrawable drawable = (LayerDrawable) activity.getResources().getDrawable(R.drawable.background_notification_dialog);
+        Drawable backgroundLayer = drawable.findDrawableByLayerId(R.id.backgroundLayer);
+        backgroundLayer.setColorFilter(backgroundColor, PorterDuff.Mode.SRC_OVER);
+
+        rootBinding.tvNotificationMessage.setTextColor(textColor);
+        rootBinding.tvNotificationMessage.setText(message);
+
+        rootBinding.notificationFrame.setBackground(drawable);
+        rootBinding.notificationFrame.setVisibility(View.VISIBLE);
+
     }
 
     // </editor-fold>

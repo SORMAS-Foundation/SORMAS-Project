@@ -11,6 +11,7 @@
             type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
 
+    <!--android:background="@drawable/selector_section_list_row_background"-->
     <LinearLayout
         android:id="@+id/rowListItem"
         android:layout_width="match_parent"
@@ -20,7 +21,7 @@
         android:paddingLeft="@dimen/rowListItemHorizontalMargin"
         android:paddingRight="@dimen/rowListItemHorizontalMargin"
         android:orientation="horizontal"
-        android:background="@drawable/selector_section_list_row_background"
+        android:background="@drawable/selector_list_section_row_background"
         android:elevation="0dp"
         android:onClickListener="@{(view) -> callback.onClick(view, data)}"
         >

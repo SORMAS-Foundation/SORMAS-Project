@@ -1,5 +1,8 @@
 package de.symeda.sormas.app.core.async;
 
+import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.core.BoolResult;
+
 /**
  * Created by Orson on 09/03/2018.
  * <p>
@@ -9,6 +12,6 @@ package de.symeda.sormas.app.core.async;
  */
 
 public interface IJobDefinition {
-    void preExecute();
-    void execute(TaskResultHolder resultHolder);
+    void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) throws DaoException;
+    void execute(BoolResult resultStatus, TaskResultHolder resultHolder) throws Exception;
 }

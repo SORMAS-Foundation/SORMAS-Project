@@ -6,17 +6,22 @@ import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 
+import java.util.Date;
+
+import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.contact.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.util.NavigationHelper;
-
-import de.symeda.sormas.api.contact.ContactClassification;
 
 /**
  * Created by Orson on 19/02/2018.
@@ -26,7 +31,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
  * sampson.orson@technologyboard.org
  */
 
-public class CaseEditContactInfoActivity extends BaseEditActivity {
+public class CaseEditContactInfoActivity extends BaseEditActivity<Contact> {
 
     private final String DATA_XML_PAGE_MENU = null;
 
@@ -37,6 +42,9 @@ public class CaseEditContactInfoActivity extends BaseEditActivity {
     private String recordUuid = null;
     private ContactClassification pageStatus = null;
     private BaseEditActivityFragment activeFragment = null;
+
+    private MenuItem saveMenu = null;
+    private MenuItem addMenu = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -69,11 +77,32 @@ public class CaseEditContactInfoActivity extends BaseEditActivity {
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment() throws IllegalAccessException, InstantiationException {
+    protected Contact getActivityRootData(String recordUuid) {
+        Contact _contact = DatabaseHelper.getContactDao().queryUuid(recordUuid);
+        return _contact;
+    }
+
+    @Override
+    protected Contact getActivityRootDataIfRecordUuidNull() {
+        Person _person = DatabaseHelper.getPersonDao().build();
+        Contact _contact = DatabaseHelper.getContactDao().build();
+
+        _contact.setPerson(_person);
+        _contact.setReportDateTime(new Date());
+        _contact.setContactClassification(ContactClassification.UNCONFIRMED);
+        _contact.setContactStatus(ContactStatus.ACTIVE);
+        _contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
+        _contact.setReportingUser(ConfigProvider.getUser());
+
+        return _contact;
+    }
+
+    @Override
+    public BaseEditActivityFragment getActiveEditFragment(Contact activityRootData) throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
             ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(
                     CaseEditContactInfoActivity.this, recordUuid, pageStatus);
-            activeFragment = CaseEditContactInfoFragment.newInstance(this, dataCapsule);
+            activeFragment = CaseEditContactInfoFragment.newInstance(this, dataCapsule, activityRootData);
         }
 
         return activeFragment;
@@ -105,8 +134,8 @@ public class CaseEditContactInfoActivity extends BaseEditActivity {
     }
 
     @Override
-    public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-        return false;
+    protected BaseEditActivityFragment getNextFragment(LandingPageMenuItem menuItem, Contact activityRootData) {
+        return null;
     }
 
     @Override
@@ -114,13 +143,12 @@ public class CaseEditContactInfoActivity extends BaseEditActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.edit_action_menu, menu);
 
-        MenuItem saveMenu = menu.findItem(R.id.action_save);
-        MenuItem addMenu = menu.findItem(R.id.action_new);
-
-        saveMenu.setVisible(true);
-        addMenu.setVisible(false);
+        saveMenu = menu.findItem(R.id.action_save);
+        addMenu = menu.findItem(R.id.action_new);
 
         saveMenu.setTitle(R.string.action_save_contact);
+
+        processActionbarMenu();
 
         return true;
     }
@@ -174,6 +202,17 @@ public class CaseEditContactInfoActivity extends BaseEditActivity {
     @Override
     protected int getActivityTitle() {
         return R.string.heading_level4_case_edit;
+    }
+
+    private void processActionbarMenu() {
+        if (activeFragment == null)
+            return;
+
+        if (saveMenu != null)
+            saveMenu.setVisible(activeFragment.showSaveAction());
+
+        if (addMenu != null)
+            addMenu.setVisible(activeFragment.showAddAction());
     }
 
     public static void goToActivity(Context fromActivity, ContactFormNavigationCapsule dataCapsule) {

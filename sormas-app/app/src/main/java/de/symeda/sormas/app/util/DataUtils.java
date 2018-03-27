@@ -74,7 +74,16 @@ public class DataUtils {
     }
 
     public static <E>  List<Item> addEmptyItem(List<Item> items) {
-        items.add(0, new Item<E>("", null));
+        boolean hasEmptyItem = false;
+        for (int i = 0; i < items.size(); i++) {
+             if (items.get(i).getKey() == "") {
+                 hasEmptyItem = true;
+                 break;
+             }
+        }
+
+        if (!hasEmptyItem)
+            items.add(0, new Item<E>("", null));
         return items;
     }
 

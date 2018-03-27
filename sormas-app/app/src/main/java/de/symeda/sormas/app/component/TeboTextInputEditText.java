@@ -21,7 +21,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.core.CompositeOnFocusChangeListener;
 
 /**
@@ -306,7 +309,9 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        if (isSlim()) {
+        updateControlDimensions();
+
+        /*if (isSlim()) {
             float slimControlTextSize = getContext().getResources().getDimension(R.dimen.slimControlTextSize);
             int heightInPixel = getContext().getResources().getDimensionPixelSize(R.dimen.slimControlHeight);
             int paddingTop = getContext().getResources().getDimensionPixelSize(R.dimen.slimTextViewTopPadding);
@@ -316,7 +321,50 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
 
             txtControlInput.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
             txtControlInput.setHeight(heightInPixel);
+            txtControlInput.setMinHeight(heightInPixel);
+            txtControlInput.setMaxHeight(heightInPixel);
             txtControlInput.setTextSize(TypedValue.COMPLEX_UNIT_PX, slimControlTextSize);
+        } else {
+            int heightInPixel = getContext().getResources().getDimensionPixelSize(R.dimen.maxControlHeight);
+            txtControlInput.setHeight(heightInPixel);
+            txtControlInput.setMinHeight(heightInPixel);
+            txtControlInput.setMaxHeight(heightInPixel);
+        }*/
+    }
+
+    private void updateControlDimensions() {
+        if (isSlim()) {
+            float slimControlTextSize = getContext().getResources().getDimension(R.dimen.slimControlTextSize);
+            int paddingTop = getContext().getResources().getDimensionPixelSize(R.dimen.slimTextViewTopPadding);
+            int paddingBottom = getContext().getResources().getDimensionPixelSize(R.dimen.slimTextViewBottomPadding);
+            int paddingLeft = txtControlInput.getPaddingLeft();
+            int paddingRight = txtControlInput.getPaddingRight();
+
+            txtControlInput.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+            txtControlInput.setTextSize(TypedValue.COMPLEX_UNIT_PX, slimControlTextSize);
+        } else {
+            int paddingTop = 0;
+            int paddingBottom = 0;
+            int paddingLeft = txtControlInput.getPaddingLeft();
+            int paddingRight = txtControlInput.getPaddingRight();
+
+            txtControlInput.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+        }
+
+        updateControlHeight();
+    }
+
+    private void updateControlHeight() {
+        if (isSlim()) {
+            int heightInPixel = getContext().getResources().getDimensionPixelSize(R.dimen.slimControlHeight);
+            txtControlInput.setHeight(heightInPixel);
+            txtControlInput.setMinHeight(heightInPixel);
+            txtControlInput.setMaxHeight(heightInPixel);
+        } else {
+            int heightInPixel = getContext().getResources().getDimensionPixelSize(R.dimen.maxControlHeight);
+            txtControlInput.setHeight(heightInPixel);
+            txtControlInput.setMinHeight(heightInPixel);
+            txtControlInput.setMaxHeight(heightInPixel);
         }
     }
 
@@ -376,15 +424,25 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
 
 
     @Override
-    public void changeVisualState(final VisualState state) {
+    public void changeVisualState(final VisualState state, UserRight editOrCreateUserRight) {
         int labelColor = getResources().getColor(state.getLabelColor(VisualStateControl.EDIT_TEXT));
         Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControl.EDIT_TEXT));
+        int textColor = state.getTextColor(VisualStateControl.EDIT_TEXT);
+        int hintColor = state.getHintColor(VisualStateControl.EDIT_TEXT);
+
         //Drawable drawable = getResources().getDrawable(R.drawable.selector_text_control_edit_error);
 
         if (state == VisualState.DISABLED) {
             lblControlLabel.setTextColor(labelColor);
             setBackground(drawable);
-            txtControlInput.setEnabled(false);
+
+            if (textColor > 0)
+                txtControlInput.setTextColor(getResources().getColor(textColor));
+
+            if (hintColor > 0)
+                txtControlInput.setHintTextColor(getResources().getColor(hintColor));
+
+            setEnabled(false);
             return;
         }
 
@@ -397,13 +455,29 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
         if (state == VisualState.FOCUSED) {
             lblControlLabel.setTextColor(labelColor);
             setBackground(drawable);
+
+            if (textColor > 0)
+                txtControlInput.setTextColor(getResources().getColor(textColor));
+
+            if (hintColor > 0)
+                txtControlInput.setHintTextColor(getResources().getColor(hintColor));
+
+            lblControlLabel.setTextColor(textColor);
             return;
         }
 
         if (state == VisualState.NORMAL || state == VisualState.ENABLED) {
+            User user = ConfigProvider.getUser();
             lblControlLabel.setTextColor(labelColor);
             setBackground(drawable);
-            txtControlInput.setEnabled(true);
+
+            if (textColor > 0)
+                txtControlInput.setTextColor(getResources().getColor(textColor));
+
+            if (hintColor > 0)
+                txtControlInput.setHintTextColor(getResources().getColor(hintColor));
+
+            setEnabled(true && (editOrCreateUserRight != null)? user.hasUserRight(editOrCreateUserRight) : true);
             return;
         }
     }
@@ -418,6 +492,7 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
         txtControlInput.setBackgroundResource(resid);
 
         txtControlInput.setPadding(pl, pt, pr, pb);
+        updateControlHeight();
     }
 
     @Override
@@ -430,6 +505,7 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
         txtControlInput.setBackground(background);
 
         txtControlInput.setPadding(pl, pt, pr, pb);
+        updateControlHeight();
     }
 
     @Override
@@ -455,7 +531,8 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
 
             if (inErrorState()) {
                 //changeVisualState(VisualState.ERROR);
-                showNotification();
+                if (hasFocus)
+                    showNotification(hasFocus);
 
                 return;
             } else {
@@ -492,7 +569,8 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
 
             if (inErrorState()) {
                 //changeVisualState(VisualState.ERROR);
-                showNotification();
+                if(v.hasFocus())
+                    showNotification();
 
                 return;
             } else {

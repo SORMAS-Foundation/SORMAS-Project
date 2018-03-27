@@ -12,5 +12,5 @@ import de.symeda.sormas.app.core.BoolResult;
 
 public interface ITaskResultCallback {
 
-    void searchResult(BoolResult resultStatus, TaskResultHolder resultHolder);
+    void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder);
 }

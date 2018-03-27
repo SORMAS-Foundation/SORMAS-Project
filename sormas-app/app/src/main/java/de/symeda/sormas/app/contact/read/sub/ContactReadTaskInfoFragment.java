@@ -13,7 +13,7 @@ import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentContactReadTaskInfoLayoutBinding;
-import de.symeda.sormas.app.task.TaskFormNavigationCapsule;
+import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 
 /**
  * Created by Orson on 02/01/2018.
@@ -68,6 +68,13 @@ public class ContactReadTaskInfoFragment extends BaseReadActivityFragment<Fragme
     }
 
     @Override
+    public void onPageResume(FragmentContactReadTaskInfoLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
+    }
+
+    @Override
     protected String getSubHeadingTitle() {
         String title = "";
 
@@ -91,6 +98,11 @@ public class ContactReadTaskInfoFragment extends BaseReadActivityFragment<Fragme
     @Override
     public int getReadLayout() {
         return R.layout.fragment_contact_read_task_info_layout;
+    }
+
+    @Override
+    public boolean includeFabNonOverlapPadding() {
+        return false;
     }
 
     public static ContactReadTaskInfoFragment newInstance(IActivityCommunicator activityCommunicator, TaskFormNavigationCapsule capsule)

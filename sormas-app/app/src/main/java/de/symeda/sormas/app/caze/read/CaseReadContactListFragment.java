@@ -15,7 +15,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.caze.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.contact.read.ContactReadActivity;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -23,6 +23,8 @@ import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentCaseReadContactLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 
 /**
  * Created by Orson on 11/01/2018.
@@ -89,21 +91,20 @@ public class CaseReadContactListFragment extends BaseReadActivityFragment<Fragme
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)getRootBinding().getRoot()
-                .findViewById(R.id.swiperefresh);
-
+    public void onPageResume(FragmentCaseReadContactLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getBaseReadActivity().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly,
-                            true, false, swiperefresh, null);
+                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, false, true, true, swiperefresh, null);
                 }
             });
         }
+
+        if (!hasBeforeLayoutBindingAsyncReturn)
+            return;
+
     }
 
     @Override
@@ -117,12 +118,26 @@ public class CaseReadContactListFragment extends BaseReadActivityFragment<Fragme
     }
 
     @Override
+    public int getRootReadLayout() {
+        return R.layout.fragment_root_list_edit_layout;
+    }
+
+    @Override
     public int getReadLayout() {
         return R.layout.fragment_case_read_contact_layout;
     }
 
     @Override
+    public boolean includeFabNonOverlapPadding() {
+        return false;
+    }
+
+    @Override
     public void onListItemClick(View view, int position, Object item) {
+        Contact c = (Contact)item;
+        ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(),
+                c.getUuid(), c.getContactClassification());
+        ContactReadActivity.goToActivity(getActivity(), dataCapsule);
     }
 
     public static CaseReadContactListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule)

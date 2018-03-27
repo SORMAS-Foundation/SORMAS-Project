@@ -7,6 +7,7 @@ import android.view.MenuItem;
 
 import de.symeda.sormas.app.BaseLandingActivity;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.landing.CasesLandingActivity;
 import de.symeda.sormas.app.contact.landing.ContactsLandingActivity;
 import de.symeda.sormas.app.dashboard.DashboardActivity;
@@ -49,7 +50,7 @@ public class MainMenuItemSelectedListener implements NavigationView.OnNavigation
         } else if (id == R.id.menu_item_samples) {
             showSamplesView();
         } else if (id == R.id.menu_item_reports) {
-            showReportsView();
+           showReportsView();
         }
 
         // necessary to prevent the drawer from staying open when the same entry is selected
@@ -70,8 +71,8 @@ public class MainMenuItemSelectedListener implements NavigationView.OnNavigation
     }
 
     public void showCaseNewView() {
-    /*Intent intent = new Intent(activity, CaseNewActivity.class);
-    startActivity(intent);*/
+        Intent intent = new Intent(activity, CaseNewActivity.class);
+        activity.startActivity(intent);
     }
 
     public void showContactsView() {
