@@ -22,6 +22,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -41,7 +42,11 @@ public class ContactGrid extends Grid {
 	public ContactGrid() {
 		setSizeFull();
 
-        setSelectionMode(SelectionMode.NONE);
+		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+        	setSelectionMode(SelectionMode.MULTI);
+        } else {
+        	setSelectionMode(SelectionMode.NONE);
+        }
 
         BeanItemContainer<ContactIndexDto> container = new BeanItemContainer<ContactIndexDto>(ContactIndexDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
@@ -102,7 +107,7 @@ public class ContactGrid extends Grid {
         }
         
         addItemClickListener(e -> {
-	       	if (e.getPropertyId().equals(ContactIndexDto.UUID) || e.isDoubleClick()) {
+	       	if (e.getPropertyId() != null && (e.getPropertyId().equals(ContactIndexDto.UUID) || e.isDoubleClick())) {
 		       	ContactIndexDto contactIndexDto = (ContactIndexDto)e.getItemId();
 	       		ControllerProvider.getContactController().editData(contactIndexDto.getUuid());
 	       	}

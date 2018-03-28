@@ -45,7 +45,6 @@ public class SamplesView extends AbstractView {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		sampleListComponent.reload();
-		sampleListComponent.updateActiveStatusButtonCaption();
 	}
 
 }

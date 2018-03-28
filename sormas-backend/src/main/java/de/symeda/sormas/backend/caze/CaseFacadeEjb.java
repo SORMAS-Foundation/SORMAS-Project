@@ -94,6 +94,7 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sample.SampleTestService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
@@ -139,6 +140,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private ContactService contactService;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private SampleTestService sampleTestService;
 	@EJB
 	private HospitalizationFacadeEjbLocal hospitalizationFacade;
 	@EJB

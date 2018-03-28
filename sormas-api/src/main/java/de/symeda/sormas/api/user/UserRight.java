@@ -414,6 +414,9 @@ public enum UserRight {
 	DATABASE_EXPORT_ACCESS(
 			ADMIN,
 			NATIONAL_USER
+	),
+	PERFORM_BULK_OPERATIONS(
+			ADMIN
 	);
 	
 	private final Set<UserRole> userRoles;

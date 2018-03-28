@@ -26,15 +26,12 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.TextArea;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 
@@ -349,48 +346,16 @@ VerticalLayout implements Buffered {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void buttonClick(ClickEvent event) {
-					showDeleteConfirmationComponent(entityName);
+					VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete this " + entityName + "? This action can not be reversed.", new Runnable() {
+						public void run() {
+							onDelete();
+						}
+					});
 				}
 			});
 		}
 
 		return deleteButton;
-	}
-
-	public void showDeleteConfirmationComponent(String entityName) {				
-		Window popupWindow = VaadinUiUtil.createPopupWindow();	
-		
-		VerticalLayout deleteLayout = new VerticalLayout();
-		deleteLayout.setMargin(true);
-		deleteLayout.setSizeUndefined();
-		deleteLayout.setSpacing(true);
-	
-		Label description = new Label("Are you sure you want to delete this " + entityName + "? This action can not be reversed.");
-		description.setWidth(100, Unit.PERCENTAGE);
-		deleteLayout.addComponent(description);
-		
-		ConfirmationComponent deleteConfirmationComponent = new ConfirmationComponent(false) {
-			private static final long serialVersionUID = 1L;
-			@Override
-			protected void onConfirm() {
-				popupWindow.close();
-				onDelete();
-				onDone();
-			}
-
-			@Override
-			protected void onCancel() {
-				popupWindow.close();
-			}
-		};
-		deleteConfirmationComponent.getConfirmButton().setCaption("Yes");
-		deleteConfirmationComponent.getCancelButton().setCaption("No");
-		deleteLayout.addComponent(deleteConfirmationComponent);
-		deleteLayout.setComponentAlignment(deleteConfirmationComponent, Alignment.BOTTOM_RIGHT);
-		
-		popupWindow.setCaption("Confirm Deletion");
-		popupWindow.setContent(deleteLayout);
-		UI.getCurrent().addWindow(popupWindow);
 	}
 
 	@Override

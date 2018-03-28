@@ -28,6 +28,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -48,8 +49,12 @@ public class CaseGrid extends Grid {
 	public CaseGrid() {
         setSizeFull();
 
-        setSelectionMode(SelectionMode.NONE);
-
+        if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+        	setSelectionMode(SelectionMode.MULTI);
+        } else {
+        	setSelectionMode(SelectionMode.NONE);
+        }
+        
         BeanItemContainer<CaseIndexDto> container = new BeanItemContainer<CaseIndexDto>(CaseIndexDto.class);
         GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
         setContainerDataSource(generatedContainer);
@@ -96,7 +101,7 @@ public class CaseGrid extends Grid {
         }
         
         addItemClickListener(e ->  {
-        	if (e.getPropertyId().equals(CaseIndexDto.UUID) || e.isDoubleClick()) {
+        	if (e.getPropertyId() != null && (e.getPropertyId().equals(CaseIndexDto.UUID) || e.isDoubleClick())) {
         		ControllerProvider.getCaseController().navigateToCase(((CaseIndexDto) e.getItemId()).getUuid());
         	}
         });

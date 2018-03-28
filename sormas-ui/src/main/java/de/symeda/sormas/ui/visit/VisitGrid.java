@@ -14,9 +14,11 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -34,7 +36,11 @@ public class VisitGrid extends Grid {
 	public VisitGrid() {
 		setSizeFull();
 
-		setSelectionMode(SelectionMode.NONE);
+		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+        	setSelectionMode(SelectionMode.MULTI);
+        } else {
+        	setSelectionMode(SelectionMode.NONE);
+        }
 
 		BeanItemContainer<VisitDto> container = new BeanItemContainer<VisitDto>(VisitDto.class);
 		container.addNestedContainerProperty(SYMPTOMS_SYMPTOMATIC);
@@ -59,7 +65,7 @@ public class VisitGrid extends Grid {
 		}
 
 		addItemClickListener(e -> {
-			if (e.getPropertyId().equals(EDIT_BTN_ID) || e.isDoubleClick()) {
+			if (e.getPropertyId() != null && (e.getPropertyId().equals(EDIT_BTN_ID) || e.isDoubleClick())) {
 				VisitDto indexDto = (VisitDto)e.getItemId();
 				ControllerProvider.getVisitController().editVisit(indexDto.toReference(), r -> reload());
 			}

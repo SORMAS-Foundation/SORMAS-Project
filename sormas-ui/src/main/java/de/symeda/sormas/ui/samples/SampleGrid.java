@@ -27,6 +27,7 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -47,7 +48,12 @@ public class SampleGrid extends Grid {
 	
 	public SampleGrid() {
 		setSizeFull();
-		setSelectionMode(SelectionMode.NONE);
+		
+		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+        	setSelectionMode(SelectionMode.MULTI);
+        } else {
+        	setSelectionMode(SelectionMode.NONE);
+        }
 		
 		BeanItemContainer<SampleIndexDto> container = new BeanItemContainer<SampleIndexDto>(SampleIndexDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
@@ -105,7 +111,7 @@ public class SampleGrid extends Grid {
 		}
 		
 		addItemClickListener(e -> {
-	       	if (e.getPropertyId().equals(EDIT_BTN_ID) || e.isDoubleClick()) {
+	       	if (e.getPropertyId() != null && (e.getPropertyId().equals(EDIT_BTN_ID) || e.isDoubleClick())) {
 	       		ControllerProvider.getSampleController().navigateToData(((SampleIndexDto)e.getItemId()).getUuid());
 	       	}
 		});

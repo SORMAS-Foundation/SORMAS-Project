@@ -1,15 +1,20 @@
 package de.symeda.sormas.ui.samples;
 
+import java.util.Collection;
 import java.util.List;
 
+import com.vaadin.server.Page;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import de.symeda.sormas.api.sample.SampleTestFacade;
+import de.symeda.sormas.api.sample.SampleTestReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -89,4 +94,21 @@ public class SampleTestController {
 		sampleTest.setLabUser(LoginHelper.getCurrentUserAsReference());
 		return sampleTest;
 	}
+	
+	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+		if (selectedRows.size() == 0) {
+			new Notification("No sample tests selected", "You have not selected any sample tests.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected sample tests?", new Runnable() {
+				public void run() {
+					for (Object selectedRow : selectedRows) {
+						FacadeProvider.getSampleTestFacade().deleteSampleTest(new SampleTestReferenceDto(((SampleTestDto) selectedRow).getUuid()), LoginHelper.getCurrentUser().getUuid());
+					}
+					callback.run();
+					new Notification("Sample tests deleted", "All selected sample tests have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+				}
+			});
+		}
+	}
+	
 }

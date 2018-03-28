@@ -16,6 +16,7 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -34,7 +35,12 @@ public class EventGrid extends Grid {
 	
 	public EventGrid() {
 		setSizeFull();
-		setSelectionMode(SelectionMode.NONE);
+
+		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+        	setSelectionMode(SelectionMode.MULTI);
+        } else {
+        	setSelectionMode(SelectionMode.NONE);
+        }
 		
 		BeanItemContainer<EventIndexDto> container = new BeanItemContainer<EventIndexDto>(EventIndexDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
@@ -95,7 +101,7 @@ public class EventGrid extends Grid {
 		}
 		
 		addItemClickListener(e -> {
-	       	if (e.getPropertyId().equals(EventIndexDto.UUID) || e.isDoubleClick()) {
+	       	if (e.getPropertyId() != null && (e.getPropertyId().equals(EventIndexDto.UUID) || e.isDoubleClick())) {
 	       		ControllerProvider.getEventController().navigateToData(((EventIndexDto)e.getItemId()).getUuid());
 	       	}
 		});				
