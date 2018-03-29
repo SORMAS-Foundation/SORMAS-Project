@@ -39,6 +39,7 @@ import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.ConstantHelper;
+import de.symeda.sormas.app.util.SoftKeyboardHelper;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -288,6 +289,13 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
         });*/
 
         onResumeExecCount = onResumeExecCount + 1;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        SoftKeyboardHelper.hideKeyboard(getActivity(), this);
     }
 
     public abstract void onPageResume(TBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn);

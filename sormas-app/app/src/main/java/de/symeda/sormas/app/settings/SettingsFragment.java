@@ -33,6 +33,7 @@ import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.AppUpdateController;
+import de.symeda.sormas.app.util.SoftKeyboardHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
 /**
@@ -90,6 +91,13 @@ public class SettingsFragment extends BaseLandingActivityFragment {
         binding.btnSettingsRepullData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
         binding.btnSettingsSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
         binding.btnSettingsLogout.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        SoftKeyboardHelper.hideKeyboard(getActivity(), this);
     }
 
     public String getServerUrl() {

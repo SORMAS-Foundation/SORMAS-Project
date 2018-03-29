@@ -29,6 +29,7 @@ import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.LocationService;
+import de.symeda.sormas.app.util.SoftKeyboardHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
 //import android.support.design.widget.Snackbar;
@@ -50,7 +51,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         }
 
         //TODO: Orson Remove this later
-        //LoginHelper.processLogout();
+        LoginHelper.processLogout();
 
         loginViewModel = new LoginViewModel();
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login_layout);
@@ -91,6 +92,13 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
             processLogin(false);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        SoftKeyboardHelper.hideKeyboard(this, binding.txtPassword.getWindowToken());
     }
 
     @Override
