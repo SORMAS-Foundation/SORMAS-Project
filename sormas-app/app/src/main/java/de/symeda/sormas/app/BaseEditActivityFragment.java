@@ -24,6 +24,8 @@ import de.symeda.sormas.app.component.OnHideInputErrorListener;
 import de.symeda.sormas.app.component.OnShowInputErrorListener;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.IActivityRootDataRequestor;
+import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
@@ -68,6 +70,7 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
     private boolean skipAfterLayoutBinding = false;
     private TActivityRootData activityRootData;
     private View rootView;
+    private IActivityRootDataRequestor activityRootDataRequestor;
 
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -88,7 +91,7 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
         if (getActivity() instanceof BaseEditActivity) {
             this.baseEditActivity = (BaseEditActivity) this.getActivity();
         } else {
-            throw new NotImplementedException("The list activity for fragment must implement BaseEditActivity");
+            throw new NotImplementedException("The edit activity for fragment must implement BaseEditActivity");
         }
 
         if (getActivity() instanceof IUpdateSubHeadingTitle) {
@@ -103,6 +106,12 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
         } else {
             throw new NotImplementedException("Activity for fragment does not support showNotification; "
                     + "implement INotificationContext");
+        }
+
+        if (getActivity() instanceof IActivityRootDataRequestor) {
+            this.activityRootDataRequestor = (IActivityRootDataRequestor) this.getActivity();
+        } else {
+            throw new NotImplementedException("The edit activity for fragment must implement IActivityRootDataRequestor");
         }
 
 
@@ -257,7 +266,13 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
     public final void onResume() {
         super.onResume();
 
-        onPageResume(getContentBinding(), beforeLayoutBindingAsyncReturn);
+        this.activityRootDataRequestor.requestActivityRootData(new ICallback<TActivityRootData>() {
+            @Override
+            public void result(TActivityRootData result) {
+                setActivityRootData(result);
+                onPageResume(getContentBinding(), beforeLayoutBindingAsyncReturn);
+            }
+        });
         //getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
 
         /*final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);

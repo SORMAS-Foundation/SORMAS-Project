@@ -35,6 +35,7 @@ import de.symeda.sormas.app.component.menu.OnLandingPageMenuClickListener;
 import de.symeda.sormas.app.component.menu.OnSelectInitialActiveMenuItemListener;
 import de.symeda.sormas.app.component.menu.PageMenuNavAdapter;
 import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.IActivityRootDataRequestor;
 import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.INotificationContext;
@@ -53,7 +54,7 @@ import de.symeda.sormas.app.util.ConstantHelper;
  * Created by Orson on 10/12/2017.
  */
 
-public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainObject> extends AbstractSormasActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, INotificationContext {
+public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainObject> extends AbstractSormasActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, INotificationContext, IActivityRootDataRequestor<TActivityRootData> {
 
     private AsyncTask processActivityRootDataTask;
     private View fragmentFrame = null;
@@ -205,6 +206,11 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
         }
     }
 
+    @Override
+    public void requestActivityRootData(ICallback<TActivityRootData> callback) {
+        processActivityRootData(callback);
+    }
+
     private void processActivityRootData(final ICallback<TActivityRootData> callback) {
         try {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
@@ -299,6 +305,8 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
         } else {
             applicationTitleBar.setVisibility(View.GONE);
         }
+
+
     }
 
     public void setSubHeadingTitle(String title) {

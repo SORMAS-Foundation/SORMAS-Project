@@ -22,6 +22,8 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.IActivityRootDataRequestor;
+import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
@@ -55,6 +57,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
     private boolean skipAfterLayoutBinding = false;
     private TActivityRootData activityRootData;
     private View rootView;
+    private IActivityRootDataRequestor activityRootDataRequestor;
 
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -76,7 +79,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         if (getActivity() instanceof BaseReadActivity) {
             this.baseReadActivity = (BaseReadActivity) this.getActivity();
         } else {
-            throw new NotImplementedException("The list activity for fragment must implement BaseReadActivity");
+            throw new NotImplementedException("The read activity for fragment must implement BaseReadActivity");
         }
 
         if (getActivity() instanceof IUpdateSubHeadingTitle) {
@@ -84,6 +87,12 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         } else {
             throw new NotImplementedException("Activity for fragment does not support updateSubHeadingTitle; "
                     + "implement IUpdateSubHeadingTitle");
+        }
+
+        if (getActivity() instanceof IActivityRootDataRequestor) {
+            this.activityRootDataRequestor = (IActivityRootDataRequestor) this.getActivity();
+        } else {
+            throw new NotImplementedException("The read activity for fragment must implement IActivityRootDataRequestor");
         }
 
         super.onCreateView(inflater, container, savedInstanceState);
@@ -254,7 +263,14 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
     public final void onResume() {
         super.onResume();
 
-        onPageResume(getContentBinding(), beforeLayoutBindingAsyncReturn);
+        this.activityRootDataRequestor.requestActivityRootData(new ICallback<TActivityRootData>() {
+            @Override
+            public void result(TActivityRootData result) {
+                setActivityRootData(result);
+                onPageResume(getContentBinding(), beforeLayoutBindingAsyncReturn);
+            }
+        });
+
 
 
         //getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
