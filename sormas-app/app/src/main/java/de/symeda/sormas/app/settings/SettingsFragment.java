@@ -115,6 +115,7 @@ public class SettingsFragment extends BaseLandingActivityFragment {
                 NotificationHelper.showNotification((INotificationContext)getActivity(), NotificationPosition.BOTTOM, NotificationType.ERROR, e.getMessage());
             } catch (RetroProvider.ApiVersionException e) {
                 if (e.getAppUrl() != null) {
+                    //TODO: Orson Remove Version Check
                     AppUpdateController.getInstance().updateApp(this.getActivity(), e.getAppUrl(), e.getVersion(), true, null);
                     return;
                 } else {

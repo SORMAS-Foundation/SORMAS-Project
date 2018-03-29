@@ -26,7 +26,7 @@ import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.databinding.FragmentEditListLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.event.edit.sub.EventEditPersonsInvolvedInfoActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
@@ -39,13 +39,13 @@ import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
  * sampson.orson@technologyboard.org
  */
 
-public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragment<FragmentEditListLayoutBinding, List<EventParticipant>, Event> implements OnListItemClickListener {
+public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragment<FragmentFormListLayoutBinding, List<EventParticipant>, Event> implements OnListItemClickListener {
 
     private AsyncTask onResumeTask;
     private String recordUuid = null;
     private EventStatus pageStatus = null;
     private List<EventParticipant> record;
-    private FragmentEditListLayoutBinding binding;
+    private FragmentFormListLayoutBinding binding;
     private EventEditPersonsInvolvedListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
 
@@ -104,7 +104,9 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
     }
 
     @Override
-    public void onLayoutBinding(FragmentEditListLayoutBinding contentBinding) {
+    public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
+        showEmptyListHintWithAdd(record, R.string.entity_event_participant);
+
         //Create adapter and set data
         adapter = new EventEditPersonsInvolvedListAdapter(this.getActivity(), R.layout.row_read_persons_involved_list_item_layout, this, record);
 
@@ -115,17 +117,17 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentEditListLayoutBinding contentBinding) {
+    public void onAfterLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
 
     }
 
     @Override
-    protected void updateUI(FragmentEditListLayoutBinding contentBinding, List<EventParticipant> eventParticipants) {
+    protected void updateUI(FragmentFormListLayoutBinding contentBinding, List<EventParticipant> eventParticipants) {
 
     }
 
     @Override
-    public void onPageResume(FragmentEditListLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+    public void onPageResume(FragmentFormListLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -188,12 +190,12 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
 
     @Override
     public int getRootEditLayout() {
-        return R.layout.fragment_root_list_edit_layout;
+        return R.layout.fragment_root_list_form_layout;
     }
 
     @Override
     public int getEditLayout() {
-        return R.layout.fragment_edit_list_layout;
+        return R.layout.fragment_form_list_layout;
     }
 
     @Override

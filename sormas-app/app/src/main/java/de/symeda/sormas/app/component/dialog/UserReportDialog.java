@@ -2,20 +2,29 @@ package de.symeda.sormas.app.component.dialog;
 
 import android.content.Context;
 import android.databinding.ViewDataBinding;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 
 import com.android.databinding.library.baseAdapters.BR;
+import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
-import de.symeda.sormas.app.component.TeboTextInputEditText;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.ICallback;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogUserReportLayoutBinding;
+import de.symeda.sormas.app.util.TimeoutHelper;
 
 /**
  * Created by Orson on 01/02/2018.
@@ -29,6 +38,7 @@ public class UserReportDialog extends BaseTeboAlertDialog {
 
     public static final String TAG = UserReportDialog.class.getSimpleName();
 
+    private AsyncTask dialogTask;
     private String uuid;
     private String viewName;
     private Tracker tracker;
@@ -51,31 +61,73 @@ public class UserReportDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
-        TeboTextInputEditText txtMessage = (TeboTextInputEditText)rootView.findViewById(R.id.txtMessage);
-        txtMessage.enableErrorState((INotificationContext) getActivity(), "Hello");
-        /*String description = this.data.getHeading();
-        tracker.send(new HitBuilders.EventBuilder()
-                .setCategory("User Report")
-                .setAction("Error Report")
-                .setText("Location: " + viewName + (uuid!=null?" - UUID: " + uuid:"") +
-                        (ConfigProvider.getUser()!=null?" - User: " +
-                                ConfigProvider.getUser().getUuid():"") +
-                        " - Description: " + description)
-                .build());
-        Snackbar.make(activity.findViewById(R.id.base_layout),
-                activity.getString(R.string.snackbar_report_sent), Snackbar.LENGTH_LONG).show();*/
+    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, final ICallback callback) {
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
 
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    try {
+                        String description = UserReportDialog.this.data.getMessage();
+                        Tracker tracker = ((SormasApplication) getActivity().getApplication()).getDefaultTracker();
+                        tracker.send(new HitBuilders.EventBuilder()
+                                .setCategory("User Report")
+                                .setAction("Error Report")
+                                .setLabel("Location: " + viewName + (uuid!=null?" - UUID: " + uuid:"") + (ConfigProvider.getUser()!=null?" - User: " + ConfigProvider.getUser().getUuid():"") + " - Description: " + description)
+                                .build());
+
+                        resultHolder.setResultStatus(new BoolResult(true, getActivity().getResources().getString(R.string.snackbar_report_sent)));
+                    } catch (Exception ex) {
+                        resultHolder.setResultStatus(new BoolResult(true, getActivity().getResources().getString(R.string.snackbar_report_not_sent)));
+                    }
+                }
+            });
+            dialogTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    if (resultStatus.isSuccess()) {
+                        NotificationHelper.showDialogNotification(UserReportDialog.this, NotificationType.SUCCESS, resultStatus.getMessage());
+                    } else {
+                        NotificationHelper.showDialogNotification(UserReportDialog.this, NotificationType.ERROR, resultStatus.getMessage());
+                    }
+
+                    TimeoutHelper.executeIn5Seconds(new ICallback<AsyncTask>() {
+                        @Override
+                        public void result(AsyncTask result) {
+                            callback.result(null);
+                        }
+                    });
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
     }
 
     @Override
     protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+        if (dialogTask != null && !dialogTask.isCancelled())
+            dialogTask.cancel(true);
 
+        callback.result(null);
     }
 
     @Override
     protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
-
+        callback.result(null);
     }
 
     @Override

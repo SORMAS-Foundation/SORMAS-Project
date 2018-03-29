@@ -1,5 +1,6 @@
 package de.symeda.sormas.app;
 
+import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.databinding.OnRebindCallback;
 import android.databinding.ViewDataBinding;
@@ -12,6 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.TextView;
+
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
@@ -63,6 +67,7 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
 
     private boolean skipAfterLayoutBinding = false;
     private TActivityRootData activityRootData;
+    private View rootView;
 
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -105,7 +110,7 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
 
         //Inflate Root
         rootBinding = DataBindingUtil.inflate(inflater, getRootEditLayout(), container, false);
-        View rootView = rootBinding.getRoot();
+        rootView = rootBinding.getRoot();
 
         if (getEditLayout() > 0) {
             final ViewStub vsChildFragmentFrame = (ViewStub)rootView.findViewById(R.id.vsChildFragmentFrame);
@@ -197,6 +202,41 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
         }
 
         return rootView;
+    }
+
+    public void showEmptyListHintWithAdd(List list, int entityNameResId) {
+        showEmptyListHint(list, R.string.hint_no_records_found_add_new, entityNameResId);
+    }
+
+    public void showEmptyListHint(List list, int entityNameResId) {
+        showEmptyListHint(list, R.string.hint_no_records_found, entityNameResId);
+    }
+
+    private void showEmptyListHint(List list, int stringFormatResId, int entityNameResId) {
+        boolean isListEmpty = false;
+
+        if (rootView == null)
+            return;
+
+        TextView emptyListHintView = (TextView)rootView.findViewById(R.id.emptyListHint);
+
+        if (emptyListHintView == null)
+            return;
+
+        emptyListHintView.setVisibility(View.GONE);
+
+        if (list == null || list.size() <= 0)
+            isListEmpty = true;
+
+        if (!isListEmpty)
+            return;
+
+        Resources r = getResources();
+
+        String format = r.getString(stringFormatResId);
+
+        emptyListHintView.setText(String.format(format, r.getString(entityNameResId)));
+        emptyListHintView.setVisibility(View.VISIBLE);
     }
 
     public void requestLayoutRebind() {

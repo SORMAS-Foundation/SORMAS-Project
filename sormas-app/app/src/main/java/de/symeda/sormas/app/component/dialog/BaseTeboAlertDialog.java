@@ -287,7 +287,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
     @Override
     public void onDeleteClick(View v, final Object item) {
         final ConfirmationDialog confirmationDialog = new ConfirmationDialog(this.activity, R.string.heading_confirmation_dialog,
-                R.string.heading_sub_confirmation_notification_dialog_delete, "", "");
+                R.string.heading_sub_confirmation_notification_dialog_delete);
 
         confirmationDialog.setOnPositiveClickListener(new de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface.PositiveOnClickListener() {
             @Override
@@ -580,7 +580,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
     }
 
     //AlertDialog
-    public void show(final ICallback callback) {
+    public void show(final ICallback<AlertDialog> callback) {
         this.rootBinding = bindRootLayout(activity);
         try {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
@@ -754,7 +754,23 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
         return false;
     }
 
-    public boolean iconOnlyButtons() {
+    public boolean iconOnlyOkButtons() {
+        return false;
+    }
+
+    public boolean iconOnlyDismissButtons() {
+        return false;
+    }
+
+    public boolean iconOnlyDeleteButtons() {
+        return false;
+    }
+
+    public boolean iconOnlyCancelButtons() {
+        return false;
+    }
+
+    public boolean iconOnlyCreateButtons() {
         return false;
     }
 

@@ -27,7 +27,7 @@ import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.databinding.FragmentEventReadPersonsInvolvedLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.event.read.sub.EventReadPersonsInvolvedInfoActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
@@ -37,7 +37,7 @@ import de.symeda.sormas.app.util.ConstantHelper;
  * Created by Orson on 26/12/2017.
  */
 
-public class EventReadPersonsInvolvedListFragment extends BaseReadActivityFragment<FragmentEventReadPersonsInvolvedLayoutBinding, List<EventParticipant>, Event> implements OnListItemClickListener {
+public class EventReadPersonsInvolvedListFragment extends BaseReadActivityFragment<FragmentFormListLayoutBinding, List<EventParticipant>, Event> implements OnListItemClickListener {
 
     private AsyncTask onResumeTask;
     private String recordUuid;
@@ -91,7 +91,9 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadActivityFragme
     }
 
     @Override
-    public void onLayoutBinding(FragmentEventReadPersonsInvolvedLayoutBinding contentBinding) {
+    public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
+        showEmptyListHint(record, R.string.entity_event_participant);
+
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         adapter = new EventReadPersonsInvolvedAdapter(EventReadPersonsInvolvedListFragment.this.getActivity(),
                 R.layout.row_read_event_persons_involved_item_layout, EventReadPersonsInvolvedListFragment.this, record);
@@ -102,17 +104,17 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadActivityFragme
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentEventReadPersonsInvolvedLayoutBinding contentBinding) {
+    public void onAfterLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
 
     }
 
     @Override
-    protected void updateUI(FragmentEventReadPersonsInvolvedLayoutBinding contentBinding, List<EventParticipant> eventParticipants) {
+    protected void updateUI(FragmentFormListLayoutBinding contentBinding, List<EventParticipant> eventParticipants) {
 
     }
 
     @Override
-    public void onPageResume(FragmentEventReadPersonsInvolvedLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+    public void onPageResume(FragmentFormListLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -196,12 +198,12 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadActivityFragme
 
     @Override
     public int getRootReadLayout() {
-        return R.layout.fragment_root_list_edit_layout;
+        return R.layout.fragment_root_list_form_layout;
     }
 
     @Override
     public int getReadLayout() {
-        return R.layout.fragment_event_read_persons_involved_layout;
+        return R.layout.fragment_form_list_layout;
     }
 
     @Override

@@ -23,18 +23,20 @@
         android:clickable="true"
         >
         <TextView
+            android:id="@+id/userFullName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="James Doe"
             android:textColor="@color/drawerHeaderText"
             android:textSize="18sp"
             android:layout_marginTop="5dp" />
         <TextView
+            android:id="@+id/userRole"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Surveillance Officer"
             android:textColor="@color/drawerHeaderText"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:singleLine="false"
+            />
 
     </LinearLayout>
 </LinearLayout>

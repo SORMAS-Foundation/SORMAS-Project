@@ -9,6 +9,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import org.joda.time.DateTime;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import de.symeda.sormas.app.BaseLandingActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
@@ -21,13 +26,9 @@ import de.symeda.sormas.app.component.visualization.data.SummaryTotalData;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationContext;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationService;
-import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.sample.list.SampleListActivity;
+import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.util.ResourceUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 /**
  * Created by Orson on 11/12/2017.
@@ -160,5 +161,10 @@ public class SampleLandingFragment extends BaseLandingActivityFragment<ViewTypeH
     public static SampleLandingFragment newInstance()
             throws java.lang.InstantiationException, IllegalAccessException {
         return newInstance(SampleLandingFragment.class);
+    }
+
+    @Override
+    public boolean showNewAction() {
+        return false;
     }
 }

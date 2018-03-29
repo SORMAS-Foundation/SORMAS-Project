@@ -26,7 +26,7 @@ import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.databinding.FragmentEditListLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.sample.edit.SampleEditActivity;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
@@ -41,7 +41,7 @@ import de.symeda.sormas.app.util.SampleHelper;
  * sampson.orson@technologyboard.org
  */
 
-public class CaseEditSampleListFragment extends BaseEditActivityFragment<FragmentEditListLayoutBinding, List<Sample>, Case> implements OnListItemClickListener {
+public class CaseEditSampleListFragment extends BaseEditActivityFragment<FragmentFormListLayoutBinding, List<Sample>, Case> implements OnListItemClickListener {
 
     private AsyncTask onResumeTask;
     private String recordUuid;
@@ -110,7 +110,9 @@ public class CaseEditSampleListFragment extends BaseEditActivityFragment<Fragmen
     }
 
     @Override
-    public void onLayoutBinding(FragmentEditListLayoutBinding contentBinding) {
+    public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
+        showEmptyListHintWithAdd(record, R.string.entity_sample);
+
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         adapter = new CaseEditSampleListAdapter(this.getActivity(), R.layout.row_edit_sample_list_item_layout, this, record);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
@@ -119,17 +121,17 @@ public class CaseEditSampleListFragment extends BaseEditActivityFragment<Fragmen
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentEditListLayoutBinding contentBinding) {
+    public void onAfterLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
 
     }
 
     @Override
-    protected void updateUI(FragmentEditListLayoutBinding contentBinding, List<Sample> samples) {
+    protected void updateUI(FragmentFormListLayoutBinding contentBinding, List<Sample> samples) {
 
     }
 
     @Override
-    public void onPageResume(FragmentEditListLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+    public void onPageResume(FragmentFormListLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -202,12 +204,12 @@ public class CaseEditSampleListFragment extends BaseEditActivityFragment<Fragmen
 
     @Override
     public int getRootEditLayout() {
-        return R.layout.fragment_root_list_edit_layout;
+        return R.layout.fragment_root_list_form_layout;
     }
 
     @Override
     public int getEditLayout() {
-        return R.layout.fragment_edit_list_layout;
+        return R.layout.fragment_form_list_layout;
     }
 
     @Override

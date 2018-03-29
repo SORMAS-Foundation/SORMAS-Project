@@ -443,7 +443,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                             String plagueTypeString = cazeToSave.getPlagueType().toString();
                             String confirmationMessage = String.format(getResources().getString(R.string.alert_plague_type_change), plagueTypeString, plagueTypeString);
                             final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActiveActivity(), R.string.alert_title_plague_type_change,
-                                    confirmationMessage, "", "");
+                                    confirmationMessage);
 
                             confirmationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                                 @Override

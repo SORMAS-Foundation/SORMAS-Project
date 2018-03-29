@@ -27,7 +27,7 @@ import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.databinding.FragmentContactReadTaskLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
@@ -37,7 +37,7 @@ import de.symeda.sormas.app.task.read.TaskReadActivity;
  * Created by Orson on 01/01/2018.
  */
 
-public class ContactReadTaskListFragment extends BaseReadActivityFragment<FragmentContactReadTaskLayoutBinding, List<Task>, Contact> implements OnListItemClickListener {
+public class ContactReadTaskListFragment extends BaseReadActivityFragment<FragmentFormListLayoutBinding, List<Task>, Contact> implements OnListItemClickListener {
 
     private AsyncTask onResumeTask;
     private String recordUuid;
@@ -96,7 +96,9 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
     }
 
     @Override
-    public void onLayoutBinding(FragmentContactReadTaskLayoutBinding contentBinding) {
+    public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
+        showEmptyListHint(record, R.string.entity_task);
+
         adapter = new ContactReadTaskListAdapter(ContactReadTaskListFragment.this.getActivity(),
                 R.layout.row_read_contact_task_list_item_layout, ContactReadTaskListFragment.this, record);
 
@@ -107,17 +109,17 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentContactReadTaskLayoutBinding contentBinding) {
+    public void onAfterLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
 
     }
 
     @Override
-    protected void updateUI(FragmentContactReadTaskLayoutBinding contentBinding, List<Task> tasks) {
+    protected void updateUI(FragmentFormListLayoutBinding contentBinding, List<Task> tasks) {
 
     }
 
     @Override
-    public void onPageResume(FragmentContactReadTaskLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+    public void onPageResume(FragmentFormListLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -192,12 +194,12 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
 
     @Override
     public int getRootReadLayout() {
-        return R.layout.fragment_root_list_edit_layout;
+        return R.layout.fragment_root_list_form_layout;
     }
 
     @Override
     public int getReadLayout() {
-        return R.layout.fragment_contact_read_task_layout;
+        return R.layout.fragment_form_list_layout;
     }
 
     @Override

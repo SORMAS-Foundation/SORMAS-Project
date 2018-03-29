@@ -187,6 +187,7 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
                     if (swipeRefreshLayout != null) {
                         swipeRefreshLayout.setRefreshing(false);
                     }
+                    //TODO: Orson Remove Version Check
                     AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), true,
                             new Callback() {
                                 @Override

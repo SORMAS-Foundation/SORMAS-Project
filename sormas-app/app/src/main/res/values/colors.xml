@@ -507,6 +507,7 @@
     <color name="warningNotificationDialogIcon">@color/orange</color>
     <color name="errorNotificationDialogIcon">@color/watchOut</color>
     <color name="successNotificationDialogIcon">@color/green</color>
+    <color name="informationNotificationDialogIcon">@color/blue</color>
 
 
     <color name="dialogSubHeadingTextColor">@color/normalText</color>

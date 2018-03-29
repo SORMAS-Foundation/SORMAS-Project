@@ -6,78 +6,57 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.android.databinding.library.baseAdapters.BR;
 import com.google.android.gms.analytics.Tracker;
 
-import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.component.TeboButtonType;
 import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.databinding.DialogConfirmationLayoutBinding;
+import de.symeda.sormas.app.databinding.DialogMissingWeeklyReportLayoutBinding;
 
 /**
- * Created by Orson on 18/02/2018.
+ * Created by Orson on 28/03/2018.
  * <p>
  * www.technologyboard.org
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
 
-public class ConfirmationDialog extends de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog {
+public class MissingWeeklyReportDialog extends BaseTeboAlertDialog {
 
-    public static final String TAG = ConfirmationDialog.class.getSimpleName();
+    public static final String TAG = MissingWeeklyReportDialog.class.getSimpleName();
 
-    private String uuid;
-    private String viewName;
     private Tracker tracker;
     private de.symeda.sormas.app.component.dialog.DialogViewConfig data;
     private String subHeading;
-    private DialogConfirmationLayoutBinding mContentBinding;
+    private DialogMissingWeeklyReportLayoutBinding mContentBinding;
 
-    public ConfirmationDialog(final FragmentActivity activity) {
-        this(activity, R.string.heading_confirmation_dialog, R.string.heading_sub_confirmation_notification_dialog);
+    public MissingWeeklyReportDialog(final FragmentActivity activity) {
+        this(activity, R.string.heading_missing_weekly_report_dialog, R.string.alert_missing_report);
     }
 
-    public ConfirmationDialog(final FragmentActivity activity, int headingResId, String subHeading) {
-        super(activity, R.layout.dialog_root_layout, R.layout.dialog_confirmation_layout,
+    public MissingWeeklyReportDialog(final FragmentActivity activity, int headingResId, String subHeading) {
+        super(activity, R.layout.dialog_root_layout, R.layout.dialog_missing_weekly_report_layout,
                 R.layout.dialog_root_two_button_panel_edge_aligned_layout, headingResId, subHeading);
 
-        this.uuid = "";
-        this.viewName = "";
-        this.tracker = ((SormasApplication) activity.getApplication()).getDefaultTracker();
 
+        this.tracker = ((SormasApplication) activity.getApplication()).getDefaultTracker();
         this.data = null;
     }
 
-    public ConfirmationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId) {
-        super(activity, R.layout.dialog_root_layout, R.layout.dialog_confirmation_layout,
+    public MissingWeeklyReportDialog(final FragmentActivity activity, int headingResId, int subHeadingResId) {
+        super(activity, R.layout.dialog_root_layout, R.layout.dialog_missing_weekly_report_layout,
                 R.layout.dialog_root_two_button_panel_edge_aligned_layout, headingResId, subHeadingResId);
 
-        this.uuid = "";
-        this.viewName = "";
         this.tracker = ((SormasApplication) activity.getApplication()).getDefaultTracker();
-
         this.data = null;
     }
 
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
-        /*TeboTextInputEditText txtMessage = (TeboTextInputEditText)rootView.findViewById(R.id.txtMessage);
-        txtMessage.enableErrorState("Hello");*/
-        /*String description = this.data.getHeading();
-        tracker.send(new HitBuilders.EventBuilder()
-                .setCategory("User Report")
-                .setAction("Error Report")
-                .setText("Location: " + viewName + (uuid!=null?" - UUID: " + uuid:"") +
-                        (ConfigProvider.getUser()!=null?" - User: " +
-                                ConfigProvider.getUser().getUuid():"") +
-                        " - Description: " + description)
-                .build());
-        Snackbar.make(activity.findViewById(R.id.base_layout),
-                activity.getString(R.string.snackbar_report_sent), Snackbar.LENGTH_LONG).show();*/
         callback.result(null);
-
     }
 
     @Override
@@ -92,7 +71,7 @@ public class ConfirmationDialog extends de.symeda.sormas.app.component.dialog.Ba
 
     @Override
     protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
-        this.mContentBinding = (DialogConfirmationLayoutBinding)binding;
+        this.mContentBinding = (DialogMissingWeeklyReportLayoutBinding)binding;
     }
 
     @Override
@@ -138,13 +117,12 @@ public class ConfirmationDialog extends de.symeda.sormas.app.component.dialog.Ba
     }
 
     @Override
-    public boolean iconOnlyDismissButtons() {
-        return true;
+    public int getPositiveButtonText() {
+        return R.string.action_open_reports;
     }
 
     @Override
-    public int getPositiveButtonText() {
-        return R.string.action_confirm;
+    public boolean iconOnlyDismissButtons() {
+        return true;
     }
 }
-

@@ -13,9 +13,12 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
@@ -128,6 +131,7 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
 
                         CaseListFragment.this.getListAdapter().replaceAll(cases);
                         CaseListFragment.this.getListAdapter().notifyDataSetChanged();
+                        //CaseListFragment.this.getListAdapter().updateUnreadIndicator();
 
                         dataLoaded = true;
 
@@ -167,19 +171,10 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
         recyclerViewForList.setAdapter(getListAdapter());
     }
 
-    public void showCaseReadView(Case caze) {
-        /*Intent intent = new Intent(getActivity(), TaskEditActivity.class);
-        intent.putExtra(Task.UUID, task.getUuid());
-        if(parentCaseUuid != null) {
-            intent.putExtra(KEY_CASE_UUID, parentCaseUuid);
-        }
-        if(parentContactUuid != null) {
-            intent.putExtra(KEY_CONTACT_UUID, parentContactUuid);
-        }
-        if(parentEventUuid != null) {
-            intent.putExtra(KEY_EVENT_UUID, parentEventUuid);
-        }
-        startActivity(intent);*/
+    @Override
+    public boolean showNewAction() {
+        User user = ConfigProvider.getUser();
+        return user.hasUserRight(UserRight.CASE_CREATE);
     }
 
     public static CaseListFragment newInstance(IActivityCommunicator communicator, CaseListCapsule capsule)

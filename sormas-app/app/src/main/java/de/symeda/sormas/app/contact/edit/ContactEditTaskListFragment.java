@@ -26,7 +26,7 @@ import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.databinding.FragmentEditListLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
@@ -40,13 +40,13 @@ import de.symeda.sormas.app.task.edit.TaskEditActivity;
  * sampson.orson@technologyboard.org
  */
 
-public class ContactEditTaskListFragment extends BaseEditActivityFragment<FragmentEditListLayoutBinding, List<Task>, Contact> implements OnListItemClickListener {
+public class ContactEditTaskListFragment extends BaseEditActivityFragment<FragmentFormListLayoutBinding, List<Task>, Contact> implements OnListItemClickListener {
 
     private AsyncTask onResumeTask;
     private String recordUuid;
     private ContactClassification pageStatus = null;
     private List<Task> record;
-    private FragmentEditListLayoutBinding binding;
+    private FragmentFormListLayoutBinding binding;
     private ContactEditTaskListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
 
@@ -105,7 +105,9 @@ public class ContactEditTaskListFragment extends BaseEditActivityFragment<Fragme
     }
 
     @Override
-    public void onLayoutBinding(FragmentEditListLayoutBinding contentBinding) {
+    public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
+        showEmptyListHint(record, R.string.entity_task);
+
         adapter = new ContactEditTaskListAdapter(this.getActivity(), R.layout.row_edit_task_list_item_layout, this, record);
 
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
@@ -115,17 +117,17 @@ public class ContactEditTaskListFragment extends BaseEditActivityFragment<Fragme
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentEditListLayoutBinding contentBinding) {
+    public void onAfterLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
 
     }
 
     @Override
-    protected void updateUI(FragmentEditListLayoutBinding contentBinding, List<Task> tasks) {
+    protected void updateUI(FragmentFormListLayoutBinding contentBinding, List<Task> tasks) {
 
     }
 
     @Override
-    public void onPageResume(FragmentEditListLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+    public void onPageResume(FragmentFormListLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -189,12 +191,12 @@ public class ContactEditTaskListFragment extends BaseEditActivityFragment<Fragme
 
     @Override
     public int getRootEditLayout() {
-        return R.layout.fragment_root_list_edit_layout;
+        return R.layout.fragment_root_list_form_layout;
     }
 
     @Override
     public int getEditLayout() {
-        return R.layout.fragment_edit_list_layout;
+        return R.layout.fragment_form_list_layout;
     }
 
     @Override

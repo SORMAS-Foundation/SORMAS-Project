@@ -412,6 +412,8 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
             ft.replace(R.id.fragment_frame, activeFragment);
             ft.addToBackStack(null);
             ft.commit();
+
+            processActionbarMenu();
         }
     }
 

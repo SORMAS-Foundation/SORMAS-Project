@@ -86,7 +86,6 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
     private String recordUuid = null;
     private InvestigationStatus pageStatus = null;
     private Person record;
-    private Case caze;
     private OnTeboSwitchCheckedChangeListener onPresentConditionCheckedCallback;
     private IEntryItemOnClickListener onAddressLinkClickedCallback;
 
@@ -162,7 +161,7 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
             }
 
             resultHolder.forItem().add(caze.getPerson());
-            resultHolder.forItem().add(caze);
+            //resultHolder.forItem().add(caze);
 
             resultHolder.forOther().add(DataUtils.getEnumItems(OccupationType.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(Sex.class, false));
@@ -189,8 +188,8 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
             if (record == null)
                 getActivity().finish();
 
-            if (itemIterator.hasNext())
-                caze = itemIterator.next();
+            /*if (itemIterator.hasNext())
+                caze = itemIterator.next();*/
 
             if (otherIterator.hasNext())
                 occupationTypeList =  otherIterator.next();
@@ -472,7 +471,7 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
                     }
 
                     resultHolder.forItem().add(caze.getPerson());
-                    resultHolder.forItem().add(caze);
+                    //resultHolder.forItem().add(caze);
                 }
             });
             onResumeTask = executor.execute(new ITaskResultCallback() {
@@ -490,8 +489,8 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
                     if (itemIterator.hasNext())
                         record = itemIterator.next();
 
-                    if (itemIterator.hasNext())
-                        caze = itemIterator.next();
+                    /*if (itemIterator.hasNext())
+                        caze = itemIterator.next();*/
 
                     if (record != null)
                         requestLayoutRebind();

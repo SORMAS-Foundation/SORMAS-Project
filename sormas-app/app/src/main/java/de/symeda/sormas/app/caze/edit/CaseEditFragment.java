@@ -307,6 +307,24 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
             }
         });
 
+        contentBinding.spnCaseOfficerClassification.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+            @Override
+            public Object getSelectedValue() {
+                return null;
+            }
+
+            @Override
+            public List<Item> getDataSource(Object parentValue) {
+                return (caseClassificationList.size() > 0) ? DataUtils.addEmptyItem(caseClassificationList)
+                        : caseClassificationList;
+            }
+
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
+            }
+        });
+
         contentBinding.spnOutcome.initialize(new TeboSpinner.ISpinnerInitConfig() {
             @Override
             public Object getSelectedValue() {
@@ -478,11 +496,6 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
         } else {
             getContentBinding().spnCaseClassification.setVisibility(View.GONE);
         }
-
-        /*if (getContentBinding().spnCaseOfficerClassification.getVisibility() == View.GONE &&
-                getContentBinding().spnCaseClassification.getVisibility() == View.GONE) {
-            getContentBinding().caseClassificationFrame.setVisibility(View.GONE);
-        }*/
     }
 
     private void setLocalBindingVariable(final ViewDataBinding binding, String layoutName) {

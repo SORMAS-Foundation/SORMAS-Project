@@ -38,7 +38,7 @@
             app:drawableLeft="@drawable/ic_clear_black_24dp"
             app:buttonType="@{dialog.dismissButtonType}"
             app:rounded="@{dialog.isRounded}"
-            app:iconOnly="@{dialog.iconOnlyButtons}"
+            app:iconOnly="@{dialog.iconOnlyDismissButtons}"
             app:onButtonOnClick="@{(view) -> dismissCallback.onDismissClick(view, data)}"
             />
 
@@ -54,7 +54,7 @@
             app:drawableLeft="@drawable/ic_done_black_24dp"
             app:buttonType="@{dialog.okButtonType}"
             app:rounded="@{dialog.isRounded}"
-            app:iconOnly="@{dialog.iconOnlyButtons}"
+            app:iconOnly="@{dialog.iconOnlyOkButtons}"
             app:onButtonOnClick="@{(view) -> okCallback.onOkClick(view, data)}"
             />
     </RelativeLayout>

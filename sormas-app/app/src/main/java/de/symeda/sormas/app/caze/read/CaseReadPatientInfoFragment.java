@@ -27,7 +27,7 @@ import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
  * Created by Orson on 08/01/2018.
  */
 
-public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<FragmentCaseReadPatientInfoLayoutBinding, Case, Case> {
+public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<FragmentCaseReadPatientInfoLayoutBinding, Person, Case> {
 
 
     public static final String TAG = CaseReadPatientInfoFragment.class.getSimpleName();
@@ -36,9 +36,8 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
     private String recordUuid = null;
     private InvestigationStatus filterStatus = null;
     private CaseClassification pageStatus = null;
-    private Case record;
+    private Person record;
     private Case caze;
-    private Person personRecord;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -75,15 +74,18 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
             }
 
             resultHolder.forItem().add(caze.getPerson());
-            resultHolder.forItem().add(caze);
+            //resultHolder.forItem().add(caze);
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
             if (itemIterator.hasNext())
                 record =  itemIterator.next();
 
-            if (itemIterator.hasNext())
-                caze = itemIterator.next();
+            if (record == null)
+                getActivity().finish();
+
+            /*if (itemIterator.hasNext())
+                caze = itemIterator.next();*/
         }
 
         return true;
@@ -91,7 +93,7 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
 
     @Override
     public void onLayoutBinding(FragmentCaseReadPatientInfoLayoutBinding contentBinding) {
-
+        contentBinding.setData(record);
     }
 
     @Override
@@ -123,7 +125,7 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
                     }
 
                     resultHolder.forItem().add(caze.getPerson());
-                    resultHolder.forItem().add(caze);
+                    //resultHolder.forItem().add(caze);
                 }
             });
             onResumeTask = executor.execute(new ITaskResultCallback() {
@@ -141,8 +143,8 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
                     if (itemIterator.hasNext())
                         record = itemIterator.next();
 
-                    if (itemIterator.hasNext())
-                        caze = itemIterator.next();
+                    /*if (itemIterator.hasNext())
+                        caze = itemIterator.next();*/
 
                     if (record != null)
                         requestLayoutRebind();
@@ -161,14 +163,11 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
 
     @Override
     public void onAfterLayoutBinding(FragmentCaseReadPatientInfoLayoutBinding contentBinding) {
-        if (record != null) {
-            personRecord = record.getPerson();
-            contentBinding.setData(personRecord);
-        }
+
     }
 
     @Override
-    protected void updateUI(FragmentCaseReadPatientInfoLayoutBinding contentBinding, Case aCase) {
+    protected void updateUI(FragmentCaseReadPatientInfoLayoutBinding contentBinding, Person person) {
 
     }
 
@@ -179,7 +178,7 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
     }
 
     @Override
-    public Case getPrimaryData() {
+    public Person getPrimaryData() {
         return record;
     }
 

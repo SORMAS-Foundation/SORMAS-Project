@@ -27,7 +27,7 @@ import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.databinding.FragmentCaseReadTaskLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
@@ -37,7 +37,7 @@ import de.symeda.sormas.app.task.read.TaskReadActivity;
  * Created by Orson on 08/01/2018.
  */
 
-public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentCaseReadTaskLayoutBinding, List<Task>, Case> implements OnListItemClickListener {
+public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentFormListLayoutBinding, List<Task>, Case> implements OnListItemClickListener {
 
     private AsyncTask onResumeTask;
     private String recordUuid = null;
@@ -95,7 +95,9 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentC
     }
 
     @Override
-    public void onLayoutBinding(FragmentCaseReadTaskLayoutBinding contentBinding) {
+    public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
+        showEmptyListHint(record, R.string.entity_task);
+
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         adapter = new CaseReadTaskListAdapter(this.getActivity(), R.layout.row_read_case_task_list_item_layout, this, record);
         getContentBinding().recyclerViewForList.setLayoutManager(linearLayoutManager);
@@ -104,17 +106,17 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentC
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentCaseReadTaskLayoutBinding contentBinding) {
+    public void onAfterLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
 
     }
 
     @Override
-    protected void updateUI(FragmentCaseReadTaskLayoutBinding contentBinding, List<Task> tasks) {
+    protected void updateUI(FragmentFormListLayoutBinding contentBinding, List<Task> tasks) {
 
     }
 
     @Override
-    public void onPageResume(FragmentCaseReadTaskLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+    public void onPageResume(FragmentFormListLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -209,12 +211,12 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentC
 
     @Override
     public int getRootReadLayout() {
-        return R.layout.fragment_root_list_edit_layout;
+        return R.layout.fragment_root_list_form_layout;
     }
 
     @Override
     public int getReadLayout() {
-        return R.layout.fragment_case_read_task_layout;
+        return R.layout.fragment_form_list_layout;
     }
 
     @Override

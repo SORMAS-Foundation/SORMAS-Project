@@ -49,7 +49,6 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 
     private AsyncTask jobTask;
     private String recordUuid = null;
-    //private FollowUpStatus filterStatus = null;
     private ContactClassification pageStatus = null;
     private BaseReadActivityFragment activeFragment = null;
 
@@ -106,6 +105,11 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
         }
 
         return activeFragment;
+    }
+
+    @Override
+    public String getPageMenuData() {
+        return DATA_XML_PAGE_MENU;
     }
 
     @Override

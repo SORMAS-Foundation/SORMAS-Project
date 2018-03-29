@@ -46,6 +46,7 @@ public class DashboardActivity extends BaseLandingActivity {
         final Menu _menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.dashboard_action_menu, menu);
+        menu.findItem(R.id.action_sync).setVisible(false);
         return true;
     }
 

@@ -41,6 +41,7 @@
     <dimen name="buttonPanelVerticalMargin">16dp</dimen>
     <dimen name="spinnerHorizontalSpacing">16dp</dimen>
     <dimen name="spinnerVerticalSpacing">16dp</dimen>
+    <dimen name="dialogVerticalContentSpacing">48dp</dimen>
 
 
 
@@ -461,10 +462,10 @@
 
     <!-- Dialog -->
     <dimen name="progressDialogWidth">150dp</dimen>
-    <dimen name="notificationDialogWidth">300dp</dimen>
-    <dimen name="notificationDialogIconVerticalMargin">48dp</dimen>
-    <dimen name="notificationDialogIconWidth">96dp</dimen>
-    <dimen name="notificationDialogIconHeight">96dp</dimen>
+    <dimen name="notificationDialogWidth">350dp</dimen>
+    <dimen name="notificationDialogIconVerticalMargin">32dp</dimen>
+    <dimen name="notificationDialogIconWidth">88dp</dimen>
+    <dimen name="notificationDialogIconHeight">88dp</dimen>
     <dimen name="dialogHeadingTextSize">20sp</dimen>
 
 

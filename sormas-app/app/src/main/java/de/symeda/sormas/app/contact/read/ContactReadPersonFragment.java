@@ -34,7 +34,7 @@ public class ContactReadPersonFragment  extends BaseReadActivityFragment<Fragmen
     private FollowUpStatus followUpStatus;
     private ContactClassification contactClassification = null;
     private Person record;
-    private Person person;
+    //private Person person;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -69,7 +69,7 @@ public class ContactReadPersonFragment  extends BaseReadActivityFragment<Fragmen
                 p = DatabaseHelper.getPersonDao().queryUuid(contact.getPerson().getUuid());
             }
 
-            resultHolder.forItem().add(contact);
+            //resultHolder.forItem().add(contact);
             resultHolder.forItem().add(p);
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
@@ -77,8 +77,11 @@ public class ContactReadPersonFragment  extends BaseReadActivityFragment<Fragmen
             if (itemIterator.hasNext())
                 record =  itemIterator.next();
 
-            if (itemIterator.hasNext())
-                person =  itemIterator.next();
+            if (record == null)
+                getActivity().finish();
+
+            /*if (itemIterator.hasNext())
+                person =  itemIterator.next();*/
         }
 
         return true;
@@ -86,12 +89,11 @@ public class ContactReadPersonFragment  extends BaseReadActivityFragment<Fragmen
 
     @Override
     public void onLayoutBinding(FragmentContactReadPersonInfoLayoutBinding contentBinding) {
-
+        contentBinding.setData(record);
     }
 
     @Override
     public void onAfterLayoutBinding(FragmentContactReadPersonInfoLayoutBinding contentBinding) {
-        contentBinding.setData(record);
     }
 
     @Override
@@ -124,7 +126,7 @@ public class ContactReadPersonFragment  extends BaseReadActivityFragment<Fragmen
                         p = DatabaseHelper.getPersonDao().queryUuid(contact.getPerson().getUuid());
                     }
 
-                    resultHolder.forItem().add(contact);
+                    //resultHolder.forItem().add(contact);
                     resultHolder.forItem().add(p);
                 }
             });
@@ -143,8 +145,8 @@ public class ContactReadPersonFragment  extends BaseReadActivityFragment<Fragmen
                     if (itemIterator.hasNext())
                         record = itemIterator.next();
 
-                    if (itemIterator.hasNext())
-                        person = itemIterator.next();
+                    /*if (itemIterator.hasNext())
+                        person = itemIterator.next();*/
 
                     if (record != null)
                         requestLayoutRebind();

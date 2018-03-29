@@ -1,20 +1,33 @@
 package de.symeda.sormas.app.caze.list;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import java.util.Date;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.landing.CaseLandingToListCapsule;
+import de.symeda.sormas.app.component.dialog.MissingWeeklyReportDialog;
+import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
+import de.symeda.sormas.app.component.dialog.UserReportDialog;
+import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.util.MarkAllAsReadHelper;
 import de.symeda.sormas.app.util.NavigationHelper;
 
 /**
@@ -103,44 +116,45 @@ public class CaseListActivity extends BaseListActivity {
                 return true;
 
             case R.id.action_new:
-                gotoNewView();
-
-
-                //synchronizeChangedData();
-                /*EpiWeek lastEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
+                EpiWeek lastEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
                 User user = ConfigProvider.getUser();
-                if (user.getUserRole() == UserRole.INFORMANT && DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(lastEpiWeek, ConfigProvider.getUser()) == null) {
-                    AlertDialog noLastWeeklyReportDialog = buildNoLastWeeklyReportDialog();
-                    noLastWeeklyReportDialog.show();
+                if (user.hasUserRole(UserRole.INFORMANT)
+                        && DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(lastEpiWeek, ConfigProvider.getUser()) == null) {
+
+                    MissingWeeklyReportDialog confirmationDialog = new MissingWeeklyReportDialog(this);
+
+                    confirmationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                        @Override
+                        public void onOkClick(View v, Object item, View viewRoot) {
+                            /*Intent intent = new Intent(CaseListActivity.this, ReportsActivity.class);
+                            startActivity(intent);*/
+                        }
+                    });
+
+                    confirmationDialog.show(null);
                 } else {
-                    showCaseNewView();
-                }*/
+                    gotoNewView();
+                }
                 return true;
 
             case R.id.option_menu_action_sync:
-                //synchronizeChangedData();
+                synchronizeChangedData();
                 return true;
 
             case R.id.option_menu_action_markAllAsRead:
-                /*CaseDao caseDao = DatabaseHelper.getCaseDao();
-                PersonDao personDao = DatabaseHelper.getPersonDao();
-                List<Case> cases = caseDao.queryForAll();
-                for (Case caseToMark : cases) {
-                    caseDao.markAsRead(caseToMark);
-                }
-
-                for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                    if (fragment instanceof CasesListFragment) {
-                        fragment.onResume();
+                MarkAllAsReadHelper.markCases(this, new ICallback<AsyncTask>() {
+                    @Override
+                    public void result(AsyncTask asyncTask) {
+                        /*if (asyncTask != null && !asyncTask.isCancelled())
+                            asyncTask.cancel(true);*/
                     }
-                }*/
+                });
                 return true;
 
             // Report problem button
             case R.id.action_report:
-                /*UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
-                AlertDialog dialog = userReportDialog.create();
-                dialog.show();*/
+                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
+                userReportDialog.show(null);
 
                 return true;
 
@@ -159,34 +173,6 @@ public class CaseListActivity extends BaseListActivity {
     @Override
     protected int getActivityTitle() {
         return R.string.heading_level2_cases_list;
-    }
-
-    private AlertDialog buildNoLastWeeklyReportDialog() {
-        /*AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.alert_missing_report);
-        builder.setTitle(R.string.alert_title_missing_report);
-        builder.setIcon(R.drawable.ic_info_outline_black_24dp);
-        AlertDialog dialog = builder.create();
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_open_reports),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(CasesActivity.this, ReportsActivity.class);
-                        startActivity(intent);
-                    }
-                }
-        );
-        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.action_close),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                }
-        );
-
-        return dialog;*/
-        return null;
     }
 
     private void gotoNewView() {

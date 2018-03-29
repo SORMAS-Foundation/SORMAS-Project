@@ -453,6 +453,8 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
             ft.replace(R.id.fragment_frame, activeFragment);
             ft.addToBackStack(null);
             ft.commit();
+
+            processActionbarMenu();
         }
     }
 

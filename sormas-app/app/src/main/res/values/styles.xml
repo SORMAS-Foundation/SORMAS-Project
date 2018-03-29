@@ -122,6 +122,18 @@
         <item name="android:textSize">@dimen/defaultControlTextSize</item>
     </style>
 
+    <style name="EmptyListHintStyle">
+        <item name="android:paddingTop">@dimen/parentLayoutVerticalPadding</item>
+        <item name="android:paddingBottom">@dimen/parentLayoutVerticalPadding</item>
+        <item name="android:paddingLeft">@dimen/parentLayoutHorizontalPadding</item>
+        <item name="android:paddingRight">@dimen/parentLayoutHorizontalPadding</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/controlTextColor</item>
+        <item name="android:textSize">@dimen/defaultControlTextSize</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+
 
 
     <style name="EditTextViewSingleRowStyle">

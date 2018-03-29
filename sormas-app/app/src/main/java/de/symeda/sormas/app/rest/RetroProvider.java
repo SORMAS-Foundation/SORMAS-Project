@@ -173,11 +173,12 @@ public final class RetroProvider {
                     throw new ConnectException(e.getMessage());
                 }
 
-                if (appUrlResponse.isSuccessful()) {
+                //TODO: Orson Remove Version Check
+                /*if (appUrlResponse.isSuccessful()) {
                     throw new ApiVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'", appUrlResponse.body(), serverApiVersion);
                 } else {
                     throw new ApiVersionException("App version '" + appApiVersion + "' does not match server version '" + serverApiVersion + "'");
-                }
+                }*/
             }
         }
         else {

@@ -9,7 +9,11 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -17,11 +21,6 @@ import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.databinding.RowReadContactListItemLayoutBinding;
 import de.symeda.sormas.app.event.read.EventReadTaskListAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import de.symeda.sormas.app.backend.contact.Contact;
 
 /**
  * Created by Orson on 11/01/2018.
@@ -52,6 +51,8 @@ public class CaseReadReadContactListAdapter extends DataBoundAdapter<RowReadCont
             this.data = new ArrayList<>();
         else
             this.data = new ArrayList<>(data);
+
+
     }
 
     @Override

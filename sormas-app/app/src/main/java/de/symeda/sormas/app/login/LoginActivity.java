@@ -56,12 +56,32 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login_layout);
 
         //TODO: Orson Remove this later
-        loginViewModel.setUserName("SanaObas");
-        loginViewModel.setPassword("BZWhXQfXAMG2");
+        useCaseSurveillanceOfficer();
+
+        //TODO: Orson Remove this later - Informant
+        //useInformant();
+
+        //TODO: Orson Remove this later - Contact Officer
+        //useContactOfficer();
 
         binding.setData(loginViewModel);
         binding.setShowNotificationCallback(this);
         binding.setHideNotificationCallback(this);
+    }
+
+    private void useCaseSurveillanceOfficer() {
+        loginViewModel.setUserName("SanaObas");
+        loginViewModel.setPassword("BZWhXQfXAMG2");
+    }
+
+    private void useInformant() {
+        loginViewModel.setUserName("SangIbor");
+        loginViewModel.setPassword("SgyTDt73xbiY");
+    }
+
+    private void useContactOfficer() {
+        loginViewModel.setUserName("ContOffi");
+        loginViewModel.setPassword("NK9eLWn95Ebi");
     }
 
     @Override
@@ -120,6 +140,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                 // clearing login data is done below
                 errorMessage = e.getMessage();
             } catch (RetroProvider.ApiVersionException e) {
+                //TODO: Orson Remove Version Check
                 if (e.getAppUrl() != null) {
                     AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), false,
                             new Callback() {
@@ -174,6 +195,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                 ConfigProvider.clearUsernameAndPassword();
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             } catch (RetroProvider.ApiVersionException e) {
+                //TODO: Orson Remove Version Check
                 if (!ignoreApiVersionConflict) {
                     if (e.getAppUrl() != null) {
                         AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), ConfigProvider.getUser() != null,

@@ -18,19 +18,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 />
-
-
-
         </android.support.v4.widget.SwipeRefreshLayout>
 
         <TextView
-            android:id="@+id/empty_list_hint"
+            android:id="@+id/emptyListHint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/empty_list_hint"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textAlignment="center"
-            android:padding="15dp"
+            style="@style/EmptyListHintStyle"
             android:visibility="gone"/>
 
     </FrameLayout>

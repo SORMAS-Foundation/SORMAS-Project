@@ -76,7 +76,7 @@ import de.symeda.sormas.app.util.layoutprocessor.PresentConditionLayoutProcessor
  * sampson.orson@technologyboard.org
  */
 
-public class ContactEditPersonFragment extends BaseEditActivityFragment<FragmentContactEditPersonLayoutBinding, Contact, Contact> {
+public class ContactEditPersonFragment extends BaseEditActivityFragment<FragmentContactEditPersonLayoutBinding, Person, Contact> {
 
     public static final String TAG = ContactEditPersonFragment.class.getSimpleName();
 
@@ -85,8 +85,7 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
     private AsyncTask onResumeTask;
     private String recordUuid = null;
     private ContactClassification pageStatus = null;
-    private Contact record;
-    private Person person;
+    private Person record;
     private OnTeboSwitchCheckedChangeListener onPresentConditionCheckedCallback;
     private IEntryItemOnClickListener onAddressLinkClickedCallback;
 
@@ -138,7 +137,7 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
     }
 
     @Override
-    public Contact getPrimaryData() {
+    public Person getPrimaryData() {
         return record;
     }
 
@@ -155,7 +154,7 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
                 p = DatabaseHelper.getPersonDao().queryUuid(contact.getPerson().getUuid());
             }
 
-            resultHolder.forItem().add(contact);
+            //resultHolder.forItem().add(contact);
             resultHolder.forItem().add(p);
 
             resultHolder.forOther().add(DataUtils.getEnumItems(OccupationType.class, false));
@@ -183,8 +182,8 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
             if (record == null)
                 getActivity().finish();
 
-            if (itemIterator.hasNext())
-                person =  itemIterator.next();
+            /*if (itemIterator.hasNext())
+                person =  itemIterator.next();*/
 
             if (otherIterator.hasNext())
                 occupationTypeList =  otherIterator.next();
@@ -237,7 +236,7 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
 
     @Override
     public void onLayoutBinding(FragmentContactEditPersonLayoutBinding contentBinding) {
-        occupationTypeLayoutProcessor = new OccupationTypeLayoutProcessor(getContext(), contentBinding, record.getPerson(), regionLoader, districtLoader, communityLoader, facilityLoader);
+        occupationTypeLayoutProcessor = new OccupationTypeLayoutProcessor(getContext(), contentBinding, record, regionLoader, districtLoader, communityLoader, facilityLoader);
         occupationTypeLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
             public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
@@ -247,7 +246,7 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
         });
 
         presentConditionLayoutProcessor = new PresentConditionLayoutProcessor(getContext(),
-                getFragmentManager(), contentBinding, record.getPerson(), causeOfDeathList, deathPlaceTypeList, diseaseList, burialConductorList);
+                getFragmentManager(), contentBinding, record, causeOfDeathList, deathPlaceTypeList, diseaseList, burialConductorList);
         presentConditionLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
             public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
@@ -429,13 +428,13 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
     }
 
     @Override
-    protected void updateUI(FragmentContactEditPersonLayoutBinding contentBinding, Contact contact) {
-        contentBinding.spnOccupationType.setValue(contact.getPerson().getOccupationType(), true);
-        contentBinding.spnGender.setValue(contact.getPerson().getSex(), true);
-        contentBinding.spnAgeType.setValue(contact.getPerson().getApproximateAgeType(), true);
-        contentBinding.spnYear.setValue(contact.getPerson().getBirthdateYYYY(), true);
-        contentBinding.spnMonth.setValue(contact.getPerson().getBirthdateMM(), true);
-        contentBinding.spnDate.setValue(contact.getPerson().getBirthdateDD(), true);
+    protected void updateUI(FragmentContactEditPersonLayoutBinding contentBinding, Person person) {
+        contentBinding.spnOccupationType.setValue(person.getOccupationType(), true);
+        contentBinding.spnGender.setValue(person.getSex(), true);
+        contentBinding.spnAgeType.setValue(person.getApproximateAgeType(), true);
+        contentBinding.spnYear.setValue(person.getBirthdateYYYY(), true);
+        contentBinding.spnMonth.setValue(person.getBirthdateMM(), true);
+        contentBinding.spnDate.setValue(person.getBirthdateDD(), true);
     }
 
     @Override
@@ -463,7 +462,7 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
                         p = DatabaseHelper.getPersonDao().queryUuid(contact.getPerson().getUuid());
                     }
 
-                    resultHolder.forItem().add(contact);
+                    //resultHolder.forItem().add(contact);
                     resultHolder.forItem().add(p);
                 }
             });
@@ -482,8 +481,8 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
                     if (itemIterator.hasNext())
                         record = itemIterator.next();
 
-                    if (itemIterator.hasNext())
-                        person = itemIterator.next();
+                    /*if (itemIterator.hasNext())
+                        person = itemIterator.next();*/
 
                     if (record != null)
                         requestLayoutRebind();
@@ -543,7 +542,7 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
         onAddressLinkClickedCallback = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
-                final Location location = record.getPerson().getAddress();
+                final Location location = record.getAddress();
                 final LocationDialog locationDialog = new LocationDialog(AbstractSormasActivity.getActiveActivity(), location);
                 locationDialog.show(null);
 
@@ -552,7 +551,7 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
                         getContentBinding().txtPermAddress.setValue(location.toString());
-                        record.getPerson().setAddress(location);
+                        record.setAddress(location);
 
                         locationDialog.dismiss();
                     }
@@ -562,33 +561,33 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
     }
 
     private void setLocalBindingVariable(final ViewDataBinding binding, String layoutName) {
-        if (!binding.setVariable(BR.data, record.getPerson())) {
+        if (!binding.setVariable(BR.data, record)) {
             Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
     }
 
     private void updateApproximateAgeField() {
-        Integer birthyear = record.getPerson().getBirthdateYYYY();
+        Integer birthyear = record.getBirthdateYYYY();
         //TeboTextRead approximateAgeTextField =  getContentBinding().txtAge;
         //TeboSpinner approximateAgeTypeField = getContentBinding().spnAgeType;
 
         if(birthyear != null) {
-            Integer birthday = record.getPerson().getBirthdateDD();
-            Integer birthmonth = record.getPerson().getBirthdateMM();
+            Integer birthday = record.getBirthdateDD();
+            Integer birthmonth = record.getBirthdateMM();
 
             Calendar birthDate = new GregorianCalendar();
             birthDate.set(birthyear, birthmonth!=null?birthmonth-1:0, birthday!=null?birthday:1);
 
             Date to = new Date();
-            if(record.getPerson().getDeathDate() != null) {
-                to = record.getPerson().getDeathDate();
+            if(record.getDeathDate() != null) {
+                to = record.getDeathDate();
             }
             DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = ApproximateAgeHelper.getApproximateAge(birthDate.getTime(),to);
             ApproximateAgeType ageType = approximateAge.getElement1();
             Integer age = approximateAge.getElement0();
 
-            record.getPerson().setApproximateAge(age);
-            record.getPerson().setApproximateAgeType(ageType);
+            record.setApproximateAge(age);
+            record.setApproximateAgeType(ageType);
 
             updateUI();
         } else {

@@ -27,7 +27,7 @@ import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.databinding.FragmentContactReadFollowupLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.shared.ContactFormFollowUpNavigationCapsule;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
@@ -36,7 +36,7 @@ import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
  * Created by Orson on 01/01/2018.
  */
 
-public class ContactReadFollowUpVisitListFragment extends BaseReadActivityFragment<FragmentContactReadFollowupLayoutBinding, List<Visit>, Contact> implements OnListItemClickListener {
+public class ContactReadFollowUpVisitListFragment extends BaseReadActivityFragment<FragmentFormListLayoutBinding, List<Visit>, Contact> implements OnListItemClickListener {
 
     private AsyncTask onResumeTask;
     private String recordUuid;
@@ -90,7 +90,9 @@ public class ContactReadFollowUpVisitListFragment extends BaseReadActivityFragme
     }
 
     @Override
-    public void onLayoutBinding(FragmentContactReadFollowupLayoutBinding contentBinding) {
+    public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
+        showEmptyListHint(record, R.string.entity_visit);
+
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         adapter = new ContactReadFollowupListAdapter(ContactReadFollowUpVisitListFragment.this.getActivity(),
                 R.layout.row_read_followup_list_item_layout, ContactReadFollowUpVisitListFragment.this, record);
@@ -101,17 +103,17 @@ public class ContactReadFollowUpVisitListFragment extends BaseReadActivityFragme
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentContactReadFollowupLayoutBinding contentBinding) {
+    public void onAfterLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
 
     }
 
     @Override
-    protected void updateUI(FragmentContactReadFollowupLayoutBinding contentBinding, List<Visit> visits) {
+    protected void updateUI(FragmentFormListLayoutBinding contentBinding, List<Visit> visits) {
 
     }
 
     @Override
-    public void onPageResume(FragmentContactReadFollowupLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+    public void onPageResume(FragmentFormListLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -197,12 +199,12 @@ public class ContactReadFollowUpVisitListFragment extends BaseReadActivityFragme
 
     @Override
     public int getRootReadLayout() {
-        return R.layout.fragment_root_list_edit_layout;
+        return R.layout.fragment_root_list_form_layout;
     }
 
     @Override
     public int getReadLayout() {
-        return R.layout.fragment_contact_read_followup_layout;
+        return R.layout.fragment_form_list_layout;
     }
 
     @Override

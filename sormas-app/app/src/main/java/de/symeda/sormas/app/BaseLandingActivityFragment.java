@@ -152,6 +152,6 @@ public abstract class BaseLandingActivityFragment<E extends Enum<E>, TAdapter ex
     }
 
     public boolean showNewAction() {
-        return true;
+        return false;
     }
 }

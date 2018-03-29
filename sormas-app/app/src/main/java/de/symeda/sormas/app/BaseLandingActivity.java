@@ -12,8 +12,12 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.menu.MainMenuItemSelectedListener;
+import de.symeda.sormas.app.util.UserHelper;
 
 /**
  * Created by Orson on 03/12/2017.
@@ -82,7 +86,7 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
         if (setHomeAsUpIndicator())
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_blue_36dp);
 
-        setupDrawer();
+        setupDrawer(navigationView);
 
         fragmentFrame = findViewById(R.id.fragment_frame);
         if (fragmentFrame != null) {
@@ -177,7 +181,64 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
         getSupportActionBar().setTitle(mainViewTitle + userRole);
     }
 
-    private void setupDrawer() {
+    private void setupDrawer(NavigationView navView) {
+        if (navView != null) {
+            View headerView = navView.getHeaderView(0);
+
+            if (headerView == null)
+                return;
+
+            TextView userName = (TextView)headerView.findViewById(R.id.userFullName);
+            TextView userRole = (TextView)headerView.findViewById(R.id.userRole);
+
+            if (userName == null)
+                return;
+
+            if (userRole == null)
+                return;
+
+            User user = ConfigProvider.getUser();
+
+            if (user == null)
+                return;
+            else {
+                userName.setText(R.string.userNamePlaceholder);
+                userRole.setText(R.string.userRolePlaceholder);
+            }
+
+            userName.setText(user.getLastName() + " " + user.getFirstName());
+            userRole.setText(UserHelper.getUserRole(user));
+
+
+            Menu menuNav = navView.getMenu();
+
+            MenuItem dashboardMenu = menuNav.findItem(R.id.menu_item_dashboard);
+            MenuItem taskMenu = menuNav.findItem(R.id.menu_item_tasks);
+            MenuItem caseMenu = menuNav.findItem(R.id.menu_item_cases);
+            MenuItem contactMenu = menuNav.findItem(R.id.menu_item_contacts);
+            MenuItem eventMenu = menuNav.findItem(R.id.menu_item_events);
+            MenuItem sampleMenu = menuNav.findItem(R.id.menu_item_samples);
+            MenuItem reportMenu = menuNav.findItem(R.id.menu_item_reports);
+
+            if (taskMenu != null)
+                taskMenu.setVisible(user.hasUserRight(UserRight.TASK_VIEW));
+
+            if (caseMenu != null)
+                caseMenu.setVisible(user.hasUserRight(UserRight.CASE_VIEW));
+
+            if (sampleMenu != null)
+                sampleMenu.setVisible(user.hasUserRight(UserRight.SAMPLE_VIEW));
+
+            if (eventMenu != null)
+                eventMenu.setVisible(user.hasUserRight(UserRight.EVENT_VIEW));
+
+            if (contactMenu != null)
+                contactMenu.setVisible(user.hasUserRight(UserRight.CONTACT_VIEW));
+
+            if (reportMenu != null)
+                reportMenu.setVisible(user.hasUserRight(UserRight.WEEKLYREPORT_VIEW));
+
+        }
 
         menuDrawerToggle = new ActionBarDrawerToggle(
                 this,

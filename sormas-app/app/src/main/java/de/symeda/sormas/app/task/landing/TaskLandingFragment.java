@@ -10,6 +10,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import org.joda.time.DateTime;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseLandingActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
@@ -29,15 +38,6 @@ import de.symeda.sormas.app.task.TaskPriorityLegendEntry;
 import de.symeda.sormas.app.task.list.TaskListActivity;
 import de.symeda.sormas.app.util.PercentageUtils;
 import de.symeda.sormas.app.util.ResourceUtils;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import de.symeda.sormas.api.task.TaskStatus;
 
 /**
  * Created by Orson on 11/12/2017.
@@ -222,5 +222,4 @@ public class TaskLandingFragment extends BaseLandingActivityFragment<ViewTypeHel
             throws java.lang.InstantiationException, IllegalAccessException {
         return newInstance(TaskLandingFragment.class);
     }
-
 }

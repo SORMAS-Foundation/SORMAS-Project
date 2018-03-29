@@ -309,6 +309,7 @@
     <string name="entity_visit">Visit</string>
     <string name="entity_task">Task</string>
     <string name="entity_weekly_report">Weekly report</string>
+    <string name="entity_event_participant">Event participant</string>
 
     <!--<string name="alert_encryption">SORMAS requires device encryption to be activated on your device to ensure data security.\n\nPlease note that you cannot use the application as long as device encryption is disabled.</string>-->
     <string name="alert_gps">SORMAS needs access to your GPS location for all of its features to work as intended. Please click on \"Turn On GPS\" to enable the required functionality on your device.</string>
@@ -477,6 +478,7 @@
     <string name="snackbar_sync_success">Synchronization successful.</string>
     <string name="snackbar_no_connection">You are not connected to the internet.</string>
     <string name="snackbar_report_sent">Problem report successfully sent.</string>
+    <string name="snackbar_report_not_sent">Unable to send report at this time.</string>
 
     <string name="synclog_yours">Yours: </string>
     <string name="synclog_server">Server: </string>
@@ -488,6 +490,8 @@
     <string name="headline_synchronization">Synchronization</string>
     <string name="hint_synchronization">Synchronizing with SORMAS server...</string>
     <string name="empty_list_hint">Add a new entry by pressing the "+" symbol in the top right.</string>
+    <string name="hint_no_records_found">There were not %1$s found found.</string>
+    <string name="hint_no_records_found_add_new">There were not %1$s found found. To add a new entry, press the "+" symbol at the top right of the toolbar.</string>
 
 
 
@@ -869,5 +873,11 @@
     <string name="select_or_create_person_infoText">Select anyone of the persons below that match by tapping.</string>
     <string name="select_or_create_person_no_records_infoText">No records found matching the first and last name.</string>
     <string name="tag_row_item_select_or_create_person">rowItemSelectOrCreatePerson</string>
+
+
+
+
+    <string name="userNamePlaceholder">No Username</string>
+    <string name="userRolePlaceholder">Role Unassigned</string>
 
 </resources>

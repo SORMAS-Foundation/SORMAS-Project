@@ -238,6 +238,6 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
     }
 
     public boolean showNewAction() {
-        return true;
+        return false;
     }
 }
