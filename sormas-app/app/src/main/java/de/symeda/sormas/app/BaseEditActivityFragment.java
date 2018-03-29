@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.databinding.OnRebindCallback;
 import android.databinding.ViewDataBinding;
+import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import java.util.List;
@@ -122,6 +124,18 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
         //Inflate Root
         rootBinding = DataBindingUtil.inflate(inflater, getRootEditLayout(), container, false);
         rootView = rootBinding.getRoot();
+
+
+
+
+
+
+
+
+
+
+
+
 
         if (getEditLayout() > 0) {
             final ViewStub vsChildFragmentFrame = (ViewStub)rootView.findViewById(R.id.vsChildFragmentFrame);

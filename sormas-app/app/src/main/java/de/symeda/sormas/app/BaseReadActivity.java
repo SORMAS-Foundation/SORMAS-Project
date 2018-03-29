@@ -3,6 +3,7 @@ package de.symeda.sormas.app;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -115,6 +117,36 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
         fragmentFrame = findViewById(R.id.fragment_frame);
         pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);
         fab = (FloatingActionButton)findViewById(R.id.fab);
+
+
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Rect r = new Rect();
+                rootView.getWindowVisibleDisplayFrame(r);
+                int heightDiff = rootView.getRootView().getHeight() - (r.bottom - r.top);
+
+                if (heightDiff > 100) {
+                    fab.setVisibility(View.GONE);
+                    /*fab.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            fab.setVisibility(View.GONE);
+                        }
+                    });*/
+
+                }else{
+                    fab.setVisibility(View.VISIBLE);
+                    /*fab.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            fab.setVisibility(View.VISIBLE);
+                        }
+                    });*/
+
+                }
+            }
+        });
 
         /*if (savedInstanceState == null) {
             activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
