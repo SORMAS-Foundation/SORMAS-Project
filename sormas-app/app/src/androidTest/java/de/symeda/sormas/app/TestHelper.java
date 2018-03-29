@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -33,6 +34,7 @@ public class TestHelper {
     public static final String SECOND_COMMUNITY_UUID = "C2C2C2-C2C2C2-C2C2C2-C2C2C2C2";
     public static final String FACILITY_UUID = "F1F1F1-F1F1F1-F1F1F1-F1F1F1F1";
     public static final String SECOND_FACILITY_UUID = "F2F2F2-F2F2F2-F2F2F2-F2F2F2F2";
+    public static final String LABORATORY_UUID = "L1L1L1-L1L1L1-L1L1L1-L1L1L1L1";
     public static final String USER_UUID = "0123456789";
     public static final String SECOND_USER_UUID = "0987654321";
     public static final String INFORMANT_USER_UUID = "0192837465";
@@ -144,6 +146,18 @@ public class TestHelper {
         secondCommunity.setUuid(SECOND_COMMUNITY_UUID);
         secondCommunity.setDistrict(secondDistrict);
         DatabaseHelper.getCommunityDao().create(secondCommunity);
+
+        Facility laboratory = new Facility();
+        laboratory.setCreationDate(new Date());
+        laboratory.setChangeDate(new Date());
+        laboratory.setName("A Laboratory");
+        laboratory.setPublicOwnership(false);
+        laboratory.setType(FacilityType.LABORATORY);
+        laboratory.setUuid(LABORATORY_UUID);
+        laboratory.setRegion(region);
+        laboratory.setDistrict(district);
+        laboratory.setCity("Laboratory City");
+        DatabaseHelper.getFacilityDao().create(laboratory);
 
         Facility facility = new Facility();
         facility.setCreationDate(new Date());

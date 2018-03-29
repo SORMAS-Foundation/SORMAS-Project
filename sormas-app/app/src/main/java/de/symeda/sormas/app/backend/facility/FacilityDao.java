@@ -6,6 +6,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -67,19 +68,27 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
     }
 
     public List<Facility> getHealthFacilitiesByDistrict(District district, boolean includeStaticFacilities) {
-        List<Facility> facilities = queryForEq(Facility.DISTRICT, district, Facility.NAME, true);
-        for (Facility facility : facilities) {
-            if (facility.getType() == FacilityType.LABORATORY) {
-                facilities.remove(facility);
+
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.and(
+                    where.eq(Facility.DISTRICT, district),
+                    where.eq(AbstractDomainObject.SNAPSHOT, false),
+                    where.or(where.ne(Facility.TYPE, FacilityType.LABORATORY), where.isNull(Facility.TYPE)));
+            List<Facility> facilities = builder.orderBy(Facility.NAME, true).query();
+
+            if (includeStaticFacilities) {
+                facilities.add(queryUuid(FacilityDto.OTHER_FACILITY_UUID));
+                facilities.add(queryUuid(FacilityDto.NONE_FACILITY_UUID));
             }
-        }
 
-        if (includeStaticFacilities) {
-            facilities.add(queryUuid(FacilityDto.OTHER_FACILITY_UUID));
-            facilities.add(queryUuid(FacilityDto.NONE_FACILITY_UUID));
-        }
+            return facilities;
 
-        return facilities;
+        } catch (SQLException | IllegalArgumentException e) {
+            Log.e(getTableName(), "Could not perform queryForEq");
+            throw new RuntimeException(e);
+        }
     }
 
     public List<Facility> getHealthFacilitiesByCommunity(Community community, boolean includeStaticFacilities) {
