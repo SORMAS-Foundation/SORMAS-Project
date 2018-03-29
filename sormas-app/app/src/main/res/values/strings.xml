@@ -425,50 +425,50 @@
 
     <string name="not_available">N/A</string>
     <string name="unknown">Unknown</string>
-    <string name="case_uuid_unknown">Case ID Unknown</string>
-    <string name="uuid_unknown">ID Unknown</string>
-    <string name="type_unknown">Type Unknown</string>
-    <string name="status_unknown">Status Unknown</string>
-    <string name="record_desc_unknown">Description Unknown</string>
-    <string name="event_date_unknown">Date Unknown</string>
-    <string name="report_date_unknown">Report Date Unknown</string>
-    <string name="event_location_unknown">Location Unknown</string>
-    <string name="contact_uuid_unknown">Contact ID Unknown</string>
-    <string name="person_unknown">Person Unknown</string>
-    <string name="patient_unknown">Patient Unknown</string>
-    <string name="involvement_desc_unknown">Description Unknown</string>
-    <string name="gender_unknown">Gender Unknown</string>
-    <string name="age_unknown">Age Unknown</string>
-    <string name="health_facility_unknown">Health Facility Unknown</string>
-    <string name="task_date_unknown">Task Date Unknown</string>
-    <string name="task_comment_unknown">Comment Unknown</string>
-    <string name="task_type_unknown">Type Unknown</string>
-    <string name="task_status_unknown">Status Unknown</string>
-    <string name="task_priority_unknown">Priority Unknown</string>
-    <string name="disease_unknown">Priority Unknown</string>
-    <string name="visit_status_unknown">Status Unknown</string>
-    <string name="visit_remarks_unknown">Remarks Unknown</string>
-    <string name="visit_date_unknown">Visit Date Unknown</string>
-    <string name="visit_time_unknown">Visit Time Unknown</string>
+    <string name="case_uuid_unknown">Case ID N/A</string>
+    <string name="uuid_unknown">ID N/A</string>
+    <string name="type_unknown">Type N/A</string>
+    <string name="status_unknown">Status N/A</string>
+    <string name="record_desc_unknown">Description N/A</string>
+    <string name="event_date_unknown">Date N/A</string>
+    <string name="report_date_unknown">Report Date N/A</string>
+    <string name="event_location_unknown">Location N/A</string>
+    <string name="contact_uuid_unknown">Contact ID N/A</string>
+    <string name="person_unknown">Person N/A</string>
+    <string name="patient_unknown">Patient N/A</string>
+    <string name="involvement_desc_unknown">Description N/A</string>
+    <string name="gender_unknown">Gender N/A</string>
+    <string name="age_unknown">Age N/A</string>
+    <string name="health_facility_unknown">Health Facility N/A</string>
+    <string name="task_date_unknown">Task Date N/A</string>
+    <string name="task_comment_unknown">Comment N/A</string>
+    <string name="task_type_unknown">Type N/A</string>
+    <string name="task_status_unknown">Status N/A</string>
+    <string name="task_priority_unknown">Priority N/A</string>
+    <string name="disease_unknown">Disease N/A</string>
+    <string name="visit_status_unknown">Status N/A</string>
+    <string name="visit_remarks_unknown">Remarks N/A</string>
+    <string name="visit_date_unknown">Visit Date N/A</string>
+    <string name="visit_time_unknown">Visit Time N/A</string>
 
 
 
-    <string name="contact_proximity_unknown">Proximity Unknown</string>
-    <string name="contact_class_unknown">Classification Unknown</string>
-    <string name="sample_material_unknown">Material Unknown</string>
-    <string name="sample_disease_unknown">Disease Unknown</string>
-    <string name="sampling_date_unknown">Sampling Date Unknown</string>
-    <string name="sample_lab_unknown">Lab Unknown</string>
-    <string name="sample_result_unknown">Test Result Unknown</string>
-    <string name="epid_burial_person_unknown">Person/Relation Unknown</string>
-    <string name="epid_burial_location_unknown">Location Unknown</string>
-    <string name="epid_burial_date_unknown">Date Unknown</string>
-    <string name="epid_event_type_unknown">Event Unknown</string>
-    <string name="epid_event_location_unknown">Location Unknown</string>
-    <string name="epid_event_date_unknown">Date Unknown</string>
-    <string name="epid_travel_type_unknown">Type Unknown</string>
-    <string name="epid_travel_destination_unknown">Destination Unknown</string>
-    <string name="epid_travel_period_unknown">Period Unknown</string>
+    <string name="contact_proximity_unknown">Proximity N/A</string>
+    <string name="contact_class_unknown">Classification N/A</string>
+    <string name="sample_material_unknown">Material N/A</string>
+    <string name="sample_disease_unknown">Disease N/A</string>
+    <string name="sampling_date_unknown">Sampling Date N/A</string>
+    <string name="sample_lab_unknown">Lab N/A</string>
+    <string name="sample_result_unknown">Test Result N/A</string>
+    <string name="epid_burial_person_unknown">Person/Relation N/A</string>
+    <string name="epid_burial_location_unknown">Location N/A</string>
+    <string name="epid_burial_date_unknown">Date N/A</string>
+    <string name="epid_event_type_unknown">Event N/A</string>
+    <string name="epid_event_location_unknown">Location N/A</string>
+    <string name="epid_event_date_unknown">Date N/A</string>
+    <string name="epid_travel_type_unknown">Type N/A</string>
+    <string name="epid_travel_destination_unknown">Destination N/A</string>
+    <string name="epid_travel_period_unknown">Period N/A</string>
 
 
 
@@ -675,6 +675,7 @@
     <string name="heading_case_new">New Case</string>
     <string name="heading_contact_new">New Contact</string>
     <string name="heading_level4_1_case_create_new_contact_info">Create New Contact</string>
+    <string name="heading_sample_new">New Sample</string>
 
 
     <string name="heading_level4_1_event_edit_person_involved_info">Person Involved</string>
@@ -719,6 +720,7 @@
     <string name="caption_epidemiological_information">Epidemilogical Info</string>
     <string name="caption_visit_information">Visit Information</string>
     <string name="caption_case_contacts">Case Contacts</string>
+    <string name="caption_new_sample">New Sample</string>
 
 
 

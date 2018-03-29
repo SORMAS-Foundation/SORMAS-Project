@@ -481,6 +481,7 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
     void goToActivity(Context fromActivity, Class<TActivity> toActivity, TCapsule dataCapsule) {
 
         int activeMenuKey = dataCapsule.getActiveMenuKey();
+        //int activeMenuKey = dataCapsule.getActiveMenuKey() < 0? BaseEditActivity.this.getActiveMenuKey() : dataCapsule.getActiveMenuKey();
         String dataUuid = dataCapsule.getRecordUuid();
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
         IStatusElaborator pageStatus = dataCapsule.getPageStatus();
@@ -535,11 +536,6 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
 
     public abstract BaseEditActivityFragment getActiveEditFragment(TActivityRootData activityRootData) throws IllegalAccessException, InstantiationException;
 
-    protected void setActiveMenu(LandingPageMenuItem menuItem) {
-        activeMenu = menuItem;
-        activeMenuKey = menuItem.getKey();
-    }
-
     public LandingPageMenuItem getActiveMenuItem() {
         return activeMenu;
     }
@@ -567,6 +563,15 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
 
     public String getPageMenuData() {
         return null;
+    }
+
+    public int getActiveMenuKey() {
+        return activeMenuKey;
+    }
+
+    protected void setActiveMenu(LandingPageMenuItem menuItem) {
+        activeMenu = menuItem;
+        activeMenuKey = menuItem.getKey();
     }
 
     public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {

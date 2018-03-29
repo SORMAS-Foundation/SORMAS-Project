@@ -422,7 +422,7 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                 if (caze == null)
                     return;
 
-                CaseFormNavigationCapsule dataCapsule = (CaseFormNavigationCapsule)new CaseFormNavigationCapsule(getContext(),
+                CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(),
                         caze.getUuid()).setEditPageStatus(caze.getInvestigationStatus()).setTaskUuid(task.getUuid());
                 CaseEditActivity.goToActivity(getActivity(), dataCapsule);
 
@@ -441,7 +441,7 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                 if (contact == null)
                     return;
 
-                ContactFormNavigationCapsule dataCapsule = (ContactFormNavigationCapsule)new ContactFormNavigationCapsule(getContext(),
+                ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(),
                         contact.getUuid(), contact.getContactClassification()).setTaskUuid(task.getUuid());
                 ContactEditActivity.goToActivity(getActivity(), dataCapsule);
             }
@@ -459,7 +459,7 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                 if (event == null)
                     return;
 
-                EventFormNavigationCapsule dataCapsule = (EventFormNavigationCapsule)new EventFormNavigationCapsule(getContext(),
+                EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(getContext(),
                         event.getUuid(), event.getEventStatus()).setTaskUuid(task.getUuid());
                 EventEditActivity.goToActivity(getActivity(), dataCapsule);
             }

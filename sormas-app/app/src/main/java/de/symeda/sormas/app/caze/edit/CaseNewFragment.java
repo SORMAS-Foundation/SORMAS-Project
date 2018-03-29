@@ -2,6 +2,7 @@ package de.symeda.sormas.app.caze.edit;
 
 import android.content.res.Resources;
 import android.databinding.ViewDataBinding;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -23,7 +24,6 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
-import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -42,7 +42,11 @@ import de.symeda.sormas.app.component.dialog.RegionLoader;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
@@ -61,12 +65,13 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
 
     public static final String TAG = CaseNewFragment.class.getSimpleName();
 
+    private AsyncTask onResumeTask;
     private String recordUuid = null;
     private String personUuid = null;
     private String contactUuid = null;
     private InvestigationStatus pageStatus = null;
     private Case record;
-    private Person person;
+    //private Person person;
 
     private List<Item> diseaseList;
     private List<Item> plagueTypeList;
@@ -124,27 +129,9 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
                 }*/
             }
 
-            /*Person p = null;
-            Case c = null;
-            Contact _contact = null;
-
-            if (contactUuid != null && !contactUuid.isEmpty()) {
-                _contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
-                if (_contact != null) {
-                    c = _contact.getCaze();
-                    p = _contact.getPerson();
-                }
-            }
-
-            if (p == null)
-                p = DatabaseHelper.getPersonDao().build();
-
-            if (c == null && p != null)
-                c = DatabaseHelper.getCaseDao().build(p);*/
-
 
             resultHolder.forItem().add(caze);
-            resultHolder.forItem().add(caze.getPerson());
+            //resultHolder.forItem().add(caze.getPerson());
 
             resultHolder.forOther().add(DataUtils.getEnumItems(Disease.class, false));
             resultHolder.forOther().add(RegionLoader.getInstance());
@@ -159,8 +146,8 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
             if (itemIterator.hasNext())
                 record = itemIterator.next();
 
-            if (itemIterator.hasNext())
-                person = itemIterator.next();
+            /*if (itemIterator.hasNext())
+                person = itemIterator.next();*/
 
             /*if (itemIterator.hasNext())
                 record = itemIterator.next();*/
@@ -408,6 +395,53 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    Case caze = getActivityRootData();
+
+                    if (caze != null && caze.getPerson() == null) {
+                        caze.setPerson(DatabaseHelper.getPersonDao().build());
+                    }
+
+
+                    resultHolder.forItem().add(caze);
+                }
+            });
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+
+                    if (itemIterator.hasNext())
+                        record =  itemIterator.next();
+
+                    if (record != null)
+                        requestLayoutRebind();
+                    else {
+                        getActivity().finish();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
+
     }
 
     @Override
@@ -454,5 +488,13 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
     public static CaseNewFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {
         return newInstance(activityCommunicator, CaseNewFragment.class, capsule, activityRootData);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (onResumeTask != null && !onResumeTask.isCancelled())
+            onResumeTask.cancel(true);
     }
 }

@@ -13,7 +13,6 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.caze.edit.CaseNewFragment;
 import de.symeda.sormas.app.component.Item;
@@ -81,15 +80,10 @@ public class ContactNewFragment extends BaseEditActivityFragment<FragmentContact
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            Case _associatedCase = null;
             Contact contact = getActivityRootData();
 
-            if (contact != null) {
-                _associatedCase = contact.getCaze();
-            }
-
             resultHolder.forItem().add(contact);
-            resultHolder.forItem().add(_associatedCase);
+            resultHolder.forItem().add(contact.getCaze());
             resultHolder.forOther().add(DataUtils.getEnumItems(ContactRelation.class, false));
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
@@ -172,18 +166,10 @@ public class ContactNewFragment extends BaseEditActivityFragment<FragmentContact
 
                 @Override
                 public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    Case _associatedCase = null;
                     Contact contact = getActivityRootData();
 
-                    if (contact != null) {
-                        if (contact.isUnreadOrChildUnread())
-                            DatabaseHelper.getContactDao().markAsRead(contact);
-
-                        _associatedCase = contact.getCaze();
-                    }
-
                     resultHolder.forItem().add(contact);
-                    resultHolder.forItem().add(_associatedCase);
+                    resultHolder.forItem().add(contact.getCaze());
                 }
             });
             onResumeTask = executor.execute(new ITaskResultCallback() {

@@ -71,6 +71,7 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
     private TActivityRootData activityRootData;
     private View rootView;
     private IActivityRootDataRequestor activityRootDataRequestor;
+    private int onResumeExecCount = 0;
 
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -266,13 +267,16 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
     public final void onResume() {
         super.onResume();
 
-        this.activityRootDataRequestor.requestActivityRootData(new ICallback<TActivityRootData>() {
-            @Override
-            public void result(TActivityRootData result) {
-                setActivityRootData(result);
-                onPageResume(getContentBinding(), beforeLayoutBindingAsyncReturn);
-            }
-        });
+        if (onResumeExecCount > 0) {
+            this.activityRootDataRequestor.requestActivityRootData(new ICallback<TActivityRootData>() {
+                @Override
+                public void result(TActivityRootData result) {
+
+                    setActivityRootData(result);
+                    onPageResume(getContentBinding(), beforeLayoutBindingAsyncReturn);
+                }
+            });
+        }
         //getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
 
         /*final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
@@ -282,6 +286,8 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
                 getBaseEditActivity().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, false, refreshLayout, null);
             }
         });*/
+
+        onResumeExecCount = onResumeExecCount + 1;
     }
 
     public abstract void onPageResume(TBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn);

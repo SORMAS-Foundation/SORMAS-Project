@@ -64,6 +64,7 @@ public class TeboRadioGroup extends EditTeboPropertyField<Object> {
     private boolean includeMarginStart;
     private float radioButtonMarginStart;
     private float radioButtonLabelMarginStart;
+    private boolean enumClassSet = false;
 
     private OnTeboRadioButtonCheckedChangeListener mOnTeboRadioButtonCheckedChangeListener;
 
@@ -217,10 +218,14 @@ public class TeboRadioGroup extends EditTeboPropertyField<Object> {
     }
 
     public void setEnumClass(Class c) {
-        List<Item> items = DataUtils.getEnumItems(c);
-        for (int i = 0; i < items.size(); i++) {
-            this.addItem(i, items.get(i));
+        if (!enumClassSet) {
+            List<Item> items = DataUtils.getEnumItems(c);
+            for (int i = 0; i < items.size(); i++) {
+                this.addItem(i, items.get(i));
+            }
         }
+
+        enumClassSet = true;
     }
 
     public void setItems(List<Item> items) {

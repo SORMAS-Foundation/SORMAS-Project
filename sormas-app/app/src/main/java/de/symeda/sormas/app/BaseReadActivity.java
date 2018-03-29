@@ -495,11 +495,6 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
 
     public abstract BaseReadActivityFragment getActiveReadFragment(TActivityRootData activityRootData) throws IllegalAccessException, InstantiationException;
 
-    protected void setActiveMenu(LandingPageMenuItem menuItem) {
-        activeMenu = menuItem;
-        activeMenuKey = menuItem.getKey();
-    }
-
     public LandingPageMenuItem getActiveMenuItem() {
         return activeMenu;
     }
@@ -527,6 +522,15 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
 
     public String getPageMenuData() {
         return null;
+    }
+
+    public int getActiveMenuKey() {
+        return activeMenuKey;
+    }
+
+    protected void setActiveMenu(LandingPageMenuItem menuItem) {
+        activeMenu = menuItem;
+        activeMenuKey = menuItem.getKey();
     }
 
     public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {

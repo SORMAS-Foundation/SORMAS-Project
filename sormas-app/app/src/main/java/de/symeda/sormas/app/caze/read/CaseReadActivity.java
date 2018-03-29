@@ -16,13 +16,6 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.NavigationHelper;
 
@@ -218,7 +211,14 @@ public class CaseReadActivity  extends BaseReadActivity<Case> {
         if (activeFragment == null)
             return;
 
-        try {
+        Case record = getStoredActivityRootData();
+        //Case record = itemIterator.next();
+
+        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(CaseReadActivity.this,
+                record.getUuid()).setEditPageStatus(record.getInvestigationStatus());
+        CaseEditActivity.goToActivity(CaseReadActivity.this, dataCapsule);
+
+        /*try {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
                 @Override
                 public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
@@ -260,7 +260,7 @@ public class CaseReadActivity  extends BaseReadActivity<Case> {
         } catch (Exception ex) {
             hidePreloader();
             showFragmentView();
-        }
+        }*/
     }
 
     public static void goToActivity(Context fromActivity, CaseFormNavigationCapsule dataCapsule) {

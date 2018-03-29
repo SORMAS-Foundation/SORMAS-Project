@@ -183,17 +183,6 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
         return R.string.heading_level4_task_edit;
     }
 
-    private void processActionbarMenu() {
-        if (activeFragment == null)
-            return;
-
-        if (saveMenu != null)
-            saveMenu.setVisible(activeFragment.showSaveAction());
-
-        if (addMenu != null)
-            addMenu.setVisible(activeFragment.showAddAction());
-    }
-
     public static void goToActivity(Context fromActivity, TaskFormNavigationCapsule dataCapsule) {
         BaseEditActivity.goToActivity(fromActivity, TaskEditActivity.class, dataCapsule);
     }

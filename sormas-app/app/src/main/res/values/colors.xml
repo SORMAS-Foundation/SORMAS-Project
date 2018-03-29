@@ -29,7 +29,7 @@
     <color name="infoTextColor">@color/whiteOpaque</color>
     <color name="successTextColor">@color/whiteOpaque</color>
     <color name="errorTextColor">@color/whiteOpaque</color>
-    <color name="warningTextColor">@color/normalText</color>
+    <color name="warningTextColor">@color/whiteOpaque</color>
 
     <!-- Remove when done -->
     <color name="red">#FFe10002</color>

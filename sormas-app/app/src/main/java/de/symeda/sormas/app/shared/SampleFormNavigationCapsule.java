@@ -11,6 +11,10 @@ import de.symeda.sormas.app.core.BaseFormNavigationCapsule;
 
 public class SampleFormNavigationCapsule extends BaseFormNavigationCapsule<Sample, SampleFormNavigationCapsule> {
 
+    public SampleFormNavigationCapsule(Context context, ShipmentStatus pageStatus) {
+        super(context, null, pageStatus);
+    }
+
     public SampleFormNavigationCapsule(Context context, String recordUuid, ShipmentStatus pageStatus) {
         super(context, recordUuid, pageStatus);
     }

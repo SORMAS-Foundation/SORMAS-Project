@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -365,17 +364,6 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
             showFragmentView();
         }
 
-    }
-
-    private void processActionbarMenu() {
-        if (activeFragment == null)
-            return;
-
-        if (saveMenu != null)
-            saveMenu.setVisible(activeFragment.showSaveAction());
-
-        if (addMenu != null)
-            addMenu.setVisible(activeFragment.showAddAction());
     }
 
     public static <TActivity extends AbstractSormasActivity> void

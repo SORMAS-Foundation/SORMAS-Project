@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.caze.edit;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -25,9 +24,6 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.epidata.EpiData;
-import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDtoHelper;
@@ -46,13 +42,11 @@ import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
-import de.symeda.sormas.app.databinding.FragmentCaseEditEpidLayoutBinding;
-import de.symeda.sormas.app.databinding.FragmentCaseEditHospitalizationLayoutBinding;
-import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
-import de.symeda.sormas.app.databinding.FragmentCaseEditPatientLayoutBinding;
-import de.symeda.sormas.app.databinding.FragmentCaseEditSymptomsInfoLayoutBinding;
+import de.symeda.sormas.app.sample.edit.SampleNewActivity;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
+import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.symptom.Symptom;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.NavigationHelper;
@@ -209,17 +203,6 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         getSaveMenu().setTitle(R.string.action_save_case);
 
         return true;
-        /*MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.edit_action_menu, menu);
-
-        saveMenu = menu.findItem(R.id.action_save);
-        addMenu = menu.findItem(R.id.action_new);
-
-        saveMenu.setTitle(R.string.action_save_case);
-
-        processActionbarMenu();
-
-        return true;*/
     }
 
     @Override
@@ -275,17 +258,6 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     @Override
     protected int getActivityTitle() {
         return R.string.heading_level4_case_edit;
-    }
-
-    private void processActionbarMenu() {
-        if (activeFragment == null)
-            return;
-
-        if (saveMenu != null)
-            saveMenu.setVisible(activeFragment.showSaveAction());
-
-        if (addMenu != null)
-            addMenu.setVisible(activeFragment.showAddAction());
     }
 
     private boolean updatePlagueType(Case caze) {
@@ -476,51 +448,49 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     private void gotoNewView() {
         int activeMenuKey = getActiveMenuItem().getKey();
 
-        if (activeMenuKey != MENU_INDEX_CONTACTS)
-            return;
-
-        ContactFormNavigationCapsule dataCapsule = (ContactFormNavigationCapsule)new ContactFormNavigationCapsule(getContext(),
-                ContactClassification.UNCONFIRMED);
-        ContactNewActivity.goToActivity(this, dataCapsule);
+        if (activeMenuKey == MENU_INDEX_CONTACTS) {
+            ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(),
+                    ContactClassification.UNCONFIRMED).setCaseUuid(recordUuid);
+            ContactNewActivity.goToActivity(this, dataCapsule);
+        } else if (activeMenuKey == MENU_INDEX_SAMPLES) {
+            SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(getContext(),
+                    ShipmentStatus.NOT_SHIPPED).setCaseUuid(recordUuid);
+            SampleNewActivity.goToActivity(this, dataCapsule);
+        }
     }
 
     public void saveCaseToDatabase(final ICallback<BoolResult> callback) {
-        if (activeFragment == null)
+        final String saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_case));
+
+        if (activeFragment == null) {
+            callback.result(new BoolResult(false, saveUnsuccessful));
             return;
+        }
 
         int activeMenuKey = getActiveMenuItem().getKey();
 
-        if (activeMenuKey == MENU_INDEX_CONTACTS || activeMenuKey == MENU_INDEX_SAMPLES || activeMenuKey == MENU_INDEX_TASKS)
+        if (activeMenuKey == MENU_INDEX_CONTACTS || activeMenuKey == MENU_INDEX_SAMPLES || activeMenuKey == MENU_INDEX_TASKS) {
+            callback.result(new BoolResult(false, saveUnsuccessful));
             return;
-
-        Resources r = getResources();
-
-        FragmentCaseEditLayoutBinding caseEditBinding = null;
-        FragmentCaseEditPatientLayoutBinding caseEditPatientBinding = null;
-        FragmentCaseEditHospitalizationLayoutBinding caseEditHospitaliztionBinding = null;
-        FragmentCaseEditSymptomsInfoLayoutBinding caseEditSymptomsBinding = null;
-        FragmentCaseEditEpidLayoutBinding caseEditEpidBinding = null;
-
-        Person person = null;
-        Hospitalization hospitalization = null;
-        Symptoms symptoms = null;
-        EpiData epid = null;
+        }
 
         final Case cazeToSave = getStoredActivityRootData();
 
-        if (cazeToSave == null)
+        if (cazeToSave == null) {
+            callback.result(new BoolResult(false, saveUnsuccessful));
             return;
+        }
 
         if (activeMenuKey == MENU_INDEX_CASE_INFO) {
             //caze = (Case)activeFragment.getPrimaryData();
-            caseEditBinding =(FragmentCaseEditLayoutBinding)activeFragment.getContentBinding();
+            //caseEditBinding =(FragmentCaseEditLayoutBinding)activeFragment.getContentBinding();
         }
 
         if (activeMenuKey == MENU_INDEX_PATIENT_INFO) {
-            person = cazeToSave.getPerson();
+            //person = cazeToSave.getPerson();
             //person = (Person)activeFragment.getPrimaryData();
 
-            caseEditPatientBinding = (FragmentCaseEditPatientLayoutBinding)activeFragment.getContentBinding();
+            //caseEditPatientBinding = (FragmentCaseEditPatientLayoutBinding)activeFragment.getContentBinding();
 
             //TODO: Validation
             /*if (person != null) {
@@ -533,15 +503,15 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         }
 
         if (activeMenuKey == MENU_INDEX_HOSPITALIZATION) {
-            hospitalization = cazeToSave.getHospitalization();
+            //hospitalization = cazeToSave.getHospitalization();
             //hospitalization = (Hospitalization)activeFragment.getPrimaryData();
-            caseEditHospitaliztionBinding =(FragmentCaseEditHospitalizationLayoutBinding)activeFragment.getContentBinding();
+            //caseEditHospitaliztionBinding =(FragmentCaseEditHospitalizationLayoutBinding)activeFragment.getContentBinding();
         }
 
         if (activeMenuKey == MENU_INDEX_SYMPTOMS) {
-            symptoms = cazeToSave.getSymptoms();
+            Symptoms symptoms = cazeToSave.getSymptoms();
             //symptoms = (Symptoms)activeFragment.getPrimaryData();
-            caseEditSymptomsBinding =(FragmentCaseEditSymptomsInfoLayoutBinding)activeFragment.getContentBinding();
+            //caseEditSymptomsBinding =(FragmentCaseEditSymptomsInfoLayoutBinding)activeFragment.getContentBinding();
 
             if (symptoms != null) {
                 // Necessary because the entry could've been automatically set, in which case the setValue method of the
@@ -562,9 +532,9 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         }
 
         if (activeMenuKey == MENU_INDEX_EPIDEMIOLOGICAL_DATA) {
-            epid = cazeToSave.getEpiData();
+            //epid = cazeToSave.getEpiData();
             //epid = (EpiData)activeFragment.getPrimaryData();
-            caseEditEpidBinding =(FragmentCaseEditEpidLayoutBinding)activeFragment.getContentBinding();
+            //caseEditEpidBinding =(FragmentCaseEditEpidLayoutBinding)activeFragment.getContentBinding();
         }
 
         //TODO: Validation
@@ -574,13 +544,11 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
                 private CaseDao caseDao = DatabaseHelper.getCaseDao();
                 private PersonDao personDao = DatabaseHelper.getPersonDao();
-                private String saveUnsuccessful;
 
                 @Override
                 public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
                     caseDao = DatabaseHelper.getCaseDao();
                     personDao = DatabaseHelper.getPersonDao();
-                    saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_case));
                 }
 
                 @Override

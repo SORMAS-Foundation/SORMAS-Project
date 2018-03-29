@@ -287,11 +287,12 @@ public class TextViewBindingAdapters {
     @BindingAdapter(value={"diseaseValue", "valueFormat", "defaultValue"}, requireAll=false)
     public static void setDiseaseValue(TextView textField, Task task, String valueFormat, String defaultValue) {
         String val = defaultValue;
+        String diseaseString = getDisease(task);
 
-        if (task == null) {
+        if (task == null || diseaseString == null || diseaseString.isEmpty()) {
             textField.setText(val);
         } else {
-            val = getDisease(task);
+            val = diseaseString;
 
             if (valueFormat != null && valueFormat.trim() != "") {
                 textField.setText(String.format(valueFormat, val));
@@ -304,11 +305,12 @@ public class TextViewBindingAdapters {
     @BindingAdapter(value={"diseaseValue", "valueFormat", "defaultValue"}, requireAll=false)
     public static void setDiseaseValue(TextView textField, Sample sample, String valueFormat, String defaultValue) {
         String val = defaultValue;
+        String diseaseString = getDisease(sample);
 
-        if (sample == null) {
+        if (sample == null || diseaseString == null || diseaseString.isEmpty()) {
             textField.setText(val);
         } else {
-            val = getDisease(sample);
+            val = diseaseString;
 
             if (valueFormat != null && valueFormat.trim() != "") {
                 textField.setText(String.format(valueFormat, val));
@@ -321,11 +323,12 @@ public class TextViewBindingAdapters {
     @BindingAdapter(value={"diseaseValue", "valueFormat", "defaultValue"}, requireAll=false)
     public static void setDiseaseValue(TextView textField, Event eventRecord, String valueFormat, String defaultValue) {
         String val = defaultValue;
+        String diseaseString = getDisease(eventRecord);
 
-        if (eventRecord == null) {
+        if (eventRecord == null || diseaseString == null || diseaseString.isEmpty()) {
             textField.setText(val);
         } else {
-            val = getDisease(eventRecord);
+            val = diseaseString;
 
             if (valueFormat != null && valueFormat.trim() != "") {
                 textField.setText(String.format(valueFormat, val));
@@ -338,11 +341,12 @@ public class TextViewBindingAdapters {
     @BindingAdapter(value={"diseaseValue", "valueFormat", "defaultValue"}, requireAll=false)
     public static void setDiseaseValue(TextView textField, Case caseRecord, String valueFormat, String defaultValue) {
         String val = defaultValue;
+        String diseaseString = getDisease(caseRecord);
 
-        if (caseRecord == null) {
+        if (caseRecord == null || diseaseString == null || diseaseString.isEmpty()) {
             textField.setText(val);
         } else {
-            val = getDisease(caseRecord);
+            val = diseaseString;
 
             if (valueFormat != null && valueFormat.trim() != "") {
                 textField.setText(String.format(valueFormat, val));
@@ -785,15 +789,12 @@ public class TextViewBindingAdapters {
         }
     }
 
-
-
-
     private static String getDisease(Task record) {
         String result = null;
 
-        if (record.getCaze() != null) {
+        if (record.getCaze() != null && record.getCaze().getDisease() != null) {
             result = record.getCaze().getDisease().toShortString();
-        } else if (record.getContact() != null) {
+        } else if (record.getContact() != null && record.getContact().getCaze() != null && record.getContact().getCaze().getDisease() != null) {
             result = record.getContact().getCaze().getDisease().toShortString();
         } else if (record.getEvent() != null && record.getEvent().getDisease() != null){
             result = record.getEvent().getDisease().toShortString();
