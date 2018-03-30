@@ -136,7 +136,7 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
                 rootView.getWindowVisibleDisplayFrame(r);
                 int heightDiff = rootView.getRootView().getHeight() - (r.bottom - r.top);
 
-                if (heightDiff > 100) {
+                if (heightDiff > ConstantHelper.SOFT_KEYBOARD_HEIGHT) {
                     fab.setVisibility(View.GONE);
                 }else{
                     fab.setVisibility(View.VISIBLE);

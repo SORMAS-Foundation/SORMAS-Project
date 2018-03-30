@@ -43,6 +43,8 @@ public class ConstantHelper {
     public static final String NONE_FACILITY_UUID = "SORMAS-CONSTID-ISNONE-FACILITY";
     public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 
+    public static final int SOFT_KEYBOARD_HEIGHT = 100;
+
 
 
 
