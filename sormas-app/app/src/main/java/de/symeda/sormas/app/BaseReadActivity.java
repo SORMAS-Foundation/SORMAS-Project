@@ -11,12 +11,14 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -42,6 +44,7 @@ import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
+import de.symeda.sormas.app.core.OnSwipeTouchListener;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -110,6 +113,38 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
             fragmentFrame.setVisibility(View.GONE);
     }
 
+
+
+    private void ensureFabHiddenOnSoftKeyboardShown(final FloatingActionButton floatingActionButton, final LandingPageMenuControl landingPageMenuControl) {
+        final View _rootView = getRootView();
+
+        if (_rootView == null)
+            return;
+
+        _rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Rect r = new Rect();
+                _rootView.getWindowVisibleDisplayFrame(r);
+                int heightDiff = _rootView.getRootView().getHeight() - (r.bottom - r.top);
+
+                if (floatingActionButton == null)
+                    return;
+
+                if (heightDiff > 100) {
+                    if (landingPageMenuControl != null && showPageMenu() && landingPageMenuControl.getVisibility() == View.VISIBLE) {
+                        landingPageMenuControl.setVisibility(View.GONE);
+                        setFabUpDrawable();
+                    }
+
+                    floatingActionButton.setVisibility(View.GONE);
+                }else{
+                    floatingActionButton.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
     protected void initializeBaseActivity(Bundle savedInstanceState) {
         menuList = new ArrayList<LandingPageMenuItem>();
         rootView = findViewById(R.id.base_layout);
@@ -118,41 +153,7 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
         pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);
         fab = (FloatingActionButton)findViewById(R.id.fab);
 
-
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                Rect r = new Rect();
-                rootView.getWindowVisibleDisplayFrame(r);
-                int heightDiff = rootView.getRootView().getHeight() - (r.bottom - r.top);
-
-                if (heightDiff > 100) {
-                    fab.setVisibility(View.GONE);
-                    /*fab.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            fab.setVisibility(View.GONE);
-                        }
-                    });*/
-
-                }else{
-                    fab.setVisibility(View.VISIBLE);
-                    /*fab.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            fab.setVisibility(View.VISIBLE);
-                        }
-                    });*/
-
-                }
-            }
-        });
-
-        /*if (savedInstanceState == null) {
-            activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
-        } else {
-            activeMenuKey = RestoreActiveMenuState(savedInstanceState);
-        }*/
+        ensureFabHiddenOnSoftKeyboardShown(fab, pageMenu);
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
 
@@ -163,46 +164,21 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
         initializeActivity(arguments);
 
         try {
-            if (showPageMenu()) {
-                if (pageMenu != null) {
-                    Context menuControlContext = this.pageMenu.getContext();
+            if(pageMenu != null)
+                pageMenu.setVisibility(View.GONE);
 
-                    pageMenu.setVisibility(View.GONE);
-                    pageMenu.setOnLandingPageMenuClickListener(this);
-                    pageMenu.setOnSelectInitialActiveMenuItem(this);
+            if (pageMenu != null && showPageMenu()) {
+                Context menuControlContext = this.pageMenu.getContext();
 
-                    pageMenu.setAdapter(new PageMenuNavAdapter(menuControlContext));
-                    pageMenu.setMenuParser(new LandingPageMenuParser(menuControlContext));
-                    pageMenu.setMenuData(getPageMenuData());
-                }
+                pageMenu.setVisibility(View.GONE);
+                pageMenu.setOnLandingPageMenuClickListener(this);
+                pageMenu.setOnSelectInitialActiveMenuItem(this);
 
-                if (fab != null) {
-                    //fab.setAlpha(0.5f);
-                    fab.setVisibility(View.VISIBLE);
-                    setFabUpDrawable();
+                pageMenu.setAdapter(new PageMenuNavAdapter(menuControlContext));
+                pageMenu.setMenuParser(new LandingPageMenuParser(menuControlContext));
+                pageMenu.setMenuData(getPageMenuData());
 
-                    fab.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (pageMenu.getVisibility() == View.VISIBLE) {
-                                pageMenu.setVisibility(View.GONE);
-                                setFabUpDrawable();
-                            } else {
-                                pageMenu.setVisibility(View.VISIBLE);
-                                setFabDownDrawable();
-                            }
-                        }
-                    });
-                }
-            } else {
-                if (pageMenu != null) {
-                    pageMenu.setVisibility(View.GONE);
-                }
-
-                if (fab != null) {
-                    fab.setVisibility(View.GONE);
-                    setFabDownDrawable();
-                }
+                configureFab(fab, pageMenu);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -236,6 +212,60 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
 
 
         }
+    }
+
+    private void configureFab(final FloatingActionButton floatingActionButton, final LandingPageMenuControl landingPageMenuControl) {
+        if (floatingActionButton == null)
+            return;
+
+        if (landingPageMenuControl == null)
+            return;
+
+        if (!showPageMenu()) {
+            floatingActionButton.setVisibility(View.GONE);
+            setFabDownDrawable();
+            return;
+        }
+
+        floatingActionButton.setVisibility(View.VISIBLE);
+        setFabUpDrawable();
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (landingPageMenuControl.getVisibility() == View.VISIBLE) {
+                    landingPageMenuControl.setVisibility(View.GONE);
+                    setFabUpDrawable();
+                } else {
+                    landingPageMenuControl.setVisibility(View.VISIBLE);
+                    setFabDownDrawable();
+                }
+            }
+        });
+
+        floatingActionButton.setOnTouchListener(new OnSwipeTouchListener(getContext()) {
+            public boolean onSwipeTop() {
+                return true;
+            }
+            public boolean onSwipeRight() {
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)floatingActionButton.getLayoutParams();
+                params.gravity = Gravity.BOTTOM | Gravity.END;
+                floatingActionButton.setLayoutParams(params);
+
+                return true;
+            }
+            public boolean onSwipeLeft() {
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)floatingActionButton.getLayoutParams();
+                params.gravity = Gravity.BOTTOM | Gravity.START;
+                floatingActionButton.setLayoutParams(params);
+
+                return true;
+            }
+            public boolean onSwipeBottom() {
+                return true;
+            }
+
+        });
     }
 
     @Override
