@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         }
 
         //TODO: Orson Remove this later
-        LoginHelper.processLogout();
+        //LoginHelper.processLogout();
 
         loginViewModel = new LoginViewModel();
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login_layout);
