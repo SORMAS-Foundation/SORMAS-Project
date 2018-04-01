@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         app:marginBottomOffsetResId="@id/landingSummaryFrame"
-        app:collapsible="true"
+        app:collapsible="false"
         app:visibility="true"
         app:cellLayout="@layout/control_landing_page_menu_item_cell_layout"/>
 

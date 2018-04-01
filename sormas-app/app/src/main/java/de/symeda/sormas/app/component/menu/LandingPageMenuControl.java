@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.percent.PercentFrameLayout;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -360,8 +361,6 @@ public class LandingPageMenuControl extends LinearLayout {
         return this.landingPageContext;
     }
 
-
-
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -416,38 +415,6 @@ public class LandingPageMenuControl extends LinearLayout {
     }
 
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
-
-        int width = r - l;
-        int height = b - t;
-
-        int w1 = getMeasuredWidth();
-        int h1 = getMeasuredHeight();
-
-        int w2 = getWidth();
-        int h2 = getHeight();
-
-        int miniW = getMinimumWidth();
-        int miniH = getMinimumHeight();
-
-        if (getLayoutParams() instanceof FrameLayout.LayoutParams) {
-            FrameLayout.LayoutParams pppp = (FrameLayout.LayoutParams)getLayoutParams();
-
-            int wwwww = pppp.width;
-            int hhhhh = pppp.height;
-
-            String iiii = "";
-        }
-
-        Object kkk11 = getLayoutParams();
-        ViewGroup.LayoutParams kkk = getLayoutParams();
-
-
-        String kkkkkkk = "";
-    }
-
-    @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
         this.mCapturedLayoutHeight = this.getHeight();
@@ -492,23 +459,17 @@ public class LandingPageMenuControl extends LinearLayout {
             setVisibility(View.GONE);
         } else if (!isVisible() || mEarlyAction == ActionType.HIDE) {
             hide();
+            mEarlyAction = null;
             //setY(this.getHeight() - this.mFabHeight);
             //setVisibility(View.VISIBLE);
         } else {
             show();
+            mEarlyAction = null;
             //setY(0);
             //setVisibility(View.VISIBLE);
         }
 
         updateFabDrawable();
-
-        /*if (isVisible()) {
-            show();
-        } else {
-            hide();
-        }*/
-
-        //setVisibility(isVisible()? VISIBLE : GONE);
 
         canvas.drawARGB(0, 225, 225, 255);
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.SCREEN);
@@ -523,19 +484,7 @@ public class LandingPageMenuControl extends LinearLayout {
         if (!showPageMenu())
             return;
 
-        //this.onVisibilityChanged(this, View.VISIBLE);
-
-        /*if (mCollapsible)
-            setFabDownDrawable();*/
-
-        /*if (mFirstAnimatingIn)
-            setY(this.mCapturedLayoutHeight);*/
-
         setVisibility(View.VISIBLE);
-
-        //mFirstAnimatingIn = true;
-
-
 
         if (mLastAnimation == null) {
             setY(this.mOpenPositionY);
@@ -569,31 +518,6 @@ public class LandingPageMenuControl extends LinearLayout {
 
         this.mVisible = true;
         updateFabDrawable();
-        //mLastAnimation = ActionType.SHOW;
-
-
-
-        /*this.animate().translationY(0).setInterpolator(new LinearInterpolator()).setListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                setTranslationY(0);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        }).start();*/
     }
 
     public void showFab() {
@@ -613,24 +537,12 @@ public class LandingPageMenuControl extends LinearLayout {
             setY(2000);
             return;
         }
-
-
-        /*if (this.mCapturedLayoutHeight <= 0)
-            return;*/
-
-        //this.onVisibilityChanged(this, View.GONE);
-
-
-
         setVisibility(View.VISIBLE);
 
-
-        //setY(this.mClosePositionY);
         if (mLastAnimation == null) {
             setY(this.mClosePositionY);
             mLastAnimation = ActionType.HIDE;
         } else if (mLastAnimation != null && mLastAnimation == ActionType.SHOW) {
-            //Animate
             this.animate().y(this.mClosePositionY).setInterpolator(new LinearInterpolator()).setListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
@@ -656,45 +568,12 @@ public class LandingPageMenuControl extends LinearLayout {
         }
 
         this.mVisible = false;
-        //mLastAnimation = ActionType.HIDE;
-
-        //animateOut(this.mCapturedLayoutHeight - this.mFabHeight); // - this.mFabHeight
-
-
         updateFabDrawable();
     }
 
     public void hideAll() {
         hide();
         setFabFrameVisibility(false);
-    }
-
-    private void animateOut(int height) {
-        this.animate().translationY(height).setInterpolator(new LinearInterpolator()).setListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                LandingPageMenuControl.this.mIsAnimatingIn = false;
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                LandingPageMenuControl.this.mIsAnimatingIn = true;
-                //setVisibility(View.GONE);
-                //setAlpha(0);
-                //setBackground(new ColorDrawable(0));
-                //setBackground(null);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        }).start();
     }
 
     public boolean isVisible() {
@@ -712,22 +591,8 @@ public class LandingPageMenuControl extends LinearLayout {
     }
 
     private void configureFab() {
-
-        /*if (!mCollapsible)
-            return;*/
-
         if (fab == null)
             return;
-
-        /*if (!showPageMenu()) {
-            hideAll();
-            *//*fab.setVisibility(View.GONE);
-            setFabDownDrawable();*//*
-            return;
-        }*/
-
-        /*fab.setVisibility(View.VISIBLE);
-        setFabUpDrawable();*/
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -745,16 +610,28 @@ public class LandingPageMenuControl extends LinearLayout {
                 return true;
             }
             public boolean onSwipeRight() {
-                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)fab.getLayoutParams();
-                params.gravity = Gravity.BOTTOM | Gravity.END;
-                fab.setLayoutParams(params);
+                if (fab.getLayoutParams() instanceof FrameLayout.LayoutParams) {
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)fab.getLayoutParams();
+                    params.gravity = Gravity.END;
+                    fab.setLayoutParams(params);
+                } else if (fab.getLayoutParams() instanceof PercentFrameLayout.LayoutParams) {
+                    PercentFrameLayout.LayoutParams params = (PercentFrameLayout.LayoutParams)fab.getLayoutParams();
+                    params.gravity = Gravity.END;
+                    fab.setLayoutParams(params);
+                }
 
                 return true;
             }
             public boolean onSwipeLeft() {
-                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)fab.getLayoutParams();
-                params.gravity = Gravity.BOTTOM | Gravity.START;
-                fab.setLayoutParams(params);
+                if (fab.getLayoutParams() instanceof FrameLayout.LayoutParams) {
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)fab.getLayoutParams();
+                    params.gravity = Gravity.START;
+                    fab.setLayoutParams(params);
+                } else if (fab.getLayoutParams() instanceof PercentFrameLayout.LayoutParams) {
+                    PercentFrameLayout.LayoutParams params = (PercentFrameLayout.LayoutParams)fab.getLayoutParams();
+                    params.gravity = Gravity.START;
+                    fab.setLayoutParams(params);
+                }
 
                 return true;
             }
@@ -777,18 +654,6 @@ public class LandingPageMenuControl extends LinearLayout {
         }
     }
 
-    /*private void setFabUpDrawable() {
-        Drawable drw = (Drawable) ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_landing_menu_open_black_24dp);
-        drw.setTint(fab.getContext().getResources().getColor(R.color.fabIcon));
-        fab.setImageDrawable(drw);
-    }
-
-    private void setFabDownDrawable() {
-        Drawable drw = (Drawable) ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_landing_menu_close_black_24dp);
-        drw.setTint(fab.getContext().getResources().getColor(R.color.fabIcon));
-        fab.setImageDrawable(drw);
-    }*/
-
     private int calculateFabHeight() {
         if (fabFrame == null) {
             return 0;
@@ -803,9 +668,6 @@ public class LandingPageMenuControl extends LinearLayout {
         /*FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)fab.getLayoutParams();
         this.mFabHeight = fab.getHeight() + params.topMargin + params.bottomMargin;*/
     }
-
-
-
 
     private void setFabFrameVisibility(boolean visibility) {
         if (fabFrame != null)

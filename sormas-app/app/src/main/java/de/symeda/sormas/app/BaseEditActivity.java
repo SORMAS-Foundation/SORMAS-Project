@@ -8,12 +8,9 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.percent.PercentFrameLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -46,7 +43,6 @@ import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
-import de.symeda.sormas.app.core.OnSwipeTouchListener;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -76,7 +72,6 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
     private View applicationTitleBar = null;
     private TextView subHeadingListActivityTitle;
     private LandingPageMenuControl pageMenu = null;
-    private FloatingActionButton fab = null;
     private LandingPageMenuItem activeMenu = null;
     private ArrayList<LandingPageMenuItem> menuList;
     private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
@@ -122,7 +117,7 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
             fragmentFrame.setVisibility(View.GONE);
     }
 
-    private void ensureFabHiddenOnSoftKeyboardShown(final FloatingActionButton floatingActionButton, final LandingPageMenuControl landingPageMenuControl) {
+    private void ensureFabHiddenOnSoftKeyboardShown(final LandingPageMenuControl landingPageMenuControl) {
         final View _rootView = getRootView();
 
         if (_rootView == null)
@@ -135,18 +130,12 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
                 _rootView.getWindowVisibleDisplayFrame(r);
                 int heightDiff = _rootView.getRootView().getHeight() - (r.bottom - r.top);
 
-                if (floatingActionButton == null)
-                    return;
-
                 if (heightDiff > 100) {
-                    if (landingPageMenuControl != null && showPageMenu() && landingPageMenuControl.getVisibility() == View.VISIBLE) {
-                        landingPageMenuControl.setVisibility(View.GONE);
-                        setFabUpDrawable();
+                    if (landingPageMenuControl != null) {
+                        landingPageMenuControl.hideAll();
                     }
-
-                    floatingActionButton.setVisibility(View.GONE);
                 }else{
-                    floatingActionButton.setVisibility(View.VISIBLE);
+                    landingPageMenuControl.showFab();
                 }
             }
         });
@@ -158,17 +147,10 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingListActivityTitle);
         fragmentFrame = findViewById(R.id.fragment_frame);
         pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);
-        fab = (FloatingActionButton)findViewById(R.id.fab);
         notificationFrame = (LinearLayout)findViewById(R.id.notificationFrame);
 
 
-        ensureFabHiddenOnSoftKeyboardShown(fab, pageMenu);
-
-        /*if (savedInstanceState == null) {
-            activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
-        } else {
-            activeMenuKey = RestoreActiveMenuState(savedInstanceState);
-        }*/
+        ensureFabHiddenOnSoftKeyboardShown(pageMenu);
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
 
@@ -193,20 +175,17 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
 
         try {
             if(pageMenu != null)
-                pageMenu.setVisibility(View.GONE);
+                pageMenu.hide();
 
-            if (pageMenu != null && showPageMenu()) {
+            if (pageMenu != null) {
                 Context menuControlContext = this.pageMenu.getContext();
 
-                pageMenu.setVisibility(View.GONE);
                 pageMenu.setOnLandingPageMenuClickListener(this);
                 pageMenu.setOnSelectInitialActiveMenuItem(this);
 
                 pageMenu.setAdapter(new PageMenuNavAdapter(menuControlContext));
                 pageMenu.setMenuParser(new LandingPageMenuParser(menuControlContext));
                 pageMenu.setMenuData(getPageMenuData());
-
-                configureFab(fab, pageMenu);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -241,61 +220,6 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
 
         }
     }
-
-    private void configureFab(final FloatingActionButton floatingActionButton, final LandingPageMenuControl landingPageMenuControl) {
-        if (floatingActionButton == null)
-            return;
-
-        if (landingPageMenuControl == null)
-            return;
-
-        if (!showPageMenu()) {
-            floatingActionButton.setVisibility(View.GONE);
-            setFabDownDrawable();
-            return;
-        }
-
-        floatingActionButton.setVisibility(View.VISIBLE);
-        setFabUpDrawable();
-
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (landingPageMenuControl.getVisibility() == View.VISIBLE) {
-                    landingPageMenuControl.setVisibility(View.GONE);
-                    setFabUpDrawable();
-                } else {
-                    landingPageMenuControl.setVisibility(View.VISIBLE);
-                    setFabDownDrawable();
-                }
-            }
-        });
-
-        floatingActionButton.setOnTouchListener(new OnSwipeTouchListener(getContext()) {
-            public boolean onSwipeTop() {
-                return true;
-            }
-            public boolean onSwipeRight() {
-                PercentFrameLayout.LayoutParams params = (PercentFrameLayout.LayoutParams)floatingActionButton.getLayoutParams();
-                params.gravity = Gravity.BOTTOM | Gravity.END;
-                floatingActionButton.setLayoutParams(params);
-
-                return true;
-            }
-            public boolean onSwipeLeft() {
-                PercentFrameLayout.LayoutParams params = (PercentFrameLayout.LayoutParams)floatingActionButton.getLayoutParams();
-                params.gravity = Gravity.BOTTOM | Gravity.START;
-                floatingActionButton.setLayoutParams(params);
-
-                return true;
-            }
-            public boolean onSwipeBottom() {
-                return true;
-            }
-
-        });
-    }
-
 
 
     @Override
@@ -530,18 +454,6 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
 
             processActionbarMenu();
         }
-    }
-
-    public void setFabUpDrawable() {
-        Drawable drw = (Drawable) ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_landing_menu_open_black_24dp);
-        drw.setTint(fab.getContext().getResources().getColor(R.color.fabIcon));
-        fab.setImageDrawable(drw);
-    }
-
-    public void setFabDownDrawable() {
-        Drawable drw = (Drawable) ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_landing_menu_close_black_24dp);
-        drw.setTint(fab.getContext().getResources().getColor(R.color.fabIcon));
-        fab.setImageDrawable(drw);
     }
 
     protected static <TActivity extends AbstractSormasActivity, TCapsule extends INavigationCapsule>

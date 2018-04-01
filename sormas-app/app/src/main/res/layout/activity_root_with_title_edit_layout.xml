@@ -79,7 +79,7 @@
                             />
 
 
-                        <android.support.design.widget.FloatingActionButton
+                        <!--<android.support.design.widget.FloatingActionButton
                             android:id="@+id/fab"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -89,21 +89,27 @@
                             android:visibility="gone"
                             app:backgroundTint="@color/fab"
                             app:elevation="5dp"
+                            />-->
+
+                        <de.symeda.sormas.app.component.menu.LandingPageMenuControl
+                            android:id="@+id/landingPageMenuControl"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom"
+                            android:backgroundTint="@android:color/transparent"
+                            android:background="@android:color/transparent"
+                            app:collapsible="true"
+                            app:visibility="false"
+                            app:cellLayout="@layout/control_page_menu_nav_item_cell_layout"
+                            app:positionColor="@color/pageMenuPositionColor"
+                            app:positionActiveColor="@color/pageMenuPositionActiveColor"
+                            app:titleColor="@color/pageMenuTitleColor"
+                            app:titleActiveColor="@color/pageMenuTitleActiveColor"
                             />
 
                     </android.support.percent.PercentFrameLayout>
 
-                    <de.symeda.sormas.app.component.menu.LandingPageMenuControl
-                        android:id="@+id/landingPageMenuControl"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:visibility="true"
-                        app:cellLayout="@layout/control_page_menu_nav_item_cell_layout"
-                        app:positionColor="@color/pageMenuPositionColor"
-                        app:positionActiveColor="@color/pageMenuPositionActiveColor"
-                        app:titleColor="@color/pageMenuTitleColor"
-                        app:titleActiveColor="@color/pageMenuTitleActiveColor"
-                        />
+
 
                 </LinearLayout>
 

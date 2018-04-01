@@ -63,7 +63,6 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
     private View applicationTitleBar = null;
     private TextView subHeadingListActivityTitle;
     private LandingPageMenuControl pageMenu = null;
-    //private FloatingActionButton fab = null;
     private LandingPageMenuItem activeMenu = null;
     private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
     private View rootView;
@@ -119,7 +118,6 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
         subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingListActivityTitle);
         fragmentFrame = findViewById(R.id.fragment_frame);
         pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);
-        //fab = (FloatingActionButton)findViewById(R.id.fab);
 
         ensureFabHiddenOnSoftKeyboardShown(pageMenu);
 
@@ -135,10 +133,9 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
             if(pageMenu != null)
                 pageMenu.hide();
 
-            if (pageMenu != null) { //<- Remove showPageMenu()
+            if (pageMenu != null) {
                 Context menuControlContext = this.pageMenu.getContext();
 
-                //pageMenu.set Visibility(View.GONE);
                 pageMenu.setOnLandingPageMenuClickListener(this);
                 pageMenu.setOnSelectInitialActiveMenuItem(this);
 
@@ -182,60 +179,6 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
         }
     }
 
-    /*private void configureFab(final FloatingActionButton floatingActionButton, final LandingPageMenuControl landingPageMenuControl) {
-        if (floatingActionButton == null)
-            return;
-
-        if (landingPageMenuControl == null)
-            return;
-
-        if (!showPageMenu()) {
-            floatingActionButton.setVisibility(View.GONE);
-            setFabDownDrawable();
-            return;
-        }
-
-        floatingActionButton.setVisibility(View.VISIBLE);
-        setFabUpDrawable();
-
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (landingPageMenuControl.isVisible()) {
-                    landingPageMenuControl.hide();
-                    setFabUpDrawable();
-                } else {
-                    landingPageMenuControl.show();
-                    setFabDownDrawable();
-                }
-            }
-        });
-
-        floatingActionButton.setOnTouchListener(new OnSwipeTouchListener(getContext()) {
-            public boolean onSwipeTop() {
-                return true;
-            }
-            public boolean onSwipeRight() {
-                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)floatingActionButton.getLayoutParams();
-                params.gravity = Gravity.BOTTOM | Gravity.END;
-                floatingActionButton.setLayoutParams(params);
-
-                return true;
-            }
-            public boolean onSwipeLeft() {
-                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)floatingActionButton.getLayoutParams();
-                params.gravity = Gravity.BOTTOM | Gravity.START;
-                floatingActionButton.setLayoutParams(params);
-
-                return true;
-            }
-            public boolean onSwipeBottom() {
-                return true;
-            }
-
-        });
-    }*/
-
     private void ensureFabHiddenOnSoftKeyboardShown(final LandingPageMenuControl landingPageMenuControl) {
         final View _rootView = getRootView();
 
@@ -249,24 +192,13 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
                 _rootView.getWindowVisibleDisplayFrame(r);
                 int heightDiff = _rootView.getRootView().getHeight() - (r.bottom - r.top);
 
-                /*if (floatingActionButton == null)
-                    return;*/
-
                 if (heightDiff > 100) {
 
                     if (landingPageMenuControl != null) {
                         landingPageMenuControl.hideAll();
-                        //setFabUpDrawable();
                     }
-                    /*if (landingPageMenuControl != null && showPageMenu() && landingPageMenuControl.isVisible()) {
-                        landingPageMenuControl.hide();
-                        //setFabUpDrawable();
-                    }
-
-                    floatingActionButton.setVisibility(View.GONE);*/
                 } else{
                     landingPageMenuControl.showFab();
-                    //floatingActionButton.setVisibility(View.VISIBLE);
                 }
             }
         });
