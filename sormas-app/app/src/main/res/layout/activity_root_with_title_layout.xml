@@ -13,8 +13,10 @@
 
         <!-- The main content view -->
         <LinearLayout
-            android:orientation="vertical" android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/applicationToolbar"
@@ -94,7 +96,7 @@
                     </android.support.percent.PercentFrameLayout>
 
 
-                    <android.support.design.widget.FloatingActionButton
+                    <!--<android.support.design.widget.FloatingActionButton
                         android:id="@+id/fab"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -104,7 +106,7 @@
                         android:visibility="gone"
                         app:backgroundTint="@color/fab"
                         app:elevation="5dp"
-                        />
+                        />-->
 
 
                 </FrameLayout>
@@ -119,21 +121,43 @@
                 <!--app:showNotificationCallback="@{showNotificationCallback}"
                 app:hideNotificationCallback="@{hideNotificationCallback}"-->
 
+                <de.symeda.sormas.app.component.menu.LandingPageMenuControl
+                    android:id="@+id/landingPageMenuControl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@android:color/transparent"
+                    android:background="@android:color/transparent"
+                    app:visibility="false"
+                    app:collapsible="true"
+                    app:cellLayout="@layout/control_page_menu_nav_item_cell_layout"
+                    app:positionColor="@color/pageMenuPositionColor"
+                    app:positionActiveColor="@color/pageMenuPositionActiveColor"
+                    app:titleColor="@color/pageMenuTitleColor"
+                    app:titleActiveColor="@color/pageMenuTitleActiveColor"
+                    />
+
             </FrameLayout>
 
-
-
-            <de.symeda.sormas.app.component.menu.LandingPageMenuControl
-                android:id="@+id/landingPageMenuControl"
+            <!--<FrameLayout
+                android:id="@+id/fabFrame1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:cellLayout="@layout/control_page_menu_nav_item_cell_layout"
-                app:positionColor="@color/pageMenuPositionColor"
-                app:positionActiveColor="@color/pageMenuPositionActiveColor"
-                app:titleColor="@color/pageMenuTitleColor"
-                app:titleActiveColor="@color/pageMenuTitleActiveColor"
-                />
+                >
+                &lt;!&ndash;android:visibility="gone"&ndash;&gt;
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fab1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="@dimen/fab_margin"
+                    android:scaleType="center"
+                    app:backgroundTint="@color/fab"
+                    app:elevation="5dp"
+                    />
+
+            </FrameLayout>-->
+
+
 
         </LinearLayout>
 

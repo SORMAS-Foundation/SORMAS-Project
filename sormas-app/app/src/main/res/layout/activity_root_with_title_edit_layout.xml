@@ -97,7 +97,7 @@
                         android:id="@+id/landingPageMenuControl"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"
+                        app:visibility="true"
                         app:cellLayout="@layout/control_page_menu_nav_item_cell_layout"
                         app:positionColor="@color/pageMenuPositionColor"
                         app:positionActiveColor="@color/pageMenuPositionActiveColor"

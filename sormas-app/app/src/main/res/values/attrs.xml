@@ -89,6 +89,11 @@
 
     <attr name="textSize" format="dimension" />
 
+
+    <attr name="visibility" format="boolean" />
+    <attr name="collapsible" format="boolean" />
+    <attr name="marginBottomOffset" format="reference" />
+
     <attr name="gravity">
         <flag name="bottom" value="80" />
         <flag name="center" value="17" />
@@ -362,6 +367,9 @@
         <attr name="positionActiveColor" />
         <attr name="titleColor" />
         <attr name="titleActiveColor" />
+        <attr name="visibility" />
+        <attr name="collapsible" />
+        <attr name="marginBottomOffsetResId" />
     </declare-styleable>
 
     <declare-styleable name="LandingPageSummaryControl">

@@ -1,9 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
-    <LinearLayout
-        android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+    <!--android:layout_marginTop="@dimen/fabTotalHeightOffset"
+        android:layout_alignParentTop="true"-->
+    <FrameLayout
+        android:id="@+id/fabFrame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        >
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:layout_gravity="end"
+            android:scaleType="center"
+            app:backgroundTint="@color/fab"
+            app:elevation="5dp"
+            />
+
+
+    </FrameLayout>
+
+    <!--android:layout_alignParentTop="true"-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:background="@color/lighterBlue"
         android:paddingTop="@dimen/landingPageMenuRootPaddingTop"
         android:paddingBottom="@dimen/landingPageMenuRootPaddingBottom">
@@ -27,4 +55,5 @@
             android:numColumns="@integer/landingPageMenuNumColumns"
             />
     </LinearLayout>
-</merge>
+
+</LinearLayout>

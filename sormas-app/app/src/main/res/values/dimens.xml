@@ -26,6 +26,7 @@
     <dimen name="margin_default">16dp</dimen>
 
 
+    <dimen name="fabTotalHeightOffset">-87dp</dimen>
     <dimen name="fab_margin">@dimen/margin_default</dimen>
     <dimen name="fabNonOverlapPaddingBottom">80dp</dimen>
 

@@ -25,6 +25,8 @@ import de.symeda.sormas.app.util.UserHelper;
 
 public abstract class BaseLandingActivity extends AbstractSormasActivity implements INotificationContext {
 
+    public static final String TAG = BaseLandingActivity.class.getSimpleName();
+
     private ActionBarDrawerToggle menuDrawerToggle;
     private DrawerLayout menuDrawerLayout;
     private String[] menuTitles;

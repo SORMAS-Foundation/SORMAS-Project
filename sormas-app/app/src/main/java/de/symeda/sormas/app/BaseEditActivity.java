@@ -533,13 +533,13 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
     }
 
     public void setFabUpDrawable() {
-        Drawable drw = (Drawable) ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_keyboard_arrow_up_36dp);
+        Drawable drw = (Drawable) ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_landing_menu_open_black_24dp);
         drw.setTint(fab.getContext().getResources().getColor(R.color.fabIcon));
         fab.setImageDrawable(drw);
     }
 
     public void setFabDownDrawable() {
-        Drawable drw = (Drawable) ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_keyboard_arrow_down_36dp);
+        Drawable drw = (Drawable) ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_landing_menu_close_black_24dp);
         drw.setTint(fab.getContext().getResources().getColor(R.color.fabIcon));
         fab.setImageDrawable(drw);
     }
