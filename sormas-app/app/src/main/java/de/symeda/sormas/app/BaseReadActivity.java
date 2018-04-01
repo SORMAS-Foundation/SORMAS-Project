@@ -97,6 +97,11 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
     }
 
     @Override
+    protected boolean setHomeAsUpIndicator() {
+        return false;
+    }
+
+    @Override
     public void showFragmentView() {
         if (fragmentFrame != null)
             fragmentFrame.setVisibility(View.VISIBLE);

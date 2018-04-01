@@ -5,7 +5,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 
-import de.symeda.sormas.app.BaseLandingActivity;
+import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.landing.CasesLandingActivity;
@@ -22,11 +22,11 @@ import de.symeda.sormas.app.task.landing.TasksLandingActivity;
  */
 public class MainMenuItemSelectedListener implements NavigationView.OnNavigationItemSelectedListener {
 
-    private BaseLandingActivity activity;
+    private AbstractSormasActivity activity;
     private DrawerLayout drawer;
 
 
-    public MainMenuItemSelectedListener(BaseLandingActivity activity, DrawerLayout drawer) {
+    public MainMenuItemSelectedListener(AbstractSormasActivity activity, DrawerLayout drawer) {
         this.activity = activity;
         this.drawer = drawer;
         //this.activity = activity;

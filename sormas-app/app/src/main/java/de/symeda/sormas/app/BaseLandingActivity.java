@@ -16,7 +16,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.core.INotificationContext;
-import de.symeda.sormas.app.menu.MainMenuItemSelectedListener;
 import de.symeda.sormas.app.util.UserHelper;
 
 /**
@@ -72,7 +71,7 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
 
     protected void initializeBaseActivity(Bundle savedInstanceState) {
         rootView = findViewById(R.id.base_layout);
-        menuDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        /*menuDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.main_navigation_view);
         navigationView.setNavigationItemSelectedListener(new MainMenuItemSelectedListener(this, menuDrawerLayout));
 
@@ -80,15 +79,15 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
         caseNotificationCounter = (TextView) navigationView.getMenu().findItem(R.id.menu_item_cases).getActionView().findViewById(R.id.main_menu_notification_counter);
         contactNotificationCounter = (TextView) navigationView.getMenu().findItem(R.id.menu_item_contacts).getActionView().findViewById(R.id.main_menu_notification_counter);
         eventNotificationCounter = (TextView) navigationView.getMenu().findItem(R.id.menu_item_events).getActionView().findViewById(R.id.main_menu_notification_counter);
-        sampleNotificationCounter = (TextView) navigationView.getMenu().findItem(R.id.menu_item_samples).getActionView().findViewById(R.id.main_menu_notification_counter);
+        sampleNotificationCounter = (TextView) navigationView.getMenu().findItem(R.id.menu_item_samples).getActionView().findViewById(R.id.main_menu_notification_counter);*/
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getExtras();
         initializeActivity(arguments);
 
-        if (setHomeAsUpIndicator())
+        /*if (setHomeAsUpIndicator())
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_blue_36dp);
 
-        setupDrawer(navigationView);
+        setupDrawer(navigationView);*/
 
         fragmentFrame = findViewById(R.id.fragment_frame);
         if (fragmentFrame != null) {
@@ -166,9 +165,9 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (menuDrawerToggle.onOptionsItemSelected(item)) {
+        /*if (menuDrawerToggle.onOptionsItemSelected(item)) {
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -275,44 +274,6 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
         sampleNotificationCounter.setText("50");
     }
 
-    /**
-     * Swaps fragments in the main content view
-     */
-    private void selectItem(int position) {
-        /*switch (position) {
-            case 0:
-                showTasksView();
-                break;
-            case 1:
-                showCasesView();
-                break;
-            case 2:
-                showContactsView();
-                break;
-            case 3:
-                showEventsView();
-                break;
-            case 4:
-                showSamplesView();
-                break;
-            case 5:
-                showReportsView();
-                break;
-            case 6:
-                showSettingsView();
-                // don't keep this button selected
-                menuDrawerList.clearChoices();
-                break;
-            case 7:
-                synchronizeCompleteData();
-                // don't keep this button selected
-                menuDrawerList.clearChoices();
-                break;
-            default:
-                throw new IndexOutOfBoundsException("No action defined for menu entry: " + position);
-        }*/
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -322,15 +283,6 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
     public void onStop() {
         super.onStop();
     }
-    /*@Override
-    public void showNotification(NotificationType type, String message) {
-        NotificationHelper.showNotification(rootView, type, message);
-    }
-
-    @Override
-    public void hideNotification() {
-        NotificationHelper.hideNotification(rootView);
-    }*/
 
     @Override
     public View getRootView() {

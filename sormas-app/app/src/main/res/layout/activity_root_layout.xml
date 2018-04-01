@@ -93,7 +93,7 @@
 
         <android.support.design.widget.NavigationView
             android:id="@+id/main_navigation_view"
-            android:layout_width="324dp"
+            android:layout_width="@dimen/drawerWidth"
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:choiceMode="singleChoice"

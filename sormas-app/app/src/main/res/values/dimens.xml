@@ -29,6 +29,7 @@
     <dimen name="fabTotalHeightOffset">-87dp</dimen>
     <dimen name="fab_margin">@dimen/margin_default</dimen>
     <dimen name="fabNonOverlapPaddingBottom">80dp</dimen>
+    <dimen name="drawerWidth">324dp</dimen>
 
 
     <!-- Layout Dimensions -->

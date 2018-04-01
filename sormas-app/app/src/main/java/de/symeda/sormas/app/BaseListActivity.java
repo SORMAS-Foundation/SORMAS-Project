@@ -51,6 +51,11 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
     }
 
     @Override
+    protected boolean setHomeAsUpIndicator() {
+        return false;
+    }
+
+    @Override
     public void showFragmentView() {
         if (fragmentFrame != null)
             fragmentFrame.setVisibility(View.VISIBLE);
