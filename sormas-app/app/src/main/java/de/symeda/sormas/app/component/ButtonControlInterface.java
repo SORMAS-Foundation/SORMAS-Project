@@ -10,7 +10,7 @@ package de.symeda.sormas.app.component;
 
 public interface ButtonControlInterface {
 
-    public void setText(String label);
-    public String getText();
+    void setText(String label);
+    String getText();
 
 }
