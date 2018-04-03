@@ -20,6 +20,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.ConstraintViolationException;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -59,6 +60,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.MessageType;
@@ -286,12 +288,40 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public CaseDataDto saveCase(CaseDataDto dto) {
+	public CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException {
 		CaseDataDto existingCase = toDto(caseService.getByUuid(dto.getUuid()));
 
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
 		Case caze = fromDto(dto);
+		
+		// Check whether any required field that does not have a not null constraint in the database is empty
+		if (caze.getRegion() == null) {
+			throw new ValidationRuntimeException("You have to specify a valid region");
+		}
+		if (caze.getDistrict() == null) {
+			throw new ValidationRuntimeException("You have to specify a valid district");
+		}
+		if (caze.getHealthFacility() == null) {
+			throw new ValidationRuntimeException("You have to specify a valid health facility");
+		}
+		if (caze.getDisease() == null) {
+			throw new ValidationRuntimeException("You have to specify a valid disease");
+		}
+		// Check whether there are any infrastructure errors
+		if (!caze.getDistrict().getRegion().equals(caze.getRegion())) {
+			throw new ValidationRuntimeException("Could not find a database entry for the specified district in the specified region");
+		}
+		if (caze.getCommunity() != null && !caze.getCommunity().getDistrict().equals(caze.getDistrict())) {
+			throw new ValidationRuntimeException("Could not find a database entry for the specified community in the specified district");
+		}
+		if (caze.getCommunity() == null && !caze.getHealthFacility().getDistrict().equals(caze.getDistrict())) {
+			throw new ValidationRuntimeException("Could not find a database entry for the specified health facility in the specified district");
+		}
+		if (caze.getCommunity() != null && !caze.getHealthFacility().getCommunity().equals(caze.getCommunity())) {
+			throw new ValidationRuntimeException("Could not find a database entry for the specified health facility in the specified community");
+		}
+		
 		caseService.ensurePersisted(caze);
 
 		onCaseChanged(existingCase, caze);

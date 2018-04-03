@@ -37,6 +37,7 @@ import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -198,52 +199,15 @@ public class ImportFacadeEjb implements ImportFacade {
 			}
 
 			if (!caseHasImportError) {
-				// Check whether any required field that does not have a not null constraint in the database is empty
-				if (newCase.getRegion() == null) {
-					hasImportError = true;
-					writeImportErrorToFile(errorReportWriter, nextLine, "You have to specify a valid region.");
-					continue;
-				}
-				if (newCase.getDistrict() == null) {
-					hasImportError = true;
-					writeImportErrorToFile(errorReportWriter, nextLine, "You have to specify a valid district.");
-					continue;
-				}
-				if (newCase.getHealthFacility() == null) {
-					hasImportError = true;
-					writeImportErrorToFile(errorReportWriter, nextLine, "You have to specify a valid health facility.");
-					continue;
-				}
-				if (newCase.getDisease() == null) {
-					hasImportError = true;
-					writeImportErrorToFile(errorReportWriter, nextLine, "You have to specify a valid disease.");
-					continue;
-				}
-				// Check whether there are any infrastructure errors
-				if (!newCase.getDistrict().getRegion().equals(newCase.getRegion())) {
-					hasImportError = true;
-					writeImportErrorToFile(errorReportWriter, nextLine, "Could not find a database entry for the specified district in the specified region.");
-					continue;
-				}
-				if (newCase.getCommunity() != null && !newCase.getCommunity().getDistrict().equals(newCase.getDistrict())) {
-					hasImportError = true;
-					writeImportErrorToFile(errorReportWriter, nextLine, "Could not find a database entry for the specified community in the specified district.");
-					continue;
-				}
-				if (newCase.getCommunity() == null && !newCase.getHealthFacility().getDistrict().equals(newCase.getDistrict())) {
-					hasImportError = true;
-					writeImportErrorToFile(errorReportWriter, nextLine, "Could not find a database entry for the specified health facility in the specified district.");
-					continue;
-				}
-				if (newCase.getCommunity() != null && !newCase.getHealthFacility().getCommunity().equals(newCase.getCommunity())) {
-					hasImportError = true;
-					writeImportErrorToFile(errorReportWriter, nextLine, "Could not find a database entry for the specified health facility in the specified community.");
-					continue;
-				}
-
 				// It's necessary to use the save methods from the facades because of the additional logic they contain
-				personFacade.savePerson(PersonFacadeEjbLocal.toDto(newCase.getPerson()));
-				caseFacade.saveCase(CaseFacadeEjbLocal.toDto(newCase));
+				try {
+					personFacade.savePerson(PersonFacadeEjbLocal.toDto(newCase.getPerson()));
+					caseFacade.saveCase(CaseFacadeEjbLocal.toDto(newCase));
+				} catch (ValidationRuntimeException e) {
+					hasImportError = true;
+					writeImportErrorToFile(errorReportWriter, nextLine, e.getMessage());
+					continue;
+				}
 			}
 		}
 
