@@ -50,11 +50,6 @@
 			<artifactId>client</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>com.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-		</dependency>
-
 		<!-- Testing -->
 
 		<dependency>

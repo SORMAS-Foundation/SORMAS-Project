@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.statistics;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -63,7 +64,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
 			
-			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(ageSexGrid, "sormas_statistics_age_sex", "sormas_statistics_age_sex_" + DateHelper.formatDateForExport(new Date()) + ".csv", "text/csv");
+			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(ageSexGrid.getContainerDataSource(), new ArrayList<>(ageSexGrid.getColumns()), "sormas_statistics_age_sex", "sormas_statistics_age_sex_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 			

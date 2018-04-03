@@ -3,7 +3,6 @@ package de.symeda.sormas.backend.importexport;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,13 +23,10 @@ import javax.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.opencsv.CSVWriter;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ExportErrorException;
 import de.symeda.sormas.backend.caze.Case;
@@ -65,7 +61,6 @@ import de.symeda.sormas.backend.sample.SampleTest;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.CSVUtils;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.Visit;
 
@@ -190,24 +185,6 @@ public class ExportFacadeEjb implements ExportFacade {
 		// Create a zip containing all created .csv files
 		return createZipFromCsvFiles(databaseTables, date, randomNumber);
 	}
-	
-	@Override
-	public String generateGridExportCsv(List<List<String>> exportedRows, String filePrefix, String userUuid) throws IOException {
-		String date = DateHelper.formatDateForExport(new Date());
-		int randomNumber = new Random().nextInt(Integer.MAX_VALUE);
-		
-		Path tempDirectory = Paths.get(configFacade.getTempFilesPath());
-		Path filePath = tempDirectory.resolve(filePrefix + "_" + DataHelper.getShortUuid(userUuid) + "_" + date + "_" + randomNumber + ".csv");
-		
-		CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()));
-		exportedRows.forEach(r -> {
-			writer.writeNext(r.toArray(new String[r.size()]));
-		});
-		
-		writer.flush();
-		writer.close();
-		return filePath.toString();
-	}	
 
 	/**
 	 * Creates a zip by collecting all .csv files that match the file names of the passed databaseTables plus

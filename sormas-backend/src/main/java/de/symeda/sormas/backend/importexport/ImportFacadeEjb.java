@@ -34,6 +34,7 @@ import com.opencsv.CSVWriter;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -56,7 +57,6 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.CSVUtils;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "ImportFacade")

@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.caze;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -183,7 +184,7 @@ public class CaseContactsView extends AbstractCaseView {
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
 
-			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", "text/csv");
+			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), new ArrayList<>(grid.getColumns()), "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 
