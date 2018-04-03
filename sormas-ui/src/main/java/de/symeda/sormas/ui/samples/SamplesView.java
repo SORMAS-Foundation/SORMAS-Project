@@ -35,7 +35,7 @@ public class SamplesView extends AbstractView {
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
 			
-			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(sampleListComponent.getGrid().getContainerDataSource(), new ArrayList<>(sampleListComponent.getGrid().getColumns()), "sormas_samples", "sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv", SampleGrid.EDIT_BTN_ID);
+			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(sampleListComponent.getGrid().getContainerDataSource(), sampleListComponent.getGrid().getColumns(), "sormas_samples", "sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv", SampleGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 			

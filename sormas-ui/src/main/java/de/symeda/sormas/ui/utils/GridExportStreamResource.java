@@ -30,12 +30,13 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 @SuppressWarnings("serial")
 public class GridExportStreamResource extends StreamResource {
 
-	public GridExportStreamResource(Indexed container, List<Column> columns, String tempFilePrefix, String filename, String... ignoredPropertyIds) {
+	public GridExportStreamResource(Indexed container, List<Column> gridColumns, String tempFilePrefix, String filename, String... ignoredPropertyIds) {
 		super(new StreamSource() {
 			@Override
 			public InputStream getStream() {
 				try {
 					List<String> ignoredPropertyIdsList = Arrays.asList(ignoredPropertyIds);
+					List<Column> columns = new ArrayList<>(gridColumns);
 					columns.removeIf(c -> c.isHidden());
 					columns.removeIf(c -> ignoredPropertyIdsList.contains(c.getPropertyId()));
 					Collection<?> itemIds = container.getItemIds();

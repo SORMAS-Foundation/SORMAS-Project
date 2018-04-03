@@ -64,7 +64,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
 			
-			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(ageSexGrid.getContainerDataSource(), new ArrayList<>(ageSexGrid.getColumns()), "sormas_statistics_age_sex", "sormas_statistics_age_sex_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(ageSexGrid.getContainerDataSource(), ageSexGrid.getColumns(), "sormas_statistics_age_sex", "sormas_statistics_age_sex_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 			
