@@ -284,14 +284,7 @@ public class LabelField extends PropertyField<String> {
             labelField.setValue(labelField.getContext().getString(R.string.label_pick_gps));
         }
         else {
-            if (latLonAccuracy != null) {
-                labelField.setValue(android.location.Location.convert(latitude, android.location.Location.FORMAT_DEGREES)
-                        + ", " + android.location.Location.convert(longitude, android.location.Location.FORMAT_DEGREES)
-                        + " +-" + Math.round(latLonAccuracy) + "m");
-            } else {
-                labelField.setValue(android.location.Location.convert(latitude, android.location.Location.FORMAT_DEGREES)
-                        + ", " + android.location.Location.convert(longitude, android.location.Location.FORMAT_DEGREES));
-            }
+            labelField.setValue(Location.getLatLonString(latitude, longitude, latLonAccuracy));
         }
     }
 
