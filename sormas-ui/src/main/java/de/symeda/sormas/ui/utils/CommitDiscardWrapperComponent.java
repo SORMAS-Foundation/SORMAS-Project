@@ -377,17 +377,21 @@ VerticalLayout implements Buffered {
 	}
 
 	@Override
-	public void commit() {
+	public void commit() throws InvalidValueException, SourceException, CommitRuntimeException {
 
 		if (fieldGroups != null)
 		{
-			// validate all fields first, so commit will likely work for all fieldGroups
-			// this is basically only needed when we have multiple field groups
-			getFieldsStream().forEach(field -> {
-				if (!field.isInvalidCommitted()) {
-					field.validate();
-				}
-			});
+			if (fieldGroups.length > 1) {
+				// validate all fields first, so commit will likely work for all fieldGroups
+				// this is basically only needed when we have multiple field groups
+				// FIXME this leads to problem #537 for AbstractEditForm with hideValidationUntilNextCommit 
+				// can hopefully be fixed easier with Vaadin 8 architecture change
+				getFieldsStream().forEach(field -> {
+					if (!field.isInvalidCommitted()) {
+						field.validate();
+					}
+				});
+			}
 			
 			try {
 				for (FieldGroup fieldGroup : fieldGroups) {

@@ -236,6 +236,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 
 	@Override
 	public void preCommit(CommitEvent commitEvent) throws CommitException {
+		
 		if (hideValidationUntilNextCommit) {
 			hideValidationUntilNextCommit = false;
 			for (Field<?> field : getFieldGroup().getFields()) {
