@@ -297,7 +297,7 @@ public class ContactController {
 						if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 							ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 							contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
-							contactDto.setFollowUpComment("Canceled by bulk action");
+							contactDto.setFollowUpComment("Canceled by " + LoginHelper.getCurrentUserName() + " using bulk action");
 							FacadeProvider.getContactFacade().saveContact(contactDto);
 						}
 					}
@@ -319,7 +319,7 @@ public class ContactController {
 						if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 							ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 							contactDto.setFollowUpStatus(FollowUpStatus.LOST);
-							contactDto.setFollowUpComment("Set to lost to follow-up by bulk action");
+							contactDto.setFollowUpComment("Set to lost to follow-up by " + LoginHelper.getCurrentUserName() + " using bulk action");
 							FacadeProvider.getContactFacade().saveContact(contactDto);
 						}
 					}
