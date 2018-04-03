@@ -42,9 +42,11 @@ public class CaseDataView extends AbstractCaseView {
     	TaskListComponent taskListComponent = new TaskListComponent(TaskContext.CASE, getCaseRef());
     	addComponent(taskListComponent);
     	taskListComponent.reload();
+    	taskListComponent.updateActiveStatusButtonCaption();
     	
     	SampleListComponent sampleListComponent = new SampleListComponent(getCaseRef());
     	addComponent(sampleListComponent);
     	sampleListComponent.reload();
+    	sampleListComponent.updateActiveStatusButtonCaption();
     }
 }

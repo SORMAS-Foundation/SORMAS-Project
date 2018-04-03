@@ -40,6 +40,7 @@ import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -295,7 +296,7 @@ public class ContactsView extends AbstractView {
 
 	private void updateActiveStatusButtonCaption() {
 		if (activeStatusButton != null) {
-			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + "<span class=\"" + CssStyles.BADGE + "\">" + grid.getContainer().size() + "</span>");
+			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
 		}
 	}
 
@@ -313,5 +314,6 @@ public class ContactsView extends AbstractView {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		grid.reload();
+		updateActiveStatusButtonCaption();
 	}
 }

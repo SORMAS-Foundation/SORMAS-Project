@@ -19,6 +19,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.visit.VisitGrid;
 
 public class ContactVisitsView extends AbstractContactView {
@@ -126,7 +127,7 @@ public class ContactVisitsView extends AbstractContactView {
 
 	private void updateActiveStatusButtonCaption() {
 		if (activeStatusButton != null) {
-			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + "<span class=\"" + CssStyles.BADGE + "\">" + grid.getContainer().size() + "</span>");
+			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
 		}
 	}
 
@@ -144,5 +145,6 @@ public class ContactVisitsView extends AbstractContactView {
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
 		grid.reload(getContactRef());
+		updateActiveStatusButtonCaption();
 	}
 }

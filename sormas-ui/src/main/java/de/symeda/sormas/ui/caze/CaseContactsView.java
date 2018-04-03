@@ -34,6 +34,7 @@ import de.symeda.sormas.ui.contact.ContactGrid;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class CaseContactsView extends AbstractCaseView {
 
@@ -229,11 +230,12 @@ public class CaseContactsView extends AbstractCaseView {
 		super.enter(event);
 		update();
 		grid.reload();
+		updateActiveStatusButtonCaption();
 	}
 
 	private void updateActiveStatusButtonCaption() {
 		if (activeStatusButton != null) {
-			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + "<span class=\"" + CssStyles.BADGE + "\">" + grid.getContainer().size() + "</span>");
+			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
 		}
 	}
 
