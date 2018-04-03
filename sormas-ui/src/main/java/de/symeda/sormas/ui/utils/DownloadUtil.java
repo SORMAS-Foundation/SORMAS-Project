@@ -50,7 +50,7 @@ public class DownloadUtil {
 						}
 					}
 
-					String zipPath = FacadeProvider.getImportExportFacade().generateDatabaseExportArchive(tablesToExport);
+					String zipPath = FacadeProvider.getExportFacade().generateDatabaseExportArchive(tablesToExport);
 					return new BufferedInputStream(Files.newInputStream(new File(zipPath).toPath()));
 				} catch (IOException | ExportErrorException e) {
 					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
@@ -109,7 +109,7 @@ public class DownloadUtil {
 						exportedRows.add(row);
 					});
 
-					String csvPath = FacadeProvider.getImportExportFacade().generateGridExportCsv(exportedRows, tempFilePrefix, LoginHelper.getCurrentUser().getUuid());
+					String csvPath = FacadeProvider.getExportFacade().generateGridExportCsv(exportedRows, tempFilePrefix, LoginHelper.getCurrentUser().getUuid());
 					return new BufferedInputStream(Files.newInputStream(new File(csvPath).toPath()));
 				} catch (IOException e) {
 					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
@@ -125,7 +125,7 @@ public class DownloadUtil {
 	}
 
 	@SuppressWarnings("serial")
-	public static StreamResource createStreamResource(AbstractView sourceView, String filePath, String fileName, String mimeType, String errorTitle, String errorText) {
+	public static StreamResource createStreamResource(String filePath, String fileName, String mimeType, String errorTitle, String errorText) {
 		StreamResource streamResource = new StreamResource(new StreamSource() {
 			@Override
 			public InputStream getStream() {

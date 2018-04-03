@@ -3,10 +3,8 @@ package de.symeda.sormas.backend.importexport;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,16 +18,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,36 +31,22 @@ import org.slf4j.LoggerFactory;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.importexport.DatabaseTable;
-import de.symeda.sormas.api.importexport.ImportExportFacade;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
+import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.ExportErrorException;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ImportIgnore;
-import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.epidata.EpiData;
-import de.symeda.sormas.backend.epidata.EpiDataBurial;
-import de.symeda.sormas.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.backend.epidata.EpiDataService;
-import de.symeda.sormas.backend.epidata.EpiDataTravel;
-import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityService;
-import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
-import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.outbreak.Outbreak;
-import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityService;
@@ -74,22 +54,17 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sample.SampleTest;
-import de.symeda.sormas.backend.symptoms.Symptoms;
-import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.CSVUtils;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.visit.Visit;
 
-@Stateless(name = "ImportExportFacade")
-public class ImportExportFacadeEjb implements ImportExportFacade {
+@Stateless(name = "ImportFacade")
+public class ImportFacadeEjb implements ImportFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
-
+	
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
@@ -107,127 +82,20 @@ public class ImportExportFacadeEjb implements ImportExportFacade {
 	@EJB
 	private FacilityService facilityService;
 	@EJB
+	private PersonFacadeEjbLocal personFacade;
+	@EJB
 	private PersonService personService;
 	@EJB
 	private HospitalizationService hospitalizationService;
 	@EJB
 	private EpiDataService epiDataService;
-
-	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = "sormas_import_case_template.csv";
-	private static final String SORMAS_IMPORT_GUIDE_FILE_NAME = "SORMAS_Import_Guide.pdf";
-	private static final String ERROR_COLUMN_NAME = "Error description";
-
-	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
-
-	@Override
-	public String generateDatabaseExportArchive(List<DatabaseTable> databaseTables) throws ExportErrorException, IOException {
-		// Create the folder if it doesn't exist
-		try {	
-			Files.createDirectories(Paths.get(configFacade.getTempFilesPath()));
-		} catch (IOException e) {
-			logger.error("Temp directory doesn't exist and creation failed.");
-			throw e;
-		}
-
-		// Export all selected tables to .csv files
-		String date = DateHelper.formatDateForExport(new Date());
-		int randomNumber = new Random().nextInt(Integer.MAX_VALUE);
-		for (DatabaseTable databaseTable : databaseTables) {
-			switch (databaseTable) {
-			case CASES:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Case.TABLE_NAME).getResultList();
-				break;
-			case HOSPITALIZATIONS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Hospitalization.TABLE_NAME).getResultList();
-				break;
-			case PREVIOUSHOSPITALIZATIONS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, PreviousHospitalization.TABLE_NAME).getResultList();
-				break;
-			case EPIDATA:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, EpiData.TABLE_NAME).getResultList();
-				break;
-			case EPIDATABURIALS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, EpiDataBurial.TABLE_NAME).getResultList();
-				break;
-			case EPIDATAGATHERINGS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, EpiDataGathering.TABLE_NAME).getResultList();
-				break;
-			case EPIDATATRAVELS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, EpiDataTravel.TABLE_NAME).getResultList();
-				break;
-			case CONTACTS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Contact.TABLE_NAME).getResultList();
-				break;
-			case VISITS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Visit.TABLE_NAME).getResultList();
-				break;
-			case EVENTS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Event.TABLE_NAME).getResultList();
-				break;
-			case EVENTPARTICIPANTS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, EventParticipant.TABLE_NAME).getResultList();
-				break;
-			case SAMPLES:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Sample.TABLE_NAME).getResultList();
-				break;
-			case SAMPLETESTS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, SampleTest.TABLE_NAME).getResultList();
-				break;
-			case TASKS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Task.TABLE_NAME).getResultList();
-				break;
-			case PERSONS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Person.TABLE_NAME).getResultList();
-				break;
-			case LOCATIONS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Location.TABLE_NAME).getResultList();
-				break;
-			case REGIONS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Region.TABLE_NAME).getResultList();
-				break;
-			case DISTRICTS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, District.TABLE_NAME).getResultList();
-				break;
-			case COMMUNITIES:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Community.TABLE_NAME).getResultList();
-				break;
-			case FACILITIES:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Facility.TABLE_NAME).getResultList();
-				break;
-			case OUTBREAKS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Outbreak.TABLE_NAME).getResultList();
-				break;
-			case CASE_SYMPTOMS:
-				generateCsvExportJoinQuery(databaseTable.getFileName(), date, randomNumber, Symptoms.TABLE_NAME, Case.TABLE_NAME, "id", "symptoms_id").getResultList();
-				break;
-			case VISIT_SYMPTOMS:
-				generateCsvExportJoinQuery(databaseTable.getFileName(), date, randomNumber, Symptoms.TABLE_NAME, Visit.TABLE_NAME, "id", "symptoms_id").getResultList();
-				break;				
-			}
-		}
-
-		// Create a zip containing all created .csv files
-		return createZipFromCsvFiles(databaseTables, date, randomNumber);
-	}
 	
-	@Override
-	public String generateGridExportCsv(List<List<String>> exportedRows, String filePrefix, String userUuid) throws IOException {
-		String date = DateHelper.formatDateForExport(new Date());
-		int randomNumber = new Random().nextInt(Integer.MAX_VALUE);
-		
-		Path tempDirectory = Paths.get(configFacade.getTempFilesPath());
-		Path filePath = tempDirectory.resolve(filePrefix + "_" + DataHelper.getShortUuid(userUuid) + "_" + date + "_" + randomNumber + ".csv");
-		
-		CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()));
-		exportedRows.forEach(r -> {
-			writer.writeNext(r.toArray(new String[r.size()]));
-		});
-		
-		writer.flush();
-		writer.close();
-		return filePath.toString();
-	}
+	private static final Logger logger = LoggerFactory.getLogger(ImportFacadeEjb.class);
 
+	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.TEMP_FILE_PREFIX + "_import_case_template.csv";
+	private static final String SORMAS_IMPORT_GUIDE_FILE_NAME = ImportExportUtils.TEMP_FILE_PREFIX_CAPS + "_Import_Guide.pdf";
+	private static final String ERROR_COLUMN_NAME = "Error description";
+	
 	@Override
 	public void generateCaseImportTemplateFile() throws IOException {				
 		// Create the export directory if it doesn't exist
@@ -285,7 +153,7 @@ public class ImportExportFacadeEjb implements ImportExportFacade {
 
 		// Create error report file
 		Path exportDirectory = Paths.get(configFacade.getTempFilesPath());
-		Path errorReportFilePath = exportDirectory.resolve("sormas_error_report_" + DataHelper.getShortUuid(userUuid) + "_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+		Path errorReportFilePath = exportDirectory.resolve(ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" + DataHelper.getShortUuid(userUuid) + "_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 		generateCaseErrorReportFile(headersLine, errorReportFilePath.toString());
 		CSVWriter errorReportWriter = CSVUtils.createCSVWriter(new FileWriter(errorReportFilePath.toString(), true));
 
@@ -319,11 +187,7 @@ public class ImportExportFacadeEjb implements ImportExportFacade {
 				} catch (ImportErrorException e) {
 					hasImportError = true;
 					caseHasImportError = true;
-					if (e.getCustomMessage() != null) {
-						writeImportErrorToFile(errorReportWriter, nextLine, e.getCustomMessage());
-					} else {
-						writeImportErrorToFile(errorReportWriter, nextLine, "Invalid value " + e.getValue() + " in column " + e.getColumnName());
-					}
+					writeImportErrorToFile(errorReportWriter, nextLine, e.getMessage());
 					break;
 				} catch (InvalidColumnException e) {
 					reader.close();
@@ -377,9 +241,8 @@ public class ImportExportFacadeEjb implements ImportExportFacade {
 					continue;
 				}
 
-				personService.ensurePersisted(newCase.getPerson());
-				hospitalizationService.ensurePersisted(newCase.getHospitalization());
-				epiDataService.ensurePersisted(newCase.getEpiData());
+				// It's necessary to use the save methods from the facades because of the additional logic they contain
+				personFacade.savePerson(PersonFacadeEjbLocal.toDto(newCase.getPerson()));
 				caseFacade.saveCase(CaseFacadeEjbLocal.toDto(newCase));
 			}
 		}
@@ -389,7 +252,7 @@ public class ImportExportFacadeEjb implements ImportExportFacade {
 		errorReportWriter.close();
 		return hasImportError ? errorReportFilePath.toString() : null;
 	}
-
+	
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private void insertColumnEntryIntoCase(Case caze, String entry, String[] entryHeaderPath) throws InvalidColumnException, ImportErrorException {
 		Object currentElement = caze;
@@ -467,14 +330,7 @@ public class ImportExportFacadeEjb implements ImportExportFacade {
 			}
 		}
 	}
-
-	private void writeImportErrorToFile(CSVWriter errorReportWriter, String[] nextLine, String message) throws IOException {
-		List<String> nextLineAsList = new ArrayList<>();
-		nextLineAsList.add(message);
-		nextLineAsList.addAll(Arrays.asList(nextLine));
-		errorReportWriter.writeNext(nextLineAsList.toArray(new String[nextLineAsList.size()]));
-	}
-
+	
 	private String buildHeaderPathString(String[] entryHeaderPath) {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
@@ -490,61 +346,13 @@ public class ImportExportFacadeEjb implements ImportExportFacade {
 		return sb.toString();
 	}
 
-	/**
-	 * Creates a zip by collecting all .csv files that match the file names of the passed databaseTables plus
-	 * the date and randomNumber suffixes. The zip is stored in the same export folder that contains the .csv files
-	 * and its file path is returned.
-	 */
-	private String createZipFromCsvFiles(List<DatabaseTable> databaseTables, String date, int randomNumber) throws ExportErrorException {
-		try {
-			Path path = new File(configFacade.getTempFilesPath()).toPath();
-			String name = "sormas_export_" + date + "_" + randomNumber + ".zip";
-			Path filePath = path.resolve(name);
-			String zipPath = filePath.toString();
-			FileOutputStream fos = new FileOutputStream(zipPath);
-			BufferedOutputStream bos = new BufferedOutputStream(fos);
-			ZipOutputStream zos = new ZipOutputStream(bos);
-
-			for (DatabaseTable databaseTable : databaseTables) {
-				name = "sormas_export_" + databaseTable.getFileName() + "_" + date + "_" + randomNumber + ".csv";
-				filePath = path.resolve(name);
-				zos.putNextEntry(new ZipEntry(databaseTable.getFileName() + ".csv"));
-				byte[] bytes = Files.readAllBytes(filePath);
-				zos.write(bytes, 0, bytes.length);
-				zos.closeEntry();
-			}
-
-			zos.close();
-			return zipPath;
-		} catch (IOException e) {
-			logger.error("Failed to generate a zip file for database export.");
-			throw new ExportErrorException();
-		}
+	private void writeImportErrorToFile(CSVWriter errorReportWriter, String[] nextLine, String message) throws IOException {
+		List<String> nextLineAsList = new ArrayList<>();
+		nextLineAsList.add(message);
+		nextLineAsList.addAll(Arrays.asList(nextLine));
+		errorReportWriter.writeNext(nextLineAsList.toArray(new String[nextLineAsList.size()]));
 	}
-
-	/**
-	 * Generates the query used to create a .csv file of this table. In order to gain access to the server file system, a function
-	 * that needs to be defined in the database is used. The path to save the .csv file to needs to be specified in the sormas.properties file.
-	 */
-	private Query generateCsvExportQuery(String fileName, String date, int randomNumber, String tableName) {
-		Path path = new File(FacadeProvider.getConfigFacade().getTempFilesPath()).toPath();
-		String name = "sormas_export_" + fileName + "_" + date + "_" + randomNumber + ".csv";
-		Path filePath = path.resolve(name);
-		return em.createNativeQuery("SELECT export_database('" + tableName + "', '" + filePath + "');");
-	}
-
-	/**
-	 * Generates the query used to create a .csv file of a this table, joined with another table. This is specifially used to only retrieve
-	 * the symptoms of cases or visits to export two different tables for this data.
-	 */
-	private Query generateCsvExportJoinQuery(String fileName, String date, int randomNumber, String tableName, String joinTableName, String columnName, String joinColumnName) {
-		Path path = new File(FacadeProvider.getConfigFacade().getTempFilesPath()).toPath();
-		String name = "sormas_export_" + fileName + "_" + date + "_" + randomNumber + ".csv";
-		Path filePath = path.resolve(name);
-		return em.createNativeQuery("SELECT export_database_join('" + tableName + "', '" + joinTableName + "', '" + tableName + "." + columnName + "', '" + joinTableName + "." + joinColumnName + "', '" + 
-				filePath + "');");
-	}
-
+	
 	private void buildListOfFields(List<String> fieldNames, Class<?> clazz, String prefix) throws IntrospectionException {
 		for (PropertyDescriptor pd : Introspector.getBeanInfo(clazz).getPropertyDescriptors()) {
 			// Fields with the @ImportIgnore annotation are ignored
@@ -591,14 +399,14 @@ public class ImportExportFacadeEjb implements ImportExportFacade {
 		writer.flush();
 		writer.close();
 	}
-
+	
 	private boolean isInfrastructureClass(Class<?> clazz) {
 		return clazz == Region.class || clazz == District.class || clazz == Community.class || clazz == Facility.class;
 	}
-
+	
 	@LocalBean
 	@Stateless
-	public static class ImportExportFacadeEjbLocal extends ImportExportFacadeEjb {
+	public static class ImportFacadeEjbLocal extends ImportFacadeEjb {
 	}
 
 }

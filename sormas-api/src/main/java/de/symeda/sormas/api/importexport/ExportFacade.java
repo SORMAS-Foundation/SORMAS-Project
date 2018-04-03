@@ -8,7 +8,7 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.utils.ExportErrorException;
 
 @Remote
-public interface ImportExportFacade {
+public interface ExportFacade {
 
 	/**
 	 * Exports the passed database tables as .csv files to the export folder specified in the
@@ -22,18 +22,5 @@ public interface ImportExportFacade {
 	 * properties file and returns the path that can then be used to offer it as a download.
 	 */
 	String generateGridExportCsv(List<List<String>> exportedRows, String filePrefix, String userUuid) throws IOException;
-	
-	/**
-	 * Creates a .csv file with one row containing all relevant column names of the case entity
-	 * and its sub-entities and returns the path to the .csv file that can then be used to offer
-	 * it as a download.
-	 */
-	void generateCaseImportTemplateFile() throws IOException;
-	
-	String getCaseImportTemplateFilePath();
-	
-	String getSormasImportGuideFilePath();
-	
-	String importCasesFromCsvFile(String csvFilePath, String userUuid) throws IOException, InvalidColumnException;
 	
 }

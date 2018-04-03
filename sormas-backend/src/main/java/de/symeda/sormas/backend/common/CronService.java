@@ -14,6 +14,7 @@ import javax.ejb.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -57,7 +58,7 @@ public class CronService {
 		int numberOfDeletedFiles = 0;
 		for (final File fileEntry : exportFolder.listFiles()) {
 			// Skip the file if it's a directory or not a sormas export or import file
-			if (!fileEntry.isFile() || (!fileEntry.getName().startsWith("sormas"))) {
+			if (!fileEntry.isFile() || (!fileEntry.getName().startsWith(ImportExportUtils.TEMP_FILE_PREFIX))) {
 				continue;
 			}
 			
