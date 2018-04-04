@@ -26,6 +26,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -145,7 +146,7 @@ public class CaseImportLayout extends VerticalLayout {
 			
 			FileOutputStream fos = null;
 			try {
-				String newFileName = "sormas_case_import_" + DateHelper.formatDateForExport(new Date()) + "_" + DataHelper.getShortUuid(LoginHelper.getCurrentUser().getUuid()) + ".csv";
+				String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_case_import_" + DateHelper.formatDateForExport(new Date()) + "_" + DataHelper.getShortUuid(LoginHelper.getCurrentUser().getUuid()) + ".csv";
 				file = new File(Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath()).resolve(newFileName).toString());
 				fos = new FileOutputStream(file);
 			} catch (FileNotFoundException e) {
