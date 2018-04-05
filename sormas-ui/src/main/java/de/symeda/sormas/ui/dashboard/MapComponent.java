@@ -269,7 +269,7 @@ public class MapComponent extends VerticalLayout {
 		HorizontalLayout mapHeaderLayout = new HorizontalLayout();
 		mapHeaderLayout.setWidth(100, Unit.PERCENTAGE);
 		mapHeaderLayout.setSpacing(true);
-		CssStyles.style(mapHeaderLayout, CssStyles.VSPACE_2);
+		CssStyles.style(mapHeaderLayout, CssStyles.VSPACE_4);
 
 		// Map and date labels
 		VerticalLayout mapLabelLayout = new VerticalLayout();
