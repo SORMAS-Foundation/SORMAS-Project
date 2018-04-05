@@ -76,7 +76,6 @@ public class MapComponent extends VerticalLayout {
 	// Layouts and components
 	private final DashboardDataProvider dashboardDataProvider;
 	private final GoogleMap map;
-	private Button casesWithoutGPSButton;
 	private Label mapDateLabel;
 	private PopupButton mapKeyDropdown;
 
@@ -149,7 +148,6 @@ public class MapComponent extends VerticalLayout {
 		// Add components
 		addComponent(createHeader());
 		addComponent(map);
-		addComponent(createFooter());
 		setExpandRatio(map, 1);
 
 		map.addMarkerClickListener(new MarkerClickListener() {
@@ -163,7 +161,7 @@ public class MapComponent extends VerticalLayout {
 				if (facility != null) {
 					VerticalLayout layout = new VerticalLayout();
 					Window window = VaadinUiUtil.showPopupWindow(layout);
-					CasePopupGrid caseGrid = new CasePopupGrid(window, facility, MapComponent.this);
+					CasePopupGrid caseGrid = new CasePopupGrid(window, new FacilityReferenceDto(facility.getUuid()), MapComponent.this);
 					caseGrid.setHeightMode(HeightMode.ROW);
 					layout.addComponent(caseGrid);
 					layout.setMargin(true);
@@ -211,12 +209,12 @@ public class MapComponent extends VerticalLayout {
 		if (showEvents) {
 			showEventMarkers(dashboardDataProvider.getEvents());
 		}
-		
+
 		// Re-create the map key layout to only show the keys for the selected layers
 		mapKeyDropdown.setContent(createMapKey());
 	}
 
-	public List<CaseDataDto> getCasesForFacility(FacilityDto facility) {
+	public List<CaseDataDto> getCasesForFacility(FacilityReferenceDto facility) {
 		List<CaseDataDto> casesForFacility = new ArrayList<>();
 		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
 		for (MapCaseDto mapCaseDto : casesByFacility.get(facility)) {
@@ -267,16 +265,6 @@ public class MapComponent extends VerticalLayout {
 		externalCollapseButtonListener = listener;
 	}
 
-	private boolean hasCasesWithoutGPSTag() {
-		for (MapCaseDto caze : mapCaseDtos) {
-			if (caze.getReportLat() == null || caze.getReportLon() == null) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	private HorizontalLayout createHeader() {
 		HorizontalLayout mapHeaderLayout = new HorizontalLayout();
 		mapHeaderLayout.setWidth(100, Unit.PERCENTAGE);
@@ -302,66 +290,13 @@ public class MapComponent extends VerticalLayout {
 		mapHeaderLayout.setComponentAlignment(mapLabelLayout, Alignment.BOTTOM_LEFT);
 		mapHeaderLayout.setExpandRatio(mapLabelLayout, 1);
 
-		// "Cases without GPS Tag" button
-		casesWithoutGPSButton = new Button("Cases without GPS tag");
-		CssStyles.style(casesWithoutGPSButton, CssStyles.BUTTON_SUBTLE);
-		casesWithoutGPSButton.addClickListener(e -> {
-			VerticalLayout layout = new VerticalLayout();
-			Window window = VaadinUiUtil.showPopupWindow(layout);
-			if (!hasCasesWithoutGPSTag()) {
-				Label noCasesLabel = new Label("There are no cases without a GPS tag.");
-				layout.addComponent(noCasesLabel);
-			} else {
-				CasePopupGrid caseGrid = new CasePopupGrid(window, null, this);
-				caseGrid.setHeightMode(HeightMode.ROW);
-				layout.addComponent(caseGrid);
-			}
-			layout.setMargin(true);
-			window.setCaption("Cases Without GPS Tag");
-		});
-		mapHeaderLayout.addComponent(casesWithoutGPSButton, 1);
-		mapHeaderLayout.setComponentAlignment(casesWithoutGPSButton, Alignment.MIDDLE_RIGHT);
-		toggleCasesWithoutGPSButtonVisibility();
-
-		// "Expand" and "Collapse" buttons
-		Button expandMapButton = new Button("", FontAwesome.EXPAND);
-		CssStyles.style(expandMapButton, CssStyles.BUTTON_SUBTLE);
-		expandMapButton.addStyleName(CssStyles.VSPACE_NONE);   
-		Button collapseMapButton = new Button("", FontAwesome.COMPRESS);
-		CssStyles.style(collapseMapButton, CssStyles.BUTTON_SUBTLE);
-		collapseMapButton.addStyleName(CssStyles.VSPACE_NONE);
-
-		expandMapButton.addClickListener(e -> {
-			externalExpandButtonListener.buttonClick(e);
-			mapHeaderLayout.removeComponent(expandMapButton);
-			mapHeaderLayout.addComponent(collapseMapButton);
-			mapHeaderLayout.setComponentAlignment(collapseMapButton, Alignment.MIDDLE_RIGHT);
-		});
-		collapseMapButton.addClickListener(e -> {
-			externalCollapseButtonListener.buttonClick(e);
-			mapHeaderLayout.removeComponent(collapseMapButton);
-			mapHeaderLayout.addComponent(expandMapButton);
-			mapHeaderLayout.setComponentAlignment(expandMapButton, Alignment.MIDDLE_RIGHT);
-		});
-		mapHeaderLayout.addComponent(expandMapButton);
-		mapHeaderLayout.setComponentAlignment(expandMapButton, Alignment.MIDDLE_RIGHT);
-
-		return mapHeaderLayout;
-	}
-
-	private HorizontalLayout createFooter() {
-		HorizontalLayout mapFooterLayout = new HorizontalLayout();
-		mapFooterLayout.setWidth(100, Unit.PERCENTAGE);
-		mapFooterLayout.setSpacing(true);
-		CssStyles.style(mapFooterLayout, CssStyles.VSPACE_TOP_2);
-
 		// Map key dropdown button
-		mapKeyDropdown = new PopupButton("Show Map Key");
+		mapKeyDropdown = new PopupButton("Map Key");
 		CssStyles.style(mapKeyDropdown, CssStyles.BUTTON_SUBTLE);
 		mapKeyDropdown.setContent(createMapKey());
-		mapFooterLayout.addComponent(mapKeyDropdown);
-		mapFooterLayout.setComponentAlignment(mapKeyDropdown, Alignment.BOTTOM_LEFT);
-		mapFooterLayout.setExpandRatio(mapKeyDropdown, 1);
+		mapHeaderLayout.addComponent(mapKeyDropdown);
+		mapHeaderLayout.setComponentAlignment(mapKeyDropdown, Alignment.MIDDLE_RIGHT);
+		mapHeaderLayout.setExpandRatio(mapKeyDropdown, 1);
 
 		// Layers dropdown button
 		PopupButton layersDropdown = new PopupButton("Layers");
@@ -485,10 +420,33 @@ public class MapComponent extends VerticalLayout {
 				}
 			}
 		}
-		mapFooterLayout.addComponent(layersDropdown);
-		mapFooterLayout.setComponentAlignment(layersDropdown, Alignment.BOTTOM_RIGHT);
+		mapHeaderLayout.addComponent(layersDropdown);
+		mapHeaderLayout.setComponentAlignment(layersDropdown, Alignment.MIDDLE_RIGHT);
 
-		return mapFooterLayout;
+		// "Expand" and "Collapse" buttons
+		Button expandMapButton = new Button("", FontAwesome.EXPAND);
+		CssStyles.style(expandMapButton, CssStyles.BUTTON_SUBTLE);
+		expandMapButton.addStyleName(CssStyles.VSPACE_NONE);   
+		Button collapseMapButton = new Button("", FontAwesome.COMPRESS);
+		CssStyles.style(collapseMapButton, CssStyles.BUTTON_SUBTLE);
+		collapseMapButton.addStyleName(CssStyles.VSPACE_NONE);
+
+		expandMapButton.addClickListener(e -> {
+			externalExpandButtonListener.buttonClick(e);
+			mapHeaderLayout.removeComponent(expandMapButton);
+			mapHeaderLayout.addComponent(collapseMapButton);
+			mapHeaderLayout.setComponentAlignment(collapseMapButton, Alignment.MIDDLE_RIGHT);
+		});
+		collapseMapButton.addClickListener(e -> {
+			externalCollapseButtonListener.buttonClick(e);
+			mapHeaderLayout.removeComponent(collapseMapButton);
+			mapHeaderLayout.addComponent(expandMapButton);
+			mapHeaderLayout.setComponentAlignment(expandMapButton, Alignment.MIDDLE_RIGHT);
+		});
+		mapHeaderLayout.addComponent(expandMapButton);
+		mapHeaderLayout.setComponentAlignment(expandMapButton, Alignment.MIDDLE_RIGHT);
+
+		return mapHeaderLayout;
 	}
 
 	private VerticalLayout createMapKey() {
@@ -651,11 +609,11 @@ public class MapComponent extends VerticalLayout {
 				break;
 			default: throw new IllegalArgumentException(caseMeasure.toString());
 			}
-	
+
 			regionKeyLayout.addComponent(legendEntry);
 			regionKeyLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
 			regionKeyLayout.setExpandRatio(legendEntry, 0);
-	
+
 			spacer = new Label();
 			spacer.setWidth(6, Unit.PIXELS);
 			regionKeyLayout.addComponent(spacer);
@@ -671,16 +629,16 @@ public class MapComponent extends VerticalLayout {
 				break;
 			default: throw new IllegalArgumentException(caseMeasure.toString());
 			}	
-			
+
 			regionKeyLayout.addComponent(legendEntry);
 			regionKeyLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
 			regionKeyLayout.setExpandRatio(legendEntry, 0);
-	
+
 			spacer = new Label();
 			spacer.setWidth(6, Unit.PIXELS);
 			regionKeyLayout.addComponent(spacer);
 		}
-		
+
 		switch (caseMeasure) {
 		case CASE_COUNT:
 			legendEntry = createMapKeyEntry("mapicons/highest-region-small.png", "> " + districtShapesUpperQuartile + " cases");
@@ -690,7 +648,7 @@ public class MapComponent extends VerticalLayout {
 			break;
 		default: throw new IllegalArgumentException(caseMeasure.toString());
 		}
-		
+
 		regionKeyLayout.addComponent(legendEntry);
 		regionKeyLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
 		regionKeyLayout.setExpandRatio(legendEntry, 1);
@@ -699,14 +657,14 @@ public class MapComponent extends VerticalLayout {
 			spacer = new Label();
 			spacer.setWidth(6, Unit.PIXELS);
 			regionKeyLayout.addComponent(spacer);
-			
+
 			legendEntry = createMapKeyEntry("mapicons/no-population-region-small.png", "No population data available");
-			
+
 			regionKeyLayout.addComponent(legendEntry);
 			regionKeyLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
 			regionKeyLayout.setExpandRatio(legendEntry, 1);
 		}
-		
+
 		return regionKeyLayout;
 	}
 
@@ -729,11 +687,6 @@ public class MapComponent extends VerticalLayout {
 		// Refresh the map according to the selected layers
 		refreshMap();
 		// Show or hide the button to show cases without a GPS tag depending on whether the cases layer has been selected
-		toggleCasesWithoutGPSButtonVisibility();
-	}
-
-	private void toggleCasesWithoutGPSButtonVisibility() {
-		casesWithoutGPSButton.setVisible(showCases);
 	}
 
 	private void clearRegionShapes() {
@@ -751,7 +704,7 @@ public class MapComponent extends VerticalLayout {
 			}
 		}
 		districtPolygonsMap.clear();
-		
+
 		emptyPopulationDistrictPresent = false;
 
 		map.removeStyleName("no-tiles");
@@ -793,10 +746,10 @@ public class MapComponent extends VerticalLayout {
 		if (caseMeasure == CaseMeasure.CASE_COUNT) {
 			districtShapesLowerQuartile = measurePerDistrict.size() > 0 ? 
 					measurePerDistrict.get((int) (measurePerDistrict.size()  * 0.25)).getElement1() : null;
-			districtShapesMedian = measurePerDistrict.size() > 0 ? 
-					measurePerDistrict.get((int) (measurePerDistrict.size() * 0.5)).getElement1() : null;
-			districtShapesUpperQuartile = measurePerDistrict.size() > 0 ? 
-					measurePerDistrict.get((int) (measurePerDistrict.size() * 0.75)).getElement1() : null;
+					districtShapesMedian = measurePerDistrict.size() > 0 ? 
+							measurePerDistrict.get((int) (measurePerDistrict.size() * 0.5)).getElement1() : null;
+							districtShapesUpperQuartile = measurePerDistrict.size() > 0 ? 
+									measurePerDistrict.get((int) (measurePerDistrict.size() * 0.75)).getElement1() : null;
 		} else {
 			// For case incidence, districts without or with a population <= 0 should not be used for the calculation of the quartiles because they will falsify the result
 			List<Pair<DistrictDto, BigDecimal>> measurePerDistrictWithoutMissingPopulations = new ArrayList<>();
@@ -804,10 +757,10 @@ public class MapComponent extends VerticalLayout {
 			measurePerDistrictWithoutMissingPopulations.removeIf(d -> d.getElement0().getPopulation() == null || d.getElement0().getPopulation() <= 0);
 			districtShapesLowerQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0 ? 
 					measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size()  * 0.25)).getElement1() : null;
-			districtShapesMedian = measurePerDistrictWithoutMissingPopulations.size() > 0 ? 
-					measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.5)).getElement1() : null;
-			districtShapesUpperQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0 ? 
-					measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.75)).getElement1() : null;
+					districtShapesMedian = measurePerDistrictWithoutMissingPopulations.size() > 0 ? 
+							measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.5)).getElement1() : null;
+							districtShapesUpperQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0 ? 
+									measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.75)).getElement1() : null;
 		}
 
 		// Draw relevant district fills
@@ -830,7 +783,7 @@ public class MapComponent extends VerticalLayout {
 						.collect(Collectors.toList()));
 
 				polygon.setStrokeOpacity(0);
-				
+
 				if (districtValue.compareTo(BigDecimal.ZERO) == 0) {
 					polygon.setFillOpacity(0);
 				} else if (districtValue.compareTo(districtShapesLowerQuartile) <= 0) {
@@ -846,7 +799,7 @@ public class MapComponent extends VerticalLayout {
 					polygon.setFillColor("#ED1B24");
 					polygon.setFillOpacity(0.5);
 				}
-				
+
 				if (caseMeasure == CaseMeasure.CASE_INCIDENCE) {
 					if (district.getPopulation() == null || district.getPopulation() <= 0) {
 						// grey when region has no population data
@@ -855,7 +808,7 @@ public class MapComponent extends VerticalLayout {
 						polygon.setFillOpacity(0.5);
 					}
 				}
-				
+
 				districtPolygons[part] = polygon;
 				map.addPolygonOverlay(polygon);
 			}
@@ -896,9 +849,9 @@ public class MapComponent extends VerticalLayout {
 
 			// colorize the icon by the "strongest" classification type (order as in enum) and set its size depending
 			// on the number of cases
-			int numberOfCases = casesByFacility.get(facility).size();
+			int numberOfCases = casesByFacility.get(facilityReference).size();
 			Set<CaseClassification> classificationSet = new HashSet<>();
-			for (MapCaseDto caze : casesByFacility.get(facility)) {
+			for (MapCaseDto caze : casesByFacility.get(facilityReference)) {
 				classificationSet.add(caze.getCaseClassification());
 			}
 
@@ -925,7 +878,7 @@ public class MapComponent extends VerticalLayout {
 			}
 
 			// create and place the marker
-			GoogleMapMarker marker = new GoogleMapMarker(facility.toString() + " (" + casesByFacility.get(facility).size() + " case(s))", latLon, false, icon.getUrl());
+			GoogleMapMarker marker = new GoogleMapMarker(facility.toString() + " (" + casesByFacility.get(facilityReference).size() + " case(s))", latLon, false, icon.getUrl());
 			marker.setId(facility.getUuid().hashCode());
 			markerCaseFacilities.put(marker, facility);
 			map.addMarker(marker);
@@ -1065,7 +1018,7 @@ public class MapComponent extends VerticalLayout {
 			} else {
 				icon = MapIcon.RUMOR;
 			}
-			
+
 			LatLon latLon = null;
 			if (event.getReportLat() != null && event.getReportLon() != null) {
 				latLon = new LatLon(event.getReportLat(), event.getReportLon());
@@ -1073,7 +1026,7 @@ public class MapComponent extends VerticalLayout {
 				GeoLatLon districtCenter = FacadeProvider.getGeoShapeProvider().getCenterOfDistrict(event.getDistrict());
 				latLon = new LatLon(districtCenter.getLon(), districtCenter.getLat());
 			}
-			
+
 			if (latLon != null) {
 				GoogleMapMarker marker = new GoogleMapMarker(event.toString(), latLon, false, icon.getUrl());
 				marker.setId(event.getUuid().hashCode());

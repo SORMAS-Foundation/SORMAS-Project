@@ -15,6 +15,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -27,10 +28,10 @@ public class CasePopupGrid extends Grid {
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
 	
-	private final FacilityDto facility;
+	private final FacilityReferenceDto facility;
 	private final MapComponent mapComponent;
 	
-	public CasePopupGrid(Window window, FacilityDto facility, MapComponent mapComponent) {
+	public CasePopupGrid(Window window, FacilityReferenceDto facility, MapComponent mapComponent) {
 		this.facility = facility;
 		this.mapComponent = mapComponent;
 		setWidth(960, Unit.PIXELS);

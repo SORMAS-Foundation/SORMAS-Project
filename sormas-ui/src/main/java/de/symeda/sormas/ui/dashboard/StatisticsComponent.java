@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -108,7 +109,7 @@ public class StatisticsComponent extends VerticalLayout {
 	public StatisticsComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
 		this.setWidth(100, Unit.PERCENTAGE);
-		this.setMargin(true);
+		this.setMargin(new MarginInfo(true, true, false, true));
 
 		subComponentsLayout = new CustomLayout();
 		subComponentsLayout.setTemplateContents(
@@ -151,23 +152,28 @@ public class StatisticsComponent extends VerticalLayout {
 		
 		// fixed height makes sure they stack correct when screen gets smaller
 		if (isFullMode()) {
-			myTasksComponent.setHeight(480, Unit.PIXELS);
-			newCasesComponent.setHeight(480, Unit.PIXELS);
-			newEventsComponent.setHeight(480, Unit.PIXELS);
-			newTestResultsComponent.setHeight(480, Unit.PIXELS);
+			myTasksComponent.setHeight(430, Unit.PIXELS);
+			newCasesComponent.setHeight(430, Unit.PIXELS);
+			newEventsComponent.setHeight(430, Unit.PIXELS);
+			newTestResultsComponent.setHeight(430, Unit.PIXELS);
+		} else if (currentDisease == null) {
+			myTasksComponent.setHeight(320, Unit.PIXELS);
+			newCasesComponent.setHeight(320, Unit.PIXELS);
+			newEventsComponent.setHeight(320, Unit.PIXELS);
+			newTestResultsComponent.setHeight(320, Unit.PIXELS);
 		} else {
-			myTasksComponent.setHeight(340, Unit.PIXELS);
-			newCasesComponent.setHeight(340, Unit.PIXELS);
-			newEventsComponent.setHeight(340, Unit.PIXELS);
-			newTestResultsComponent.setHeight(340, Unit.PIXELS);
+			myTasksComponent.setHeight(370, Unit.PIXELS);
+			newCasesComponent.setHeight(370, Unit.PIXELS);
+			newEventsComponent.setHeight(370, Unit.PIXELS);
+			newTestResultsComponent.setHeight(370, Unit.PIXELS);
 		}
 	}
 
 	private void addShowMoreAndLessButtons() {
 		showMoreButton = new Button("Show All Diseases", FontAwesome.CHEVRON_DOWN);
-		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE);
+		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
 		showLessButton = new Button("Show First 6 Diseases", FontAwesome.CHEVRON_UP);
-		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE);
+		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
 
 		showMoreButton.addClickListener(e -> {
 			showMoreButton.setVisible(false);

@@ -268,7 +268,7 @@ public class DashboardView extends AbstractView {
 	private VerticalLayout createEpiCurveLayout() {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setHeight(380, Unit.PIXELS);
+		layout.setHeight(400, Unit.PIXELS);
 
 		epiCurveComponent = new EpiCurveComponent(dashboardDataProvider);
 		epiCurveComponent.setSizeFull();
@@ -287,7 +287,7 @@ public class DashboardView extends AbstractView {
 		epiCurveComponent.setCollapseListener(e -> {
 			dashboardLayout.addComponent(statisticsComponent, 1);
 			epiCurveAndMapLayout.addComponent(mapLayout, 1);
-			epiCurveLayout.setHeight(380, Unit.PIXELS);
+			epiCurveLayout.setHeight(400, Unit.PIXELS);
 			DashboardView.this.setHeightUndefined();
 			epiCurveAndMapLayout.setHeightUndefined();
 		});
@@ -298,7 +298,7 @@ public class DashboardView extends AbstractView {
 	private VerticalLayout createMapLayout() {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setHeight(380, Unit.PIXELS);
+		layout.setHeight(400, Unit.PIXELS);
 
 		mapComponent = new MapComponent(dashboardDataProvider);
 		mapComponent.setSizeFull();
@@ -317,7 +317,7 @@ public class DashboardView extends AbstractView {
 		mapComponent.setCollapseListener(e -> {
 			dashboardLayout.addComponent(statisticsComponent, 1);
 			epiCurveAndMapLayout.addComponent(epiCurveLayout, 0);
-			mapLayout.setHeight(380, Unit.PIXELS);
+			mapLayout.setHeight(400, Unit.PIXELS);
 			DashboardView.this.setHeightUndefined();
 			epiCurveAndMapLayout.setHeightUndefined();
 		});
