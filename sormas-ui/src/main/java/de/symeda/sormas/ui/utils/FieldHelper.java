@@ -325,7 +325,7 @@ public final class FieldHelper {
 			boolean required = sourceValues.contains(sourceField.getValue());
 			for(Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
-				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
+				if(disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
 					if (required) {
 						addSoftRequiredStyle(targetField);
 					} else {
@@ -339,7 +339,7 @@ public final class FieldHelper {
 			boolean required = sourceValues.contains(event.getProperty().getValue());
 			for(Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
-				if(Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
+				if(disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
 					if (required) {
 						addSoftRequiredStyle(targetField);
 					} else {

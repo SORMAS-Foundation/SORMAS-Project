@@ -11,9 +11,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.PropertyField;
-import de.symeda.sormas.app.databinding.CaseDataFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.CaseNewFragmentLayoutBinding;
-import de.symeda.sormas.app.databinding.MoveCaseFragmentLayoutBinding;
+import de.symeda.sormas.app.databinding.TransferCaseFragmentLayoutBinding;
 
 /**
  * Created by Mate Strysewske on 20.07.2017.
@@ -24,7 +23,7 @@ public final class CaseValidator {
      * Validates whether the Case Data entered are valid. Fields should be processed from bottom to top according to
      * their arrangement in the layout to make sure that the error message popup is displayed for the first invalid field.
      */
-    public static boolean validateMoveCaseData(MoveCaseFragmentLayoutBinding binding) {
+    public static boolean validateTransferCaseData(TransferCaseFragmentLayoutBinding binding) {
         Resources resources = DatabaseHelper.getContext().getResources();
 
         Case caze = binding.getCaze();
@@ -127,8 +126,8 @@ public final class CaseValidator {
         return success;
     }
 
-    public static void clearErrorsForMoveCaseData(MoveCaseFragmentLayoutBinding binding) {
-        for (PropertyField field : getMoveCaseDataFields(binding)) {
+    public static void clearErrorsForTransferCaseData(TransferCaseFragmentLayoutBinding binding) {
+        for (PropertyField field : getTransferCaseDataFields(binding)) {
             field.clearError();
         }
     }
@@ -139,8 +138,8 @@ public final class CaseValidator {
         }
     }
 
-    public static void setRequiredHintsForMoveCaseData(MoveCaseFragmentLayoutBinding binding) {
-        for (PropertyField field : getMoveCaseDataFields(binding)) {
+    public static void setRequiredHintsForTransferCaseData(TransferCaseFragmentLayoutBinding binding) {
+        for (PropertyField field : getTransferCaseDataFields(binding)) {
             field.setRequiredHint(true);
         }
     }
@@ -151,7 +150,7 @@ public final class CaseValidator {
         }
     }
 
-    private static final List<PropertyField<?>> getMoveCaseDataFields(MoveCaseFragmentLayoutBinding binding) {
+    private static final List<PropertyField<?>> getTransferCaseDataFields(TransferCaseFragmentLayoutBinding binding) {
         return Arrays.asList(binding.caseDataRegion, binding.caseDataDistrict,
                 binding.caseDataHealthFacility, binding.caseDataFacilityDetails);
     }

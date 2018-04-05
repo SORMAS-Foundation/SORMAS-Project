@@ -28,6 +28,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -43,12 +44,17 @@ public class CaseGrid extends Grid {
 	public static final String NUMBER_OF_PENDING_TASKS = "numberOfPendingTasks";
 	
 	private CaseCriteria caseCriteria = new CaseCriteria();
+	private boolean reloadEnabled = false;
 	
 	public CaseGrid() {
         setSizeFull();
 
-        setSelectionMode(SelectionMode.NONE);
-
+        if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+        	setSelectionMode(SelectionMode.MULTI);
+        } else {
+        	setSelectionMode(SelectionMode.NONE);
+        }
+        
         BeanItemContainer<CaseIndexDto> container = new BeanItemContainer<CaseIndexDto>(CaseIndexDto.class);
         GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
         setContainerDataSource(generatedContainer);
@@ -94,7 +100,11 @@ public class CaseGrid extends Grid {
         			CaseIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         
-        addItemClickListener(e -> ControllerProvider.getCaseController().navigateToCase(((CaseIndexDto)e.getItemId()).getUuid()));
+        addItemClickListener(e ->  {
+        	if (e.getPropertyId() != null && (e.getPropertyId().equals(CaseIndexDto.UUID) || e.isDoubleClick())) {
+        		ControllerProvider.getCaseController().navigateToCase(((CaseIndexDto) e.getItemId()).getUuid());
+        	}
+        });
 	}
 	
 	public void setOutcomeFilter(CaseOutcome outcome) {
@@ -200,20 +210,28 @@ public class CaseGrid extends Grid {
 	}
 	
     @SuppressWarnings("unchecked")
-	private BeanItemContainer<CaseIndexDto> getContainer() {
+	public BeanItemContainer<CaseIndexDto> getContainer() {
     	GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
         return (BeanItemContainer<CaseIndexDto>) container.getWrappedContainer();
     }
     
     public void reload() {
-    	
-    	List<CaseIndexDto> cases = FacadeProvider.getCaseFacade().getIndexList(
-    			LoginHelper.getCurrentUser().getUuid(), 
-    			caseCriteria);
-
-    	getContainer().removeAllItems();
-        getContainer().addAll(cases);
+    	if (reloadEnabled) {
+	    	List<CaseIndexDto> cases = FacadeProvider.getCaseFacade().getIndexList(
+	    			LoginHelper.getCurrentUser().getUuid(), 
+	    			caseCriteria);
+	
+	    	getContainer().removeAllItems();
+	        getContainer().addAll(cases);
+    	}
     }
+
+	public boolean isReloadEnabled() {
+		return reloadEnabled;
+	}
+
+	public void setReloadEnabled(boolean reloadEnabled) {
+		this.reloadEnabled = reloadEnabled;
+	}
+   
 }
-
-

@@ -338,7 +338,7 @@ public class StatisticsComponent extends VerticalLayout {
 			Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 			infoLabel.setSizeUndefined();
 			infoLabel.setDescription("The fatality rate is calculated based on the number of confirmed cases. Unconfirmed, suspect and probable cases are not taken into account.");
-			CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.HSPACE_LEFT_4, CssStyles.NEGATIVE_VSPACE_TOP_5, CssStyles.LABEL_SECONDARY);
+			CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.HSPACE_LEFT_4, "cfr-info-button", CssStyles.LABEL_SECONDARY);
 			fatalityCaptionLayout.addComponent(infoLabel);
 			fatalityCaptionLayout.setComponentAlignment(infoLabel, Alignment.TOP_RIGHT);
 			fatalityRateLayout.addComponent(fatalityCaptionLayout);

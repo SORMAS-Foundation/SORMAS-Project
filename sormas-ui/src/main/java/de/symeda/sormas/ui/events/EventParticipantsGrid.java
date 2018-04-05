@@ -17,7 +17,9 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -35,7 +37,12 @@ public class EventParticipantsGrid extends Grid {
 	
 	public EventParticipantsGrid() {
 		setSizeFull();
-		setSelectionMode(SelectionMode.NONE);
+		
+		if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+        	setSelectionMode(SelectionMode.MULTI);
+        } else {
+        	setSelectionMode(SelectionMode.NONE);
+        }
 		
 		BeanItemContainer<EventParticipantDto> container = new BeanItemContainer<EventParticipantDto>(EventParticipantDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
@@ -121,6 +128,10 @@ public class EventParticipantsGrid extends Grid {
 		}
 
 		addItemClickListener(e -> {
+			if (e.getPropertyId() == null) {
+				return;
+			}
+			
 	       	EventParticipantDto eventParticipantDto = (EventParticipantDto)e.getItemId();
 	       	if(CASE_ID.equals(e.getPropertyId())) {
 				if (eventParticipantDto.getResultingCase() != null) {
@@ -129,7 +140,7 @@ public class EventParticipantsGrid extends Grid {
 					EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipantDto.getEvent().getUuid());
 					ControllerProvider.getCaseController().create(eventParticipantDto.getPerson().toReference(), eventDto.getDisease());
 				}
-	       	} else if(EDIT_BTN_ID.equals(e.getPropertyId())) {
+	       	} else if(EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
 	       		ControllerProvider.getEventParticipantController().editEventParticipant(eventParticipantDto);
 	       	}
 		});	

@@ -1,5 +1,10 @@
 package de.symeda.sormas.ui.task;
 
+import java.util.Collection;
+
+import com.vaadin.server.Page;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
@@ -144,5 +149,21 @@ public class TaskController {
 	public String getUserCaptionWithPendingTaskCount(UserReferenceDto user) {
 		long taskCount = FacadeProvider.getTaskFacade().getPendingTaskCount(user.getUuid());
 		return user.getCaption() + " (" + taskCount + ")";
+	}
+	
+	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+		if (selectedRows.size() == 0) {
+			new Notification("No tasks selected", "You have not selected any tasks.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected tasks?", new Runnable() {
+				public void run() {
+					for (Object selectedRow : selectedRows) {
+						FacadeProvider.getTaskFacade().deleteTask(FacadeProvider.getTaskFacade().getByUuid(((TaskIndexDto) selectedRow).getUuid()), LoginHelper.getCurrentUser().getUuid());
+					}
+					callback.run();
+					new Notification("Tasks deleted", "All selected tasks have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+				}
+			});
+		}
 	}
 }

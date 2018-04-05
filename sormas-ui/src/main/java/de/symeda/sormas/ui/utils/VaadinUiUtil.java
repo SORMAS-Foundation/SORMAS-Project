@@ -7,7 +7,6 @@ import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -106,22 +105,18 @@ public class VaadinUiUtil {
 		});
 	}
 
-	public static Window showConfirmationPopup(String caption, String description, Consumer<Boolean> resultConsumer) {
-		return showConfirmationPopup(caption, description, "Confirm", "Cancel", resultConsumer);
-	}
-
-	public static Window showConfirmationPopup(String caption, String description, String confirmCaption, String cancelCaption, Consumer<Boolean> resultConsumer) {
-
+	public static Window showConfirmationPopup(String caption, Component content, String confirmCaption, String cancelCaption, Integer width, Consumer<Boolean> resultConsumer) {
 		Window popupWindow = VaadinUiUtil.createPopupWindow();
-		popupWindow.setWidth(400, Unit.PIXELS);
+		if (width != null) {
+			popupWindow.setWidth(width, Unit.PIXELS);
+		} else {
+			popupWindow.setWidthUndefined();
+		}
 		popupWindow.setCaption(caption);
 
 		VerticalLayout layout = new VerticalLayout();	
 		layout.setMargin(true);
-
-		Label descLabel = new Label(description, ContentMode.HTML);
-		descLabel.setWidth(100, Unit.PERCENTAGE);
-		layout.addComponent(descLabel);
+		layout.addComponent(content);
 
 		ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
 			private static final long serialVersionUID = 1L;
@@ -153,6 +148,44 @@ public class VaadinUiUtil {
 		layout.setSpacing(true);
 
 		UI.getCurrent().addWindow(popupWindow);
+		return popupWindow;
+	}
+	
+	public static Window showDeleteConfirmationWindow(String content, Runnable callback) {
+		Window popupWindow = VaadinUiUtil.createPopupWindow();	
+		
+		VerticalLayout deleteLayout = new VerticalLayout();
+		deleteLayout.setMargin(true);
+		deleteLayout.setSizeUndefined();
+		deleteLayout.setSpacing(true);
+	
+		Label description = new Label(content);
+		description.setWidth(100, Unit.PERCENTAGE);
+		deleteLayout.addComponent(description);
+		
+		ConfirmationComponent deleteConfirmationComponent = new ConfirmationComponent(false) {
+			private static final long serialVersionUID = 1L;
+			@Override
+			protected void onConfirm() {
+				popupWindow.close();
+				onDone();
+				callback.run();
+			}
+
+			@Override
+			protected void onCancel() {
+				popupWindow.close();
+			}
+		};
+		deleteConfirmationComponent.getConfirmButton().setCaption("Yes");
+		deleteConfirmationComponent.getCancelButton().setCaption("No");
+		deleteLayout.addComponent(deleteConfirmationComponent);
+		deleteLayout.setComponentAlignment(deleteConfirmationComponent, Alignment.BOTTOM_RIGHT);
+		
+		popupWindow.setCaption("Confirm Deletion");
+		popupWindow.setContent(deleteLayout);
+		UI.getCurrent().addWindow(popupWindow);
+		
 		return popupWindow;
 	}
 

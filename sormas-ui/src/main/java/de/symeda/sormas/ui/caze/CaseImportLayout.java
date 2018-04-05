@@ -26,6 +26,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -47,8 +48,8 @@ public class CaseImportLayout extends VerticalLayout {
 		Resource buttonIcon = FontAwesome.DOWNLOAD;
 		String buttonCaption = "Download Import Guide";
 		CaseImportLayoutComponent importGuideComponent = new CaseImportLayoutComponent(1, headline, infoText, buttonIcon, buttonCaption);
-		String importGuideFilePath = FacadeProvider.getImportExportFacade().getSormasImportGuideFilePath().toString();
-		StreamResource importGuideResource = DownloadUtil.createStreamResource(null, importGuideFilePath, "SORMAS_Import_Guide.pdf", "application/pdf", "Import guide not available",
+		String importGuideFilePath = FacadeProvider.getImportFacade().getSormasImportGuideFilePath().toString();
+		StreamResource importGuideResource = DownloadUtil.createStreamResource(importGuideFilePath, "SORMAS_Import_Guide.pdf", "application/pdf", "Import guide not available",
 				"The SORMAS Import Guide can not be found on the server. Please contact an admin and tell them about this issue.");
 		FileDownloader importGuideDownloader = new FileDownloader(importGuideResource);
 		importGuideDownloader.extend(importGuideComponent.getButton());
@@ -61,8 +62,8 @@ public class CaseImportLayout extends VerticalLayout {
 				+ " never use a file you have downloaded before.";
 		buttonCaption = "Download Case Import Template";
 		CaseImportLayoutComponent importTemplateComponent = new CaseImportLayoutComponent(2, headline, infoText, buttonIcon, buttonCaption);
-		String templateFilePath = FacadeProvider.getImportExportFacade().getCaseImportTemplateFilePath().toString();
-		StreamResource templateResource = DownloadUtil.createStreamResource(null, templateFilePath, "sormas_import_case_template.csv", "text/csv",
+		String templateFilePath = FacadeProvider.getImportFacade().getCaseImportTemplateFilePath().toString();
+		StreamResource templateResource = DownloadUtil.createStreamResource(templateFilePath, "sormas_import_case_template.csv", "text/csv",
 				"Template not available", "The template file is not available. Please contact an admin and tell them about this issue.");
 		FileDownloader templateFileDownloader = new FileDownloader(templateResource);
 		templateFileDownloader.extend(importTemplateComponent.getButton());
@@ -145,7 +146,7 @@ public class CaseImportLayout extends VerticalLayout {
 			
 			FileOutputStream fos = null;
 			try {
-				String newFileName = "sormas_case_import_" + DateHelper.formatDateForExport(new Date()) + "_" + DataHelper.getShortUuid(LoginHelper.getCurrentUser().getUuid()) + ".csv";
+				String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_case_import_" + DateHelper.formatDateForExport(new Date()) + "_" + DataHelper.getShortUuid(LoginHelper.getCurrentUser().getUuid()) + ".csv";
 				file = new File(Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath()).resolve(newFileName).toString());
 				fos = new FileOutputStream(file);
 			} catch (FileNotFoundException e) {
@@ -165,7 +166,7 @@ public class CaseImportLayout extends VerticalLayout {
 			}
 			
 			try {
-				String errorReportFilePath = FacadeProvider.getImportExportFacade().importCasesFromCsvFile(file.getPath(), LoginHelper.getCurrentUser().getUuid());
+				String errorReportFilePath = FacadeProvider.getImportFacade().importCasesFromCsvFile(file.getPath(), LoginHelper.getCurrentUser().getUuid());
 				if (errorReportFilePath == null) {
 					Notification notification = new Notification("Import successful", "All cases have been imported. You can now close this window.", Type.HUMANIZED_MESSAGE, false);
 					notification.setDelayMsec(-1);
@@ -175,7 +176,7 @@ public class CaseImportLayout extends VerticalLayout {
 					notification.setDelayMsec(-1);
 					notification.show(Page.getCurrent());
 
-					StreamResource streamResource = DownloadUtil.createStreamResource(null, errorReportFilePath, "sormas_import_error_report.csv", "text/csv",
+					StreamResource streamResource = DownloadUtil.createStreamResource(errorReportFilePath, "sormas_import_error_report.csv", "text/csv",
 							"Error report not available", "The error report file is not available. Please contact an admin and tell them about this issue.");
 					FileDownloader fileDownloader = new FileDownloader(streamResource);
 					fileDownloader.extend(downloadErrorReportButton);

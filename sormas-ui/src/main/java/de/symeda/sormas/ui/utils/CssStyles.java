@@ -34,8 +34,6 @@ public final class CssStyles {
 	public static final String VSPACE_TOP_5 = "vspace-top-5";
 	public static final String VSPACE_TOP_NONE = "vspace-top-none";
 	
-	public static final String NEGATIVE_VSPACE_TOP_5 = "negative-vspace-top-5";
-	
 	// Horizontal space
 	public static final String HSPACE_LEFT_0 = "hspace-left-0";
 	public static final String HSPACE_LEFT_1 = "hspace-left-1";
@@ -97,6 +95,8 @@ public final class CssStyles {
 	public static final String BUTTON_SUBTLE = "subtle";
 	public static final String BUTTON_BORDER_NEUTRAL = "border-neutral";
 	public static final String LINK_ACTIVE = "active";
+	public static final String LINK_HIGHLIGHTED = "link-highlighted";
+	public static final String LINK_HIGHLIGHTED_LIGHT = "link-highlighted-light";
 	
 	// SVG fill and stroke styles
 	public static final String SVG_FILL_BACKGROUND = "svg-fill-background";
@@ -140,6 +140,7 @@ public final class CssStyles {
 	public static final String GRID_ROW_TITLE = "row-title";
 	
 	public static final String LABEL_CONFIGURATION_SEVERITY_INDICATOR = "severity-indicator";
+	public static final String BADGE = "badge";
 	
 	/**
 	 * Example: <code>LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE)</code>

@@ -1,11 +1,15 @@
 package de.symeda.sormas.ui.visit;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.function.Consumer;
 
+import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
@@ -120,4 +124,21 @@ public class VisitController {
     	
     	return visit;
     }
+	
+	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+		if (selectedRows.size() == 0) {
+			new Notification("No visits selected", "You have not selected any visits.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected visits?", new Runnable() {
+				public void run() {
+					for (Object selectedRow : selectedRows) {
+						FacadeProvider.getVisitFacade().deleteVisit(new VisitReferenceDto(((VisitDto) selectedRow).getUuid()), LoginHelper.getCurrentUser().getUuid());
+					}
+					callback.run();
+					new Notification("Visits deleted", "All selected visits have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+				}
+			});
+		}
+	}
+	
 }

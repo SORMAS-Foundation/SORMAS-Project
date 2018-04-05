@@ -29,7 +29,18 @@
   .v-widget.v-select-optiongroup {
   	margin-bottom: 16px;
   }
-  
+ 
+  .badge {
+  	padding: 2px 9px 2px;
+  	margin-left: 5px;
+  	font-weight: bold;
+  	white-space: nowrap;
+  	color: #ffffff;
+  	background-color: $s-primary-color;
+  	-webkit-border-radius: 9px;
+  	-moz-border-radius: 9px;
+  	border-radius: 9px;
+  }
   
   /** HEADER STYLES **/
 
@@ -99,10 +110,6 @@
   }
   .vspace-top-none {
   	margin-top: 0 !important;
-  }
- 
-  .negative-vspace-top-5 {
-  	margin-top: -2px;
   }
  
   .hspace-left-0 {

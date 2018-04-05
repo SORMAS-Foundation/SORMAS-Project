@@ -37,9 +37,27 @@ public class SampleService extends AbstractAdoService<Sample> {
 	
 	@EJB
 	private CaseService caseService;	
+	@EJB
+	private SampleTestService sampleTestService;
 	
 	public SampleService() {
 		super(Sample.class);
+	}
+	
+	@Override
+	public void delete(Sample sample) {
+		sample.setMainSampleTest(null);
+		for (SampleTest sampleTest : sample.getSampleTests()) {
+			sampleTestService.delete(sampleTest);
+		}
+
+		// Remove the reference from another sample to this sample, if existing
+		Sample referralSample = getReferredFrom(sample.getUuid());
+		if (referralSample != null) {
+			referralSample.setReferredTo(null);
+		}
+		
+		super.delete(sample);
 	}
 	
 	public List<Sample> getAllByCase(Case caze) {

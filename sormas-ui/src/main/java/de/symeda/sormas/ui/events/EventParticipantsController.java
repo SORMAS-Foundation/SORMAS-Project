@@ -1,9 +1,11 @@
 package de.symeda.sormas.ui.events;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -115,6 +117,22 @@ public class EventParticipantsController {
     		// force refresh, because view didn't change
     		((EventParticipantsView)currentView).enter(null);
     	}
+	}
+
+	public void deleteAllSelectedItems(Collection<Object> selectedRows, Runnable callback) {
+		if (selectedRows.size() == 0) {
+			new Notification("No event participants selected", "You have not selected any event participants.", Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showDeleteConfirmationWindow("Are you sure you want to delete all " + selectedRows.size() + " selected event participants?", new Runnable() {
+				public void run() {
+					for (Object selectedRow : selectedRows) {
+						FacadeProvider.getEventParticipantFacade().deleteEventParticipant(new EventParticipantReferenceDto(((EventParticipantDto) selectedRow).getUuid()), LoginHelper.getCurrentUser().getUuid());
+					}
+					callback.run();
+					new Notification("Event participants deleted", "All selected event participants have been deleted.", Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+				}
+			});
+		}
 	}
 
 }

@@ -162,10 +162,10 @@ public class CaseEditDataForm extends FormTab {
             });
         }
 
-        if (user.hasUserRight(UserRight.CASE_MOVE)) {
-            binding.caseDataMove.setVisibility(View.VISIBLE);
-            binding.caseDataMove.setPaintFlags(binding.caseDataMove.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-            binding.caseDataMove.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+        if (user.hasUserRight(UserRight.CASE_TRANSFER)) {
+            binding.caseDataTransfer.setVisibility(View.VISIBLE);
+            binding.caseDataTransfer.setPaintFlags(binding.caseDataTransfer.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+            binding.caseDataTransfer.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         }
 
         if (user.hasUserRight(UserRight.CASE_CLASSIFY)) {

@@ -35,6 +35,16 @@ public class SampleTestService extends AbstractAdoService<SampleTest> {
 		super(SampleTest.class);
 	}
 	
+	@Override
+	public void delete(SampleTest sampleTest) {
+		Sample sample = sampleTest.getSample();
+		if (sampleTest.equals(sample.getMainSampleTest())) {
+			sampleTest.getSample().setMainSampleTest(null);
+		}
+		
+		super.delete(sampleTest);
+	}
+	
 	public List<SampleTest> getAllBySample(Sample sample) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleTest> cq = cb.createQuery(getElementClass());

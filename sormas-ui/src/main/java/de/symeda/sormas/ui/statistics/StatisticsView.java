@@ -4,7 +4,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -19,11 +21,13 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 
 public class StatisticsView extends AbstractStatisticsView {
@@ -53,6 +57,18 @@ public class StatisticsView extends AbstractStatisticsView {
 		statisticsLayout.addComponent(ageSexGrid);
 		statisticsLayout.setMargin(true);
 		statisticsLayout.setSpacing(true);
+		
+		if (LoginHelper.hasUserRight(UserRight.CASE_EXPORT)) {
+			Button exportButton = new Button("Export");
+			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			exportButton.setIcon(FontAwesome.DOWNLOAD);
+			
+			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(ageSexGrid.getContainerDataSource(), ageSexGrid.getColumns(), "sormas_statistics_age_sex", "sormas_statistics_age_sex_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
+			
+			addHeaderComponent(exportButton);
+		}
 		
 		addComponent(statisticsLayout);
 	}

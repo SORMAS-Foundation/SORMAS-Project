@@ -25,6 +25,7 @@ public class EventDataView extends AbstractEventView {
     	TaskListComponent taskListComponent = new TaskListComponent(TaskContext.EVENT, getEventRef());
     	addComponent(taskListComponent);
     	taskListComponent.reload();
+    	taskListComponent.updateActiveStatusButtonCaption();
 	}
 
 }

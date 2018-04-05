@@ -216,10 +216,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		Sample sample = sampleService.getByReferenceDto(sampleRef);
-		sample.setMainSampleTest(null);
-		for (SampleTest sampleTest : sample.getSampleTests()) {
-			sampleTestService.delete(sampleTest);
-		}
 		sampleService.delete(sample);
 	}
 	

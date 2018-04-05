@@ -31,7 +31,7 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityService;
-import de.symeda.sormas.backend.importexport.ImportExportFacadeEjb.ImportExportFacadeEjbLocal;
+import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityService;
@@ -80,7 +80,7 @@ public class StartupShutdownService {
 	@EJB
 	private FacilityService facilityService;
 	@EJB
-	private ImportExportFacadeEjbLocal importExportFacade;
+	private ImportFacadeEjbLocal importFacade;
 
 	@PostConstruct
 	public void startup() {
@@ -190,7 +190,7 @@ public class StartupShutdownService {
 	
 	private void createImportTemplateFiles() {
 		try {
-			importExportFacade.generateCaseImportTemplateFile();
+			importFacade.generateCaseImportTemplateFile();
 		} catch (IOException e) {
 			logger.error("Could not create case import template .csv file.");
 		}

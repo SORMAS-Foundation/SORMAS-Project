@@ -18,6 +18,7 @@ import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
 public interface CaseFacade {
@@ -28,7 +29,11 @@ public interface CaseFacade {
 	
 	CaseDataDto getCaseDataByUuid(String uuid);
     
-    CaseDataDto saveCase(CaseDataDto dto);
+	/**
+	 * Saves the case. Throws a ValidationRuntimeException when a required field that does not have a not null constraint in the database
+	 * is saved or there is an infrastructure error (e.g. the district of the case does not belong in the region of the case).
+	 */
+    CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException;
 
 	List<CaseReferenceDto> getSelectableCases(UserReferenceDto user);
 
@@ -36,7 +41,7 @@ public interface CaseFacade {
 	
 	List<String> getAllUuids(String userUuid);
 	
-	CaseDataDto moveCase(CaseReferenceDto caze, CommunityReferenceDto community, FacilityReferenceDto facility, String facilityDetails, UserReferenceDto surveillanceOfficer);
+	CaseDataDto transferCase(CaseReferenceDto caze, CommunityReferenceDto community, FacilityReferenceDto facility, String facilityDetails, UserReferenceDto surveillanceOfficer);
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 	

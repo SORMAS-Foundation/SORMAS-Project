@@ -5,6 +5,7 @@ import android.databinding.Bindable;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import javax.persistence.Column;
@@ -12,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.region.Community;
@@ -139,15 +141,40 @@ public class Location extends AbstractDomainObject {
 			sb.append(getDetails());
 		}
 
-		if (getLatitude() != null && getLongitude() != null) {
+		String latLonString = getLatLonString();
+		if (!DataHelper.isNullOrEmpty(latLonString)) {
 			if (sb.length() > 0) {
 				sb.append(" ");
 			}
-			sb.append("(").append(android.location.Location.convert(getLatitude(), android.location.Location.FORMAT_DEGREES))
-					.append(", ").append(android.location.Location.convert(getLongitude(), android.location.Location.FORMAT_DEGREES)).append(")");
+			sb.append(latLonString);
 		}
 
 		return sb.toString();
+	}
+
+	public String getLatLonString() {
+		return getLatLonString(getLatitude(), getLongitude(), getLatLonAccuracy());
+	}
+
+	public static String getLatLonString(Double latitude, Double longitude, Float latLonAccuracy) {
+		if (latitude != null && longitude != null) {
+
+			StringBuilder resultString = new StringBuilder();
+			DecimalFormat df = new DecimalFormat("###.#####");
+
+			try {
+				String latString = df.format(latitude);
+				String lonString = df.format(longitude);
+				resultString.append(latString).append(", ").append(lonString);
+				if (latLonAccuracy != null) {
+					resultString.append(" +-").append(Math.round(latLonAccuracy)).append("m");
+				}
+				return resultString.toString();
+			} catch(IllegalArgumentException convertException) {
+				// ignore
+			}
+		}
+		return "";
 	}
 
 	@Override

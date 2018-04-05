@@ -402,7 +402,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         });
     }
 
-    public void moveCase(View v) {
+    public void transferCase(View v) {
         if (saveCaseToDatabase()) {
             final CaseDataFragmentLayoutBinding caseBinding = ((CaseEditDataForm)getTabByPosition(adapter.getPositionOfTab(CaseEditTabs.CASE_DATA))).getBinding();
 
@@ -413,9 +413,9 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                     caseBinding.setCaze(updatedCase);
 
                     if ((boolean) success) {
-                        Snackbar.make(findViewById(R.id.base_layout), getResources().getString(R.string.snackbar_case_moved), Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.base_layout), getResources().getString(R.string.snackbar_case_transfered), Snackbar.LENGTH_LONG).show();
                     } else {
-                        Snackbar.make(findViewById(R.id.base_layout), getResources().getString(R.string.snackbar_case_moved_error), Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.base_layout), getResources().getString(R.string.snackbar_case_transfered_error), Snackbar.LENGTH_LONG).show();
                     }
 
                     setAdapter(updatedCase);

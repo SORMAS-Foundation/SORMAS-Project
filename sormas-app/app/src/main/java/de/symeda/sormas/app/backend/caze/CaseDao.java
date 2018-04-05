@@ -123,15 +123,15 @@ public class CaseDao extends AbstractAdoDao<Case> {
         return caze;
     }
 
-    public Case moveCase(Case caseToMove) throws DaoException {
-        Case caze = queryForIdWithEmbedded(caseToMove.getId());
+    public Case transferCase(Case caseToTransfer) throws DaoException {
+        Case caze = queryForIdWithEmbedded(caseToTransfer.getId());
 
-        Facility facility = caseToMove.getHealthFacility();
-        Community community = caseToMove.getCommunity();
-        District district = caseToMove.getDistrict();
-        Region region = caseToMove.getRegion();
-        String facilityDetails = caseToMove.getHealthFacilityDetails();
-        User surveillanceOfficer = caseToMove.getSurveillanceOfficer();
+        Facility facility = caseToTransfer.getHealthFacility();
+        Community community = caseToTransfer.getCommunity();
+        District district = caseToTransfer.getDistrict();
+        Region region = caseToTransfer.getRegion();
+        String facilityDetails = caseToTransfer.getHealthFacilityDetails();
+        User surveillanceOfficer = caseToTransfer.getSurveillanceOfficer();
 
         // If the facility has changed, add a previous hospitalization
         if (!caze.getHealthFacility().getUuid().equals(facility.getUuid())) {

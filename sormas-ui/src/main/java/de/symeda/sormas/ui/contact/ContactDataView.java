@@ -48,5 +48,6 @@ public class ContactDataView extends AbstractContactView {
     	TaskListComponent taskListComponent = new TaskListComponent(TaskContext.CONTACT, getContactRef());
     	addComponent(taskListComponent);
     	taskListComponent.reload();
+    	taskListComponent.updateActiveStatusButtonCaption();
     }
 }

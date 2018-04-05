@@ -20,7 +20,6 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -35,7 +34,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.app.backend.hospitalization.HospitalizationDao;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
@@ -187,7 +185,7 @@ public class CaseBackendTest {
         Case caze = TestEntityCreator.createCase();
         assertThat(caze.isModified(), is(false));
 
-        caze.setMeaslesVaccination(Vaccination.VACCINATED);
+        caze.setVaccination(Vaccination.VACCINATED);
 
         DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
         caze = DatabaseHelper.getCaseDao().queryUuid(caze.getUuid());
@@ -270,7 +268,7 @@ public class CaseBackendTest {
         caze.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(TestHelper.SECOND_FACILITY_UUID));
 
         try {
-            caseDao.moveCase(caze);
+            caseDao.transferCase(caze);
         } catch (DaoException e) {
             throw new RuntimeException();
         }

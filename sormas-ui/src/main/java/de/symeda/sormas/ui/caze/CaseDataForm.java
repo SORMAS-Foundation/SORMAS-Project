@@ -82,7 +82,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			LayoutUtil.fluidRowLocs("", CaseDataDto.SURVEILLANCE_OFFICER)
 			;
 
-
 	private final PersonDto person;
 	private final Disease disease;
 	private final ViewMode viewMode;

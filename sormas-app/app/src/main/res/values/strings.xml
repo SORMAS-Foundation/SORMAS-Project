@@ -25,7 +25,7 @@
     <string name="action_clear">Clear</string>
     <string name="action_dimiss">Dismiss</string>
     <string name="action_close">Close</string>
-    <string name="action_move">Move</string>
+    <string name="action_transfer">Transfer</string>
     <string name="action_done">Done</string>
     <string name="action_new_case">New case</string>
     <string name="action_new_event">New event</string>
@@ -104,7 +104,7 @@
     <string name="headline_permanent_residence">Permanent residence of person</string>
     <string name="headline_occupation">Occupation</string>
     <string name="headline_location">Location</string>
-    <string name="headline_move_case">Move case</string>
+    <string name="headline_transfer_case">Transfer case</string>
     <string name="headline_responsible">Responsible users</string>
     <string name="headline_new_case">Create new case</string>
     <string name="headline_help">Help</string>
@@ -162,7 +162,7 @@
     <string name="caption_unknown">Unknown</string>
 
     <!-- forms -->
-    <string name="case_move">Move case to another health facility \u279D</string>
+    <string name="case_transfer">Transfer case \u279D</string>
 
     <string name="form_p_date_of_birth">Date of birth (year / month / day)</string>
 
@@ -294,8 +294,8 @@
     <string name="snackbar_open_synclog">Open Sync Log</string>
     <string name="snackbar_entity_overridden">%1$s refreshed. Unsaved changes discarded.</string>
     <string name="snackbar_okay">Okay</string>
-    <string name="snackbar_case_moved">The case has been successfully moved.</string>
-    <string name="snackbar_case_moved_error">The case could not be moved.</string>
+    <string name="snackbar_case_transfered">The case has been successfully transfered.</string>
+    <string name="snackbar_case_transfered_error">The case could not be transfered.</string>
     <string name="snackbar_weekly_report_confirmed">Thank you, your weekly report has been confirmed.</string>
     <string name="snackbar_weekly_report_sync_confirmed">Your weekly report has been confirmed, but could  not be synchronized.</string>
     <string name="snackbar_weekly_report_error">Confirmation of weekly report has failed.</string>

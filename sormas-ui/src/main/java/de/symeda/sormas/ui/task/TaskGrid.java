@@ -29,6 +29,7 @@ import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -137,7 +138,12 @@ public class TaskGrid extends Grid implements ItemClickListener {
         			TaskIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
         }
         
-        setSelectionMode(SelectionMode.NONE);        
+        if (LoginHelper.hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+        	setSelectionMode(SelectionMode.MULTI);
+        } else {
+        	setSelectionMode(SelectionMode.NONE);
+        }     
+        
 		addItemClickListener(this);
 	}
 	
@@ -195,7 +201,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
     }
 
     @SuppressWarnings("unchecked")
-	private BeanItemContainer<TaskIndexDto> getContainer() {
+	public BeanItemContainer<TaskIndexDto> getContainer() {
     	GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
         return (BeanItemContainer<TaskIndexDto>) container.getWrappedContainer();
     }
@@ -236,6 +242,10 @@ public class TaskGrid extends Grid implements ItemClickListener {
 
 	@Override
 	public void itemClick(ItemClickEvent event) {
+		if (event.getPropertyId() == null) {
+			return;
+		}
+		
 		TaskIndexDto task = (TaskIndexDto)event.getItemId();
 		if (TaskIndexDto.CONTEXT_REFERENCE.equals(event.getPropertyId())) {
 			switch (task.getTaskContext()) {
@@ -253,8 +263,7 @@ public class TaskGrid extends Grid implements ItemClickListener {
 			default:
 				throw new IndexOutOfBoundsException(task.getTaskContext().toString());
 			}
-		} 
-		else {
+		} else if (EDIT_BTN_ID.equals(event.getPropertyId()) || event.isDoubleClick()) {
 			ControllerProvider.getTaskController().edit(task, this);
 		}
 	}
