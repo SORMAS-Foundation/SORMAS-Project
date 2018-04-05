@@ -82,8 +82,8 @@ public class AppUpdateController {
      */
     public void updateApp(final Activity activity, final String appUrl, final String version, boolean allowDismiss, final Callback negativeCallback) {
         // retrieve the app version but returns the same value
-        if (appUrl == null || version == null) {
-            throw new IllegalArgumentException("This method may not be called with appUrl or version set to null.");
+        if (appUrl == null || appUrl.isEmpty() || version == null) {
+            throw new IllegalArgumentException("This method may not be called with appUrl or version set to null or an empty appUrl.");
         }
 
         // Check if the file is currently being downloaded

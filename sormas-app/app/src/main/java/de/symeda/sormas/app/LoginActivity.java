@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                 // clearing login data is done below
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             } catch (RetroProvider.ApiVersionException e) {
-                if (e.getAppUrl() != null) {
+                if (e.getAppUrl() != null && !e.getAppUrl().isEmpty()) {
                     AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), false,
                             new Callback() {
                                 @Override
@@ -136,7 +136,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             } catch (RetroProvider.ApiVersionException e) {
                 if (!ignoreApiVersionConflict) {
-                    if (e.getAppUrl() != null) {
+                    if (e.getAppUrl() != null && !e.getAppUrl().isEmpty()) {
                         AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), ConfigProvider.getUser() != null,
                                 new Callback() {
                                     @Override

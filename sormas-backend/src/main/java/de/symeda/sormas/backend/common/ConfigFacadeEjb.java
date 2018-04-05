@@ -57,7 +57,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	@Override
 	public String getAppUrl() {
-		return getProperty(APP_URL, "");
+		return getProperty(APP_URL, null);
 	}
 	
 	@Override
