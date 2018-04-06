@@ -62,10 +62,6 @@ public class CronService {
 				continue;
 			}
 			
-			if (fileEntry.getName().endsWith("template.csv")) {
-				continue;
-			}
-			
 			try {
 				BasicFileAttributes fileAttributes = Files.readAttributes(fileEntry.toPath(), BasicFileAttributes.class);
 				if (now.getTime() - fileAttributes.creationTime().toMillis() >= 1000 * 60 * 120) {

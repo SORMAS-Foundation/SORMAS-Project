@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -32,11 +31,10 @@ public class CommunityService extends AbstractAdoService<Community> {
 		Root<Community> from = cq.from(getElementClass());
 		
 		cq.where(cb.equal(from.get(Community.NAME), name));
-		try {
-			return em.createQuery(cq).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+
+		return em.createQuery(cq).getResultList().stream()
+				.findFirst()
+				.orElse(null);
 	}
 	
 	@Override

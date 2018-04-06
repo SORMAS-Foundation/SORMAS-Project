@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -51,11 +50,10 @@ public class RegionService extends AbstractAdoService<Region> {
 		Root<Region> from = cq.from(getElementClass());
 		
 		cq.where(cb.equal(from.get(Region.NAME), name));
-		try {
-			return em.createQuery(cq).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+
+		return em.createQuery(cq).getResultList().stream()
+				.findFirst()
+				.orElse(null);
 	}
 	
 	@Override

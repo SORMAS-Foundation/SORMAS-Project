@@ -20,7 +20,6 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.ConstraintViolationException;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -318,7 +317,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caze.getCommunity() == null && !caze.getHealthFacility().getDistrict().equals(caze.getDistrict())) {
 			throw new ValidationRuntimeException("Could not find a database entry for the specified health facility in the specified district");
 		}
-		if (caze.getCommunity() != null && !caze.getHealthFacility().getCommunity().equals(caze.getCommunity())) {
+		if (caze.getCommunity() != null && !caze.getCommunity().equals(caze.getHealthFacility().getCommunity())) {
 			throw new ValidationRuntimeException("Could not find a database entry for the specified health facility in the specified community");
 		}
 		

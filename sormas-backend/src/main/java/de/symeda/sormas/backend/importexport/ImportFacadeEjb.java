@@ -229,7 +229,7 @@ public class ImportFacadeEjb implements ImportFacade {
 					Class<?> propertyType = pd.getPropertyType();
 
 					if (propertyType.isEnum()) {
-						pd.getWriteMethod().invoke(currentElement, Enum.valueOf((Class<? extends Enum>) propertyType, entry));
+						pd.getWriteMethod().invoke(currentElement, Enum.valueOf((Class<? extends Enum>) propertyType, entry.toUpperCase()));
 					} else if (propertyType.isAssignableFrom(Date.class)) {
 						pd.getWriteMethod().invoke(currentElement, DateHelper.parseDateWithException(entry));
 					} else if (propertyType.isAssignableFrom(Integer.class)) {
