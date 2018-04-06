@@ -48,16 +48,19 @@ public class DistrictService extends AbstractAdoService<District> {
 		return em.createQuery(cq).getSingleResult().intValue();
 	}
 
-	public District getByName(String name) {
+	public List<District> getByName(String name, Region region) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
 		Root<District> from = cq.from(getElementClass());
 	
-		cq.where(cb.equal(from.get(District.NAME), name));
+		Predicate filter = cb.equal(from.get(District.NAME), name);
+		if (region != null) {
+			filter = cb.and(filter, cb.equal(from.get(District.REGION), region));
+		}
 
-		return em.createQuery(cq).getResultList().stream()
-				.findFirst()
-				.orElse(null);
+		cq.where(filter);
+		
+		return em.createQuery(cq).getResultList();
 	}
 	
 	@Override

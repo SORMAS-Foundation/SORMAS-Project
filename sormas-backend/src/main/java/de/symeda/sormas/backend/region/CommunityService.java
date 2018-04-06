@@ -25,16 +25,19 @@ public class CommunityService extends AbstractAdoService<Community> {
 		super(Community.class);
 	}
 
-	public Community getByName(String name) {
+	public List<Community> getByName(String name, District district) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Community> cq = cb.createQuery(getElementClass());
 		Root<Community> from = cq.from(getElementClass());
 		
-		cq.where(cb.equal(from.get(Community.NAME), name));
+		Predicate filter = cb.equal(from.get(Community.NAME), name);
+		if (district != null) {
+			filter = cb.and(filter, cb.equal(from.get(Community.DISTRICT), district));
+		}
+		
+		cq.where(filter);
 
-		return em.createQuery(cq).getResultList().stream()
-				.findFirst()
-				.orElse(null);
+		return em.createQuery(cq).getResultList();
 	}
 	
 	@Override

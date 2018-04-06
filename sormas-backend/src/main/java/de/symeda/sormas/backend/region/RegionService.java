@@ -44,16 +44,14 @@ public class RegionService extends AbstractAdoService<Region> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public Region getByName(String name) {
+	public List<Region> getByName(String name) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
 		Root<Region> from = cq.from(getElementClass());
 		
 		cq.where(cb.equal(from.get(Region.NAME), name));
 
-		return em.createQuery(cq).getResultList().stream()
-				.findFirst()
-				.orElse(null);
+		return em.createQuery(cq).getResultList();
 	}
 	
 	@Override
