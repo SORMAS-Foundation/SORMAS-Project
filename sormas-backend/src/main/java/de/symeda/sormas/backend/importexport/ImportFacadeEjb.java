@@ -101,9 +101,9 @@ public class ImportFacadeEjb implements ImportFacade {
 	public void generateCaseImportTemplateFile() throws IOException {				
 		// Create the export directory if it doesn't exist
 		try {	
-			Files.createDirectories(Paths.get(configFacade.getTempFilesPath()));
+			Files.createDirectories(Paths.get(configFacade.getGeneratedFilesPath()));
 		} catch (IOException e) {
-			logger.error("Temp directory doesn't exist and creation failed.");
+			logger.error("Generated files directory doesn't exist and creation failed.");
 			throw e;
 		}
 
@@ -123,14 +123,14 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	@Override
 	public String getCaseImportTemplateFilePath() {
-		Path exportDirectory = Paths.get(configFacade.getTempFilesPath());
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		Path filePath = exportDirectory.resolve(CASE_IMPORT_TEMPLATE_FILE_NAME);
 		return filePath.toString();
 	}
 	
 	@Override
 	public String getSormasImportGuideFilePath() {
-		Path exportDirectory = Paths.get(configFacade.getTempFilesPath());
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		Path filePath = exportDirectory.resolve(SORMAS_IMPORT_GUIDE_FILE_NAME);
 		return filePath.toString();
 	}
