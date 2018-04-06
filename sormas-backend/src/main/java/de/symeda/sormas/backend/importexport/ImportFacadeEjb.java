@@ -229,7 +229,7 @@ public class ImportFacadeEjb implements ImportFacade {
 					Class<?> propertyType = pd.getPropertyType();
 
 					if (propertyType.isEnum()) {
-						pd.getWriteMethod().invoke(currentElement, Enum.valueOf((Class<? extends Enum>) propertyType, entry));
+						pd.getWriteMethod().invoke(currentElement, Enum.valueOf((Class<? extends Enum>) propertyType, entry.toUpperCase()));
 					} else if (propertyType.isAssignableFrom(Date.class)) {
 						pd.getWriteMethod().invoke(currentElement, DateHelper.parseDateWithException(entry));
 					} else if (propertyType.isAssignableFrom(Integer.class)) {
@@ -241,32 +241,42 @@ public class ImportFacadeEjb implements ImportFacade {
 					} else if (propertyType.isAssignableFrom(Boolean.class)) {
 						pd.getWriteMethod().invoke(currentElement, Boolean.parseBoolean(entry));
 					} else if (propertyType.isAssignableFrom(Region.class)) {
-						Region region = regionService.getByName(entry);
-						if (region != null) {
-							pd.getWriteMethod().invoke(currentElement, region);
-						} else {
+						List<Region> region = regionService.getByName(entry);
+						if (region.isEmpty()) {
 							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database");
+						} else if (region.size() > 1) {
+							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Region name is not unique, make sure there is only one region with this name in the database");
+						} else {
+							pd.getWriteMethod().invoke(currentElement, region.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(District.class)) {
-						District district = districtService.getByName(entry);
-						if (district != null) {
-							pd.getWriteMethod().invoke(currentElement, district);
-						} else {
+						List<District> district = districtService.getByName(entry, caze.getRegion());
+						if (district.isEmpty()) {
 							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database");
+						} else if (district.size() > 1) {
+							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; District name is not unique in the chosen region, make sure there is only one district with this name belonging to the chosen region in the database");
+						} else {
+							pd.getWriteMethod().invoke(currentElement, district.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(Community.class)) {
-						Community community = communityService.getByName(entry);
-						if (community != null) {
-							pd.getWriteMethod().invoke(currentElement, community);
-						} else {
+						List<Community> community = communityService.getByName(entry, caze.getDistrict());
+						if (community.isEmpty()) {
 							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database");
+						} else if (community.size() > 1) {
+							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Community name is not unique in the chosen district, make sure there is only one community with this name belonging to the chosen district in the database");
+						} else {
+							pd.getWriteMethod().invoke(currentElement, community.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(Facility.class)) {
-						Facility facility = facilityService.getByName(entry);
-						if (facility != null) {
-							pd.getWriteMethod().invoke(currentElement, facility);
-						} else {
+						List<Facility> facility = facilityService.getByName(entry, caze.getDistrict(), caze.getCommunity());
+						if (facility.isEmpty()) {
 							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database");
+						} else if (facility.size() > 1 && caze.getCommunity() == null) {
+							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Facility name is not unique in the chosen district, make sure there is only one facility with this name belonging to the chosen district in the database or specify a community");
+						} else if (facility.size() > 1 && caze.getCommunity() != null) {
+							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Facility name is not unique in the chosen community, make sure there is only one facility with this name belonging to the chosen community in the database");
+						} else {
+							pd.getWriteMethod().invoke(currentElement, facility.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(User.class)) {
 						User user = userService.getByUserName(entry);
@@ -339,8 +349,16 @@ public class ImportFacadeEjb implements ImportFacade {
 			if (AbstractDomainObject.class.isAssignableFrom(pd.getPropertyType()) && !isInfrastructureClass(pd.getPropertyType())) {
 				buildListOfFields(fieldNames, pd.getPropertyType(), prefix == null || prefix.isEmpty() ? pd.getName() + "." :  prefix + pd.getName() + ".");
 			} else {
-				// All other field types
-				fieldNames.add(prefix + pd.getName());
+				// All other field types - make sure that region, district, community and healthFacility are entered in this order
+				if (pd.getName().equals("region") && fieldNames.contains("district")) {
+					fieldNames.add(fieldNames.indexOf("district"), prefix + pd.getName());
+				} else if (pd.getName().equals("district") && fieldNames.contains("community")) {
+					fieldNames.add(fieldNames.indexOf("community"), prefix + pd.getName());
+				} else if (pd.getName().equals("community") && fieldNames.contains("healthFacility")) {
+					fieldNames.add(fieldNames.indexOf("healthFacility"), prefix + pd.getName());
+				} else {
+					fieldNames.add(prefix + pd.getName());
+				}
 			}
 		}
 	}
