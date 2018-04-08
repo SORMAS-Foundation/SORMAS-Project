@@ -1,14 +1,13 @@
 package de.symeda.sormas.app.task.landing;
 
 import android.content.Context;
-import android.util.Xml;
+import android.content.res.XmlResourceParser;
+import android.util.Log;
 
-import de.symeda.sormas.app.R;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,137 +17,129 @@ import java.util.List;
 
 public class TaskPrioritySummaryParser {
 
-    private static final String ns = null;
+    private static final String TAG = TaskPrioritySummaryParser.class.getSimpleName();
+
+    private static final String NS = null;
     private Context context;
 
-    private final String TAG_NAME_SUMMARY;
-    private final String TAG_NAME_ENTRY;
-    private final String TAG_NAME_KEY;
-    private final String TAG_NAME_LABEL;
-    private final String TAG_NAME_VALUE;
+    private final String TAG_NAME_SUMMARY = "summary";
+    private final String TAG_NAME_SUMMARY_NAME = "name";
+    private final String TAG_NAME_ENTRY = "entry";
+    private final String TAG_NAME_KEY = "key";
+    private final String TAG_NAME_LABEL = "label";
+    private final String TAG_NAME_VALUE = "value";
+
+    List<TaskPrioritySummaryEntry> mEntries;
 
     public TaskPrioritySummaryParser(Context context) {
         this.context = context;
-
-        TAG_NAME_SUMMARY = this.context.getResources().getString(R.string.data_task_priority_summary);
-        TAG_NAME_ENTRY = this.context.getResources().getString(R.string.data_tag_task_priority_entry);
-        TAG_NAME_KEY = this.context.getResources().getString(R.string.data_tag_task_priority_key);
-        TAG_NAME_LABEL = this.context.getResources().getString(R.string.data_tag_task_priority_label);
-        TAG_NAME_VALUE = this.context.getResources().getString(R.string.data_tag_task_priority_value);
     }
 
-    public List<TaskPrioritySummaryEntry> parse(InputStream in) throws XmlPullParserException, IOException {
+    public List<TaskPrioritySummaryEntry> parse(XmlResourceParser parser) {
         try {
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(in, null);
-            parser.nextTag();
+            while(parser.next() != XmlResourceParser.END_DOCUMENT) {
+                if (parser.getEventType() == XmlResourceParser.START_TAG) {
+                    String menuValue = parser.getName();
 
-            return readSummary(parser);
+                    if (menuValue.equals(TAG_NAME_SUMMARY)) {
+                        mEntries = readSummaryTag(parser);
+                    }
+                }
+            }
+        } catch (XmlPullParserException e) {
+            Log.e(TAG, e.getMessage());
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
         } finally {
-            in.close();
+            parser.close();
         }
+
+        return mEntries;
     }
 
-    private List<TaskPrioritySummaryEntry> readSummary(XmlPullParser parser) throws XmlPullParserException, IOException {
-        List<TaskPrioritySummaryEntry> list = new ArrayList();
+    private List<TaskPrioritySummaryEntry> readSummaryTag(XmlResourceParser parser) throws IOException, XmlPullParserException {
+        //Guard.That.NotNull.isTrue(parser);
 
-        parser.require(XmlPullParser.START_TAG, ns, TAG_NAME_SUMMARY);
-        while(parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
+        parser.require(XmlResourceParser.START_TAG, NS, TAG_NAME_SUMMARY);
+        String summaryName = parser.getAttributeValue(NS, TAG_NAME_SUMMARY_NAME);
+
+        mEntries = new ArrayList<>();
+
+        while (parser.next() != XmlResourceParser.END_TAG) {
+            if (parser.getEventType() != XmlResourceParser.START_TAG) {
                 continue;
             }
 
             String name = parser.getName();
-
-            //Start by looking for the menu tag
             if (name.equals(TAG_NAME_ENTRY)) {
-                list.add(readEntry(parser));
+                mEntries.add(readEntryTag(parser));
             } else {
-                skip(parser);
+                skipTag(parser);
             }
         }
 
-        return list;
+        return mEntries;
     }
 
-    // Parses the contents of a menu. If it encounters a title, description, and icon, hands
-    // them off to their respective "read" methods for processing. Otherwise, skip the tag.
-    private TaskPrioritySummaryEntry readEntry(XmlPullParser parser) throws XmlPullParserException, IOException {
-        parser.require(XmlPullParser.START_TAG, ns, TAG_NAME_ENTRY);
+    private TaskPrioritySummaryEntry readEntryTag(XmlResourceParser parser) throws XmlPullParserException, IOException {
+        parser.require(XmlResourceParser.START_TAG, NS, TAG_NAME_ENTRY);
         int key = -1;
         String label = null;
         float value = -1f;
 
-        while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
+        while (parser.next() != XmlResourceParser.END_TAG) {
+            if (parser.getEventType() != XmlResourceParser.START_TAG) {
                 continue;
             }
 
             String name = parser.getName();
             if (name.equals(TAG_NAME_KEY)) {
-                key = readKey(parser);
+                key = readKeyTag(parser);
             } else if (name.equals(TAG_NAME_LABEL)) {
-                label = readLabel(parser);
+                label = readLabelTag(parser);
             } else if (name.equals(TAG_NAME_VALUE)) {
-                value = readValue(parser);
+                value = readValueTag(parser);
             } else {
-                skip(parser);
+                skipTag(parser);
             }
         }
 
         return new TaskPrioritySummaryEntry(key, label, value);
     }
 
-    private int readKey(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, TAG_NAME_KEY);
-        String result = readText(parser);
-        parser.require(XmlPullParser.END_TAG, ns, TAG_NAME_KEY);
+    private int readKeyTag(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlResourceParser.START_TAG, NS, TAG_NAME_KEY);
+        String result = parser.nextText();
+        parser.require(XmlResourceParser.END_TAG, NS, TAG_NAME_KEY);
         return Integer.valueOf(result);
     }
 
-    private String readLabel(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, TAG_NAME_LABEL);
-        String result = readText(parser);
-        parser.require(XmlPullParser.END_TAG, ns, TAG_NAME_LABEL);
+    private String readLabelTag(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlResourceParser.START_TAG, NS, TAG_NAME_LABEL);
+        String result = parser.nextText();
+        parser.require(XmlResourceParser.END_TAG, NS, TAG_NAME_LABEL);
         return result;
     }
 
-    private float readValue(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, TAG_NAME_VALUE);
-        String result = readText(parser);
-        parser.require(XmlPullParser.END_TAG, ns, TAG_NAME_VALUE);
+    private float readValueTag(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlResourceParser.START_TAG, NS, TAG_NAME_VALUE);
+        String result = parser.nextText();
+        parser.require(XmlResourceParser.END_TAG, NS, TAG_NAME_VALUE);
         return Float.valueOf(result);
     }
 
-    private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
-        String result = "";
-        if (parser.next() == XmlPullParser.TEXT) {
-            result = parser.getText();
-            parser.nextTag();
-        }
-
-        return result;
-    }
-
-    private String readAttribute(XmlPullParser parser, String attrName) throws IOException, XmlPullParserException {
-        String result = parser.getAttributeValue(null, attrName);
-
-        return result;
-    }
-
-    private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
-        if (parser.getEventType() != XmlPullParser.START_TAG) {
+    private void skipTag(XmlResourceParser parser) throws IOException, XmlPullParserException {
+        if (parser.getEventType() != XmlResourceParser.START_TAG) {
             throw new IllegalStateException();
         }
 
         int depth = 1;
         while (depth != 0) {
             switch (parser.next()) {
-                case XmlPullParser.END_TAG:
+                case XmlResourceParser.END_TAG:
                     depth--;
                     break;
-                case XmlPullParser.START_TAG:
+                case XmlResourceParser.START_TAG:
                     depth++;
                     break;
             }

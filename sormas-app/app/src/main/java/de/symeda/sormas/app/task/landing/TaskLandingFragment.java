@@ -1,6 +1,6 @@
 package de.symeda.sormas.app.task.landing;
 
-import android.content.res.AssetManager;
+import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,10 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import org.joda.time.DateTime;
-import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -64,9 +61,9 @@ public class TaskLandingFragment extends BaseLandingActivityFragment<ViewTypeHel
         super.onActivityCreated(savedInstanceState);
 
         try {
-            AssetManager assetManager = getContext().getAssets();
-            InputStream dataInputStream = assetManager.open("xml/data_landing_page_task_priority.xml");
-            final List<TaskPrioritySummaryEntry> taskPriorityData = new TaskPrioritySummaryParser(getContext()).parse(dataInputStream);
+
+            XmlResourceParser parser = getResources().getXml(R.xml.data_landing_page_task_priority);
+            final List<TaskPrioritySummaryEntry> taskPriorityData = new TaskPrioritySummaryParser(getContext()).parse(parser);
 
 
             final List<Float> valueList = new ArrayList<>();
@@ -119,10 +116,6 @@ public class TaskLandingFragment extends BaseLandingActivityFragment<ViewTypeHel
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (java.lang.InstantiationException e) {
-            e.printStackTrace();
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
             e.printStackTrace();
         }
 
