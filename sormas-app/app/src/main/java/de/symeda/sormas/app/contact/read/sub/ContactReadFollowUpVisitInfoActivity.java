@@ -29,7 +29,7 @@ public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity<Visit
     private static final int MENU_INDEX_VISIT_INFO = 0;
     private static final int MENU_INDEX_SYMPTOMS_INFO = 1;
 
-    private final String DATA_XML_PAGE_MENU = "xml/data_read_page_3_1_followup_menu.xml";
+    private final int DATA_XML_PAGE_MENU = R.xml.data_form_page_followup_menu; // "xml/data_read_page_3_1_followup_menu.xml";
 
     private String recordUuid = null;
     private VisitStatus pageStatus = null;
@@ -84,7 +84,7 @@ public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity<Visit
     }
 
     @Override
-    public String getPageMenuData() {
+    public int getPageMenuData() {
         return DATA_XML_PAGE_MENU;
     }
 

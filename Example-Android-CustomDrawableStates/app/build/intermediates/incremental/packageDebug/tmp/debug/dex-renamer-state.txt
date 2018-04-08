@@ -1,0 +1,4 @@
+#Wed Apr 04 15:39:47 WAT 2018
+base.0=C\:\\Projects\\Dev\\mobile\\integration\\SORMAS-Open\\Example-Android-CustomDrawableStates\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\0
+path.0=classes.dex
+renamed.0=classes.dex

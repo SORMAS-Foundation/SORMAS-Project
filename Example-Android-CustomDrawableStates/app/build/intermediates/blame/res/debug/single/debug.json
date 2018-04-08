@@ -1,0 +1,22 @@
+[
+    {
+        "merged": "C:\\Projects\\Dev\\mobile\\integration\\SORMAS-Open\\Example-Android-CustomDrawableStates\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi_message_read_status_read.png.flat",
+        "source": "C:\\Projects\\Dev\\mobile\\integration\\SORMAS-Open\\Example-Android-CustomDrawableStates\\app\\src\\main\\res\\drawable-mdpi\\message_read_status_read.png"
+    },
+    {
+        "merged": "C:\\Projects\\Dev\\mobile\\integration\\SORMAS-Open\\Example-Android-CustomDrawableStates\\app\\build\\intermediates\\res\\merged\\debug\\drawable_message_list_item_background.xml.flat",
+        "source": "C:\\Projects\\Dev\\mobile\\integration\\SORMAS-Open\\Example-Android-CustomDrawableStates\\app\\src\\main\\res\\drawable\\message_list_item_background.xml"
+    },
+    {
+        "merged": "C:\\Projects\\Dev\\mobile\\integration\\SORMAS-Open\\Example-Android-CustomDrawableStates\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi_message_read_status_unread.png.flat",
+        "source": "C:\\Projects\\Dev\\mobile\\integration\\SORMAS-Open\\Example-Android-CustomDrawableStates\\app\\src\\main\\res\\drawable-mdpi\\message_read_status_unread.png"
+    },
+    {
+        "merged": "C:\\Projects\\Dev\\mobile\\integration\\SORMAS-Open\\Example-Android-CustomDrawableStates\\app\\build\\intermediates\\res\\merged\\debug\\layout_message_list_item.xml.flat",
+        "source": "C:\\Projects\\Dev\\mobile\\integration\\SORMAS-Open\\Example-Android-CustomDrawableStates\\app\\src\\main\\res\\layout\\message_list_item.xml"
+    },
+    {
+        "merged": "C:\\Projects\\Dev\\mobile\\integration\\SORMAS-Open\\Example-Android-CustomDrawableStates\\app\\build\\intermediates\\res\\merged\\debug\\drawable_message_read_status.xml.flat",
+        "source": "C:\\Projects\\Dev\\mobile\\integration\\SORMAS-Open\\Example-Android-CustomDrawableStates\\app\\src\\main\\res\\drawable\\message_read_status.xml"
+    }
+]

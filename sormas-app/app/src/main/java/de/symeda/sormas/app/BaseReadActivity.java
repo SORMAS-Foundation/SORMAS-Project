@@ -58,18 +58,17 @@ import de.symeda.sormas.app.util.ConstantHelper;
 public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainObject> extends AbstractSormasActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, INotificationContext, IActivityRootDataRequestor<TActivityRootData> {
 
     private AsyncTask processActivityRootDataTask;
+    private View rootView;
+    private TActivityRootData storedActivityRootData = null;
     private View fragmentFrame = null;
     private View statusFrame = null;
     private View applicationTitleBar = null;
     private TextView subHeadingListActivityTitle;
+
     private LandingPageMenuControl pageMenu = null;
+    private ArrayList<LandingPageMenuItem> menuList;
     private LandingPageMenuItem activeMenu = null;
     private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
-    private View rootView;
-    private TActivityRootData storedActivityRootData = null;
-    private ArrayList<LandingPageMenuItem> menuList;
-    private boolean firstTimeReplaceFragment;
-
 
     private Enum pageStatus;
     private String recordUuid;
@@ -77,18 +76,18 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
     private MenuItem editMenu = null;
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        activeMenuKey = getActiveMenuArg(savedInstanceState);
+        initializeActivity(savedInstanceState);
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         SaveActiveMenuState(outState, activeMenuKey);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        activeMenuKey = RestoreActiveMenuState(savedInstanceState);
-        initializeActivity(savedInstanceState);
     }
 
     @Override
@@ -118,10 +117,10 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
 
 
     protected void initializeBaseActivity(Bundle savedInstanceState) {
-        menuList = new ArrayList<LandingPageMenuItem>();
         rootView = findViewById(R.id.base_layout);
         subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingListActivityTitle);
         fragmentFrame = findViewById(R.id.fragment_frame);
+        menuList = new ArrayList<LandingPageMenuItem>();
         pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);
 
         ensureFabHiddenOnSoftKeyboardShown(pageMenu);
@@ -171,7 +170,6 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
                     try {
                         activeFragment = getActiveReadFragment(result);
                         replaceFragment(activeFragment);
-                        firstTimeReplaceFragment = true;
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     } catch (InstantiationException e) {
@@ -516,15 +514,15 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
     }
 
     public boolean showPageMenu() {
-        return getPageMenuData() != null && !getPageMenuData().isEmpty();
+        return getPageMenuData() > 0;
     }
 
     public Enum getPageStatus() {
         return pageStatus;
     }
 
-    public String getPageMenuData() {
-        return null;
+    public int getPageMenuData() {
+        return -1;
     }
 
     public int getActiveMenuKey() {

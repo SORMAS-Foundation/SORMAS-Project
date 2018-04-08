@@ -50,7 +50,7 @@ public class EventEditActivity extends BaseEditActivity<Event> {
     public static final String TAG = EventEditActivity.class.getSimpleName();
 
     private AsyncTask saveTask;
-    private final String DATA_XML_PAGE_MENU = "xml/data_edit_page_alert_menu.xml";
+    private final int DATA_XML_PAGE_MENU = R.xml.data_form_page_alert_menu; // "xml/data_edit_page_alert_menu.xml";
 
     private static final int MENU_INDEX_EVENT_INFO = 0;
     private static final int MENU_INDEX_EVENT__PERSON_INVOLVED = 1;
@@ -140,7 +140,7 @@ public class EventEditActivity extends BaseEditActivity<Event> {
     }
 
     @Override
-    public String getPageMenuData() {
+    public int getPageMenuData() {
         return DATA_XML_PAGE_MENU;
     }
 

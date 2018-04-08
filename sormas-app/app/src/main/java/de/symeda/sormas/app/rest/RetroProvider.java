@@ -125,8 +125,7 @@ public final class RetroProvider {
                     try {
                         return versionCall.execute();
                     } catch (IOException e) {
-                         String kkkk = e.getMessage();
-                        Log.w(RetroProvider.class.getSimpleName(), kkkk);
+                        Log.w(RetroProvider.class.getSimpleName(), e.getMessage());
                         // wrap the exception message inside a response object
                         return Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
                     }

@@ -12,5 +12,7 @@ import java.util.ArrayList;
 
 public interface IPageMenuAdapter {
 
-    void initialize(ArrayList<LandingPageMenuItem> data, int cellLayout, int positionColor, int positionActiveColor, int titleColor, int titleActiveColor);
+    void initialize(ArrayList<LandingPageMenuItem> data, int cellLayout,
+                    int counterBackgroundColor, int counterBackgroundActiveColor,
+                    int iconColor, int iconActiveColor, int positionColor, int positionActiveColor, int titleColor, int titleActiveColor);
 }

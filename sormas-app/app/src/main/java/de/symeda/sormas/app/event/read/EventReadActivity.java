@@ -35,7 +35,7 @@ public class EventReadActivity extends BaseReadActivity<Event> {
 
     public static final String TAG = EventReadActivity.class.getSimpleName();
 
-    private final String DATA_XML_PAGE_MENU = "xml/data_read_page_alert_menu.xml";
+    private final int DATA_XML_PAGE_MENU = R.xml.data_form_page_alert_menu; // "xml/data_read_page_alert_menu.xml";
 
     private static final int MENU_INDEX_EVENT_INFO = 0;
     private static final int MENU_INDEX_EVENT__PERSON_INVOLVED = 1;
@@ -140,7 +140,7 @@ public class EventReadActivity extends BaseReadActivity<Event> {
     }
 
     @Override
-    public String getPageMenuData() {
+    public int getPageMenuData() {
         return DATA_XML_PAGE_MENU;
     }
 

@@ -22,6 +22,7 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -177,7 +178,7 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
         return user.hasUserRight(UserRight.CASE_CREATE);
     }
 
-    public static CaseListFragment newInstance(IActivityCommunicator communicator, CaseListCapsule capsule)
+    public static CaseListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
         return newInstance(communicator, CaseListFragment.class, capsule);
     }

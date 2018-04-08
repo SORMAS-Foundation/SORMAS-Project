@@ -2,7 +2,6 @@ package de.symeda.sormas.app.component.menu;
 
 import android.animation.Animator;
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -19,7 +18,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.LinearInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
@@ -32,7 +31,6 @@ import android.widget.TextView;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -60,8 +58,12 @@ public class LandingPageMenuControl extends LinearLayout {
     private BaseAdapter adapter;
     private ArrayList<LandingPageMenuItem> menuList;
 
-    private String dataFile;
+    private int dataResourceId;
     private int cellLayout;
+    private int counterBackgroundColor;
+    private int counterBackgroundActiveColor;
+    private int iconColor;
+    private int iconActiveColor;
     private int positionColor;
     private int positionActiveColor;
     private int titleColor;
@@ -116,8 +118,14 @@ public class LandingPageMenuControl extends LinearLayout {
                     0, 0);
 
             try {
-                dataFile = a.getString(R.styleable.LandingPageMenuControl_dataFile);
+                dataResourceId = a.getResourceId(R.styleable.LandingPageMenuControl_dataResource, -1);
                 cellLayout = a.getResourceId(R.styleable.LandingPageMenuControl_cellLayout, 0);
+
+                counterBackgroundColor = a.getResourceId(R.styleable.LandingPageMenuControl_counterBackgroundColor, 0);
+                counterBackgroundActiveColor = a.getResourceId(R.styleable.LandingPageMenuControl_counterBackgroundActiveColor, 0);
+                iconColor = a.getResourceId(R.styleable.LandingPageMenuControl_iconColor, 0);
+                iconActiveColor = a.getResourceId(R.styleable.LandingPageMenuControl_iconActiveColor, 0);
+
                 positionColor = a.getResourceId(R.styleable.LandingPageMenuControl_positionColor, 0);
                 positionActiveColor = a.getResourceId(R.styleable.LandingPageMenuControl_positionActiveColor, 0);
                 titleColor = a.getResourceId(R.styleable.LandingPageMenuControl_titleColor, 0);
@@ -125,7 +133,6 @@ public class LandingPageMenuControl extends LinearLayout {
                 mVisible = a.getBoolean(R.styleable.LandingPageMenuControl_visibility, false);
                 mCollapsible = a.getBoolean(R.styleable.LandingPageMenuControl_collapsible, false);
                 mMarginBottomOffsetResId = a.getResourceId(R.styleable.LandingPageMenuControl_marginBottomOffsetResId, -1);
-
 
 
             } finally {
@@ -149,13 +156,13 @@ public class LandingPageMenuControl extends LinearLayout {
         }
     }
 
-    public void setMenuData(String data) throws IOException, XmlPullParserException, ParserConfigurationException {
-        if (data != null && !data.isEmpty()) {
-            dataFile = data;
+    public void setMenuData(int dataResId) throws IOException, XmlPullParserException, ParserConfigurationException {
+        if (dataResId > 0) {
+            dataResourceId = dataResId;
         } else {
             setFabFrameVisibility(false);
             return;
-            //throw new IllegalArgumentException("The dataFile file argument is empty.");
+            //throw new IllegalArgumentException("The dataResourceId file argument is empty.");
         }
 
         setFabFrameVisibility(true);
@@ -168,7 +175,7 @@ public class LandingPageMenuControl extends LinearLayout {
         invalidate();
         requestLayout();
 
-        this.dataFile = data;
+        this.dataResourceId = dataResId;
     }
 
     public void setMenuParser(IMenuParser parser) {
@@ -186,8 +193,8 @@ public class LandingPageMenuControl extends LinearLayout {
         }
 
         if (adapter instanceof IPageMenuAdapter) {
-            ((IPageMenuAdapter)adapter).initialize(menuList, cellLayout,
-                    positionColor, positionActiveColor, titleColor, titleActiveColor);
+            ((IPageMenuAdapter)adapter).initialize(menuList, cellLayout, counterBackgroundColor, counterBackgroundActiveColor,
+                    iconColor, iconActiveColor, positionColor, positionActiveColor, titleColor, titleActiveColor);
         } else {
             Log.e(TAG, "Page menu adapters must implement IPageMenuAdapter");
             return;
@@ -211,21 +218,20 @@ public class LandingPageMenuControl extends LinearLayout {
     }
 
     private ArrayList<LandingPageMenuItem> extractAndLoadMenuData() throws IOException, XmlPullParserException, ParserConfigurationException {
-        if (dataFile == null || dataFile.isEmpty())
-            throw new IllegalArgumentException("The dataFile file argument is empty.");
+        if (dataResourceId <= 0)
+            throw new IllegalArgumentException("The dataResourceId file argument is empty.");
 
         if (menuList == null)
             menuList = new ArrayList<>();
 
         menuList.clear();
 
+        parser = new LandingPageMenuParser(getContext());
+
         if (parser == null)
             throw new ParserConfigurationException("This is no parser configured for the menu control.");
 
-        AssetManager assetManager = getContext().getAssets();
-        InputStream is = assetManager.open(dataFile); //data_landing_page_task_menu.xml
-        //IMenuParser parser = new LandingPageMenuParser(getContext());
-        LandingPageMenu menu = parser.parse(is);
+        LandingPageMenu menu = parser.parse(getResources().getXml(dataResourceId));
 
         //Set Title
         setMenuTitle(menu.getTitle());
@@ -376,7 +382,7 @@ public class LandingPageMenuControl extends LinearLayout {
         //configureFab();
 
         try {
-            if (dataFile != null && !dataFile.isEmpty())
+            if (dataResourceId > 0)
                 extractAndLoadMenuData();
         } catch (IOException e) {
             e.printStackTrace();
@@ -491,7 +497,7 @@ public class LandingPageMenuControl extends LinearLayout {
             mLastAnimation = ActionType.SHOW;
         } else if (mLastAnimation != null && mLastAnimation == ActionType.HIDE) {
             setY(this.mClosePositionY);
-            this.animate().y(this.mOpenPositionY).setInterpolator(new LinearInterpolator()).setListener(new Animator.AnimatorListener() {
+            this.animate().y(this.mOpenPositionY).setInterpolator(new AccelerateInterpolator()).setListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
                     setY(LandingPageMenuControl.this.mClosePositionY);
@@ -543,7 +549,7 @@ public class LandingPageMenuControl extends LinearLayout {
             setY(this.mClosePositionY);
             mLastAnimation = ActionType.HIDE;
         } else if (mLastAnimation != null && mLastAnimation == ActionType.SHOW) {
-            this.animate().y(this.mClosePositionY).setInterpolator(new LinearInterpolator()).setListener(new Animator.AnimatorListener() {
+            this.animate().y(this.mClosePositionY).setInterpolator(new AccelerateInterpolator()).setListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
 
@@ -587,7 +593,7 @@ public class LandingPageMenuControl extends LinearLayout {
     }
 
     private boolean showPageMenu() {
-        return this.dataFile != null && !this.dataFile.isEmpty();
+        return this.dataResourceId > 0;
     }
 
     private void configureFab() {

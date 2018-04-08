@@ -51,7 +51,7 @@ public class EventEditPersonsInvolvedInfoActivity extends BaseEditActivity<Event
     private boolean showStatusFrame = false;
     private boolean showTitleBar = true;
     private boolean showPageMenu = false;
-    private final String DATA_XML_PAGE_MENU = null;
+    private final int DATA_XML_PAGE_MENU = -1;
 
     private EventStatus pageStatus = null;
     private String recordUuid = null;
@@ -137,7 +137,7 @@ public class EventEditPersonsInvolvedInfoActivity extends BaseEditActivity<Event
     }
 
     @Override
-    public String getPageMenuData() {
+    public int getPageMenuData() {
         return DATA_XML_PAGE_MENU;
     }
 

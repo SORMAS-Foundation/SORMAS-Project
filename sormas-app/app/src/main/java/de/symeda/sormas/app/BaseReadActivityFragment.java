@@ -370,6 +370,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         String dataUuid = dataCapsule.getRecordUuid();
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
         IStatusElaborator pageStatus = dataCapsule.getPageStatus();
+        int activeMenuKey = dataCapsule.getActiveMenuKey();
         String sampleMaterial = dataCapsule.getSampleMaterial();
         String personUuid = dataCapsule.getPersonUuid();
         String caseUuid = dataCapsule.getCaseUuid();
@@ -383,6 +384,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         UserRight userRight = dataCapsule.getUserRight();
         //AbstractDomainObject record = dataCapsule.getRecord();
 
+        bundle.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
         bundle.putString(ConstantHelper.KEY_DATA_UUID, dataUuid);
         bundle.putString(ConstantHelper.KEY_PERSON_UUID, personUuid);
         bundle.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);

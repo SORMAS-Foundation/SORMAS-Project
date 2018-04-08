@@ -45,7 +45,7 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
     private static final int MENU_INDEX_FOLLOWUP_VISIT = 2;
     private static final int MENU_INDEX_TASK = 3;
 
-    private final String DATA_XML_PAGE_MENU = "xml/data_read_page_contact_menu.xml";
+    private final int DATA_XML_PAGE_MENU = R.xml.data_form_page_contact_menu; // "xml/data_read_page_contact_menu.xml";
 
     private AsyncTask jobTask;
     private String recordUuid = null;
@@ -108,7 +108,7 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
     }
 
     @Override
-    public String getPageMenuData() {
+    public int getPageMenuData() {
         return DATA_XML_PAGE_MENU;
     }
 

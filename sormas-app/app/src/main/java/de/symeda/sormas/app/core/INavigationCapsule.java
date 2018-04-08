@@ -16,6 +16,8 @@ public interface INavigationCapsule<T extends AbstractDomainObject> {
 
     IStatusElaborator getPageStatus();
 
+    SearchBy getSearchStrategy();
+
     List<IStatusElaborator> getOtherStatus();
 
     String getRecordUuid();

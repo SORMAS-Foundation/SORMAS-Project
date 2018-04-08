@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">TryoutButterKnife</string>
+
+
+    <string name="message1">Message 1</string>
+    <string name="message2">Message 2</string>
+
+    <string-array name="items">
+        <item>Item 1</item>
+        <item>Item 2</item>
+        <item>Item 3</item>
+        <item>Item 4</item>
+        <item>Item 5</item>
+        <item>Item 6</item>
+        <item>Item 7</item>
+        <item>Item 8</item>
+        <item>Item 9</item>
+    </string-array>
+</resources>

@@ -19,6 +19,7 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.contact.read.ContactReadActivity;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -182,7 +183,7 @@ public class ContactListFragment extends BaseListActivityFragment<ContactListAda
         startActivity(intent);*/
     }
 
-    public static ContactListFragment newInstance(IActivityCommunicator communicator, ContactListCapsule capsule)
+    public static ContactListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
         return newInstance(communicator, ContactListFragment.class, capsule);
     }

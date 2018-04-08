@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menus xmlns:android="http://schemas.android.com/apk/res/android" name="data_form_page_followup_menu" title="Information Sections">
+    <menu>
+        <key>0</key>
+        <title>Visit Information</title>
+        <description>Visit Information</description>
+    </menu>
+    <menu>
+        <key>1</key>
+        <title>Clinical Signs &amp; Symptoms</title>
+        <description>Clinical Signs &amp; Symptoms</description>
+    </menu>
+</menus>

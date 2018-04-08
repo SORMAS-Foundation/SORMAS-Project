@@ -30,6 +30,8 @@ import de.symeda.sormas.app.component.visualization.data.SummaryCircularData;
 import de.symeda.sormas.app.component.visualization.data.SummaryPieData;
 import de.symeda.sormas.app.component.visualization.data.SummaryPieEntry;
 import de.symeda.sormas.app.component.visualization.data.SummaryTotalData;
+import de.symeda.sormas.app.core.IListNavigationCapsule;
+import de.symeda.sormas.app.core.ListNavigationCapsule;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterDataModifier;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationContext;
@@ -46,7 +48,7 @@ import de.symeda.sormas.app.util.ResourceUtils;
 public class TaskLandingFragment extends BaseLandingActivityFragment<ViewTypeHelper.ViewTypeEnum, TasksLandingSummaryAdapter> {
 
     private TaskStatus statusFilters[];
-    private final String DATA_XML_LANDING_MENU = "xml/data_landing_page_task_menu.xml";
+    private final int DATA_XML_LANDING_MENU = R.xml.data_landing_page_task_menu; // "xml/data_landing_page_task_menu.xml";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -151,7 +153,7 @@ public class TaskLandingFragment extends BaseLandingActivityFragment<ViewTypeHel
     }
 
     @Override
-    public String getMenuData() {
+    public int getMenuData() {
         return DATA_XML_LANDING_MENU;
     }
 
@@ -164,7 +166,7 @@ public class TaskLandingFragment extends BaseLandingActivityFragment<ViewTypeHel
     @Override
     public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) {
         TaskStatus status = statusFilters[menuItem.getKey()];
-        TaskLandingToListCapsule dataCapsule = new TaskLandingToListCapsule(getContext(), status, SearchBy.BY_FILTER_STATUS);
+        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(getContext(), status, SearchBy.BY_FILTER_STATUS);
         TaskListActivity.goToActivity(getActivity(), dataCapsule);
 
         return true;

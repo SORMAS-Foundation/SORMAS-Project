@@ -226,10 +226,17 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
         }
 
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
+        IStatusElaborator pageStatus = dataCapsule.getPageStatus();
         SearchBy searchBy = dataCapsule.getSearchStrategy();
+        int activeMenuKey = dataCapsule.getActiveMenuKey();
+
+        bundle.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
 
         if (filterStatus != null)
             bundle.putSerializable(ConstantHelper.ARG_FILTER_STATUS, dataCapsule.getFilterStatus().getValue());
+
+        if (pageStatus != null)
+            bundle.putSerializable(ConstantHelper.ARG_PAGE_STATUS, pageStatus.getValue());
 
         bundle.putSerializable(ConstantHelper.ARG_SEARCH_STRATEGY, searchBy);
 

@@ -1,15 +1,14 @@
 package de.symeda.sormas.app.component.menu;
 
 import android.content.Context;
-import android.util.Xml;
+import android.content.res.XmlResourceParser;
+import android.util.Log;
 
-import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.io.InputStream;
 
-import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.core.guard.Guard;
 
 /**
  * Created by Orson on 25/11/2017.
@@ -20,159 +19,159 @@ import de.symeda.sormas.app.R;
  */
 
 public class LandingPageMenuParser implements IMenuParser {
-    private static final String ns = null;
+
+    private static final String TAG = LandingPageMenuParser.class.getSimpleName();
+
+    private static final String NS = null;
     private Context context;
 
-    private final String TAG_NAME_MENUS;
-    private final String TAG_ATTR_MENUS_NAME;
-    private final String TAG_ATTR_MENUS_TITLE;
-    private final String TAG_NAME_MENU_ENTRY;
-    private final String TAG_NAME_KEY;
-    private final String TAG_NAME_TITLE;
-    private final String TAG_NAME_DESCRIPTION;
-    private final String TAG_NAME_ICON;
-    private final String TAG_ATTR_NAME_ICON_VIEW_TYPE;
+    private final String TAG_NAME_MENUS = "menus";
+    private final String TAG_ATTR_MENUS_NAME = "name";
+    private final String TAG_ATTR_MENUS_TITLE = "title";
+    private final String TAG_NAME_MENU_ENTRY = "menu";
+    private final String TAG_NAME_KEY = "key";
+    private final String TAG_NAME_TITLE = "title";
+    private final String TAG_NAME_DESCRIPTION = "description";
+    private final String TAG_NAME_ICON = "icon";
+    private final String TAG_ATTR_NAME_ICON_SKIP = "skip";
+    private final String TAG_ATTR_NAME_ICON_VIEW_TYPE = "def-viewType";
+
+    private LandingPageMenu mMenus;
 
     public LandingPageMenuParser(Context context) {
         this.context = context;
-
-        TAG_NAME_MENUS = this.context.getResources().getString(R.string.data_tag_menu_menus);
-        TAG_ATTR_MENUS_NAME = this.context.getResources().getString(R.string.data_tag_menu_menus_name);
-        TAG_ATTR_MENUS_TITLE = this.context.getResources().getString(R.string.data_tag_menu_menus_title);
-        TAG_NAME_MENU_ENTRY = this.context.getResources().getString(R.string.data_tag_menu_entry);
-        TAG_NAME_KEY = this.context.getResources().getString(R.string.data_tag_menu_key);
-        TAG_NAME_TITLE = this.context.getResources().getString(R.string.data_tag_menu_title);
-        TAG_NAME_DESCRIPTION = this.context.getResources().getString(R.string.data_tag_menu_description);
-        TAG_NAME_ICON = this.context.getResources().getString(R.string.data_tag_menu_icon);
-        TAG_ATTR_NAME_ICON_VIEW_TYPE = this.context.getResources().getString(R.string.data_tag_menu_icon_attr_view_type);
     }
+
 
     @Override
-    public LandingPageMenu parse(InputStream in) throws XmlPullParserException, IOException {
+    public LandingPageMenu parse(XmlResourceParser parser) {
         try {
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(in, null);
-            parser.nextTag();
+            while(parser.next() != XmlResourceParser.END_DOCUMENT) {
+                if (parser.getEventType() == XmlResourceParser.START_TAG) {
+                    String menuValue = parser.getName();
 
-            return readMenus(parser);
+                    if (menuValue.equals(TAG_NAME_MENUS)) {
+                        mMenus = readMenusTag(parser);
+                    }
+                }
+            }
+        } catch (XmlPullParserException e) {
+            Log.e(TAG, e.getMessage());
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
         } finally {
-            in.close();
+            parser.close();
         }
+
+        return mMenus;
     }
 
-    private LandingPageMenu readMenus(XmlPullParser parser) throws XmlPullParserException, IOException {
-        parser.require(XmlPullParser.START_TAG, ns, TAG_NAME_MENUS);
-        String menuName = readAttribute(parser, TAG_ATTR_MENUS_NAME);
-        String menuTitle = readAttribute(parser, TAG_ATTR_MENUS_TITLE);
+    private LandingPageMenu readMenusTag(XmlResourceParser parser) throws IOException, XmlPullParserException {
+        Guard.That.NotNull.isTrue(parser);
 
-        LandingPageMenu menu = new LandingPageMenu(menuName, menuTitle);
-        while(parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
+        parser.require(XmlResourceParser.START_TAG, NS, TAG_NAME_MENUS);
+        String menuName = parser.getAttributeValue(NS, TAG_ATTR_MENUS_NAME);
+        String menuTitle = parser.getAttributeValue(NS, TAG_ATTR_MENUS_TITLE);
+
+        mMenus = new LandingPageMenu(menuName, menuTitle);
+
+        while (parser.next() != XmlResourceParser.END_TAG) {
+            if (parser.getEventType() != XmlResourceParser.START_TAG) {
                 continue;
             }
 
             String name = parser.getName();
-
-            //Start by looking for the menu tag
             if (name.equals(TAG_NAME_MENU_ENTRY)) {
-                menu.addMenuItem(readMenuItem(parser));
+                mMenus.addMenuItem(readMenuTag(parser));
             } else {
-                skip(parser);
+                skipTag(parser);
             }
         }
 
-        return menu;
+        return mMenus;
     }
 
-    // Parses the contents of a menu. If it encounters a title, description, and icon, hands
-    // them off to their respective "read" methods for processing. Otherwise, skip the tag.
-    private LandingPageMenuItem readMenuItem(XmlPullParser parser) throws XmlPullParserException, IOException {
-        parser.require(XmlPullParser.START_TAG, ns, TAG_NAME_MENU_ENTRY);
+    private LandingPageMenuItem readMenuTag(XmlResourceParser parser) throws XmlPullParserException, IOException {
+        parser.require(XmlResourceParser.START_TAG, NS, TAG_NAME_MENU_ENTRY);
         int key = -1;
         String title = null;
         String description = null;
         LandingPageMenuItemIcon icon = null;
 
-        while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
+        while (parser.next() != XmlResourceParser.END_TAG) {
+            if (parser.getEventType() != XmlResourceParser.START_TAG) {
                 continue;
             }
 
             String name = parser.getName();
             if (name.equals(TAG_NAME_KEY)) {
-                key = readKey(parser);
+                key = readKeyTag(parser);
             } else if (name.equals(TAG_NAME_TITLE)) {
-                title = readTitle(parser);
+                title = readTitleTag(parser);
             } else if (name.equals(TAG_NAME_DESCRIPTION)) {
-                description = readDescription(parser);
+                description = readDescriptionTag(parser);
             } else if (name.equals(TAG_NAME_ICON)) {
-                icon = readIcon(parser);
+                icon = readIconTag(parser);
             } else {
-                skip(parser);
+                skipTag(parser);
             }
         }
 
         return new LandingPageMenuItem(key, title, description, icon, false);
     }
 
-    private int readKey(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, TAG_NAME_KEY);
-        String result = readText(parser);
-        parser.require(XmlPullParser.END_TAG, ns, TAG_NAME_KEY);
+    private int readKeyTag(XmlResourceParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlResourceParser.START_TAG, NS, TAG_NAME_KEY);
+        String result = parser.nextText();
+        parser.require(XmlResourceParser.END_TAG, NS, TAG_NAME_KEY);
         return Integer.valueOf(result);
     }
 
-    private String readTitle(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, TAG_NAME_TITLE);
-        String result = readText(parser);
-        parser.require(XmlPullParser.END_TAG, ns, TAG_NAME_TITLE);
+    private String readTitleTag(XmlResourceParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlResourceParser.START_TAG, NS, TAG_NAME_TITLE);
+        String result = parser.nextText();
+        parser.require(XmlResourceParser.END_TAG, NS, TAG_NAME_TITLE);
         return result;
     }
 
-    private String readDescription(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, TAG_NAME_DESCRIPTION);
-        String result = readText(parser);
-        parser.require(XmlPullParser.END_TAG, ns, TAG_NAME_DESCRIPTION);
+    private String readDescriptionTag(XmlResourceParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlResourceParser.START_TAG, NS, TAG_NAME_DESCRIPTION);
+        String result = parser.nextText();
+        parser.require(XmlResourceParser.END_TAG, NS, TAG_NAME_DESCRIPTION);
         return result;
     }
 
-    private LandingPageMenuItemIcon readIcon(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, TAG_NAME_ICON);
-        String defType = readAttribute(parser, TAG_ATTR_NAME_ICON_VIEW_TYPE);
-        String iconName = readText(parser);
-        parser.require(XmlPullParser.END_TAG, ns, TAG_NAME_ICON); //
-        return new LandingPageMenuItemIcon(iconName, defType);
+    private LandingPageMenuItemIcon readIconTag(XmlResourceParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlResourceParser.START_TAG, NS, TAG_NAME_ICON);
+
+        LandingPageMenuItemIcon itemIcon = null;
+        boolean skip = parser.getAttributeBooleanValue(NS, TAG_ATTR_NAME_ICON_SKIP, false);
+        String defType = parser.getAttributeValue(NS, TAG_ATTR_NAME_ICON_VIEW_TYPE);
+        String iconName = parser.nextText();
+
+        skip = (skip || (defType == null || defType.isEmpty()) || (iconName == null || iconName.isEmpty()));
+
+        if (skip)
+            return itemIcon;
+
+        parser.require(XmlResourceParser.END_TAG, NS, TAG_NAME_ICON);
+        itemIcon = new LandingPageMenuItemIcon(iconName, defType);
+
+        return itemIcon;
     }
 
-    private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
-        String result = "";
-        if (parser.next() == XmlPullParser.TEXT) {
-            result = parser.getText();
-            parser.nextTag();
-        }
-
-        return result;
-    }
-
-    private String readAttribute(XmlPullParser parser, String attrName) throws IOException, XmlPullParserException {
-        String result = parser.getAttributeValue(null, attrName);
-
-        return result;
-    }
-
-    private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
-        if (parser.getEventType() != XmlPullParser.START_TAG) {
+    private void skipTag(XmlResourceParser parser) throws IOException, XmlPullParserException {
+        if (parser.getEventType() != XmlResourceParser.START_TAG) {
             throw new IllegalStateException();
         }
 
         int depth = 1;
         while (depth != 0) {
             switch (parser.next()) {
-                case XmlPullParser.END_TAG:
+                case XmlResourceParser.END_TAG:
                     depth--;
                     break;
-                case XmlPullParser.START_TAG:
+                case XmlResourceParser.START_TAG:
                     depth++;
                     break;
             }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="dpvalue1">24dp</dimen>
+    <dimen name="dpvalue2">24dp</dimen>
+
+    <item name="float_value" format="float" type="dimen">1.65</item>
+
+    <item name="float_15_32" type="dimen">15.32</item>
+    <item name="percent_15" type="dimen">15%</item>
+</resources>

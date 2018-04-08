@@ -219,8 +219,8 @@ public class SettingsFragment extends BaseLandingActivityFragment {
     }
 
     @Override
-    public String getMenuData() {
-        return null;
+    public int getMenuData() {
+        return -1;
     }
 
     @Override

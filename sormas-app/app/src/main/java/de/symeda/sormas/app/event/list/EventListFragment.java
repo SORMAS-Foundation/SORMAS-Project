@@ -18,6 +18,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -171,7 +172,7 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
         return true;
     }
 
-    public static EventListFragment newInstance(IActivityCommunicator communicator, EventListCapsule capsule)
+    public static EventListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
         return newInstance(communicator, EventListFragment.class, capsule);
     }

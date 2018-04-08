@@ -5,13 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.List;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.visualization.data.BaseLegendEntry;
-
-import java.util.List;
 
 /**
  * Created by Orson on 29/11/2017.
@@ -49,15 +48,6 @@ public class TaskPriorityLegendAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        int icon;
-        String iconName;
-        String defType;
-
-        TextView txtNotificationCounter;
-        ImageView imgMenuItemIcon;
-        TextView txtMenuItemTitle;
-
-
         View row;
         ViewHolder holder;
 

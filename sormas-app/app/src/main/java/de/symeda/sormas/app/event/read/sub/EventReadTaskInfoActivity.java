@@ -91,11 +91,6 @@ public class EventReadTaskInfoActivity  extends BaseReadActivity<Task> {
     }
 
     @Override
-    public String getPageMenuData() {
-        return null;
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getEditMenu().setTitle(R.string.action_edit_event);

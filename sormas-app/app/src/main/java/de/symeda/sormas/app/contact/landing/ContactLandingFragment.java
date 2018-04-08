@@ -9,6 +9,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import org.joda.time.DateTime;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.BaseLandingActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
@@ -19,16 +25,12 @@ import de.symeda.sormas.app.component.visualization.ViewTypeHelper.ViewTypeEnum;
 import de.symeda.sormas.app.component.visualization.data.SummaryCircularData;
 import de.symeda.sormas.app.component.visualization.data.SummaryTotalData;
 import de.symeda.sormas.app.contact.list.ContactListActivity;
+import de.symeda.sormas.app.core.IListNavigationCapsule;
+import de.symeda.sormas.app.core.ListNavigationCapsule;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationContext;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationService;
 import de.symeda.sormas.app.util.ResourceUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import de.symeda.sormas.api.contact.FollowUpStatus;
 
 /**
  * Created by Orson on 11/12/2017.
@@ -37,7 +39,7 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 public class ContactLandingFragment extends BaseLandingActivityFragment<ViewTypeHelper.ViewTypeEnum, ContactsLandingSummaryAdapter> {
 
     private FollowUpStatus statusFilters[];
-    private final String DATA_XML_LANDING_MENU = "xml/data_landing_page_contact_menu.xml";
+    private final int DATA_XML_LANDING_MENU = R.xml.data_landing_page_contact_menu; // "xml/data_landing_page_contact_menu.xml";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -85,7 +87,7 @@ public class ContactLandingFragment extends BaseLandingActivityFragment<ViewType
     }
 
     @Override
-    public String getMenuData() {
+    public int getMenuData() {
         return DATA_XML_LANDING_MENU;
     }
 
@@ -98,7 +100,7 @@ public class ContactLandingFragment extends BaseLandingActivityFragment<ViewType
     @Override
     public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) {
         FollowUpStatus status = statusFilters[menuItem.getKey()];
-        ContactLandingToListCapsule dataCapsule = new ContactLandingToListCapsule(getContext(), status, SearchBy.BY_FILTER_STATUS);
+        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(getContext(), status, SearchBy.BY_FILTER_STATUS);
         ContactListActivity.goToActivity(getActivity(), dataCapsule);
 
         return true;

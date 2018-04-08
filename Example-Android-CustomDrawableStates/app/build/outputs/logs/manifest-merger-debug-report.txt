@@ -1,0 +1,55 @@
+-- Merging decision tree log ---
+manifest
+ADDED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:2:1-21:12
+INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:2:1-21:12
+INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:2:1-21:12
+INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:2:1-21:12
+INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:2:1-21:12
+INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:2:1-21:12
+INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:2:1-21:12
+	package
+		ADDED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:3:11-75
+		INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml
+	android:versionName
+		ADDED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:5:11-36
+		INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:2:11-69
+	android:versionCode
+		ADDED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:4:11-34
+		INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml
+uses-sdk
+ADDED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:8:5-73
+INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:8:5-73
+INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:8:5-73
+INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:8:5-73
+INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:8:5-73
+	android:targetSdkVersion
+		ADDED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:8:41-70
+		INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		ADDED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:8:15-40
+		INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml
+application
+ADDED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:10:5-19:19
+	android:label
+		ADDED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:10:18-64
+activity#com.charlesharley.example.android.customdrawablestates.HomeActivity
+ADDED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:12:9-17:20
+	android:name
+		ADDED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:12:19-46
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:13:13-16:29
+action#android.intent.action.MAIN
+ADDED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:14:17-69
+	android:name
+		ADDED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:14:25-66
+category#android.intent.category.LAUNCHER
+ADDED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:15:17-77
+	android:name
+		ADDED from C:\Projects\Dev\mobile\integration\SORMAS-Open\Example-Android-CustomDrawableStates\app\src\main\AndroidManifest.xml:15:27-74

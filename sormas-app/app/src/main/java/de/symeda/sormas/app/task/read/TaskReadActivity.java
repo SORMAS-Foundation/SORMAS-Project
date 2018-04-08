@@ -99,8 +99,8 @@ public class TaskReadActivity extends BaseReadActivity<Task> {
     }
 
     @Override
-    public String getPageMenuData() {
-        return null;
+    public int getPageMenuData() {
+        return -1;
     }
 
     @Override

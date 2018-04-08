@@ -23,6 +23,8 @@ import de.symeda.sormas.app.component.visualization.ViewTypeHelper;
 import de.symeda.sormas.app.component.visualization.ViewTypeHelper.ViewTypeEnum;
 import de.symeda.sormas.app.component.visualization.data.SummaryCircularData;
 import de.symeda.sormas.app.component.visualization.data.SummaryTotalData;
+import de.symeda.sormas.app.core.IListNavigationCapsule;
+import de.symeda.sormas.app.core.ListNavigationCapsule;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationContext;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationService;
@@ -37,7 +39,7 @@ import de.symeda.sormas.app.util.ResourceUtils;
 public class SampleLandingFragment extends BaseLandingActivityFragment<ViewTypeHelper.ViewTypeEnum, SampleLandingSummaryAdapter> {
 
     private ShipmentStatus statusFilters[];
-    private final String DATA_XML_LANDING_MENU = "xml/data_landing_page_sample_menu.xml";
+    private final int DATA_XML_LANDING_MENU = R.xml.data_landing_page_sample_menu; // "xml/data_landing_page_sample_menu.xml";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -88,7 +90,7 @@ public class SampleLandingFragment extends BaseLandingActivityFragment<ViewTypeH
     }
 
     @Override
-    public String getMenuData() {
+    public int getMenuData() {
         return DATA_XML_LANDING_MENU;
     }
 
@@ -101,7 +103,7 @@ public class SampleLandingFragment extends BaseLandingActivityFragment<ViewTypeH
     @Override
     public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) {
         ShipmentStatus status = statusFilters[menuItem.getKey()];
-        SampleLandingToListCapsule dataCapsule = new SampleLandingToListCapsule(getContext(), status, SearchBy.BY_FILTER_STATUS);
+        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(getContext(), status, SearchBy.BY_FILTER_STATUS);
         SampleListActivity.goToActivity(getActivity(), dataCapsule);
 
         return true;

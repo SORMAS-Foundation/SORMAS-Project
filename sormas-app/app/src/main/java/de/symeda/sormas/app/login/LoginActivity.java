@@ -15,10 +15,8 @@ import java.net.ConnectException;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.caze.landing.CasesLandingActivity;
 import de.symeda.sormas.app.component.OnHideInputErrorListener;
 import de.symeda.sormas.app.component.OnShowInputErrorListener;
-import de.symeda.sormas.app.contact.landing.ContactsLandingActivity;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -28,6 +26,7 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.LandingNavigationHelper;
 import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
 import de.symeda.sormas.app.util.SyncCallback;
@@ -249,11 +248,19 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     private void openLandingActivity() {
         Intent intent;
         if (ConfigProvider.getUser().hasUserRole(UserRole.CONTACT_OFFICER)) {
+            LandingNavigationHelper.gotoContact(LoginActivity.this);
+        } else {
+            LandingNavigationHelper.gotoCase(LoginActivity.this);
+        }
+
+
+        /*Intent intent;
+        if (ConfigProvider.getUser().hasUserRole(UserRole.CONTACT_OFFICER)) {
             intent = new Intent(LoginActivity.this, ContactsLandingActivity.class);
         } else {
             intent = new Intent(LoginActivity.this, CasesLandingActivity.class);
         }
-        startActivity(intent);
+        startActivity(intent);*/
     }
 
     private void closeApp() {

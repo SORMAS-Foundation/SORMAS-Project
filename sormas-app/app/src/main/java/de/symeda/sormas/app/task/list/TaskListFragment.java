@@ -18,6 +18,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -171,7 +172,7 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
         recyclerViewForList.setAdapter(getListAdapter());
     }
 
-    public static TaskListFragment newInstance(IActivityCommunicator communicator, TaskListCapsule capsule)
+    public static TaskListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
         return newInstance(communicator, TaskListFragment.class, capsule);
     }

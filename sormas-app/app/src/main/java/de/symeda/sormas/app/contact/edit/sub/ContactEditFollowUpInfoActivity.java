@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import de.symeda.sormas.api.utils.DataHelper;
@@ -51,7 +50,7 @@ public class ContactEditFollowUpInfoActivity extends BaseEditActivity<Visit> {
 
     public static final String TAG = ContactEditFollowUpInfoActivity.class.getSimpleName();
 
-    private final String DATA_XML_PAGE_MENU = "xml/data_edit_page_3_1_followup_menu.xml";
+    private final int DATA_XML_PAGE_MENU = R.xml.data_form_page_followup_menu;// "xml/data_edit_page_3_1_followup_menu.xml";
 
     private static final int MENU_INDEX_VISIT_INFO = 0;
     private static final int MENU_INDEX_SYMPTOMS_INFO = 1;
@@ -144,7 +143,7 @@ public class ContactEditFollowUpInfoActivity extends BaseEditActivity<Visit> {
     }
 
     @Override
-    public String getPageMenuData() {
+    public int getPageMenuData() {
         return DATA_XML_PAGE_MENU;
     }
 

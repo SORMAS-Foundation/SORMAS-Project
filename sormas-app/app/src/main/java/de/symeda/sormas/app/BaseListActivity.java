@@ -12,10 +12,27 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import de.symeda.sormas.app.core.ILandingToListNavigationCapsule;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.component.menu.LandingPageMenuAdapter;
+import de.symeda.sormas.app.component.menu.LandingPageMenuControl;
+import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.component.menu.LandingPageMenuParser;
+import de.symeda.sormas.app.component.menu.OnLandingPageMenuClickListener;
+import de.symeda.sormas.app.component.menu.OnNotificationCountChangingListener;
+import de.symeda.sormas.app.component.menu.OnSelectInitialActiveMenuItemListener;
+import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.SearchBy;
@@ -27,7 +44,7 @@ import de.symeda.sormas.app.util.ConstantHelper;
  * Created by Orson on 03/12/2017.
  */
 
-public abstract class BaseListActivity extends AbstractSormasActivity implements IUpdateSubHeadingTitle, INotificationContext {
+public abstract class BaseListActivity<TListItemData extends AbstractDomainObject> extends AbstractSormasActivity implements IUpdateSubHeadingTitle, INotificationContext, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, OnNotificationCountChangingListener {
 
     private View statusFrame = null;
     private View applicationTitleBar = null;
@@ -37,13 +54,27 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
     private MenuItem newMenu = null;
     private BaseListActivityFragment activeFragment = null;
 
+    private List<TListItemData> storedListData = null;
+    private LandingPageMenuControl pageMenu = null;
+    private ArrayList<LandingPageMenuItem> menuList;
+    private LandingPageMenuItem activeMenu = null;
+    private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
+
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
         //initializeActivity(savedInstanceState);
+        activeMenuKey = getActiveMenuArg(savedInstanceState);
+        initializeActivity(savedInstanceState);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        SaveActiveMenuState(outState, activeMenuKey);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,7 +83,7 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
 
     @Override
     protected boolean setHomeAsUpIndicator() {
-        return false;
+        return true;
     }
 
     @Override
@@ -70,9 +101,46 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
     protected void initializeBaseActivity(Bundle savedInstanceState) {
         rootView = findViewById(R.id.base_layout);
         subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingListActivityTitle);
+        menuList = new ArrayList<LandingPageMenuItem>();
+        pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);
+        /*Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getExtras();
+        initializeActivity(arguments);*/
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getExtras();
+        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
+        activeMenuKey = getActiveMenuArg(arguments);
         initializeActivity(arguments);
+
+        try {
+            if(pageMenu != null)
+                pageMenu.hide();
+
+            if (pageMenu != null) {
+                Context menuControlContext = this.pageMenu.getContext();
+
+
+                pageMenu.setOnNotificationCountChangingListener(this);
+                pageMenu.setOnLandingPageMenuClickListener(this);
+                pageMenu.setOnSelectInitialActiveMenuItem(this);
+
+                //pageMenu.setOnLandingPageMenuClickListener(this);
+                //pageMenu.setOnSelectInitialActiveMenuItem(this);
+
+                //pageMenu.setAdapter(new PageMenuNavAdapter(menuControlContext));
+
+                pageMenu.setAdapter(new LandingPageMenuAdapter(menuControlContext));
+                pageMenu.setMenuParser(new LandingPageMenuParser(menuControlContext));
+                pageMenu.setMenuData(getPageMenuData());
+
+                //configureFab(fab, pageMenu);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+
 
         if (showTitleBar()) {
             applicationTitleBar = findViewById(R.id.applicationTitleBar);
@@ -105,7 +173,9 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
         activeFragment = f;
 
         if (activeFragment != null) {
-            activeFragment.setArguments(getIntent().getExtras());
+            if (activeFragment.getArguments() == null)
+                activeFragment.setArguments(getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA));
+
             ft.setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout);
             ft.replace(R.id.fragment_frame, activeFragment);
             ft.addToBackStack(null);
@@ -123,6 +193,15 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
         processActionbarMenu();
 
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        /*if (menuDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }*/
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void processActionbarMenu() {
@@ -198,6 +277,119 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
 
     public abstract boolean showTitleBar();
 
+    @Override
+    protected int getRootActivityLayout() {
+        return R.layout.activity_root_list_layout;
+    }
+
+    //<editor-fold desc="Landing Menu Methods">
+
+    public int getPageMenuData() {
+        return -1;
+    }
+
+    public int getActiveMenuKey() {
+        return activeMenuKey;
+    }
+
+    protected void setActiveMenu(LandingPageMenuItem menuItem) {
+        activeMenu = menuItem;
+        activeMenuKey = menuItem.getKey();
+    }
+
+    public abstract int onNotificationCountChanging(AdapterView<?> parent, LandingPageMenuItem menuItem, int position);
+
+    @Override
+    public LandingPageMenuItem onSelectInitialActiveMenuItem(ArrayList<LandingPageMenuItem> menuList) {
+        if (menuList == null || menuList.size() <= 0)
+            return null;
+
+        this.menuList = menuList;
+
+        activeMenu = menuList.get(0);
+
+        for(LandingPageMenuItem m: menuList){
+            if (m.getKey() == activeMenuKey){
+                activeMenu = m;
+            }
+        }
+
+        return activeMenu;
+    }
+
+    @Override
+    public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
+        BaseListActivityFragment newActiveFragment = getNextFragment(menuItem); //, storedListData
+
+        if (newActiveFragment == null)
+            return false;
+
+        setActiveMenu(menuItem);
+        replaceFragment(newActiveFragment);
+
+        processActionbarMenu();
+        //updateSubHeadingTitle();
+
+        return true;
+    }
+
+    protected boolean goToNextMenu() {
+        if (pageMenu == null)
+            return false;
+
+        if (menuList == null || menuList.size() <= 0)
+            return false;
+
+        int lastMenuKey = menuList.size() - 1;
+
+        if (activeMenuKey == lastMenuKey)
+            return false;
+
+        int newMenukey = activeMenuKey + 1;
+
+        LandingPageMenuItem m = menuList.get(newMenukey);
+        setActiveMenu(m);
+
+        BaseListActivityFragment newActiveFragment = getNextFragment(m); //, storedListData
+
+        if (newActiveFragment == null)
+            return false;
+
+        setActiveMenu(m);
+
+        pageMenu.markActiveMenuItem(m);
+
+        replaceFragment(newActiveFragment);
+
+        //this.activeFragment = newActiveFragment;
+
+        processActionbarMenu();
+        //updateSubHeadingTitle();
+
+        return true;
+    }
+
+    protected BaseListActivityFragment getNextFragment(LandingPageMenuItem menuItem) { //, List<TListItemData> activityListData
+        return null;
+    }
+
+    protected boolean changeFragment(BaseListActivityFragment newActiveFragment) {
+        if (newActiveFragment == null)
+            return false;
+
+        replaceFragment(newActiveFragment);
+
+        //this.activeFragment = newActiveFragment;
+
+        processActionbarMenu();
+        //updateSubHeadingTitle();
+
+        return true;
+    }
+
+    //</editor-fold>
+
+
     public String getStatusName(Context context) {
         Enum status = getStatus();
 
@@ -255,6 +447,18 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
         return e;
     }
 
+    protected int getActiveMenuArg(Bundle arguments) {
+        int result = ConstantHelper.INDEX_FIRST_MENU;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.KEY_ACTIVE_MENU)) {
+                result = (int) arguments.getInt(ConstantHelper.KEY_ACTIVE_MENU);
+            }
+        }
+
+        return result;
+    }
+
+
 
     protected <E extends Enum<E>> void SaveFilterStatusState(Bundle outState, E status) {
         if (outState != null) {
@@ -274,19 +478,36 @@ public abstract class BaseListActivity extends AbstractSormasActivity implements
         }
     }
 
-    protected static <TActivity extends AbstractSormasActivity, TCapsule extends ILandingToListNavigationCapsule>
+    protected void SaveActiveMenuState(Bundle outState, int activeMenuKey) {
+        if (outState != null) {
+            outState.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
+        }
+    }
+
+    protected static <TActivity extends AbstractSormasActivity, TCapsule extends IListNavigationCapsule>
     void goToActivity(Context fromActivity, Class<TActivity> toActivity, TCapsule dataCapsule) {
 
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
+        IStatusElaborator pageStatus = dataCapsule.getPageStatus();
         SearchBy searchBy = dataCapsule.getSearchStrategy();
+        int activeMenuKey = dataCapsule.getActiveMenuKey();
 
         Intent intent = new Intent(fromActivity, toActivity);
 
+        Bundle bundle = new Bundle();
+
+        bundle.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
+
         if (filterStatus != null)
-            intent.putExtra(ConstantHelper.ARG_FILTER_STATUS, filterStatus.getValue());
+            bundle.putSerializable(ConstantHelper.ARG_FILTER_STATUS, filterStatus.getValue());
+
+        if (pageStatus != null)
+            bundle.putSerializable(ConstantHelper.ARG_PAGE_STATUS, pageStatus.getValue());
 
         if (searchBy != null)
-            intent.putExtra(ConstantHelper.ARG_SEARCH_STRATEGY, searchBy);
+            bundle.putSerializable(ConstantHelper.ARG_SEARCH_STRATEGY, searchBy);
+
+        intent.putExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA, bundle);
 
         fromActivity.startActivity(intent);
     }

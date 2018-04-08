@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.component.menu;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,12 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
     private Context context;
     private ArrayList<LandingPageMenuItem> data;
     private int cellLayout;
+
+    private int counterBackgroundColor;
+    private int counterBackgroundActiveColor;
+    private int iconColor;
+    private int iconActiveColor;
+
     private int positionColor;
     private int positionActiveColor;
     private int titleColor;
@@ -43,9 +50,16 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
     }
 
     @Override
-    public void initialize(ArrayList<LandingPageMenuItem> data, int cellLayout, int positionColor, int positionActiveColor, int titleColor, int titleActiveColor) {
+    public void initialize(ArrayList<LandingPageMenuItem> data, int cellLayout,
+                           int counterBackgroundColor, int counterBackgroundActiveColor,
+                           int iconColor, int iconActiveColor,
+                           int positionColor, int positionActiveColor, int titleColor, int titleActiveColor) {
         this.data = data;
         this.cellLayout = cellLayout;
+        this.counterBackgroundColor = counterBackgroundColor;
+        this.counterBackgroundActiveColor = counterBackgroundActiveColor;
+        this.iconColor = iconColor;
+        this.iconActiveColor = iconActiveColor;
         this.positionColor = positionColor;
         this.positionActiveColor = positionActiveColor;
         this.titleColor = titleColor;
@@ -82,10 +96,9 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
     public View getView(int position, View convertView, ViewGroup parent) {
         checkInitStatus();
 
-        Context appContext = this.context;
         ArrayList<LandingPageMenuItem> menuItems = this.data;
 
-        int icon;
+        Drawable icon;
         String iconName;
         String defType;
 
@@ -94,7 +107,7 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
 
         if (convertView == null) {
             // if it's not recycled, initializeDialog some attributes
-            LayoutInflater inflater = (LayoutInflater)appContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             layout = inflater.inflate(this.cellLayout, parent, false);
         } else {
             layout = (View) convertView;
@@ -105,10 +118,32 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
         LandingPageMenuItem landingPageMenuItem = menuItems.get(position);
         viewHolder.txtNotificationCounter.setText(String.valueOf(landingPageMenuItem.getNotificationCount()));
 
-        iconName = landingPageMenuItem.getIcon().getIconName();
-        defType = landingPageMenuItem.getIcon().getDefType();
-        icon = appContext.getResources().getIdentifier(iconName, defType, appContext.getPackageName());
-        viewHolder.imgMenuItemIcon.setImageResource(icon);
+        Drawable counterDrawable = viewHolder.txtNotificationCounter.getBackground();
+
+        if (landingPageMenuItem.isActive()) {
+            counterDrawable.setTint(context.getResources().getColor(this.counterBackgroundActiveColor));
+        } else {
+            counterDrawable.setTint(context.getResources().getColor(this.counterBackgroundColor));
+        }
+
+        if (landingPageMenuItem.getIcon() != null) {
+            iconName = landingPageMenuItem.getIcon().getIconName();
+            defType = landingPageMenuItem.getIcon().getDefType();
+
+            if ((iconName != null && !iconName.isEmpty()) && (defType != null && !defType.isEmpty())) {
+                icon = context.getResources().getDrawable(context.getResources().getIdentifier(iconName, defType, context.getPackageName()));
+
+                if (landingPageMenuItem.isActive()) {
+                    icon.setTint(context.getResources().getColor(this.iconActiveColor));
+                    icon.setAlpha(255);
+                } else {
+                    icon.setTint(context.getResources().getColor(this.iconColor));
+                    icon.setAlpha(128);
+                }
+
+                viewHolder.imgMenuItemIcon.setImageDrawable(icon);
+            }
+        }
 
         viewHolder.txtMenuItemTitle.setText(landingPageMenuItem.getTitle());
 

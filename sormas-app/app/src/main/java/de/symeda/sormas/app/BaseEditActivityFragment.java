@@ -4,7 +4,6 @@ import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.databinding.OnRebindCallback;
 import android.databinding.ViewDataBinding;
-import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import java.util.List;
@@ -400,6 +398,7 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
         String dataUuid = dataCapsule.getRecordUuid();
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
         IStatusElaborator pageStatus = dataCapsule.getPageStatus();
+        int activeMenuKey = dataCapsule.getActiveMenuKey();
         String sampleMaterial = dataCapsule.getSampleMaterial();
         String caseUuid = dataCapsule.getCaseUuid();
         String personUuid = dataCapsule.getPersonUuid();
@@ -413,6 +412,7 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
         UserRight userRight = dataCapsule.getUserRight();
         //AbstractDomainObject record = dataCapsule.getRecord();
 
+        bundle.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
         bundle.putString(ConstantHelper.KEY_DATA_UUID, dataUuid);
         bundle.putString(ConstantHelper.KEY_PERSON_UUID, personUuid);
         bundle.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);

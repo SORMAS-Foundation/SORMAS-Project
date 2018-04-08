@@ -17,6 +17,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -165,7 +166,7 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
         recyclerViewForList.setAdapter(getListAdapter());
     }
 
-    public static SampleListFragment newInstance(IActivityCommunicator communicator, SampleListCapsule capsule)
+    public static SampleListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule)
             throws java.lang.InstantiationException, IllegalAccessException {
         return newInstance(communicator, SampleListFragment.class, capsule);
     }

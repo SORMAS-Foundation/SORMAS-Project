@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import de.symeda.sormas.api.task.TaskStatus;
@@ -27,7 +26,7 @@ import de.symeda.sormas.app.util.NavigationHelper;
 
 public class ContactEditTaskInfoActivity extends BaseEditActivity<Task> {
 
-    private final String DATA_XML_PAGE_MENU = null;
+    private final int DATA_XML_PAGE_MENU = -1;
 
     private boolean showStatusFrame;
     private boolean showTitleBar;
@@ -111,7 +110,7 @@ public class ContactEditTaskInfoActivity extends BaseEditActivity<Task> {
     }
 
     @Override
-    public String getPageMenuData() {
+    public int getPageMenuData() {
         return DATA_XML_PAGE_MENU;
     }
 

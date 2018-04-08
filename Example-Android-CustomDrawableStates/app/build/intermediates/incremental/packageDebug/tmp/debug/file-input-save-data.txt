@@ -1,0 +1,7 @@
+#Internal package file, do not edit.
+#Wed Apr 04 15:39:47 WAT 2018
+0.baseType=DIRECTORY
+0.base=C\:\\Projects\\Dev\\mobile\\integration\\SORMAS-Open\\Example-Android-CustomDrawableStates\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\0
+0.path=classes.dex
+0.set=DEX
+count=1

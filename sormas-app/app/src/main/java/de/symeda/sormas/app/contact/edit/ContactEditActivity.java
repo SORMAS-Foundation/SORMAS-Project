@@ -53,7 +53,7 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
     public static final String TAG = ContactEditActivity.class.getSimpleName();
 
-    private final String DATA_XML_PAGE_MENU = "xml/data_edit_page_contact_menu.xml";
+    private final int DATA_XML_PAGE_MENU = R.xml.data_form_page_contact_menu;// "xml/data_edit_page_contact_menu.xml";
 
     private AsyncTask saveTask;
     private static final int MENU_INDEX_CONTACT_INFO = 0;
@@ -132,7 +132,7 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
     }
 
     @Override
-    public String getPageMenuData() {
+    public int getPageMenuData() {
         return DATA_XML_PAGE_MENU;
     }
 

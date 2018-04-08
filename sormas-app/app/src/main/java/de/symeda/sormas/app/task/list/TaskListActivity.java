@@ -3,22 +3,37 @@ package de.symeda.sormas.app.task.list;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+
+import org.joda.time.DateTime;
+
+import java.util.Random;
 
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.core.IListNavigationCapsule;
+import de.symeda.sormas.app.core.ListNavigationCapsule;
 import de.symeda.sormas.app.core.SearchBy;
-import de.symeda.sormas.app.task.landing.TaskLandingToListCapsule;
-import de.symeda.sormas.app.util.NavigationHelper;
 
 /**
  * Created by Orson on 01/12/2017.
  */
 
 public class TaskListActivity  extends BaseListActivity {
+
+    private final int DATA_XML_PAGE_MENU = R.xml.data_landing_page_task_menu;//  "xml/data_landing_page_task_menu.xml";
+
+    private static final int MENU_INDEX_TASK_PENDING = 0;
+    private static final int MENU_INDEX_TASK_DONE = 1;
+    private static final int MENU_INDEX_TASK_NOT_EXECUTABLE = 2;
+
+    private TaskStatus statusFilters[] = new TaskStatus[] { TaskStatus.PENDING, TaskStatus.DONE, TaskStatus.NOT_EXECUTABLE };
 
     private TaskStatus filterStatus = null;
     private SearchBy searchBy = null;
@@ -60,8 +75,40 @@ public class TaskListActivity  extends BaseListActivity {
     @Override
     public BaseListActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
         if (activeFragment == null) {
-            TaskListCapsule dataCapsule = new TaskListCapsule(TaskListActivity.this, filterStatus, searchBy);
+            IListNavigationCapsule dataCapsule = new ListNavigationCapsule(TaskListActivity.this, filterStatus, searchBy);
             activeFragment = TaskListFragment.newInstance(this, dataCapsule);
+        }
+
+        return activeFragment;
+    }
+
+    @Override
+    public int getPageMenuData() {
+        return DATA_XML_PAGE_MENU;
+    }
+
+    @Override
+    public int onNotificationCountChanging(AdapterView parent, LandingPageMenuItem menuItem, int position) {
+        //TODO: Call database and retrieve notification count
+        return (int)(new Random(DateTime.now().getMillis() * 1000).nextInt()/10000000);
+    }
+
+    @Override
+    protected BaseListActivityFragment getNextFragment(LandingPageMenuItem menuItem) {
+        TaskStatus status = statusFilters[menuItem.getKey()];
+
+        if (status == null)
+            return null;
+
+        filterStatus = status;
+        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(TaskListActivity.this, filterStatus, searchBy);
+
+        try {
+            activeFragment = TaskListFragment.newInstance(this, dataCapsule);
+        } catch (InstantiationException e) {
+            Log.e(TAG, e.getMessage());
+        } catch (IllegalAccessException e) {
+            Log.e(TAG, e.getMessage());
         }
 
         return activeFragment;
@@ -102,7 +149,7 @@ public class TaskListActivity  extends BaseListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
-            case android.R.id.home:
+            /*case android.R.id.home:
                 // TODO check parent activity intent as soon as the minimum API level has been increased to 16
                 //Intent intent = new Intent(this, TasksLandingActivity.class);
                 //startActivity(intent);
@@ -111,7 +158,7 @@ public class TaskListActivity  extends BaseListActivity {
 
                 NavigationHelper.navigateUpFrom(this);
 
-                return true;
+                return true;*/
 
             case R.id.option_menu_action_sync:
                 //synchronizeChangedData();
@@ -146,16 +193,11 @@ public class TaskListActivity  extends BaseListActivity {
     }
 
     @Override
-    protected int getRootActivityLayout() {
-        return R.layout.activity_root_with_title_layout;
-    }
-
-    @Override
     protected int getActivityTitle() {
         return R.string.heading_level2_tasks_list;
     }
 
-    public static void goToActivity(Context fromActivity, TaskLandingToListCapsule dataCapsule) {
+    public static void goToActivity(Context fromActivity, IListNavigationCapsule dataCapsule) {
         BaseListActivity.goToActivity(fromActivity, TaskListActivity.class, dataCapsule);
     }
 }

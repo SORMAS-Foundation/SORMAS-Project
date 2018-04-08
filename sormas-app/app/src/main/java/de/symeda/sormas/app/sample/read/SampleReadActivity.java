@@ -24,7 +24,7 @@ import de.symeda.sormas.app.util.NavigationHelper;
 
 public class SampleReadActivity extends BaseReadActivity<Sample> {
 
-    private final String DATA_XML_PAGE_MENU = "";
+    private final int DATA_XML_PAGE_MENU = -1;
 
     private ShipmentStatus pageStatus = null;
     private String recordUuid = null;
@@ -112,7 +112,7 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
     }
 
     @Override
-    public String getPageMenuData() {
+    public int getPageMenuData() {
         return DATA_XML_PAGE_MENU;
     }
 

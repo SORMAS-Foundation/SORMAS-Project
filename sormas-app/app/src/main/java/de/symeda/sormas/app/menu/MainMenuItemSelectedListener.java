@@ -8,14 +8,10 @@ import android.view.MenuItem;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
-import de.symeda.sormas.app.caze.landing.CasesLandingActivity;
-import de.symeda.sormas.app.contact.landing.ContactsLandingActivity;
 import de.symeda.sormas.app.dashboard.DashboardActivity;
-import de.symeda.sormas.app.event.landing.EventsLandingActivity;
 import de.symeda.sormas.app.report.ReportsLandingActivity;
-import de.symeda.sormas.app.sample.landing.SampleLandingActivity;
 import de.symeda.sormas.app.settings.SettingsActivity;
-import de.symeda.sormas.app.task.landing.TasksLandingActivity;
+import de.symeda.sormas.app.util.LandingNavigationHelper;
 
 /**
  * Created by Orson on 22/11/2017.
@@ -66,8 +62,7 @@ public class MainMenuItemSelectedListener implements NavigationView.OnNavigation
     }
 
     public void showCasesView() {
-        Intent intent = new Intent(activity, CasesLandingActivity.class);
-        activity.startActivity(intent);
+        LandingNavigationHelper.gotoCase(activity);
     }
 
     public void showCaseNewView() {
@@ -76,24 +71,25 @@ public class MainMenuItemSelectedListener implements NavigationView.OnNavigation
     }
 
     public void showContactsView() {
-        Intent intent = new Intent(activity, ContactsLandingActivity.class);
-        activity.startActivity(intent);
-    }
-
-    public void showTasksView() {
-        Intent intent = new Intent(activity, TasksLandingActivity.class);
-        activity.startActivity(intent);
+        LandingNavigationHelper.gotoContact(activity);
     }
 
     public void showEventsView() {
-        Intent intent = new Intent(activity, EventsLandingActivity.class);
-        activity.startActivity(intent);
+        LandingNavigationHelper.gotoEvent(activity);
     }
 
     public void showSamplesView() {
-        Intent intent = new Intent(activity, SampleLandingActivity.class);
-        activity.startActivity(intent);
+        LandingNavigationHelper.gotoSample(activity);
     }
+
+    public void showTasksView() {
+        LandingNavigationHelper.gotoTask(activity);
+    }
+
+
+
+
+
 
     public void showReportsView() {
         Intent intent = new Intent(activity, ReportsLandingActivity.class);

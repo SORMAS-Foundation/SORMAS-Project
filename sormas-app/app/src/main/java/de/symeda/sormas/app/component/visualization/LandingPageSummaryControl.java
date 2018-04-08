@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridLayout;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -427,15 +426,6 @@ class LandingPageSummaryAdapter extends BaseAdapter {
         SummaryInfo summary = this.data.get(position);
 
         View layout = null;
-        LandingPageSummaryViewHolder viewHolder;
-
-        int icon;
-        String iconName;
-        String defType;
-
-        TextView txtNotificationCounter;
-        ImageView imgMenuItemIcon;
-        TextView txtMenuItemTitle;
 
 
 

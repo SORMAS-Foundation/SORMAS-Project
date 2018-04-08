@@ -20,6 +20,7 @@ public class BaseFormNavigationCapsule<T extends AbstractDomainObject, TFormNavi
     private Context context;
     private IStatusElaborator filterStatus;
     private Enum pageStatus;
+    private SearchBy searchBy;
     private List<IStatusElaborator> otherStatus = new ArrayList<>();
     private int activeMenuKey;
     private String recordUuid;
@@ -72,6 +73,16 @@ public class BaseFormNavigationCapsule<T extends AbstractDomainObject, TFormNavi
     }
 
     @Override
+    public SearchBy getSearchStrategy() {
+        return searchBy;
+    }
+
+    @Override
+    public int getActiveMenuKey() {
+        return activeMenuKey;
+    }
+
+    @Override
     public List<IStatusElaborator> getOtherStatus() {
         return otherStatus;
     }
@@ -86,11 +97,6 @@ public class BaseFormNavigationCapsule<T extends AbstractDomainObject, TFormNavi
         return record;
     }
 
-    @Override
-    public int getActiveMenuKey() {
-        return activeMenuKey;
-    }
-
     @SuppressWarnings("unchecked")
     public TFormNavigationCapsule setActiveMenu(int activeMenuKey) {
         this.activeMenuKey = activeMenuKey;
@@ -100,6 +106,10 @@ public class BaseFormNavigationCapsule<T extends AbstractDomainObject, TFormNavi
 
     public void setPageStatus(Enum pageStatus) {
         this.pageStatus = pageStatus;
+    }
+
+    public void setSearchBy(SearchBy searchBy) {
+        this.searchBy = searchBy;
     }
 
     public TFormNavigationCapsule setSampleMaterial(String sampleMaterial) {

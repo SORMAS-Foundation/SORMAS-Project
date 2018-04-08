@@ -37,7 +37,7 @@ public class CaseReadActivity  extends BaseReadActivity<Case> {
     private static final int MENU_INDEX_SAMPLES = 6;
     private static final int MENU_INDEX_TASKS = 7;
 
-    private final String DATA_XML_PAGE_MENU = "xml/data_read_page_case_menu.xml";
+    private final int DATA_XML_PAGE_MENU = R.xml.data_form_page_case_menu; // "xml/data_read_page_case_menu.xml";
 
     //private InvestigationStatus filterStatus = null;
     private CaseClassification pageStatus = null;
@@ -102,7 +102,7 @@ public class CaseReadActivity  extends BaseReadActivity<Case> {
     }
 
     @Override
-    public String getPageMenuData() {
+    public int getPageMenuData() {
         return DATA_XML_PAGE_MENU;
     }
 

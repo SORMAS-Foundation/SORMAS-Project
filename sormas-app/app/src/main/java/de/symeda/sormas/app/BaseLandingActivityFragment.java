@@ -100,7 +100,7 @@ public abstract class BaseLandingActivityFragment<E extends Enum<E>, TAdapter ex
 
     public abstract RecyclerView.LayoutManager createLayoutManager();
 
-    public abstract String getMenuData();
+    public abstract int getMenuData();
 
     public abstract int onNotificationCountChanging(AdapterView<?> parent, LandingPageMenuItem menuItem, int position);
 
@@ -111,7 +111,7 @@ public abstract class BaseLandingActivityFragment<E extends Enum<E>, TAdapter ex
     }
 
     public boolean hasMenu() {
-        return getMenuData() != null;
+        return getMenuData() > 0;
     }
 
     public TAdapter getLandingAdapter() {

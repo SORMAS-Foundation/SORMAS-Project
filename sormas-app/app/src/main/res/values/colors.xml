@@ -302,8 +302,13 @@
     <color name="landingPageMenuText">@color/normalText</color>
     <color name="landingPageMenuCounterText">@color/whiteOpaque</color>
     <color name="landingPageMenuCounterBackground">@color/lightBlue</color>
+    <color name="landingPageMenuCounterBackgroundActive">@color/blue</color>
     <color name="landingPageSummaryDivider">#ffcad8e7</color>
 
+
+    <!-- Landing Page Icons -->
+    <color name="landingPageMenuIconColor">@color/lightBlue</color>
+    <color name="landingPageMenuIconActiveColor">@color/blue</color>
 
 
     <!-- Page Menu -->
@@ -349,9 +354,6 @@
     <!-- Task Priority -->
     <color name="legendValuePercentageSpacer">#ffa7c3e4</color>
 
-
-    <!-- Landing Page Icons -->
-    <color name="landingPageMenuIcon">@color/lightBlue50</color>
 
 
     <!-- List Layoutrs -->

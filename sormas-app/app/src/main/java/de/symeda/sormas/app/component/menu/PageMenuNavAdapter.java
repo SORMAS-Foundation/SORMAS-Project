@@ -24,6 +24,12 @@ public class PageMenuNavAdapter extends BaseAdapter implements IPageMenuAdapter 
     private Context context;
     private ArrayList<LandingPageMenuItem> data;
     private int cellLayout;
+
+    private int counterBackgroundColor;
+    private int counterBackgroundActiveColor;
+    private int iconColor;
+    private int iconActiveColor;
+
     private int positionColor;
     private int positionActiveColor;
     private int titleColor;
@@ -42,9 +48,16 @@ public class PageMenuNavAdapter extends BaseAdapter implements IPageMenuAdapter 
     }
 
     @Override
-    public void initialize(ArrayList<LandingPageMenuItem> data, int cellLayout, int positionColor, int positionActiveColor, int titleColor, int titleActiveColor) {
+    public void initialize(ArrayList<LandingPageMenuItem> data, int cellLayout,
+                           int counterBackgroundColor, int counterBackgroundActiveColor,
+                           int iconColor, int iconActiveColor,
+                           int positionColor, int positionActiveColor, int titleColor, int titleActiveColor) {
         this.data = data;
         this.cellLayout = cellLayout;
+        this.counterBackgroundColor = counterBackgroundColor;
+        this.counterBackgroundActiveColor = counterBackgroundActiveColor;
+        this.iconColor = iconColor;
+        this.iconActiveColor = iconActiveColor;
         this.positionColor = positionColor;
         this.positionActiveColor = positionActiveColor;
         this.titleColor = titleColor;

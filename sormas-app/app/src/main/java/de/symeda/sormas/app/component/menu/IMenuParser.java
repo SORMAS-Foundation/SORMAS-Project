@@ -1,9 +1,6 @@
 package de.symeda.sormas.app.component.menu;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.io.InputStream;
+import android.content.res.XmlResourceParser;
 
 /**
  * Created by Orson on 25/12/2017.
@@ -14,5 +11,5 @@ import java.io.InputStream;
  */
 
 public interface IMenuParser {
-    LandingPageMenu parse(InputStream in) throws XmlPullParserException, IOException;
+    LandingPageMenu parse(XmlResourceParser parser);
 }

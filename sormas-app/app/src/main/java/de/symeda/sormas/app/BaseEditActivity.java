@@ -538,15 +538,15 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
     }
 
     public boolean showPageMenu() {
-        return getPageMenuData() != null && !getPageMenuData().isEmpty();
+        return getPageMenuData() > 0;
     }
 
     public Enum getPageStatus() {
         return pageStatus;
     }
 
-    public String getPageMenuData() {
-        return null;
+    public int getPageMenuData() {
+        return -1;
     }
 
     public int getActiveMenuKey() {

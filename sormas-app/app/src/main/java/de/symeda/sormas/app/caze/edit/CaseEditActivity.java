@@ -63,7 +63,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
     public static final String TAG = CaseEditActivity.class.getSimpleName();
 
-    private final String DATA_XML_PAGE_MENU = "xml/data_edit_page_case_menu.xml";
+    private final int DATA_XML_PAGE_MENU = R.xml.data_form_page_case_menu;// "xml/data_edit_page_case_menu.xml";
 
     private AsyncTask saveTask;
     private AsyncTask moveCaseTask;
@@ -159,7 +159,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     }
 
     @Override
-    public String getPageMenuData() {
+    public int getPageMenuData() {
         return DATA_XML_PAGE_MENU;
     }
 

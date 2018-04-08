@@ -14,6 +14,10 @@
     <attr name="title" format="string" />
     <attr name="text" format="string" />
     <attr name="cellLayout" format="reference" />
+    <attr name="counterBackgroundColor" format="reference" />
+    <attr name="counterBackgroundActiveColor" format="reference" />
+    <attr name="iconColor" format="reference" />
+    <attr name="iconActiveColor" format="reference" />
     <attr name="positionColor" format="reference" />
     <attr name="positionActiveColor" format="reference" />
     <attr name="titleColor" format="reference" />
@@ -361,8 +365,12 @@
     </declare-styleable>
 
     <declare-styleable name="LandingPageMenuControl">
-        <attr name="dataFile" />
+        <attr name="dataResource" />
         <attr name="cellLayout" />
+        <attr name="counterBackgroundColor" />
+        <attr name="counterBackgroundActiveColor" />
+        <attr name="iconColor" />
+        <attr name="iconActiveColor" />
         <attr name="positionColor" />
         <attr name="positionActiveColor" />
         <attr name="titleColor" />
