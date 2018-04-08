@@ -29,6 +29,7 @@ import de.symeda.sormas.app.R;
  * sampson.orson@technologyboard.org
  */
 
+//TODO: Remove
 public class LandingPageSummaryControl extends GridLayout {
 
     private String data;

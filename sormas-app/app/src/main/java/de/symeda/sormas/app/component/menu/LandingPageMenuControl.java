@@ -60,7 +60,6 @@ public class LandingPageMenuControl extends LinearLayout {
 
     public static final String TAG = LandingPageMenuControl.class.getSimpleName();
 
-    private AsyncTask counterTask;
     private AsyncTask updateNotificationCountTask;
     private OnNotificationCountChangingListener mOnNotificationCountChangingListener;
     private OnLandingPageMenuClickListener mOnLandingPageMenuClickListener;
@@ -750,9 +749,6 @@ public class LandingPageMenuControl extends LinearLayout {
     }
 
     public void onDestroy() {
-        if (counterTask != null && !counterTask.isCancelled())
-            counterTask.cancel(true);
-
         if (updateNotificationCountTask != null && !updateNotificationCountTask.isCancelled())
             updateNotificationCountTask.cancel(true);
     }

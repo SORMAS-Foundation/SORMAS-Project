@@ -25,7 +25,7 @@ public class AdapterRegistrationContext<E extends Enum<E>> implements IAdapterRe
     public <TDataItem, T1 extends RecyclerView.ViewHolder, T2 extends DataBinder<T1, TDataItem>> IAdapterRegistrationData<TDataItem> registerBinder(Class<T2> binder) throws IllegalAccessException, InstantiationException {
 
         if (!ClassUtil.hasParameterlessPublicConstructor(binder))
-            throw new InstantiationException("DataBind MUST hava a parameterless constructor.");
+            throw new InstantiationException("DataBind MUST have a parameterless constructor.");
 
         T2 dataBinder = binder.newInstance();
         dataBinder.setContext(this.context);

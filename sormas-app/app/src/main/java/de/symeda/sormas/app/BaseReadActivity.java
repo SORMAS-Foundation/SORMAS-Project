@@ -280,32 +280,24 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
     protected void onResume() {
         super.onResume();
 
-        if (applicationTitleBar != null) {
-            if (showTitleBar()) {
-                applicationTitleBar.setVisibility(View.VISIBLE);
+        if (applicationTitleBar != null && showTitleBar()) {
+            applicationTitleBar.setVisibility(View.VISIBLE);
 
-                if (statusFrame != null) {
-                    if (showStatusFrame()) {
-                        Context statusFrameContext = statusFrame.getContext();
+            if (statusFrame != null && showStatusFrame()) {
+                Context statusFrameContext = statusFrame.getContext();
 
-                        Drawable drw = (Drawable) ContextCompat.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
-                        drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource(statusFrameContext)), PorterDuff.Mode.SRC);
+                Drawable drw = (Drawable) ContextCompat.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
+                drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource(statusFrameContext)), PorterDuff.Mode.SRC);
 
-                        TextView txtStatusName = (TextView)statusFrame.findViewById(R.id.txtStatusName);
-                        ImageView imgStatus = (ImageView)statusFrame.findViewById(R.id.statusIcon);
+                TextView txtStatusName = (TextView)statusFrame.findViewById(R.id.txtStatusName);
+                ImageView imgStatus = (ImageView)statusFrame.findViewById(R.id.statusIcon);
 
 
-                        txtStatusName.setText(getStatusName(statusFrameContext));
-                        imgStatus.setBackground(drw);
+                txtStatusName.setText(getStatusName(statusFrameContext));
+                imgStatus.setBackground(drw);
 
-                        statusFrame.setVisibility(View.VISIBLE);
-                    } else {
-                        statusFrame.setVisibility(View.GONE);
-                    }
-                }
+                statusFrame.setVisibility(View.VISIBLE);
             }
-        } else {
-            applicationTitleBar.setVisibility(View.GONE);
         }
 
 

@@ -476,4 +476,10 @@
     <dimen name="preloaderScaleY">2</dimen>
     <dimen name="preloaderMinHeight">150dp</dimen>
 
+
+
+
+
+    <dimen name="summaryFragmentMinHeight">@dimen/landingSummaryCellHeight</dimen>
+
 </resources>
