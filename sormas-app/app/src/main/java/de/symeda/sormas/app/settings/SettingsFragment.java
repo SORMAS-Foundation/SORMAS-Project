@@ -139,7 +139,7 @@ public class SettingsFragment extends BaseLandingActivityFragment {
         if (RetroProvider.isConnected()) {
             progressDialog.show(new ICallback<AlertDialog>() {
                 @Override
-                public void result(AlertDialog result) {
+                public void call(AlertDialog result) {
 
                 }
             });
@@ -229,7 +229,7 @@ public class SettingsFragment extends BaseLandingActivityFragment {
     }
 
     @Override
-    public int onNotificationCountChanging(AdapterView parent, LandingPageMenuItem menuItem, int position) {
+    public int onNotificationCountChangingAsync(AdapterView parent, LandingPageMenuItem menuItem, int position) {
         return 0;
     }
 }

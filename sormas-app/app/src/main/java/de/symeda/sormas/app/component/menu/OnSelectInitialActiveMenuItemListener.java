@@ -1,6 +1,6 @@
 package de.symeda.sormas.app.component.menu;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Orson on 25/12/2017.
@@ -11,5 +11,5 @@ import java.util.ArrayList;
  */
 
 public interface OnSelectInitialActiveMenuItemListener {
-    LandingPageMenuItem onSelectInitialActiveMenuItem(ArrayList<LandingPageMenuItem> menuList);
+    LandingPageMenuItem onSelectInitialActiveMenuItem(List<LandingPageMenuItem> menuList);
 }

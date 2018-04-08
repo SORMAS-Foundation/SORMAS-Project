@@ -1,6 +1,6 @@
 package de.symeda.sormas.app.component.menu;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Orson on 25/12/2017.
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public interface IPageMenuAdapter {
 
-    void initialize(ArrayList<LandingPageMenuItem> data, int cellLayout,
+    void initialize(List<LandingPageMenuItem> data, int cellLayout,
                     int counterBackgroundColor, int counterBackgroundActiveColor,
                     int iconColor, int iconActiveColor, int positionColor, int positionActiveColor, int titleColor, int titleActiveColor);
 }

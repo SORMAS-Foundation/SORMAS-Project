@@ -462,7 +462,7 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
                 activity.saveCaseToDatabase(new ICallback<BoolResult>() {
 
                     @Override
-                    public void result(BoolResult result) {
+                    public void call(BoolResult result) {
                         if (!result.isSuccess()) {
                             NotificationHelper.showNotification(activity, NotificationType.ERROR, R.string.notification_error_init_move_case);
                             return;

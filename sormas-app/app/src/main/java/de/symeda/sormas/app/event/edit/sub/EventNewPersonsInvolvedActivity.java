@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -234,7 +233,7 @@ public class EventNewPersonsInvolvedActivity extends BaseEditActivity<EventParti
                     if (listIterator.hasNext())
                         existingPersons = listIterator.next();
 
-                    callback.result(existingPersons);
+                    callback.call(existingPersons);
                 }
             });
         } catch (Exception ex) {
@@ -270,7 +269,7 @@ public class EventNewPersonsInvolvedActivity extends BaseEditActivity<EventParti
 
         checkExistingPersons(new ICallback<List<Person>>() {
             @Override
-            public void result(List<Person> existingPersons) {
+            public void call(List<Person> existingPersons) {
                 if (existingPersons.size() > 0) {
                     final SelectOrCreatePersonDialog personDialog = new SelectOrCreatePersonDialog(AbstractSormasActivity.getActiveActivity(), recordToSave.getPerson(), existingPersons);
                     personDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
@@ -393,7 +392,7 @@ public class EventNewPersonsInvolvedActivity extends BaseEditActivity<EventParti
 
                     TimeoutHelper.executeIn5Seconds(new ICallback<AsyncTask>() {
                         @Override
-                        public void result(AsyncTask result) {
+                        public void call(AsyncTask result) {
                             goToNewEventParticipantFullView();
                         }
                     });
@@ -506,7 +505,7 @@ public class EventNewPersonsInvolvedActivity extends BaseEditActivity<EventParti
 
                     TimeoutHelper.executeIn5Seconds(new ICallback<AsyncTask>() {
                         @Override
-                        public void result(AsyncTask result) {
+                        public void call(AsyncTask result) {
                             EventNewPersonsInvolvedActivity.this.finish();
                         }
                     });

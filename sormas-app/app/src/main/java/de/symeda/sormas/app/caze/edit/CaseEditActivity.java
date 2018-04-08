@@ -363,7 +363,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                         setAdapter(savedCase);
                     }*/
 
-                    callback.result(resultStatus);
+                    callback.call(resultStatus);
                 }
             });
         } catch (Exception ex) {
@@ -402,7 +402,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
         saveCaseToDatabase(new ICallback<BoolResult>() {
             @Override
-            public void result(BoolResult result) {
+            public void call(BoolResult result) {
                 if (!result.isSuccess())
                     return;
 
@@ -423,7 +423,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                                     confirmationDialog.dismiss();
                                     finalizeSaveProcess(cazeToSave, caseBeforeSaving, new ICallback<BoolResult>() {
                                         @Override
-                                        public void result(BoolResult result) {
+                                        public void call(BoolResult result) {
                                             finalizeSaveProcessHelper(result);
                                         }
                                     });
@@ -434,7 +434,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                         } else {
                             finalizeSaveProcess(cazeToSave, caseBeforeSaving, new ICallback<BoolResult>() {
                                 @Override
-                                public void result(BoolResult result) {
+                                public void call(BoolResult result) {
                                     finalizeSaveProcessHelper(result);
                                 }
                             });
@@ -463,21 +463,21 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         final String saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_case));
 
         if (activeFragment == null) {
-            callback.result(new BoolResult(false, saveUnsuccessful));
+            callback.call(new BoolResult(false, saveUnsuccessful));
             return;
         }
 
         int activeMenuKey = getActiveMenuItem().getKey();
 
         if (activeMenuKey == MENU_INDEX_CONTACTS || activeMenuKey == MENU_INDEX_SAMPLES || activeMenuKey == MENU_INDEX_TASKS) {
-            callback.result(new BoolResult(false, saveUnsuccessful));
+            callback.call(new BoolResult(false, saveUnsuccessful));
             return;
         }
 
         final Case cazeToSave = getStoredActivityRootData();
 
         if (cazeToSave == null) {
-            callback.result(new BoolResult(false, saveUnsuccessful));
+            callback.call(new BoolResult(false, saveUnsuccessful));
             return;
         }
 
@@ -584,7 +584,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                         NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.SUCCESS, "Case " + DataHelper.getShortUuid(cazeToSave.getUuid()) + " saved");
                     }
 
-                    callback.result(resultStatus);
+                    callback.call(resultStatus);
                     /*if (!goToNextMenu())
                         NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.INFO, R.string.notification_reach_last_menu);*/
 

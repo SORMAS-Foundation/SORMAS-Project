@@ -93,17 +93,17 @@ public class LocationDialog extends BaseTeboAlertDialog {
         data.setLongitude(longitude);
         data.setLatLonAccuracy(latLonAccuracy);
 
-        callback.result(null);
+        callback.call(null);
     }
 
     @Override
     protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
-        callback.result(null);
+        callback.call(null);
     }
 
     @Override
     protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
-        callback.result(null);
+        callback.call(null);
     }
 
     @Override

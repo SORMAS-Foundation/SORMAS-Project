@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -32,11 +33,19 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.OnSwipeTouchListener;
+import de.symeda.sormas.app.core.async.IJobDefinition;
+import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.ITaskResultCallback;
+import de.symeda.sormas.app.core.async.TaskExecutorFor;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
 
 
 /**
@@ -51,12 +60,14 @@ public class LandingPageMenuControl extends LinearLayout {
 
     public static final String TAG = LandingPageMenuControl.class.getSimpleName();
 
+    private AsyncTask counterTask;
+    private AsyncTask updateNotificationCountTask;
     private OnNotificationCountChangingListener mOnNotificationCountChangingListener;
     private OnLandingPageMenuClickListener mOnLandingPageMenuClickListener;
     private OnSelectInitialActiveMenuItemListener mOnSelectInitialActiveMenuItemListener;
 
     private BaseAdapter adapter;
-    private ArrayList<LandingPageMenuItem> menuList;
+    private List<LandingPageMenuItem> menuList;
 
     private int dataResourceId;
     private int cellLayout;
@@ -217,7 +228,7 @@ public class LandingPageMenuControl extends LinearLayout {
         mConfigured = true;
     }
 
-    private ArrayList<LandingPageMenuItem> extractAndLoadMenuData() throws IOException, XmlPullParserException, ParserConfigurationException {
+    private List<LandingPageMenuItem> extractAndLoadMenuData() throws IOException, XmlPullParserException, ParserConfigurationException {
         if (dataResourceId <= 0)
             throw new IllegalArgumentException("The dataResourceId file argument is empty.");
 
@@ -236,14 +247,14 @@ public class LandingPageMenuControl extends LinearLayout {
         //Set Title
         setMenuTitle(menu.getTitle());
 
-        int position = 0;
-        for(LandingPageMenuItem entry: menu.getMenuItems()) {
-            //Get Notification Count
-            entry.setNotificationCount(performNotificationCountChange(entry, position));
-
-            menuList.add(entry);
-            position = position + 1;
-        }
+        menuList.addAll(menu.getMenuItems());
+        updateNotificationCount(menuList, new ICallback<BoolResult>() {
+            @Override
+            public void call(BoolResult result) {
+                if (result.isSuccess())
+                    adapter.notifyDataSetChanged();
+            }
+        });
 
         if (menuList != null && menuList.size() > 0) {
             selectInitialActiveMenuItem();
@@ -251,6 +262,49 @@ public class LandingPageMenuControl extends LinearLayout {
         }
 
         return menuList;
+    }
+
+    private void updateNotificationCount(final List<LandingPageMenuItem> inputMenuList, final ICallback<BoolResult> callback) {
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    int position = 0;
+                    for(final LandingPageMenuItem entry: inputMenuList) {
+                        int result = performNotificationCountChange(entry, position);
+                        entry.setNotificationCount(result);
+                        //resultHolder.<LandingPageMenuItem>forEnumerable().add(entry);
+
+                        position = position + 1;
+                    }
+
+                    resultHolder.setResultStatus(BoolResult.TRUE);
+                }
+            });
+            updateNotificationCountTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    callback.call(resultStatus);
+
+                    /*ITaskResultHolderEnumerableIterator<LandingPageMenuItem> enumerableIterator = resultHolder.forEnumerable().iterator();
+
+                    if (enumerableIterator.hasNext()) {
+                        callback.call(enumerableIterator.next());
+                    }*/
+                }
+            });
+        } catch (Exception ex) {
+
+        }
     }
 
     public void setOnNotificationCountChangingListener(@Nullable OnNotificationCountChangingListener listener) {
@@ -266,18 +320,19 @@ public class LandingPageMenuControl extends LinearLayout {
         if (menuList == null)
             throw new NullPointerException("The menuList is null.");
 
-
-        int position = 0;
-        for(LandingPageMenuItem entry: menuList) {
-            entry.setNotificationCount(performNotificationCountChange(entry, position));
-            position = position + 1;
-        }
+        updateNotificationCount(menuList, new ICallback<BoolResult>() {
+            @Override
+            public void call(BoolResult result) {
+                if (result.isSuccess())
+                    adapter.notifyDataSetChanged();
+            }
+        });
     }
-
+    //Orson on Init
     public int performNotificationCountChange(LandingPageMenuItem menuItem, int position) {
         int result = 0;
         if (mOnNotificationCountChangingListener != null) {
-            result = mOnNotificationCountChangingListener.onNotificationCountChanging(taskLandingMenuGridView, menuItem, position);
+            result = mOnNotificationCountChangingListener.onNotificationCountChangingAsync(taskLandingMenuGridView, menuItem, position);
         }
 
         return result;
@@ -318,7 +373,7 @@ public class LandingPageMenuControl extends LinearLayout {
     public boolean performLandingPageMenuItemClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws InstantiationException, IllegalAccessException {
         boolean result = false;
         if (mOnLandingPageMenuClickListener != null) {
-            result = mOnLandingPageMenuClickListener.onLandingPageMenuClick(parent, view, menuItem, position, id);
+            result = mOnLandingPageMenuClickListener.onLandingPageMenuClick(parent, view, menuItem, position, id); //IMPORTANT
 
             if (result) {
                 markActiveMenuItem(menuItem);
@@ -692,5 +747,13 @@ public class LandingPageMenuControl extends LinearLayout {
         if (v.getParent() instanceof View) {
             disableClipOnParents((View) v.getParent());
         }
+    }
+
+    public void onDestroy() {
+        if (counterTask != null && !counterTask.isCancelled())
+            counterTask.cancel(true);
+
+        if (updateNotificationCountTask != null && !updateNotificationCountTask.isCancelled())
+            updateNotificationCountTask.cancel(true);
     }
 }

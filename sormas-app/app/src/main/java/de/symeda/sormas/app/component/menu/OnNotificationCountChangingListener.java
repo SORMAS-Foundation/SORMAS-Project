@@ -12,5 +12,5 @@ import android.widget.AdapterView;
 
 public interface OnNotificationCountChangingListener {
 
-    int onNotificationCountChanging(AdapterView<?> parent, LandingPageMenuItem menuItem, int position);
+    int onNotificationCountChangingAsync(AdapterView<?> parent, LandingPageMenuItem menuItem, int position);
 }

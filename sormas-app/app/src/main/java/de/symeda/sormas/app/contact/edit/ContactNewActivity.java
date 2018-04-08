@@ -376,7 +376,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
                                 TimeoutHelper.executeIn5Seconds(new ICallback<AsyncTask>() {
                                     @Override
-                                    public void result(AsyncTask result) {
+                                    public void call(AsyncTask result) {
                                         goToCaseContacts();
                                     }
                                 });
@@ -387,7 +387,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
                         NotificationHelper.showNotification(ContactNewActivity.this, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_contact)));
                         TimeoutHelper.executeIn5Seconds(new ICallback<AsyncTask>() {
                             @Override
-                            public void result(AsyncTask result) {
+                            public void call(AsyncTask result) {
                                 goToCaseContacts();
                             }
                         });

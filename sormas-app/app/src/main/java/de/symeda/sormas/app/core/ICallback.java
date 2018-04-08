@@ -9,7 +9,7 @@ package de.symeda.sormas.app.core;
  */
 
 public interface ICallback<T> {
-    void result(T result);
+    void call(T result);
 }
 
 

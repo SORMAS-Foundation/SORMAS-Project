@@ -149,7 +149,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
             private View _viewRoot;
 
             @Override
-            public void result(Object result) {
+            public void call(Object result) {
                 if (onPositiveClickListener != null)
                     onPositiveClickListener.onOkClick(this._v, (result != null)? result : this._item, this._viewRoot);
             }
@@ -175,7 +175,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
             private View _viewRoot;
 
             @Override
-            public void result(Object result) {
+            public void call(Object result) {
                 if (onCancelClickListener != null)
                     onCancelClickListener.onCancelClick(this._v, (result != null)? result : this._item, this._viewRoot);
             }
@@ -201,7 +201,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
             private View _viewRoot;
 
             @Override
-            public void result(Object result) {
+            public void call(Object result) {
                 if (onCreateClickListener != null)
                     onCreateClickListener.onCreateClick(this._v, (result != null)? result : this._item, this._viewRoot);
             }
@@ -270,7 +270,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
             private View _viewRoot;
 
             @Override
-            public void result(Object result) {
+            public void call(Object result) {
                 if (onNegativeClickListener != null)
                     onNegativeClickListener.onDismissClick(this._v, (result != null)? result : this._item, this._viewRoot);
             }
@@ -300,7 +300,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
                     private View _viewRoot;
 
                     @Override
-                    public void result(Object result) {
+                    public void call(Object result) {
                         if (onDeleteClickListener != null)
                             onDeleteClickListener.onDeleteClick(this._v, (result != null)? result : this._item, this._viewRoot);
 
@@ -623,7 +623,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
                     dialog.getWindow().setLayout((int) width, (int) height);
 
                     if (callback != null)
-                        callback.result(dialog);
+                        callback.call(dialog);
                 }
             });
         } catch (Exception ex) {

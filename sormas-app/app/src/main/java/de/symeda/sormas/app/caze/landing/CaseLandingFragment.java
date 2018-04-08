@@ -90,7 +90,7 @@ public class CaseLandingFragment extends BaseLandingActivityFragment<ViewTypeHel
     }
 
     @Override
-    public int onNotificationCountChanging(AdapterView<?> parent, LandingPageMenuItem menuItem, int position) {
+    public int onNotificationCountChangingAsync(AdapterView<?> parent, LandingPageMenuItem menuItem, int position) {
         //TODO: Call database and retrieve notification count
         return (int)(new Random(DateTime.now().getMillis() * 1000).nextInt()/10000000);
     }

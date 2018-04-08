@@ -102,7 +102,7 @@ public abstract class BaseLandingActivityFragment<E extends Enum<E>, TAdapter ex
 
     public abstract int getMenuData();
 
-    public abstract int onNotificationCountChanging(AdapterView<?> parent, LandingPageMenuItem menuItem, int position);
+    public abstract int onNotificationCountChangingAsync(AdapterView<?> parent, LandingPageMenuItem menuItem, int position);
 
     public abstract boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id);
 
@@ -153,5 +153,14 @@ public abstract class BaseLandingActivityFragment<E extends Enum<E>, TAdapter ex
 
     public boolean showNewAction() {
         return false;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (menuControl != null) {
+            menuControl.onDestroy();
+        }
     }
 }

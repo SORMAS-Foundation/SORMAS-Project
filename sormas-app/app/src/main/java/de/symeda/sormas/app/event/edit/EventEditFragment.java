@@ -322,7 +322,7 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
 
                 locationDialog.show(new ICallback<AlertDialog>() {
                     @Override
-                    public void result(AlertDialog result) {
+                    public void call(AlertDialog result) {
 
                     }
                 });

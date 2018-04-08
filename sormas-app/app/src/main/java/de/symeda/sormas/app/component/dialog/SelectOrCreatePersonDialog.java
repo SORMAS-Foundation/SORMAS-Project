@@ -77,7 +77,7 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, final ICallback callback) {
         if (getSelectedPerson() != null && getSelectedPerson().getUuid() != data.getUuid()) {
-            callback.result(getSelectedPerson());
+            callback.call(getSelectedPerson());
         } else {
             NotificationHelper.showDialogNotification((INotificationContext)this, NotificationType.ERROR, R.string.snackbar_select_create_person);
         }
@@ -88,29 +88,29 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
         if (selectOrCreateTask != null && !selectOrCreateTask.isCancelled())
             selectOrCreateTask.cancel(true);
 
-        callback.result(null);
+        callback.call(null);
     }
 
     @Override
     protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
-        callback.result(null);
+        callback.call(null);
     }
 
     @Override
     protected void onCancelClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
-        callback.result(null);
+        callback.call(null);
     }
 
     @Override
     protected void onCreateClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
-        callback.result(getSelectedPerson());
+        callback.call(getSelectedPerson());
 
         if (binding.txtFirstName.getValue().isEmpty() || binding.txtLastName.getValue().isEmpty()) {
             NotificationHelper.showDialogNotification((INotificationContext)this, NotificationType.ERROR, R.string.snackbar_person_first_last_name);
         } else {
             data.setFirstName(binding.txtFirstName.getValue());
             data.setLastName(binding.txtLastName.getValue());
-            callback.result(data);
+            callback.call(data);
         }
     }
 

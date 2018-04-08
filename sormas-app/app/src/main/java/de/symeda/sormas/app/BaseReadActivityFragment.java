@@ -268,7 +268,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         if (onResumeExecCount > 0) {
             this.activityRootDataRequestor.requestActivityRootData(new ICallback<TActivityRootData>() {
                 @Override
-                public void result(TActivityRootData result) {
+                public void call(TActivityRootData result) {
                     setActivityRootData(result);
                     onPageResume(getContentBinding(), beforeLayoutBindingAsyncReturn);
                 }

@@ -138,7 +138,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
                         return;
                     } else {
                         NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_case_moved);
-                        callback.result(null);
+                        callback.call(null);
                     }
                 }
 
@@ -155,12 +155,12 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
         if (moveCaseTask != null && !moveCaseTask.isCancelled())
             moveCaseTask.cancel(true);
 
-        callback.result(null);
+        callback.call(null);
     }
 
     @Override
     protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
-        callback.result(null);
+        callback.call(null);
     }
 
     @Override

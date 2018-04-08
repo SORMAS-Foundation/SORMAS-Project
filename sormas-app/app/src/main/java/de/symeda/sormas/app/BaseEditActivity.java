@@ -25,6 +25,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -73,7 +74,7 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
     private TextView subHeadingListActivityTitle;
     private LandingPageMenuControl pageMenu = null;
     private LandingPageMenuItem activeMenu = null;
-    private ArrayList<LandingPageMenuItem> menuList;
+    private List<LandingPageMenuItem> menuList;
     private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
     private View rootView;
     private TActivityRootData storedActivityRootData = null;
@@ -209,7 +210,7 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         if (fragmentFrame != null && savedInstanceState == null) {
             processActivityRootData(new ICallback<TActivityRootData>() {
                 @Override
-                public void result(TActivityRootData result) {
+                public void call(TActivityRootData result) {
                     try {
                         activeFragment = getActiveEditFragment(result);
                         replaceFragment(activeFragment);
@@ -261,7 +262,7 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
                     if (itemIterator.hasNext())
                         storedActivityRootData = itemIterator.next();
 
-                    callback.result(storedActivityRootData);
+                    callback.call(storedActivityRootData);
                 }
             });
         } catch (Exception ex) {
@@ -365,7 +366,7 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
     }
 
     @Override
-    public LandingPageMenuItem onSelectInitialActiveMenuItem(ArrayList<LandingPageMenuItem> menuList) {
+    public LandingPageMenuItem onSelectInitialActiveMenuItem(List<LandingPageMenuItem> menuList) {
         if (menuList == null || menuList.size() <= 0)
             return null;
 
@@ -943,6 +944,10 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
 
         if (processActivityRootDataTask != null && !processActivityRootDataTask.isCancelled())
             processActivityRootDataTask.cancel(true);
+
+        if (pageMenu != null) {
+            pageMenu.onDestroy();
+        }
     }
 
 }

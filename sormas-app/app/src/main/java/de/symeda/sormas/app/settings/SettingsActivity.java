@@ -74,7 +74,7 @@ public class SettingsActivity extends BaseLandingActivity {
                 UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
                 userReportDialog.show(new ICallback<AlertDialog>() {
                     @Override
-                    public void result(AlertDialog result) {
+                    public void call(AlertDialog result) {
 
                     }
                 });

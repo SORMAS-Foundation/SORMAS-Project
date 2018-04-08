@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.symeda.sormas.app.R;
 
@@ -24,7 +25,7 @@ import de.symeda.sormas.app.R;
 public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdapter {
 
     private Context context;
-    private ArrayList<LandingPageMenuItem> data;
+    private List<LandingPageMenuItem> data;
     private int cellLayout;
 
     private int counterBackgroundColor;
@@ -50,7 +51,7 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
     }
 
     @Override
-    public void initialize(ArrayList<LandingPageMenuItem> data, int cellLayout,
+    public void initialize(List<LandingPageMenuItem> data, int cellLayout,
                            int counterBackgroundColor, int counterBackgroundActiveColor,
                            int iconColor, int iconActiveColor,
                            int positionColor, int positionActiveColor, int titleColor, int titleActiveColor) {
@@ -96,7 +97,7 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
     public View getView(int position, View convertView, ViewGroup parent) {
         checkInitStatus();
 
-        ArrayList<LandingPageMenuItem> menuItems = this.data;
+        List<LandingPageMenuItem> menuItems = this.data;
 
         Drawable icon;
         String iconName;

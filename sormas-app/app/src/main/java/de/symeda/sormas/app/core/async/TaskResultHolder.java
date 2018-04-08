@@ -28,6 +28,7 @@ public class TaskResultHolder {
     private ITaskResultOtherHolder otherHolderObject;
     private ITaskResultItemHolder itemHolderObject;
     private ITaskResultItemListHolder listHolderObject;
+    private ITaskResultItemEnumerableHolder enumerableHolderObject;
 
     public TaskResultHolder() {
         this.itemHolder = new ArrayList<>();
@@ -54,6 +55,13 @@ public class TaskResultHolder {
             listHolderObject = new TaskResultItemListHolder(listHolder);
 
         return listHolderObject;
+    }
+
+    public <T> ITaskResultItemEnumerableHolder forEnumerable() {
+        if (enumerableHolderObject == null)
+            enumerableHolderObject = new TaskResultItemEnumerableHolder<T>();
+
+        return enumerableHolderObject;
     }
 
 
@@ -211,6 +219,58 @@ public class TaskResultHolder {
 
                 cursor = i + 1;
                 return (E) holder.get(lastRet = i);
+            }
+        }
+    }
+
+    private static class TaskResultItemEnumerableHolder<T> implements ITaskResultItemEnumerableHolder<T> {
+
+        private List<T> holder;
+        protected transient int modCount = 0;
+        private int nextIndex = 0;
+
+        public TaskResultItemEnumerableHolder() {
+            this.holder = new ArrayList<T>();
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void add(T value) {
+            if (holder != null) {
+                holder.add(nextIndex, value);
+                nextIndex = nextIndex + 1;
+            }
+        }
+
+        public ITaskResultHolderEnumerableIterator<T> iterator() {
+            return new TaskResultHolderIterator();
+        }
+
+        private class TaskResultHolderIterator implements ITaskResultHolderEnumerableIterator<T> {
+
+            protected int limit = holder.size();
+
+            int cursor;       // index of next element to return
+            int lastRet = -1; // index of last element returned; -1 if no such
+            int expectedModCount = modCount;
+
+            public boolean hasNext() {
+                return cursor < limit;
+            }
+
+            public T next() {
+                if (modCount != expectedModCount)
+                    throw new ConcurrentModificationException();
+
+                int i = cursor;
+                if (i >= limit)
+                    throw new NoSuchElementException();
+
+                if (i >= holder.size())
+                    throw new ConcurrentModificationException();
+
+                cursor = i + 1;
+                return (T) holder.get(lastRet = i);
             }
         }
     }

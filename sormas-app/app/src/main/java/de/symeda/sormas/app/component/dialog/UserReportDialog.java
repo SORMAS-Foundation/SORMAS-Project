@@ -105,8 +105,8 @@ public class UserReportDialog extends BaseTeboAlertDialog {
 
                     TimeoutHelper.executeIn5Seconds(new ICallback<AsyncTask>() {
                         @Override
-                        public void result(AsyncTask result) {
-                            callback.result(null);
+                        public void call(AsyncTask result) {
+                            callback.call(null);
                         }
                     });
                 }
@@ -122,12 +122,12 @@ public class UserReportDialog extends BaseTeboAlertDialog {
         if (dialogTask != null && !dialogTask.isCancelled())
             dialogTask.cancel(true);
 
-        callback.result(null);
+        callback.call(null);
     }
 
     @Override
     protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
-        callback.result(null);
+        callback.call(null);
     }
 
     @Override

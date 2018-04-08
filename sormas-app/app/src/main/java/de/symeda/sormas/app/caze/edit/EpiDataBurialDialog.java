@@ -146,7 +146,7 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
                 final LocationDialog locationDialog = new LocationDialog(getActivity(), location);
                 locationDialog.show(new ICallback<AlertDialog>() {
                     @Override
-                    public void result(AlertDialog result) {
+                    public void call(AlertDialog result) {
 
                     }
                 });

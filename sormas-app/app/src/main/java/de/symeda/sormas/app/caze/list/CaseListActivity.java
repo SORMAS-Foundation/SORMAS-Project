@@ -9,8 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
-import org.joda.time.DateTime;
-
 import java.util.Date;
 import java.util.Random;
 
@@ -88,9 +86,10 @@ public class CaseListActivity extends BaseListActivity {
     }
 
     @Override
-    public int onNotificationCountChanging(AdapterView parent, LandingPageMenuItem menuItem, int position) {
+    public int onNotificationCountChangingAsync(AdapterView parent, LandingPageMenuItem menuItem, int position) {
         //TODO: Call database and retrieve notification count
-        return (int)(new Random(DateTime.now().getMillis() * 1000).nextInt()/10000000);
+        return new Random().nextInt(100);
+        //return (int)(new Random(DateTime.now().getMillis() * 1000).nextInt()/10000000);
     }
 
     @Override
@@ -187,7 +186,7 @@ public class CaseListActivity extends BaseListActivity {
             case R.id.option_menu_action_markAllAsRead:
                 MarkAllAsReadHelper.markCases(this, new ICallback<AsyncTask>() {
                     @Override
-                    public void result(AsyncTask asyncTask) {
+                    public void call(AsyncTask asyncTask) {
                         /*if (asyncTask != null && !asyncTask.isCancelled())
                             asyncTask.cancel(true);*/
                     }

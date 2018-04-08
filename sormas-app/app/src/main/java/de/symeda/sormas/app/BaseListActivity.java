@@ -56,7 +56,7 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
 
     private List<TListItemData> storedListData = null;
     private LandingPageMenuControl pageMenu = null;
-    private ArrayList<LandingPageMenuItem> menuList;
+    private List<LandingPageMenuItem> menuList;
     private LandingPageMenuItem activeMenu = null;
     private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
 
@@ -297,10 +297,10 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
         activeMenuKey = menuItem.getKey();
     }
 
-    public abstract int onNotificationCountChanging(AdapterView<?> parent, LandingPageMenuItem menuItem, int position);
+    public abstract int onNotificationCountChangingAsync(AdapterView<?> parent, LandingPageMenuItem menuItem, int position);
 
     @Override
-    public LandingPageMenuItem onSelectInitialActiveMenuItem(ArrayList<LandingPageMenuItem> menuList) {
+    public LandingPageMenuItem onSelectInitialActiveMenuItem(List<LandingPageMenuItem> menuList) {
         if (menuList == null || menuList.size() <= 0)
             return null;
 
@@ -516,5 +516,14 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
     @Override
     public View getRootView() {
         return rootView;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (pageMenu != null) {
+            pageMenu.onDestroy();
+        }
     }
 }

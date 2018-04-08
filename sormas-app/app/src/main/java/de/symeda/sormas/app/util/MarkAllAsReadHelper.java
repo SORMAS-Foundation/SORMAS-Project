@@ -60,7 +60,7 @@ public class MarkAllAsReadHelper {
                         }
                     }
 
-                    callback.result(finalMarkCasesAsync);
+                    callback.call(finalMarkCasesAsync);
                 }
             });
         } catch (Exception ex) {

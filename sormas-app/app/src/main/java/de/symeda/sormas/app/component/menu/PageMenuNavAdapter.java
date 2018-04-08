@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.symeda.sormas.app.R;
 
@@ -22,7 +23,7 @@ import de.symeda.sormas.app.R;
 public class PageMenuNavAdapter extends BaseAdapter implements IPageMenuAdapter {
 
     private Context context;
-    private ArrayList<LandingPageMenuItem> data;
+    private List<LandingPageMenuItem> data;
     private int cellLayout;
 
     private int counterBackgroundColor;
@@ -48,7 +49,7 @@ public class PageMenuNavAdapter extends BaseAdapter implements IPageMenuAdapter 
     }
 
     @Override
-    public void initialize(ArrayList<LandingPageMenuItem> data, int cellLayout,
+    public void initialize(List<LandingPageMenuItem> data, int cellLayout,
                            int counterBackgroundColor, int counterBackgroundActiveColor,
                            int iconColor, int iconActiveColor,
                            int positionColor, int positionActiveColor, int titleColor, int titleActiveColor) {
@@ -95,7 +96,7 @@ public class PageMenuNavAdapter extends BaseAdapter implements IPageMenuAdapter 
         checkInitStatus();
 
         Context appContext = this.context;
-        ArrayList<LandingPageMenuItem> menuItems = this.data;
+        List<LandingPageMenuItem> menuItems = this.data;
 
         View layout;
         PageMenuNavAdapter.ViewHolder viewHolder;

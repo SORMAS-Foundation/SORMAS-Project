@@ -54,7 +54,7 @@ public class TimeoutHelper {
             timeoutTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    callback.result(null);
+                    callback.call(null);
                 }
             });
         } catch (Exception ex) {
