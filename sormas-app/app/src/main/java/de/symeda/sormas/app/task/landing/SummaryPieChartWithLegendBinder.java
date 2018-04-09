@@ -92,9 +92,6 @@ public class SummaryPieChartWithLegendBinder extends DataBinder<SummaryPieChartW
         holder.pieChart.invalidate();
 
 
-
-
-
         TaskPriorityLegendAdapter adapter = new TaskPriorityLegendAdapter(getContext(), data.get(position).getLegendEntries(),
                 R.layout.control_lps_task_priority_legend_row_layout);
         holder.legendListView.setAdapter(adapter);

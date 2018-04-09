@@ -45,6 +45,8 @@ public class ConstantHelper {
 
     public static final int SOFT_KEYBOARD_HEIGHT = 100;
 
+    public static final int REPEAT_INTERVAL_IN_SECONDS = 5;
+
 
 
 

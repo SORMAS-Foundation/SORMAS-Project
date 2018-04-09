@@ -40,6 +40,8 @@
     <dimen name="parentLayoutVerticalPadding">24dp</dimen>
     <dimen name="contentHorizontalSpacing">8dp</dimen>
     <dimen name="contentVerticalSpacing">8dp</dimen>
+    <dimen name="contentHorizontalSpacingDouble">16dp</dimen>
+    <dimen name="contentVerticalSpacingDouble">16dp</dimen>
     <dimen name="buttonPanelVerticalMargin">16dp</dimen>
     <dimen name="spinnerHorizontalSpacing">16dp</dimen>
     <dimen name="spinnerVerticalSpacing">16dp</dimen>
@@ -476,6 +478,8 @@
     <dimen name="preloaderScaleY">2</dimen>
     <dimen name="preloaderMinHeight">150dp</dimen>
 
+    <dimen name="dashboardPreloaderWidth">50dp</dimen>
+    <dimen name="dashboardPreloaderHeight">50dp</dimen>
 
 
 

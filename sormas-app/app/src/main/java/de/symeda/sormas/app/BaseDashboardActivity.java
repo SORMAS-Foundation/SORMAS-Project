@@ -198,7 +198,7 @@ public abstract class BaseDashboardActivity extends AbstractSormasActivity imple
                 ft.addToBackStack(null);
                 ft.commit();
 
-                frame.setMinimumHeight(getResources().getDimensionPixelSize(f.getMinHeightResId()));
+                //frame.setMinimumHeight(getResources().getDimensionPixelSize(f.getMinHeightResId()));
                 frame.setVisibility(View.VISIBLE);
             }
 

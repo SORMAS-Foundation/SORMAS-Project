@@ -1,7 +1,8 @@
-package de.symeda.sormas.app.dashboard;
+package de.symeda.sormas.app.dashboard.sample;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +10,10 @@ import android.view.ViewGroup;
 
 import de.symeda.sormas.app.BaseSummaryFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.component.visualization.ViewTypeHelper;
 import de.symeda.sormas.app.core.DashboardNavigationCapsule;
 import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.sample.landing.SampleLandingSummaryAdapter;
 
 /**
  * Created by Orson on 08/04/2018.
@@ -19,15 +22,31 @@ import de.symeda.sormas.app.core.IActivityCommunicator;
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
-public class SampleSummaryFragment extends BaseSummaryFragment {
+public class SampleSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.ViewTypeEnum, SampleLandingSummaryAdapter> {
 
     public static final String TAG = SampleSummaryFragment.class.getSimpleName();
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dashboard_summary_sample_layout, container, false);
-        return view;
+        /*View view = inflater.inflate(R.layout.dashboard_summary_sample_layout, container, false);
+        return view;*/
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    protected int getSectionTitleResId() {
+        return R.string.dashboard_section_title_sample;
+    }
+
+    @Override
+    protected SampleLandingSummaryAdapter createSummaryAdapter() {
+        return null;
+    }
+
+    @Override
+    protected RecyclerView.LayoutManager createLayoutManager() {
+        return null;
     }
 
     @Override

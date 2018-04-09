@@ -1,7 +1,8 @@
-package de.symeda.sormas.app.dashboard;
+package de.symeda.sormas.app.dashboard.event;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +10,10 @@ import android.view.ViewGroup;
 
 import de.symeda.sormas.app.BaseSummaryFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.component.visualization.ViewTypeHelper;
 import de.symeda.sormas.app.core.DashboardNavigationCapsule;
 import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.event.landing.EventsLandingSummaryAdapter;
 
 /**
  * Created by Orson on 08/04/2018.
@@ -19,7 +22,7 @@ import de.symeda.sormas.app.core.IActivityCommunicator;
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
-public class EventSummaryFragment extends BaseSummaryFragment {
+public class EventSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.ViewTypeEnum, EventsLandingSummaryAdapter> {
 
     public static final String TAG = EventSummaryFragment.class.getSimpleName();
 
@@ -27,8 +30,24 @@ public class EventSummaryFragment extends BaseSummaryFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dashboard_summary_event_layout, container, false);
-        return view;
+        /*View view = inflater.inflate(R.layout.dashboard_summary_event_layout, container, false);
+        return view;*/
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    protected int getSectionTitleResId() {
+        return R.string.dashboard_section_title_event;
+    }
+
+    @Override
+    protected EventsLandingSummaryAdapter createSummaryAdapter() {
+        return null;
+    }
+
+    @Override
+    protected RecyclerView.LayoutManager createLayoutManager() {
+        return null;
     }
 
     @Override

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    android:id="@+id/base_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/landingPageSummaryDivider"
-    android:id="@+id/base_layout">
+    android:orientation="vertical">
 
     <!--android:layout_weight="1"-->
     <ScrollView
@@ -19,14 +18,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerview_main"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/background_summary_cell_last"/>
+                android:background="@drawable/background_summary_cell_last" />
         </LinearLayout>
     </ScrollView>
-
 
 
     <de.symeda.sormas.app.component.menu.LandingPageMenuControl
@@ -34,9 +33,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:marginBottomOffsetResId="@id/landingSummaryFrame"
+        app:cellLayout="@layout/control_landing_page_menu_item_cell_layout"
         app:collapsible="false"
-        app:visibility="true"
-        app:cellLayout="@layout/control_landing_page_menu_item_cell_layout"/>
+        app:marginBottomOffsetResId="@id/landingSummaryFrame"
+        app:visibility="true" />
 
 </FrameLayout>

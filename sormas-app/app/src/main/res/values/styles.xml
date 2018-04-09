@@ -479,4 +479,15 @@
         <item name="android:layout_margin">8dp</item>
     </style>
 
+    <style name="SummarySectionTitleStyle">
+        <item name="android:paddingTop">@dimen/contentVerticalSpacingDouble</item>
+        <item name="android:paddingBottom">@dimen/contentVerticalSpacingDouble</item>
+        <item name="android:paddingLeft">@dimen/parentLayoutHorizontalPadding</item>
+        <item name="android:paddingRight">@dimen/parentLayoutHorizontalPadding</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/normalText</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
 </resources>

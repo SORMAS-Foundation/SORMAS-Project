@@ -30,81 +30,85 @@
                 layout="@layout/activity_root_title_bar_layout"
                 android:visibility="gone" />
 
-            <FrameLayout
+            <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1">
-
+                android:layout_weight="1"
+                >
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    >
+                    android:layout_height="match_parent">
 
-                    <android.support.percent.PercentFrameLayout
+
+                    <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@color/activityBackground">
+                        android:orientation="vertical"
+                        >
 
                         <FrameLayout
-                            android:id="@+id/fragment_frame_task"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@color/activityBackground"
-                            />
+                            android:background="@color/activityBackground">
 
-                        <FrameLayout
-                            android:id="@+id/fragment_frame_case"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@color/activityBackground"
-                            />
+                            <LinearLayout
+                                android:id="@+id/fragment_frame"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                >
 
-                        <FrameLayout
-                            android:id="@+id/fragment_frame_contact"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@color/activityBackground"
-                            />
+                                <FrameLayout
+                                    android:id="@+id/fragment_frame_task"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@color/activityBackground"
+                                    />
 
-                        <FrameLayout
-                            android:id="@+id/fragment_frame_event"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@color/activityBackground"
-                            />
+                                <FrameLayout
+                                    android:id="@+id/fragment_frame_case"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@color/activityBackground"
+                                    />
 
-                        <FrameLayout
-                            android:id="@+id/fragment_frame_sample"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@color/activityBackground"
-                            />
+                                <FrameLayout
+                                    android:id="@+id/fragment_frame_contact"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@color/activityBackground"
+                                    />
 
+                                <FrameLayout
+                                    android:id="@+id/fragment_frame_event"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@color/activityBackground"
+                                    />
 
-                        <ProgressBar
-                            android:id="@+id/preloader"
-                            android:layout_gravity="center"
-                            android:indeterminateOnly="true"
-                            android:visibility="gone"
-                            app:layout_widthPercent="@dimen/preloaderWidthPercent"
-                            android:layout_height="wrap_content"
-                            android:minHeight="@dimen/preloaderMinHeight"
-                            />
-                    </android.support.percent.PercentFrameLayout>
+                                <FrameLayout
+                                    android:id="@+id/fragment_frame_sample"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@color/activityBackground"
+                                    />
 
+                            </LinearLayout>
+                        </FrameLayout>
+
+                    </FrameLayout>
+
+                    <include
+                        android:id="@+id/notificationFrame"
+                        layout="@layout/activity_root_notification_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        />
 
                 </FrameLayout>
 
-                <include
-                    android:id="@+id/notificationFrame"
-                    layout="@layout/activity_root_notification_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    />
-
-            </FrameLayout>
+            </ScrollView>
         </LinearLayout>
 
         <android.support.design.widget.NavigationView

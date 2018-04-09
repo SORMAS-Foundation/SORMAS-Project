@@ -15,6 +15,11 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.dialog.UserReportDialog;
 import de.symeda.sormas.app.core.DashboardNavigationCapsule;
 import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.dashboard.caze.CaseSummaryFragment;
+import de.symeda.sormas.app.dashboard.contact.ContactSummaryFragment;
+import de.symeda.sormas.app.dashboard.event.EventSummaryFragment;
+import de.symeda.sormas.app.dashboard.sample.SampleSummaryFragment;
+import de.symeda.sormas.app.dashboard.task.TaskSummaryFragment;
 import de.symeda.sormas.app.util.MarkAllAsReadHelper;
 
 /**

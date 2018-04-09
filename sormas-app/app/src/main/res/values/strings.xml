@@ -882,4 +882,12 @@
     <string name="userNamePlaceholder">No Username</string>
     <string name="userRolePlaceholder">Role Unassigned</string>
 
+
+
+    <string name="dashboard_section_title_task">Task Summary</string>
+    <string name="dashboard_section_title_case">Case Summary</string>
+    <string name="dashboard_section_title_contact">Contact Summary</string>
+    <string name="dashboard_section_title_event">Event Summary</string>
+    <string name="dashboard_section_title_sample">Sample Summary</string>
+
 </resources>
