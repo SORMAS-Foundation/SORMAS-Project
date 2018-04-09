@@ -125,75 +125,56 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
                                 final List<SummaryCircularData> circularData = taskObservableDataResult.getCircularData();
                                 final List<SummaryPieData> pieData = taskObservableDataResult.getPieData();
 
+
                                 try {
                                     getLandingAdapter().startConfig().forViewType(ViewTypeHelper.ViewTypeEnum.TOTAL, new IAdapterRegistrationService() {
                                         @Override
-                                        public void register(final IAdapterRegistrationContext context) {
-                                            try {
-                                                context.registerBinder(SummaryTotalBinder.class).registerData(totalData);
-                                            } catch (IllegalAccessException e) {
-                                                Log.e(TAG, e.getMessage(), e);
-                                            } catch (java.lang.InstantiationException e) {
-                                                Log.e(TAG, e.getMessage(), e);
-                                            }
+                                        public void register(final IAdapterRegistrationContext context) throws java.lang.InstantiationException, IllegalAccessException {
+                                            context.registerBinder(SummaryTotalBinder.class).registerData(totalData);
                                         }
                                     })
-                                    .forViewType(ViewTypeHelper.ViewTypeEnum.SINGLE_CIRCULAR_PROGRESS, new IAdapterRegistrationService() {
-                                        @Override
-                                        public void register(final IAdapterRegistrationContext context) {
+                                            .forViewType(ViewTypeHelper.ViewTypeEnum.SINGLE_CIRCULAR_PROGRESS, new IAdapterRegistrationService() {
+                                                @Override
+                                                public void register(final IAdapterRegistrationContext context) throws java.lang.InstantiationException, IllegalAccessException {
+                                                    context.registerBinder(SummaryCircularProgressBinder.class).registerData(circularData);
+                                                }
+                                            })
+                                            .forViewType(ViewTypeHelper.ViewTypeEnum.PIECHART_WITH_LEGEND, new IAdapterRegistrationService() {
+                                                @Override
+                                                public void register(final IAdapterRegistrationContext context) throws java.lang.InstantiationException, IllegalAccessException {
+                                                    context.registerBinder(SummaryPieChartWithLegendBinder.class).registerData(pieData).forEach(new IAdapterDataModifier<SummaryPieData>() {
+                                                        @Override
+                                                        public void modify(SummaryPieData item, int position) {
+                                                            int i = 0;
+                                                            for(TaskPrioritySummaryEntry entry: taskPriorityData) {
+                                                                //TODO: Set value from database
+                                                                //entry.setValue(null);
 
-                                            try {
-                                                context.registerBinder(SummaryCircularProgressBinder.class).registerData(circularData);
-                                            } catch (IllegalAccessException e) {
-                                                Log.e(TAG, e.getMessage(), e);
-                                            } catch (java.lang.InstantiationException e) {
-                                                Log.e(TAG, e.getMessage(), e);
-                                            }
-                                        }
-                                    })
-                                    .forViewType(ViewTypeHelper.ViewTypeEnum.PIECHART_WITH_LEGEND, new IAdapterRegistrationService() {
-                                        @Override
-                                        public void register(final IAdapterRegistrationContext context) {
-                                            try {
-                                                context.registerBinder(SummaryPieChartWithLegendBinder.class).registerData(pieData).forEach(new IAdapterDataModifier<SummaryPieData>() {
-                                                    @Override
-                                                    public void modify(SummaryPieData item, int position) {
-                                                        //Get data from xml
-                                                        int i = 0;
-                                                        for(TaskPrioritySummaryEntry entry: taskPriorityData) {
-                                                            //TODO: Set value from database
-                                                            //entry.setValue(null);
+                                                                item.addEntry(new SummaryPieEntry(entry.getValue(), entry.getLabel(), entry.getKey()));
+                                                                item.addLegendEntry(TaskPriorityLegendEntry.findByKey(entry.getKey()).setValue(entry.getValue())
+                                                                        .setPercentage(PercentageUtils.percentageOf(entry.getValue(), valueList)));
 
-                                                            item.addEntry(new SummaryPieEntry(entry.getValue(), entry.getLabel(), entry.getKey()));
-                                                            item.addLegendEntry(TaskPriorityLegendEntry.findByKey(entry.getKey()).setValue(entry.getValue())
-                                                                    .setPercentage(PercentageUtils.percentageOf(entry.getValue(), valueList)));
+                                                                if (i == 0) {
+                                                                    item.addColor(getContext().getResources().getColor(R.color.normalPriority));
+                                                                } else if (i == 1) {
+                                                                    item.addColor(getContext().getResources().getColor(R.color.lowPriority));
+                                                                } else {
+                                                                    item.addColor(getContext().getResources().getColor(R.color.highPriority));
+                                                                }
 
-                                                            if (i == 0) {
-                                                                item.addColor(getContext().getResources().getColor(R.color.normalPriority));
-                                                            } else if (i == 1) {
-                                                                item.addColor(getContext().getResources().getColor(R.color.lowPriority));
-                                                            } else {
-                                                                item.addColor(getContext().getResources().getColor(R.color.highPriority));
+                                                                i = i + 1;
                                                             }
-
-                                                            i = i + 1;
                                                         }
-                                                    }
-                                                });
-                                            } catch (IllegalAccessException e) {
-                                                Log.e(TAG, e.getMessage(), e);
-                                            } catch (java.lang.InstantiationException e) {
-                                                Log.e(TAG, e.getMessage(), e);
-                                            }
-                                        }
-                                    });
-
-                                    hidePreloader();
+                                                    });
+                                                }
+                                            });
                                 } catch (IllegalAccessException e) {
-                                    e.printStackTrace();
+                                    Log.e(TAG, e.getMessage(), e);
                                 } catch (java.lang.InstantiationException e) {
-                                    e.printStackTrace();
+                                    Log.e(TAG, e.getMessage(), e);
                                 }
+
+                                hidePreloader();
                             }
                         });
 
@@ -312,7 +293,7 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
     private Func3<List<SummaryTotalData>, List<SummaryCircularData>, List<SummaryPieData>, TaskObservableDataResult> getMergeDataObservable() {
         return new Func3<List<SummaryTotalData>, List<SummaryCircularData>, List<SummaryPieData>, TaskObservableDataResult>() {
             @Override
-            public TaskObservableDataResult call(List<SummaryTotalData> summaryTotalData, List<SummaryCircularData> summaryPieData, List<SummaryPieData> summaryCircularData) {
+            public TaskObservableDataResult call(List<SummaryTotalData> summaryTotalData, List<SummaryCircularData> summaryCircularData, List<SummaryPieData> summaryPieData) {
                 return new TaskObservableDataResult(summaryTotalData, summaryCircularData, summaryPieData);
             }
         };

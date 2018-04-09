@@ -7,9 +7,9 @@
     android:layout_gravity="fill_vertical"
     android:orientation="vertical"
     android:background="@color/landingPageSummaryDivider"
-    android:minHeight="@dimen/summaryFragmentMinHeight"
     >
 
+    <!--android:minHeight="@dimen/summaryFragmentMinHeight"-->
     <TextView
         android:id="@+id/summarySectionTitle"
         android:layout_width="match_parent"
@@ -23,20 +23,6 @@
         android:layout_weight="1"
         android:orientation="vertical"
         android:background="@color/summaryCellBackground">
-
-        <!--<LinearLayout
-            android:id="@+id/landingSummaryFrame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerview_main"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/background_summary_cell_last" />
-        </LinearLayout>-->
 
 
         <FrameLayout
@@ -57,6 +43,8 @@
                 android:layout_gravity="center"
                 android:indeterminateOnly="true"
                 android:visibility="gone"
+                android:layout_marginTop="@dimen/dashboardPreloaderWidth"
+                android:layout_marginBottom="@dimen/dashboardPreloaderWidth"
                 android:layout_width="@dimen/dashboardPreloaderWidth"
                 android:layout_height="@dimen/dashboardPreloaderHeight"
                 />

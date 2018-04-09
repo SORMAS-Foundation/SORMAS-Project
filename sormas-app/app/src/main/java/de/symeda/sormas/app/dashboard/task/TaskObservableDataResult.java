@@ -5,6 +5,7 @@ import java.util.List;
 import de.symeda.sormas.app.component.visualization.data.SummaryCircularData;
 import de.symeda.sormas.app.component.visualization.data.SummaryPieData;
 import de.symeda.sormas.app.component.visualization.data.SummaryTotalData;
+import de.symeda.sormas.app.dashboard.SummaryObservableDataResult;
 
 /**
  * Created by Orson on 09/04/2018.
@@ -13,27 +14,16 @@ import de.symeda.sormas.app.component.visualization.data.SummaryTotalData;
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
-public class TaskObservableDataResult {
+public class TaskObservableDataResult extends SummaryObservableDataResult {
 
-    private List<SummaryTotalData> mTotalData;
     private List<SummaryPieData> mPieData;
-    private List<SummaryCircularData> mCircularData;
 
-    public TaskObservableDataResult(List<SummaryTotalData> totalData, List<SummaryPieData> pieData, List<SummaryCircularData> circularData) {
-        this.mTotalData = totalData;
+    public TaskObservableDataResult(List<SummaryTotalData> totalData, List<SummaryCircularData> circularData, List<SummaryPieData> pieData) {
+        super(totalData, circularData);
         this.mPieData = pieData;
-        this.mCircularData = circularData;
-    }
-
-    public List<SummaryTotalData> getTotalData() {
-        return mTotalData;
     }
 
     public List<SummaryPieData> getPieData() {
         return mPieData;
-    }
-
-    public List<SummaryCircularData> getCircularData() {
-        return mCircularData;
     }
 }
