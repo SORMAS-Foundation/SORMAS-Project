@@ -73,6 +73,8 @@ public class SampleSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.Vi
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, e.getMessage(), e);
+                        hidePreloader();
+                        showEmptySummaryHint();
                     }
 
                     @Override
@@ -218,6 +220,11 @@ public class SampleSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.Vi
     @Override
     protected int getSectionTitleResId() {
         return R.string.dashboard_section_title_sample;
+    }
+
+    @Override
+    protected int getEntityResId() {
+        return R.string.entity_sample;
     }
 
     @Override

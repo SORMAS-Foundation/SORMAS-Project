@@ -76,6 +76,8 @@ public class EventSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.Vie
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, e.getMessage(), e);
+                        hidePreloader();
+                        showEmptySummaryHint();
                     }
 
                     @Override
@@ -115,6 +117,11 @@ public class EventSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.Vie
     @Override
     protected int getSectionTitleResId() {
         return R.string.dashboard_section_title_event;
+    }
+
+    @Override
+    protected int getEntityResId() {
+        return R.string.entity_event;
     }
 
     @Override

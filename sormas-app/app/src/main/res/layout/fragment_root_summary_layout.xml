@@ -38,6 +38,19 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/background_summary_cell_last" />
 
+            <TextView
+                android:id="@+id/emptySummaryHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/parentLayoutVerticalPadding"
+                android:layout_marginBottom="@dimen/parentLayoutVerticalPadding"
+                android:gravity="center"
+                android:visibility="gone"
+                android:textStyle="italic"
+                android:textColor="@color/controlTextColor"
+                android:textSize="@dimen/defaultControlTextSize"
+                />
+
             <ProgressBar
                 android:id="@+id/preloader"
                 android:layout_gravity="center"

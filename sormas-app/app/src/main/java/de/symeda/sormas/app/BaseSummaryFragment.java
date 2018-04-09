@@ -31,6 +31,7 @@ public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends En
     private IActivityCommunicator mActivityCommunicator;
     private TextView mSummarySectionTitle;
     private ProgressBar mPreloader;
+    private TextView mEmptySummaryHint;
 
 
     @Nullable
@@ -40,6 +41,7 @@ public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends En
 
         mPreloader = (ProgressBar)view.findViewById(R.id.preloader);
         mSummarySectionTitle = (TextView)view.findViewById(R.id.summarySectionTitle);
+        mEmptySummaryHint = (TextView) view.findViewById(R.id.emptySummaryHint);
 
         mRecyclerView = createRecyclerView(view);
         mLayoutManager = createLayoutManager();
@@ -47,6 +49,9 @@ public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends En
 
         if (mSummarySectionTitle != null)
             mSummarySectionTitle.setText(getResources().getString(getSectionTitleResId()));
+
+        if (mEmptySummaryHint != null)
+            mEmptySummaryHint.setText(String.format(getResources().getString(R.string.hint_dashboard_section_not_data), getResources().getString(getEntityResId())));
 
 
         //view.setMinimumHeight(getResources().getDimensionPixelSize(getMinHeightResId()));
@@ -86,11 +91,23 @@ public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends En
             mPreloader.setVisibility(View.GONE);
     }
 
+    protected void showEmptySummaryHint() {
+        if (mEmptySummaryHint != null)
+            mEmptySummaryHint.setVisibility(View.VISIBLE);
+    }
+
+    protected void hideEmptySummaryHint() {
+        if (mEmptySummaryHint != null)
+            mEmptySummaryHint.setVisibility(View.GONE);
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="Abstract Methods">
 
     protected abstract int getSectionTitleResId();
+
+    protected abstract int getEntityResId();
 
     protected abstract TAdapter createSummaryAdapter();
 

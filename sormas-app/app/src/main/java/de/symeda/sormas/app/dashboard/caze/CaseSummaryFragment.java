@@ -74,6 +74,8 @@ public class CaseSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, e.getMessage(), e);
+                        hidePreloader();
+                        showEmptySummaryHint();
                     }
 
                     @Override
@@ -168,6 +170,11 @@ public class CaseSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
     }
 
     @Override
+    protected int getEntityResId() {
+        return R.string.entity_case;
+    }
+
+    @Override
     protected CasesLandingSummaryAdapter createSummaryAdapter() {
         return new CasesLandingSummaryAdapter(getActivity());
     }
@@ -200,7 +207,10 @@ public class CaseSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
     //</editor-fold>
 
     //<editor-fold desc="Private Methods">
-    private List<SummaryTotalData> getTotalDataAsync() {
+    private List<SummaryTotalData> getTotalDataAsync() throws Exception {
+        boolean kkk = true;
+        if (kkk)
+            throw new Exception();
         List<SummaryTotalData> dataSet = new ArrayList<>();
 
         SummaryTotalData data = new SummaryTotalData();

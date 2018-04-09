@@ -64,11 +64,6 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
     }
 
     @Override
-    protected int getSectionTitleResId() {
-        return R.string.dashboard_section_title_task;
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -86,6 +81,8 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
             @Override
             public void onError(Throwable e) {
                 Log.e(TAG, e.getMessage(), e);
+                hidePreloader();
+                showEmptySummaryHint();
             }
 
             @Override
@@ -117,6 +114,8 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
                             @Override
                             public void onError(Throwable e) {
                                 Log.e(TAG, e.getMessage(), e);
+                                hidePreloader();
+                                showEmptySummaryHint();
                             }
 
                             @Override
@@ -353,6 +352,17 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
     //</editor-fold>
 
     //<editor-fold desc="More Overrides">
+
+    @Override
+    protected int getSectionTitleResId() {
+        return R.string.dashboard_section_title_task;
+    }
+
+    @Override
+    protected int getEntityResId() {
+        return R.string.entity_task;
+    }
+
     @Override
     protected TaskSummaryAdapter createSummaryAdapter() {
         return new TaskSummaryAdapter(getActivity());

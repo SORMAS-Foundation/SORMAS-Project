@@ -889,5 +889,6 @@
     <string name="dashboard_section_title_contact">Contact Summary</string>
     <string name="dashboard_section_title_event">Event Summary</string>
     <string name="dashboard_section_title_sample">Sample Summary</string>
+    <string name="hint_dashboard_section_not_data">No summary to display for the %1$s section.</string>
 
 </resources>

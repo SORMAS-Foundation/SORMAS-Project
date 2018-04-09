@@ -72,6 +72,8 @@ public class ContactSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.V
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, e.getMessage(), e);
+                        hidePreloader();
+                        showEmptySummaryHint();
                     }
 
                     @Override
@@ -110,6 +112,11 @@ public class ContactSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.V
     @Override
     protected int getSectionTitleResId() {
         return R.string.dashboard_section_title_contact;
+    }
+
+    @Override
+    protected int getEntityResId() {
+        return R.string.entity_contact;
     }
 
     @Override

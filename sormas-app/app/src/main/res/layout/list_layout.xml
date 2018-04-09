@@ -31,7 +31,7 @@
             android:text="@string/empty_list_hint"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textAlignment="center"
-            android:padding="15dp"
+            style="@style/EmptyListHintStyle"
             android:visibility="gone"/>
 
     </FrameLayout>
