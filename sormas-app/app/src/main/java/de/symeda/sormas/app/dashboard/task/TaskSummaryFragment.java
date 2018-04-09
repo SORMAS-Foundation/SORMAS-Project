@@ -58,8 +58,6 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        /*View view = inflater.inflate(R.layout.dashboard_summary_task_layout, container, false);
-        return view;*/
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -68,7 +66,6 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
         super.onActivityCreated(savedInstanceState);
 
         final List<Float> valueList = new ArrayList<>();
-        //final List<TaskPrioritySummaryEntry> taskPriorityData = null;
 
         showPreloader();
         Subscription mTaskPrioritySubscription = getTaskPriorityObservable()
@@ -388,6 +385,11 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
     @Override
     protected int getContainerResId() {
         return R.id.fragment_frame_task;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return TAG;
     }
 
     @Override

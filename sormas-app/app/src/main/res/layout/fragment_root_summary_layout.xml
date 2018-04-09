@@ -32,11 +32,22 @@
             android:orientation="vertical"
             >
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerview_main"
+
+
+            <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/background_summary_cell_last" />
+                >
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerview_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/background_summary_cell_last"
+                    />
+
+
+            </android.support.v4.widget.NestedScrollView>
 
             <TextView
                 android:id="@+id/emptySummaryHint"
@@ -56,8 +67,8 @@
                 android:layout_gravity="center"
                 android:indeterminateOnly="true"
                 android:visibility="gone"
-                android:layout_marginTop="@dimen/dashboardPreloaderWidth"
-                android:layout_marginBottom="@dimen/dashboardPreloaderWidth"
+                android:layout_marginTop="@dimen/parentLayoutVerticalPadding"
+                android:layout_marginBottom="@dimen/parentLayoutVerticalPadding"
                 android:layout_width="@dimen/dashboardPreloaderWidth"
                 android:layout_height="@dimen/dashboardPreloaderHeight"
                 />

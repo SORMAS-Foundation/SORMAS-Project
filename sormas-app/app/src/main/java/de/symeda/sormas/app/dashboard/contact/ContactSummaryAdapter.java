@@ -11,11 +11,11 @@ import de.symeda.sormas.app.core.adapter.multiview.IAdapterConfiguration;
  * Created by Orson on 01/12/2017.
  */
 
-public class ContactsLandingSummaryAdapter extends EnumMapDataBinderAdapter<ViewTypeEnum> {
+public class ContactSummaryAdapter extends EnumMapDataBinderAdapter<ViewTypeEnum> {
 
     private Context context;
 
-    public ContactsLandingSummaryAdapter(Context context) {
+    public ContactSummaryAdapter(Context context) {
         this.context = context;
     }
 
@@ -24,7 +24,7 @@ public class ContactsLandingSummaryAdapter extends EnumMapDataBinderAdapter<View
         ViewTypeEnum viewType;
 
         switch (position) {
-            case ContactsLandingSummaryAdapter.PositionHelper.TOTAL_CONTACTS: {
+            case ContactSummaryAdapter.PositionHelper.TOTAL_CONTACTS: {
                 viewType = ViewTypeEnum.TOTAL;
                 break;
             }

@@ -20,7 +20,6 @@ import de.symeda.sormas.app.component.visualization.SummaryTotalBinder;
 import de.symeda.sormas.app.component.visualization.ViewTypeHelper;
 import de.symeda.sormas.app.component.visualization.data.SummaryCircularData;
 import de.symeda.sormas.app.component.visualization.data.SummaryTotalData;
-import de.symeda.sormas.app.contact.landing.ContactsLandingSummaryAdapter;
 import de.symeda.sormas.app.core.DashboardNavigationCapsule;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationContext;
@@ -43,11 +42,13 @@ import rx.subscriptions.CompositeSubscription;
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
-public class ContactSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.ViewTypeEnum, ContactsLandingSummaryAdapter> {
+public class ContactSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.ViewTypeEnum, ContactSummaryAdapter> {
 
     public static final String TAG = ContactSummaryFragment.class.getSimpleName();
 
     private CompositeSubscription mSubscription = new CompositeSubscription();
+    private ContactSummaryAdapter mAdapter;
+    private GridLayoutManager mLayoutManager;
 
     @Nullable
     @Override
@@ -59,7 +60,7 @@ public class ContactSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.V
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        showPreloader();
+        //showPreloader();
         Subscription mDataSubscription = Observable
                 .zip(getTotalDataObservable(), getCircularDataObservable(), getMergeDataObservable())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -88,12 +89,12 @@ public class ContactSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.V
                                     context.registerBinder(SummaryTotalBinder.class).registerData(totalData);
                                 }
                             })
-                                    .forViewType(ViewTypeHelper.ViewTypeEnum.SINGLE_CIRCULAR_PROGRESS, new IAdapterRegistrationService() {
-                                        @Override
-                                        public void register(IAdapterRegistrationContext context) throws java.lang.InstantiationException, IllegalAccessException {
-                                            context.registerBinder(SummaryCircularProgressBinder.class).registerData(circularData);
-                                        }
-                                    });
+                            .forViewType(ViewTypeHelper.ViewTypeEnum.SINGLE_CIRCULAR_PROGRESS, new IAdapterRegistrationService() {
+                                @Override
+                                public void register(IAdapterRegistrationContext context) throws java.lang.InstantiationException, IllegalAccessException {
+                                    context.registerBinder(SummaryCircularProgressBinder.class).registerData(circularData);
+                                }
+                            });
                             hidePreloader();
                         } catch (IllegalAccessException e) {
                             Log.e(TAG, e.getMessage(), e);
@@ -120,18 +121,29 @@ public class ContactSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.V
     }
 
     @Override
-    protected ContactsLandingSummaryAdapter createSummaryAdapter() {
-        return new ContactsLandingSummaryAdapter(getActivity());
+    protected ContactSummaryAdapter createSummaryAdapter() {
+        if (mAdapter == null) {
+            mAdapter = new ContactSummaryAdapter(getActivity());
+        }
+        return mAdapter;
     }
 
     @Override
     protected RecyclerView.LayoutManager createLayoutManager() {
-        return new GridLayoutManager(getActivity(), 3, GridLayoutManager.VERTICAL, false);
+        if (mLayoutManager == null) {
+            mLayoutManager = new GridLayoutManager(getActivity(), 3, GridLayoutManager.VERTICAL, false);
+        }
+        return mLayoutManager;
     }
 
     @Override
     protected int getContainerResId() {
         return R.id.fragment_frame_contact;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return TAG;
     }
 
     @Override

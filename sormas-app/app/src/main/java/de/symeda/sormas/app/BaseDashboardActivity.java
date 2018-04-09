@@ -14,12 +14,15 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.symeda.sormas.app.core.IDashboardNavigationCapsule;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
+import de.symeda.sormas.app.dashboard.SummaryRegisterItem;
 import de.symeda.sormas.app.util.ConstantHelper;
 
 /**
@@ -29,7 +32,7 @@ import de.symeda.sormas.app.util.ConstantHelper;
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
-public abstract class BaseDashboardActivity extends AbstractSormasActivity implements INotificationContext {
+public abstract class BaseDashboardActivity extends AbstractSormasActivity implements INotificationContext { //, ISummaryLoadingStatusCommunicator
 
     private View rootView;
     private View fragmentFrame = null;
@@ -38,7 +41,10 @@ public abstract class BaseDashboardActivity extends AbstractSormasActivity imple
     private TextView subHeadingListActivityTitle;
 
     private Enum pageStatus;
-    private List<BaseSummaryFragment> fragments = null;
+    /*private List<SummaryRegisterItem> mRegisteredFragments = null;
+    private List<SummaryRegisterItem> mRegisteredFragments = null;*/
+    private Map<String, SummaryRegisterItem> mRegisteredFragments = new HashMap<String, SummaryRegisterItem>();
+    //private Map<String, ICallback<BoolResult>> mSummaryCompleteCallbacks = new HashMap<String, ICallback<BoolResult>>();
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -80,7 +86,14 @@ public abstract class BaseDashboardActivity extends AbstractSormasActivity imple
 
         fragmentFrame = findViewById(R.id.fragment_frame);
         if (fragmentFrame != null && savedInstanceState == null) {
-            replaceFragment(getSummaryFragments());
+            regiserSummaryFragments();
+            replaceFragment(mRegisteredFragments);
+        }
+    }
+
+    private void regiserSummaryFragments() {
+        for(BaseSummaryFragment f: getSummaryFragments()) {
+            mRegisteredFragments.put(f.getIdentifier(), new SummaryRegisterItem(f));
         }
     }
 
@@ -174,13 +187,18 @@ public abstract class BaseDashboardActivity extends AbstractSormasActivity imple
     //</editor-fold>
 
     //<editor-fold desc="Private Methods">
-    private void replaceFragment(List<BaseSummaryFragment> fragments) {
+    private void replaceFragment(Map<String, SummaryRegisterItem> items) {
         FragmentManager manager = getSupportFragmentManager();
 
-        if (fragments != null) {
-            this.fragments = fragments;
+        if (items != null) {
+            this.mRegisteredFragments = items;
 
-            for (BaseSummaryFragment f: fragments) {
+            for (Map.Entry<String, SummaryRegisterItem> item : items.entrySet()) {
+                if (item == null)
+                    continue;
+
+                BaseSummaryFragment f = item.getValue().getFragment();
+
                 if (f == null)
                     continue;
 
@@ -248,4 +266,35 @@ public abstract class BaseDashboardActivity extends AbstractSormasActivity imple
 
         fromActivity.startActivity(intent);
     }
+
+    /*@Override
+    public void registerOnSummaryLoadingCompletedCallback(String identifier, ICallback<BoolResult> callback) {
+        if (!mSummaryCompleteCallbacks.containsKey(identifier))
+            mSummaryCompleteCallbacks.put(identifier, callback);
+    }
+
+    @Override
+    public void loadingCompleted(String identifier) {
+        SummaryRegisterItem item = mRegisteredFragments.get(identifier);
+        item.setCompleteStatus(true);
+
+        boolean allComplete = true;
+        for (Map.Entry<String, SummaryRegisterItem> entry : mRegisteredFragments.entrySet()) {
+            allComplete = allComplete && entry.getValue().isCompleteStatus();
+        }
+
+        if (allComplete) {
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    for (Map.Entry<String, ICallback<BoolResult>> entry : mSummaryCompleteCallbacks.entrySet()) {
+                        ICallback<BoolResult> callback = entry.getValue();
+                        callback.call(BoolResult.TRUE);
+                    }
+                }
+            }, 5000);
+        }
+
+    }*/
 }

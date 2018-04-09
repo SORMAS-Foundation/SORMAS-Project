@@ -15,7 +15,6 @@ import java.util.Random;
 
 import de.symeda.sormas.app.BaseSummaryFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.caze.landing.CasesLandingSummaryAdapter;
 import de.symeda.sormas.app.component.visualization.SummaryCircularProgressBinder;
 import de.symeda.sormas.app.component.visualization.SummaryTotalBinder;
 import de.symeda.sormas.app.component.visualization.ViewTypeHelper;
@@ -43,7 +42,7 @@ import rx.subscriptions.CompositeSubscription;
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
-public class CaseSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.ViewTypeEnum, CasesLandingSummaryAdapter> {
+public class CaseSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.ViewTypeEnum, CaseSummaryAdapter> {
 
     public static final String TAG = CaseSummaryFragment.class.getSimpleName();
 
@@ -98,6 +97,7 @@ public class CaseSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
                                     });
 
                             hidePreloader();
+
                         } catch (IllegalAccessException e) {
                             Log.e(TAG, e.getMessage(), e);
                         } catch (java.lang.InstantiationException e) {
@@ -175,8 +175,8 @@ public class CaseSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
     }
 
     @Override
-    protected CasesLandingSummaryAdapter createSummaryAdapter() {
-        return new CasesLandingSummaryAdapter(getActivity());
+    protected CaseSummaryAdapter createSummaryAdapter() {
+        return new CaseSummaryAdapter(getActivity());
     }
 
     @Override
@@ -187,6 +187,11 @@ public class CaseSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
     @Override
     protected int getContainerResId() {
         return R.id.fragment_frame_case;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return TAG;
     }
 
     @Override
@@ -207,10 +212,7 @@ public class CaseSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
     //</editor-fold>
 
     //<editor-fold desc="Private Methods">
-    private List<SummaryTotalData> getTotalDataAsync() throws Exception {
-        boolean kkk = true;
-        if (kkk)
-            throw new Exception();
+    private List<SummaryTotalData> getTotalDataAsync() {
         List<SummaryTotalData> dataSet = new ArrayList<>();
 
         SummaryTotalData data = new SummaryTotalData();

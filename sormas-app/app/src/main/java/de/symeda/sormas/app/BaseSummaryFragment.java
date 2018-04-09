@@ -13,6 +13,7 @@ import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IDashboardNavigationCapsule;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
+import de.symeda.sormas.app.dashboard.ISummaryLoadingStatusCommunicator;
 import de.symeda.sormas.app.util.ConstantHelper;
 
 /**
@@ -22,7 +23,7 @@ import de.symeda.sormas.app.util.ConstantHelper;
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
-public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends EnumMapDataBinderAdapter<E>> extends BaseFragment {
+public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends EnumMapDataBinderAdapter<E>> extends BaseFragment { // implements ISummaryLoadingStatus
 
 
     private RecyclerView.LayoutManager mLayoutManager;
@@ -32,6 +33,7 @@ public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends En
     private TextView mSummarySectionTitle;
     private ProgressBar mPreloader;
     private TextView mEmptySummaryHint;
+    private ISummaryLoadingStatusCommunicator mDashboardActivityCommunicator;
 
 
     @Nullable
@@ -43,9 +45,11 @@ public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends En
         mSummarySectionTitle = (TextView)view.findViewById(R.id.summarySectionTitle);
         mEmptySummaryHint = (TextView) view.findViewById(R.id.emptySummaryHint);
 
-        mRecyclerView = createRecyclerView(view);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview_main);
         mLayoutManager = createLayoutManager();
         mAdapter = createSummaryAdapter();
+
+        mRecyclerView.setNestedScrollingEnabled(false);
 
         if (mSummarySectionTitle != null)
             mSummarySectionTitle.setText(getResources().getString(getSectionTitleResId()));
@@ -68,8 +72,8 @@ public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends En
         return R.dimen.summaryFragmentMinHeight;
     }
 
-    public RecyclerView createRecyclerView(View view) {
-        return (RecyclerView) view.findViewById(R.id.recyclerview_main);
+    public RecyclerView getRecyclerView() {
+        return mRecyclerView;
     }
 
     public TAdapter getLandingAdapter() {
@@ -115,6 +119,8 @@ public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends En
 
     protected abstract int getContainerResId();
 
+    public abstract String getIdentifier();
+
     //</editor-fold>
 
 
@@ -140,4 +146,15 @@ public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends En
         fragment.setArguments(bundle);
         return fragment;
     }
+
+
+    /*@Override
+    public void onAllSummaryLoadingCompleted(ICallback<BoolResult> callback) {
+        mDashboardActivityCommunicator.registerOnSummaryLoadingCompletedCallback(getIdentifier(), callback);
+    }
+
+    @Override
+    public void notifyActivitySummaryLoadingCompleted() {
+        mDashboardActivityCommunicator.loadingCompleted(getIdentifier());
+    }*/
 }

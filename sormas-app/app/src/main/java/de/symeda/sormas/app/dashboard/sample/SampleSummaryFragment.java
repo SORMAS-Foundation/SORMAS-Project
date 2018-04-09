@@ -25,7 +25,6 @@ import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationContext;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationService;
 import de.symeda.sormas.app.dashboard.SummaryObservableDataResult;
-import de.symeda.sormas.app.sample.landing.SampleLandingSummaryAdapter;
 import de.symeda.sormas.app.util.ResourceUtils;
 import rx.Observable;
 import rx.Subscriber;
@@ -43,7 +42,7 @@ import rx.subscriptions.CompositeSubscription;
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
-public class SampleSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.ViewTypeEnum, SampleLandingSummaryAdapter> {
+public class SampleSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.ViewTypeEnum, SampleSummaryAdapter> {
 
     public static final String TAG = SampleSummaryFragment.class.getSimpleName();
 
@@ -228,8 +227,8 @@ public class SampleSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.Vi
     }
 
     @Override
-    protected SampleLandingSummaryAdapter createSummaryAdapter() {
-        return new SampleLandingSummaryAdapter(getActivity());
+    protected SampleSummaryAdapter createSummaryAdapter() {
+        return new SampleSummaryAdapter(getActivity());
     }
 
     @Override
@@ -240,6 +239,11 @@ public class SampleSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.Vi
     @Override
     protected int getContainerResId() {
         return R.id.fragment_frame_sample;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return TAG;
     }
 
     @Override

@@ -11,11 +11,11 @@ import de.symeda.sormas.app.core.adapter.multiview.IAdapterConfiguration;
  * Created by Orson on 01/12/2017.
  */
 
-public class EventsLandingSummaryAdapter extends EnumMapDataBinderAdapter<ViewTypeEnum> {
+public class EventSummaryAdapter extends EnumMapDataBinderAdapter<ViewTypeEnum> {
 
     private Context context;
 
-    public EventsLandingSummaryAdapter(Context context) {
+    public EventSummaryAdapter(Context context) {
         this.context = context;
     }
 

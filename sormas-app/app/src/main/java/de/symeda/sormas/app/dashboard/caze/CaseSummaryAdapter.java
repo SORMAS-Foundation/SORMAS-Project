@@ -11,11 +11,11 @@ import de.symeda.sormas.app.core.adapter.multiview.IAdapterConfiguration;
  * Created by Orson on 01/12/2017.
  */
 
-public class CasesLandingSummaryAdapter extends EnumMapDataBinderAdapter<ViewTypeEnum> {
+public class CaseSummaryAdapter extends EnumMapDataBinderAdapter<ViewTypeEnum> {
 
     private Context context;
 
-    public CasesLandingSummaryAdapter(Context context) {
+    public CaseSummaryAdapter(Context context) {
         this.context = context;
     }
 
