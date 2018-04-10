@@ -47,7 +47,7 @@ public class PersonController {
     	PersonSelectField personSelect = new PersonSelectField();
     	personSelect.setFirstName(firstName);
     	personSelect.setLastName(lastName);
-    	personSelect.setWidth(640, Unit.PIXELS);
+    	personSelect.setWidth(1024, Unit.PIXELS);
 
     	if (personSelect.hasMatches()) {
     		personSelect.selectBestMatch();

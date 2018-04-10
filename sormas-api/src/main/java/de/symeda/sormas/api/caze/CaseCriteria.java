@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -17,6 +18,7 @@ public class CaseCriteria implements Serializable {
 	private CaseOutcome outcome;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	private PersonReferenceDto person;
 	private Date newCaseDateFrom;
 	private Date newCaseDateTo;
 
@@ -45,6 +47,11 @@ public class CaseCriteria implements Serializable {
 		return this;
 	}
 	
+	public CaseCriteria personEquals(PersonReferenceDto person) {
+		this.person = person;
+		return this;
+	}
+	
 	public CaseCriteria newCaseDateBetween(Date newCaseDateFrom, Date newCaseDateTo) {
 		this.newCaseDateFrom = newCaseDateFrom;
 		this.newCaseDateTo = newCaseDateTo;
@@ -69,6 +76,10 @@ public class CaseCriteria implements Serializable {
 	
 	public DistrictReferenceDto getDistrict() {
 		return district;
+	}
+
+	public PersonReferenceDto getPerson() {
+		return person;
 	}
 
 	public Date getNewCaseDateFrom() {

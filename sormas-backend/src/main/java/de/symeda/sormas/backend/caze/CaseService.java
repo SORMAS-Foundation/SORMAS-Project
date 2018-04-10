@@ -1,9 +1,11 @@
 package de.symeda.sormas.backend.caze;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -23,6 +25,7 @@ import javax.persistence.criteria.Subquery;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -419,6 +422,39 @@ public class CaseService extends AbstractAdoService<Case> {
 		Map<PresentCondition, Long> resultMap = results.stream().collect(
 				Collectors.toMap(e -> (PresentCondition) e[0], e -> (Long) e[1]));
 		return resultMap;
+	}
+	
+	public Case getLatestCaseByPerson(Person person, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
+		Root<Case> caze = cq.from(Case.class);
+
+		Predicate filter = createUserFilter(cb, cq, caze, user);
+		Predicate personFilter = cb.equal(caze.get(Case.PERSON), person);
+		if (filter != null) {
+			filter = cb.and(filter, personFilter);
+		} else {
+			filter = personFilter;
+		}
+		cq.where(filter);
+
+		List<Case> cases = em.createQuery(cq).getResultList();
+		Optional<Case> latestCase = cases.stream()
+				.sorted(new Comparator<Case> () {
+					@Override
+					public int compare(Case o1, Case o2) {
+						if (CaseLogic.getStartDate(o1.getSymptoms().getOnsetDate(), o1.getReceptionDate(), o1.getReportDate()).after(CaseLogic.getStartDate(o2.getSymptoms().getOnsetDate(), o2.getReceptionDate(), o2.getReportDate()))) {
+							return -1;
+						}
+						if (CaseLogic.getStartDate(o2.getSymptoms().getOnsetDate(), o2.getReceptionDate(), o2.getReportDate()).after(CaseLogic.getStartDate(o1.getSymptoms().getOnsetDate(), o1.getReceptionDate(), o1.getReportDate()))) {
+							return 1;
+						}
+						return 0;
+					}
+				})
+				.findFirst();
+		
+		return latestCase.isPresent() ? latestCase.get() : null;
 	}
 
 	/**

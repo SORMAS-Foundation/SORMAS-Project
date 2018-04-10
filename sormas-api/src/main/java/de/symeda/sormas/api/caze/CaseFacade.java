@@ -69,5 +69,7 @@ public interface CaseFacade {
 	 */
 	List<Pair<DistrictDto, BigDecimal>> getCaseMeasurePerDistrict(Date onsetFromDate, Date onsetToDate, Disease disease, CaseMeasure caseMeasure);
 
+	CaseDataDto getLatestCaseByPerson(String personUuid, String userUuid);
+	
 	void deleteCase(CaseReferenceDto caseRef, String userUuid);
 }

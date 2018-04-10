@@ -112,7 +112,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
-	
+
 	@EJB
 	private CaseService caseService;
 	@EJB
@@ -261,21 +261,29 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		return caseService.getCasesForStatistics(region, district, disease, from, to, user);
 	}
-	
+
+	@Override
+	public CaseDataDto getLatestCaseByPerson(String personUuid, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		Person person = personService.getByUuid(personUuid);
+
+		return toDto(caseService.getLatestCaseByPerson(person, user));
+	}
+
 	@Override
 	public Map<CaseClassification, Long> getNewCaseCountPerClassification(CaseCriteria caseCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+
 		return caseService.getNewCaseCountPerClassification(caseCriteria, user);
 	}
 
 	@Override
 	public Map<PresentCondition, Long> getNewCaseCountPerPersonCondition(CaseCriteria caseCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+
 		return caseService.getNewCaseCountPerPersonCondition(caseCriteria, user);
 	}
-	
+
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
 		return toDto(caseService.getByUuid(uuid));
@@ -293,7 +301,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
 		Case caze = fromDto(dto);
-		
+
 		// Check whether any required field that does not have a not null constraint in the database is empty
 		if (caze.getRegion() == null) {
 			throw new ValidationRuntimeException("You have to specify a valid region");
@@ -320,7 +328,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caze.getCommunity() != null && !caze.getCommunity().equals(caze.getHealthFacility().getCommunity())) {
 			throw new ValidationRuntimeException("Could not find a database entry for the specified health facility in the specified community");
 		}
-		
+
 		caseService.ensurePersisted(caze);
 
 		onCaseChanged(existingCase, caze);
@@ -332,7 +340,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	 * Handles potential changes, processes and backend logic that needs to be done after a case has been created/saved
 	 */
 	private void onCaseChanged(CaseDataDto existingCase, Case newCase) {
-		
+
 		// If the case is new and the geo coordinates of the case's health facility are null, set its coordinates to the
 		// case's report coordinates, if available
 		Facility facility = newCase.getHealthFacility();
@@ -344,7 +352,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				facilityService.ensurePersisted(facility);
 			}
 		}
-		
+
 		if (newCase.getDisease() == Disease.PLAGUE) {
 			PlagueType plagueType = DiseaseHelper.getPlagueTypeForSymptoms(SymptomsFacadeEjb.toDto(newCase.getSymptoms()));
 			if (plagueType != newCase.getPlagueType() && plagueType != null) {
@@ -353,7 +361,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}		
 
 		updateInvestigationByStatus(existingCase, newCase);
-	
+
 		// Send an email to all responsible supervisors when the case classification has changed
 		if (existingCase != null && existingCase.getCaseClassification() != newCase.getCaseClassification()) {
 			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(newCase.getRegion(), 
@@ -369,7 +377,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 			}
 		}
-	
+
 		if (existingCase == null 
 				|| newCase.getDisease() != existingCase.getDisease()
 				|| newCase.getReportDate() != existingCase.getReportDate()
@@ -392,7 +400,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				eventParticipantService.udpateResultingCase(eventParticipant);
 			}
 		}
-		
+
 		// Create a task to search for other cases for new Plague cases
 		if (existingCase == null && newCase.getDisease() == Disease.PLAGUE) {
 			createActiveSearchForOtherCasesTask(newCase);
@@ -616,7 +624,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				task.setTaskStatus(TaskStatus.REMOVED);
 				task.setStatusChangeDate(new Date());
 			}
-			
+
 			if (caze.getInvestigationStatus() == InvestigationStatus.DONE 
 					&& existingCase.getInvestigationStatus() != InvestigationStatus.DONE) {
 				sendInvestigationDoneNotifications(caze);
@@ -826,7 +834,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			return resultList;
 		}
 	}
-	
+
 	private void sendInvestigationDoneNotifications(Case caze) {
 		List<User> messageRecipients = userService.getAllByRegionAndUserRoles(caze.getRegion(), 
 				UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
@@ -841,7 +849,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 	}
-	
+
 	@LocalBean
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {

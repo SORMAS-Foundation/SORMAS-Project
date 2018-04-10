@@ -15,8 +15,10 @@ import android.view.MenuItem;
 
 import com.google.android.gms.analytics.Tracker;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
@@ -119,10 +121,17 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                 }
 
                 try {
-                    List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(eventParticipant.getPerson().getFirstName(), eventParticipant.getPerson().getLastName());
-                    if (existingPersons.size() > 0) {
+                    List<Person> existingPersons = DatabaseHelper.getPersonDao().queryForAll();
+                    List<Person> similarPersons = new ArrayList<>();
+                    for (Person existingPerson : existingPersons) {
+                        if (PersonHelper.areNamesSimilar(eventParticipant.getPerson().getFirstName() + " " + eventParticipant.getPerson().getLastName(),
+                                existingPerson.getFirstName() + " " + existingPerson.getLastName())) {
+                            similarPersons.add(existingPerson);
+                        }
+                    }
 
-                        AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, eventParticipant.getPerson(), existingPersons, new Consumer() {
+                    if (similarPersons.size() > 0) {
+                        AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, eventParticipant.getPerson(), existingPersons, similarPersons, new Consumer() {
                             @Override
                             public void accept(Object parameter) {
                                 if (parameter instanceof Person) {

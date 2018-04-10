@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.person;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Grid.SelectionMode;
@@ -7,10 +8,12 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public class PersonSelectField extends CustomField<PersonIndexDto> {
@@ -21,6 +24,7 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 	
 	private final TextField firstNameField = new TextField();
 	private final TextField lastNameField = new TextField();
+	private final Button searchMatchesButton = new Button("Find matching persons");
 	private PersonGrid personGrid;
 	private OptionGroup createNewPerson;
 	
@@ -39,21 +43,20 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 		firstNameField.setCaption(
 				I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
 		firstNameField.setWidth(100, Unit.PERCENTAGE);
-		firstNameField.addValueChangeListener(e -> {
-			personGrid.setFirstNameFilter((String)e.getProperty().getValue());	
-			selectBestMatch();
-		});
 		nameLayout.addComponent(firstNameField);
 		
 		lastNameField.setCaption(
 				I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
 		lastNameField.setWidth(100, Unit.PERCENTAGE);
-		lastNameField.addValueChangeListener(e -> {
-			personGrid.setLastNameFilter((String)e.getProperty().getValue());
-			selectBestMatch();
-		});
 		nameLayout.addComponent(lastNameField);
 
+		CssStyles.style(searchMatchesButton, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
+		searchMatchesButton.addClickListener(e -> {
+			personGrid.reload(firstNameField.getValue(), lastNameField.getValue());
+			selectBestMatch();
+		});
+		nameLayout.addComponent(searchMatchesButton);
+		
 		layout.addComponent(nameLayout);
 		
 		initPersonGrid();
@@ -84,12 +87,10 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 	
 	private void initPersonGrid() {
 		if (personGrid == null) {
-			personGrid = new PersonGrid();
+			personGrid = new PersonGrid(firstNameField.getValue(), lastNameField.getValue());
 			personGrid.setHeightByRows(6);
 			personGrid.setCaption(I18nProperties.getFragment("Person.select"));
 			personGrid.setSelectionMode(SelectionMode.SINGLE);
-			personGrid.setFirstNameFilter(firstNameField.getValue());
-			personGrid.setLastNameFilter(lastNameField.getValue());
 		}
 	}
 	

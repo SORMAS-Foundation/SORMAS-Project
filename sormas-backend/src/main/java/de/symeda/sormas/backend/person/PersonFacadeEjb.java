@@ -257,10 +257,12 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	public static PersonIndexDto toIndexDto(Person entity) {
-		
 		PersonIndexDto dto = new PersonIndexDto(entity.getUuid(), entity.getSex(), entity.getFirstName(), entity.getLastName(), 
 				entity.getPresentCondition(), entity.getBirthdateDD(), entity.getBirthdateMM(), entity.getBirthdateYYYY(),
-				entity.getApproximateAge(), entity.getApproximateAgeType(), entity.getDeathDate());
+				entity.getApproximateAge(), entity.getApproximateAgeType(), entity.getDeathDate(), entity.getNickname(),
+				entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null, 
+				entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null, 
+				entity.getAddress().getCity());
 		return dto;
 	}
 	
