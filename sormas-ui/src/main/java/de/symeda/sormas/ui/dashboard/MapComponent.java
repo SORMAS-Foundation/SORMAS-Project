@@ -316,7 +316,7 @@ public class MapComponent extends VerticalLayout {
 				mapCaseDisplayModeSelect.setValue(mapCaseDisplayMode);
 				mapCaseDisplayModeSelect.addValueChangeListener(event -> {
 					mapCaseDisplayMode = (MapCaseDisplayMode) event.getProperty().getValue();
-					applyLayerChanges();
+					refreshMap();
 				});
 
 				HorizontalLayout showCasesLayout = new HorizontalLayout();
@@ -329,7 +329,7 @@ public class MapComponent extends VerticalLayout {
 						showCases = (boolean) e.getProperty().getValue();
 						mapCaseDisplayModeSelect.setEnabled(showCases);
 						mapCaseDisplayModeSelect.setValue(mapCaseDisplayMode);
-						applyLayerChanges();
+						refreshMap();
 					});
 					showCasesLayout.addComponent(showCasesCheckBox);
 
@@ -358,7 +358,7 @@ public class MapComponent extends VerticalLayout {
 					showConfirmedContactsCheckBox.setValue(true);
 					showUnconfirmedContactsCheckBox.setEnabled(showContacts);
 					showUnconfirmedContactsCheckBox.setValue(true);
-					applyLayerChanges();
+					refreshMap();
 				});
 				layersLayout.addComponent(showContactsCheckBox);
 
@@ -367,7 +367,7 @@ public class MapComponent extends VerticalLayout {
 				showConfirmedContactsCheckBox.setValue(showConfirmedContacts);
 				showConfirmedContactsCheckBox.addValueChangeListener(e -> {
 					showConfirmedContacts = (boolean) e.getProperty().getValue();
-					applyLayerChanges();
+					refreshMap();
 				});
 				layersLayout.addComponent(showConfirmedContactsCheckBox);	 
 
@@ -376,7 +376,7 @@ public class MapComponent extends VerticalLayout {
 				showUnconfirmedContactsCheckBox.setValue(showUnconfirmedContacts);
 				showUnconfirmedContactsCheckBox.addValueChangeListener(e -> {
 					showUnconfirmedContacts = (boolean) e.getProperty().getValue();
-					applyLayerChanges();
+					refreshMap();
 				});
 				layersLayout.addComponent(showUnconfirmedContactsCheckBox);	
 
@@ -389,7 +389,7 @@ public class MapComponent extends VerticalLayout {
 				showEventsCheckBox.setValue(showEvents);
 				showEventsCheckBox.addValueChangeListener(e -> {
 					showEvents = (boolean) e.getProperty().getValue();
-					applyLayerChanges();
+					refreshMap();
 				});
 				layersLayout.addComponent(showEventsCheckBox);
 
@@ -401,7 +401,7 @@ public class MapComponent extends VerticalLayout {
 					regionMapVisualizationSelect.setValue(caseMeasure);
 					regionMapVisualizationSelect.addValueChangeListener(event -> {
 						caseMeasure = (CaseMeasure) event.getProperty().getValue();
-						applyLayerChanges();
+						refreshMap();
 					});
 
 					CheckBox showRegionsCheckBox = new CheckBox();
@@ -412,7 +412,7 @@ public class MapComponent extends VerticalLayout {
 						showRegions = (boolean) e.getProperty().getValue();
 						regionMapVisualizationSelect.setEnabled(showRegions);
 						regionMapVisualizationSelect.setValue(caseMeasure);
-						applyLayerChanges();
+						refreshMap();
 					});
 					layersLayout.addComponent(showRegionsCheckBox);
 					layersLayout.addComponent(regionMapVisualizationSelect);
@@ -466,7 +466,7 @@ public class MapComponent extends VerticalLayout {
 
 		// Cases
 		if (showCases) {
-			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES) {
+			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES || mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES_OR_ADDRESS) {
 				Label facilitiesKeyLabel = new Label("Health Facilities");
 				CssStyles.style(facilitiesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 				mapKeyLayout.addComponent(facilitiesKeyLabel);
@@ -490,7 +490,7 @@ public class MapComponent extends VerticalLayout {
 			}
 
 			Label casesKeyLabel = new Label("Cases");
-			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES) {
+			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES || mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES_OR_ADDRESS) {
 				CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_3);
 			} else {
 				CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
@@ -681,12 +681,6 @@ public class MapComponent extends VerticalLayout {
 		label.addStyleName(ValoTheme.LABEL_SMALL);
 		entry.addComponent(label);
 		return entry;
-	}
-
-	private void applyLayerChanges() {
-		// Refresh the map according to the selected layers
-		refreshMap();
-		// Show or hide the button to show cases without a GPS tag depending on whether the cases layer has been selected
 	}
 
 	private void clearRegionShapes() {
@@ -926,7 +920,11 @@ public class MapComponent extends VerticalLayout {
 			} else {
 				if (caze.getHealthFacilityUuid().equals(FacilityDto.NONE_FACILITY_UUID) ||
 						caze.getHealthFacilityUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
-					mapCaseDtos.add(caze);
+					if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES_OR_ADDRESS) {
+						mapCaseDtos.add(caze);
+					} else {
+						continue;
+					}
 				} else {
 					FacilityReferenceDto facility = new FacilityReferenceDto();
 					facility.setUuid(caze.getHealthFacilityUuid());
@@ -936,6 +934,7 @@ public class MapComponent extends VerticalLayout {
 					casesByFacility.get(facility).add(caze);
 				}
 			}
+			
 			mapAndFacilityCases.add(caze);
 		}
 	}
@@ -1050,7 +1049,7 @@ public class MapComponent extends VerticalLayout {
 		YELLOW_DOT_SMALL("yellow-dot-small"),
 		YELLOW_DOT_LARGE("yellow-dot-large"),
 		YELLOW_DOT_VERY_LARGE("yellow-dot-very-large"),
-		YELLOW_HOUSE("yellow-dot"),
+		YELLOW_HOUSE("yellow-house"),
 		YELLOW_HOUSE_SMALL("yellow-house-small"),
 		YELLOW_HOUSE_LARGE("yellow-house-large"),
 		YELLOW_HOUSE_VERY_LARGE("yellow-house-very-large"),
