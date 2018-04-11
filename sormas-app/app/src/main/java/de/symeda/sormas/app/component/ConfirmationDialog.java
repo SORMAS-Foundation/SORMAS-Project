@@ -75,4 +75,8 @@ public class ConfirmationDialog {
         confirmationDialog.dismiss();
     }
 
+    public boolean isShowing() {
+        return confirmationDialog.isShowing();
+    }
+
 }
