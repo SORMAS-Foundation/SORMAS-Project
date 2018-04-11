@@ -5,6 +5,7 @@ import org.apache.commons.text.similarity.LevenshteinDistance;
 public class PersonHelper {
 	
 	private final static double SIMILARITY_THRESHOLD = 0.65;
+	private final static double LOWER_THRESHOLD = 0.33;
 	
 	/**
 	 * Calculates a modified Levenshtein distance between both names and returns true
@@ -16,20 +17,20 @@ public class PersonHelper {
 		String[] secondNameParts = secondName.split("[\\s_-]");
 		
 		if (firstNameParts.length <= secondNameParts.length) {
-			return getAverageDistance(firstNameParts, secondNameParts) >= SIMILARITY_THRESHOLD;
+			return getAverageSimilarity(firstNameParts, secondNameParts) >= SIMILARITY_THRESHOLD;
 		} else {
-			return getAverageDistance(secondNameParts, firstNameParts) >= SIMILARITY_THRESHOLD;
+			return getAverageSimilarity(secondNameParts, firstNameParts) >= SIMILARITY_THRESHOLD;
 		}
 	}
 	
 	/**
-	 * Average distance is calculated by comparing each element in the shorter name array with
+	 * Average similarity is calculated by comparing each element in the shorter name array with
 	 * each element in the longer name array. The highest achieved similarity is stored and
 	 * the element in the longer array with which this score was achieved is set to null to
 	 * make sure it can't be used again. After the comparison, the average of the achieved
 	 * scores is returned.
 	 */
-	private static double getAverageDistance(String[] shorterArray, String[] longerArray) {
+	private static double getAverageSimilarity(String[] shorterArray, String[] longerArray) {
 		double[] similarityResults = new double[shorterArray.length];
 		
 		for (int i = 0; i < shorterArray.length; i++) {
@@ -42,11 +43,15 @@ public class PersonHelper {
 				}
 				
 				String str2 = longerArray[j];
-				double levenshteinDistance = getSimilarity(str1, str2);
+				double levenshteinDistance = getSimilarity(str1, str2);				
 				if (levenshteinDistance > highestValue) {
 					highestValue = levenshteinDistance;
 					entryPosition = j;
 				}
+			}
+			
+			if (highestValue < LOWER_THRESHOLD) {
+				return 0;
 			}
 			
 			similarityResults[i] = highestValue;
