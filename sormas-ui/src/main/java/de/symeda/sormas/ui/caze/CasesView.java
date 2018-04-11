@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.caze;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -10,6 +9,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
@@ -274,6 +274,15 @@ public class CasesView extends AbstractView {
 				grid.setReportedByFilter((UserRole) e.getProperty().getValue());
 			});
 			secondFilterRowLayout.addComponent(reportedByFilter);
+			
+			CheckBox casesWithoutGPSCoordsFilter = new CheckBox();
+			CssStyles.style(casesWithoutGPSCoordsFilter, CssStyles.CHECKBOX_FILTER_INLINE);
+			casesWithoutGPSCoordsFilter.setCaption("Only cases without geo coordinates");
+			casesWithoutGPSCoordsFilter.setDescription("Only list cases that don't have address or report geo coordinates");
+			casesWithoutGPSCoordsFilter.addValueChangeListener(e -> {
+				grid.setNoGPSCoordinatesFilter((boolean) e.getProperty().getValue());
+			});
+			secondFilterRowLayout.addComponent(casesWithoutGPSCoordsFilter);
 		}
 		filterLayout.addComponent(secondFilterRowLayout);
 		secondFilterRowLayout.setVisible(false);

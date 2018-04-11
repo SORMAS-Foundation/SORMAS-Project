@@ -79,6 +79,7 @@ import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalizationService;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -187,6 +188,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
 		Root<Case> caze = cq.from(Case.class);
 		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
+		Join<Person, Location> address = person.join(Person.ADDRESS, JoinType.LEFT);
 		Join<Case, Region> region = caze.join(Case.REGION, JoinType.LEFT);
 		Join<Case, District> district = caze.join(Case.DISTRICT, JoinType.LEFT);
 		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
@@ -197,7 +199,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), caze.get(Case.CASE_CLASSIFICATION),
 				caze.get(Case.INVESTIGATION_STATUS), person.get(Person.PRESENT_CONDITION),
 				caze.get(Case.REPORT_DATE), region.get(Region.UUID), district.get(District.UUID), district.get(District.NAME), 
-				facility.get(Facility.UUID), surveillanceOfficer.get(User.UUID), caze.get(Case.OUTCOME));
+				facility.get(Facility.UUID), surveillanceOfficer.get(User.UUID), caze.get(Case.OUTCOME),
+				caze.get(Case.REPORT_LAT), caze.get(Case.REPORT_LON), address.get(Location.LATITUDE), address.get(Location.LONGITUDE));
 
 		User user = userService.getByUuid(userUuid);		
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
