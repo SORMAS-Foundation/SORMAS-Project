@@ -275,14 +275,14 @@ public class CasesView extends AbstractView {
 			});
 			secondFilterRowLayout.addComponent(reportedByFilter);
 			
-			CheckBox casesWithoutGPSCoordsFilter = new CheckBox();
-			CssStyles.style(casesWithoutGPSCoordsFilter, CssStyles.CHECKBOX_FILTER_INLINE);
-			casesWithoutGPSCoordsFilter.setCaption("Only cases without geo coordinates");
-			casesWithoutGPSCoordsFilter.setDescription("Only list cases that don't have address or report geo coordinates");
-			casesWithoutGPSCoordsFilter.addValueChangeListener(e -> {
-				grid.setNoGPSCoordinatesFilter((boolean) e.getProperty().getValue());
+			CheckBox casesWithoutGeoCoordsFilter = new CheckBox();
+			CssStyles.style(casesWithoutGeoCoordsFilter, CssStyles.CHECKBOX_FILTER_INLINE);
+			casesWithoutGeoCoordsFilter.setCaption("Only cases without geo coordinates");
+			casesWithoutGeoCoordsFilter.setDescription("Only list cases that don't have address or report geo coordinates");
+			casesWithoutGeoCoordsFilter.addValueChangeListener(e -> {
+				grid.setNoGeoCoordinatesFilter((boolean) e.getProperty().getValue());
 			});
-			secondFilterRowLayout.addComponent(casesWithoutGPSCoordsFilter);
+			secondFilterRowLayout.addComponent(casesWithoutGeoCoordsFilter);
 		}
 		filterLayout.addComponent(secondFilterRowLayout);
 		secondFilterRowLayout.setVisible(false);

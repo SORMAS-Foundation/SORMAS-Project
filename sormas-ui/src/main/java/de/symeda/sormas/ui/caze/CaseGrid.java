@@ -183,12 +183,9 @@ public class CaseGrid extends Grid {
     	}
     }
 	
-	public void setNoGPSCoordinatesFilter(boolean showOnlyCasesWithoutGPSCoords) {
-		getContainer().removeContainerFilters(CaseIndexDto.HAS_REPORT_COORDINATES);
-		if (showOnlyCasesWithoutGPSCoords) {
-			Equal filter = new Equal(CaseIndexDto.HAS_REPORT_COORDINATES, false);
-			getContainer().addContainerFilter(filter);
-		}
+	public void setNoGeoCoordinatesFilter(boolean showOnlyCasesWithoutGPSCoords) {
+		caseCriteria.mustHaveNoGeoCoordinatesEquals(showOnlyCasesWithoutGPSCoords);
+		reload();
 	}
 	
 	public void setDateFilter(Date fromDate, Date toDate) {

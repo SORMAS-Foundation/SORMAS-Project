@@ -28,7 +28,6 @@ public class CaseIndexDto implements Serializable {
 	public static final String HEALTH_FACILITY_UUID = "healthFacilityUuid";
 	public static final String SURVEILLANCE_OFFICER_UUID = "surveillanceOfficerUuid";
 	public static final String OUTCOME = "outcome";
-	public static final String HAS_REPORT_COORDINATES = "hasReportCoordinates";
 
 	private String uuid;
 	private String epidNumber;
@@ -46,13 +45,11 @@ public class CaseIndexDto implements Serializable {
 	private String healthFacilityUuid;
 	private String surveillanceOfficerUuid;
 	private CaseOutcome outcome;
-	private boolean hasReportCoordinates;	
 	
 	public CaseIndexDto(String uuid, String epidNumber, String personFirstName, String personLastName, Disease disease,
 			String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 			PresentCondition presentCondition, Date reportDate, String regionUuid, 
-			String districtUuid, String districtName, String healthFacilityUuid, String surveillanceOfficerUuid, CaseOutcome outcome,
-			Double reportLat, Double reportLon, Double addressLat, Double addressLon) {
+			String districtUuid, String districtName, String healthFacilityUuid, String surveillanceOfficerUuid, CaseOutcome outcome) {
 		this.uuid = uuid;
 		this.epidNumber = epidNumber;
 		this.personFirstName = personFirstName;
@@ -69,7 +66,6 @@ public class CaseIndexDto implements Serializable {
 		this.healthFacilityUuid = healthFacilityUuid;
 		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
 		this.outcome = outcome;
-		this.hasReportCoordinates = (reportLat != null && reportLon != null) || (addressLat != null && addressLon != null);
 	}
 	
 	public String getEpidNumber() {
@@ -161,12 +157,6 @@ public class CaseIndexDto implements Serializable {
 	}
 	public void setOutcome(CaseOutcome outcome) {
 		this.outcome = outcome;
-	}
-	public boolean isHasReportCoordinates() {
-		return hasReportCoordinates;
-	}
-	public void setHasReportCoordinates(boolean hasReportCoordinates) {
-		this.hasReportCoordinates = hasReportCoordinates;
 	}
 
 	public CaseReferenceDto toReference() {

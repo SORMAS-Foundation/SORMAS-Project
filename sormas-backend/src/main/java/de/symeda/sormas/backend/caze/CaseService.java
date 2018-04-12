@@ -621,6 +621,7 @@ public class CaseService extends AbstractAdoService<Case> {
 	
 	public Predicate buildCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, Root<Case> from) {
 		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
+		Join<Person, Location> personAddress = person.join(Person.ADDRESS, JoinType.LEFT);
 		Join<Case, Region> region = from.join(Case.REGION, JoinType.LEFT);
 		Join<Case, District> district = from.join(Case.DISTRICT, JoinType.LEFT);
 		Predicate filter = null;
@@ -643,6 +644,18 @@ public class CaseService extends AbstractAdoService<Case> {
 		}
 		if (caseCriteria.getNewCaseDateFrom() != null && caseCriteria.getNewCaseDateTo() != null) {
 			filter = and(cb, filter, createNewCaseFilter(cb, from, caseCriteria.getNewCaseDateFrom(), caseCriteria.getNewCaseDateTo()));
+		}
+		if (caseCriteria.isMustHaveNoGeoCoordinates() != null && caseCriteria.isMustHaveNoGeoCoordinates() == true) {
+			filter = and(cb, filter, 
+					cb.and(
+						cb.or(
+								cb.isNull(from.get(Case.REPORT_LAT)), 
+								cb.isNull(from.get(Case.REPORT_LON))), 
+						cb.or(
+								cb.isNull(personAddress.get(Location.LATITUDE)), 
+								cb.isNull(personAddress.get(Location.LONGITUDE)))
+						)
+					);
 		}
 		return filter;
 	}

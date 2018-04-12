@@ -19,6 +19,7 @@ public class CaseCriteria implements Serializable {
 	private DistrictReferenceDto district;
 	private Date newCaseDateFrom;
 	private Date newCaseDateTo;
+	private Boolean mustHaveNoGeoCoordinates;
 
 	public CaseCriteria reportingUserHasRole(UserRole reportingUserRole) {
 		this.reportingUserRole = reportingUserRole;
@@ -51,6 +52,11 @@ public class CaseCriteria implements Serializable {
 		return this;
 	}
 	
+	public CaseCriteria mustHaveNoGeoCoordinatesEquals(Boolean mustHaveNoGeoCoordinates) {
+		this.mustHaveNoGeoCoordinates = mustHaveNoGeoCoordinates;
+		return this;
+	}
+	
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
 	}
@@ -77,6 +83,10 @@ public class CaseCriteria implements Serializable {
 
 	public Date getNewCaseDateTo() {
 		return newCaseDateTo;
+	}
+
+	public Boolean isMustHaveNoGeoCoordinates() {
+		return mustHaveNoGeoCoordinates;
 	}
 	
 }
