@@ -13,8 +13,8 @@ public class PersonHelper {
 	 */
 	public static boolean areNamesSimilar(String firstName, String secondName) {
 		// Split names at whitespaces and the symbols _ and -
-		String[] firstNameParts = firstName.split("[\\s_-]");
-		String[] secondNameParts = secondName.split("[\\s_-]");
+		String[] firstNameParts = firstName.trim().split("[\\s_-]");
+		String[] secondNameParts = secondName.trim().split("[\\s_-]");
 		
 		if (firstNameParts.length <= secondNameParts.length) {
 			return getAverageSimilarity(firstNameParts, secondNameParts) >= SIMILARITY_THRESHOLD;
@@ -28,7 +28,8 @@ public class PersonHelper {
 	 * each element in the longer name array. The highest achieved similarity is stored and
 	 * the element in the longer array with which this score was achieved is set to null to
 	 * make sure it can't be used again. After the comparison, the average of the achieved
-	 * scores is returned.
+	 * scores is returned. If any part of the name deceeds the lower threshold, 0 is returned by
+	 * default.
 	 */
 	private static double getAverageSimilarity(String[] shorterArray, String[] longerArray) {
 		double[] similarityResults = new double[shorterArray.length];

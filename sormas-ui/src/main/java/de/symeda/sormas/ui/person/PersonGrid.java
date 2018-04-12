@@ -19,6 +19,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.login.LoginHelper;
 
@@ -27,10 +28,10 @@ public class PersonGrid extends Grid {
 
 	public static final String LAST_DISEASE_LOC = "lastDiseaseLoc";
 	
-	private final List<PersonIndexDto> persons;
+	private final List<PersonNameDto> persons;
 
 	public PersonGrid(String firstName, String lastName) {
-		persons = FacadeProvider.getPersonFacade().getIndexList(LoginHelper.getCurrentUserAsReference());
+		persons = FacadeProvider.getPersonFacade().getNameDtos(LoginHelper.getCurrentUserAsReference());
 		
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);
@@ -82,15 +83,16 @@ public class PersonGrid extends Grid {
 
 	public void reload(String firstName, String lastName) {
 		List<PersonIndexDto> entries = new ArrayList<>();
-		for (PersonIndexDto person : persons) {
+		for (PersonNameDto person : persons) {
 			if (PersonHelper.areNamesSimilar(firstName + " " + lastName, person.getFirstName() + " " + person.getLastName())) {
-				CaseDataDto lastCase = FacadeProvider.getCaseFacade().getLatestCaseByPerson(person.getUuid(), LoginHelper.getCurrentUserAsReference().getUuid());
+				PersonIndexDto indexDto = FacadeProvider.getPersonFacade().getIndexDto(person.getId());
+				CaseDataDto lastCase = FacadeProvider.getCaseFacade().getLatestCaseByPerson(indexDto.getUuid(), LoginHelper.getCurrentUserAsReference().getUuid());
 				if (lastCase != null) {
-					person.setLastDisease(lastCase.getDisease());
-					person.setLastDiseaseStartDate(CaseLogic.getStartDate(lastCase.getSymptoms().getOnsetDate(), lastCase.getReceptionDate(), lastCase.getReportDate()));
-					person.setLastCaseUuid(lastCase.getUuid());
+					indexDto.setLastDisease(lastCase.getDisease());
+					indexDto.setLastDiseaseStartDate(CaseLogic.getStartDate(lastCase.getSymptoms().getOnsetDate(), lastCase.getReceptionDate(), lastCase.getReportDate()));
+					indexDto.setLastCaseUuid(lastCase.getUuid());
 				}
-				entries.add(person);
+				entries.add(indexDto);
 			}
 		}
 

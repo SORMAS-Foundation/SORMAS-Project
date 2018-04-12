@@ -23,6 +23,7 @@ import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonName;
 import de.symeda.sormas.app.databinding.EventParticipantNewFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.PersonSelectOrCreateFragmentLayoutBinding;
 import de.symeda.sormas.app.person.PersonSelectVO;
@@ -37,7 +38,7 @@ public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
     final Consumer positiveCallback;
     final Person person;
 
-    public SelectOrCreatePersonDialogBuilder(final FragmentActivity activity, final Person person, final List<Person> existingPersons, final List<Person> similarPersons, final Consumer positiveCallback ) {
+    public SelectOrCreatePersonDialogBuilder(final FragmentActivity activity, final Person person, final List<PersonName> existingPersons, final List<Person> similarPersons, final Consumer positiveCallback ) {
         super(activity);
 
         SormasApplication application = (SormasApplication) activity.getApplication();
@@ -60,10 +61,11 @@ public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
             @Override
             public void onClick(View v) {
                 List<Person> newSimilarPersons = new ArrayList<>();
-                for (Person existingPerson : existingPersons) {
+                for (PersonName existingPerson : existingPersons) {
                     if (PersonHelper.areNamesSimilar(bindingPersonSelect.personFirstName.getValue() + " " + bindingPersonSelect.personLastName.getValue(),
                             existingPerson.getFirstName() + " " + existingPerson.getLastName())) {
-                        newSimilarPersons.add(existingPerson);
+                        Person person = DatabaseHelper.getPersonDao().queryForId(existingPerson.getId());
+                        newSimilarPersons.add(person);
                     }
                 }
                 updatePersonSelectRadioGroupField(person, newSimilarPersons, dialogView);

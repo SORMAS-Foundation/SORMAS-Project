@@ -30,6 +30,7 @@ import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.event.EventParticipantDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.backend.person.PersonName;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.databinding.EventParticipantNewFragmentLayoutBinding;
@@ -121,12 +122,13 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                 }
 
                 try {
-                    List<Person> existingPersons = DatabaseHelper.getPersonDao().queryForAll();
+                    List<PersonName> existingPersons = DatabaseHelper.getPersonDao().getPersonNames();
                     List<Person> similarPersons = new ArrayList<>();
-                    for (Person existingPerson : existingPersons) {
+                    for (PersonName existingPerson : existingPersons) {
                         if (PersonHelper.areNamesSimilar(eventParticipant.getPerson().getFirstName() + " " + eventParticipant.getPerson().getLastName(),
                                 existingPerson.getFirstName() + " " + existingPerson.getLastName())) {
-                            similarPersons.add(existingPerson);
+                            Person person = DatabaseHelper.getPersonDao().queryForId(existingPerson.getId());
+                            similarPersons.add(person);
                         }
                     }
 

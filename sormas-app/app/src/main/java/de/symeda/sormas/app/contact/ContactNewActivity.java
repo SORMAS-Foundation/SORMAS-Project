@@ -33,6 +33,7 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.backend.person.PersonName;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
@@ -144,12 +145,13 @@ public class ContactNewActivity extends AppCompatActivity {
                 }
 
                 try {
-                    List<Person> existingPersons = DatabaseHelper.getPersonDao().queryForAll();
+                    List<PersonName> existingPersons = DatabaseHelper.getPersonDao().getPersonNames();
                     List<Person> similarPersons = new ArrayList<>();
-                    for (Person existingPerson : existingPersons) {
+                    for (PersonName existingPerson : existingPersons) {
                         if (PersonHelper.areNamesSimilar(contact.getPerson().getFirstName() + " " + contact.getPerson().getLastName(),
                                 existingPerson.getFirstName() + " " + existingPerson.getLastName())) {
-                            similarPersons.add(existingPerson);
+                            Person person = DatabaseHelper.getPersonDao().queryForId(existingPerson.getId());
+                            similarPersons.add(person);
                         }
                     }
                     if (similarPersons.size() > 0) {

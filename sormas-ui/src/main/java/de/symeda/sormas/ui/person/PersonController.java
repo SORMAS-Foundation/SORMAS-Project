@@ -53,7 +53,7 @@ public class PersonController {
     		personSelect.selectBestMatch();
             // TODO add user right parameter
 	    	final CommitDiscardWrapperComponent<PersonSelectField> selectOrCreateComponent = 
-	    			new CommitDiscardWrapperComponent<PersonSelectField>(personSelect, null);
+	    			new CommitDiscardWrapperComponent<PersonSelectField>(personSelect);
 	    	
 	    	selectOrCreateComponent.addCommitListener(new CommitListener() {
 	        	@Override

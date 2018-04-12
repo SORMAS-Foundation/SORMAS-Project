@@ -35,6 +35,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -82,17 +83,17 @@ public class CaseController {
 	}
 
 	public void create() {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, null);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case");    	
 	}
 
-	public void create(PersonReferenceDto person, Disease disease) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(person, disease, null);
+	public void create(PersonReferenceDto person, Disease disease, EventParticipantDto eventParticipant) {
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(person, disease, null, eventParticipant);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case"); 
 	}
 
 	public void create(PersonReferenceDto person, Disease disease, ContactDto contact) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(person, disease, contact);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(person, disease, contact, null);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, "Create new case");
 	}
 
@@ -165,7 +166,7 @@ public class CaseController {
 		return caze;
 	}
 
-	public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(PersonReferenceDto person, Disease disease, ContactDto contact) {
+	public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(PersonReferenceDto person, Disease disease, ContactDto contact, EventParticipantDto eventParticipant) {
 
 		CaseCreateForm createForm = new CaseCreateForm(UserRight.CASE_CREATE);
 		CaseDataDto caze = createNewCase(person, disease);
@@ -193,13 +194,15 @@ public class CaseController {
 					dto.setEpidNumber(region.getEpidCode() != null ? region.getEpidCode() : "" 
 							+ "-" + district.getEpidCode() != null ? district.getEpidCode() : "" 
 									+ "-" + year + "-");
-
+					
 					if (contact != null) {
 						// automatically change the contact classification to "converted"
 						contact.setContactStatus(ContactStatus.CONVERTED);
 						FacadeProvider.getContactFacade().saveContact(contact);
-
-						// use the person of the contact we are creating a case for
+					}
+					
+					if (contact != null || eventParticipant != null) {
+						// use the person of the contact or event participant the case is created for
 						dto.setPerson(person);
 						FacadeProvider.getCaseFacade().saveCase(dto);        				
 						Notification.show("New case created", Type.ASSISTIVE_NOTIFICATION);

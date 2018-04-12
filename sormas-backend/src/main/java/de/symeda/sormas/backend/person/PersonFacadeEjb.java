@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.person;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -20,6 +21,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -66,29 +68,14 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	@Override
-	public List<PersonReferenceDto> getAllPersons(UserReferenceDto userRef) {
-
-		User user = userService.getByReferenceDto(userRef);
-		if (user == null) {
-			return Collections.emptyList();
-		}
-
-		return personService.getAllAfter(null, user).stream()
-			.map(c -> toReferenceDto(c))
-			.collect(Collectors.toList());
-	}
-	
-	@Override
-	public List<PersonIndexDto> getIndexList(UserReferenceDto userRef) {
+	public List<PersonNameDto> getNameDtos(UserReferenceDto userRef) {
 		
 		User user = userService.getByReferenceDto(userRef);
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return personService.getAllAfter(null, user).stream()
-			.map(c -> toIndexDto(c))
-			.collect(Collectors.toList());
+		return new ArrayList<PersonNameDto>(personService.getNameDtos(user));
 	}
 	
 	// multiselect does not work for person, because getting all persons requires multiple querries and we currently don't have an abstraction for this
@@ -119,19 +106,6 @@ public class PersonFacadeEjb implements PersonFacade {
 //		List<PersonIndexDto> resultList = em.createQuery(cq).getResultList();
 //		return resultList;
 //	}
-	
-	@Override
-	public List<PersonReferenceDto> getPersonReferencesAfter(Date date, UserReferenceDto userRef) {
-		
-		User user = userService.getByReferenceDto(userRef);
-		if (user == null) {
-			return Collections.emptyList();
-		}
-		
-		return personService.getAllAfter(date, user).stream()
-			.map(c -> toReferenceDto(c))
-			.collect(Collectors.toList());
-	}
 	
 	@Override
 	public List<PersonDto> getPersonsAfter(Date date, String uuid) {
@@ -193,6 +167,12 @@ public class PersonFacadeEjb implements PersonFacade {
 		
 		return toDto(person);
 		
+	}
+	
+	@Override
+	public PersonIndexDto getIndexDto(Long id) {
+		Person person = personService.getById(id);
+		return toIndexDto(person);
 	}
 	
 	@Override

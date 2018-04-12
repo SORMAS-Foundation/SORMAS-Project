@@ -3,8 +3,12 @@ package de.symeda.sormas.app.backend.person;
 import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.dao.RawRowMapper;
+import com.j256.ormlite.field.DataType;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,14 +40,21 @@ public class PersonDao extends AbstractAdoDao<Person> {
         return Person.TABLE_NAME;
     }
 
-    public List<Person> getAllByName(String firstName, String lastName) {
+    public List<PersonName> getPersonNames() {
         try {
-            return queryBuilder()
-                    .where().eq(Person.FIRST_NAME, firstName).and().eq(Person.LAST_NAME, lastName)
-                    .and().eq(AbstractDomainObject.SNAPSHOT, false)
-                    .query();
+            GenericRawResults<Object[]> rawResults = queryRaw("select " + Person.ID +
+                    ", " + Person.FIRST_NAME + ", " + Person.LAST_NAME + " from " +
+                    Person.TABLE_NAME + ";", new DataType[]{DataType.LONG, DataType.STRING, DataType.STRING});
+            List<Object[]> results = rawResults.getResults();
+            List<PersonName> personNames = new ArrayList<>();
+            for (Object[] result : results) {
+                PersonName personName = new PersonName((Long) result[0], (String) result[1], (String) result[2]);
+                personNames.add(personName);
+            }
+
+            return personNames;
         } catch (SQLException e) {
-            Log.e(getTableName(), "Could not perform getAllByName on Person");
+            Log.e(getTableName(), "Could not perform getPersonNames on Person");
             throw new RuntimeException(e);
         }
     }

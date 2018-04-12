@@ -12,14 +12,10 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 @Remote
 public interface PersonFacade {
 
-    List<PersonReferenceDto> getAllPersons(UserReferenceDto user);
-
-	List<PersonIndexDto> getIndexList(UserReferenceDto user);
+	List<PersonNameDto> getNameDtos(UserReferenceDto user);
 
 	List<PersonDto> getPersonsAfter(Date date, String uuid);
 
-	List<PersonReferenceDto> getPersonReferencesAfter(Date date, UserReferenceDto userRef);
-    
 	List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid);
 	
     PersonReferenceDto getReferenceByUuid(String uuid);
@@ -31,6 +27,8 @@ public interface PersonFacade {
 	List<String> getAllUuids(String userUuid);
 
 	List<PersonDto> getByUuids(List<String> uuids);
+	
+	PersonIndexDto getIndexDto(Long id);
 	
 	PersonDto buildPerson();
 }
