@@ -26,14 +26,11 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseLogic;
-import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
-import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.StatisticsCaseDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -92,25 +89,22 @@ public class CaseService extends AbstractAdoService<Case> {
 		return caze;
 	}
 	
-	public Case createCase() {
-		Case caze = new Case();
-    	caze.setUuid(DataHelper.createUuid());
-    	
-    	caze.setInvestigationStatus(InvestigationStatus.PENDING);
-    	caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
-    	caze.setOutcome(CaseOutcome.NO_OUTCOME);
-    	
-    	caze.setPerson(personService.createPerson());
-    	caze.setHospitalization(hospitalizationService.createHospitalization());
-    	caze.setEpiData(epiDataService.createEpiData());
-    	
-    	caze.setReportDate(new Date());
-    	User user = userService.getByUserName(sessionContext.getCallerPrincipal().getName());
-    	caze.setReportingUser(user);
-    	
-    	return caze;
-	}
+	public List<Case> findBy(CaseCriteria caseCriteria) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
+		Root<Case> from = cq.from(getElementClass());
 
+		Predicate filter = buildCriteriaFilter(caseCriteria, cb, from);
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.asc(from.get(Case.CREATION_DATE)));
+
+		List<Case> resultList = em.createQuery(cq).getResultList();
+		return resultList;	
+	}
+	
 	public List<Case> getAllByDisease(Disease disease, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
@@ -644,6 +638,9 @@ public class CaseService extends AbstractAdoService<Case> {
 		}
 		if (caseCriteria.getNewCaseDateFrom() != null && caseCriteria.getNewCaseDateTo() != null) {
 			filter = and(cb, filter, createNewCaseFilter(cb, from, caseCriteria.getNewCaseDateFrom(), caseCriteria.getNewCaseDateTo()));
+		}
+		if (caseCriteria.getPerson() != null) {
+			filter = and(cb, filter, cb.equal(from.join(Case.PERSON, JoinType.LEFT).get(Person.UUID), caseCriteria.getPerson().getUuid()));
 		}
 		if (caseCriteria.isMustHaveNoGeoCoordinates() != null && caseCriteria.isMustHaveNoGeoCoordinates() == true) {
 			filter = and(cb, filter, 

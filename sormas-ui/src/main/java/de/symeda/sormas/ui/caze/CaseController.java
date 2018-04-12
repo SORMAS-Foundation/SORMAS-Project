@@ -3,7 +3,6 @@ package de.symeda.sormas.ui.caze;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import com.vaadin.navigator.Navigator;
@@ -26,12 +25,9 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
-import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.epidata.EpiDataDto;
@@ -47,7 +43,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
@@ -141,22 +136,9 @@ public class CaseController {
 		return FacadeProvider.getCaseFacade().getCaseDataByUuid(uuid);
 	}
 
-	// TODO unify this in API project
 	private CaseDataDto createNewCase(PersonReferenceDto person, Disease disease) {
-		CaseDataDto caze = new CaseDataDto();
-		caze.setUuid(DataHelper.createUuid());
+		CaseDataDto caze = CaseDataDto.build(person, disease);
 
-		if(person != null) {
-			caze.setPerson(person);
-		}
-		if(disease != null) {
-			caze.setDisease(disease);
-		}
-		caze.setInvestigationStatus(InvestigationStatus.PENDING);
-		caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
-		caze.setOutcome(CaseOutcome.NO_OUTCOME);
-
-		caze.setReportDate(new Date());
 		UserDto user = LoginHelper.getCurrentUser();
 		UserReferenceDto userReference = LoginHelper.getCurrentUserAsReference();
 		caze.setReportingUser(userReference);

@@ -10,4 +10,8 @@ public enum PresentCondition {
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	};
+	
+	public boolean isDeceased() {
+		return this == DEAD || this == BURIED;
+	}
 }

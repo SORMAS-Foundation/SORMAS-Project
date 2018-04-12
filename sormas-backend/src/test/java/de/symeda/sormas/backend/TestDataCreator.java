@@ -79,12 +79,9 @@ public class TestDataCreator {
 
 	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease, CaseClassification caseClassification, 
 			InvestigationStatus investigationStatus, Date reportDate, RDCF rdcf) {
-		CaseDataDto caze = new CaseDataDto();
-		caze.setUuid(DataHelper.createUuid());
-		caze.setPerson(cazePerson);
+		CaseDataDto caze = CaseDataDto.build(cazePerson, disease);
 		caze.setReportDate(reportDate);
 		caze.setReportingUser(user);
-		caze.setDisease(disease);
 		caze.setCaseClassification(caseClassification);
 		caze.setInvestigationStatus(investigationStatus);
 		caze.setRegion(beanTest.getRegionFacade().getRegionReferenceByUuid(rdcf.region.getUuid()));

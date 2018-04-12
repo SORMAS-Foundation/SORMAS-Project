@@ -8,12 +8,15 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
@@ -21,6 +24,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
@@ -32,9 +36,13 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.util.DateHelper8;
+import de.symeda.sormas.backend.util.DtoHelper;
 
 public class CaseFacadeEjbTest extends AbstractBeanTest {
 
+	@Rule
+	public final ExpectedException exception = ExpectedException.none();
+	  
 	@Test
 	public void testDiseaseChangeUpdatesContacts() {
 
@@ -168,5 +176,79 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(0, getContactFacade().getAllContactsAfter(null, userUuid).size());
 		assertNull(getTaskFacade().getByUuid(task.getUuid()));
 		assertEquals(0, getSampleFacade().getAllAfter(null, userUuid).size());
+	}
+	
+	@Test
+	public void testOutcomePersonConditionUpdate() {
+		
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto firstCase = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+
+		// case deceased -> person has to set to dead
+		firstCase.setOutcome(CaseOutcome.DECEASED);
+		firstCase = getCaseFacade().saveCase(firstCase);
+		
+		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
+
+		// person alive again -> case has to be reset to no outcome
+		cazePerson.setPresentCondition(PresentCondition.ALIVE);
+		cazePerson = getPersonFacade().savePerson(cazePerson);
+		
+		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
+		assertEquals(CaseOutcome.NO_OUTCOME, firstCase.getOutcome());
+		
+		// additional case for the the person. set to deceased -> person has to be dead and other no outcome cases have to be set to deceased
+		CaseDataDto secondCase = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		secondCase.setOutcome(CaseOutcome.RECOVERED);
+		secondCase = getCaseFacade().saveCase(secondCase);
+		CaseDataDto thirdCase = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		thirdCase.setOutcome(CaseOutcome.DECEASED);
+		thirdCase = getCaseFacade().saveCase(thirdCase);
+
+		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
+
+		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
+		assertEquals(CaseOutcome.DECEASED, firstCase.getOutcome());
+		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
+		assertEquals(CaseOutcome.RECOVERED, secondCase.getOutcome());
+		
+		// person alive again -> deceased cases have to be set to no outcome
+		cazePerson.setPresentCondition(PresentCondition.ALIVE);
+		cazePerson = getPersonFacade().savePerson(cazePerson);
+		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
+		assertEquals(CaseOutcome.NO_OUTCOME, firstCase.getOutcome());
+		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
+		assertEquals(CaseOutcome.RECOVERED, secondCase.getOutcome());
+		thirdCase = getCaseFacade().getCaseDataByUuid(thirdCase.getUuid());
+		assertEquals(CaseOutcome.NO_OUTCOME, thirdCase.getOutcome());
+	}
+	
+	@Test
+	public void testOutcomePersonConditionUpdateForAppSync() throws InterruptedException {
+		
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto firstCase = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+
+		// simulate short delay between transmissions
+		Thread.sleep(DtoHelper.CHANGE_DATE_TOLERANCE_MS+1);
+
+		// case deceased -> person has to set to dead
+		firstCase.setOutcome(CaseOutcome.DECEASED);
+		cazePerson.setPresentCondition(PresentCondition.DEAD);
+		cazePerson = getPersonFacade().savePerson(cazePerson);
+
+		// this should throw an exception
+		exception.expect(UnsupportedOperationException.class);
+		firstCase = getCaseFacade().saveCase(firstCase);
 	}
 }

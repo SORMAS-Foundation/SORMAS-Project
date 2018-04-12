@@ -16,6 +16,9 @@ import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
@@ -27,6 +30,9 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
@@ -43,6 +49,10 @@ public class PersonFacadeEjb implements PersonFacade {
 	
 	@EJB
 	private PersonService personService;
+	@EJB
+	private CaseService caseService;
+	@EJB
+	private CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private FacilityService facilityService;
 	@EJB
@@ -161,12 +171,50 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	@Override
-	public PersonDto savePerson(PersonDto dto) {
-		Person person = fromDto(dto);
+	public PersonDto savePerson(PersonDto source) {
+		Person person = personService.getByUuid(source.getUuid());
+		PersonDto existingPerson = toDto(person);
+		
+		person = fillOrBuildEntity(source, person);
 		personService.ensurePersisted(person);
 		
-		return toDto(person);
+		onPersonChanged(existingPerson, person);
 		
+		return toDto(person);
+	}
+	
+	public void onPersonChanged(PersonDto existingPerson, Person newPerson) {
+
+		if (existingPerson != null) {
+			if (newPerson.getPresentCondition() != null 
+					&& existingPerson.getPresentCondition() != newPerson.getPresentCondition()) {
+				
+				// present condition changed -> update cases
+				
+				// CHECK Should we better use only dtos here and use CaseFacade.saveCase?
+				List<Case> personCases = caseService.findBy(new CaseCriteria().personEquals(new PersonReferenceDto(newPerson.getUuid())));
+
+				for (Case personCase : personCases) {
+					if (newPerson.getPresentCondition().isDeceased()) {
+						if (personCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
+							CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+							personCase.setOutcome(CaseOutcome.DECEASED);
+							personCase.setOutcomeDate(new Date());
+							// attention: this may lead to infinite recursion when not properly implemented
+							caseFacade.onCaseChanged(existingCase, personCase);
+						}
+					} else {
+						if (personCase.getOutcome() == CaseOutcome.DECEASED) {
+							CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+							personCase.setOutcome(CaseOutcome.NO_OUTCOME);
+							personCase.setOutcomeDate(new Date());
+							// attention: this may lead to infinite recursion when not properly implemented
+							caseFacade.onCaseChanged(existingCase, personCase);
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -183,9 +231,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		return person;
 	}
 	
-	public Person fromDto(@NotNull PersonDto source) {
+	public Person fillOrBuildEntity(@NotNull PersonDto source, Person target) {
 		
-		Person target = personService.getByUuid(source.getUuid());
 		if(target==null) {
 			target = personService.createPerson();
 			target.setUuid(source.getUuid());
@@ -247,6 +294,9 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	public static PersonDto toDto(Person source) {
+		if (source == null) {
+			return null;
+		}
 		PersonDto target = new PersonDto();
 		DtoHelper.fillDto(target, source);
 		

@@ -19,8 +19,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -31,6 +33,9 @@ import org.slf4j.LoggerFactory;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
@@ -63,6 +68,8 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "ImportFacade")
 public class ImportFacadeEjb implements ImportFacade {
 
+	@Resource
+	private SessionContext sessionContext;
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
 	
@@ -134,6 +141,23 @@ public class ImportFacadeEjb implements ImportFacade {
 		Path filePath = exportDirectory.resolve(SORMAS_IMPORT_GUIDE_FILE_NAME);
 		return filePath.toString();
 	}
+	
+	private Case buildCase() {
+		Case caze = new Case();
+    	caze.setUuid(DataHelper.createUuid());
+    	
+    	caze.setInvestigationStatus(InvestigationStatus.PENDING);
+    	caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+    	caze.setOutcome(CaseOutcome.NO_OUTCOME);
+    	
+    	caze.setPerson(personService.createPerson());
+    	
+    	caze.setReportDate(new Date());
+    	User user = userService.getByUserName(sessionContext.getCallerPrincipal().getName());
+    	caze.setReportingUser(user);
+    	
+    	return caze;
+	}
 
 	@Override
 	public String importCasesFromCsvFile(String csvFilePath, String userUuid) throws IOException, InvalidColumnException {
@@ -169,7 +193,7 @@ public class ImportFacadeEjb implements ImportFacade {
 				continue;
 			}
 
-			Case newCase = caseService.createCase();
+			Case newCase = buildCase();
 			boolean caseHasImportError = false;
 			for (int i = 0; i < nextLine.length; i++) {
 				String entry = nextLine[i];
