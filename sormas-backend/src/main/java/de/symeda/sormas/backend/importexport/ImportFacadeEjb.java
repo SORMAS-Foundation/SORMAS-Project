@@ -268,7 +268,7 @@ public class ImportFacadeEjb implements ImportFacade {
 							pd.getWriteMethod().invoke(currentElement, community.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(Facility.class)) {
-						List<Facility> facility = facilityService.getByName(entry, caze.getDistrict(), caze.getCommunity());
+						List<Facility> facility = facilityService.getHealthFacilitiesByName(entry, caze.getDistrict(), caze.getCommunity());
 						if (facility.isEmpty()) {
 							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database");
 						} else if (facility.size() > 1 && caze.getCommunity() == null) {
