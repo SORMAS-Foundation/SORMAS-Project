@@ -19,18 +19,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.event.EventParticipantDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
-import de.symeda.sormas.app.backend.person.PersonName;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
 import de.symeda.sormas.app.databinding.EventParticipantNewFragmentLayoutBinding;
@@ -122,9 +121,9 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                 }
 
                 try {
-                    List<PersonName> existingPersons = DatabaseHelper.getPersonDao().getPersonNames();
+                    List<PersonNameDto> existingPersons = DatabaseHelper.getPersonDao().getPersonNameDtos();
                     List<Person> similarPersons = new ArrayList<>();
-                    for (PersonName existingPerson : existingPersons) {
+                    for (PersonNameDto existingPerson : existingPersons) {
                         if (PersonHelper.areNamesSimilar(eventParticipant.getPerson().getFirstName() + " " + eventParticipant.getPerson().getLastName(),
                                 existingPerson.getFirstName() + " " + existingPerson.getLastName())) {
                             Person person = DatabaseHelper.getPersonDao().queryForId(existingPerson.getId());

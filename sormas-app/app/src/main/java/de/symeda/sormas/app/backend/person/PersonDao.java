@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -40,21 +41,21 @@ public class PersonDao extends AbstractAdoDao<Person> {
         return Person.TABLE_NAME;
     }
 
-    public List<PersonName> getPersonNames() {
+    public List<PersonNameDto> getPersonNameDtos() {
         try {
-            GenericRawResults<Object[]> rawResults = queryRaw("select " + Person.ID +
-                    ", " + Person.FIRST_NAME + ", " + Person.LAST_NAME + " from " +
-                    Person.TABLE_NAME + ";", new DataType[]{DataType.LONG, DataType.STRING, DataType.STRING});
+            GenericRawResults<Object[]> rawResults = queryRaw("select " + Person.FIRST_NAME +
+                    ", " + Person.LAST_NAME + ", " + Person.ID + " from " +
+                    Person.TABLE_NAME + ";", new DataType[]{DataType.STRING, DataType.STRING, DataType.LONG});
             List<Object[]> results = rawResults.getResults();
-            List<PersonName> personNames = new ArrayList<>();
+            List<PersonNameDto> personNames = new ArrayList<>();
             for (Object[] result : results) {
-                PersonName personName = new PersonName((Long) result[0], (String) result[1], (String) result[2]);
+                PersonNameDto personName = new PersonNameDto((String) result[0], (String) result[1], (Long) result[2]);
                 personNames.add(personName);
             }
 
             return personNames;
         } catch (SQLException e) {
-            Log.e(getTableName(), "Could not perform getPersonNames on Person");
+            Log.e(getTableName(), "Could not perform getPersonNameDtos on Person");
             throw new RuntimeException(e);
         }
     }

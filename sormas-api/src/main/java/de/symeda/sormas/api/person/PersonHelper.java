@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.person;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
 public class PersonHelper {
@@ -13,8 +14,8 @@ public class PersonHelper {
 	 */
 	public static boolean areNamesSimilar(String firstName, String secondName) {
 		// Split names at whitespaces and the symbols _ and -
-		String[] firstNameParts = firstName.trim().split("[\\s_-]");
-		String[] secondNameParts = secondName.trim().split("[\\s_-]");
+		String[] firstNameParts = StringUtils.split(firstName.trim(), " _-", 0);
+		String[] secondNameParts = StringUtils.split(secondName.trim(), " _-", 0);
 		
 		if (firstNameParts.length <= secondNameParts.length) {
 			return getAverageSimilarity(firstNameParts, secondNameParts) >= SIMILARITY_THRESHOLD;

@@ -43,11 +43,13 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 		firstNameField.setCaption(
 				I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
 		firstNameField.setWidth(100, Unit.PERCENTAGE);
+		firstNameField.setRequired(true);
 		nameLayout.addComponent(firstNameField);
 		
 		lastNameField.setCaption(
 				I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
 		lastNameField.setWidth(100, Unit.PERCENTAGE);
+		lastNameField.setRequired(true);
 		nameLayout.addComponent(lastNameField);
 
 		CssStyles.style(searchMatchesButton, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
@@ -151,6 +153,14 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 		lastNameField.setValue(lastName);
 	}
 	
+	public TextField getFirstNameField() {
+		return firstNameField;
+	}
+
+	public TextField getLastNameField() {
+		return lastNameField;
+	}
+
 	public boolean hasMatches() {
 		if (personGrid == null) {
 			initPersonGrid();

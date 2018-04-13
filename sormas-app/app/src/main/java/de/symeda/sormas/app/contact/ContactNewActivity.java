@@ -23,6 +23,7 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
@@ -33,7 +34,6 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
-import de.symeda.sormas.app.backend.person.PersonName;
 import de.symeda.sormas.app.caze.CaseEditActivity;
 import de.symeda.sormas.app.component.SelectOrCreatePersonDialogBuilder;
 import de.symeda.sormas.app.component.UserReportDialog;
@@ -145,9 +145,9 @@ public class ContactNewActivity extends AppCompatActivity {
                 }
 
                 try {
-                    List<PersonName> existingPersons = DatabaseHelper.getPersonDao().getPersonNames();
+                    List<PersonNameDto> existingPersons = DatabaseHelper.getPersonDao().getPersonNameDtos();
                     List<Person> similarPersons = new ArrayList<>();
-                    for (PersonName existingPerson : existingPersons) {
+                    for (PersonNameDto existingPerson : existingPersons) {
                         if (PersonHelper.areNamesSimilar(contact.getPerson().getFirstName() + " " + contact.getPerson().getLastName(),
                                 existingPerson.getFirstName() + " " + existingPerson.getLastName())) {
                             Person person = DatabaseHelper.getPersonDao().queryForId(existingPerson.getId());

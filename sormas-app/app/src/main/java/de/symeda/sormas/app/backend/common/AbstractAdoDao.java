@@ -1066,14 +1066,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
     }
 
-    protected GenericRawResults<String[]> queryRaw(String query, String... arguments) {
-        try {
-            return dao.queryRaw(query, arguments);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     /**
      * @see Dao#callBatchTasks(Callable)
      */
