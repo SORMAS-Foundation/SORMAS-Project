@@ -343,7 +343,7 @@ public class StatisticsComponent extends VerticalLayout {
 			fatalityCaptionLayout.addComponent(caseFatalityRateCaption);
 			Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 			infoLabel.setSizeUndefined();
-			infoLabel.setDescription("The fatality rate is calculated based on the number of confirmed cases. Unconfirmed, suspect and probable cases are not taken into account.");
+			infoLabel.setDescription("The fatality rate is calculated based on the number of confirmed, suspect and probable cases.");
 			CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.HSPACE_LEFT_4, "cfr-info-button", CssStyles.LABEL_SECONDARY);
 			fatalityCaptionLayout.addComponent(infoLabel);
 			fatalityCaptionLayout.setComponentAlignment(infoLabel, Alignment.TOP_RIGHT);
@@ -378,7 +378,8 @@ public class StatisticsComponent extends VerticalLayout {
 			int previousInvestigatedCasesCount = (int) previousDashboardCases.stream().filter(c -> c.getInvestigationStatus() == InvestigationStatus.DONE).count();
 			int discardedCasesCount = (int) dashboardCaseDtos.stream().filter(c -> c.getInvestigationStatus() == InvestigationStatus.DISCARDED).count();
 			int previousDiscardedCasesCount = (int) previousDashboardCases.stream().filter(c -> c.getInvestigationStatus() == InvestigationStatus.DISCARDED).count();
-			int fatalitiesCount = (int) dashboardCaseDtos.stream().filter(c -> c.getCasePersonCondition() == PresentCondition.DEAD).count();
+			int fatalitiesCount = (int) dashboardCaseDtos.stream().filter(c -> c.getCasePersonCondition() == PresentCondition.DEAD && 
+					c.getCauseOfDeathDisease() != null && c.getCauseOfDeathDisease() == c.getDisease()).count();
 			int previousFatalitiesCount = (int) previousDashboardCases.stream().filter(c -> c.getCasePersonCondition() == PresentCondition.DEAD).count();
 			
 			float investigatedCasesGrowth = investigatedCasesCount == 0 ? previousInvestigatedCasesCount > 0 ? -100 : 0 : 
@@ -390,8 +391,9 @@ public class StatisticsComponent extends VerticalLayout {
 			float fatalitiesGrowth = fatalitiesCount == 0 ? previousFatalitiesCount > 0 ? -100 : 0 : 
 				previousFatalitiesCount == 0 ? fatalitiesCount > 0 ? Float.MIN_VALUE : 0 :
 				new BigDecimal(fatalitiesCount).subtract(new BigDecimal(previousFatalitiesCount)).divide(new BigDecimal(fatalitiesCount), 1, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).floatValue();
-			float fatalityRate = fatalitiesCount == 0 ? 0 : newCasesCount == 0 ? 0 :
-				new BigDecimal(fatalitiesCount).multiply(new BigDecimal(100)).divide(new BigDecimal(confirmedCasesCount), 1, RoundingMode.HALF_UP).floatValue();
+			int fatalityRateRelevantCasesCount = confirmedCasesCount + suspectCasesCount + probableCasesCount;
+			float fatalityRate = fatalitiesCount == 0 ? 0 : newCasesCount == 0 ? 0 : fatalityRateRelevantCasesCount == 0 ? 0 :
+				new BigDecimal(fatalitiesCount).multiply(new BigDecimal(100)).divide(new BigDecimal(fatalityRateRelevantCasesCount), 1, RoundingMode.HALF_UP).floatValue();
 			
 			caseInvestigationStatusDone.update(investigatedCasesCount, investigatedCasesGrowth, true);
 			caseInvestigationStatusDiscarded.update(discardedCasesCount, discardedCasesGrowth, false);

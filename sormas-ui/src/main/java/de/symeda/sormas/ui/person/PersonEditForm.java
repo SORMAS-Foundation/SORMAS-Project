@@ -379,6 +379,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 						PersonDto.DEATH_DATE,
 						PersonDto.DEATH_PLACE_TYPE,
 						PersonDto.DEATH_PLACE_DESCRIPTION);
+				causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
 				toggleCauseOfDeathFields(true);
 				setVisible(false,
 						PersonDto.BURIAL_DATE,
@@ -393,6 +394,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 						PersonDto.BURIAL_DATE,
 						PersonDto.BURIAL_PLACE_DESCRIPTION,
 						PersonDto.BURIAL_CONDUCTOR);
+				causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
 				toggleCauseOfDeathFields(true);
 				break;
 			default:
@@ -428,13 +430,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			if (isVisibleAllowed(causeOfDeathField)) {
 				causeOfDeathField.setVisible(true);
 			}
-			if (causeOfDeathField.getValue() == null && disease != null) {
-				causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
-			}
 
 			if (causeOfDeathField.getValue() == null) {
 				causeOfDeathDiseaseField.setVisible(false);
 				causeOfDeathDetailsField.setVisible(false);
+				causeOfDeathDiseaseField.setValue(null);
+				causeOfDeathDetailsField.setValue(null);
 			} else if (causeOfDeathField.getValue() == CauseOfDeath.EPIDEMIC_DISEASE) {
 				if (isVisibleAllowed(causeOfDeathDiseaseField)) {
 					causeOfDeathDiseaseField.setVisible(true);
@@ -454,6 +455,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				}
 			} else {
 				causeOfDeathDiseaseField.setVisible(false);
+				causeOfDeathDiseaseField.setValue(null);
 				if (isVisibleAllowed(causeOfDeathDetailsField)) {
 					causeOfDeathDetailsField.setVisible(true);
 				}

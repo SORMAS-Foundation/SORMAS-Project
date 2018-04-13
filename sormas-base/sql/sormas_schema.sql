@@ -2249,3 +2249,8 @@ FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'eventparticipant_histor
 ALTER TABLE eventparticipant_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (100, 'Create history table for event participant #509');
+
+-- 2018-04-12 Remove cause of death disease from persons that died due to another cause
+UPDATE person SET causeofdeathdisease = null WHERE causeofdeath != 'EPIDEMIC_DISEASE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (101, 'Remove cause of death disease from persons that died due to another cause');
