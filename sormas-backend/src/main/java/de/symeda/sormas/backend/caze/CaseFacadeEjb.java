@@ -325,13 +325,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caze.getCommunity() != null && !caze.getCommunity().getDistrict().equals(caze.getDistrict())) {
 			throw new ValidationRuntimeException("Could not find a database entry for the specified community in the specified district");
 		}
-		if (caze.getCommunity() == null && !caze.getHealthFacility().getDistrict().equals(caze.getDistrict())) {
+		if (caze.getCommunity() == null && caze.getHealthFacility().getDistrict() != null && !caze.getHealthFacility().getDistrict().equals(caze.getDistrict())) {
 			throw new ValidationRuntimeException("Could not find a database entry for the specified health facility in the specified district");
 		}
-		if (caze.getCommunity() != null && !caze.getCommunity().equals(caze.getHealthFacility().getCommunity())) {
+		if (caze.getCommunity() != null && caze.getHealthFacility().getCommunity() != null && !caze.getCommunity().equals(caze.getHealthFacility().getCommunity())) {
 			throw new ValidationRuntimeException("Could not find a database entry for the specified health facility in the specified community");
 		}
-
+		if (caze.getHealthFacility().getRegion() != null && !caze.getRegion().equals(caze.getHealthFacility().getRegion())) {
+			throw new ValidationRuntimeException("Could not find a database entry for the specified health facility in the specified region");
+		}
+		
 		caseService.ensurePersisted(caze);
 
 		onCaseChanged(existingCaseDto, caze);
