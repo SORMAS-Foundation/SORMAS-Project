@@ -334,6 +334,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caze.getHealthFacility().getRegion() != null && !caze.getRegion().equals(caze.getHealthFacility().getRegion())) {
 			throw new ValidationRuntimeException("Could not find a database entry for the specified health facility in the specified region");
 		}
+		if (caze.getHealthFacility().getRegion() != null && !caze.getRegion().equals(caze.getHealthFacility().getRegion())) {
+			throw new ValidationRuntimeException("Could not find a database entry for the specified health facility in the specified region");
+		}
 		
 		caseService.ensurePersisted(caze);
 
