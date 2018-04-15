@@ -27,7 +27,6 @@ import de.symeda.sormas.app.component.dialog.MissingWeeklyReportDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.component.dialog.UserReportDialog;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.ListNavigationCapsule;
 import de.symeda.sormas.app.core.SearchBy;
@@ -134,29 +133,11 @@ public class CaseListActivity extends BaseListActivity {
         getNewMenu().setTitle(R.string.action_new_case);
 
         return true;
-        /*MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.list_action_bar, menu);
-
-        MenuItem listMenu = menu.findItem(R.id.action_new);
-        //listMenu.setVisible(false);
-        listMenu.setTitle(R.string.action_new_case);
-
-        return true;*/
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            /*case android.R.id.home:
-                // TODO check parent activity intent as soon as the minimum API level has been increased to 16
-                //Intent intent = new Intent(this, CasesLandingActivity.class);
-                //startActivity(intent);
-
-                NavigationHelper.navigateUpFrom(this);
-
-                return true;*/
-
             case R.id.action_new:
                 EpiWeek lastEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
                 User user = ConfigProvider.getUser();
@@ -184,13 +165,7 @@ public class CaseListActivity extends BaseListActivity {
                 return true;
 
             case R.id.option_menu_action_markAllAsRead:
-                MarkAllAsReadHelper.markCases(this, new ICallback<AsyncTask>() {
-                    @Override
-                    public void call(AsyncTask asyncTask) {
-                        /*if (asyncTask != null && !asyncTask.isCancelled())
-                            asyncTask.cancel(true);*/
-                    }
-                });
+                MarkAllAsReadHelper.markCases(this, null);
                 return true;
 
             // Report problem button

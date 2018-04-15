@@ -28,7 +28,7 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 
 public class MarkAllAsReadHelper {
 
-    public static void markCases(final AbstractSormasActivity activity, final ICallback<AsyncTask> callback) {
+    public static void markCases(final AbstractSormasActivity activity, final ICallback callback) {
         try {
             AsyncTask markCasesAsync = null;
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
@@ -46,7 +46,6 @@ public class MarkAllAsReadHelper {
                     }
                 }
             });
-            final AsyncTask finalMarkCasesAsync = markCasesAsync;
             markCasesAsync = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
@@ -60,7 +59,8 @@ public class MarkAllAsReadHelper {
                         }
                     }
 
-                    callback.call(finalMarkCasesAsync);
+                    if (callback != null)
+                        callback.call(null);
                 }
             });
         } catch (Exception ex) {

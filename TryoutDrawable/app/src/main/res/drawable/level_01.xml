@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<level-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/ic_done_black_24dp" android:minLevel="0" android:maxLevel="0" />
-    <item android:drawable="@drawable/ic_clear_black_24dp" android:minLevel="0" android:maxLevel="0" />
-</level-list>
