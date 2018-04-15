@@ -104,6 +104,11 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
     }
 
     @Override
+    protected int getEmptyListEntityResId() {
+        return R.string.entity_task;
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 

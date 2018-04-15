@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IListActivityAdapterDataObserverCommunicator;
@@ -65,6 +66,9 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
                 "implement ISetOnListItemClickListener");
         }
 
+        String format = canAddToList() ? getResources().getString(R.string.hint_no_records_found_add_new) : getResources().getString(R.string.hint_no_records_found);
+        getEmptyListView(view).setText(String.format(format, getResources().getString(getEmptyListEntityResId()).toLowerCase()));
+
         return view;
     }
 
@@ -101,8 +105,12 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
     }
 
     @Override
-    public View getEmptyListView() {
-        return this.getView().findViewById(R.id.empty_list_hint);
+    public TextView getEmptyListView() {
+        return getEmptyListView(getView());
+    }
+
+    private TextView getEmptyListView(View rootView) {
+        return (TextView)rootView.findViewById(R.id.empty_list_hint);
     }
 
     @Override
@@ -118,17 +126,17 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
         return this.activityCommunicator;
     }
 
-
     public BaseListActivity getBaseListActivity() {
         return this.baseListActivity;
     }
 
-
     public abstract void cancelTaskExec();
 
+    protected abstract int getEmptyListEntityResId();
 
-
-
+    protected boolean canAddToList() {
+        return false;
+    }
 
     protected String getRecordUuidArg(Bundle arguments) {
         String result = null;

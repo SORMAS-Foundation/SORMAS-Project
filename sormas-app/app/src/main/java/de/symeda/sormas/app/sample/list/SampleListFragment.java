@@ -95,6 +95,11 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
     }
 
     @Override
+    protected int getEmptyListEntityResId() {
+        return R.string.entity_sample;
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 

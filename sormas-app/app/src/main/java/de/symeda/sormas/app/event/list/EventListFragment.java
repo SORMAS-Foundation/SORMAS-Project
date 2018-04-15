@@ -96,6 +96,11 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
     }
 
     @Override
+    protected int getEmptyListEntityResId() {
+        return R.string.entity_event;
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 

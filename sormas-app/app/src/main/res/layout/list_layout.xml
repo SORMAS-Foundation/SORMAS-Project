@@ -28,7 +28,7 @@
             android:id="@+id/empty_list_hint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/empty_list_hint"
+            android:text="@string/addToEmptyListHint"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textAlignment="center"
             style="@style/EmptyListHintStyle"

@@ -96,6 +96,11 @@ public class ContactListFragment extends BaseListActivityFragment<ContactListAda
     }
 
     @Override
+    protected int getEmptyListEntityResId() {
+        return R.string.entity_contact;
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 

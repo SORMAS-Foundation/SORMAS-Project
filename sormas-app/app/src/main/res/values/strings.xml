@@ -489,9 +489,9 @@
 
     <string name="headline_synchronization">Synchronization</string>
     <string name="hint_synchronization">Synchronizing with SORMAS server...</string>
-    <string name="empty_list_hint">Add a new entry by pressing the "+" symbol in the top right.</string>
-    <string name="hint_no_records_found">There were not %1$s found.</string>
-    <string name="hint_no_records_found_add_new">There were not %1$s found. To add a new entry, press the "+" symbol at the top right of the toolbar.</string>
+    <string name="addToEmptyListHint">Add a new entry by pressing the "+" symbol in the top right.</string>
+    <string name="hint_no_records_found">There were no %1$s found.</string>
+    <string name="hint_no_records_found_add_new">There were no %1$s found. To add a new entry, press the "+" symbol at the top right of the toolbar.</string>
 
 
 
