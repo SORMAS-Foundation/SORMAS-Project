@@ -418,6 +418,10 @@ public final class DateHelper {
 	 * @return The first day of the epi week
 	 */
 	public static Date getEpiWeekStart(EpiWeek epiWeek) {
+		if (epiWeek == null) {
+			return null;
+		}
+		
 		Calendar calendar = getEpiCalendar();
 		calendar.set(Calendar.YEAR, epiWeek.getYear());
 		calendar.set(Calendar.WEEK_OF_YEAR, epiWeek.getWeek());
@@ -436,6 +440,10 @@ public final class DateHelper {
 	 * @return The last day of the epi week
 	 */
 	public static Date getEpiWeekEnd(EpiWeek epiWeek) {
+		if (epiWeek == null) {
+			return null;
+		}
+		
 		Calendar calendar = getEpiCalendar();
 		calendar.set(Calendar.YEAR, epiWeek.getYear());
 		calendar.set(Calendar.WEEK_OF_YEAR, epiWeek.getWeek());

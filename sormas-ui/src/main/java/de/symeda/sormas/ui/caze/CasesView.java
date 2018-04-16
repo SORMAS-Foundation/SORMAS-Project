@@ -6,6 +6,7 @@ import java.util.HashMap;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -13,8 +14,10 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -310,8 +313,16 @@ public class CasesView extends AbstractView {
 					fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
 					toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
 				}
-				applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-				grid.setDateFilter(fromDate, toDate);
+				if (fromDate != null && toDate != null) {
+					applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
+					grid.setDateFilter(fromDate, toDate);
+				} else {
+					if (dateFilterOption == DateFilterOption.DATE) {
+						new Notification("Missing date filter", "Please fill in both date filter fields", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+					} else {
+						new Notification("Missing epi week filter", "Please fill in both epi week filter fields", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+					}
+				}
 			});
 		}
 		filterLayout.addComponent(dateFilterRowLayout);

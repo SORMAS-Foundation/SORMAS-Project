@@ -6,6 +6,7 @@ import java.util.Date;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -14,7 +15,9 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
@@ -148,8 +151,17 @@ public class StatisticsView extends AbstractStatisticsView {
 				fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
 				toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
 			}
-			applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-			refreshStatistics();
+			
+			if (fromDate != null && toDate != null) {
+				applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
+				refreshStatistics();
+			} else {
+				if (dateFilterOption == DateFilterOption.DATE) {
+					new Notification("Missing date filter", "Please fill in both date filter fields", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+				} else {
+					new Notification("Missing epi week filter", "Please fill in both epi week filter fields", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+				}
+			}
 		});
 		
 		return filterLayout;
