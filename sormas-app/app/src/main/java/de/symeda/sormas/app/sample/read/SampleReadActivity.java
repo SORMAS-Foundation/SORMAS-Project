@@ -16,7 +16,7 @@ import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.sample.edit.SampleEditActivity;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
-import de.symeda.sormas.app.util.NavigationHelper;
+import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 /**
  * Created by Orson on 10/12/2017.
@@ -127,60 +127,14 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
         getEditMenu().setTitle(R.string.action_edit_sample);
 
         return true;
-        /*MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.read_action_menu, menu);
-
-        MenuItem readMenu = menu.findItem(R.id.action_edit);
-        //readMenu.setVisible(false);
-        readMenu.setTitle(R.string.action_edit_sample);
-
-        return true;*/
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                NavigationHelper.navigateUpFrom(this);
-                return true;
+        if (!MenuOptionsHelper.handleReadModuleOptionsItemSelected(this, item))
+            return super.onOptionsItemSelected(item);
 
-            case R.id.action_edit:
-                gotoEditView();
-                return true;
-
-            case R.id.option_menu_action_sync:
-                //synchronizeChangedData();
-                return true;
-
-            case R.id.option_menu_action_markAllAsRead:
-                /*CaseDao caseDao = DatabaseHelper.getCaseDao();
-                PersonDao personDao = DatabaseHelper.getPersonDao();
-                List<Case> cases = caseDao.queryForAll();
-                for (Case caseToMark : cases) {
-                    caseDao.markAsRead(caseToMark);
-                }
-
-                for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                    if (fragment instanceof CasesListFragment) {
-                        fragment.onResume();
-                    }
-                }*/
-                return true;
-
-            // Report problem button
-            case R.id.action_report:
-                /*UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
-                AlertDialog dialog = userReportDialog.create();
-                dialog.show();*/
-
-                return true;
-
-            default:
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     @Override
@@ -188,8 +142,8 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
         return R.string.heading_level3_sample_read;
     }
 
-
-    private void gotoEditView() {
+    @Override
+    public void gotoEditView() {
         if (activeFragment == null)
             return;
 

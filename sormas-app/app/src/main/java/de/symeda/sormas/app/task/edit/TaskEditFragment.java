@@ -477,7 +477,7 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
 
     @Override
     public boolean showSaveAction() {
-        return true;
+        return false;
     }
 
     @Override

@@ -25,7 +25,7 @@ import de.symeda.sormas.app.component.OnShowInputErrorListener;
 import de.symeda.sormas.app.component.TeboButton;
 import de.symeda.sormas.app.component.TeboButtonType;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
@@ -143,7 +143,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
     public void onOkClick(View v, Object item) {
         View viewRoot = getRoot();
 
-        onOkClicked(v, item, viewRoot, contentViewStubBinding, new ICallback() {
+        onOkClicked(v, item, viewRoot, contentViewStubBinding, new Callback.IAction() {
             private View _v;
             private Object _item;
             private View _viewRoot;
@@ -154,7 +154,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
                     onPositiveClickListener.onOkClick(this._v, (result != null)? result : this._item, this._viewRoot);
             }
 
-            private ICallback init(View v, Object item, View viewRoot) {
+            private Callback.IAction init(View v, Object item, View viewRoot) {
                 this._v = v;
                 this._item = item;
                 this._viewRoot = viewRoot;
@@ -169,7 +169,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
     public void onCancelClick(View v, Object item) {
         View viewRoot = getRoot();
 
-        onCancelClicked(v, item, viewRoot, contentViewStubBinding, new ICallback() {
+        onCancelClicked(v, item, viewRoot, contentViewStubBinding, new Callback.IAction() {
             private View _v;
             private Object _item;
             private View _viewRoot;
@@ -180,7 +180,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
                     onCancelClickListener.onCancelClick(this._v, (result != null)? result : this._item, this._viewRoot);
             }
 
-            private ICallback init(View v, Object item, View viewRoot) {
+            private Callback.IAction init(View v, Object item, View viewRoot) {
                 this._v = v;
                 this._item = item;
                 this._viewRoot = viewRoot;
@@ -195,7 +195,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
     public void onCreateClick(View v, Object item) {
         View viewRoot = getRoot();
 
-        onCreateClicked(v, item, viewRoot, contentViewStubBinding, new ICallback() {
+        onCreateClicked(v, item, viewRoot, contentViewStubBinding, new Callback.IAction() {
             private View _v;
             private Object _item;
             private View _viewRoot;
@@ -206,7 +206,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
                     onCreateClickListener.onCreateClick(this._v, (result != null)? result : this._item, this._viewRoot);
             }
 
-            private ICallback init(View v, Object item, View viewRoot) {
+            private Callback.IAction init(View v, Object item, View viewRoot) {
                 this._v = v;
                 this._item = item;
                 this._viewRoot = viewRoot;
@@ -264,7 +264,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
 
         View viewRoot = getRoot();
 
-        onDismissClicked(v, item, viewRoot, contentViewStubBinding, new ICallback() {
+        onDismissClicked(v, item, viewRoot, contentViewStubBinding, new Callback.IAction() {
             private View _v;
             private Object _item;
             private View _viewRoot;
@@ -275,7 +275,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
                     onNegativeClickListener.onDismissClick(this._v, (result != null)? result : this._item, this._viewRoot);
             }
 
-            private ICallback init(View v, Object item, View viewRoot) {
+            private Callback.IAction init(View v, Object item, View viewRoot) {
                 this._v = v;
                 this._item = item;
                 this._viewRoot = viewRoot;
@@ -294,7 +294,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
             public void onOkClick(View v, Object confirmationItem, View viewRoot) {
                 confirmationDialog.dismiss();
 
-                onDeleteClicked(v, item, viewRoot, contentViewStubBinding, new ICallback() {
+                onDeleteClicked(v, item, viewRoot, contentViewStubBinding, new Callback.IAction() {
                     private View _v;
                     private Object _item;
                     private View _viewRoot;
@@ -307,7 +307,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
 
                     }
 
-                    private ICallback init(View v, Object item, View viewRoot) {
+                    private Callback.IAction init(View v, Object item, View viewRoot) {
                         this._v = v;
                         this._item = item;
                         this._viewRoot = viewRoot;
@@ -533,17 +533,17 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
 
     // <editor-fold defaultstate="collapsed" desc="Abstract Methods">
 
-    protected abstract void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback);
+    protected abstract void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback);
 
-    protected abstract void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback);
+    protected abstract void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback);
 
-    protected abstract void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback);
+    protected abstract void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback);
 
-    protected void onCancelClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+    protected void onCancelClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
 
     }
 
-    protected void onCreateClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+    protected void onCreateClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
 
     }
 
@@ -580,7 +580,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
     }
 
     //AlertDialog
-    public void show(final ICallback<AlertDialog> callback) {
+    public void show(final Callback.IAction<AlertDialog> callback) {
         this.rootBinding = bindRootLayout(activity);
         try {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {

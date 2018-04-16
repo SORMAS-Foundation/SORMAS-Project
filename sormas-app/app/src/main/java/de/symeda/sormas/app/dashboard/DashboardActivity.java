@@ -13,8 +13,8 @@ import de.symeda.sormas.app.BaseDashboardActivity;
 import de.symeda.sormas.app.BaseSummaryFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.dialog.UserReportDialog;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.DashboardNavigationCapsule;
-import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.dashboard.caze.CaseSummaryFragment;
 import de.symeda.sormas.app.dashboard.contact.ContactSummaryFragment;
 import de.symeda.sormas.app.dashboard.event.EventSummaryFragment;
@@ -84,7 +84,7 @@ public class DashboardActivity extends BaseDashboardActivity {
                 return true;
 
             case R.id.option_menu_action_markAllAsRead:
-                MarkAllAsReadHelper.markCases(this, new ICallback<AsyncTask>() {
+                MarkAllAsReadHelper.markCases(this, new Callback.IAction<AsyncTask>() {
                     @Override
                     public void call(AsyncTask asyncTask) {
                         /*if (asyncTask != null && !asyncTask.isCancelled())

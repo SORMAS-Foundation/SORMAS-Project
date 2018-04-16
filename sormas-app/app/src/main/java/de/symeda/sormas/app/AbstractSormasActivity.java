@@ -461,6 +461,10 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
         startActivity(intent);
     }
 
+    public void gotoNewView() {
+
+    }
+
     protected int getRootActivityLayout() {
         return R.layout.activity_root_layout;
     }

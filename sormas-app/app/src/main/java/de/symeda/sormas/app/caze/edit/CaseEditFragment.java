@@ -42,8 +42,8 @@ import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.MoveCaseDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityCommunicator;
-import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.core.async.IJobDefinition;
@@ -459,7 +459,7 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
                 if (activity == null)
                     return;
 
-                activity.saveCaseToDatabase(new ICallback<BoolResult>() {
+                activity.saveCaseToDatabase(new Callback.IAction<BoolResult>() {
 
                     @Override
                     public void call(BoolResult result) {

@@ -12,7 +12,7 @@ import com.google.android.gms.analytics.Tracker;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.component.TeboButtonType;
-import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.DialogErrorLayoutBinding;
 
@@ -51,7 +51,7 @@ public class ErrorDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
         /*TeboTextInputEditText txtMessage = (TeboTextInputEditText)rootView.findViewById(R.id.txtMessage);
         txtMessage.enableErrorState("Hello");*/
         /*String description = this.data.getHeading();
@@ -69,12 +69,12 @@ public class ErrorDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
 
     }
 
     @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
 
     }
 

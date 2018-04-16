@@ -21,9 +21,9 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IActivityRootDataRequestor;
-import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
@@ -266,7 +266,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         super.onResume();
 
         if (onResumeExecCount > 0) {
-            this.activityRootDataRequestor.requestActivityRootData(new ICallback<TActivityRootData>() {
+            this.activityRootDataRequestor.requestActivityRootData(new Callback.IAction<TActivityRootData>() {
                 @Override
                 public void call(TActivityRootData result) {
                     setActivityRootData(result);

@@ -37,8 +37,8 @@ import de.symeda.sormas.app.component.menu.OnLandingPageMenuClickListener;
 import de.symeda.sormas.app.component.menu.OnSelectInitialActiveMenuItemListener;
 import de.symeda.sormas.app.component.menu.PageMenuNavAdapter;
 import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityRootDataRequestor;
-import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
@@ -165,7 +165,7 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
         }
 
         if (fragmentFrame != null && savedInstanceState == null) {
-            processActivityRootData(new ICallback<TActivityRootData>() {
+            processActivityRootData(new Callback.IAction<TActivityRootData>() {
                 @Override
                 public void call(TActivityRootData result) {
                     try {
@@ -209,11 +209,11 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
     }
 
     @Override
-    public void requestActivityRootData(ICallback<TActivityRootData> callback) {
+    public void requestActivityRootData(Callback.IAction<TActivityRootData> callback) {
         processActivityRootData(callback);
     }
 
-    private void processActivityRootData(final ICallback<TActivityRootData> callback) {
+    private void processActivityRootData(final Callback.IAction<TActivityRootData> callback) {
         try {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
                 @Override
@@ -576,6 +576,10 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
         //updateSubHeadingTitle();
 
         return true;
+    }
+
+    public void gotoEditView() {
+
     }
 
     protected BaseReadActivityFragment getNextFragment(LandingPageMenuItem menuItem, TActivityRootData activityRootData) {

@@ -39,7 +39,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.OnSwipeTouchListener;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
@@ -247,7 +247,7 @@ public class LandingPageMenuControl extends LinearLayout {
         setMenuTitle(menu.getTitle());
 
         menuList.addAll(menu.getMenuItems());
-        updateNotificationCount(menuList, new ICallback<BoolResult>() {
+        updateNotificationCount(menuList, new Callback.IAction<BoolResult>() {
             @Override
             public void call(BoolResult result) {
                 if (result.isSuccess())
@@ -263,7 +263,7 @@ public class LandingPageMenuControl extends LinearLayout {
         return menuList;
     }
 
-    private void updateNotificationCount(final List<LandingPageMenuItem> inputMenuList, final ICallback<BoolResult> callback) {
+    private void updateNotificationCount(final List<LandingPageMenuItem> inputMenuList, final Callback.IAction<BoolResult> callback) {
         try {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
                 @Override
@@ -319,7 +319,7 @@ public class LandingPageMenuControl extends LinearLayout {
         if (menuList == null)
             throw new NullPointerException("The menuList is null.");
 
-        updateNotificationCount(menuList, new ICallback<BoolResult>() {
+        updateNotificationCount(menuList, new Callback.IAction<BoolResult>() {
             @Override
             public void call(BoolResult result) {
                 if (result.isSuccess())

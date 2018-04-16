@@ -23,9 +23,9 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.component.OnHideInputErrorListener;
 import de.symeda.sormas.app.component.OnShowInputErrorListener;
 import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IActivityRootDataRequestor;
-import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
@@ -281,7 +281,7 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
         super.onResume();
 
         if (onResumeExecCount > 0) {
-            this.activityRootDataRequestor.requestActivityRootData(new ICallback<TActivityRootData>() {
+            this.activityRootDataRequestor.requestActivityRootData(new Callback.IAction<TActivityRootData>() {
                 @Override
                 public void call(TActivityRootData result) {
 

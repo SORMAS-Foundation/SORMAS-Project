@@ -174,7 +174,7 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
 
     @Override
     public boolean showNewAction() {
-        return true;
+        return false;
     }
 
     public static EventListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule)

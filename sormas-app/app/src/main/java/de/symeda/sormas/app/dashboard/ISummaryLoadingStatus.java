@@ -1,7 +1,7 @@
 package de.symeda.sormas.app.dashboard;
 
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.Callback;
 
 /**
  * Created by Orson on 09/04/2018.
@@ -12,6 +12,6 @@ import de.symeda.sormas.app.core.ICallback;
  */
 public interface ISummaryLoadingStatus {
 
-    void onAllSummaryLoadingCompleted(ICallback<BoolResult> callback);
+    void onAllSummaryLoadingCompleted(Callback.IAction<BoolResult> callback);
     void notifyActivitySummaryLoadingCompleted();
 }

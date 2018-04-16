@@ -27,7 +27,7 @@ import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.dialog.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -41,7 +41,7 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
-import de.symeda.sormas.app.util.NavigationHelper;
+import de.symeda.sormas.app.util.MenuOptionsHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.TimeoutHelper;
 
@@ -124,63 +124,14 @@ public class EventNewPersonsInvolvedActivity extends BaseEditActivity<EventParti
         getSaveMenu().setTitle(R.string.action_save_case);
 
         return true;
-        /*MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.edit_action_menu, menu);
-
-        saveMenu = menu.findItem(R.id.action_save);
-        addMenu = menu.findItem(R.id.action_new);
-
-        saveMenu.setTitle(R.string.action_save_case);
-
-        processActionbarMenu();
-
-        return true;*/
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                NavigationHelper.navigateUpFrom(this);
-                return true;
+        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
+            return super.onOptionsItemSelected(item);
 
-            case R.id.action_save:
-                saveData();
-                return true;
-
-            case R.id.option_menu_action_sync:
-                //synchronizeChangedData();
-                return true;
-
-            case R.id.option_menu_action_markAllAsRead:
-                /*CaseDao caseDao = DatabaseHelper.getCaseDao();
-                PersonDao personDao = DatabaseHelper.getPersonDao();
-                List<Case> cases = caseDao.queryForAll();
-                for (Case caseToMark : cases) {
-                    caseDao.markAsRead(caseToMark);
-                }
-
-                for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                    if (fragment instanceof CasesListFragment) {
-                        fragment.onResume();
-                    }
-                }*/
-                return true;
-
-            // Report problem button
-            case R.id.action_report:
-                /*UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
-                AlertDialog dialog = userReportDialog.create();
-                dialog.show();*/
-
-                return true;
-
-            default:
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     @Override
@@ -188,7 +139,7 @@ public class EventNewPersonsInvolvedActivity extends BaseEditActivity<EventParti
         return R.string.heading_person_involved_new;
     }
 
-    private void checkExistingPersons(final ICallback<List<Person>> callback) {
+    private void checkExistingPersons(final Callback.IAction<List<Person>> callback) {
         if (activeFragment == null)
             return;
 
@@ -244,7 +195,8 @@ public class EventNewPersonsInvolvedActivity extends BaseEditActivity<EventParti
     }
 
     //TODO: Delegate saving to fragments
-    private void saveData()  {
+    @Override
+    public void saveData()  {
         if (activeFragment == null)
             return;
 
@@ -267,7 +219,7 @@ public class EventNewPersonsInvolvedActivity extends BaseEditActivity<EventParti
             return true;
         }*/
 
-        checkExistingPersons(new ICallback<List<Person>>() {
+        checkExistingPersons(new Callback.IAction<List<Person>>() {
             @Override
             public void call(List<Person> existingPersons) {
                 if (existingPersons.size() > 0) {
@@ -390,7 +342,7 @@ public class EventNewPersonsInvolvedActivity extends BaseEditActivity<EventParti
                         //finish();
                     }
 
-                    TimeoutHelper.executeIn5Seconds(new ICallback<AsyncTask>() {
+                    TimeoutHelper.executeIn5Seconds(new Callback.IAction<AsyncTask>() {
                         @Override
                         public void call(AsyncTask result) {
                             goToNewEventParticipantFullView();
@@ -503,7 +455,7 @@ public class EventNewPersonsInvolvedActivity extends BaseEditActivity<EventParti
                         //finish();
                     }
 
-                    TimeoutHelper.executeIn5Seconds(new ICallback<AsyncTask>() {
+                    TimeoutHelper.executeIn5Seconds(new Callback.IAction<AsyncTask>() {
                         @Override
                         public void call(AsyncTask result) {
                             EventNewPersonsInvolvedActivity.this.finish();

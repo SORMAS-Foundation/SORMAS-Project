@@ -22,7 +22,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.component.dialog.TeboProgressDialog;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -137,7 +137,7 @@ public class SettingsFragment extends BaseLandingActivityFragment {
         }
 
         if (RetroProvider.isConnected()) {
-            progressDialog.show(new ICallback<AlertDialog>() {
+            progressDialog.show(new Callback.IAction<AlertDialog>() {
                 @Override
                 public void call(AlertDialog result) {
 

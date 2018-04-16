@@ -39,7 +39,7 @@ import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentContactEditPersonLayoutBinding;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
-import de.symeda.sormas.app.util.NavigationHelper;
+import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 /**
  * Created by Orson on 12/02/2018.
@@ -167,55 +167,18 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
         getSaveMenu().setTitle(R.string.action_save_contact);
 
         return true;
-        /*MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.edit_action_menu, menu);
-
-        saveMenu = menu.findItem(R.id.action_save);
-        addMenu = menu.findItem(R.id.action_new);
-
-        saveMenu.setTitle(R.string.action_save_contact);
-
-        processActionbarMenu();
-
-        return true;*/
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                NavigationHelper.navigateUpFrom(this);
-                return true;
+        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
+            return super.onOptionsItemSelected(item);
 
-            case R.id.action_save:
-                saveData();
-                return true;
-
-            case R.id.option_menu_action_sync:
-                //synchronizeChangedData();
-                return true;
-
-            case R.id.option_menu_action_markAllAsRead:
-                markAllAsRead();
-                return true;
-
-            // Report problem button
-            case R.id.action_report:
-                /*UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
-                AlertDialog dialog = userReportDialog.create();
-                dialog.show();*/
-
-                return true;
-
-            default:
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
-    private void saveData() {
+    @Override
+    public void saveData() {
         if (activeFragment == null)
             return;
 
@@ -366,37 +329,6 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
         }
 
 
-    }
-
-    private void markAllAsRead() {
-        /*switch (tab) {
-            case VISITS:
-                VisitDao visitDao = DatabaseHelper.getVisitDao();
-                List<Visit> visits = visitDao.getByContact(contact);
-                for (Visit visitToMark : visits) {
-                    visitDao.markAsRead(visitToMark);
-                }
-
-                for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                    if (fragment instanceof VisitsListFragment) {
-                        fragment.onResume();
-                    }
-                }
-                break;
-            case TASKS:
-                TaskDao taskDao = DatabaseHelper.getTaskDao();
-                List<Task> tasks = taskDao.queryByContact(contact);
-                for (Task taskToMark : tasks) {
-                    taskDao.markAsRead(taskToMark);
-                }
-
-                for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                    if (fragment instanceof TasksListFragment) {
-                        fragment.onResume();
-                    }
-                }
-                break;
-        }*/
     }
 
     @Override

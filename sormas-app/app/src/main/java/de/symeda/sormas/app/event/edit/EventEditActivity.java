@@ -34,7 +34,7 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
-import de.symeda.sormas.app.util.NavigationHelper;
+import de.symeda.sormas.app.util.MenuOptionsHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
 /**
@@ -173,69 +173,15 @@ public class EventEditActivity extends BaseEditActivity<Event> {
         super.onCreateOptionsMenu(menu);
         getSaveMenu().setTitle(R.string.action_save_event);
 
-        /*MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.edit_action_menu, menu);
-
-        saveMenu = menu.findItem(R.id.action_save);
-        addMenu = menu.findItem(R.id.action_new);
-
-
-
-        processActionbarMenu();
-
-        return true;*/
-
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                NavigationHelper.navigateUpFrom(this);
-                return true;
+        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
+            return super.onOptionsItemSelected(item);
 
-            case R.id.action_new:
-                goToNewPersonInvolvedView();
-                return true;
-
-            case R.id.action_save:
-                saveData();
-                return true;
-
-            case R.id.option_menu_action_sync:
-                //synchronizeChangedData();
-                return true;
-
-            case R.id.option_menu_action_markAllAsRead:
-                /*CaseDao caseDao = DatabaseHelper.getCaseDao();
-                PersonDao personDao = DatabaseHelper.getPersonDao();
-                List<Case> cases = caseDao.queryForAll();
-                for (Case caseToMark : cases) {
-                    caseDao.markAsRead(caseToMark);
-                }
-
-                for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                    if (fragment instanceof CasesListFragment) {
-                        fragment.onResume();
-                    }
-                }*/
-                return true;
-
-            // Report problem button
-            case R.id.action_report:
-                /*UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
-                AlertDialog dialog = userReportDialog.create();
-                dialog.show();*/
-
-                return true;
-
-            default:
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     @Override
@@ -243,24 +189,15 @@ public class EventEditActivity extends BaseEditActivity<Event> {
         return R.string.heading_level4_event_edit;
     }
 
-    private void processActionbarMenu() {
-        if (activeFragment == null)
-            return;
-
-        if (saveMenu != null)
-            saveMenu.setVisible(activeFragment.showSaveAction());
-
-        if (addMenu != null)
-            addMenu.setVisible(activeFragment.showAddAction());
-    }
-
-    private void goToNewPersonInvolvedView() {
+    @Override
+    public void gotoNewView() {
         EventFormNavigationCapsule dataCapsule = (EventFormNavigationCapsule)new EventFormNavigationCapsule(getContext(), pageStatus)
                 .setEventUuid(recordUuid);
         EventNewPersonsInvolvedActivity.goToActivity(EventEditActivity.this, dataCapsule);
     }
 
-    private void saveData() {
+    @Override
+    public void saveData() {
         if (activeFragment == null)
             return;
 

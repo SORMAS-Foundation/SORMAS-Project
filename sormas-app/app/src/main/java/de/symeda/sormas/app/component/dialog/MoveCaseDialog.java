@@ -28,7 +28,7 @@ import de.symeda.sormas.app.component.TeboButtonType;
 import de.symeda.sormas.app.component.TeboSpinner;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
@@ -92,7 +92,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, final ICallback callback) {
+    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, final Callback.IAction callback) {
         //DialogMoveCaseLayoutBinding _contentBinding = (DialogMoveCaseLayoutBinding)contentBinding;
         try {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
@@ -151,7 +151,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
         if (moveCaseTask != null && !moveCaseTask.isCancelled())
             moveCaseTask.cancel(true);
 
@@ -159,7 +159,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
         callback.call(null);
     }
 

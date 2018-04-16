@@ -32,8 +32,7 @@ import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.contact.edit.ContactNewActivity;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.ICallback;
-import de.symeda.sormas.app.core.ICallback3;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -49,7 +48,7 @@ import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.symptom.Symptom;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
-import de.symeda.sormas.app.util.NavigationHelper;
+import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 /**
  * Created by Orson on 16/02/2018.
@@ -207,52 +206,10 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                NavigationHelper.navigateUpFrom(this);
-                return true;
+        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
+            return super.onOptionsItemSelected(item);
 
-            case R.id.action_new:
-                gotoNewView();
-                return true;
-
-            case R.id.action_save:
-                saveData();
-                return true;
-
-            case R.id.option_menu_action_sync:
-                //synchronizeChangedData();
-                return true;
-
-            case R.id.option_menu_action_markAllAsRead:
-                /*CaseDao caseDao = DatabaseHelper.getCaseDao();
-                PersonDao personDao = DatabaseHelper.getPersonDao();
-                List<Case> cases = caseDao.queryForAll();
-                for (Case caseToMark : cases) {
-                    caseDao.markAsRead(caseToMark);
-                }
-
-                for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                    if (fragment instanceof CasesListFragment) {
-                        fragment.onResume();
-                    }
-                }*/
-                return true;
-
-            // Report problem button
-            case R.id.action_report:
-                /*UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
-                AlertDialog dialog = userReportDialog.create();
-                dialog.show();*/
-
-                return true;
-
-            default:
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     @Override
@@ -276,7 +233,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         return false;
     }
 
-    private void getCaseBeforeSaveAndPlagueTypeAlert(final Case cazeToSave, final ICallback3<BoolResult, Case, Boolean> callback) {
+    private void getCaseBeforeSaveAndPlagueTypeAlert(final Case cazeToSave, final Callback.IAction3<BoolResult, Case, Boolean> callback) {
         try {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
                 @Override
@@ -318,7 +275,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                     if (otherIterator.hasNext())
                         showPlagueTypeChangeAlert = otherIterator.next();
 
-                    callback.result(resultStatus, caseBeforeSaving, showPlagueTypeChangeAlert);
+                    callback.call(resultStatus, caseBeforeSaving, showPlagueTypeChangeAlert);
                 }
             });
         } catch (Exception ex) {
@@ -327,7 +284,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         }
     }
 
-    private void finalizeSaveProcess(final Case caze, final Case caseBeforeSaving, final ICallback<BoolResult> callback) {
+    private void finalizeSaveProcess(final Case caze, final Case caseBeforeSaving, final Callback.IAction<BoolResult> callback) {
         try {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
                 @Override
@@ -386,7 +343,8 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.INFO, R.string.notification_reach_last_menu);
     }
 
-    private void saveData() {
+    @Override
+    public void saveData() {
         if (activeFragment == null)
             return;
 
@@ -400,16 +358,16 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         if (cazeToSave == null)
             return;
 
-        saveCaseToDatabase(new ICallback<BoolResult>() {
+        saveCaseToDatabase(new Callback.IAction<BoolResult>() {
             @Override
             public void call(BoolResult result) {
                 if (!result.isSuccess())
                     return;
 
-                getCaseBeforeSaveAndPlagueTypeAlert(cazeToSave, new ICallback3<BoolResult, Case, Boolean>() {
+                getCaseBeforeSaveAndPlagueTypeAlert(cazeToSave, new Callback.IAction3<BoolResult, Case, Boolean>() {
 
                     @Override
-                    public void result(BoolResult result1, final Case caseBeforeSaving, Boolean showPlagueTypeChangeAlert) {
+                    public void call(BoolResult result1, final Case caseBeforeSaving, Boolean showPlagueTypeChangeAlert) {
                         if (cazeToSave.getDisease() == Disease.PLAGUE && showPlagueTypeChangeAlert) {
 
                             String plagueTypeString = cazeToSave.getPlagueType().toString();
@@ -421,7 +379,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                                 @Override
                                 public void onOkClick(View v, Object item, View viewRoot) {
                                     confirmationDialog.dismiss();
-                                    finalizeSaveProcess(cazeToSave, caseBeforeSaving, new ICallback<BoolResult>() {
+                                    finalizeSaveProcess(cazeToSave, caseBeforeSaving, new Callback.IAction<BoolResult>() {
                                         @Override
                                         public void call(BoolResult result) {
                                             finalizeSaveProcessHelper(result);
@@ -432,7 +390,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
                             confirmationDialog.show(null);
                         } else {
-                            finalizeSaveProcess(cazeToSave, caseBeforeSaving, new ICallback<BoolResult>() {
+                            finalizeSaveProcess(cazeToSave, caseBeforeSaving, new Callback.IAction<BoolResult>() {
                                 @Override
                                 public void call(BoolResult result) {
                                     finalizeSaveProcessHelper(result);
@@ -445,7 +403,8 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         });
     }
 
-    private void gotoNewView() {
+    @Override
+    public void gotoNewView() {
         int activeMenuKey = getActiveMenuItem().getKey();
 
         if (activeMenuKey == MENU_INDEX_CONTACTS) {
@@ -459,7 +418,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         }
     }
 
-    public void saveCaseToDatabase(final ICallback<BoolResult> callback) {
+    public void saveCaseToDatabase(final Callback.IAction<BoolResult> callback) {
         final String saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_case));
 
         if (activeFragment == null) {

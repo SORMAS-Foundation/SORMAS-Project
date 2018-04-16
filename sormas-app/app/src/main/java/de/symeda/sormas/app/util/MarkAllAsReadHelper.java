@@ -11,7 +11,7 @@ import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.caze.list.CaseListFragment;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -28,7 +28,7 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 
 public class MarkAllAsReadHelper {
 
-    public static void markCases(final AbstractSormasActivity activity, final ICallback callback) {
+    public static void markCases(final AbstractSormasActivity activity, final Callback.IAction callback) {
         try {
             AsyncTask markCasesAsync = null;
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {

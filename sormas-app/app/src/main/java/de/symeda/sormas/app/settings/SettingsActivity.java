@@ -14,7 +14,7 @@ import de.symeda.sormas.app.BaseLandingActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.dialog.UserReportDialog;
-import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationPosition;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -72,7 +72,7 @@ public class SettingsActivity extends BaseLandingActivity {
             // Report problem button
             case R.id.action_report:
                 UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
-                userReportDialog.show(new ICallback<AlertDialog>() {
+                userReportDialog.show(new Callback.IAction<AlertDialog>() {
                     @Override
                     public void call(AlertDialog result) {
 

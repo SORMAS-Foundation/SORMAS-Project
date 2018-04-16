@@ -21,7 +21,7 @@ import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.TeboButton;
-import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
@@ -75,7 +75,7 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, final ICallback callback) {
+    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, final Callback.IAction callback) {
         if (getSelectedPerson() != null && getSelectedPerson().getUuid() != data.getUuid()) {
             callback.call(getSelectedPerson());
         } else {
@@ -84,7 +84,7 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
         if (selectOrCreateTask != null && !selectOrCreateTask.isCancelled())
             selectOrCreateTask.cancel(true);
 
@@ -92,17 +92,17 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
         callback.call(null);
     }
 
     @Override
-    protected void onCancelClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+    protected void onCancelClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
         callback.call(null);
     }
 
     @Override
-    protected void onCreateClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+    protected void onCreateClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
         callback.call(getSelectedPerson());
 
         if (binding.txtFirstName.getValue().isEmpty() || binding.txtLastName.getValue().isEmpty()) {

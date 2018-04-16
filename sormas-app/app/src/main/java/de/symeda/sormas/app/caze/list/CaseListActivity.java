@@ -6,15 +6,25 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
 
+import java.util.Date;
 import java.util.Random;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
+import de.symeda.sormas.app.component.dialog.MissingWeeklyReportDialog;
+import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.ListNavigationCapsule;
@@ -139,9 +149,27 @@ public class CaseListActivity extends BaseListActivity {
 
     @Override
     public void gotoNewView() {
-        CaseFormNavigationCapsule dataCapsule = (CaseFormNavigationCapsule)new CaseFormNavigationCapsule(CaseListActivity.this,
-                null).setEditPageStatus(filterStatus).setPersonUuid(null);
-        CaseNewActivity.goToActivity(this, dataCapsule);
+        EpiWeek lastEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
+        User user = ConfigProvider.getUser();
+        if (user.hasUserRole(UserRole.INFORMANT)
+                && DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(lastEpiWeek, ConfigProvider.getUser()) == null) {
+
+            MissingWeeklyReportDialog confirmationDialog = new MissingWeeklyReportDialog(this);
+
+            confirmationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                @Override
+                public void onOkClick(View v, Object item, View viewRoot) {
+                    /*Intent intent = new Intent(CaseListActivity.this, ReportsActivity.class);
+                    startActivity(intent);*/
+                }
+            });
+
+            confirmationDialog.show(null);
+        } else {
+            CaseFormNavigationCapsule dataCapsule = (CaseFormNavigationCapsule)new CaseFormNavigationCapsule(CaseListActivity.this,
+                    null).setEditPageStatus(filterStatus).setPersonUuid(null);
+            CaseNewActivity.goToActivity(this, dataCapsule);
+        }
     }
 
     public static void goToActivity(Context fromActivity, IListNavigationCapsule dataCapsule) {

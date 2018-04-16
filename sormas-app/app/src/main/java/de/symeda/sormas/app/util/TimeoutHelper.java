@@ -5,7 +5,7 @@ import android.util.Log;
 
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -24,11 +24,11 @@ public class TimeoutHelper {
 
     public static final String TAG = TimeoutHelper.class.getSimpleName();
 
-    public static void executeIn5Seconds(final ICallback<AsyncTask> callback) {
+    public static void executeIn5Seconds(final Callback.IAction<AsyncTask> callback) {
         executeIn(5000, callback);
     }
 
-    public static void executeIn(final int milliSeconds, final ICallback<AsyncTask> callback) {
+    public static void executeIn(final int milliSeconds, final Callback.IAction<AsyncTask> callback) {
         try {
             AsyncTask timeoutTask = null;
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {

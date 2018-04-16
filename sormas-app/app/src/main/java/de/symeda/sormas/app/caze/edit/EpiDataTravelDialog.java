@@ -22,7 +22,7 @@ import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
-import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.DialogEpidTravelsLayoutBinding;
@@ -64,7 +64,7 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
         /*DialogEpiDataTravelLayoutBinding _contentBinding = (DialogEpiDataTravelLayoutBinding)contentBinding;
 
         _contentBinding.spnState.enableErrorState("Hello");*/
@@ -72,12 +72,12 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
 
     }
 
     @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
 
     }
 
@@ -170,7 +170,7 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
             public void onClick(View v, Object item) {
                 final Location location = MemoryDatabaseHelper.LOCATION.getLocations(1).get(0);
                 final LocationDialog locationDialog = new LocationDialog(getActivity(), location);
-                locationDialog.show(new ICallback<AlertDialog>() {
+                locationDialog.show(new Callback.IAction<AlertDialog>() {
                     @Override
                     public void call(AlertDialog result) {
 

@@ -15,7 +15,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.ICallback;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -61,7 +61,7 @@ public class UserReportDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, final ICallback callback) {
+    protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, final Callback.IAction callback) {
         try {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
                 @Override
@@ -103,7 +103,7 @@ public class UserReportDialog extends BaseTeboAlertDialog {
                         NotificationHelper.showDialogNotification(UserReportDialog.this, NotificationType.ERROR, resultStatus.getMessage());
                     }
 
-                    TimeoutHelper.executeIn5Seconds(new ICallback<AsyncTask>() {
+                    TimeoutHelper.executeIn5Seconds(new Callback.IAction<AsyncTask>() {
                         @Override
                         public void call(AsyncTask result) {
                             callback.call(null);
@@ -118,7 +118,7 @@ public class UserReportDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+    protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
         if (dialogTask != null && !dialogTask.isCancelled())
             dialogTask.cancel(true);
 
@@ -126,7 +126,7 @@ public class UserReportDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, ICallback callback) {
+    protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
         callback.call(null);
     }
 

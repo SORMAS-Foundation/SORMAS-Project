@@ -21,7 +21,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
-import de.symeda.sormas.app.component.dialog.UserReportDialog;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
@@ -35,7 +34,7 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
-import de.symeda.sormas.app.util.NavigationHelper;
+import de.symeda.sormas.app.util.MenuOptionsHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
 /**
@@ -119,35 +118,10 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                NavigationHelper.navigateUpFrom(this);
-                return true;
+        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
+            return super.onOptionsItemSelected(item);
 
-            case R.id.action_save:
-                saveData();
-                return true;
-
-            case R.id.option_menu_action_help:
-                /*UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
-                AlertDialog dialog = userReportDialog.create();
-                dialog.show();*/
-
-                return true;
-
-            // Report problem button
-            case R.id.action_report:
-                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
-                userReportDialog.show(null);
-
-                return true;
-
-            default:
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     @Override
@@ -155,7 +129,8 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
         return R.string.heading_sample_new;
     }
 
-    private void saveData() {
+    @Override
+    public void saveData() {
         if (activeFragment == null)
             return;
 

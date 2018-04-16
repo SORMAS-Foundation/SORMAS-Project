@@ -12,5 +12,5 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
 public interface IActivityRootDataRequestor<TActivityRootData extends AbstractDomainObject> {
 
-    void requestActivityRootData(final ICallback<TActivityRootData> callback);
+    void requestActivityRootData(final Callback.IAction<TActivityRootData> callback);
 }

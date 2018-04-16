@@ -51,8 +51,8 @@ import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.RegionLoader;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityCommunicator;
-import de.symeda.sormas.app.core.ICallback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.core.async.IJobDefinition;
@@ -550,7 +550,7 @@ public class EventEditPersonsInvolvedInfoFragment extends BaseEditActivityFragme
                     }
                 });
 
-                locationDialog.show(new ICallback<AlertDialog>() {
+                locationDialog.show(new Callback.IAction<AlertDialog>() {
                     @Override
                     public void call(AlertDialog result) {
 

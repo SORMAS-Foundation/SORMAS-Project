@@ -159,6 +159,8 @@ public class EventListActivity extends BaseListActivity {
         return R.string.heading_level2_events_list;
     }
 
+
+
     public static void goToActivity(Context fromActivity, IListNavigationCapsule dataCapsule) {
         BaseListActivity.goToActivity(fromActivity, EventListActivity.class, dataCapsule);
     }
