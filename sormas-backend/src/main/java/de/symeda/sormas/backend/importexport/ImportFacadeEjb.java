@@ -101,7 +101,6 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final Logger logger = LoggerFactory.getLogger(ImportFacadeEjb.class);
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
-	private static final String SORMAS_IMPORT_GUIDE_FILE_NAME = ImportExportUtils.FILE_PREFIX.toUpperCase() + "_Import_Guide.pdf";
 	private static final String ERROR_COLUMN_NAME = "Error description";
 	
 	@Override
@@ -132,13 +131,6 @@ public class ImportFacadeEjb implements ImportFacade {
 	public String getCaseImportTemplateFilePath() {
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		Path filePath = exportDirectory.resolve(CASE_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
-	}
-	
-	@Override
-	public String getSormasImportGuideFilePath() {
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(SORMAS_IMPORT_GUIDE_FILE_NAME);
 		return filePath.toString();
 	}
 	

@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.nio.file.Paths;
 import java.util.Date;
 
+import com.vaadin.server.ClassResource;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
@@ -48,10 +49,7 @@ public class CaseImportLayout extends VerticalLayout {
 		Resource buttonIcon = FontAwesome.DOWNLOAD;
 		String buttonCaption = "Download Import Guide";
 		CaseImportLayoutComponent importGuideComponent = new CaseImportLayoutComponent(1, headline, infoText, buttonIcon, buttonCaption);
-		String importGuideFilePath = FacadeProvider.getImportFacade().getSormasImportGuideFilePath().toString();
-		StreamResource importGuideResource = DownloadUtil.createStreamResource(importGuideFilePath, "SORMAS_Import_Guide.pdf", "application/pdf", "Import guide not available",
-				"The SORMAS Import Guide can not be found on the server. Please contact an admin and tell them about this issue.");
-		FileDownloader importGuideDownloader = new FileDownloader(importGuideResource);
+		FileDownloader importGuideDownloader = new FileDownloader(new ClassResource("/SORMAS_Import_Guide.pdf"));
 		importGuideDownloader.extend(importGuideComponent.getButton());
 		CssStyles.style(importGuideComponent, CssStyles.VSPACE_2);
 		addComponent(importGuideComponent);
@@ -63,7 +61,7 @@ public class CaseImportLayout extends VerticalLayout {
 		buttonCaption = "Download Case Import Template";
 		CaseImportLayoutComponent importTemplateComponent = new CaseImportLayoutComponent(2, headline, infoText, buttonIcon, buttonCaption);
 		String templateFilePath = FacadeProvider.getImportFacade().getCaseImportTemplateFilePath().toString();
-		StreamResource templateResource = DownloadUtil.createStreamResource(templateFilePath, "sormas_import_case_template.csv", "text/csv",
+		StreamResource templateResource = DownloadUtil.createFileStreamResource(templateFilePath, "sormas_import_case_template.csv", "text/csv",
 				"Template not available", "The template file is not available. Please contact an admin and tell them about this issue.");
 		FileDownloader templateFileDownloader = new FileDownloader(templateResource);
 		templateFileDownloader.extend(importTemplateComponent.getButton());
@@ -176,7 +174,7 @@ public class CaseImportLayout extends VerticalLayout {
 					notification.setDelayMsec(-1);
 					notification.show(Page.getCurrent());
 
-					StreamResource streamResource = DownloadUtil.createStreamResource(errorReportFilePath, "sormas_import_error_report.csv", "text/csv",
+					StreamResource streamResource = DownloadUtil.createFileStreamResource(errorReportFilePath, "sormas_import_error_report.csv", "text/csv",
 							"Error report not available", "The error report file is not available. Please contact an admin and tell them about this issue.");
 					FileDownloader fileDownloader = new FileDownloader(streamResource);
 					fileDownloader.extend(downloadErrorReportButton);
