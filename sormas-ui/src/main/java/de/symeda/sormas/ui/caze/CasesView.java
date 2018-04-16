@@ -313,7 +313,7 @@ public class CasesView extends AbstractView {
 					fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
 					toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
 				}
-				if (fromDate != null && toDate != null) {
+				if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 					applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
 					grid.setDateFilter(fromDate, toDate);
 				} else {
