@@ -24,6 +24,7 @@
     <attr name="titleActiveColor" format="reference" />
     <attr name="singleLine" format="boolean"/>
     <attr name="maxLines" format="integer"/>
+    <attr name="textArea" format="boolean"/>
     <attr name="image" format="reference"/>
     <attr name="imageColor" format="reference"/>
     <attr name="imageWidth" format="integer"/>
@@ -232,6 +233,7 @@
         <attr name="required" />
         <attr name="singleLine" />
         <attr name="maxLines" />
+        <attr name="textArea" />
         <attr name="inputType" />
     </declare-styleable>
 

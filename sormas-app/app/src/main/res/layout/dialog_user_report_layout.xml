@@ -47,8 +47,10 @@
             app:textAlignment="gravity"
             app:gravity="top|start"
             app:maxLines="8"
+            app:textArea="true"
             app:required="true"
             app:value="@={data.message}"
+            app:imeOptions="actionNone"
             app:onShowInputErrorListener="@{showNotificationCallback}"
             app:onHideInputErrorListener="@{hideNotificationCallback}"
             />

@@ -13,9 +13,11 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -46,6 +48,7 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
     private String hint;
     private boolean singleLine;
     private int maxLines;
+    private boolean textArea;
     private int inputType;
 
     // <editor-fold defaultstate="collapsed" desc="Constructors">
@@ -208,7 +211,10 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
             txtControlInput.setVerticalScrollBarEnabled(false);
         } else {
             txtControlInput.setMaxLines(maxLines);
-            //txtControlInput.setLines(maxLines);
+
+            if (textArea)
+                txtControlInput.setLines(maxLines);
+
             txtControlInput.setInputType(inputType);
             txtControlInput.setVerticalScrollBarEnabled(true);
         }
@@ -237,6 +243,7 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
                 hint = a.getString(R.styleable.TeboTextInputEditText_hint);
                 singleLine = a.getBoolean(R.styleable.TeboTextInputEditText_singleLine, true);
                 maxLines = a.getInt(R.styleable.TeboTextInputEditText_maxLines, 1);
+                textArea = a.getBoolean(R.styleable.TeboTextInputEditText_textArea, true);
                 inputType = a.getInt(R.styleable.TeboTextInputEditText_inputType, InputType.TYPE_CLASS_TEXT);
             } finally {
                 a.recycle();
@@ -263,11 +270,12 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
         txtControlInput.setNextFocusDownId(getNextFocusDown());
         txtControlInput.setNextFocusForwardId(getNextFocusForward());
 
-        txtControlInput.setImeOptions(getImeOptions());
+        setImeOptions();
 
         txtControlInput.setTextAlignment(getCaptionAlignment());
         if(getCaptionAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
             txtControlInput.setGravity(getCaptionGravity());
+            //if (textArea) txtControlInput.setGravity(Gravity.TOP | Gravity.START);
         }
 
         txtControlInput.addTextChangedListener(new TextWatcher() {
@@ -283,6 +291,7 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
                 onValueChanged();
             }
         });
+
         setOnEditorActionListener();
 
         //Set Hint
@@ -303,6 +312,7 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
 
         setInputType(inputType);
         setSingleLine(singleLine);
+
     }
 
     @Override
@@ -333,24 +343,22 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
     }
 
     private void updateControlDimensions() {
+        int paddingTop = 0, paddingBottom = 0, paddingLeft = 0, paddingRight = 0;
         if (isSlim()) {
             float slimControlTextSize = getContext().getResources().getDimension(R.dimen.slimControlTextSize);
-            int paddingTop = getContext().getResources().getDimensionPixelSize(R.dimen.slimTextViewTopPadding);
-            int paddingBottom = getContext().getResources().getDimensionPixelSize(R.dimen.slimTextViewBottomPadding);
-            int paddingLeft = txtControlInput.getPaddingLeft();
-            int paddingRight = txtControlInput.getPaddingRight();
-
-            txtControlInput.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+            paddingTop = getContext().getResources().getDimensionPixelSize(R.dimen.slimTextViewTopPadding);
+            paddingBottom = getContext().getResources().getDimensionPixelSize(R.dimen.slimTextViewBottomPadding);
             txtControlInput.setTextSize(TypedValue.COMPLEX_UNIT_PX, slimControlTextSize);
+        } else if (singleLine) {
+            paddingTop = 0; paddingBottom = 0;
         } else {
-            int paddingTop = 0;
-            int paddingBottom = 0;
-            int paddingLeft = txtControlInput.getPaddingLeft();
-            int paddingRight = txtControlInput.getPaddingRight();
-
-            txtControlInput.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+            paddingTop = getContext().getResources().getDimensionPixelSize(R.dimen.textViewTopPadding);
+            paddingBottom = getContext().getResources().getDimensionPixelSize(R.dimen.textViewBottomPadding);
         }
 
+        paddingLeft = txtControlInput.getPaddingLeft();
+        paddingRight = txtControlInput.getPaddingRight();
+        txtControlInput.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
         updateControlHeight();
     }
 
@@ -360,11 +368,14 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
             txtControlInput.setHeight(heightInPixel);
             txtControlInput.setMinHeight(heightInPixel);
             txtControlInput.setMaxHeight(heightInPixel);
-        } else {
+        } else if (singleLine) {
             int heightInPixel = getContext().getResources().getDimensionPixelSize(R.dimen.maxControlHeight);
             txtControlInput.setHeight(heightInPixel);
             txtControlInput.setMinHeight(heightInPixel);
             txtControlInput.setMaxHeight(heightInPixel);
+        } else {
+            ViewGroup.LayoutParams params = txtControlInput.getLayoutParams();
+            params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
     }
 
@@ -383,44 +394,6 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
 
     // </editor-fold>
 
-    /**
-     * Handles hiding of the soft keyboard when custom fields are selected and management of
-     * the next button
-     */
-    private void setOnEditorActionListener() {
-        txtControlInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_GO ||
-                        (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                    int id = getNextFocusForwardId();
-                    if(id != View.NO_ID) {
-                        View nextView = v.getRootView().findViewById(id);
-                        if (nextView != null && nextView.getVisibility() == VISIBLE) {
-                            if (!(nextView instanceof TeboTextInputEditText)) {
-                                if (nextView instanceof TeboPropertyField) {
-                                    ((TeboPropertyField) nextView).requestFocusForContentView(nextView);
-                                } else {
-                                    nextView.requestFocus();
-                                }
-                                hideKeyboard(v);
-                            } else {
-                                requestFocusForContentView(nextView);
-                            }
-                        } else {
-                            hideKeyboard(v);
-                        }
-                    } else {
-                        hideKeyboard(v);
-                    }
-                    return true;
-                } else {
-                    hideKeyboard(v);
-                    return false;
-                }
-            }
-        });
-    }
 
 
     @Override
@@ -516,6 +489,56 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
         return getValue() != "";
     }
 
+    //<editor-fold desc="Private Methods">
+    private void setImeOptions() {
+        txtControlInput.setImeOptions(getImeOptions());
+        txtControlInput.setImeActionLabel(null, getImeOptions());
+    }
+
+    /**
+     * Handles hiding of the soft keyboard when custom fields are selected and management of
+     * the next button
+     */
+    private void setOnEditorActionListener() {
+        txtControlInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                int _actionId = v.getImeActionId();
+
+                if (_actionId == EditorInfo.IME_ACTION_NONE)
+                    return false;
+
+                if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_GO ||
+                        (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                    int id = getNextFocusForwardId();
+                    if(id != View.NO_ID) {
+                        View nextView = v.getRootView().findViewById(id);
+                        if (nextView != null && nextView.getVisibility() == VISIBLE) {
+                            if (!(nextView instanceof TeboTextInputEditText)) {
+                                if (nextView instanceof TeboPropertyField) {
+                                    ((TeboPropertyField) nextView).requestFocusForContentView(nextView);
+                                } else {
+                                    nextView.requestFocus();
+                                }
+                                hideKeyboard(v);
+                            } else {
+                                requestFocusForContentView(nextView);
+                            }
+                        } else {
+                            hideKeyboard(v);
+                        }
+                    } else {
+                        hideKeyboard(v);
+                    }
+                    return true;
+                } else {
+                    hideKeyboard(v);
+                    return false;
+                }
+            }
+        });
+    }
+
     private class OnFocusChangeListenerHandler implements OnFocusChangeListener {
 
         private TeboTextInputEditText inputEditText;
@@ -585,5 +608,6 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
             }
         }
     }
+    //</editor-fold>
 
 }
