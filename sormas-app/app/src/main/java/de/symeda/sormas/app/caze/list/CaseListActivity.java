@@ -6,32 +6,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.AdapterView;
 
-import java.util.Date;
 import java.util.Random;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
-import de.symeda.sormas.app.component.dialog.MissingWeeklyReportDialog;
-import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
-import de.symeda.sormas.app.component.dialog.UserReportDialog;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.ListNavigationCapsule;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.util.MarkAllAsReadHelper;
+import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 /**
  * Created by Orson on 05/12/2017.
@@ -137,49 +126,10 @@ public class CaseListActivity extends BaseListActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.action_new:
-                EpiWeek lastEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
-                User user = ConfigProvider.getUser();
-                if (user.hasUserRole(UserRole.INFORMANT)
-                        && DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(lastEpiWeek, ConfigProvider.getUser()) == null) {
+        if (!MenuOptionsHelper.handleListModuleOptionsItemSelected(this, item))
+            return super.onOptionsItemSelected(item);
 
-                    MissingWeeklyReportDialog confirmationDialog = new MissingWeeklyReportDialog(this);
-
-                    confirmationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
-                        @Override
-                        public void onOkClick(View v, Object item, View viewRoot) {
-                            /*Intent intent = new Intent(CaseListActivity.this, ReportsActivity.class);
-                            startActivity(intent);*/
-                        }
-                    });
-
-                    confirmationDialog.show(null);
-                } else {
-                    gotoNewView();
-                }
-                return true;
-
-            case R.id.option_menu_action_sync:
-                synchronizeChangedData();
-                return true;
-
-            case R.id.option_menu_action_markAllAsRead:
-                MarkAllAsReadHelper.markCases(this, null);
-                return true;
-
-            // Report problem button
-            case R.id.action_report:
-                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
-                userReportDialog.show(null);
-
-                return true;
-
-            default:
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     @Override
@@ -187,7 +137,8 @@ public class CaseListActivity extends BaseListActivity {
         return R.string.heading_level2_cases_list;
     }
 
-    private void gotoNewView() {
+    @Override
+    public void gotoNewView() {
         CaseFormNavigationCapsule dataCapsule = (CaseFormNavigationCapsule)new CaseFormNavigationCapsule(CaseListActivity.this,
                 null).setEditPageStatus(filterStatus).setPersonUuid(null);
         CaseNewActivity.goToActivity(this, dataCapsule);

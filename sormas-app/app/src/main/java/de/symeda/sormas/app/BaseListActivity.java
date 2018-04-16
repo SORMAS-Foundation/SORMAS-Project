@@ -269,6 +269,10 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
 
     public abstract boolean showTitleBar();
 
+    public void gotoNewView() {
+
+    }
+
     @Override
     protected int getRootActivityLayout() {
         return R.layout.activity_root_list_layout;

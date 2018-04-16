@@ -19,6 +19,7 @@ import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.ListNavigationCapsule;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.shared.ShipmentStatus;
+import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 /**
  * Created by Orson on 07/12/2017.
@@ -122,62 +123,14 @@ public class SampleListActivity extends BaseListActivity {
         getNewMenu().setTitle(R.string.action_new_sample);
 
         return true;
-        /*MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.list_action_bar, menu);
-
-        MenuItem listMenu = menu.findItem(R.id.action_new);
-        listMenu.setVisible(false);
-        listMenu.setTitle(R.string.action_new_sample);
-
-        return true;*/
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            /*case android.R.id.home:
-                // TODO check parent activity intent as soon as the minimum API level has been increased to 16
-                //Intent intent = new Intent(this, SampleLandingActivity.class);
-                //startActivity(intent);
-                if (activeFragment != null)
-                    activeFragment.cancelTaskExec();
+        if (!MenuOptionsHelper.handleListModuleOptionsItemSelected(this, item))
+            return super.onOptionsItemSelected(item);
 
-                NavigationHelper.navigateUpFrom(this);
-
-                return true;*/
-            case R.id.option_menu_action_sync:
-                //synchronizeChangedData();
-                return true;
-
-            case R.id.option_menu_action_markAllAsRead:
-                /*CaseDao caseDao = DatabaseHelper.getCaseDao();
-                PersonDao personDao = DatabaseHelper.getPersonDao();
-                List<Case> cases = caseDao.queryForAll();
-                for (Case caseToMark : cases) {
-                    caseDao.markAsRead(caseToMark);
-                }
-
-                for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                    if (fragment instanceof CasesListFragment) {
-                        fragment.onResume();
-                    }
-                }*/
-                return true;
-
-            // Report problem button
-            case R.id.action_report:
-                /*UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
-                AlertDialog dialog = userReportDialog.create();
-                dialog.show();*/
-
-                return true;
-
-            default:
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     @Override
