@@ -563,9 +563,11 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                             continue;
                         }
 
-                        // do we have local changes?
+                        // did we change anything and is the server data different from ours?
+                        // - two persons may have set the exact same data
                         Object currentFieldValue = property.getReadMethod().invoke(current);
-                        if (!DataHelper.equal(snapshotFieldValue, currentFieldValue)) {
+                        if (!DataHelper.equal(snapshotFieldValue, currentFieldValue)
+                            && !DataHelper.equal(currentFieldValue, sourceFieldValue)) {
                             // we have a conflict
                             Log.i(source.getClass().getName(), "Overriding " + property.getName() +
                                     "; Snapshot '" + DataHelper.toStringNullable(snapshotFieldValue) +

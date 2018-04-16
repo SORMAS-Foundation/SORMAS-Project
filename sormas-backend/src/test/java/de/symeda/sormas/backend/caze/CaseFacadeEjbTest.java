@@ -200,7 +200,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		
 		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
 		assertEquals(CaseOutcome.NO_OUTCOME, firstCase.getOutcome());
-		
+		assertNull(firstCase.getOutcomeDate());
+
 		// additional case for the the person. set to deceased -> person has to be dead and other no outcome cases have to be set to deceased
 		CaseDataDto secondCase = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
@@ -216,6 +217,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
 		assertEquals(CaseOutcome.DECEASED, firstCase.getOutcome());
+		assertNotNull(firstCase.getOutcomeDate());
 		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
 		assertEquals(CaseOutcome.RECOVERED, secondCase.getOutcome());
 		

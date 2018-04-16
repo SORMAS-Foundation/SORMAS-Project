@@ -207,7 +207,7 @@ public class PersonFacadeEjb implements PersonFacade {
 						if (personCase.getOutcome() == CaseOutcome.DECEASED) {
 							CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 							personCase.setOutcome(CaseOutcome.NO_OUTCOME);
-							personCase.setOutcomeDate(new Date());
+							personCase.setOutcomeDate(null);
 							// attention: this may lead to infinite recursion when not properly implemented
 							caseFacade.onCaseChanged(existingCase, personCase);
 						}
