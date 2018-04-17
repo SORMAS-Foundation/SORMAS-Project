@@ -766,9 +766,9 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
         if (record.getTravels() == null)
             return;
 
-        record.getTravels().add(0, (EpiDataTravel) item);
+        record.getTravels().add(0, item);
 
-        getContentBinding().setGatheringList(getTravels());
+        getContentBinding().setTravelList(getTravels());
         verifyTravelStatus();
     }
 

@@ -56,17 +56,20 @@ public class MissingWeeklyReportDialog extends BaseTeboAlertDialog {
 
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        callback.call(null);
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
     protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        callback.call(null);
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
     protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        callback.call(null);
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override

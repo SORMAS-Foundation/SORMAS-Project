@@ -93,7 +93,10 @@ public class UserReportDialog extends BaseTeboAlertDialog {
                     //getActivityCommunicator().hidePreloader();
                     //getActivityCommunicator().showFragmentView();
 
-                    if (resultHolder == null){
+                    if (resultHolder == null){if (callback != null)
+                        if (callback != null)
+                            callback.call(null);
+
                         return;
                     }
 
@@ -106,7 +109,8 @@ public class UserReportDialog extends BaseTeboAlertDialog {
                     TimeoutHelper.executeIn5Seconds(new Callback.IAction<AsyncTask>() {
                         @Override
                         public void call(AsyncTask result) {
-                            callback.call(null);
+                            if (callback != null)
+                                callback.call(null);
                         }
                     });
                 }
@@ -122,12 +126,14 @@ public class UserReportDialog extends BaseTeboAlertDialog {
         if (dialogTask != null && !dialogTask.isCancelled())
             dialogTask.cancel(true);
 
-        callback.call(null);
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
     protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        callback.call(null);
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override

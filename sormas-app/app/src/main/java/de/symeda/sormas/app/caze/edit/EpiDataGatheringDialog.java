@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.caze.edit;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.databinding.ViewDataBinding;
 import android.support.v4.app.FragmentActivity;
@@ -19,7 +18,6 @@ import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.DialogEpidSocialEventsLayoutBinding;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 
 /**
  * Created by Orson on 19/02/2018.
@@ -56,17 +54,20 @@ public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
         /*DialogEpiDataGatheringLayoutBinding _contentBinding = (DialogEpiDataGatheringLayoutBinding)contentBinding;
 
         _contentBinding.spnState.enableErrorState("Hello");*/
-        dismiss();
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
     protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
     protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
@@ -136,21 +137,15 @@ public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
         onAddressLinkClickedCallback = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
-                final Location location = MemoryDatabaseHelper.LOCATION.getLocations(1).get(0);
+                final Location location = data.getGatheringAddress();
                 final LocationDialog locationDialog = new LocationDialog(getActivity(), location);
-                locationDialog.show(new Callback.IAction<AlertDialog>() {
-                    @Override
-                    public void call(AlertDialog result) {
-
-                    }
-                });
-
-
+                locationDialog.show(null);
                 locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
-                        /*getContentBinding().txtAddress.setValue(location.toString());
-                        locationDialog.dismiss();*/
+                        mContentBinding.txtAddress.setValue(location.toString());
+                        data.setGatheringAddress(location);
+                        locationDialog.dismiss();
                     }
                 });
             }

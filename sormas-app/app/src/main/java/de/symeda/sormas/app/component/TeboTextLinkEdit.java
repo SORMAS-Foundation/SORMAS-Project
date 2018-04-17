@@ -19,6 +19,7 @@ import android.widget.TextView;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.user.User;
 
 /**
@@ -49,6 +50,8 @@ public class TeboTextLinkEdit extends EditTeboPropertyField<String> implements I
     private ColorStateList drawableTint;
     private Drawable background;
     private int drawablePadding;
+
+    private Location mCachedLocation;
 
     private OnClickListener onLinkClickListener;
 
@@ -86,11 +89,39 @@ public class TeboTextLinkEdit extends EditTeboPropertyField<String> implements I
         return txtControlInput.getText().toString();
     }
 
+    public void setValue(Location value) {
+        if (value == null)
+            return;
+
+        try {
+            if (value.toString() != getValue()) {
+                mCachedLocation = value;
+                setValue(value.toString());
+            }
+        } catch(Exception e) {
+            return;
+        }
+    }
+
+    public Location getLocation() {
+        return mCachedLocation;
+    }
+
     @BindingAdapter("value")
     public static void setValue(TeboTextLinkEdit view, String text) {
         if (text != view.getValue()) {
             view.setValue(text);
         }
+    }
+
+    @BindingAdapter("locationValue")
+    public static void setLocationValue(TeboTextLinkEdit textField, Location location) {
+        textField.setValue(location);
+    }
+
+    @InverseBindingAdapter(attribute = "locationValue", event = "valueAttrChanged")
+    public static Location getLocationValue(TeboTextLinkEdit view) {
+        return view.getLocation();
     }
 
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged" /*default - can also be removed*/)

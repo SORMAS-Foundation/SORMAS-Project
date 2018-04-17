@@ -12,7 +12,6 @@ import java.util.List;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.location.Location;
-import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.Item;
@@ -43,17 +42,9 @@ public class LocationDialog extends BaseTeboAlertDialog {
     private FragmentActivity activity;
     private DialogLocationLayoutBinding mContentBinding;
 
-    private Double latitude;
-    private Double longitude;
-    private Float latLonAccuracy;
-
     private IRegionLoader regionLoader;
     private IDistrictLoader districtLoader;
     private ICommunityLoader communityLoader;
-
-    private List<Region> regionList;
-    private List<District> districtList;
-    private List<Community> communityList;
 
     private IEntryItemOnClickListener pickGpsCallback;
 
@@ -77,33 +68,27 @@ public class LocationDialog extends BaseTeboAlertDialog {
         this.activity = activity;
         this.data = location;
 
-        this.latitude = location.getLatitude();
-        this.longitude = location.getLongitude();
-        this.latLonAccuracy = location.getLatLonAccuracy();
-
         setupCallbacks();
-        updateGpsTextView();
     }
 
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
         DialogLocationLayoutBinding _contentBinding = (DialogLocationLayoutBinding)contentBinding;
 
-        data.setLatitude(latitude);
-        data.setLongitude(longitude);
-        data.setLatLonAccuracy(latLonAccuracy);
-
-        callback.call(null);
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
     protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        callback.call(null);
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
     protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        callback.call(null);
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
@@ -145,6 +130,8 @@ public class LocationDialog extends BaseTeboAlertDialog {
     @Override
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
         mContentBinding = (DialogLocationLayoutBinding)contentBinding;
+
+        updateGpsTextView();
 
         mContentBinding.spnState.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override
@@ -242,19 +229,7 @@ public class LocationDialog extends BaseTeboAlertDialog {
         if (mContentBinding == null)
             return;
 
-        if (latitude == null || longitude == null) {
-            mContentBinding.txtGpsLatLon.setValue(""); //getContext().getString(R.string.label_pick_gps)
-        }
-        else {
-            if (latLonAccuracy != null) {
-                mContentBinding.txtGpsLatLon.setValue(android.location.Location.convert(latitude, android.location.Location.FORMAT_DEGREES)
-                        + ", " + android.location.Location.convert(longitude, android.location.Location.FORMAT_DEGREES)
-                        + " +-" + Math.round(latLonAccuracy) + "m");
-            } else {
-                mContentBinding.txtGpsLatLon.setValue(android.location.Location.convert(latitude, android.location.Location.FORMAT_DEGREES)
-                        + ", " + android.location.Location.convert(longitude, android.location.Location.FORMAT_DEGREES));
-            }
-        }
+        mContentBinding.txtGpsLatLon.setValue(data.getGpsLocation());
     }
 
     private void setupCallbacks() {
@@ -264,13 +239,13 @@ public class LocationDialog extends BaseTeboAlertDialog {
             public void onClick(View v, Object item) {
                 android.location.Location phoneLocation = LocationService.instance().getLocation(activity);
                 if (phoneLocation != null) {
-                    latitude = phoneLocation.getLatitude();
-                    longitude = phoneLocation.getLongitude();
-                    latLonAccuracy = phoneLocation.getAccuracy();
+                    data.setLatitude(phoneLocation.getLatitude());
+                    data.setLongitude(phoneLocation.getLongitude());
+                    data.setLatLonAccuracy(phoneLocation.getAccuracy());
                 } else {
-                    latitude = null;
-                    longitude = null;
-                    latLonAccuracy = null;
+                    data.setLatitude(null);
+                    data.setLongitude(null);
+                    data.setLatLonAccuracy(null);
                 }
                 updateGpsTextView();
             }

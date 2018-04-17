@@ -75,6 +75,7 @@
                 app:hint="@string/hint_case_epid_social_event_address"
                 app:labelCaption="@string/label_case_epid_social_event_address"
                 app:description="@string/desc_case_epid_social_event_address"
+                app:locationValue="@={data.gatheringAddress}"
                 app:onLinkClick="@{(view) -> addressLinkCallback.onClick(view, data)}"
                 />
 

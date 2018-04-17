@@ -130,16 +130,20 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
                     //getActivityCommunicator().showFragmentView();
 
                     if (resultHolder == null){
+                        if (callback != null)
+                            callback.call(null);
+
                         return;
                     }
 
                     if (!resultStatus.isSuccess()) {
                         NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, R.string.snackbar_case_moved_error);
-                        return;
                     } else {
                         NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_case_moved);
-                        callback.call(null);
                     }
+
+                    if (callback != null)
+                        callback.call(null);
                 }
 
             });

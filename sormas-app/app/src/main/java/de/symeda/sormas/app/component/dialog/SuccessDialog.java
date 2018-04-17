@@ -66,17 +66,20 @@ public class SuccessDialog extends BaseTeboAlertDialog {
                 .build());
         Snackbar.make(activity.findViewById(R.id.base_layout),
                 activity.getString(R.string.snackbar_report_sent), Snackbar.LENGTH_LONG).show();*/
-
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
     protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
     protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override

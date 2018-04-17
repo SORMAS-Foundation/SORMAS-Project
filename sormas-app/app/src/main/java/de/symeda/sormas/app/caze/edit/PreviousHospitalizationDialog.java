@@ -87,17 +87,20 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
         /*DialogPreviousHospitalizationLayoutBinding _contentBinding = (DialogPreviousHospitalizationLayoutBinding)contentBinding;
 
         _contentBinding.spnState.enableErrorState("Hello");*/
-        callback.call(null);
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
     protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        callback.call(null);
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
     protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        callback.call(null);
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override

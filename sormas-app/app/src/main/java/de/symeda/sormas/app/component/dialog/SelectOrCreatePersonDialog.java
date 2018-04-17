@@ -77,10 +77,14 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, final Callback.IAction callback) {
         if (getSelectedPerson() != null && getSelectedPerson().getUuid() != data.getUuid()) {
-            callback.call(getSelectedPerson());
+            if (callback != null)
+                callback.call(getSelectedPerson());
         } else {
             NotificationHelper.showDialogNotification((INotificationContext)this, NotificationType.ERROR, R.string.snackbar_select_create_person);
         }
+
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
@@ -88,30 +92,40 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
         if (selectOrCreateTask != null && !selectOrCreateTask.isCancelled())
             selectOrCreateTask.cancel(true);
 
-        callback.call(null);
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
     protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        callback.call(null);
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
     protected void onCancelClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        callback.call(null);
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
     protected void onCreateClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        callback.call(getSelectedPerson());
+        //TODO: Find out what's going on here
+        if (callback != null)
+            callback.call(getSelectedPerson());
 
         if (binding.txtFirstName.getValue().isEmpty() || binding.txtLastName.getValue().isEmpty()) {
             NotificationHelper.showDialogNotification((INotificationContext)this, NotificationType.ERROR, R.string.snackbar_person_first_last_name);
         } else {
             data.setFirstName(binding.txtFirstName.getValue());
             data.setLastName(binding.txtLastName.getValue());
-            callback.call(data);
+
+            if (callback != null)
+                callback.call(data);
         }
+
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override

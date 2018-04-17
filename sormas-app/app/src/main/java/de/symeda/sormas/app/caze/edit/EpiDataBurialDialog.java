@@ -57,17 +57,20 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
         /*DialogEpiDataTravelLayoutBinding _contentBinding = (DialogEpiDataTravelLayoutBinding)contentBinding;
 
         _contentBinding.spnState.enableErrorState("Hello");*/
-        dismiss();
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
     protected void onDismissClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override
     protected void onDeleteClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-
+        if (callback != null)
+            callback.call(null);
     }
 
     @Override

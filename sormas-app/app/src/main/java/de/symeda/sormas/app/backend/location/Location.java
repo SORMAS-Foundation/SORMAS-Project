@@ -5,13 +5,9 @@ import android.databinding.Bindable;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import java.text.NumberFormat;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.region.Community;
@@ -163,6 +159,21 @@ public class Location extends AbstractDomainObject {
 	public boolean isEmptyLocation() {
 		return address == null && details == null && city == null && region == null &&
 				district == null && community == null;
+	}
+
+	public String getGpsLocation() {
+		if (latitude == null || longitude == null) {
+			return "";
+		}
+
+		if (latLonAccuracy != null) {
+			return android.location.Location.convert(latitude, android.location.Location.FORMAT_DEGREES)
+					+ ", " + android.location.Location.convert(longitude, android.location.Location.FORMAT_DEGREES)
+					+ " +-" + Math.round(latLonAccuracy) + "m";
+		} else {
+			return android.location.Location.convert(latitude, android.location.Location.FORMAT_DEGREES)
+					+ ", " + android.location.Location.convert(longitude, android.location.Location.FORMAT_DEGREES);
+		}
 	}
 
 	@Override
