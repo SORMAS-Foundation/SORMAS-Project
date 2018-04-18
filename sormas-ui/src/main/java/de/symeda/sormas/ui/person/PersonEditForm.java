@@ -264,11 +264,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addFieldListeners(PersonDto.PRESENT_CONDITION, e -> toogleDeathAndBurialFields());
 
 		causeOfDeathField.addValueChangeListener(e -> {
-			toggleCauseOfDeathFields(true);
+			toggleCauseOfDeathFields(presentCondition.getValue() != PresentCondition.ALIVE &&
+					presentCondition.getValue() != null);
 		});
 
 		causeOfDeathDiseaseField.addValueChangeListener(e -> {
-			toggleCauseOfDeathFields(true);
+			toggleCauseOfDeathFields(presentCondition.getValue() != PresentCondition.ALIVE &&
+					presentCondition.getValue() != null);
 		});
 
 		addValueChangeListener(e -> {
