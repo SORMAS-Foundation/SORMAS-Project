@@ -49,4 +49,8 @@ public interface UserFacade {
 
 	List<UserDto> getByUuids(List<String> uuids);
 	
+	UserDto getCurrentUser();
+	
+	UserReferenceDto getCurrentUserAsReference();
+	
 }

@@ -1,6 +1,8 @@
 package de.symeda.sormas.api.importexport;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 
 import javax.ejb.Remote;
 
@@ -17,5 +19,7 @@ public interface ImportFacade {
 	String getCaseImportTemplateFilePath();
 	
 	String importCasesFromCsvFile(String csvFilePath, String userUuid) throws IOException, InvalidColumnException;
+	
+	boolean importCasesFromCsvFile(Reader reader, Writer writer, String userUuid) throws IOException, InvalidColumnException;
 	
 }

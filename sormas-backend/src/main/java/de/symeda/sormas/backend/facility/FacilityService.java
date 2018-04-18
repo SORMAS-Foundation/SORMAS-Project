@@ -157,7 +157,10 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		Root<Facility> from = cq.from(getElementClass());
 		
 		Predicate filter = cb.equal(from.get(Facility.NAME), name);
-		filter = cb.and(filter, cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY));
+		// Additional null check is required because notEqual returns true if one of the values is null
+		filter = cb.and(filter, cb.or(
+						cb.isNull(from.get(Facility.TYPE)),
+						cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY)));
 		if (community != null) {
 			filter = cb.and(filter, cb.equal(from.get(Facility.COMMUNITY), community));
 		} else if (district != null) {

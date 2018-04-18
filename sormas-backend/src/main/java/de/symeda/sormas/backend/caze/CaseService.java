@@ -8,10 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -60,9 +58,6 @@ import de.symeda.sormas.backend.user.UserService;
 @LocalBean
 public class CaseService extends AbstractAdoService<Case> {
 
-	@Resource
-	private SessionContext sessionContext;
-	
 	@EJB
 	ContactService contactService;
 	@EJB

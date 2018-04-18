@@ -2,10 +2,8 @@ package de.symeda.sormas.backend.common;
 
 import java.io.IOException;
 
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.mail.MessagingException;
 
@@ -16,6 +14,7 @@ import com.nexmo.client.NexmoClientException;
 
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 
 /**
  * Service used to send email and SMS messages to SORMAS users.
@@ -50,9 +49,8 @@ public class MessagingService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessagingService.class);
 
-	@Resource
-	private SessionContext sessionContext;
-	
+	@EJB
+	private UserService userService;
 	@EJB
 	private EmailService emailService;
 	@EJB
@@ -64,7 +62,7 @@ public class MessagingService {
 	 */
 	public void sendMessage(User recipient, String subject, String messageContent, MessageType... messageTypes) throws NotificationDeliveryFailedException {
 		// Don't send notifications to users that initiated an action
-		if (recipient.getUserName().equals(sessionContext.getCallerPrincipal().getName())) {
+		if (recipient.equals(userService.getCurrentUser())) {
 			return;
 		}
 		

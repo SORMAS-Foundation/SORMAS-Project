@@ -9,6 +9,7 @@ import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
+import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
@@ -31,6 +32,7 @@ import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipant
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
+import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
@@ -145,6 +147,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 	
 	public OutbreakFacade getOutbreakFacade() {
 		return getBean(OutbreakFacadeEjbLocal.class);
+	}
+	
+	public ImportFacade getImportFacade() {
+		return getBean(ImportFacadeEjbLocal.class);
 	}
 	
 	public FacilityService getFacilityService() {
