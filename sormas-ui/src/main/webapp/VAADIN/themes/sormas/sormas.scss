@@ -63,22 +63,23 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @import "bootstrap-grid.scss";
 
 @import "components/button.scss";
+@import "components/checkbox.scss";
 @import "components/combobox.scss";
+@import "components/customcomponent.scss";
 @import "components/datefield.scss";
 @import "components/grid.scss";
+@import "components/label.scss";
 @import "components/menu.scss";
+@import "components/notification.scss";
 @import "components/optiongroup.scss";
 @import "components/panel.scss";
+@import "components/svg.scss";
 @import "components/tabsheet.scss";
 @import "components/table.scss";
-@import "components/textfield.scss";
-@import "components/label.scss";
-@import "components/window.scss";
-@import "components/svg.scss";
-@import "components/customcomponent.scss";
 @import "components/textarea.scss";
+@import "components/textfield.scss";
 @import "components/upload.scss";
-@import "components/checkbox.scss";
+@import "components/window.scss";
 
 @import "views/view.scss";
 @import "views/about.scss";
@@ -106,22 +107,23 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-global;
   
   @include sormas-button;
+  @include sormas-checkbox;		
   @include sormas-combobox;
+  @include sormas-customcomponent;
   @include sormas-datefield;
   @include sormas-grid;
+  @include sormas-label;
   @include sormas-menu;
+  @include sormas-notification;
   @include sormas-optiongroup;
   @include sormas-panel;
+  @include sormas-svg;
   @include sormas-tabsheet;
   @include sormas-table;
-  @include sormas-textfield;
-  @include sormas-label;
-  @include sormas-window;
-  @include sormas-svg;
-  @include sormas-customcomponent;
   @include sormas-textarea;
+  @include sormas-textfield;
   @include sormas-upload;
-  @include sormas-checkbox;
+  @include sormas-window;
 
   @include sormas-view;
   @include sormas-about-view;
