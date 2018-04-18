@@ -5,6 +5,9 @@
         <variable
             name="data"
             type="de.symeda.sormas.app.backend.person.Person" />
+        <variable
+            name="index"
+            type="java.lang.Integer" />
 
         <variable
             name="callback"
@@ -12,7 +15,6 @@
     </data>
 
     <LinearLayout
-        android:id="@+id/rowListItemPerson"
         android:tag="@string/tag_row_item_select_or_create_person"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -863,6 +863,7 @@
     <string name="notification_error_init_move_case">There was an internal problem while attempting to initiate a move case.</string>
     <string name="notification_case_move_error">%1$s could not be moved because of an internal error.</string>
     <string name="notification_case_move_validation_error">%1$s could not be moved because of a validation error.</string>
+    <string name="notification_internal_error">There has been an internal error, contact administrator.</string>
     <string name="validation_record_error">%1$s could not be processed because of a validation error.</string>
 
     <string name="label_gender">Gender</string>

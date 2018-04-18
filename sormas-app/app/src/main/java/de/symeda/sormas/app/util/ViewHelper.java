@@ -18,6 +18,10 @@ public class ViewHelper {
         return inflater.inflate(layout, null);
     }
 
+    public static ArrayList<View> getViewsByTag(ViewGroup root){
+        return getViewsByTag(root, null);
+    }
+
     public static ArrayList<View> getViewsByTag(ViewGroup root, String tag){
         ArrayList<View> views = new ArrayList<View>();
         final int childCount = root.getChildCount();
@@ -25,6 +29,11 @@ public class ViewHelper {
             final View child = root.getChildAt(i);
             if (child instanceof ViewGroup) {
                 views.addAll(getViewsByTag((ViewGroup) child, tag));
+            }
+
+            if(tag == null || tag.isEmpty()) {
+                views.add(child);
+                continue;
             }
 
             final Object tagObj = child.getTag();

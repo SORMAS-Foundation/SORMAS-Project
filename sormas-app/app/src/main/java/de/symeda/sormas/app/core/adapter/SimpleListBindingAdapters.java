@@ -75,13 +75,20 @@ public class SimpleListBindingAdapters {
     }
 
     private static ViewDataBinding bindLayout(LayoutInflater inflater,
-                                              ViewGroup parent, int layoutId, Object entry, Object callback) {
+                                              ViewGroup parent, int layoutId, Object entry, int entryIndex, Object callback) {
         ViewDataBinding binding = DataBindingUtil.inflate(inflater,
                 layoutId, parent, false);
         String layoutName = parent.getResources().getResourceEntryName(layoutId);
+        View rootView = binding.getRoot();
+
+        rootView.setId(entryIndex);
 
         if (!binding.setVariable(BR.data, entry)) {
             Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
+        }
+
+        if (!binding.setVariable(BR.index, entryIndex)) {
+            Log.e(TAG, "There is no variable 'index' in layout " + layoutName);
         }
 
         if (callback != null) {
@@ -103,8 +110,7 @@ public class SimpleListBindingAdapters {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         for (int i = 0; i < entries.size(); i++) {
             Object entry = entries.get(i);
-            ViewDataBinding binding = bindLayout(inflater, parent,
-                    layoutId, entry, callback);
+            ViewDataBinding binding = bindLayout(inflater, parent, layoutId, entry, i, callback);
             parent.addView(binding.getRoot());
         }
     }
@@ -148,7 +154,7 @@ public class SimpleListBindingAdapters {
             for (int i = start; i < end; i++) {
                 Object data = observableList.get(i);
                 ViewDataBinding binding = bindLayout(inflater,
-                        mTarget, mLayoutId, data, mCallback);
+                        mTarget, mLayoutId, data, i, mCallback);
                 binding.setVariable(BR.data, observableList.get(i));
                 mTarget.removeViewAt(i);
                 mTarget.addView(binding.getRoot(), i);
@@ -168,7 +174,7 @@ public class SimpleListBindingAdapters {
             for (int i = end - 1; i >= start; i--) {
                 Object entry = observableList.get(i);
                 ViewDataBinding binding =
-                        bindLayout(inflater, mTarget, mLayoutId, entry, mCallback);
+                        bindLayout(inflater, mTarget, mLayoutId, entry, i, mCallback);
                 mTarget.addView(binding.getRoot(), start);
             }
         }

@@ -81,10 +81,9 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
                 callback.call(getSelectedPerson());
         } else {
             NotificationHelper.showDialogNotification((INotificationContext)this, NotificationType.ERROR, R.string.snackbar_select_create_person);
+            if (callback != null)
+                callback.call(null);
         }
-
-        if (callback != null)
-            callback.call(null);
     }
 
     @Override
@@ -111,11 +110,14 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
     @Override
     protected void onCreateClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
         //TODO: Find out what's going on here
-        if (callback != null)
-            callback.call(getSelectedPerson());
+        /*if (callback != null)
+            callback.call(getSelectedPerson());*/
 
         if (binding.txtFirstName.getValue().isEmpty() || binding.txtLastName.getValue().isEmpty()) {
             NotificationHelper.showDialogNotification((INotificationContext)this, NotificationType.ERROR, R.string.snackbar_person_first_last_name);
+
+            if (callback != null)
+                callback.call(null);
         } else {
             data.setFirstName(binding.txtFirstName.getValue());
             data.setLastName(binding.txtLastName.getValue());
@@ -123,9 +125,6 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
             if (callback != null)
                 callback.call(data);
         }
-
-        if (callback != null)
-            callback.call(null);
     }
 
     @Override
@@ -249,18 +248,28 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
                 Person personItem = (Person)item;
                 String tag = getActivity().getResources().getString(R.string.tag_row_item_select_or_create_person);
                 ArrayList<View> views = ViewHelper.getViewsByTag(binding.listExistingPersons, tag);
+                setSelectedPerson(null);
 
                 for (View itemView : views) {
-                    if (itemView == v && v.isSelected()) {
-                        itemView.setSelected(false);
-                        setSelectedPerson(null);
-                    } else if (itemView == v && !v.isSelected()) {
-                        itemView.setSelected(true);
-                        setSelectedPerson(personItem);
-                    } else {
-                        itemView.setSelected(false);
-                        setSelectedPerson(null);
+                    try {
+                        int itemViewId = itemView.getId();
+                        int vId = v.getId();
+
+                        if (itemViewId == vId && v.isSelected()) {
+                            itemView.setSelected(false);
+                        } else if (itemViewId == vId && !v.isSelected()) {
+                            itemView.setSelected(true);
+                            setSelectedPerson(personItem);
+                        } else {
+                            itemView.setSelected(false);
+                        }
+
+
+                    } catch (NumberFormatException ex) {
+                        NotificationHelper.showDialogNotification((INotificationContext)SelectOrCreatePersonDialog.this, NotificationType.ERROR, R.string.notification_internal_error);
                     }
+
+
                 }
             }
         };

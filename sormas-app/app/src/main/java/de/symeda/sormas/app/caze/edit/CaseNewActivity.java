@@ -202,6 +202,9 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                             public void onOkClick(View v, Object item, View viewRoot) {
                                 personDialog.dismiss();
 
+                                if (item == null)
+                                    return;
+
                                 //Select
                                 if (item instanceof Person) {
                                     //TODO: Talk to Martin; we need to know this person's case info
