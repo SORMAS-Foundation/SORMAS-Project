@@ -19,12 +19,13 @@ public class InfoResource {
 	@GET
 	@Path("/version")
 	public String getVersion() {	
-		return InfoProvider.getVersion();
+//		return InfoProvider.getVersion();
+		return "0.21.0";
 	}
 	
 	@GET
 	@Path("/appurl")
-	public String getAppUrl() {
+	public String getAppUrl(@QueryParam("appVersion") String appVersion) {
 		return FacadeProvider.getConfigFacade().getAppUrl();
 	}
 	

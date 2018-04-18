@@ -242,7 +242,7 @@ public final class RetroProvider {
 
                         @Override
                         protected Response<String> doInBackground(Void... params) {
-                            Call<String> versionCall = localInfoFacadeRetro != null ? localInfoFacadeRetro.getAppUrl() : getInfoFacade().getAppUrl();
+                            Call<String> versionCall = localInfoFacadeRetro != null ? localInfoFacadeRetro.getAppUrl(InfoProvider.getVersion()) : getInfoFacade().getAppUrl(InfoProvider.getVersion());
                             try {
                                 return versionCall.execute();
                             } catch (IOException e) {
