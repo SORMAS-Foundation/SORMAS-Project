@@ -3,7 +3,6 @@ package de.symeda.sormas.ui.person;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
-import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
@@ -21,11 +20,13 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
 	public static final String CREATE_PERSON = "createPerson";
+	public static final String SELECT_PERSON = "selectPerson";
 	
 	private final TextField firstNameField = new TextField();
 	private final TextField lastNameField = new TextField();
 	private final Button searchMatchesButton = new Button("Find matching persons");
 	private PersonGrid personGrid;
+	private OptionGroup selectPerson;
 	private OptionGroup createNewPerson;
 	
 	@Override
@@ -61,6 +62,18 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 		
 		layout.addComponent(nameLayout);
 		
+		selectPerson = new OptionGroup(null);
+		selectPerson.addItem(SELECT_PERSON);
+		selectPerson.setItemCaption(SELECT_PERSON, I18nProperties.getFragment("Person.select"));
+		CssStyles.style(selectPerson, CssStyles.VSPACE_NONE);
+		selectPerson.addValueChangeListener(e -> {
+			if (e.getProperty().getValue() != null) {
+				createNewPerson.setValue(null);
+				personGrid.setEnabled(true);
+			}
+		});
+		layout.addComponent(selectPerson);
+		
 		initPersonGrid();
 		// unselect "create new" when person is selected
 		personGrid.addSelectionListener(e -> {
@@ -76,7 +89,9 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 		// unselect grid when "create new" is selected
 		createNewPerson.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
+				selectPerson.setValue(null);
 				personGrid.select(null);
+				personGrid.setEnabled(false);
 			}
 		});
 		layout.addComponent(createNewPerson);
@@ -90,9 +105,7 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 	private void initPersonGrid() {
 		if (personGrid == null) {
 			personGrid = new PersonGrid(firstNameField.getValue(), lastNameField.getValue());
-			personGrid.setHeightByRows(6);
-			personGrid.setCaption(I18nProperties.getFragment("Person.select"));
-			personGrid.setSelectionMode(SelectionMode.SINGLE);
+//			personGrid.setCaption(I18nProperties.getFragment("Person.select"));
 		}
 	}
 	
@@ -114,15 +127,12 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 	protected void setInternalValue(PersonIndexDto newValue) {
 		super.setInternalValue(newValue);
 		
-		if (newValue == null) {
-			if (createNewPerson != null) {
-				createNewPerson.setValue(CREATE_PERSON);
-			}
+		if (selectPerson != null) {
+			selectPerson.setValue(SELECT_PERSON);
 		}
-		else {
-			if (personGrid != null) {
-				personGrid.select(newValue);
-			}
+		
+		if (newValue != null) {
+			personGrid.select(newValue);
 		}
 	}
 	

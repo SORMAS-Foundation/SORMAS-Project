@@ -10,6 +10,7 @@ import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.MethodProperty;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.server.Page;
+import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
@@ -34,7 +35,8 @@ public class PersonGrid extends Grid {
 		persons = FacadeProvider.getPersonFacade().getNameDtos(LoginHelper.getCurrentUserAsReference());
 		
 		setSizeFull();
-		setSelectionMode(SelectionMode.NONE);
+		setSelectionMode(SelectionMode.SINGLE);
+		setHeightMode(HeightMode.ROW);
 
 		BeanItemContainer<PersonIndexDto> container = new BeanItemContainer<PersonIndexDto>(PersonIndexDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
@@ -97,7 +99,8 @@ public class PersonGrid extends Grid {
 		}
 
 		getContainer().removeAllItems();
-		getContainer().addAll(entries);    	
+		getContainer().addAll(entries);    
+		setHeightByRows(entries.size() > 0 ? entries.size() : 1);
 	}
 
 	public void refresh(PersonIndexDto entry) {
