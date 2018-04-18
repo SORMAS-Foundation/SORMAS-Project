@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.component;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -162,6 +163,7 @@ public class TeboDatePicker extends EditTeboPropertyField<Date> implements ITebo
         ((TeboDatePicker) nextView).txtControlInput.requestFocus();
     }
 
+    @SuppressLint("WrongConstant")
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -262,8 +264,8 @@ public class TeboDatePicker extends EditTeboPropertyField<Date> implements ITebo
     public void changeVisualState(VisualState state, UserRight editOrCreateUserRight) {
         int labelColor = getResources().getColor(state.getLabelColor(VisualStateControl.EDIT_TEXT));
         Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControl.EDIT_TEXT));
-        int textColor = state.getTextColor(VisualStateControl.EDIT_TEXT);
-        int hintColor = state.getHintColor(VisualStateControl.EDIT_TEXT);
+        int textColor = getResources().getColor(state.getTextColor(VisualStateControl.EDIT_TEXT));
+        int hintColor = getResources().getColor(state.getHintColor(VisualStateControl.EDIT_TEXT));
 
         //Drawable drawable = getResources().getDrawable(R.drawable.selector_text_control_edit_error);
 
@@ -272,10 +274,10 @@ public class TeboDatePicker extends EditTeboPropertyField<Date> implements ITebo
             setBackground(drawable);
 
             if (textColor > 0)
-                txtControlInput.setTextColor(getResources().getColor(textColor));
+                txtControlInput.setTextColor(textColor);
 
             if (hintColor > 0)
-                txtControlInput.setHintTextColor(getResources().getColor(hintColor));
+                txtControlInput.setHintTextColor(hintColor);
 
             setEnabled(false);
             return;
@@ -292,10 +294,10 @@ public class TeboDatePicker extends EditTeboPropertyField<Date> implements ITebo
             setBackground(drawable);
 
             if (textColor > 0)
-                txtControlInput.setTextColor(getResources().getColor(textColor));
+                txtControlInput.setTextColor(textColor);
 
             if (hintColor > 0)
-                txtControlInput.setHintTextColor(getResources().getColor(hintColor));
+                txtControlInput.setHintTextColor(hintColor);
 
             lblControlLabel.setTextColor(textColor);
             return;
@@ -307,10 +309,10 @@ public class TeboDatePicker extends EditTeboPropertyField<Date> implements ITebo
             setBackground(drawable);
 
             if (textColor > 0)
-                txtControlInput.setTextColor(getResources().getColor(textColor));
+                txtControlInput.setTextColor(textColor);
 
             if (hintColor > 0)
-                txtControlInput.setHintTextColor(getResources().getColor(hintColor));
+                txtControlInput.setHintTextColor(hintColor);
 
             setEnabled(true && (editOrCreateUserRight != null)? user.hasUserRight(editOrCreateUserRight) : true);
             return;

@@ -353,6 +353,8 @@ public class TeboAddress extends EditTeboPropertyField<Location> implements ICon
         Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControl.EDIT_TEXT));
         //Drawable drawable = getResources().getDrawable(R.drawable.selector_text_control_edit_error);
 
+        if (drawable != null) drawable = drawable.mutate();
+
         if (state == VisualState.DISABLED) {
             lblControlLabel.setTextColor(labelColor);
             setBackground(drawable);

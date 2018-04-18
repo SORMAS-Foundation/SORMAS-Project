@@ -41,19 +41,19 @@ public class FormBindingAdapters {
             Resources resources = context.getResources();
 
             if (resultType == SampleTestResultType.POSITIVE) {
-                drw = (Drawable) ContextCompat.getDrawable(context, R.drawable.ic_add_24dp);
+                drw = (Drawable) ContextCompat.getDrawable(context, R.drawable.ic_add_24dp).mutate();
                 drw.setTint(resources.getColor(R.color.samplePositive));
                 imageView.setBackground(drw);
             } else if (resultType == SampleTestResultType.NEGATIVE) {
-                drw = (Drawable) ContextCompat.getDrawable(context, R.drawable.ic_remove_24dp);
+                drw = (Drawable) ContextCompat.getDrawable(context, R.drawable.ic_remove_24dp).mutate();
                 drw.setTint(resources.getColor(R.color.sampleNegative));
                 imageView.setBackground(drw);
             } else if (resultType == SampleTestResultType.PENDING) {
-                drw = (Drawable) ContextCompat.getDrawable(context, R.drawable.ic_pending_24dp);
+                drw = (Drawable) ContextCompat.getDrawable(context, R.drawable.ic_pending_24dp).mutate();
                 drw.setTint(resources.getColor(R.color.samplePending));
                 imageView.setBackground(drw);
             } else if (resultType == SampleTestResultType.INDETERMINATE) {
-                drw = (Drawable) ContextCompat.getDrawable(context, R.drawable.ic_do_not_disturb_on_24dp);
+                drw = (Drawable) ContextCompat.getDrawable(context, R.drawable.ic_do_not_disturb_on_24dp).mutate();
                 drw.setTint(resources.getColor(R.color.sampleIndeterminate));
                 imageView.setBackground(drw);
             }

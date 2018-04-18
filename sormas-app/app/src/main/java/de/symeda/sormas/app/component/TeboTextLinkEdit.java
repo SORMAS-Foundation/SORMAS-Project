@@ -360,6 +360,8 @@ public class TeboTextLinkEdit extends EditTeboPropertyField<String> implements I
         Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControl.EDIT_TEXT));
         //Drawable drawable = getResources().getDrawable(R.drawable.selector_text_control_edit_error);
 
+        if (drawable != null) drawable = drawable.mutate();
+
         if (state == VisualState.DISABLED) {
             lblControlLabel.setTextColor(labelColor);
             setBackground(drawable);

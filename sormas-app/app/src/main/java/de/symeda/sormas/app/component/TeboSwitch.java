@@ -390,8 +390,12 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
         if (state == VisualState.DISABLED) {
             changeRadioButtonState(false);
             Drawable disabledStateDrawable = getResources().getDrawable(R.drawable.control_switch_background_border_disabled);
+
+            if (disabledStateDrawable != null)
+                disabledStateDrawable = disabledStateDrawable.mutate();
+
             lblControlLabel.setTextColor(labelColor);
-            radioGroup.setBackground(disabledStateDrawable.mutate());
+            radioGroup.setBackground(disabledStateDrawable);
             setStateColorText(textColor);
             setEnabled(false);
             return;
@@ -400,8 +404,12 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
         if (state == VisualState.ERROR) {
             changeRadioButtonState(true);
             Drawable errorStateDrawable = getResources().getDrawable(R.drawable.control_switch_background_border_error);
+
+            if (errorStateDrawable != null)
+                errorStateDrawable = errorStateDrawable.mutate();
+
             lblControlLabel.setTextColor(labelColor);
-            radioGroup.setBackground(errorStateDrawable.mutate());
+            radioGroup.setBackground(errorStateDrawable);
             ColorStateList textColorError = getResources().getColorStateList(R.color.control_switch_color_selector_error);
             setStateColorText(textColorError);
 
@@ -412,8 +420,11 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
         if (state == VisualState.FOCUSED) {
             changeRadioButtonState(false);
             lblControlLabel.setTextColor(labelColor);
-            //setStateColorBackground(SormasColor.BLUE, SormasColor.TRANSPARENT);
-            radioGroup.setBackground(background.mutate());
+
+            if (background != null)
+                background = background.mutate();
+
+            radioGroup.setBackground(background);
             setStateColorText(textColor);
             return;
         }
@@ -422,7 +433,11 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
         if (state == VisualState.NORMAL || state == VisualState.ENABLED) {
             changeRadioButtonState(false);
             lblControlLabel.setTextColor(labelColor);
-            radioGroup.setBackground(background.mutate());
+
+            if (background != null)
+                background = background.mutate();
+
+            radioGroup.setBackground(background);
             setStateColorText(textColor);
             setEnabled(true);
             return;

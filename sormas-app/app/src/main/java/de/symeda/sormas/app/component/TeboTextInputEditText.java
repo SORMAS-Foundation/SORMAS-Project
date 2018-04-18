@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.component;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
@@ -13,7 +14,6 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +26,6 @@ import android.widget.TextView;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.core.CompositeOnFocusChangeListener;
 
@@ -259,6 +258,7 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
         inflater.inflate(R.layout.control_textfield_edit_layout, this);
     }
 
+    @SuppressLint("WrongConstant")
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -401,9 +401,10 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
     public void changeVisualState(final VisualState state, UserRight editOrCreateUserRight) {
         int labelColor = getResources().getColor(state.getLabelColor(VisualStateControl.EDIT_TEXT));
         Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControl.EDIT_TEXT));
-        int textColor = state.getTextColor(VisualStateControl.EDIT_TEXT);
-        int hintColor = state.getHintColor(VisualStateControl.EDIT_TEXT);
+        int textColor = getResources().getColor(state.getTextColor(VisualStateControl.EDIT_TEXT));
+        int hintColor = getResources().getColor(state.getHintColor(VisualStateControl.EDIT_TEXT));
 
+        if (drawable != null) drawable = drawable.mutate();
         //Drawable drawable = getResources().getDrawable(R.drawable.selector_text_control_edit_error);
 
         if (state == VisualState.DISABLED) {
@@ -411,10 +412,10 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
             setBackground(drawable);
 
             if (textColor > 0)
-                txtControlInput.setTextColor(getResources().getColor(textColor));
+                txtControlInput.setTextColor(textColor);
 
             if (hintColor > 0)
-                txtControlInput.setHintTextColor(getResources().getColor(hintColor));
+                txtControlInput.setHintTextColor(hintColor);
 
             setEnabled(false);
             return;
@@ -427,16 +428,16 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
         }
 
         if (state == VisualState.FOCUSED) {
-            lblControlLabel.setTextColor(labelColor);
+            //int c = getResources().getColor(R.color.colorControlActivated);
+            lblControlLabel.setTextColor(labelColor); //labelColor
             setBackground(drawable);
 
             if (textColor > 0)
-                txtControlInput.setTextColor(getResources().getColor(textColor));
+                txtControlInput.setTextColor(textColor);
 
             if (hintColor > 0)
-                txtControlInput.setHintTextColor(getResources().getColor(hintColor));
+                txtControlInput.setHintTextColor(hintColor);
 
-            lblControlLabel.setTextColor(textColor);
             return;
         }
 
@@ -446,10 +447,10 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
             setBackground(drawable);
 
             if (textColor > 0)
-                txtControlInput.setTextColor(getResources().getColor(textColor));
+                txtControlInput.setTextColor(textColor);
 
             if (hintColor > 0)
-                txtControlInput.setHintTextColor(getResources().getColor(hintColor));
+                txtControlInput.setHintTextColor(hintColor);
 
             setEnabled(true && (editOrCreateUserRight != null)? user.hasUserRight(editOrCreateUserRight) : true);
             return;

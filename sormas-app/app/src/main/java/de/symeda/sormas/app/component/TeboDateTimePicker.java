@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.component;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -211,6 +212,7 @@ public class TeboDateTimePicker extends EditTeboPropertyField<Date> implements I
         ((TeboDateTimePicker) nextView).dateInput.requestFocus();
     }
 
+    @SuppressLint("WrongConstant")
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -233,7 +235,6 @@ public class TeboDateTimePicker extends EditTeboPropertyField<Date> implements I
         //dateInput.setImeOptions(getImeOptions());
 
         dateInput.setTextAlignment(getCaptionAlignment());
-        timeInput.setTextAlignment(getCaptionAlignment());
 
         if (getCaptionAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
             dateInput.setGravity(getCaptionGravity());
@@ -359,8 +360,11 @@ public class TeboDateTimePicker extends EditTeboPropertyField<Date> implements I
     public void changeVisualState(VisualState state, UserRight editOrCreateUserRight) {
         int labelColor = getResources().getColor(state.getLabelColor(VisualStateControl.EDIT_TEXT));
         Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControl.EDIT_TEXT));
-        int textColor = state.getTextColor(VisualStateControl.EDIT_TEXT);
-        int hintColor = state.getHintColor(VisualStateControl.EDIT_TEXT);
+        int textColor = getResources().getColor(state.getTextColor(VisualStateControl.EDIT_TEXT));
+        int hintColor = getResources().getColor(state.getHintColor(VisualStateControl.EDIT_TEXT));
+
+        if (drawable != null)
+            drawable = drawable.mutate();
 
         //Drawable drawable = getResources().getDrawable(R.drawable.selector_text_control_edit_error);
 
@@ -369,16 +373,16 @@ public class TeboDateTimePicker extends EditTeboPropertyField<Date> implements I
             setBackground(drawable);
 
             if (textColor > 0)
-                dateInput.setTextColor(getResources().getColor(textColor));
+                dateInput.setTextColor(textColor);
 
             if (hintColor > 0)
-                dateInput.setHintTextColor(getResources().getColor(hintColor));
+                dateInput.setHintTextColor(hintColor);
 
             if (textColor > 0)
-                timeInput.setTextColor(getResources().getColor(textColor));
+                timeInput.setTextColor(textColor);
 
             if (hintColor > 0)
-                timeInput.setHintTextColor(getResources().getColor(hintColor));
+                timeInput.setHintTextColor(hintColor);
 
             setEnabled(false);
             return;
@@ -395,18 +399,16 @@ public class TeboDateTimePicker extends EditTeboPropertyField<Date> implements I
             setBackground(drawable);
 
             if (textColor > 0)
-                dateInput.setTextColor(getResources().getColor(textColor));
+                dateInput.setTextColor(textColor);
 
             if (hintColor > 0)
-                dateInput.setHintTextColor(getResources().getColor(hintColor));
+                dateInput.setHintTextColor(hintColor);
 
             if (textColor > 0)
-                timeInput.setTextColor(getResources().getColor(textColor));
+                timeInput.setTextColor(textColor);
 
             if (hintColor > 0)
-                timeInput.setHintTextColor(getResources().getColor(hintColor));
-
-            lblControlLabel.setTextColor(textColor);
+                timeInput.setHintTextColor(hintColor);
             return;
         }
 
@@ -416,16 +418,16 @@ public class TeboDateTimePicker extends EditTeboPropertyField<Date> implements I
             setBackground(drawable);
 
             if (textColor > 0)
-                dateInput.setTextColor(getResources().getColor(textColor));
+                dateInput.setTextColor(textColor);
 
             if (hintColor > 0)
-                dateInput.setHintTextColor(getResources().getColor(hintColor));
+                dateInput.setHintTextColor(hintColor);
 
             if (textColor > 0)
-                timeInput.setTextColor(getResources().getColor(textColor));
+                timeInput.setTextColor(textColor);
 
             if (hintColor > 0)
-                timeInput.setHintTextColor(getResources().getColor(hintColor));
+                timeInput.setHintTextColor(hintColor);
 
             setEnabled(true && (editOrCreateUserRight != null)? user.hasUserRight(editOrCreateUserRight) : true);
             return;
