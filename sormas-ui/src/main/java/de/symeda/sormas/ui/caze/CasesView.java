@@ -318,9 +318,13 @@ public class CasesView extends AbstractView {
 					grid.setDateFilter(fromDate, toDate);
 				} else {
 					if (dateFilterOption == DateFilterOption.DATE) {
-						new Notification("Missing date filter", "Please fill in both date filter fields", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+						Notification notification = new Notification("Missing date filter", "Please fill in both date filter fields", Type.WARNING_MESSAGE, false);
+						notification.setDelayMsec(-1);
+						notification.show(Page.getCurrent());
 					} else {
-						new Notification("Missing epi week filter", "Please fill in both epi week filter fields", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+						Notification notification = new Notification("Missing epi week filter", "Please fill in both epi week filter fields", Type.WARNING_MESSAGE, false);
+						notification.setDelayMsec(-1);
+						notification.show(Page.getCurrent());
 					}
 				}
 			});
