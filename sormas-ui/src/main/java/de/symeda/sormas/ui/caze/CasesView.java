@@ -152,7 +152,6 @@ public class CasesView extends AbstractView {
 				grid.setOutcomeFilter(((CaseOutcome) e.getProperty().getValue()));
 			});
 			firstFilterRowLayout.addComponent(outcomeFilter);
-			outcomeFilter.setValue(CaseOutcome.NO_OUTCOME);
 
 			ComboBox diseaseFilter = new ComboBox();
 			diseaseFilter.setWidth(140, Unit.PIXELS);
