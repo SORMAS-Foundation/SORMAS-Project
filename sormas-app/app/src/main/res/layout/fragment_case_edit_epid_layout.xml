@@ -146,7 +146,7 @@
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
                         android:text="@string/heading_sub_case_epid_burial_visited"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        style="@style/ReadActivitySubListHeadingNoBMarginStyle"
                         />
 
                     <de.symeda.sormas.app.component.TeboButton
@@ -252,7 +252,7 @@
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
                         android:text="@string/heading_sub_case_epid_social_events"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        style="@style/ReadActivitySubListHeadingNoBMarginStyle"
                         />
 
                     <de.symeda.sormas.app.component.TeboButton
@@ -357,7 +357,7 @@
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
                         android:text="@string/heading_sub_case_epid_travels"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        style="@style/ReadActivitySubListHeadingNoBMarginStyle"
                         />
 
                     <de.symeda.sormas.app.component.TeboButton

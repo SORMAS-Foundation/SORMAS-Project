@@ -604,7 +604,7 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
             button.setMinHeight(heightInPixel);
             button.setMaxHeight(heightInPixel);
         } else {
-            textSize = getContext().getResources().getDimension(R.dimen.swithControlTextSize);
+            textSize = getContext().getResources().getDimension(R.dimen.switchControlTextSize);
             paddingTop = 0;
             paddingBottom = 0;
 

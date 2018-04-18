@@ -421,6 +421,11 @@
         <item name="android:textSize">@dimen/readActivitySubHeadingTextSize</item>
     </style>
 
+    <style name="ReadActivitySubListHeadingNoBMarginStyle">
+        <item name="android:textColor">@color/normalText</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">@dimen/readActivitySubListHeadingTextSize</item>
+    </style>
 
 
     <style name="FullHorizontalDividerStyle">

@@ -232,7 +232,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
 
         NotificationType type = NotificationType.ERROR;
 
-        LayerDrawable drawable = (LayerDrawable) activity.getResources().getDrawable(R.drawable.background_notification_dialog);
+        LayerDrawable drawable = (LayerDrawable) activity.getResources().getDrawable(R.drawable.background_notification_dialog).mutate();
         int backgroundColor = activity.getResources().getColor(type.getInverseBackgroundColor());
         int textColor = activity.getResources().getColor(type.getInverseTextColor());
 
@@ -490,7 +490,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
         int backgroundResourceId = getBackground();
 
         if (backgroundResourceId > 0)
-            baseLayout.setBackground(this.activity.getResources().getDrawable(backgroundResourceId));
+            baseLayout.setBackground(this.activity.getResources().getDrawable(backgroundResourceId).mutate());
     }
 
     private void setBackgroundColor(ViewDataBinding binding) {

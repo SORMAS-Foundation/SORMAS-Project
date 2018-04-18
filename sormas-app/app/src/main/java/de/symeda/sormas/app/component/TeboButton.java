@@ -157,6 +157,24 @@ public class TeboButton extends LinearLayout implements ButtonControlInterface {
                 rounded = a.getBoolean(R.styleable.TeboButton_rounded, false);
                 slim = a.getBoolean(R.styleable.TeboButton_slim, false);
                 iconOnly = a.getBoolean(R.styleable.TeboButton_iconOnly, false);
+
+                if (drawableStart != null)
+                    drawableStart = drawableStart.mutate();
+
+                if (drawableEnd != null)
+                    drawableEnd = drawableEnd.mutate();
+
+                if (drawableLeft != null)
+                    drawableLeft = drawableLeft.mutate();
+
+                if (drawableRight != null)
+                    drawableRight = drawableRight.mutate();
+
+                if (drawableTop != null)
+                    drawableTop = drawableTop.mutate();
+
+                if (drawableBottom != null)
+                    drawableBottom = drawableBottom.mutate();
             } finally {
                 a.recycle();
             }
