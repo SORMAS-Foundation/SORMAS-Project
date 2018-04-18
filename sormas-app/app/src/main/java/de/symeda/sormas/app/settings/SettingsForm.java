@@ -83,7 +83,7 @@ public class SettingsForm extends FormTab {
             } catch (AuthenticatorException e) {
                 Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             } catch (RetroProvider.ApiVersionException e) {
-                if (e.getAppUrl() != null) {
+                if (e.getAppUrl() != null && !e.getAppUrl().isEmpty()) {
                     AppUpdateController.getInstance().updateApp(this.getActivity(), e.getAppUrl(), e.getVersion(), true, null);
                     return;
                 } else {

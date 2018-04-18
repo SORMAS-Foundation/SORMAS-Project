@@ -45,7 +45,7 @@ public class CaseIndexDto implements Serializable {
 	private String healthFacilityUuid;
 	private String surveillanceOfficerUuid;
 	private CaseOutcome outcome;
-		
+	
 	public CaseIndexDto(String uuid, String epidNumber, String personFirstName, String personLastName, Disease disease,
 			String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 			PresentCondition presentCondition, Date reportDate, String regionUuid, 

@@ -24,7 +24,7 @@ public class InfoResource {
 	
 	@GET
 	@Path("/appurl")
-	public String getAppUrl() {
+	public String getAppUrl(@QueryParam("appVersion") String appVersion) {
 		return FacadeProvider.getConfigFacade().getAppUrl();
 	}
 	

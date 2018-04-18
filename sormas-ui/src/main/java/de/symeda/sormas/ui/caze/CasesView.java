@@ -1,20 +1,23 @@
 package de.symeda.sormas.ui.caze;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -149,7 +152,6 @@ public class CasesView extends AbstractView {
 				grid.setOutcomeFilter(((CaseOutcome) e.getProperty().getValue()));
 			});
 			firstFilterRowLayout.addComponent(outcomeFilter);
-			outcomeFilter.setValue(CaseOutcome.NO_OUTCOME);
 
 			ComboBox diseaseFilter = new ComboBox();
 			diseaseFilter.setWidth(140, Unit.PIXELS);
@@ -274,6 +276,15 @@ public class CasesView extends AbstractView {
 				grid.setReportedByFilter((UserRole) e.getProperty().getValue());
 			});
 			secondFilterRowLayout.addComponent(reportedByFilter);
+			
+			CheckBox casesWithoutGeoCoordsFilter = new CheckBox();
+			CssStyles.style(casesWithoutGeoCoordsFilter, CssStyles.CHECKBOX_FILTER_INLINE);
+			casesWithoutGeoCoordsFilter.setCaption("Only cases without geo coordinates");
+			casesWithoutGeoCoordsFilter.setDescription("Only list cases that don't have address or report geo coordinates");
+			casesWithoutGeoCoordsFilter.addValueChangeListener(e -> {
+				grid.setNoGeoCoordinatesFilter((boolean) e.getProperty().getValue());
+			});
+			secondFilterRowLayout.addComponent(casesWithoutGeoCoordsFilter);
 		}
 		filterLayout.addComponent(secondFilterRowLayout);
 		secondFilterRowLayout.setVisible(false);
@@ -301,8 +312,20 @@ public class CasesView extends AbstractView {
 					fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
 					toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
 				}
-				applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-				grid.setDateFilter(fromDate, toDate);
+				if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
+					applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
+					grid.setDateFilter(fromDate, toDate);
+				} else {
+					if (dateFilterOption == DateFilterOption.DATE) {
+						Notification notification = new Notification("Missing date filter", "Please fill in both date filter fields", Type.WARNING_MESSAGE, false);
+						notification.setDelayMsec(-1);
+						notification.show(Page.getCurrent());
+					} else {
+						Notification notification = new Notification("Missing epi week filter", "Please fill in both epi week filter fields", Type.WARNING_MESSAGE, false);
+						notification.setDelayMsec(-1);
+						notification.show(Page.getCurrent());
+					}
+				}
 			});
 		}
 		filterLayout.addComponent(dateFilterRowLayout);

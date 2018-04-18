@@ -23,4 +23,6 @@ public interface ConfigFacade {
 	
 	String getTempFilesPath();
 	
+	String getGeneratedFilesPath();
+	
 }

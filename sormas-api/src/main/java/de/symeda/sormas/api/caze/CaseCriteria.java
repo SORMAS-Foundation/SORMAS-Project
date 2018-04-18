@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -19,6 +20,8 @@ public class CaseCriteria implements Serializable {
 	private DistrictReferenceDto district;
 	private Date newCaseDateFrom;
 	private Date newCaseDateTo;
+	private PersonReferenceDto person;
+	private Boolean mustHaveNoGeoCoordinates;
 
 	public CaseCriteria reportingUserHasRole(UserRole reportingUserRole) {
 		this.reportingUserRole = reportingUserRole;
@@ -51,6 +54,16 @@ public class CaseCriteria implements Serializable {
 		return this;
 	}
 	
+	public CaseCriteria personEquals(PersonReferenceDto person) {
+		this.person = person;
+		return this;
+	}
+	
+	public CaseCriteria mustHaveNoGeoCoordinatesEquals(Boolean mustHaveNoGeoCoordinates) {
+		this.mustHaveNoGeoCoordinates = mustHaveNoGeoCoordinates;
+		return this;
+	}
+	
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
 	}
@@ -77,6 +90,14 @@ public class CaseCriteria implements Serializable {
 
 	public Date getNewCaseDateTo() {
 		return newCaseDateTo;
+	}
+
+	public PersonReferenceDto getPerson() {
+		return person;
+	}
+
+	public Boolean isMustHaveNoGeoCoordinates() {
+		return mustHaveNoGeoCoordinates;
 	}
 	
 }

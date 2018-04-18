@@ -183,6 +183,11 @@ public class CaseGrid extends Grid {
     	}
     }
 	
+	public void setNoGeoCoordinatesFilter(boolean showOnlyCasesWithoutGPSCoords) {
+		caseCriteria.mustHaveNoGeoCoordinatesEquals(showOnlyCasesWithoutGPSCoords);
+		reload();
+	}
+	
 	public void setDateFilter(Date fromDate, Date toDate) {
 		caseCriteria.newCaseDateBetween(fromDate, toDate);
 		reload();

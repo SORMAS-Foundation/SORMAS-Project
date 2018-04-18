@@ -14,7 +14,7 @@ public interface InfoFacadeRetro {
     Call<String> getVersion();
 
     @GET("info/appurl")
-    Call<String> getAppUrl();
+    Call<String> getAppUrl(@Query("appVersion") String appVersion);
 
     @GET("info/checkcompatibility")
     Call<CompatibilityCheckResponse> isCompatibleToApi(@Query("appVersion") String appVersion);

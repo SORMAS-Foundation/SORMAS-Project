@@ -142,6 +142,9 @@ public final class CssStyles {
 	public static final String LABEL_CONFIGURATION_SEVERITY_INDICATOR = "severity-indicator";
 	public static final String BADGE = "badge";
 	
+	// Checkbox styles
+	public static final String CHECKBOX_FILTER_INLINE = "filter-inline";
+	
 	/**
 	 * Example: <code>LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE)</code>
 	 */

@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.component;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
@@ -9,23 +8,20 @@ import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.databinding.EventParticipantNewFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.PersonSelectOrCreateFragmentLayoutBinding;
 import de.symeda.sormas.app.person.PersonSelectVO;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.util.Consumer;
 
@@ -36,7 +32,7 @@ public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
     final Consumer positiveCallback;
     final Person person;
 
-    public SelectOrCreatePersonDialogBuilder(final FragmentActivity activity, final Person person, final List<Person> existingPersons, final Consumer positiveCallback ) {
+    public SelectOrCreatePersonDialogBuilder(final FragmentActivity activity, final Person person, final List<PersonNameDto> existingPersons, final List<Person> similarPersons, final Consumer positiveCallback ) {
         super(activity);
 
         SormasApplication application = (SormasApplication) activity.getApplication();
@@ -58,14 +54,15 @@ public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List<Person> existingPersons = null;
-                // update person name from the fields
-                person.setFirstName(bindingPersonSelect.personFirstName.getValue());
-                person.setLastName(bindingPersonSelect.personLastName.getValue());
-
-                // search for existing person with this name
-                existingPersons = DatabaseHelper.getPersonDao().getAllByName(person.getFirstName(), person.getLastName());
-                updatePersonSelectRadioGroupField(person, existingPersons, dialogView);
+                List<Person> newSimilarPersons = new ArrayList<>();
+                for (PersonNameDto existingPerson : existingPersons) {
+                    if (PersonHelper.areNamesSimilar(bindingPersonSelect.personFirstName.getValue() + " " + bindingPersonSelect.personLastName.getValue(),
+                            existingPerson.getFirstName() + " " + existingPerson.getLastName())) {
+                        Person person = DatabaseHelper.getPersonDao().queryForId(existingPerson.getId());
+                        newSimilarPersons.add(person);
+                    }
+                }
+                updatePersonSelectRadioGroupField(person, newSimilarPersons, dialogView);
             }
         });
 
@@ -73,28 +70,28 @@ public class SelectOrCreatePersonDialogBuilder extends AlertDialog.Builder {
         this.setNegativeButton(activity.getResources().getString(R.string.action_create), null);
         this.setNeutralButton(activity.getResources().getString(R.string.action_cancel), null);
 
-        updatePersonSelectRadioGroupField(person, existingPersons, dialogView);
+        updatePersonSelectRadioGroupField(person, similarPersons, dialogView);
     }
 
-    private void updatePersonSelectRadioGroupField(Person person, List<Person> existingPersons, View dialogView) {
+    private void updatePersonSelectRadioGroupField(Person person, List<Person> similarPersons, View dialogView) {
         List<Item> items = new ArrayList<Item>();
-        for (Person existingPerson: existingPersons) {
+        for (Person similarPerson : similarPersons) {
             StringBuilder sb = new StringBuilder();
-            sb.append(existingPerson.toString());
-            sb.append(existingPerson.getSex()!=null || existingPerson.getApproximateAge()!=null || existingPerson.getPresentCondition()!=null
-                    || existingPerson.getBirthdateDD()!=null || existingPerson.getBirthdateMM()!=null || existingPerson.getBirthdateYYYY()!=null ? "<br />":"");
-            sb.append(existingPerson.getSex()!=null ? existingPerson.getSex():"");
-            sb.append(existingPerson.getBirthdateDD()!=null&&existingPerson.getBirthdateMM()!=null&&existingPerson.getBirthdateYYYY()!=null ? " | " +
-                    existingPerson.getBirthdateDD() + "/" + existingPerson.getBirthdateMM() + "/" + existingPerson.getBirthdateYYYY() : "");
-            sb.append(existingPerson.getApproximateAge()!=null ? " | " + existingPerson.getApproximateAge() + " " +existingPerson.getApproximateAgeType():"");
-            sb.append(existingPerson.getPresentCondition()!=null ? " | " +  existingPerson.getPresentCondition():"");
-            if (existingPerson.getAddress() != null) {
-                sb.append(existingPerson.getAddress().getDistrict() != null || existingPerson.getAddress().getCity() != null ? "<br />" : "");
-                sb.append(existingPerson.getAddress().getDistrict() != null ? existingPerson.getAddress().getCity() != null ? existingPerson.getAddress().getDistrict() + ", " +
-                        existingPerson.getAddress().getCity() : existingPerson.getAddress().getDistrict() :
-                        existingPerson.getAddress().getCity() != null ? existingPerson.getAddress().getCity() : "");
+            sb.append(similarPerson.toString());
+            sb.append(similarPerson.getSex()!=null || similarPerson.getApproximateAge()!=null || similarPerson.getPresentCondition()!=null
+                    || similarPerson.getBirthdateDD()!=null || similarPerson.getBirthdateMM()!=null || similarPerson.getBirthdateYYYY()!=null ? "<br />":"");
+            sb.append(similarPerson.getSex()!=null ? similarPerson.getSex():"");
+            sb.append(similarPerson.getBirthdateDD()!=null&&similarPerson.getBirthdateMM()!=null&&similarPerson.getBirthdateYYYY()!=null ? " | " +
+                    similarPerson.getBirthdateDD() + "/" + similarPerson.getBirthdateMM() + "/" + similarPerson.getBirthdateYYYY() : "");
+            sb.append(similarPerson.getApproximateAge()!=null ? " | " + similarPerson.getApproximateAge() + " " +similarPerson.getApproximateAgeType():"");
+            sb.append(similarPerson.getPresentCondition()!=null ? " | " +  similarPerson.getPresentCondition():"");
+            if (similarPerson.getAddress() != null) {
+                sb.append(similarPerson.getAddress().getDistrict() != null || similarPerson.getAddress().getCity() != null ? "<br />" : "");
+                sb.append(similarPerson.getAddress().getDistrict() != null ? similarPerson.getAddress().getCity() != null ? similarPerson.getAddress().getDistrict() + ", " +
+                        similarPerson.getAddress().getCity() : similarPerson.getAddress().getDistrict() :
+                        similarPerson.getAddress().getCity() != null ? similarPerson.getAddress().getCity() : "");
             }
-            items.add(new Item<Person>(Html.fromHtml(sb.toString()).toString(),existingPerson));
+            items.add(new Item<>(Html.fromHtml(sb.toString()).toString(),similarPerson));
         }
 
         final RadioGroupField radioGroupField = (RadioGroupField) dialogView.findViewById(R.id.personSelect_selectedPerson);

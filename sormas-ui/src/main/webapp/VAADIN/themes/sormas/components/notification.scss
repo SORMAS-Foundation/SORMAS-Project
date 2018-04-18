@@ -1,0 +1,12 @@
+
+@mixin sormas-notification {
+	
+	.v-Notification {
+		@include valo-notification-closable-style;
+		
+		&:after {
+			line-height: 16px;
+		}
+	}
+
+}

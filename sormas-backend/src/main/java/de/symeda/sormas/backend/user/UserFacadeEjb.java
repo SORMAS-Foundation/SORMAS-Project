@@ -235,10 +235,19 @@ public class UserFacadeEjb implements UserFacade {
 		return userService.isLoginUnique(uuid, userName);
 	}
 
-
 	@Override
 	public String resetPassword(String uuid) {
 		return userService.resetPassword(uuid);
+	}
+	
+	@Override
+	public UserDto getCurrentUser() {
+		return toDto(userService.getCurrentUser());
+	}
+	
+	@Override
+	public UserReferenceDto getCurrentUserAsReference() {
+		return new UserReferenceDto(userService.getCurrentUser().getUuid());
 	}
 	
 	@LocalBean

@@ -135,6 +135,11 @@ public class PersonEditForm extends FormTab {
         FieldHelper.initSpinnerField(binding.personPresentCondition, PresentCondition.class, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (binding.personPresentCondition.getValue() == PresentCondition.DEAD ||
+                        binding.personPresentCondition.getValue() == PresentCondition.BURIED) {
+                    binding.personCauseOfDeath.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
+                }
+
                 updateDeathAndBurialFields(disease);
             }
 
@@ -183,6 +188,9 @@ public class PersonEditForm extends FormTab {
         binding.personApproximate1Age.setInputType(InputType.TYPE_CLASS_NUMBER);
         binding.personPhone.setInputType(InputType.TYPE_CLASS_PHONE);
 
+        toggleCauseOfDeathFields(binding.personPresentCondition.getValue() != null &&
+                binding.personPresentCondition.getValue() != PresentCondition.ALIVE);
+
         binding.personCauseOfDeath.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
@@ -196,9 +204,6 @@ public class PersonEditForm extends FormTab {
                 toggleCauseOfDeathFields(true);
             }
         });
-
-        toggleCauseOfDeathFields(binding.personPresentCondition.getValue() != null &&
-                binding.personPresentCondition.getValue() != PresentCondition.ALIVE);
 
         PersonValidator.setRequiredHintsForPersonData(binding);
         binding.personPresentCondition.makeFieldSoftRequired();
@@ -450,11 +455,12 @@ public class PersonEditForm extends FormTab {
             binding.personCauseOfDeathDisease.setVisibility(View.GONE);
         } else {
             binding.personCauseOfDeath.setVisibility(View.VISIBLE);
-            if (binding.personCauseOfDeath.getValue() == null && disease != null) {
-                binding.personCauseOfDeath.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
-            }
 
             if (binding.personCauseOfDeath.getValue() == null) {
+                binding.personCauseOfDeathDisease.setValue(null);
+                binding.personCauseOfDeathDetails.setValue(null);
+                binding.getPerson().setCauseOfDeathDisease(null);
+                binding.getPerson().setCauseOfDeathDetails(null);
                 binding.personCauseOfDeathDetails.setVisibility(View.GONE);
                 binding.personCauseOfDeathDisease.setVisibility(View.GONE);
             } else if (binding.personCauseOfDeath.getValue() == CauseOfDeath.EPIDEMIC_DISEASE) {
@@ -471,6 +477,8 @@ public class PersonEditForm extends FormTab {
                     binding.personCauseOfDeathDetails.setValue(diseaseDetails);
                 }
             } else {
+                binding.personCauseOfDeathDisease.setValue(null);
+                binding.getPerson().setCauseOfDeathDisease(null);
                 binding.personCauseOfDeathDisease.setVisibility(View.GONE);
                 binding.personCauseOfDeathDetails.setVisibility(View.VISIBLE);
             }
@@ -483,6 +491,7 @@ public class PersonEditForm extends FormTab {
 
     @Override
     public AbstractDomainObject getData() {
+
         return binding == null ? null : binding.getPerson();
     }
 

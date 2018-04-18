@@ -81,9 +81,14 @@ public class AppUpdateController {
      *                         clicked the negative button
      */
     public void updateApp(final Activity activity, final String appUrl, final String version, boolean allowDismiss, final Callback negativeCallback) {
+        // don't do anything if there is already an actively displayed dialog
+        if (displayedDialog != null && displayedDialog.isShowing()) {
+            return;
+        }
+
         // retrieve the app version but returns the same value
-        if (appUrl == null || version == null) {
-            throw new IllegalArgumentException("This method may not be called with appUrl or version set to null.");
+        if (appUrl == null || appUrl.isEmpty() || version == null) {
+            throw new IllegalArgumentException("This method may not be called with appUrl or version set to null or an empty appUrl.");
         }
 
         // Check if the file is currently being downloaded
@@ -122,15 +127,15 @@ public class AppUpdateController {
     public void handleInstallFailure() {
         File file = new File(activity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName);
         if (!file.exists()) {
-            ConfirmationDialog installFailedDialog = buildInstallFailedDialog();
-            installFailedDialog.show();
+            displayedDialog = buildInstallFailedDialog();
+            displayedDialog.show();
             return;
         }
 
         boolean deleteOrRenameSuccessful = file.delete() || file.renameTo(new File("", fileName + "-incomplete"));
         if (deleteOrRenameSuccessful) {
-            ConfirmationDialog installFailedDialog = buildInstallFailedDialog();
-            installFailedDialog.show();
+            displayedDialog = buildInstallFailedDialog();
+            displayedDialog.show();
         } else {
             tracker.send(new HitBuilders.EventBuilder()
                     .setCategory("App Update Error")
@@ -138,8 +143,8 @@ public class AppUpdateController {
                     .setLabel("Failed to delete or rename an incompletely downloaded apk for user: " + ConfigProvider.getUser().getUuid())
                     .build());
 
-            ConfirmationDialog installNotPossibleDialog = buildInstallNotPossibleDialog();
-            installNotPossibleDialog.show();
+            displayedDialog = buildInstallNotPossibleDialog();
+            displayedDialog.show();
         }
     }
 
@@ -281,8 +286,8 @@ public class AppUpdateController {
                 // Check if the download has been successful
                 File file = new File(activity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName);
                 if (!file.exists()) {
-                    ConfirmationDialog downloadFailedDialog = buildDownloadFailedDialog();
-                    downloadFailedDialog.show();
+                    displayedDialog = buildDownloadFailedDialog();
+                    displayedDialog.show();
                     return;
                 }
                 // If progressDialog is null, the download has been completed in the background
@@ -290,8 +295,8 @@ public class AppUpdateController {
                 if (progressDialog != null) {
                     progressDialog.dismiss();
                     progressDialog = null;
-                    ConfirmationDialog installAppDialog = buildInstallAppDialog();
-                    installAppDialog.show();
+                    displayedDialog = buildInstallAppDialog();
+                    displayedDialog.show();
                 }
             }
         }
@@ -300,8 +305,8 @@ public class AppUpdateController {
     private void installApp() {
         File file = new File(activity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName);
         if (!file.exists()) {
-            ConfirmationDialog installFailedDialog = buildInstallFailedDialog();
-            installFailedDialog.show();
+            displayedDialog = buildInstallFailedDialog();
+            displayedDialog.show();
             return;
         }
 

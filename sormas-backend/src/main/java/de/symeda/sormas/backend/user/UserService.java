@@ -3,7 +3,9 @@ package de.symeda.sormas.backend.user;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.ejb.LocalBean;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -26,6 +28,9 @@ import de.symeda.sormas.backend.util.PasswordHelper;
 @Stateless
 @LocalBean
 public class UserService extends AbstractAdoService<User> {
+
+	@Resource
+	private SessionContext sessionContext;
 	
 	public UserService() {
 		super(User.class);
@@ -156,6 +161,10 @@ public class UserService extends AbstractAdoService<User> {
 		ensurePersisted(user);
 
 		return password;
+	}
+	
+	public User getCurrentUser() {
+		return getByUserName(sessionContext.getCallerPrincipal().getName());
 	}
 
 	@Override

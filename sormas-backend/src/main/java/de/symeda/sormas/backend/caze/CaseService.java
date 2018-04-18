@@ -1,15 +1,15 @@
 package de.symeda.sormas.backend.caze;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -23,14 +23,12 @@ import javax.persistence.criteria.Subquery;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
-import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.StatisticsCaseDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -60,9 +58,6 @@ import de.symeda.sormas.backend.user.UserService;
 @LocalBean
 public class CaseService extends AbstractAdoService<Case> {
 
-	@Resource
-	private SessionContext sessionContext;
-	
 	@EJB
 	ContactService contactService;
 	@EJB
@@ -89,25 +84,22 @@ public class CaseService extends AbstractAdoService<Case> {
 		return caze;
 	}
 	
-	public Case createCase() {
-		Case caze = new Case();
-    	caze.setUuid(DataHelper.createUuid());
-    	
-    	caze.setInvestigationStatus(InvestigationStatus.PENDING);
-    	caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
-    	caze.setOutcome(CaseOutcome.NO_OUTCOME);
-    	
-    	caze.setPerson(personService.createPerson());
-    	caze.setHospitalization(hospitalizationService.createHospitalization());
-    	caze.setEpiData(epiDataService.createEpiData());
-    	
-    	caze.setReportDate(new Date());
-    	User user = userService.getByUserName(sessionContext.getCallerPrincipal().getName());
-    	caze.setReportingUser(user);
-    	
-    	return caze;
-	}
+	public List<Case> findBy(CaseCriteria caseCriteria) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
+		Root<Case> from = cq.from(getElementClass());
 
+		Predicate filter = buildCriteriaFilter(caseCriteria, cb, from);
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.asc(from.get(Case.CREATION_DATE)));
+
+		List<Case> resultList = em.createQuery(cq).getResultList();
+		return resultList;	
+	}
+	
 	public List<Case> getAllByDisease(Disease disease, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
@@ -229,7 +221,8 @@ public class CaseService extends AbstractAdoService<Case> {
 					caze.get(Case.CASE_CLASSIFICATION),
 					caze.get(Case.DISEASE),
 					caze.get(Case.INVESTIGATION_STATUS),
-					person.get(Person.PRESENT_CONDITION)
+					person.get(Person.PRESENT_CONDITION),
+					person.get(Person.CAUSE_OF_DEATH_DISEASE)
 					);
 
 			result = em.createQuery(cq).getResultList();
@@ -420,6 +413,39 @@ public class CaseService extends AbstractAdoService<Case> {
 				Collectors.toMap(e -> (PresentCondition) e[0], e -> (Long) e[1]));
 		return resultMap;
 	}
+	
+	public Case getLatestCaseByPerson(Person person, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
+		Root<Case> caze = cq.from(Case.class);
+
+		Predicate filter = createUserFilter(cb, cq, caze, user);
+		Predicate personFilter = cb.equal(caze.get(Case.PERSON), person);
+		if (filter != null) {
+			filter = cb.and(filter, personFilter);
+		} else {
+			filter = personFilter;
+		}
+		cq.where(filter);
+
+		List<Case> cases = em.createQuery(cq).getResultList();
+		Optional<Case> latestCase = cases.stream()
+				.sorted(new Comparator<Case> () {
+					@Override
+					public int compare(Case o1, Case o2) {
+						if (CaseLogic.getStartDate(o1.getSymptoms().getOnsetDate(), o1.getReceptionDate(), o1.getReportDate()).after(CaseLogic.getStartDate(o2.getSymptoms().getOnsetDate(), o2.getReceptionDate(), o2.getReportDate()))) {
+							return -1;
+						}
+						if (CaseLogic.getStartDate(o2.getSymptoms().getOnsetDate(), o2.getReceptionDate(), o2.getReportDate()).after(CaseLogic.getStartDate(o1.getSymptoms().getOnsetDate(), o1.getReceptionDate(), o1.getReportDate()))) {
+							return 1;
+						}
+						return 0;
+					}
+				})
+				.findFirst();
+		
+		return latestCase.isPresent() ? latestCase.get() : null;
+	}
 
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
@@ -585,6 +611,7 @@ public class CaseService extends AbstractAdoService<Case> {
 	
 	public Predicate buildCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, Root<Case> from) {
 		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
+		Join<Person, Location> personAddress = person.join(Person.ADDRESS, JoinType.LEFT);
 		Join<Case, Region> region = from.join(Case.REGION, JoinType.LEFT);
 		Join<Case, District> district = from.join(Case.DISTRICT, JoinType.LEFT);
 		Predicate filter = null;
@@ -607,6 +634,21 @@ public class CaseService extends AbstractAdoService<Case> {
 		}
 		if (caseCriteria.getNewCaseDateFrom() != null && caseCriteria.getNewCaseDateTo() != null) {
 			filter = and(cb, filter, createNewCaseFilter(cb, from, caseCriteria.getNewCaseDateFrom(), caseCriteria.getNewCaseDateTo()));
+		}
+		if (caseCriteria.getPerson() != null) {
+			filter = and(cb, filter, cb.equal(from.join(Case.PERSON, JoinType.LEFT).get(Person.UUID), caseCriteria.getPerson().getUuid()));
+		}
+		if (caseCriteria.isMustHaveNoGeoCoordinates() != null && caseCriteria.isMustHaveNoGeoCoordinates() == true) {
+			filter = and(cb, filter, 
+					cb.and(
+						cb.or(
+								cb.isNull(from.get(Case.REPORT_LAT)), 
+								cb.isNull(from.get(Case.REPORT_LON))), 
+						cb.or(
+								cb.isNull(personAddress.get(Location.LATITUDE)), 
+								cb.isNull(personAddress.get(Location.LONGITUDE)))
+						)
+					);
 		}
 		return filter;
 	}

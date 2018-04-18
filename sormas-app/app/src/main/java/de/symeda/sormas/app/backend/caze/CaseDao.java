@@ -250,6 +250,21 @@ public class CaseDao extends AbstractAdoDao<Case> {
     @Override
     public Case mergeOrCreate(Case source) throws DaoException {
         Case currentCase = queryUuid(source.getUuid());
+
+        // date of outcome can be set by the server site automatically and at the same time in the app
+        // see CaseEditActivity.updateOutcomeAndPersonCondition
+        if (currentCase != null && currentCase.isModified()
+                && currentCase.getOutcomeDate() != null
+                && source.getOutcomeDate() != null
+                && currentCase.getOutcomeDate() != source.getOutcomeDate()) {
+            // this could be the situation, but we also have to check the snapshot - the outcome date has to be null
+            Case snapshotCase = querySnapshotByUuid(source.getUuid());
+            if (snapshotCase != null && snapshotCase.getOutcomeDate() == null) {
+                // we now have to ignore the conflict -> the outcome date of the app always wins
+                source.setOutcomeDate(currentCase.getOutcomeDate());
+            }
+        }
+
         Case mergedCase = super.mergeOrCreate(source);
 
         // Build and send a notification when the disease has changed

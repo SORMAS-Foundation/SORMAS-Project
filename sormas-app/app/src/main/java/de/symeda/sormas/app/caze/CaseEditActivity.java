@@ -19,12 +19,15 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.AbstractEditTabActivity;
@@ -496,7 +499,6 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
         try {
             if (person != null) {
-                personDao.saveAndSnapshot(person);
                 caze.setPerson(person); // we have to set this - otherwise data from the person will be overridden with not fully initialized data
             }
             if (symptoms != null) {
@@ -507,6 +509,15 @@ public class CaseEditActivity extends AbstractEditTabActivity {
             }
             if (epiData != null) {
                 caze.setEpiData(epiData);
+            }
+
+            if (caze.getId() != null) {
+                Case existingCase = DatabaseHelper.getCaseDao().queryForId(caze.getId());
+                updateOutcomeAndPersonCondition(existingCase, caze);
+            }
+
+            if (person != null) {
+                DatabaseHelper.getPersonDao().saveAndSnapshot(person);
             }
             DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
 
@@ -523,6 +534,45 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         }
     }
 
+    private void updateOutcomeAndPersonCondition(Case existingCase, Case newCase) {
+
+        if (existingCase != null) {
+            // see CaseFacadeEjb.onCaseChanged
+            if (newCase.getOutcome() != existingCase.getOutcome()) {
+                if (newCase.getOutcome() == CaseOutcome.DECEASED) {
+                    if (newCase.getPerson().getPresentCondition() != PresentCondition.DEAD
+                            && newCase.getPerson().getPresentCondition() != PresentCondition.BURIED) {
+                        newCase.getPerson().setPresentCondition(PresentCondition.DEAD);
+                    }
+                }
+                else if (newCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
+                    if (newCase.getPerson().getPresentCondition() != PresentCondition.ALIVE) {
+                        newCase.getPerson().setPresentCondition(PresentCondition.ALIVE);
+                    }
+                }
+            }
+
+            // see PersonFacadeEjb.onPersonChanged
+            Person existingPerson = existingCase.getPerson();
+            Person newPerson = newCase.getPerson();
+            if (newPerson.getPresentCondition() != null
+                    && existingPerson.getPresentCondition() != newPerson.getPresentCondition()) {
+                if (newPerson.getPresentCondition().isDeceased()) {
+                    if (newCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
+                        newCase.setOutcome(CaseOutcome.DECEASED);
+                        newCase.setOutcomeDate(new Date());
+                    }
+                } else {
+                    if (newCase.getOutcome() == CaseOutcome.DECEASED) {
+                        newCase.setOutcome(CaseOutcome.NO_OUTCOME);
+                        newCase.setOutcomeDate(null);
+                    }
+                }
+            }
+        }
+    }
+
+
     private void finalizeSaveProcess(Case caze, Case caseBeforeSaving) {
         Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();
 
@@ -533,10 +583,17 @@ public class CaseEditActivity extends AbstractEditTabActivity {
             pager.setCurrentItem(currentTab);
         }
 
-        // reset adapter for Plague cases to make sure that the Contact tab is displayed or hidden correctly
+        // TODO #558 can be removed when new tab-less UI is done
+        // reset adapter?
         Case savedCase = DatabaseHelper.getCaseDao().queryUuid(caze.getUuid());
-        if (savedCase.getDisease() == Disease.PLAGUE && caseBeforeSaving.getPlagueType() != savedCase.getPlagueType() &&
-                (caseBeforeSaving.getPlagueType() == PlagueType.PNEUMONIC || savedCase.getPlagueType() == PlagueType.PNEUMONIC)) {
+        boolean needsRefresh = false;
+        // for Plague cases to make sure that the Contact tab is displayed or hidden correctly
+        needsRefresh |= savedCase.getDisease() == Disease.PLAGUE && caseBeforeSaving.getPlagueType() != savedCase.getPlagueType() &&
+                (caseBeforeSaving.getPlagueType() == PlagueType.PNEUMONIC || savedCase.getPlagueType() == PlagueType.PNEUMONIC);
+        // when outcome has changed
+        needsRefresh |= savedCase.getOutcome() != caseBeforeSaving.getOutcome();
+
+        if (needsRefresh) {
             setAdapter(savedCase);
         }
     }

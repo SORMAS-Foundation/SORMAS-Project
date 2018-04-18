@@ -15,14 +15,16 @@ import android.view.MenuItem;
 
 import com.google.android.gms.analytics.Tracker;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.event.EventParticipantDao;
@@ -119,10 +121,18 @@ public class EventParticipantNewActivity extends AppCompatActivity {
                 }
 
                 try {
-                    List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(eventParticipant.getPerson().getFirstName(), eventParticipant.getPerson().getLastName());
-                    if (existingPersons.size() > 0) {
+                    List<PersonNameDto> existingPersons = DatabaseHelper.getPersonDao().getPersonNameDtos();
+                    List<Person> similarPersons = new ArrayList<>();
+                    for (PersonNameDto existingPerson : existingPersons) {
+                        if (PersonHelper.areNamesSimilar(eventParticipant.getPerson().getFirstName() + " " + eventParticipant.getPerson().getLastName(),
+                                existingPerson.getFirstName() + " " + existingPerson.getLastName())) {
+                            Person person = DatabaseHelper.getPersonDao().queryForId(existingPerson.getId());
+                            similarPersons.add(person);
+                        }
+                    }
 
-                        AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, eventParticipant.getPerson(), existingPersons, new Consumer() {
+                    if (similarPersons.size() > 0) {
+                        AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, eventParticipant.getPerson(), existingPersons, similarPersons, new Consumer() {
                             @Override
                             public void accept(Object parameter) {
                                 if (parameter instanceof Person) {

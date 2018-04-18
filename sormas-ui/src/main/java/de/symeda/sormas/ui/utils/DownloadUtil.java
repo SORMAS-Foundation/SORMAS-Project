@@ -63,7 +63,7 @@ public class DownloadUtil {
 	}
 
 	@SuppressWarnings("serial")
-	public static StreamResource createStreamResource(String filePath, String fileName, String mimeType, String errorTitle, String errorText) {
+	public static StreamResource createFileStreamResource(String filePath, String fileName, String mimeType, String errorTitle, String errorText) {
 		StreamResource streamResource = new StreamResource(new StreamSource() {
 			@Override
 			public InputStream getStream() {

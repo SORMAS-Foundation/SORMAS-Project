@@ -25,6 +25,7 @@ All commands mentioned are linux commands.
 #### Version specifics
 * 0.15.0: update the glassfish config with the new apk filename: sormas-release.apk
 * 0.16.0: update the glassfish config with the export path, SMS sender name, auth key and secret
+* 0.19.0: update the glassfish config with the generated files path
 
 #### Maintainance Mode
 * a2dissite your.sormas.server.url.conf

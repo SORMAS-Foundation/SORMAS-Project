@@ -151,12 +151,16 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		return facilities;
 	}
 
-	public List<Facility> getByName(String name, District district, Community community) {
+	public List<Facility> getHealthFacilitiesByName(String name, District district, Community community) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 		
 		Predicate filter = cb.equal(from.get(Facility.NAME), name);
+		// Additional null check is required because notEqual returns true if one of the values is null
+		filter = cb.and(filter, cb.or(
+						cb.isNull(from.get(Facility.TYPE)),
+						cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY)));
 		if (community != null) {
 			filter = cb.and(filter, cb.equal(from.get(Facility.COMMUNITY), community));
 		} else if (district != null) {

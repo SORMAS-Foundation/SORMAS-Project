@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.*;
 import android.widget.ArrayAdapter;
@@ -224,7 +225,10 @@ public class SpinnerField extends PropertyField<Object> implements SpinnerFieldI
 
     private void setSelectedItem(Object selectedItem) {
         if (selectedItem == null) {
-            spinnerElement.setSelection(-1);
+            SpinnerAdapter adapter = spinnerElement.getAdapter();
+            spinnerElement.setAdapter(null);
+            spinnerElement.setSelection(Spinner.INVALID_POSITION);
+            spinnerElement.setAdapter(adapter);
         } else {
             for (int i = 0; i < spinnerElement.getAdapter().getCount(); i++) {
                 if (selectedItem.equals(((Item) spinnerElement.getAdapter().getItem(i)).getValue())) {

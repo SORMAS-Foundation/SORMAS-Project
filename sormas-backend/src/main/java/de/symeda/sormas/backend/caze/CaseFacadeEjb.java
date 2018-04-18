@@ -35,6 +35,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -42,6 +43,8 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.StatisticsCaseDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.person.CauseOfDeath;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
@@ -112,7 +115,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
-	
+
 	@EJB
 	private CaseService caseService;
 	@EJB
@@ -261,21 +264,29 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		return caseService.getCasesForStatistics(region, district, disease, from, to, user);
 	}
-	
+
+	@Override
+	public CaseDataDto getLatestCaseByPerson(String personUuid, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		Person person = personService.getByUuid(personUuid);
+
+		return toDto(caseService.getLatestCaseByPerson(person, user));
+	}
+
 	@Override
 	public Map<CaseClassification, Long> getNewCaseCountPerClassification(CaseCriteria caseCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+
 		return caseService.getNewCaseCountPerClassification(caseCriteria, user);
 	}
 
 	@Override
 	public Map<PresentCondition, Long> getNewCaseCountPerPersonCondition(CaseCriteria caseCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+
 		return caseService.getNewCaseCountPerPersonCondition(caseCriteria, user);
 	}
-	
+
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
 		return toDto(caseService.getByUuid(uuid));
@@ -288,12 +299,13 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException {
-		CaseDataDto existingCase = toDto(caseService.getByUuid(dto.getUuid()));
+		Case caze = caseService.getByUuid(dto.getUuid());
+		CaseDataDto existingCaseDto = toDto(caseService.getByUuid(dto.getUuid()));
 
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
-		Case caze = fromDto(dto);
-		
+		caze = fillOrBuildEntity(dto, caze);
+
 		// Check whether any required field that does not have a not null constraint in the database is empty
 		if (caze.getRegion() == null) {
 			throw new ValidationRuntimeException("You have to specify a valid region");
@@ -323,10 +335,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caze.getHealthFacility().getRegion() != null && !caze.getRegion().equals(caze.getHealthFacility().getRegion())) {
 			throw new ValidationRuntimeException("Could not find a database entry for the specified health facility in the specified region");
 		}
+		if (caze.getHealthFacility().getRegion() != null && !caze.getRegion().equals(caze.getHealthFacility().getRegion())) {
+			throw new ValidationRuntimeException("Could not find a database entry for the specified health facility in the specified region");
+		}
 		
 		caseService.ensurePersisted(caze);
 
-		onCaseChanged(existingCase, caze);
+		onCaseChanged(existingCaseDto, caze);
 
 		return toDto(caze);
 	}
@@ -334,8 +349,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	/**
 	 * Handles potential changes, processes and backend logic that needs to be done after a case has been created/saved
 	 */
-	private void onCaseChanged(CaseDataDto existingCase, Case newCase) {
-		
+	public void onCaseChanged(CaseDataDto existingCase, Case newCase) {
+
 		// If the case is new and the geo coordinates of the case's health facility are null, set its coordinates to the
 		// case's report coordinates, if available
 		Facility facility = newCase.getHealthFacility();
@@ -347,16 +362,19 @@ public class CaseFacadeEjb implements CaseFacade {
 				facilityService.ensurePersisted(facility);
 			}
 		}
-		
+
+		// update the plague type based on symptoms
 		if (newCase.getDisease() == Disease.PLAGUE) {
 			PlagueType plagueType = DiseaseHelper.getPlagueTypeForSymptoms(SymptomsFacadeEjb.toDto(newCase.getSymptoms()));
 			if (plagueType != newCase.getPlagueType() && plagueType != null) {
 				newCase.setPlagueType(plagueType);
 			}
-		}		
+		}
 
 		updateInvestigationByStatus(existingCase, newCase);
-	
+		
+		updatePersonAndCaseByOutcome(existingCase, newCase);
+
 		// Send an email to all responsible supervisors when the case classification has changed
 		if (existingCase != null && existingCase.getCaseClassification() != newCase.getCaseClassification()) {
 			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(newCase.getRegion(), 
@@ -372,7 +390,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 			}
 		}
-	
+
 		if (existingCase == null 
 				|| newCase.getDisease() != existingCase.getDisease()
 				|| newCase.getReportDate() != existingCase.getReportDate()
@@ -395,17 +413,50 @@ public class CaseFacadeEjb implements CaseFacade {
 				eventParticipantService.udpateResultingCase(eventParticipant);
 			}
 		}
-		
+
 		// Create a task to search for other cases for new Plague cases
 		if (existingCase == null && newCase.getDisease() == Disease.PLAGUE) {
 			createActiveSearchForOtherCasesTask(newCase);
 		}
 	}
 
+	private void updatePersonAndCaseByOutcome(CaseDataDto existingCase, Case newCase) {
+
+		if (existingCase != null && newCase.getOutcome() != existingCase.getOutcome()) {
+
+			if (newCase.getOutcome() == null || newCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
+				newCase.setOutcomeDate(null);
+			} else if (newCase.getOutcomeDate() == null) {
+				newCase.setOutcomeDate(new Date());
+			}
+			
+			if (newCase.getOutcome() == CaseOutcome.DECEASED) {
+				if (newCase.getPerson().getPresentCondition() != PresentCondition.DEAD
+						&& newCase.getPerson().getPresentCondition() != PresentCondition.BURIED) {
+					PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
+					newCase.getPerson().setPresentCondition(PresentCondition.DEAD);
+					newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
+					newCase.getPerson().setCauseOfDeath(CauseOfDeath.EPIDEMIC_DISEASE);
+					newCase.getPerson().setCauseOfDeathDisease(newCase.getDisease());
+					// attention: this may lead to infinite recursion when not properly implemented
+					personFacade.onPersonChanged(existingPerson, newCase.getPerson());
+				}
+			}
+			else if (newCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
+				if (newCase.getPerson().getPresentCondition() != PresentCondition.ALIVE) {
+					PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
+					newCase.getPerson().setPresentCondition(PresentCondition.ALIVE);
+					// attention: this may lead to infinite recursion when not properly implemented
+					personFacade.onPersonChanged(existingPerson, newCase.getPerson());
+				}
+			}
+		}
+	}
+
 	@Override
 	public CaseDataDto transferCase(CaseReferenceDto cazeRef, CommunityReferenceDto communityDto, FacilityReferenceDto facilityDto, String facilityDetails,
 			UserReferenceDto officerDto) {
-		Case caze = fromDto(getCaseDataByUuid(cazeRef.getUuid()));
+		Case caze = fillOrBuildEntity(getCaseDataByUuid(cazeRef.getUuid()), caseService.getByUuid(cazeRef.getUuid()));
 
 		Community community = communityDto != null ? communityService.getByUuid(communityDto.getUuid()) : null;
 		Facility facility = facilityService.getByUuid(facilityDto.getUuid());
@@ -486,15 +537,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		caseService.delete(caze);
 	}
 
-	public Case fromDto(@NotNull CaseDataDto source) {
+	public Case fillOrBuildEntity(@NotNull CaseDataDto source, Case target) {
 
-		Case target = caseService.getByUuid(source.getUuid());
 		if (target == null) {
 			target = new Case();
 			target.setUuid(source.getUuid());
 			target.setReportDate(new Date());
 			// TODO set target.setReportingUser(user); from sesssion context
 		}
+		
 		DtoHelper.validateDto(source, target);
 
 		target.setDisease(source.getDisease());
@@ -619,7 +670,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				task.setTaskStatus(TaskStatus.REMOVED);
 				task.setStatusChangeDate(new Date());
 			}
-			
+
 			if (caze.getInvestigationStatus() == InvestigationStatus.DONE 
 					&& existingCase.getInvestigationStatus() != InvestigationStatus.DONE) {
 				sendInvestigationDoneNotifications(caze);
@@ -829,7 +880,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			return resultList;
 		}
 	}
-	
+
 	private void sendInvestigationDoneNotifications(Case caze) {
 		List<User> messageRecipients = userService.getAllByRegionAndUserRoles(caze.getRegion(), 
 				UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
@@ -844,7 +895,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 	}
-	
+
 	@LocalBean
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {

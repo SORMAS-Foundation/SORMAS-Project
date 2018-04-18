@@ -8,6 +8,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,6 +33,9 @@ import org.slf4j.LoggerFactory;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
@@ -94,16 +99,15 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final Logger logger = LoggerFactory.getLogger(ImportFacadeEjb.class);
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
-	private static final String SORMAS_IMPORT_GUIDE_FILE_NAME = ImportExportUtils.FILE_PREFIX.toUpperCase() + "_Import_Guide.pdf";
 	private static final String ERROR_COLUMN_NAME = "Error description";
 	
 	@Override
 	public void generateCaseImportTemplateFile() throws IOException {				
 		// Create the export directory if it doesn't exist
 		try {	
-			Files.createDirectories(Paths.get(configFacade.getTempFilesPath()));
+			Files.createDirectories(Paths.get(configFacade.getGeneratedFilesPath()));
 		} catch (IOException e) {
-			logger.error("Temp directory doesn't exist and creation failed.");
+			logger.error("Generated files directory doesn't exist and creation failed.");
 			throw e;
 		}
 
@@ -123,18 +127,28 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	@Override
 	public String getCaseImportTemplateFilePath() {
-		Path exportDirectory = Paths.get(configFacade.getTempFilesPath());
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		Path filePath = exportDirectory.resolve(CASE_IMPORT_TEMPLATE_FILE_NAME);
 		return filePath.toString();
 	}
 	
-	@Override
-	public String getSormasImportGuideFilePath() {
-		Path exportDirectory = Paths.get(configFacade.getTempFilesPath());
-		Path filePath = exportDirectory.resolve(SORMAS_IMPORT_GUIDE_FILE_NAME);
-		return filePath.toString();
+	private Case buildCase() {
+		Case caze = new Case();
+    	caze.setUuid(DataHelper.createUuid());
+    	
+    	caze.setInvestigationStatus(InvestigationStatus.PENDING);
+    	caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+    	caze.setOutcome(CaseOutcome.NO_OUTCOME);
+    	
+    	caze.setPerson(personService.createPerson());
+    	
+    	caze.setReportDate(new Date());
+    	User user = userService.getCurrentUser();
+    	caze.setReportingUser(user);
+    	
+    	return caze;
 	}
-
+	
 	@Override
 	public String importCasesFromCsvFile(String csvFilePath, String userUuid) throws IOException, InvalidColumnException {
 		File file = new File(csvFilePath);
@@ -142,34 +156,52 @@ public class ImportFacadeEjb implements ImportFacade {
 			throw new FileNotFoundException("Cases .csv file does not exist");
 		}
 
-		CSVReader reader = CSVUtils.createCSVReader(new FileReader(csvFilePath));
+		// Generate the error report file
+		Path exportDirectory = Paths.get(configFacade.getTempFilesPath());
+		Path errorReportFilePath = exportDirectory.resolve(ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" + DataHelper.getShortUuid(userUuid) + "_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+		// If the error report file already exists, delete it
+		File errorReportFile = new File(errorReportFilePath.toString());
+		if (errorReportFile.exists()) {
+			errorReportFile.delete();
+		}
+		
+		boolean hasImportError = importCasesFromCsvFile(new FileReader(csvFilePath), new FileWriter(errorReportFilePath.toString(), true), userUuid);
+		return hasImportError ? errorReportFilePath.toString() : null;
+	}
+
+	@Override
+	public boolean importCasesFromCsvFile(Reader reader, Writer errorReportwriter, String userUuid) throws IOException, InvalidColumnException {
+		CSVReader csvReader = CSVUtils.createCSVReader(reader);
+		CSVWriter errorReportCsvWriter = CSVUtils.createCSVWriter(errorReportwriter);
 
 		// Build dictionary of column paths
-		String[] headersLine = reader.readNext();
+		String[] headersLine = csvReader.readNext();
 		List<String[]> headers = new ArrayList<>();
 		for (String header : headersLine) {
 			String[] headerPath = header.split("\\.");
 			headers.add(headerPath);
 		}
-
-		// Create error report file
-		Path exportDirectory = Paths.get(configFacade.getTempFilesPath());
-		Path errorReportFilePath = exportDirectory.resolve(ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" + DataHelper.getShortUuid(userUuid) + "_" + DateHelper.formatDateForExport(new Date()) + ".csv");
-		generateCaseErrorReportFile(headersLine, errorReportFilePath.toString());
-		CSVWriter errorReportWriter = CSVUtils.createCSVWriter(new FileWriter(errorReportFilePath.toString(), true));
-
+		
+		// Write first line to the error report writer
+		List<String> columnNames = new ArrayList<>();
+		columnNames.add(ERROR_COLUMN_NAME);
+		for (String column : headersLine) {
+			columnNames.add(column);
+		}
+		errorReportCsvWriter.writeNext(columnNames.toArray(new String[columnNames.size()]));
+		
 		// Create a new case for each line in the .csv file
 		String[] nextLine;
 		boolean hasImportError = false;
-		while ((nextLine = reader.readNext()) != null) {
+		while ((nextLine = csvReader.readNext()) != null) {
 			// Check whether the new line has the same length as the header line
 			if (nextLine.length > headersLine.length) {
 				hasImportError = true;
-				writeImportErrorToFile(errorReportWriter, nextLine, "This line is longer than the header line.");
+				writeImportError(errorReportCsvWriter, nextLine, "This line is longer than the header line.");
 				continue;
 			}
 
-			Case newCase = caseService.createCase();
+			Case newCase = buildCase();
 			boolean caseHasImportError = false;
 			for (int i = 0; i < nextLine.length; i++) {
 				String entry = nextLine[i];
@@ -188,12 +220,12 @@ public class ImportFacadeEjb implements ImportFacade {
 				} catch (ImportErrorException e) {
 					hasImportError = true;
 					caseHasImportError = true;
-					writeImportErrorToFile(errorReportWriter, nextLine, e.getMessage());
+					writeImportError(errorReportCsvWriter, nextLine, e.getMessage());
 					break;
 				} catch (InvalidColumnException e) {
-					reader.close();
-					errorReportWriter.flush();
-					errorReportWriter.close();
+					csvReader.close();
+					errorReportCsvWriter.flush();
+					errorReportCsvWriter.close();
 					throw e;
 				}
 			}
@@ -205,16 +237,16 @@ public class ImportFacadeEjb implements ImportFacade {
 					caseFacade.saveCase(CaseFacadeEjbLocal.toDto(newCase));
 				} catch (ValidationRuntimeException e) {
 					hasImportError = true;
-					writeImportErrorToFile(errorReportWriter, nextLine, e.getMessage());
+					writeImportError(errorReportCsvWriter, nextLine, e.getMessage());
 					continue;
 				}
 			}
 		}
 
-		reader.close();
-		errorReportWriter.flush();
-		errorReportWriter.close();
-		return hasImportError ? errorReportFilePath.toString() : null;
+		csvReader.close();
+		errorReportCsvWriter.flush();
+		errorReportCsvWriter.close();
+		return hasImportError;
 	}
 	
 	@SuppressWarnings({"unchecked", "rawtypes"})
@@ -252,7 +284,7 @@ public class ImportFacadeEjb implements ImportFacade {
 					} else if (propertyType.isAssignableFrom(District.class)) {
 						List<District> district = districtService.getByName(entry, caze.getRegion());
 						if (district.isEmpty()) {
-							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database");
+							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database or in the specified region");
 						} else if (district.size() > 1) {
 							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; District name is not unique in the chosen region, make sure there is only one district with this name belonging to the chosen region in the database");
 						} else {
@@ -261,16 +293,16 @@ public class ImportFacadeEjb implements ImportFacade {
 					} else if (propertyType.isAssignableFrom(Community.class)) {
 						List<Community> community = communityService.getByName(entry, caze.getDistrict());
 						if (community.isEmpty()) {
-							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database");
+							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database or in the specified district");
 						} else if (community.size() > 1) {
 							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Community name is not unique in the chosen district, make sure there is only one community with this name belonging to the chosen district in the database");
 						} else {
 							pd.getWriteMethod().invoke(currentElement, community.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(Facility.class)) {
-						List<Facility> facility = facilityService.getByName(entry, caze.getDistrict(), caze.getCommunity());
+						List<Facility> facility = facilityService.getHealthFacilitiesByName(entry, caze.getDistrict(), caze.getCommunity());
 						if (facility.isEmpty()) {
-							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database");
+							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Entry does not exist in the database or in the specified " + (caze.getCommunity() == null ? "district" : "community"));
 						} else if (facility.size() > 1 && caze.getCommunity() == null) {
 							throw new ImportErrorException("Invalid value \"" + entry + "\" in column " + buildHeaderPathString(entryHeaderPath) + "; Facility name is not unique in the chosen district, make sure there is only one facility with this name belonging to the chosen district in the database or specify a community");
 						} else if (facility.size() > 1 && caze.getCommunity() != null) {
@@ -320,7 +352,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		return sb.toString();
 	}
 
-	private void writeImportErrorToFile(CSVWriter errorReportWriter, String[] nextLine, String message) throws IOException {
+	private void writeImportError(CSVWriter errorReportWriter, String[] nextLine, String message) throws IOException {
 		List<String> nextLineAsList = new ArrayList<>();
 		nextLineAsList.add(message);
 		nextLineAsList.addAll(Arrays.asList(nextLine));
@@ -361,25 +393,6 @@ public class ImportFacadeEjb implements ImportFacade {
 				}
 			}
 		}
-	}
-
-	private void generateCaseErrorReportFile(String[] columns, String filePath) throws IOException {
-		List<String> columnNames = new ArrayList<>();
-		columnNames.add(ERROR_COLUMN_NAME);
-		for (String column : columns) {
-			columnNames.add(column);
-		}
-
-		// If the file already exists, delete it
-		File errorReportFile = new File(filePath);
-		if (errorReportFile.exists()) {
-			errorReportFile.delete();
-		}
-
-		CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath));
-		writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
-		writer.flush();
-		writer.close();
 	}
 	
 	private boolean isInfrastructureClass(Class<?> clazz) {

@@ -14,6 +14,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -128,6 +129,18 @@ public class CaseDataDto extends EntityDto {
 	@Outbreaks
 	private Date outcomeDate;
 
+	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
+		CaseDataDto caze = new CaseDataDto();
+		caze.setUuid(DataHelper.createUuid());
+		caze.setPerson(person);
+		caze.setDisease(disease);
+		caze.setInvestigationStatus(InvestigationStatus.PENDING);
+		caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+		caze.setOutcome(CaseOutcome.NO_OUTCOME);
+		caze.setReportDate(new Date());
+		return caze;
+	}
+	
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
@@ -397,5 +410,4 @@ public class CaseDataDto extends EntityDto {
 	public CaseReferenceDto toReference() {
 		return new CaseReferenceDto(getUuid(), CaseReferenceDto.buildCaption(getUuid(), getPerson().getCaption()));
 	}
-
 }

@@ -2,7 +2,9 @@ package de.symeda.sormas.backend.person;
 
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -13,12 +15,14 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -53,9 +57,9 @@ public class PersonService extends AbstractAdoService<Person> {
 
 	@Override
 	public List<String> getAllUuids(User user) {
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		
+
 		// persons by LGA
 		CriteriaQuery<String> lgaQuery = cb.createQuery(String.class);
 		Root<Person> lgaRoot = lgaQuery.from(Person.class);
@@ -64,7 +68,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
 		lgaQuery.where(lgaFilter);
 		List<String> lgaResultList = em.createQuery(lgaQuery).getResultList();
-		
+
 		// persons by case
 		CriteriaQuery<String> casePersonsQuery = cb.createQuery(String.class);
 		Root<Case> casePersonsRoot = casePersonsQuery.from(Case.class);
@@ -96,18 +100,18 @@ public class PersonService extends AbstractAdoService<Person> {
 		eventPersonsQuery.where(eventPersonsFilter);
 		eventPersonsQuery.distinct(true);
 		List<String> eventPersonsResultList = em.createQuery(eventPersonsQuery).getResultList();
-		
+
 		return Stream.of(lgaResultList, casePersonsResultList, contactPersonsResultList, eventPersonsResultList)
 				.flatMap(List<String>::stream)
 				.distinct()
 				.collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<Person> getAllAfter(Date date, User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		
+
 		// persons by LGA
 		CriteriaQuery<Person> personsQuery = cb.createQuery(Person.class);
 		Root<Person> personsRoot = personsQuery.from(Person.class);
@@ -120,7 +124,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		}
 		personsQuery.where(lgaFilter);
 		List<Person> lgaResultList = em.createQuery(personsQuery).getResultList();
-		
+
 		// persons by case
 		CriteriaQuery<Person> casePersonsQuery = cb.createQuery(Person.class);
 		Root<Case> casePersonsRoot = casePersonsQuery.from(Case.class);
@@ -175,52 +179,117 @@ public class PersonService extends AbstractAdoService<Person> {
 		}
 		eventPersonsQuery.distinct(true);
 		List<Person> eventPersonsResultList = em.createQuery(eventPersonsQuery).getResultList();
-		
+
 		return Stream.of(lgaResultList, casePersonsResultList, contactPersonsResultList, eventPersonsResultList)
 				.flatMap(List<Person>::stream)
 				.distinct()
 				.sorted(Comparator.comparing(Person::getChangeDate))
 				.collect(Collectors.toList());
 	}
-	
+
+	public Set<PersonNameDto> getNameDtos(User user) {
+		Set<PersonNameDto> persons = new HashSet<>();
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+
+		// persons by LGA
+		CriteriaQuery<PersonNameDto> lgaQuery = cb.createQuery(PersonNameDto.class);
+		Root<Person> lgaRoot = lgaQuery.from(Person.class);
+		Join<Person, Location> address = lgaRoot.join(Person.ADDRESS);
+
+		lgaQuery.multiselect(lgaRoot.get(Person.FIRST_NAME), lgaRoot.get(Person.LAST_NAME),
+				lgaRoot.get(Person.ID));
+
+		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
+		lgaQuery.where(lgaFilter);
+		persons.addAll(em.createQuery(lgaQuery).getResultList());
+
+		// persons by case
+		CriteriaQuery<PersonNameDto> casePersonsQuery = cb.createQuery(PersonNameDto.class);
+		Root<Case> casePersonsRoot = casePersonsQuery.from(Case.class);
+		Join<Case, Person> casePersonsJoin = casePersonsRoot.join(Case.PERSON, JoinType.LEFT);
+
+		casePersonsQuery.multiselect(casePersonsJoin.get(Person.FIRST_NAME), casePersonsJoin.get(Person.LAST_NAME),
+				casePersonsJoin.get(Person.ID));
+
+		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot, user);
+		if (casePersonsFilter != null) {
+			casePersonsQuery.where(casePersonsFilter);
+		}
+		casePersonsQuery.distinct(true);
+		persons.addAll(em.createQuery(casePersonsQuery).getResultList());
+
+		// persons by contact
+		CriteriaQuery<PersonNameDto> contactPersonsQuery = cb.createQuery(PersonNameDto.class);
+		Root<Contact> contactPersonsRoot = contactPersonsQuery.from(Contact.class);
+		Join<Contact, Person> contactPersonsJoin = contactPersonsRoot.join(Contact.PERSON, JoinType.LEFT);
+
+		contactPersonsQuery.multiselect(contactPersonsJoin.get(Person.FIRST_NAME), contactPersonsJoin.get(Person.LAST_NAME),
+				contactPersonsJoin.get(Person.ID));
+
+		Predicate contactPersonsFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot, user);
+		if (contactPersonsFilter != null) {
+			contactPersonsQuery.where(contactPersonsFilter);
+		}
+		contactPersonsQuery.distinct(true);
+		persons.addAll(em.createQuery(contactPersonsQuery).getResultList());
+
+		// persons by event participant
+		CriteriaQuery<PersonNameDto> eventPersonsQuery = cb.createQuery(PersonNameDto.class);
+		Root<EventParticipant> eventPersonsRoot = eventPersonsQuery.from(EventParticipant.class);
+		Join<EventParticipant, Person> eventPersonsJoin = eventPersonsRoot.join(EventParticipant.PERSON, JoinType.LEFT);
+
+		eventPersonsQuery.multiselect(eventPersonsJoin.get(Person.FIRST_NAME), eventPersonsJoin.get(Person.LAST_NAME),
+				eventPersonsJoin.get(Person.ID));
+		
+		Predicate eventPersonsFilter = eventParticipantService.createUserFilter(cb, eventPersonsQuery, eventPersonsRoot, user);
+		if (eventPersonsFilter != null) {
+			eventPersonsQuery.where(eventPersonsFilter);
+		}
+		eventPersonsQuery.distinct(true);
+		persons.addAll(em.createQuery(eventPersonsQuery).getResultList());
+		
+		return persons;
+	}
+
 	public List<Person> getDeathsBetween(Date fromDate, Date toDate, District district, Disease disease, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		
+
 		CriteriaQuery<Person> casePersonsQuery = cb.createQuery(Person.class);
 		Root<Case> casePersonsRoot = casePersonsQuery.from(Case.class);
 		Path<Person> casePersonsSelect = casePersonsRoot.get(Case.PERSON);
 		casePersonsQuery.select(casePersonsSelect);
 		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot, user);
-		
+
 		// only probable and confirmed cases are of interest
 		Predicate classificationFilter = cb.equal(casePersonsRoot.get(Case.CASE_CLASSIFICATION), CaseClassification.CONFIRMED);
 		classificationFilter = cb.or(classificationFilter, cb.equal(casePersonsRoot.get(Case.CASE_CLASSIFICATION), CaseClassification.PROBABLE));
-		
+
 		if (casePersonsFilter != null) {
 			casePersonsFilter = cb.and(casePersonsFilter, classificationFilter);
 		} else {
 			casePersonsFilter = classificationFilter;
 		}
-		
+
 		// death date range
 		Predicate dateFilter = cb.isNotNull(casePersonsSelect.get(Person.DEATH_DATE));
 		dateFilter = cb.and(dateFilter, cb.greaterThanOrEqualTo(casePersonsSelect.get(Person.DEATH_DATE), fromDate));
 		dateFilter = cb.and(dateFilter, cb.lessThanOrEqualTo(casePersonsSelect.get(Person.DEATH_DATE), toDate));
-		
+
 		if (casePersonsFilter != null) {
 			casePersonsFilter = cb.and(casePersonsFilter, dateFilter);
 		} else {
 			casePersonsFilter = dateFilter;
 		}
-		
+
 		if (casePersonsFilter != null && district != null) {
 			casePersonsFilter = cb.and(casePersonsFilter, cb.equal(casePersonsRoot.get(Case.DISTRICT), district));
 		}
-		
+
 		if (casePersonsFilter != null && disease != null) {
 			casePersonsFilter = cb.and(casePersonsFilter, cb.equal(casePersonsRoot.get(Case.DISEASE), disease));
 		}
-		
+
 		if (casePersonsFilter != null) {
 			casePersonsQuery.where(casePersonsFilter);
 		}
@@ -234,7 +303,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		// getAllUuids and getAllAfter have custom implementations
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public Predicate createDateFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Person, Person> from, Date date) {
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);

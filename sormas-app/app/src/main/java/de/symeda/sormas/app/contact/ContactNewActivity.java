@@ -14,6 +14,7 @@ import android.view.MenuItem;
 
 import com.google.android.gms.analytics.Tracker;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +22,8 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
@@ -142,9 +145,17 @@ public class ContactNewActivity extends AppCompatActivity {
                 }
 
                 try {
-                    List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(contact.getPerson().getFirstName(), contact.getPerson().getLastName());
-                    if (existingPersons.size() > 0) {
-                        AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, contact.getPerson(), existingPersons, new Consumer() {
+                    List<PersonNameDto> existingPersons = DatabaseHelper.getPersonDao().getPersonNameDtos();
+                    List<Person> similarPersons = new ArrayList<>();
+                    for (PersonNameDto existingPerson : existingPersons) {
+                        if (PersonHelper.areNamesSimilar(contact.getPerson().getFirstName() + " " + contact.getPerson().getLastName(),
+                                existingPerson.getFirstName() + " " + existingPerson.getLastName())) {
+                            Person person = DatabaseHelper.getPersonDao().queryForId(existingPerson.getId());
+                            similarPersons.add(person);
+                        }
+                    }
+                    if (similarPersons.size() > 0) {
+                        AlertDialog.Builder dialogBuilder = new SelectOrCreatePersonDialogBuilder(this, contact.getPerson(), existingPersons, similarPersons, new Consumer() {
                             @Override
                             public void accept(Object parameter) {
                                 if (parameter instanceof Person) {

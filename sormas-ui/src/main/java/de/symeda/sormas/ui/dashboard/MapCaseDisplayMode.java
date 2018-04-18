@@ -5,6 +5,7 @@ import de.symeda.sormas.api.I18nProperties;
 public enum MapCaseDisplayMode {
 	
 	CASES,
+	HEALTH_FACILITIES_OR_ADDRESS,
 	HEALTH_FACILITIES;
 	
 	public String toString() {

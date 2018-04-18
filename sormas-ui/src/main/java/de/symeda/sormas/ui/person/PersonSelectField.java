@@ -1,16 +1,18 @@
 package de.symeda.sormas.ui.person;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
-import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public class PersonSelectField extends CustomField<PersonIndexDto> {
@@ -18,10 +20,13 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
 	public static final String CREATE_PERSON = "createPerson";
+	public static final String SELECT_PERSON = "selectPerson";
 	
 	private final TextField firstNameField = new TextField();
 	private final TextField lastNameField = new TextField();
+	private final Button searchMatchesButton = new Button("Find matching persons");
 	private PersonGrid personGrid;
+	private OptionGroup selectPerson;
 	private OptionGroup createNewPerson;
 	
 	@Override
@@ -39,22 +44,35 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 		firstNameField.setCaption(
 				I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
 		firstNameField.setWidth(100, Unit.PERCENTAGE);
-		firstNameField.addValueChangeListener(e -> {
-			personGrid.setFirstNameFilter((String)e.getProperty().getValue());	
-			selectBestMatch();
-		});
+		firstNameField.setRequired(true);
 		nameLayout.addComponent(firstNameField);
 		
 		lastNameField.setCaption(
 				I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
 		lastNameField.setWidth(100, Unit.PERCENTAGE);
-		lastNameField.addValueChangeListener(e -> {
-			personGrid.setLastNameFilter((String)e.getProperty().getValue());
-			selectBestMatch();
-		});
+		lastNameField.setRequired(true);
 		nameLayout.addComponent(lastNameField);
 
+		CssStyles.style(searchMatchesButton, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
+		searchMatchesButton.addClickListener(e -> {
+			personGrid.reload(firstNameField.getValue(), lastNameField.getValue());
+			selectBestMatch();
+		});
+		nameLayout.addComponent(searchMatchesButton);
+		
 		layout.addComponent(nameLayout);
+		
+		selectPerson = new OptionGroup(null);
+		selectPerson.addItem(SELECT_PERSON);
+		selectPerson.setItemCaption(SELECT_PERSON, I18nProperties.getFragment("Person.select"));
+		CssStyles.style(selectPerson, CssStyles.VSPACE_NONE);
+		selectPerson.addValueChangeListener(e -> {
+			if (e.getProperty().getValue() != null) {
+				createNewPerson.setValue(null);
+				personGrid.setEnabled(true);
+			}
+		});
+		layout.addComponent(selectPerson);
 		
 		initPersonGrid();
 		// unselect "create new" when person is selected
@@ -71,7 +89,9 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 		// unselect grid when "create new" is selected
 		createNewPerson.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
+				selectPerson.setValue(null);
 				personGrid.select(null);
+				personGrid.setEnabled(false);
 			}
 		});
 		layout.addComponent(createNewPerson);
@@ -84,12 +104,8 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 	
 	private void initPersonGrid() {
 		if (personGrid == null) {
-			personGrid = new PersonGrid();
-			personGrid.setHeightByRows(6);
-			personGrid.setCaption(I18nProperties.getFragment("Person.select"));
-			personGrid.setSelectionMode(SelectionMode.SINGLE);
-			personGrid.setFirstNameFilter(firstNameField.getValue());
-			personGrid.setLastNameFilter(lastNameField.getValue());
+			personGrid = new PersonGrid(firstNameField.getValue(), lastNameField.getValue());
+//			personGrid.setCaption(I18nProperties.getFragment("Person.select"));
 		}
 	}
 	
@@ -111,15 +127,12 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 	protected void setInternalValue(PersonIndexDto newValue) {
 		super.setInternalValue(newValue);
 		
-		if (newValue == null) {
-			if (createNewPerson != null) {
-				createNewPerson.setValue(CREATE_PERSON);
-			}
+		if (selectPerson != null) {
+			selectPerson.setValue(SELECT_PERSON);
 		}
-		else {
-			if (personGrid != null) {
-				personGrid.select(newValue);
-			}
+		
+		if (newValue != null) {
+			personGrid.select(newValue);
 		}
 	}
 	
@@ -150,6 +163,14 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 		lastNameField.setValue(lastName);
 	}
 	
+	public TextField getFirstNameField() {
+		return firstNameField;
+	}
+
+	public TextField getLastNameField() {
+		return lastNameField;
+	}
+
 	public boolean hasMatches() {
 		if (personGrid == null) {
 			initPersonGrid();
