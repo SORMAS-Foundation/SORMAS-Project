@@ -545,6 +545,11 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                         newCase.getPerson().setPresentCondition(PresentCondition.DEAD);
                     }
                 }
+                else if (newCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
+                    if (newCase.getPerson().getPresentCondition() != PresentCondition.ALIVE) {
+                        newCase.getPerson().setPresentCondition(PresentCondition.ALIVE);
+                    }
+                }
             }
 
             // see PersonFacadeEjb.onPersonChanged

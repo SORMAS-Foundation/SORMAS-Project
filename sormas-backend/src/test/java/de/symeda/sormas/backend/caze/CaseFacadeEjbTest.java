@@ -190,7 +190,21 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// case deceased -> person has to set to dead
 		firstCase.setOutcome(CaseOutcome.DECEASED);
 		firstCase = getCaseFacade().saveCase(firstCase);
+		assertNotNull(firstCase.getOutcomeDate());
+		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
+		assertEquals(firstCase.getDisease(), cazePerson.getCauseOfDeathDisease());
+
+		// case has no outcome again -> person should be alive
+		firstCase.setOutcome(CaseOutcome.NO_OUTCOME);
+		firstCase = getCaseFacade().saveCase(firstCase);
+		assertNull(firstCase.getOutcomeDate());
+		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+		assertEquals(PresentCondition.ALIVE, cazePerson.getPresentCondition());
 		
+		// case deceased -> person has to set to dead
+		firstCase.setOutcome(CaseOutcome.DECEASED);
+		firstCase = getCaseFacade().saveCase(firstCase);
 		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
 		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
 
@@ -214,7 +228,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
 		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
-
 		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
 		assertEquals(CaseOutcome.DECEASED, firstCase.getOutcome());
 		assertNotNull(firstCase.getOutcomeDate());

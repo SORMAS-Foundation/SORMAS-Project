@@ -43,6 +43,7 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.StatisticsCaseDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -372,7 +373,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		updateInvestigationByStatus(existingCase, newCase);
 		
-		updatePersonConditionByOutcome(existingCase, newCase);
+		updatePersonAndCaseByOutcome(existingCase, newCase);
 
 		// Send an email to all responsible supervisors when the case classification has changed
 		if (existingCase != null && existingCase.getCaseClassification() != newCase.getCaseClassification()) {
@@ -419,15 +420,32 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
-	private void updatePersonConditionByOutcome(CaseDataDto existingCase, Case newCase) {
+	private void updatePersonAndCaseByOutcome(CaseDataDto existingCase, Case newCase) {
 
 		if (existingCase != null && newCase.getOutcome() != existingCase.getOutcome()) {
 
+			if (newCase.getOutcome() == null || newCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
+				newCase.setOutcomeDate(null);
+			} else if (newCase.getOutcomeDate() == null) {
+				newCase.setOutcomeDate(new Date());
+			}
+			
 			if (newCase.getOutcome() == CaseOutcome.DECEASED) {
 				if (newCase.getPerson().getPresentCondition() != PresentCondition.DEAD
 						&& newCase.getPerson().getPresentCondition() != PresentCondition.BURIED) {
 					PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
 					newCase.getPerson().setPresentCondition(PresentCondition.DEAD);
+					newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
+					newCase.getPerson().setCauseOfDeath(CauseOfDeath.EPIDEMIC_DISEASE);
+					newCase.getPerson().setCauseOfDeathDisease(newCase.getDisease());
+					// attention: this may lead to infinite recursion when not properly implemented
+					personFacade.onPersonChanged(existingPerson, newCase.getPerson());
+				}
+			}
+			else if (newCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
+				if (newCase.getPerson().getPresentCondition() != PresentCondition.ALIVE) {
+					PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
+					newCase.getPerson().setPresentCondition(PresentCondition.ALIVE);
 					// attention: this may lead to infinite recursion when not properly implemented
 					personFacade.onPersonChanged(existingPerson, newCase.getPerson());
 				}
