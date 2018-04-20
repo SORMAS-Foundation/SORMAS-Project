@@ -13,6 +13,9 @@ public class PersonHelper {
 	 * if the similarity is high enough to consider them a possible match.
 	 */
 	public static boolean areNamesSimilar(String firstName, String secondName) {
+		firstName = firstName.toLowerCase();
+		secondName = secondName.toLowerCase();
+		
 		// Split names at whitespaces and the symbols _ and -
 		String[] firstNameParts = StringUtils.split(firstName.trim(), " _-", 0);
 		String[] secondNameParts = StringUtils.split(secondName.trim(), " _-", 0);
