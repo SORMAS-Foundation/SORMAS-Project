@@ -26,7 +26,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
     private final int value;
     private final String name;
     private boolean hasDetail;
-    private int detailTemplateResId;
+    private Integer detailTemplateResId;
 
     private SymptomState state;
     private int mLastCheckedId = -1;
@@ -149,23 +149,23 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
     }
 
     protected Symptom(int value, String name) { //TViewModel viewModel,
-        this(value, name, -1, null);
+        this(value, name, null, null);
     }
 
     protected Symptom(int value, String name, TChildViewModel childViewModel) { //TViewModel viewModel,
-        this(value, name, -1, childViewModel);
+        this(value, name, null, childViewModel);
     }
 
     protected Symptom(int value, String name, int detailTemplateResId) { //TViewModel viewModel,
-        this(value, name, -1, null);
+        this(value, name, detailTemplateResId, null);
     }
 
-    protected Symptom(int value, String name, int detailTemplateResId, TChildViewModel childViewModel) { //, TViewModel viewModel
+    protected Symptom(int value, String name, Integer detailTemplateResId, TChildViewModel childViewModel) { //, TViewModel viewModel
         this.value = value;
         this.name = name;
         this.state = SymptomState.UNKNOWN;
-        this.hasDetail = childViewModel != null;
-        this.detailTemplateResId = hasDetail ? detailTemplateResId : -1;
+        this.hasDetail = childViewModel != null || detailTemplateResId != null;
+        this.detailTemplateResId = hasDetail ? detailTemplateResId : null;
         //this.mViewModel = viewModel;
         this.mChildViewModel = childViewModel;
         /*this.state = SymptomState.UNKNOWN;
@@ -194,11 +194,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         this.hasDetail = hasDetail;
     }
 
-    public int getDetailTemplateResId() {
+    public Integer getDetailTemplateResId() {
         return detailTemplateResId;
     }
 
-    public void setDetailTemplateResId(int detailTemplateResId) {
+    public void setDetailTemplateResId(Integer detailTemplateResId) {
         this.detailTemplateResId = detailTemplateResId;
     }
 

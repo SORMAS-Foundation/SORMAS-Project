@@ -165,7 +165,7 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
                 return false;
             }
         };
-        symptomAdapter = new SymptomFormListAdapter(this.getActivity(), R.layout.row_edit_symptom_list_item_layout, symptomList);
+        symptomAdapter = new SymptomFormListAdapter(this.getActivity(), R.layout.row_edit_symptom_list_item_layout, symptomList, getFragmentManager());
         symptomAdapter.setOnSymptomStateChangeListener(new OnSymptomStateChangeListener() {
             @Override
             public void onChange(final Symptom symptom, SymptomState state) {

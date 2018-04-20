@@ -15,6 +15,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -57,7 +58,7 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
 
     private float scaleX;
     private float scaleY;
-    private int checkedButton;
+    private int checkedButtonIndex;
     private int orientation;
     private Drawable background;
     private ColorStateList textColor;
@@ -129,7 +130,7 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
                     0, 0);
 
             try {
-                checkedButton = a.getInt(R.styleable.TeboSwitch_checkedButton, BUTTON_1);
+                checkedButtonIndex = a.getInt(R.styleable.TeboSwitch_checkedButton, BUTTON_1);
                 orientation = a.getInt(R.styleable.TeboSwitch_orientation, HORIZONTAL);
                 background = a.getDrawable(R.styleable.TeboSwitch_background);
                 textColor = a.getColorStateList(R.styleable.TeboSwitch_textColor);
@@ -232,7 +233,7 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
             }
         }.init(this));*/
 
-        //setValue(radioGroupElements.get(checkedButton));
+        //setValue(radioGroupElements.get(checkedButtonIndex));
 
         //radioGroup.setOnFocusChangeListener(new TeboRadioGroup.OnFocusChangeListenerHandler(this));
         //radioGroup.setOnClickListener(new TeboRadioGroup.OnRadioGroupClickHandler(getContext(), this));
@@ -257,16 +258,30 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
         if (valueIndex < 0)
             return;
 
-        checkedButton = valueIndex;
+        checkedButtonIndex = valueIndex;
 
-        View child = radioGroup.getChildAt(valueIndex);
+        for (int i = 0; i < radioGroup.getChildCount(); i++) {
+            RadioButton c = (RadioButton)radioGroup.getChildAt(i);
+
+            if (c == null)
+                continue;
+
+            if(i == valueIndex) {
+                c.setChecked(true);
+            } else {
+                c.setChecked(false);
+            }
+        }
+
+        /*RadioButton child = (RadioButton)radioGroup.getChildAt(valueIndex);
 
         if (child == null)
             return;
 
         if(child != null) {
-            radioGroup.check(child.getId());
-        }
+            child.setChecked(true);
+            //radioGroup.check(child.getId());
+        }*/
     }
 
     @Override
@@ -507,7 +522,9 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
         if (value == null)
             value = defaultValue;
 
-        if (value != view.getValue() || !view.isInitialized()) {
+        Object kkk = view.getValue();
+
+        if (value != kkk || !view.isInitialized()) {
             view.setValue(value);
         }
 
@@ -583,6 +600,14 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
 
         //Create Radio Button
         final RadioButton button = createRadioButton(index, lastIndex, item);
+
+        button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+            }
+        });
+
         radioGroup.addView(button);
         radioGroupElements.add(item.getValue());
 

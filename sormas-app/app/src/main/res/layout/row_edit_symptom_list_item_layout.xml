@@ -100,25 +100,10 @@
                 />
 
             <include android:id="@+id/lesionsLayoutInclude"
-                layout="@layout/row_symptom_details_lesions_child_layout"
-                app:showNotificationCallback="@{showNotificationCallback}"
-                app:hideNotificationCallback="@{hideNotificationCallback}"
-                app:data="@{lesionsChildViewModel}"
-                app:symptomStateClass="@{symptomStateClass}"
-                app:checkedCallback="@{checkedCallback}"
+                layout="@layout/blank_layout"
                 android:visibility="gone"
                 />
 
         </LinearLayout>
-
-
-        <!--
-
-
-
-        -->
-
-
-
     </LinearLayout>
 </layout>

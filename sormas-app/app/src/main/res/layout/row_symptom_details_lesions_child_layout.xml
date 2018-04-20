@@ -406,6 +406,7 @@
                         />
 
                     <de.symeda.sormas.app.component.TeboSwitch
+                        android:id="@+id/swhLesionsPic1"
                         android:tag="@string/tag_symptom_lesions_pic_answer"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content"
@@ -467,6 +468,7 @@
                         />
 
                     <de.symeda.sormas.app.component.TeboSwitch
+                        android:id="@+id/swhLesionsPic2"
                         android:tag="@string/tag_symptom_lesions_pic_answer"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content"
@@ -528,6 +530,7 @@
                         />
 
                     <de.symeda.sormas.app.component.TeboSwitch
+                        android:id="@+id/swhLesionsPic3"
                         android:tag="@string/tag_symptom_lesions_pic_answer"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content"
@@ -589,6 +592,7 @@
                         />
 
                     <de.symeda.sormas.app.component.TeboSwitch
+                        android:id="@+id/swhLesionsPic4"
                         android:tag="@string/tag_symptom_lesions_pic_answer"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content"
@@ -619,7 +623,7 @@
             />
 
         <de.symeda.sormas.app.component.TeboDatePicker
-            android:id="@+id/dtpLastExposureDate"
+            android:id="@+id/dtpLesionsOnsetDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/contentVerticalSpacingDouble"

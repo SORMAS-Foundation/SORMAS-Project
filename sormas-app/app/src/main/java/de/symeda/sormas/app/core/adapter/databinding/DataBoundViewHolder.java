@@ -45,12 +45,12 @@ public class DataBoundViewHolder<T extends ViewDataBinding> extends RecyclerView
     public static <T extends ViewDataBinding> DataBoundViewHolder<T> create(ViewGroup parent,
                                                                             @LayoutRes int layoutId) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View layoutView = inflater.inflate(layoutId, parent, false);
+        //View layoutView = inflater.inflate(layoutId, parent, false);
 
 
 
         T binding = DataBindingUtil.inflate(inflater, layoutId, parent, false);
-        return new DataBoundViewHolder<>(binding, layoutView);
+        return new DataBoundViewHolder<>(binding, binding.getRoot()); // layoutView);
     }
 
     @Override
