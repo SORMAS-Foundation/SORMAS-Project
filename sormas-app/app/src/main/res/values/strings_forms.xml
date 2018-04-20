@@ -1172,4 +1172,50 @@
     <string name="hint_pick_gps">No coordinates picked</string>
 
 
+
+
+    <!-- Symptoms -->
+    <!-- ........................................................................ -->
+    <!-- Label -->
+    <string name="label_symptoms_face">Face</string>
+    <string name="label_symptoms_leg">Legs</string>
+    <string name="label_symptoms_soles_of_feet">Soles of the feet</string>
+    <string name="label_symptoms_palm_of_hands">Palm of hands</string>
+    <string name="label_symptoms_thorax">Thorax</string>
+    <string name="label_symptoms_arms">Arms</string>
+    <string name="label_symptoms_genitals">Genitals</string>
+    <string name="label_symptoms_all_over_body">All over body</string>
+    <string name="label_lesions_onset_date">Date of Lesions Onset</string>
+
+
+    <!-- Description -->
+    <string name="desc_symptoms_face">Face</string>
+    <string name="desc_symptoms_leg">Legs</string>
+    <string name="desc_symptoms_soles_of_feet">Soles of the feet</string>
+    <string name="desc_symptoms_palm_of_hands">Palm of hands</string>
+    <string name="desc_symptoms_thorax">Thorax</string>
+    <string name="desc_symptoms_arms">Arms</string>
+    <string name="desc_symptoms_genitals">Genitals</string>
+    <string name="desc_symptoms_all_over_body">All over body</string>
+    <string name="desc_lesions_onset_date">Date of Lesions Onset</string>
+
+
+    <!-- Hint -->
+    <string name="hint_symptoms_face">Face</string>
+    <string name="hint_symptoms_leg">Legs</string>
+    <string name="hint_symptoms_soles_of_feet">Soles of the feet</string>
+    <string name="hint_symptoms_palm_of_hands">Palm of hands</string>
+    <string name="hint_symptoms_thorax">Thorax</string>
+    <string name="hint_symptoms_arms">Arms</string>
+    <string name="hint_symptoms_genitals">Genitals</string>
+    <string name="hint_symptoms_all_over_body">All over body</string>
+    <string name="hint_lesions_onset_date">Date of Lesions Onset</string>
+
+    <string name="tag_symptom_lesions_pic_title">pictureTitle</string>
+    <string name="tag_symptom_lesions_pic_answer">pictureControl</string>
+    <string name="tag_symptom_lesions_pic">piture</string>
+
+    <!-- ........................................................................ -->
+
+
 </resources>

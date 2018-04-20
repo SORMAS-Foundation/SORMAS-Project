@@ -11,6 +11,8 @@
             name="hideNotificationCallback"
             type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
         <variable name="data" type="de.symeda.sormas.app.symptom.Symptom"/>
+        <variable name="lesionsChildViewModel" type="de.symeda.sormas.app.symptom.LesionChildViewModel" />
+        <variable name="detailsChildViewModel" type="de.symeda.sormas.app.symptom.DetailsViewModel"/>
         <variable name="symptomStateClass" type="Class" />
 
         <variable
@@ -90,15 +92,31 @@
                 app:slim="true"
                 app:hint="@string/hint_specify_detail"
                 app:required="true"
-                app:value="@={data.detail}"
+                app:value="@={detailsChildViewModel.detail}"
                 app:nextFocusDown="@+id/txtControl1"
                 app:imeOptions="actionNext"
                 app:onShowInputErrorListener="@{showNotificationCallback}"
                 app:onHideInputErrorListener="@{hideNotificationCallback}"
                 />
 
+            <include android:id="@+id/lesionsLayoutInclude"
+                layout="@layout/row_symptom_details_lesions_child_layout"
+                app:showNotificationCallback="@{showNotificationCallback}"
+                app:hideNotificationCallback="@{hideNotificationCallback}"
+                app:data="@{lesionsChildViewModel}"
+                app:symptomStateClass="@{symptomStateClass}"
+                app:checkedCallback="@{checkedCallback}"
+                android:visibility="gone"
+                />
+
         </LinearLayout>
 
+
+        <!--
+
+
+
+        -->
 
 
 

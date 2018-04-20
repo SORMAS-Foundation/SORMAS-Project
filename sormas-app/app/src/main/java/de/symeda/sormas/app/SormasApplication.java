@@ -19,7 +19,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.VibrationHelper;
 import de.symeda.sormas.app.util.LocationService;
-import de.symeda.sormas.app.util.MemoryDatabaseHelper;
 import de.symeda.sormas.app.util.UncaughtExceptionParser;
 
 /**
@@ -66,7 +65,7 @@ public class SormasApplication extends Application implements Application.Activi
         this.registerActivityLifecycleCallbacks(this);
 
         //TODO: Remove Temporary Database
-        MemoryDatabaseHelper.init(this);
+        //MemoryDatabaseHelper.init(this);
     }
 
     public static void updateLocale(Context ctx) {

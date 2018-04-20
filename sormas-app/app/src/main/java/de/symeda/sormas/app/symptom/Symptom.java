@@ -1,10 +1,15 @@
 package de.symeda.sormas.app.symptom;
 
+import android.util.Log;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.core.ReadOnly;
 
@@ -12,78 +17,115 @@ import de.symeda.sormas.app.core.ReadOnly;
  * Created by Orson on 03/01/2018.
  */
 
+//TODO: Load from XML configuration
 @ReadOnly
-public abstract class Symptom {
+public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
+
+    private final static String TAG = Symptom.class.getSimpleName();
 
     private final int value;
     private final String name;
+    private boolean hasDetail;
+    private int detailTemplateResId;
+
     private SymptomState state;
+    private int mLastCheckedId = -1;
+
+
+    /*private SymptomState state;
     private boolean hasDetail;
     private String detail;
-    private int mLastCheckedId = -1;
+    private int mLastCheckedId = -1;*/
+
+    //private TViewModel mViewModel;
+
+    // TODO: Every child should maintain thier own state
+    // TODO: Getters and setters should be abstract
+    protected TChildViewModel mChildViewModel;
+
 
     // <editor-fold defaultstate="collapsed" desc="Constants">
 
-    public static final Symptom FEVER = new Fever();
-    public static final Symptom VOMITING = new Vomiting();
-    public static final Symptom DIARRHEA = new Diarrhea();
-    public static final Symptom BLOOD_IN_STOOL = new BloodInStool();
-    public static final Symptom NAUSEA = new Nausea();
-    public static final Symptom ABDOMINAL_PAIN = new AbdominalPain();
-    public static final Symptom HEAD_ACHE = new Headache();
-    public static final Symptom MUSCLE_PAIN = new MusclePain();
-    public static final Symptom FATIGUE_GENERAL_WEAKNESS = new FatigueGeneralWeakness();
-    public static final Symptom UNEXPLAINED_BLEEDING_BRUISING = new UnexplainedBleedingBruising();
-    public static final Symptom BLEEDING_GUM = new BleedingGum();
-    public static final Symptom BLEEDING_FROM_INJECTION_SITE = new BleedingFromInjectionSite();
-    public static final Symptom NOSE_BLEED = new NoseBleed();
-    public static final Symptom BLOODY_BLACK_STOOL = new BloodyBlackStool();
-    public static final Symptom BLOOD_IN_VOMIT = new BloodInVomit();
-    public static final Symptom DIGESTED_BLOOD_IN_VOMIT = new DigestedBloodInVomit();
-    public static final Symptom COUGHING_BLOOD = new CoughingBlood();
-    public static final Symptom BLEEDING_FROM_VAGINA = new BleedingFromVagina();
-    public static final Symptom BRUISED_SKIN = new BruisedSkin();
-    public static final Symptom BLOOD_IN_URINE = new BloodInUrine();
-    public static final Symptom OTHER_HEMORRHAGIC = new OtherHemorrhagic();
-    public static final Symptom SKIN_RASH = new SkinRash();
-    public static final Symptom STIFF_NECK = new StiffNeck();
-    public static final Symptom SORE_THROAT = new SoreThroat();
-    public static final Symptom COUGH = new Cough();
-    public static final Symptom RUNNY_NOSE = new RunnyNose();
-    public static final Symptom DIFFICULTY_BREATHING = new DifficultyBreathing();
-    public static final Symptom CHEST_PAIN = new ChestPain();
-    public static final Symptom CONFUSED_OR_DISORIENTED = new ConfusedOrDisoriented();
-    public static final Symptom CONVULSION_OR_SEIZURES = new ConvulsionsOrSeizures();
-    public static final Symptom ALTERED_CONSCIOUSNESS = new AlteredConsciousness();
-    public static final Symptom CONJUNCTIVITIS = new Conjunctivitis();
-    public static final Symptom PAIN_BEHIND_EYES = new PainBehindEyes();
-    public static final Symptom KOPLIK_SPOTS = new KoplikSpots();
-    public static final Symptom THROMBOCYTOPENIA = new Thrombocytopenia();
-    public static final Symptom MIDDLE_EAR_INFLAMMATION = new MiddleEarInflammation();
-    public static final Symptom ACUTE_HEARING_LOSS = new AcuteHearingLoss();
-    public static final Symptom DEHYDRATION = new Dehydration();
-    public static final Symptom LOSS_OF_APPETITE = new LossOfAppetite();
-    public static final Symptom REFUSAL_TO_FEED = new RefusalToFeed();
-    public static final Symptom JOINT_PAIN = new JointPain();
-    public static final Symptom SHOCK = new Shock();
-    public static final Symptom HICCUPS = new Hiccups();
-    public static final Symptom OTHER_NON_HEMORRHAGIC = new OtherNonHemorrhagic();
-    public static final Symptom BACKACHE = new Backache();
-    public static final Symptom BLEEDING_FROM_EYES = new BleedingFromEyes();
-    public static final Symptom JAUNDICE = new Jaundice();
-    public static final Symptom DARK_URINE = new DarkUrine();
-    public static final Symptom BLEEDING_FROM_STOMACH = new BleedingFromStomach();
-    public static final Symptom RAPID_BREATHING = new RapidBreathing();
-    public static final Symptom SWOLLEN_GLANDS = new SwollenGlands();
-    public static final Symptom CUTANEOUS_ERUPTION = new CutaneousEruption();
-    public static final Symptom CHILLS_OR_SWEAT = new ChillsOrSweat();
-    public static final Symptom LESIONS_THAT_ITCH = new LesionsThatItch();
-    public static final Symptom BEDRIDDEN = new Bedridden();
-    public static final Symptom ORAL_ULCERS = new OralUlcers();
-    public static final Symptom PAINFUL_LYMPHADENITIS = new PainfulLymphadenitis();
-    public static final Symptom BLACKENING_DEATH_OF_TISSUE = new BlackeningDeathOfTissue();
-    public static final Symptom BUBOES_GROIN_ARMPIT_NECK = new BuboesGroinArmpitNeck();
-    public static final Symptom BULGING_FONTANELLE = new BulgingFontanelle();
+    public static final Symptom<NoViewModel> FEVER = new Fever<>();
+    public static final Symptom<NoViewModel> VOMITING = new Vomiting<>();
+    public static final Symptom<NoViewModel> DIARRHEA = new Diarrhea<>();
+    public static final Symptom<NoViewModel> BLOOD_IN_STOOL = new BloodInStool<>();
+    public static final Symptom<NoViewModel> NAUSEA = new Nausea<>();
+    public static final Symptom<NoViewModel> ABDOMINAL_PAIN = new AbdominalPain<>();
+    public static final Symptom<NoViewModel> HEAD_ACHE = new Headache<>();
+    public static final Symptom<NoViewModel> MUSCLE_PAIN = new MusclePain<>();
+    public static final Symptom<NoViewModel> FATIGUE_GENERAL_WEAKNESS = new FatigueGeneralWeakness<>();
+    public static final Symptom<NoViewModel> UNEXPLAINED_BLEEDING_BRUISING = new UnexplainedBleedingBruising<>();
+    public static final Symptom<NoViewModel> BLEEDING_GUM = new BleedingGum<>();
+    public static final Symptom<NoViewModel> BLEEDING_FROM_INJECTION_SITE = new BleedingFromInjectionSite<>();
+    public static final Symptom<NoViewModel> NOSE_BLEED = new NoseBleed<>();
+    public static final Symptom<NoViewModel> BLOODY_BLACK_STOOL = new BloodyBlackStool<>();
+    public static final Symptom<NoViewModel> BLOOD_IN_VOMIT = new BloodInVomit<>();
+    public static final Symptom<NoViewModel> DIGESTED_BLOOD_IN_VOMIT = new DigestedBloodInVomit<>();
+    public static final Symptom<NoViewModel> COUGHING_BLOOD = new CoughingBlood<>();
+    public static final Symptom<NoViewModel> BLEEDING_FROM_VAGINA = new BleedingFromVagina<>();
+    public static final Symptom<NoViewModel> BRUISED_SKIN = new BruisedSkin<>();
+    public static final Symptom<NoViewModel> BLOOD_IN_URINE = new BloodInUrine<>();
+    public static final Symptom<DetailsViewModel> OTHER_HEMORRHAGIC = new OtherHemorrhagic<>(DetailsViewModel.class);
+    public static final Symptom<NoViewModel> SKIN_RASH = new SkinRash<>();
+    public static final Symptom<NoViewModel> STIFF_NECK = new StiffNeck<>();
+    public static final Symptom<NoViewModel> SORE_THROAT = new SoreThroat<>();
+    public static final Symptom<NoViewModel> COUGH = new Cough<>();
+    public static final Symptom<NoViewModel> RUNNY_NOSE = new RunnyNose<>();
+    public static final Symptom<NoViewModel> DIFFICULTY_BREATHING = new DifficultyBreathing<>();
+    public static final Symptom<NoViewModel> CHEST_PAIN = new ChestPain<>();
+    public static final Symptom<NoViewModel> CONFUSED_OR_DISORIENTED = new ConfusedOrDisoriented<>();
+    public static final Symptom<NoViewModel> CONVULSION_OR_SEIZURES = new ConvulsionsOrSeizures<>();
+    public static final Symptom<NoViewModel> ALTERED_CONSCIOUSNESS = new AlteredConsciousness<>();
+    public static final Symptom<NoViewModel> CONJUNCTIVITIS = new Conjunctivitis<>();
+    public static final Symptom<NoViewModel> PAIN_BEHIND_EYES = new PainBehindEyes<>();
+    public static final Symptom<NoViewModel> KOPLIK_SPOTS = new KoplikSpots<>();
+    public static final Symptom<NoViewModel> THROMBOCYTOPENIA = new Thrombocytopenia<>();
+    public static final Symptom<NoViewModel> MIDDLE_EAR_INFLAMMATION = new MiddleEarInflammation<>();
+    public static final Symptom<NoViewModel> ACUTE_HEARING_LOSS = new AcuteHearingLoss<>();
+    public static final Symptom<NoViewModel> DEHYDRATION = new Dehydration();
+    public static final Symptom<NoViewModel> LOSS_OF_APPETITE = new LossOfAppetite<>();
+    public static final Symptom<NoViewModel> REFUSAL_TO_FEED = new RefusalToFeed<>();
+    public static final Symptom<NoViewModel> JOINT_PAIN = new JointPain<>();
+    public static final Symptom<NoViewModel> SHOCK = new Shock<>();
+    public static final Symptom<NoViewModel> HICCUPS = new Hiccups<>();
+    public static final Symptom<DetailsViewModel> OTHER_NON_HEMORRHAGIC = new OtherNonHemorrhagic<>(DetailsViewModel.class);
+    public static final Symptom<NoViewModel> BACKACHE = new Backache<>();
+    public static final Symptom<NoViewModel> BLEEDING_FROM_EYES = new BleedingFromEyes<>();
+    public static final Symptom<NoViewModel> JAUNDICE = new Jaundice<>();
+    public static final Symptom<NoViewModel> DARK_URINE = new DarkUrine<>();
+    public static final Symptom<NoViewModel> BLEEDING_FROM_STOMACH = new BleedingFromStomach<>();
+    public static final Symptom<NoViewModel> RAPID_BREATHING = new RapidBreathing<>();
+    public static final Symptom<NoViewModel> SWOLLEN_GLANDS = new SwollenGlands<>();
+    public static final Symptom<NoViewModel> CUTANEOUS_ERUPTION = new CutaneousEruption<>();
+    public static final Symptom<NoViewModel> CHILLS_OR_SWEAT = new ChillsOrSweat<>();
+    public static final Symptom<NoViewModel> BEDRIDDEN = new Bedridden<>();
+    public static final Symptom<NoViewModel> ORAL_ULCERS = new OralUlcers<>();
+    public static final Symptom<NoViewModel> PAINFUL_LYMPHADENITIS = new PainfulLymphadenitis<>();
+    public static final Symptom<NoViewModel> BLACKENING_DEATH_OF_TISSUE = new BlackeningDeathOfTissue<>();
+    public static final Symptom<NoViewModel> BUBOES_GROIN_ARMPIT_NECK = new BuboesGroinArmpitNeck<>();
+    public static final Symptom<NoViewModel> BULGING_FONTANELLE = new BulgingFontanelle<>();
+
+
+    //NEW
+    public static final Symptom<NoViewModel> DIFFICULTY_SWALLOWING = new DifficultySwallowing<>();
+
+    public static final Symptom<NoViewModel> LESIONS_THAT_ITCH = new LesionsThatItch<>();
+    public static final Symptom<NoViewModel> LESIONS_SAME_STATE = new LesionsSameState<>();
+    public static final Symptom<NoViewModel> LESIONS_SAME_SIZE = new LesionsSameSize<>();
+    public static final Symptom<NoViewModel> LESIONS_SAME_PROFOUND = new LesionsDeepProfound<>();
+    public static final Symptom<NoViewModel> LESIONS_LIKE_PIC1 = new LesionsLikePic1<>();
+    public static final Symptom<NoViewModel> LESIONS_LIKE_PIC2 = new LesionsLikePic2<>();
+    public static final Symptom<NoViewModel> LESIONS_LIKE_PIC3 = new LesionsLikePic3<>();
+    public static final Symptom<NoViewModel> LESIONS_LIKE_PIC4 = new LesionsLikePic4<>();
+    public static final Symptom<LesionChildViewModel> LESIONS = new Lesions<>(LesionChildViewModel.class);
+
+
+
+    public static final Symptom<NoViewModel> LYMPHADENOPATHY_INGUINAL = new LymphadenopathyInguinal<>();
+    public static final Symptom<NoViewModel> LYMPHADENOPATHY_AXILLARY = new LymphadenopathyAxillary<>();
+    public static final Symptom<NoViewModel> LYMPHADENOPATHY_CERVICAL = new LymphadenopathyCervical<>();
+
 
     // </editor-fold>
 
@@ -97,23 +139,67 @@ public abstract class Symptom {
         this.name = s.getName();
         this.state = s.getState();
         this.hasDetail = s.hasDetail();
+        this.detailTemplateResId = s.getDetailTemplateResId();
+        this.mChildViewModel = (TChildViewModel)s.getChildViewModel();
+        /*
+        this.hasDetail = s.hasDetail();
+        this.state = s.getState();
         this.detail = s.getDetail();
+        this.detailTemplateResId = s.getDetailTemplateResId()*/;
     }
 
-    protected Symptom(int value, String name, boolean hasDetail) {
+    protected Symptom(int value, String name) { //TViewModel viewModel,
+        this(value, name, -1, null);
+    }
+
+    protected Symptom(int value, String name, TChildViewModel childViewModel) { //TViewModel viewModel,
+        this(value, name, -1, childViewModel);
+    }
+
+    protected Symptom(int value, String name, int detailTemplateResId) { //TViewModel viewModel,
+        this(value, name, -1, null);
+    }
+
+    protected Symptom(int value, String name, int detailTemplateResId, TChildViewModel childViewModel) { //, TViewModel viewModel
         this.value = value;
         this.name = name;
         this.state = SymptomState.UNKNOWN;
-        this.hasDetail = hasDetail;
-        this.detail = "";
+        this.hasDetail = childViewModel != null;
+        this.detailTemplateResId = hasDetail ? detailTemplateResId : -1;
+        //this.mViewModel = viewModel;
+        this.mChildViewModel = childViewModel;
+        /*this.state = SymptomState.UNKNOWN;
+        this.detailTemplateResId = hasDetail ? detailTemplateResId : -1;
+        this.detail = "";*/
     }
 
     // </editor-fold>
+
 
     // <editor-fold defaultstate="collapsed" desc="Getters & Setters">
 
     public String getName() {
         return this.name;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public boolean hasDetail() {
+        return hasDetail;
+    }
+
+    public void setHasDetail(boolean hasDetail) {
+        this.hasDetail = hasDetail;
+    }
+
+    public int getDetailTemplateResId() {
+        return detailTemplateResId;
+    }
+
+    public void setDetailTemplateResId(int detailTemplateResId) {
+        this.detailTemplateResId = detailTemplateResId;
     }
 
     public SymptomState getState() {
@@ -135,33 +221,44 @@ public abstract class Symptom {
         this.mLastCheckedId = mLastCheckedId;
     }
 
-    public boolean hasDetail() {
-        return hasDetail;
+    /*public TViewModel getViewModel() {
+        return mViewModel;
+    }*/
+
+    public TChildViewModel getChildViewModel() {
+        return mChildViewModel;
     }
 
-    public void setHasDetail(boolean hasDetail) {
-        this.hasDetail = hasDetail;
-    }
+    /*public void setViewModel(TViewModel viewModel) {
+        this.mViewModel = viewModel;
+    }*/
 
-    public String getDetail() {
-        return detail;
-    }
-
-    public void setDetail(String detail) {
-        this.detail = detail;
-    }
-
-    public int getValue() {
-        return value;
+    public void setChildViewModel(TChildViewModel childViewModel) {
+        this.mChildViewModel = childViewModel;
     }
 
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Enumurations">
 
-    private static class Fever extends Symptom {
+    private static class Fever<T extends ISymptomViewModel> extends Symptom<T> {
         public Fever() {
-            super(0, "Fever", false);
+            this(null);
+        }
+
+        public Fever(Class<T> cls) {
+            super(0, "Fever");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -174,14 +271,30 @@ public abstract class Symptom {
                 add(Disease.CHOLERA);
                 add(Disease.MEASLES);
                 add(Disease.YELLOW_FEVER);
-                add(Disease.OTHER);
+                add(Disease.DENGUE);
+                add(Disease.MONKEYPOX);
             }};
         }
     }
 
-    private static class Vomiting extends Symptom {
+    private static class Vomiting<T extends ISymptomViewModel> extends Symptom<T> {
         public Vomiting() {
-            super(1, "Vomiting", false);
+            this(null);
+        }
+
+        public Vomiting(Class<T> cls) {
+            super(1, "Vomiting");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -191,15 +304,34 @@ public abstract class Symptom {
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
                 add(Disease.CSM);
+                add(Disease.CHOLERA);
                 add(Disease.MEASLES);
+                add(Disease.YELLOW_FEVER);
+                add(Disease.DENGUE);
+                add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class Diarrhea extends Symptom {
+    private static class Diarrhea<T extends ISymptomViewModel> extends Symptom<T> {
         public Diarrhea() {
-            super(2, "Diarrhea", false);
+            this(null);
+        }
+
+        public Diarrhea(Class<T> cls) {
+            super(2, "Diarrhea");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -209,35 +341,61 @@ public abstract class Symptom {
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
                 add(Disease.CSM);
+                add(Disease.CHOLERA);
                 add(Disease.MEASLES);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class BloodInStool extends Symptom {
+    private static class BloodInStool<T extends ISymptomViewModel> extends Symptom<T> {
         public BloodInStool() {
-            super(3, "Blood in Stool", false);
+            this(null);
+        }
+
+        public BloodInStool(Class<T> cls) {
+            super(3, "Blood in Stool");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.MEASLES);
-                add(Disease.DENGUE);
+                add(Disease.CHOLERA);
+                add(Disease.YELLOW_FEVER);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class Nausea extends Symptom {
+    private static class Nausea<T extends ISymptomViewModel> extends Symptom<T> {
         public Nausea() {
-            super(4, "Nausea", false);
+            this(null);
+        }
+
+        public Nausea(Class<T> cls) {
+            super(4, "Nausea");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -247,16 +405,33 @@ public abstract class Symptom {
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
                 add(Disease.CSM);
-                add(Disease.MEASLES);
+                add(Disease.CHOLERA);
+                add(Disease.YELLOW_FEVER);
                 add(Disease.DENGUE);
+                add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class AbdominalPain extends Symptom {
+    private static class AbdominalPain<T extends ISymptomViewModel> extends Symptom<T> {
         public AbdominalPain() {
-            super(5, "Abdominal pain", false);
+            this(null);
+        }
+
+        public AbdominalPain(Class<T> cls) {
+            super(5, "Abdominal pain");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -265,17 +440,32 @@ public abstract class Symptom {
                 add(Disease.EVD);
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.MEASLES);
+                add(Disease.CHOLERA);
+                add(Disease.YELLOW_FEVER);
                 add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class Headache extends Symptom {
+    private static class Headache<T extends ISymptomViewModel> extends Symptom<T> {
         public Headache() {
-            super(6, "Headache", false);
+            this(null);
+        }
+
+        public Headache(Class<T> cls) {
+            super(6, "Headache");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -285,16 +475,32 @@ public abstract class Symptom {
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
                 add(Disease.CSM);
-                add(Disease.MEASLES);
+                add(Disease.YELLOW_FEVER);
                 add(Disease.DENGUE);
+                add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class MusclePain extends Symptom {
+    private static class MusclePain<T extends ISymptomViewModel> extends Symptom<T> {
         public MusclePain() {
-            super(7, "Muscle pain", false);
+            this(null);
+        }
+
+        public MusclePain(Class<T> cls) {
+            super(7, "Muscle pain");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -304,16 +510,34 @@ public abstract class Symptom {
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
                 add(Disease.CSM);
+                add(Disease.CHOLERA);
                 add(Disease.MEASLES);
+                add(Disease.YELLOW_FEVER);
                 add(Disease.DENGUE);
+                add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class FatigueGeneralWeakness extends Symptom {
+    private static class FatigueGeneralWeakness<T extends ISymptomViewModel> extends Symptom<T> {
         public FatigueGeneralWeakness() {
-            super(8, "Fatigue/general weakness", false);
+            this(null);
+        }
+
+        public FatigueGeneralWeakness(Class<T> cls) {
+            super(8, "Fatigue/general weakness");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -323,16 +547,34 @@ public abstract class Symptom {
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
                 add(Disease.CSM);
+                add(Disease.CHOLERA);
                 add(Disease.MEASLES);
+                add(Disease.YELLOW_FEVER);
                 add(Disease.DENGUE);
+                add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class UnexplainedBleedingBruising extends Symptom {
+    private static class UnexplainedBleedingBruising<T extends ISymptomViewModel> extends Symptom<T> {
         public UnexplainedBleedingBruising() {
-            super(9, "Unexplained bleeding or bruising", false);
+            this(null);
+        }
+
+        public UnexplainedBleedingBruising(Class<T> cls) {
+            super(9, "Unexplained bleeding or bruising");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -340,18 +582,29 @@ public abstract class Symptom {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.MEASLES);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class BleedingGum extends Symptom {
+    private static class BleedingGum<T extends ISymptomViewModel> extends Symptom<T> {
         public BleedingGum() {
-            super(10, "Bleeding of the gums", false);
+            this(null);
+        }
+
+        public BleedingGum(Class<T> cls) {
+            super(10, "Bleeding of the gums");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -359,18 +612,31 @@ public abstract class Symptom {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.MEASLES);
+                add(Disease.YELLOW_FEVER);
                 add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
-
-    private static class BleedingFromInjectionSite extends Symptom {
+    //Other
+    private static class BleedingFromInjectionSite<T extends ISymptomViewModel> extends Symptom<T> {
         public BleedingFromInjectionSite() {
-            super(11, "Bleeding from injection site", false);
+            this(null);
+        }
+
+        public BleedingFromInjectionSite(Class<T> cls) {
+            super(11, "Bleeding from injection site");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -378,18 +644,29 @@ public abstract class Symptom {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.MEASLES);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class NoseBleed extends Symptom {
+    private static class NoseBleed<T extends ISymptomViewModel> extends Symptom<T> {
         public NoseBleed() {
-            super(12, "Nose bleed (epistaxis)", false);
+            this(null);
+        }
+
+        public NoseBleed(Class<T> cls) {
+            super(12, "Nose bleed (epistaxis)");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -397,18 +674,30 @@ public abstract class Symptom {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.MEASLES);
-                add(Disease.DENGUE);
+                add(Disease.YELLOW_FEVER);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class BloodyBlackStool extends Symptom {
+    private static class BloodyBlackStool<T extends ISymptomViewModel> extends Symptom<T> {
         public BloodyBlackStool() {
-            super(13, "Bloody or black stools (melena)", false);
+            this(null);
+        }
+
+        public BloodyBlackStool(Class<T> cls) {
+            super(13, "Bloody or black stools (melena)");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -416,18 +705,29 @@ public abstract class Symptom {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.MEASLES);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class BloodInVomit extends Symptom {
+    private static class BloodInVomit<T extends ISymptomViewModel> extends Symptom<T> {
         public BloodInVomit() {
-            super(14, "Fresh/red blood in vomit (hematemesis)", false);
+            this(null);
+        }
+
+        public BloodInVomit(Class<T> cls) {
+            super(14, "Fresh/red blood in vomit (hematemesis)");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -435,18 +735,30 @@ public abstract class Symptom {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.MEASLES);
                 add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class DigestedBloodInVomit extends Symptom {
+    private static class DigestedBloodInVomit<T extends ISymptomViewModel> extends Symptom<T> {
         public DigestedBloodInVomit() {
-            super(15, "Digested blood\"coffee grounds\" in vomit", false);
+            this(null);
+        }
+
+        public DigestedBloodInVomit(Class<T> cls) {
+            super(15, "Digested blood\"coffee grounds\" in vomit");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -454,18 +766,29 @@ public abstract class Symptom {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.MEASLES);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class CoughingBlood extends Symptom {
+    private static class CoughingBlood<T extends ISymptomViewModel> extends Symptom<T> {
         public CoughingBlood() {
-            super(16, "Coughing up blood (haemoptysis)", false);
+            this(null);
+        }
+
+        public CoughingBlood(Class<T> cls) {
+            super(16, "Coughing up blood (haemoptysis)");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -473,18 +796,29 @@ public abstract class Symptom {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.MEASLES);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class BleedingFromVagina extends Symptom {
+    private static class BleedingFromVagina<T extends ISymptomViewModel> extends Symptom<T> {
         public BleedingFromVagina() {
-            super(17, "Bleeding from vagina, other than menstruation", false);
+            this(null);
+        }
+
+        public BleedingFromVagina(Class<T> cls) {
+            super(17, "Bleeding from vagina, other than menstruation");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -492,18 +826,29 @@ public abstract class Symptom {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.MEASLES);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class BruisedSkin extends Symptom {
+    private static class BruisedSkin<T extends ISymptomViewModel> extends Symptom<T> {
         public BruisedSkin() {
-            super(18, "Bruising of the skin (petechiae/ecchymosis)", false);
+            this(null);
+        }
+
+        public BruisedSkin(Class<T> cls) {
+            super(18, "Bruising of the skin (petechiae/ecchymosis)");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -511,18 +856,29 @@ public abstract class Symptom {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.MEASLES);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class BloodInUrine extends Symptom {
+    private static class BloodInUrine<T extends ISymptomViewModel> extends Symptom<T> {
         public BloodInUrine() {
-            super(19, "Blood in urine (hematuria)", false);
+            this(null);
+        }
+
+        public BloodInUrine(Class<T> cls) {
+            super(19, "Blood in urine (hematuria)");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -530,18 +886,29 @@ public abstract class Symptom {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.MEASLES);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class OtherHemorrhagic extends Symptom {
+    private static class OtherHemorrhagic<T extends ISymptomViewModel> extends Symptom<T> {
         public OtherHemorrhagic() {
-            super(20, "Other hemorrhagic symptoms", false);
+            this(null);
+        }
+
+        public OtherHemorrhagic(Class<T> cls) {
+            super(20, "Other hemorrhagic symptoms");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -549,18 +916,29 @@ public abstract class Symptom {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.MEASLES);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class SkinRash extends Symptom {
+    private static class SkinRash<T extends ISymptomViewModel> extends Symptom<T> {
         public SkinRash() {
-            super(21, "Skin rash", false);
+            this(null);
+        }
+
+        public SkinRash(Class<T> cls) {
+            super(21, "Skin rash");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -571,35 +949,59 @@ public abstract class Symptom {
                 add(Disease.AVIAN_INFLUENCA);
                 add(Disease.CSM);
                 add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
                 add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class StiffNeck extends Symptom {
+    private static class StiffNeck<T extends ISymptomViewModel> extends Symptom<T> {
         public StiffNeck() {
-            super(22, "Stiff neck", false);
+            this(null);
+        }
+
+        public StiffNeck(Class<T> cls) {
+            super(22, "Stiff neck");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
                 add(Disease.CSM);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class SoreThroat extends Symptom {
+    private static class SoreThroat<T extends ISymptomViewModel> extends Symptom<T> {
         public SoreThroat() {
-            super(23, "Sore throat/pharyngitis", false);
+            this(null);
+        }
+
+        public SoreThroat(Class<T> cls) {
+            super(23, "Sore throat/pharyngitis");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -608,17 +1010,31 @@ public abstract class Symptom {
                 add(Disease.EVD);
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
+                add(Disease.MEASLES);
+                add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class Cough extends Symptom {
+    private static class Cough<T extends ISymptomViewModel> extends Symptom<T> {
         public Cough() {
-            super(24, "Cough", false);
+            this(null);
+        }
+
+        public Cough(Class<T> cls) {
+            super(24, "Cough");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -627,36 +1043,61 @@ public abstract class Symptom {
                 add(Disease.EVD);
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
+                add(Disease.MEASLES);
+                add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class RunnyNose extends Symptom {
+    private static class RunnyNose<T extends ISymptomViewModel> extends Symptom<T> {
         public RunnyNose() {
-            super(25, "Runny nose", false);
+            this(null);
+        }
+
+        public RunnyNose(Class<T> cls) {
+            super(25, "Runny nose");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
+                add(Disease.MEASLES);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class DifficultyBreathing extends Symptom {
+    private static class DifficultyBreathing<T extends ISymptomViewModel> extends Symptom<T> {
         public DifficultyBreathing() {
-            super(26, "Difficulty breathing", false);
+            this(null);
+        }
+
+        public DifficultyBreathing(Class<T> cls) {
+            super(26, "Difficulty breathing");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -665,17 +1106,30 @@ public abstract class Symptom {
                 add(Disease.EVD);
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
+                add(Disease.MEASLES);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class ChestPain extends Symptom {
+    private static class ChestPain<T extends ISymptomViewModel> extends Symptom<T> {
         public ChestPain() {
-            super(27, "Chest pain", false);
+            this(null);
+        }
+
+        public ChestPain(Class<T> cls) {
+            super(27, "Chest pain");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -684,17 +1138,29 @@ public abstract class Symptom {
                 add(Disease.EVD);
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class ConfusedOrDisoriented extends Symptom {
+    private static class ConfusedOrDisoriented<T extends ISymptomViewModel> extends Symptom<T> {
         public ConfusedOrDisoriented() {
-            super(28, "Confused or disoriented", false);
+            this(null);
+        }
+
+        public ConfusedOrDisoriented(Class<T> cls) {
+            super(28, "Confused or disoriented");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -704,16 +1170,31 @@ public abstract class Symptom {
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
                 add(Disease.CSM);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
+                add(Disease.CHOLERA);
+                add(Disease.MEASLES);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class ConvulsionsOrSeizures extends Symptom {
+    private static class ConvulsionsOrSeizures<T extends ISymptomViewModel> extends Symptom<T> {
         public ConvulsionsOrSeizures() {
-            super(29, "Convulsions or Seizures", false);
+            this(null);
+        }
+
+        public ConvulsionsOrSeizures(Class<T> cls) {
+            super(29, "Convulsions or Seizures");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -723,15 +1204,31 @@ public abstract class Symptom {
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
                 add(Disease.CSM);
-                add(Disease.YELLOW_FEVER);
+                add(Disease.CHOLERA);
+                add(Disease.MEASLES);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class AlteredConsciousness extends Symptom {
+    private static class AlteredConsciousness<T extends ISymptomViewModel> extends Symptom<T> {
         public AlteredConsciousness() {
-            super(30, "Altered level of consciousness", false);
+            this(null);
+        }
+
+        public AlteredConsciousness(Class<T> cls) {
+            super(30, "Altered level of consciousness");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -741,15 +1238,31 @@ public abstract class Symptom {
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
                 add(Disease.CSM);
-                add(Disease.YELLOW_FEVER);
+                add(Disease.CHOLERA);
+                add(Disease.MEASLES);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class Conjunctivitis extends Symptom {
+    private static class Conjunctivitis<T extends ISymptomViewModel> extends Symptom<T> {
         public Conjunctivitis() {
-            super(31, "Conjunctivitis (red eyes)", false);
+            this(null);
+        }
+
+        public Conjunctivitis(Class<T> cls) {
+            super(31, "Conjunctivitis (red eyes)");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -758,16 +1271,31 @@ public abstract class Symptom {
                 add(Disease.EVD);
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.YELLOW_FEVER);
+                add(Disease.MEASLES);
+                add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class PainBehindEyes extends Symptom {
+    private static class PainBehindEyes<T extends ISymptomViewModel> extends Symptom<T> {
         public PainBehindEyes() {
-            super(32, "Pain behind eyes/Sensitivity to light", false);
+            this(null);
+        }
+
+        public PainBehindEyes(Class<T> cls) {
+            super(32, "Pain behind eyes/Sensitivity to light");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -777,33 +1305,61 @@ public abstract class Symptom {
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
                 add(Disease.CSM);
-                add(Disease.YELLOW_FEVER);
+                add(Disease.MEASLES);
+                add(Disease.DENGUE);
+                add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class KoplikSpots extends Symptom {
+    private static class KoplikSpots<T extends ISymptomViewModel> extends Symptom<T> {
         public KoplikSpots() {
-            super(33, "Koplik's Spots", false);
+            this(null);
+        }
+
+        public KoplikSpots(Class<T> cls) {
+            super(33, "Koplik's Spots");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.YELLOW_FEVER);
+                add(Disease.MEASLES);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class Thrombocytopenia extends Symptom {
+    private static class Thrombocytopenia<T extends ISymptomViewModel> extends Symptom<T> {
         public Thrombocytopenia() {
-            super(34, "Thrombocytopenia", false);
+            this(null);
+        }
+
+        public Thrombocytopenia(Class<T> cls) {
+            super(34, "Thrombocytopenia");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -811,36 +1367,59 @@ public abstract class Symptom {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.YELLOW_FEVER);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class MiddleEarInflammation extends Symptom {
+    private static class MiddleEarInflammation<T extends ISymptomViewModel> extends Symptom<T> {
         public MiddleEarInflammation() {
-            super(35, "Middle ear inflammation (otitis media)", false);
+            this(null);
+        }
+
+        public MiddleEarInflammation(Class<T> cls) {
+            super(35, "Middle ear inflammation (otitis media)");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
                 add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class AcuteHearingLoss extends Symptom {
+    private static class AcuteHearingLoss<T extends ISymptomViewModel> extends Symptom<T> {
         public AcuteHearingLoss() {
-            super(36, "Acute hearing loss", false);
+            this(null);
+        }
+
+        public AcuteHearingLoss(Class<T> cls) {
+            super(36, "Acute hearing loss");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -848,18 +1427,29 @@ public abstract class Symptom {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class Dehydration extends Symptom {
+    private static class Dehydration<T extends ISymptomViewModel> extends Symptom<T> {
         public Dehydration() {
-            super(37, "Dehydration", false);
+            this(null);
+        }
+
+        public Dehydration(Class<T> cls) {
+            super(37, "Dehydration");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -867,18 +1457,30 @@ public abstract class Symptom {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
+                add(Disease.CHOLERA);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class LossOfAppetite extends Symptom {
+    private static class LossOfAppetite<T extends ISymptomViewModel> extends Symptom<T> {
         public LossOfAppetite() {
-            super(38, "Anorexia/loss of appetite", false);
+            this(null);
+        }
+
+        public LossOfAppetite(Class<T> cls) {
+            super(38, "Anorexia/loss of appetite");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -886,18 +1488,32 @@ public abstract class Symptom {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
                 add(Disease.CSM);
-                add(Disease.MEASLES);
+                add(Disease.CHOLERA);
                 add(Disease.YELLOW_FEVER);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class RefusalToFeed extends Symptom {
+    private static class RefusalToFeed<T extends ISymptomViewModel> extends Symptom<T> {
         public RefusalToFeed() {
-            super(39, "Refusal to feed or drink", false);
+            this(null);
+        }
+
+        public RefusalToFeed(Class<T> cls) {
+            super(39, "Refusal to feed or drink");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -905,18 +1521,31 @@ public abstract class Symptom {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
                 add(Disease.CSM);
-                add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
+                add(Disease.CHOLERA);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class JointPain extends Symptom {
+    private static class JointPain<T extends ISymptomViewModel> extends Symptom<T> {
         public JointPain() {
-            super(40, "Joint pain or arthritis", false);
+            this(null);
+        }
+
+        public JointPain(Class<T> cls) {
+            super(40, "Joint pain or arthritis");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -927,15 +1556,30 @@ public abstract class Symptom {
                 add(Disease.AVIAN_INFLUENCA);
                 add(Disease.CSM);
                 add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
+                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class Shock extends Symptom {
+    private static class Shock<T extends ISymptomViewModel> extends Symptom<T> {
         public Shock() {
-            super(41, "Shock (Systolic bp <90)", false);
+            this(null);
+        }
+
+        public Shock(Class<T> cls) {
+            super(41, "Shock (Systolic bp <90)");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -945,38 +1589,60 @@ public abstract class Symptom {
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
                 add(Disease.CSM);
+                add(Disease.CHOLERA);
                 add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class Hiccups extends Symptom {
+    private static class Hiccups<T extends ISymptomViewModel> extends Symptom<T> {
         public Hiccups() {
-            super(42, "Hiccups", false);
+            this(null);
+        }
+
+        public Hiccups(Class<T> cls) {
+            super(42, "Hiccups");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
-                add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.CHOLERA);
-                add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class OtherNonHemorrhagic extends Symptom {
+    private static class OtherNonHemorrhagic<T extends ISymptomViewModel> extends Symptom<T> {
         public OtherNonHemorrhagic() {
-            super(43, "Other clinical symptom", false);
+            this(null);
+        }
+
+        public OtherNonHemorrhagic(Class<T> cls) {
+            super(43, "Other clinical symptom");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -988,316 +1654,463 @@ public abstract class Symptom {
                 add(Disease.CSM);
                 add(Disease.CHOLERA);
                 add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
+                add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class Backache extends Symptom {
+    private static class Backache<T extends ISymptomViewModel> extends Symptom<T> {
         public Backache() {
-            super(44, "Backache", false);
+            this(null);
+        }
+
+        public Backache(Class<T> cls) {
+            super(44, "Backache");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.CHOLERA);
-                add(Disease.MEASLES);
                 add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class BleedingFromEyes extends Symptom {
+    private static class BleedingFromEyes<T extends ISymptomViewModel> extends Symptom<T> {
         public BleedingFromEyes() {
-            super(45, "Bleeding from the eyes", false);
+            this(null);
+        }
+
+        public BleedingFromEyes(Class<T> cls) {
+            super(45, "Bleeding from the eyes");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.CHOLERA);
-                add(Disease.MEASLES);
                 add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class Jaundice extends Symptom {
+    private static class Jaundice<T extends ISymptomViewModel> extends Symptom<T> {
         public Jaundice() {
-            super(46, "Jaundice", false);
+            this(null);
+        }
+
+        public Jaundice(Class<T> cls) {
+            super(46, "Jaundice");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.CHOLERA);
-                add(Disease.MEASLES);
                 add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class DarkUrine extends Symptom {
+    private static class DarkUrine<T extends ISymptomViewModel> extends Symptom<T> {
         public DarkUrine() {
-            super(47, "Dark Urine", false);
+            this(null);
+        }
+
+        public DarkUrine(Class<T> cls) {
+            super(47, "Dark Urine");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.CHOLERA);
-                add(Disease.MEASLES);
                 add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class BleedingFromStomach extends Symptom {
+    private static class BleedingFromStomach<T extends ISymptomViewModel> extends Symptom<T> {
         public BleedingFromStomach() {
-            super(48, "Bleeding from the stomach", false);
+            this(null);
+        }
+
+        public BleedingFromStomach(Class<T> cls) {
+            super(48, "Bleeding from the stomach");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.CHOLERA);
-                add(Disease.MEASLES);
                 add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class RapidBreathing extends Symptom {
+    private static class RapidBreathing<T extends ISymptomViewModel> extends Symptom<T> {
         public RapidBreathing() {
-            super(49, "Rapid breathing", false);
+            this(null);
+        }
+
+        public RapidBreathing(Class<T> cls) {
+            super(49, "Rapid breathing");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.CHOLERA);
-                add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
                 add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class SwollenGlands extends Symptom {
+    private static class SwollenGlands<T extends ISymptomViewModel> extends Symptom<T> {
         public SwollenGlands() {
-            super(50, "Swollen glands", false);
+            this(null);
+        }
+
+        public SwollenGlands(Class<T> cls) {
+            super(50, "Swollen glands");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.CHOLERA);
-                add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
                 add(Disease.DENGUE);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class CutaneousEruption extends Symptom {
+    private static class CutaneousEruption<T extends ISymptomViewModel> extends Symptom<T> {
         public CutaneousEruption() {
-            super(51, "Cutaneous eruption", false);
+            this(null);
+        }
+
+        public CutaneousEruption(Class<T> cls) {
+            super(51, "Cutaneous eruption");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.CHOLERA);
-                add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
+                add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class ChillsOrSweat extends Symptom {
+    private static class ChillsOrSweat<T extends ISymptomViewModel> extends Symptom<T> {
         public ChillsOrSweat() {
-            super(52, "Chills or sweats", false);
+            this(null);
+        }
+
+        public ChillsOrSweat(Class<T> cls) {
+            super(52, "Chills or sweats");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.CHOLERA);
-                add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
+                add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class LesionsThatItch extends Symptom {
-        public LesionsThatItch() {
-            super(53, "Lesions that itch", false);
-        }
-
-        @Override
-        public List<Disease> getSupportDisease() {
-            return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.CHOLERA);
-                add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
-                add(Disease.OTHER);
-            }};
-        }
-    }
-
-    private static class Bedridden extends Symptom {
+    private static class Bedridden<T extends ISymptomViewModel> extends Symptom<T> {
         public Bedridden() {
-            super(54, "Is the patient bedridden?", false);
+            this(null);
+        }
+
+        public Bedridden(Class<T> cls) {
+            super(54, "Is the patient bedridden?");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.CHOLERA);
-                add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
+                add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class OralUlcers extends Symptom {
+    private static class OralUlcers<T extends ISymptomViewModel> extends Symptom<T> {
         public OralUlcers() {
-            super(55, "Oral ulcers", false);
+            this(null);
+        }
+
+        public OralUlcers(Class<T> cls) {
+            super(55, "Oral ulcers");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.CHOLERA);
-                add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
+                add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class PainfulLymphadenitis extends Symptom {
+    private static class PainfulLymphadenitis<T extends ISymptomViewModel> extends Symptom<T> {
         public PainfulLymphadenitis() {
-            super(56, "Painful lymphadenitis", false);
+            this(null);
+        }
+
+        public PainfulLymphadenitis(Class<T> cls) {
+            super(56, "Painful lymphadenitis");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.CHOLERA);
-                add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
+                add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
             }};
         }
     }
 
-    private static class BlackeningDeathOfTissue extends Symptom {
+    private static class BlackeningDeathOfTissue<T extends ISymptomViewModel> extends Symptom<T> {
         public BlackeningDeathOfTissue() {
-            super(57, "Blackening and death of tissue in extremities", false);
+            this(null);
+        }
+
+        public BlackeningDeathOfTissue(Class<T> cls) {
+            super(57, "Blackening and death of tissue in extremities");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.CHOLERA);
-                add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
-                add(Disease.OTHER);
+
             }};
         }
     }
 
-    private static class BuboesGroinArmpitNeck extends Symptom {
+    private static class BuboesGroinArmpitNeck<T extends ISymptomViewModel> extends Symptom<T> {
         public BuboesGroinArmpitNeck() {
-            super(58, "Buboes in the groin, armpit or neck", false);
+            this(null);
+        }
+
+        public BuboesGroinArmpitNeck(Class<T> cls) {
+            super(58, "Buboes in the groin, armpit or neck");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.EVD);
-                add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.CHOLERA);
-                add(Disease.MEASLES);
-                add(Disease.YELLOW_FEVER);
-                add(Disease.DENGUE);
-                add(Disease.OTHER);
+
             }};
         }
     }
 
-    private static class BulgingFontanelle extends Symptom {
+    private static class BulgingFontanelle<T extends ISymptomViewModel> extends Symptom<T> {
         public BulgingFontanelle() {
-            super(59, "Bulging fontanelle", false);
+            this(null);
+        }
+
+        public BulgingFontanelle(Class<T> cls) {
+            super(59, "Bulging fontanelle");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public List<Disease> getSupportDisease() {
+            return new ArrayList<Disease>() {{
+                add(Disease.CSM);
+            }};
+        }
+    }
+
+    //NEW
+    private static class DifficultySwallowing<T extends ISymptomViewModel> extends Symptom<T> {
+        public DifficultySwallowing() {
+            this(null);
+        }
+
+        public DifficultySwallowing(Class<T> cls) {
+            super(60, "Difficulty Swallowing");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
 
         @Override
@@ -1306,9 +2119,376 @@ public abstract class Symptom {
                 add(Disease.EVD);
                 add(Disease.LASSA);
                 add(Disease.AVIAN_INFLUENCA);
-                add(Disease.CSM);
-                add(Disease.CHOLERA);
-                add(Disease.MEASLES);
+                add(Disease.OTHER);
+            }};
+        }
+    }
+
+    private static class Lesions<T extends LesionChildViewModel & ISymptomViewModel> extends Symptom<T> {
+        public Lesions() {
+            this(null);
+        }
+
+        public Lesions(Class<T> cls) {
+            super(61, "Does the patient have lesions?",  R.layout.row_symptom_details_lesions_child_layout);
+
+            if (cls == null)
+                return;
+
+            try {
+                Constructor<T> ctor = cls.getConstructor(Symptom.class);
+                mChildViewModel = ctor.newInstance(this);
+
+                /*mChildViewModel.setLesionsThatItches(Symptom.LESIONS_THAT_ITCH);
+                mChildViewModel.setLesionsInSameState(Symptom.LESIONS_SAME_STATE);
+                mChildViewModel.setLesionsSameSize(Symptom.LESIONS_SAME_SIZE);
+                mChildViewModel.setLesionsDeepAndProfound(Symptom.LESIONS_SAME_PROFOUND);
+                mChildViewModel.setLesionsResemblePic1(Symptom.LESIONS_LIKE_PIC1);
+                mChildViewModel.setLesionsResemblePic2(Symptom.LESIONS_LIKE_PIC2);
+                mChildViewModel.setLesionsResemblePic3(Symptom.LESIONS_LIKE_PIC3);
+                mChildViewModel.setLesionsResemblePic4(Symptom.LESIONS_LIKE_PIC4);*/
+
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (InvocationTargetException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (NoSuchMethodException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public List<Disease> getSupportDisease() {
+            return new ArrayList<Disease>() {{
+                add(Disease.MONKEYPOX);
+                add(Disease.OTHER);
+            }};
+        }
+
+        @Override
+        public T getChildViewModel() {
+            return mChildViewModel;
+        }
+    }
+
+    private static class LymphadenopathyInguinal<T extends ISymptomViewModel> extends Symptom<T> {
+        public LymphadenopathyInguinal() {
+            this(null);
+        }
+
+        public LymphadenopathyInguinal(Class<T> cls) {
+            super(62, "Lymphadenopathy, inguinal");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public List<Disease> getSupportDisease() {
+            return new ArrayList<Disease>() {{
+                add(Disease.MONKEYPOX);
+                add(Disease.OTHER);
+            }};
+        }
+    }
+
+    private static class LymphadenopathyAxillary<T extends ISymptomViewModel> extends Symptom<T> {
+        public LymphadenopathyAxillary() {
+            this(null);
+        }
+
+        public LymphadenopathyAxillary(Class<T> cls) {
+            super(63, "Lymphadenopathy, axillary");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public List<Disease> getSupportDisease() {
+            return new ArrayList<Disease>() {{
+                add(Disease.MONKEYPOX);
+                add(Disease.OTHER);
+            }};
+        }
+    }
+
+    private static class LymphadenopathyCervical<T extends ISymptomViewModel> extends Symptom<T> {
+        public LymphadenopathyCervical() {
+            this(null);
+        }
+
+        public LymphadenopathyCervical(Class<T> cls) {
+            super(64, "Lymphadenopathy, cervical");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public List<Disease> getSupportDisease() {
+            return new ArrayList<Disease>() {{
+                add(Disease.MONKEYPOX);
+                add(Disease.OTHER);
+            }};
+        }
+    }
+
+
+
+    private static class LesionsThatItch<T extends ISymptomViewModel> extends Symptom<T> {
+        public LesionsThatItch() {
+            this(null);
+        }
+
+        public LesionsThatItch(Class<T> cls) {
+            super(65, "Lesions that itch");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public List<Disease> getSupportDisease() {
+            return new ArrayList<Disease>() {{
+                add(Disease.MONKEYPOX);
+                add(Disease.OTHER);
+            }};
+        }
+    }
+
+    private static class LesionsSameState<T extends ISymptomViewModel> extends Symptom<T> {
+        public LesionsSameState() {
+            this(null);
+        }
+
+        public LesionsSameState(Class<T> cls) {
+            super(66, "Are the lesions in the same state of development on the body?");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public List<Disease> getSupportDisease() {
+            return new ArrayList<Disease>() {{
+                add(Disease.MONKEYPOX);
+                add(Disease.OTHER);
+            }};
+        }
+    }
+
+    private static class LesionsSameSize<T extends ISymptomViewModel> extends Symptom<T> {
+        public LesionsSameSize() {
+            this(null);
+        }
+
+        public LesionsSameSize(Class<T> cls) {
+            super(67, "Are all of the lesions the same size and state of development?");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public List<Disease> getSupportDisease() {
+            return new ArrayList<Disease>() {{
+                add(Disease.MONKEYPOX);
+                add(Disease.OTHER);
+            }};
+        }
+    }
+
+    private static class LesionsDeepProfound<T extends ISymptomViewModel> extends Symptom<T> {
+        public LesionsDeepProfound() {
+            this(null);
+        }
+
+        public LesionsDeepProfound(Class<T> cls) {
+            super(68, "Are the lesions deep and profound?");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public List<Disease> getSupportDisease() {
+            return new ArrayList<Disease>() {{
+                add(Disease.MONKEYPOX);
+                add(Disease.OTHER);
+            }};
+        }
+    }
+
+    private static class LesionsLikePic1<T extends ISymptomViewModel> extends Symptom<T> {
+        public LesionsLikePic1() {
+            this(null);
+        }
+
+        public LesionsLikePic1(Class<T> cls) {
+            super(69, "Does the rash resemble the picture below?");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public List<Disease> getSupportDisease() {
+            return new ArrayList<Disease>() {{
+                add(Disease.MONKEYPOX);
+                add(Disease.OTHER);
+            }};
+        }
+    }
+
+    private static class LesionsLikePic2<T extends ISymptomViewModel> extends Symptom<T> {
+        public LesionsLikePic2() {
+            this(null);
+        }
+
+        public LesionsLikePic2(Class<T> cls) {
+            super(70, "Does the rash resemble the picture below?");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public List<Disease> getSupportDisease() {
+            return new ArrayList<Disease>() {{
+                add(Disease.MONKEYPOX);
+                add(Disease.OTHER);
+            }};
+        }
+    }
+
+    private static class LesionsLikePic3<T extends ISymptomViewModel> extends Symptom<T> {
+        public LesionsLikePic3() {
+            this(null);
+        }
+
+        public LesionsLikePic3(Class<T> cls) {
+            super(71, "Does the rash resemble the picture below?");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public List<Disease> getSupportDisease() {
+            return new ArrayList<Disease>() {{
+                add(Disease.MONKEYPOX);
+                add(Disease.OTHER);
+            }};
+        }
+    }
+
+    private static class LesionsLikePic4<T extends ISymptomViewModel> extends Symptom<T> {
+        public LesionsLikePic4() {
+            this(null);
+        }
+
+        public LesionsLikePic4(Class<T> cls) {
+            super(72, "Does the rash resemble the picture below?");
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public List<Disease> getSupportDisease() {
+            return new ArrayList<Disease>() {{
+                add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
             }};
         }
@@ -1318,6 +2498,7 @@ public abstract class Symptom {
 
     // <editor-fold defaultstate="collapsed" desc="Public Methods">
 
+    // TODO: Make async
     public static ISymptomValueLoader makeSymptoms(Disease disease) {
         List<Symptom> database = getSymptomDatabase();
         List<Symptom> newList = new ArrayList<>();
@@ -1338,7 +2519,7 @@ public abstract class Symptom {
     // <editor-fold defaultstate="collapsed" desc="Private Methods">
 
     private static Symptom newSymptom(Symptom s) {
-        Symptom newSymptom = new Symptom(s.getValue(), s.getName(), s.hasDetail()) {
+        Symptom newSymptom = new Symptom(s.getValue(), s.getName(), s.getDetailTemplateResId(), s.getChildViewModel()) {
             private Symptom _s;
             private boolean _copiedSupportedDiseases;
             private List<Disease> _originalList;
@@ -1364,8 +2545,8 @@ public abstract class Symptom {
                 _s = symptom;
                 _copiedSupportedDiseases = false;
 
-                this.setState(symptom.getState());
-                this.setDetail(symptom.getDetail());
+                //this.setViewModel(symptom.getViewModel());
+                this.setChildViewModel(symptom.getChildViewModel());
                 return this;
             }
 
@@ -1429,13 +2610,25 @@ public abstract class Symptom {
             add(Symptom.SWOLLEN_GLANDS);
             add(Symptom.CUTANEOUS_ERUPTION);
             add(Symptom.CHILLS_OR_SWEAT);
-            add(Symptom.LESIONS_THAT_ITCH);
             add(Symptom.BEDRIDDEN);
             add(Symptom.ORAL_ULCERS);
             add(Symptom.PAINFUL_LYMPHADENITIS);
             add(Symptom.BLACKENING_DEATH_OF_TISSUE);
             add(Symptom.BUBOES_GROIN_ARMPIT_NECK);
             add(Symptom.BULGING_FONTANELLE);
+
+            //NEW
+            add(Symptom.DIFFICULTY_SWALLOWING);
+            add(Symptom.LESIONS);
+            add(Symptom.LYMPHADENOPATHY_INGUINAL);
+            add(Symptom.LYMPHADENOPATHY_AXILLARY);
+            add(Symptom.LYMPHADENOPATHY_CERVICAL);
+
+
+            //add(Symptom.LESIONS_THAT_ITCH);
+            //add(Symptom.LESIONS_SAME_STATE);
+            //add(Symptom.LESIONS_SAME_SIZE);
+            //add(Symptom.LESIONS_SAME_PROFOUND);
         }};
     }
 

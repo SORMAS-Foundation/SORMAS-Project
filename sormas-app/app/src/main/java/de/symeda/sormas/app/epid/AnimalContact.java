@@ -14,14 +14,13 @@ import de.symeda.sormas.app.backend.epidata.EpiData;
  * sampson.orson@technologyboard.org
  */
 
+//TODO: Load from XML configuration
 public abstract class AnimalContact {
     private final int value;
     private final String name;
     private YesNoUnknown state;
     private AnimalContactLayout layout;
     private final AnimalContactCategory category;
-
-
     private int mLastCheckedId = -1;
 
     //layoutId (null, type1, type2) - This should be a class with (controlId, control caption)

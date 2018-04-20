@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="de.symeda.sormas.api.symptoms.SymptomState" />
+        <import type="de.symeda.sormas.app.symptom.LesionChildViewModel" />
+        <variable
+            name="showNotificationCallback"
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
+
+
+        <variable name="data" type="de.symeda.sormas.app.symptom.LesionChildViewModel"/>
+        <variable name="symptomStateClass" type="Class" />
+        <variable
+            name="checkedCallback"
+            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
+    </data>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/symptomRowListItemVerticalPadding"
+        android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+        >
+
+        <!-- Rash that Itch -->
+        <LinearLayout
+            android:id="@+id/rashThatItch"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingTop="@dimen/symptomRowListItemVerticalPadding"
+            android:paddingBottom="@dimen/symptomRowListItemVerticalPadding"
+            android:background="@drawable/background_list_activity_row_no_indicator_top_n_bottom"
+            >
+
+
+            <!-- -->
+            <TextView
+                android:id="@+id/txtRashThatItchName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="@dimen/listActivityRowSecondaryTextSize"
+                android:textColor="@color/listActivityRowPrimaryText"
+                android:fontFamily="sans-serif"
+                android:text="@{data.lesionsThatItches.name}"
+                />
+
+            <!---->
+            <de.symeda.sormas.app.component.TeboSwitch
+                android:id="@+id/swhRashThatItchState"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                app:paddingTop="@dimen/defaultControlVerticalPadding"
+                app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                app:background="@drawable/control_switch_background_border"
+                app:borderSize="@dimen/defaultControlStrokeWidth"
+                app:textColor="@color/control_switch_color_selector"
+                app:showCaption="false"
+                app:required="true"
+                app:orientation="horizontal"
+                app:slim="true"
+                app:includeUnknown="@{false}"
+                app:enumClass="@{symptomStateClass}"
+                app:defaultValue="@{SymptomState.UNKNOWN}"
+                app:abbrevUnknown="@{true}"
+                app:value="@={data.lesionsThatItches.state}"
+                app:onCheckedChangeListener="@{checkedCallback}"
+                />
+
+        </LinearLayout>
+
+        <!-- State -->
+        <LinearLayout
+            android:id="@+id/lesionsState"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingTop="@dimen/symptomRowListItemVerticalPadding"
+            android:paddingBottom="@dimen/symptomRowListItemVerticalPadding"
+            android:background="@drawable/background_list_activity_row_no_indicator"
+            >
+
+            <TextView
+                android:id="@+id/txtLesionsStateName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@{data.lesionsInSameState.name}"
+                android:textSize="@dimen/listActivityRowSecondaryTextSize"
+                android:textColor="@color/listActivityRowPrimaryText"
+                android:fontFamily="sans-serif"
+                />
+
+            <de.symeda.sormas.app.component.TeboSwitch
+                android:id="@+id/swhLesionsState"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                app:paddingTop="@dimen/defaultControlVerticalPadding"
+                app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                app:background="@drawable/control_switch_background_border"
+                app:borderSize="@dimen/defaultControlStrokeWidth"
+                app:textColor="@color/control_switch_color_selector"
+                app:showCaption="false"
+                app:required="true"
+                app:orientation="horizontal"
+                app:slim="true"
+                app:includeUnknown="@{false}"
+                app:enumClass="@{symptomStateClass}"
+                app:defaultValue="@{SymptomState.UNKNOWN}"
+                app:abbrevUnknown="@{true}"
+                app:value="@={data.lesionsInSameState.state}"
+                app:onCheckedChangeListener="@{checkedCallback}"
+                />
+
+        </LinearLayout>
+
+        <!-- Size -->
+        <LinearLayout
+            android:id="@+id/lesionsSize"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingTop="@dimen/symptomRowListItemVerticalPadding"
+            android:paddingBottom="@dimen/symptomRowListItemVerticalPadding"
+            android:background="@drawable/background_list_activity_row_no_indicator"
+            >
+
+            <TextView
+                android:id="@+id/txtLesionsSizeName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@{data.lesionsSameSize.name}"
+                android:textSize="@dimen/listActivityRowSecondaryTextSize"
+                android:textColor="@color/listActivityRowPrimaryText"
+                android:fontFamily="sans-serif"
+                />
+
+            <de.symeda.sormas.app.component.TeboSwitch
+                android:id="@+id/swhLesionsSizeState"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                app:paddingTop="@dimen/defaultControlVerticalPadding"
+                app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                app:background="@drawable/control_switch_background_border"
+                app:borderSize="@dimen/defaultControlStrokeWidth"
+                app:textColor="@color/control_switch_color_selector"
+                app:showCaption="false"
+                app:required="true"
+                app:orientation="horizontal"
+                app:slim="true"
+                app:includeUnknown="@{false}"
+                app:enumClass="@{symptomStateClass}"
+                app:defaultValue="@{SymptomState.UNKNOWN}"
+                app:abbrevUnknown="@{true}"
+                app:value="@={data.lesionsSameSize.state}"
+                app:onCheckedChangeListener="@{checkedCallback}"
+                />
+
+        </LinearLayout>
+
+        <!-- Profound-->
+        <LinearLayout
+            android:id="@+id/lesionsProfound"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingTop="@dimen/symptomRowListItemVerticalPadding"
+            android:paddingBottom="@dimen/symptomRowListItemVerticalPadding"
+            android:layout_marginBottom="@dimen/contentVerticalSpacingDouble"
+            android:background="@drawable/background_list_activity_row_no_indicator"
+            >
+
+            <TextView
+                android:id="@+id/txtLesionsProfoundName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@{data.lesionsDeepAndProfound.name}"
+                android:textSize="@dimen/listActivityRowSecondaryTextSize"
+                android:textColor="@color/listActivityRowPrimaryText"
+                android:fontFamily="sans-serif"
+                />
+
+            <de.symeda.sormas.app.component.TeboSwitch
+                android:id="@+id/swhLesionsProfoundState"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                app:paddingTop="@dimen/defaultControlVerticalPadding"
+                app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                app:background="@drawable/control_switch_background_border"
+                app:borderSize="@dimen/defaultControlStrokeWidth"
+                app:textColor="@color/control_switch_color_selector"
+                app:showCaption="false"
+                app:required="true"
+                app:orientation="horizontal"
+                app:slim="true"
+                app:includeUnknown="@{false}"
+                app:enumClass="@{symptomStateClass}"
+                app:defaultValue="@{SymptomState.UNKNOWN}"
+                app:abbrevUnknown="@{true}"
+                app:value="@={data.lesionsDeepAndProfound.state}"
+                app:onCheckedChangeListener="@{checkedCallback}"
+                />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/contentVerticalSpacingDouble"
+            >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                >
+
+                <de.symeda.sormas.app.component.TeboCheckBox
+                    android:id="@+id/chkLesionsLocationFace"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint="@string/hint_symptoms_face"
+                    app:labelCaption="@string/label_symptoms_face"
+                    app:description="@string/desc_symptoms_face"
+                    app:slim="true"
+                    app:required="false"
+                    app:value="@={data.locationFace}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+                <de.symeda.sormas.app.component.TeboCheckBox
+                    android:id="@+id/chkLesionsLocationLegs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint="@string/hint_symptoms_leg"
+                    app:labelCaption="@string/label_symptoms_leg"
+                    app:description="@string/desc_symptoms_leg"
+                    app:slim="true"
+                    app:required="false"
+                    app:value="@={data.locationLegs}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+                <de.symeda.sormas.app.component.TeboCheckBox
+                    android:id="@+id/chkLesionsLocationSolesOfTheFeet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint="@string/hint_symptoms_soles_of_feet"
+                    app:labelCaption="@string/label_symptoms_soles_of_feet"
+                    app:description="@string/desc_symptoms_soles_of_feet"
+                    app:slim="true"
+                    app:required="false"
+                    app:value="@={data.locationSolesOfFeet}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+                <de.symeda.sormas.app.component.TeboCheckBox
+                    android:id="@+id/chkLesionsLocationPalmOfHands"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint="@string/hint_symptoms_palm_of_hands"
+                    app:labelCaption="@string/label_symptoms_palm_of_hands"
+                    app:description="@string/desc_symptoms_palm_of_hands"
+                    app:slim="true"
+                    app:required="false"
+                    app:value="@={data.locationPalmOfHands}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <de.symeda.sormas.app.component.TeboCheckBox
+                    android:id="@+id/chkLesionsLocationThorax"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint="@string/hint_symptoms_thorax"
+                    app:labelCaption="@string/label_symptoms_thorax"
+                    app:description="@string/desc_symptoms_thorax"
+                    app:slim="true"
+                    app:required="false"
+                    app:value="@={data.locationThroax}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+                <de.symeda.sormas.app.component.TeboCheckBox
+                    android:id="@+id/chkLesionsLocationArms"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint="@string/hint_symptoms_arms"
+                    app:labelCaption="@string/label_symptoms_arms"
+                    app:description="@string/desc_symptoms_arms"
+                    app:slim="true"
+                    app:required="false"
+                    app:value="@={data.locationArms}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+                <de.symeda.sormas.app.component.TeboCheckBox
+                    android:id="@+id/chkLesionsLocationGenitals"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint="@string/hint_symptoms_genitals"
+                    app:labelCaption="@string/label_symptoms_genitals"
+                    app:description="@string/desc_symptoms_genitals"
+                    app:slim="true"
+                    app:required="false"
+                    app:value="@={data.locationGenitals}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+                <de.symeda.sormas.app.component.TeboCheckBox
+                    android:id="@+id/chkLesionsLocationAllOverBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint="@string/hint_symptoms_all_over_body"
+                    app:labelCaption="@string/label_symptoms_all_over_body"
+                    app:description="@string/desc_symptoms_all_over_body"
+                    app:slim="true"
+                    app:required="false"
+                    app:value="@={data.locationAllBody}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ImageView style="@style/FullHorizontalDividerStyleNoDefaultMargin"
+            android:layout_marginBottom="@dimen/contentVerticalSpacingDouble"
+            />
+
+        <LinearLayout
+            android:id="@+id/monkeyPoxPicFrame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="@dimen/contentVerticalSpacingDouble"
+            >
+
+            <!--android:background="@drawable/background_list_activity_row_no_indicator"-->
+            <LinearLayout
+                android:id="@+id/pic1Frame"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/symptomRowListItemVerticalPadding"
+                android:paddingBottom="@dimen/symptomRowListItemVerticalPadding"
+                >
+
+                <ImageView
+                    android:tag="@string/tag_symptom_lesions_pic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/monkeypox_lesions_1"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="end"
+                    android:paddingLeft="@dimen/symptomRowListItemHorizontalPadding"
+                    >
+                    <TextView
+                        android:tag="@string/tag_symptom_lesions_pic_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="@dimen/symptomRowListItemVerticalPadding"
+                        android:text="@{data.lesionsResemblePic1.name}"
+                        android:textSize="@dimen/listActivityRowSecondaryTextSize"
+                        android:textColor="@color/listActivityRowPrimaryText"
+                        android:fontFamily="sans-serif"
+                        android:textAlignment="viewEnd"
+                        />
+
+                    <de.symeda.sormas.app.component.TeboSwitch
+                        android:tag="@string/tag_symptom_lesions_pic_answer"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        app:paddingTop="@dimen/defaultControlVerticalPadding"
+                        app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                        app:background="@drawable/control_switch_background_border"
+                        app:borderSize="@dimen/defaultControlStrokeWidth"
+                        app:textColor="@color/control_switch_color_selector"
+                        app:showCaption="false"
+                        app:required="true"
+                        app:orientation="horizontal"
+                        app:slim="true"
+                        app:includeUnknown="@{false}"
+                        app:enumClass="@{symptomStateClass}"
+                        app:defaultValue="@{SymptomState.UNKNOWN}"
+                        app:abbrevUnknown="@{true}"
+                        app:value="@={data.lesionsResemblePic1.state}"
+                        app:onCheckedChangeListener="@{checkedCallback}"
+                        />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!--android:background="@drawable/background_list_activity_row_no_indicator"-->
+            <LinearLayout
+                android:id="@+id/pic2Frame"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/symptomRowListItemVerticalPadding"
+                android:paddingBottom="@dimen/symptomRowListItemVerticalPadding"
+                >
+
+                <ImageView
+                    android:tag="@string/tag_symptom_lesions_pic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/monkeypox_lesions_2"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="end"
+                    android:paddingLeft="@dimen/symptomRowListItemHorizontalPadding"
+                    >
+                    <TextView
+                        android:tag="@string/tag_symptom_lesions_pic_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="@dimen/symptomRowListItemVerticalPadding"
+                        android:text="@{data.lesionsResemblePic2.name}"
+                        android:textSize="@dimen/listActivityRowSecondaryTextSize"
+                        android:textColor="@color/listActivityRowPrimaryText"
+                        android:fontFamily="sans-serif"
+                        android:textAlignment="viewEnd"
+                        />
+
+                    <de.symeda.sormas.app.component.TeboSwitch
+                        android:tag="@string/tag_symptom_lesions_pic_answer"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        app:paddingTop="@dimen/defaultControlVerticalPadding"
+                        app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                        app:background="@drawable/control_switch_background_border"
+                        app:borderSize="@dimen/defaultControlStrokeWidth"
+                        app:textColor="@color/control_switch_color_selector"
+                        app:showCaption="false"
+                        app:required="true"
+                        app:orientation="horizontal"
+                        app:slim="true"
+                        app:includeUnknown="@{false}"
+                        app:enumClass="@{symptomStateClass}"
+                        app:defaultValue="@{SymptomState.UNKNOWN}"
+                        app:abbrevUnknown="@{true}"
+                        app:value="@={data.lesionsResemblePic2.state}"
+                        app:onCheckedChangeListener="@{checkedCallback}"
+                        />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!--android:background="@drawable/background_list_activity_row_no_indicator"-->
+            <LinearLayout
+                android:id="@+id/pic3Frame"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/symptomRowListItemVerticalPadding"
+                android:paddingBottom="@dimen/symptomRowListItemVerticalPadding"
+                >
+
+                <ImageView
+                    android:tag="@string/tag_symptom_lesions_pic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/monkeypox_lesions_3"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="end"
+                    android:paddingLeft="@dimen/symptomRowListItemHorizontalPadding"
+                    >
+                    <TextView
+                        android:tag="@string/tag_symptom_lesions_pic_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="@dimen/symptomRowListItemVerticalPadding"
+                        android:text="@{data.lesionsResemblePic3.name}"
+                        android:textSize="@dimen/listActivityRowSecondaryTextSize"
+                        android:textColor="@color/listActivityRowPrimaryText"
+                        android:fontFamily="sans-serif"
+                        android:textAlignment="viewEnd"
+                        />
+
+                    <de.symeda.sormas.app.component.TeboSwitch
+                        android:tag="@string/tag_symptom_lesions_pic_answer"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        app:paddingTop="@dimen/defaultControlVerticalPadding"
+                        app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                        app:background="@drawable/control_switch_background_border"
+                        app:borderSize="@dimen/defaultControlStrokeWidth"
+                        app:textColor="@color/control_switch_color_selector"
+                        app:showCaption="false"
+                        app:required="true"
+                        app:orientation="horizontal"
+                        app:slim="true"
+                        app:includeUnknown="@{false}"
+                        app:enumClass="@{symptomStateClass}"
+                        app:defaultValue="@{SymptomState.UNKNOWN}"
+                        app:abbrevUnknown="@{true}"
+                        app:value="@={data.lesionsResemblePic3.state}"
+                        app:onCheckedChangeListener="@{checkedCallback}"
+                        />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!--android:background="@drawable/background_list_activity_row_no_indicator"-->
+            <LinearLayout
+                android:id="@+id/pic4Frame"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/symptomRowListItemVerticalPadding"
+                android:paddingBottom="@dimen/symptomRowListItemVerticalPadding"
+                >
+
+                <ImageView
+                    android:tag="@string/tag_symptom_lesions_pic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/monkeypox_lesions_4"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="end"
+                    android:paddingLeft="@dimen/symptomRowListItemHorizontalPadding"
+                    >
+                    <TextView
+                        android:tag="@string/tag_symptom_lesions_pic_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="@dimen/symptomRowListItemVerticalPadding"
+                        android:text="@{data.lesionsResemblePic4.name}"
+                        android:textSize="@dimen/listActivityRowSecondaryTextSize"
+                        android:textColor="@color/listActivityRowPrimaryText"
+                        android:fontFamily="sans-serif"
+                        android:textAlignment="viewEnd"
+                        />
+
+                    <de.symeda.sormas.app.component.TeboSwitch
+                        android:tag="@string/tag_symptom_lesions_pic_answer"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        app:paddingTop="@dimen/defaultControlVerticalPadding"
+                        app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                        app:background="@drawable/control_switch_background_border"
+                        app:borderSize="@dimen/defaultControlStrokeWidth"
+                        app:textColor="@color/control_switch_color_selector"
+                        app:showCaption="false"
+                        app:required="true"
+                        app:orientation="horizontal"
+                        app:slim="true"
+                        app:includeUnknown="@{false}"
+                        app:enumClass="@{symptomStateClass}"
+                        app:defaultValue="@{SymptomState.UNKNOWN}"
+                        app:abbrevUnknown="@{true}"
+                        app:value="@={data.lesionsResemblePic4.state}"
+                        app:onCheckedChangeListener="@{checkedCallback}"
+                        />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ImageView style="@style/FullHorizontalDividerStyleNoDefaultMargin"
+            android:layout_marginBottom="@dimen/contentVerticalSpacingDouble"
+            />
+
+        <de.symeda.sormas.app.component.TeboDatePicker
+            android:id="@+id/dtpLastExposureDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/contentVerticalSpacingDouble"
+            app:hint="@string/hint_lesions_onset_date"
+            app:labelCaption="@string/label_lesions_onset_date"
+            app:description="@string/desc_lesions_onset_date"
+            app:emphasizeCaption="false"
+            app:italicCaption="true"
+            app:required="true"
+            app:slim="true"
+            app:value="@={data.lesionsOnsetDate}"
+            />
+
+    </LinearLayout>
+</layout>

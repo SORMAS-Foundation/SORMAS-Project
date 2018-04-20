@@ -461,6 +461,13 @@
         <item name="android:layout_marginBottom">@dimen/controlReadTextMarginBottom</item>
     </style>
 
+    <style name="MiniHorizontalDividerStyleNoDefaultMargin">
+        <item name="android:layout_width">@dimen/miniHorizontalSeparatorWidth</item>
+        <item name="android:layout_height">@dimen/separatorThickness</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:background">@color/viewSeparator</item>
+    </style>
+
 
 
     <!-- Tooltip -->
