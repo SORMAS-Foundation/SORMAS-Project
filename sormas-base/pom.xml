@@ -259,6 +259,12 @@
 			</dependency>
 
 			<dependency>
+			   <groupId>org.vaadin.addons</groupId>
+			   <artifactId>extended-token-field</artifactId>
+			   <version>0.2.3</version>
+			</dependency>
+
+			<dependency>
 				<groupId>org.geotools</groupId>
 				<artifactId>gt-shapefile</artifactId>
 				<version>17.2</version>

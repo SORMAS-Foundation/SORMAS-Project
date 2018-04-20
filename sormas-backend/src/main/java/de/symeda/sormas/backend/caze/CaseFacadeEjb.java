@@ -40,7 +40,6 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
-import de.symeda.sormas.api.caze.StatisticsCaseDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.CauseOfDeath;
@@ -51,6 +50,10 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.statistics.CasesStatisticField;
+import de.symeda.sormas.api.statistics.StatisticSubField;
+import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
+import de.symeda.sormas.api.statistics.StatisticsCaseDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -99,6 +102,7 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sample.SampleTestService;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
@@ -895,9 +899,89 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 	}
+	
+	@Override
+	public List<Object[]> queryCaseCount(StatisticsCaseCriteria caseCriteria, CasesStatisticField groupingA, StatisticSubField subGroupingA) {
+
+		
+		StringBuilder sqlBuilder = new StringBuilder();
+		sqlBuilder
+			.append("FROM ").append(Case.TABLE_NAME)
+			.append(" LEFT JOIN ").append(Symptoms.TABLE_NAME)
+			.append(" ON ").append(Case.TABLE_NAME).append(".").append(Case.SYMPTOMS).append("_id")
+			.append(" = ").append(Symptoms.TABLE_NAME).append(".").append(Symptoms.ID)
+			;
+
+		if (groupingA == CasesStatisticField.PLACE) {
+			if (subGroupingA == StatisticSubField.REGION) {
+				sqlBuilder
+				.append(" LEFT JOIN ").append(Region.TABLE_NAME)
+				.append(" ON ").append(Case.TABLE_NAME).append(".").append(Case.REGION).append("_id")
+				.append(" = ").append(Region.TABLE_NAME).append(".").append(Region.ID);
+			}
+		}
+		
+		StringBuilder filterBuilder = new StringBuilder();
+		
+		if (caseCriteria.getOnsetYears() != null && !caseCriteria.getOnsetYears().isEmpty()) {
+			
+			if (filterBuilder.length() > 0) {
+				filterBuilder.append(" AND ");
+			}
+
+			filterBuilder.append("EXTRACT(YEAR FROM ").append(Symptoms.TABLE_NAME).append(".").append(Symptoms.ONSET_DATE).append(")")
+					.append(" IN (");
+			for (Object onsetYear : caseCriteria.getOnsetYears()) {
+				filterBuilder.append(onsetYear).append(",");
+			}
+			filterBuilder.deleteCharAt(filterBuilder.length()-1);
+			filterBuilder.append(")");
+		}
+		
+		if (filterBuilder.length() > 0) {
+			sqlBuilder.append(" WHERE ").append(filterBuilder);
+		}
+		
+		String groupAAlias = "groupA";
+		String groupingSelectQueryA = buildGroupingSelectQuery(groupingA, subGroupingA, groupAAlias);
+		
+		sqlBuilder.append(" GROUP BY ").append(groupAAlias);
+		
+		// SELECT
+		sqlBuilder.insert(0, "SELECT COUNT(*)," + groupingSelectQueryA + " ");
+		
+		List<Object[]> results = (List<Object[]>)em.createNativeQuery(sqlBuilder.toString()).getResultList();
+		return results;
+	}
+
+	private String buildGroupingSelectQuery(CasesStatisticField grouping, StatisticSubField subGrouping, String groupAlias) {
+		// grouping
+		StringBuilder groupingSelectPartBuilder = new StringBuilder();
+		switch(grouping) {
+		case PLACE: { 
+			switch(subGrouping) {
+			case REGION:
+				groupingSelectPartBuilder.append(Case.TABLE_NAME).append(".").append(Case.REGION).append("_id AS ").append(groupAlias)
+					.append(", MAX(").append(Region.TABLE_NAME).append(".").append(Region.NAME).append(")");
+				break;
+			case DISTRICT:
+				//TODO
+				break;
+			default:
+				throw new IllegalArgumentException(subGrouping.toString());
+			}
+		}
+		break;
+		// TODO
+		default:
+			throw new IllegalArgumentException(subGrouping.toString());
+		}
+		return groupingSelectPartBuilder.toString();
+	}
 
 	@LocalBean
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
 	}
+
 }
