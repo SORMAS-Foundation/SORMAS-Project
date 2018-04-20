@@ -20,6 +20,6 @@ public interface ImportFacade {
 	
 	String importCasesFromCsvFile(String csvFilePath, String userUuid) throws IOException, InvalidColumnException;
 	
-	boolean importCasesFromCsvFile(Reader reader, Writer writer, String userUuid) throws IOException, InvalidColumnException;
+	boolean importCasesFromCsvFile(Reader reader, Writer errorReportWriter, String userUuid) throws IOException, InvalidColumnException;
 	
 }
