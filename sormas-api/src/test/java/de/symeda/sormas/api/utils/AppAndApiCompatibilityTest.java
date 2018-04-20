@@ -13,6 +13,14 @@ public class AppAndApiCompatibilityTest {
 	}
 	
 	@Test
+	public void testHotfixVersionCompatibility() {
+		String appVersion = InfoProvider.MINIMUM_REQUIRED_VERSION;
+		appVersion.substring(0, appVersion.lastIndexOf("."));
+		appVersion.concat("99");
+		assertEquals(InfoProvider.isCompatibleToApi(appVersion), CompatibilityCheckResponse.COMPATIBLE);
+	}
+	
+	@Test
 	public void testTooOldVersionIncompatibility() {
 		// Build a version string that is older than the minimum required version
 		String minimumRequiredVersion = InfoProvider.MINIMUM_REQUIRED_VERSION;
