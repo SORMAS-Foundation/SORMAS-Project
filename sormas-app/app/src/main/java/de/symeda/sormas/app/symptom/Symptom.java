@@ -11,6 +11,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.ReadOnly;
 
 /**
@@ -213,6 +214,13 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         this.state = state;
     }
 
+    public void setState(SymptomState state, Callback.IAction<List<Symptom<TChildViewModel>>> callback) {
+        setState(state);
+        setChildState(state, callback);
+    }
+
+    protected abstract void setChildState(SymptomState state, Callback.IAction<List<Symptom<TChildViewModel>>> callback);
+
     public int getLastCheckedId() {
         return mLastCheckedId;
     }
@@ -262,6 +270,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -295,6 +308,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -335,6 +353,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -369,6 +392,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.CHOLERA);
@@ -396,6 +424,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -435,6 +468,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -466,6 +504,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -501,6 +544,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -541,6 +589,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -578,6 +631,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -605,6 +663,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -640,6 +703,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -667,6 +735,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -701,6 +774,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -728,6 +806,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -762,6 +845,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -789,6 +877,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -822,6 +915,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -849,6 +947,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -882,6 +985,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -912,6 +1020,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -939,6 +1052,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -976,6 +1094,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.CSM);
@@ -1002,6 +1125,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -1038,6 +1166,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -1071,6 +1204,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.AVIAN_INFLUENCA);
@@ -1098,6 +1236,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -1133,6 +1276,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -1161,6 +1309,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -1198,6 +1351,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -1229,6 +1387,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -1266,6 +1429,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -1296,6 +1464,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -1334,6 +1507,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.MEASLES);
@@ -1360,6 +1538,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -1393,6 +1576,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.AVIAN_INFLUENCA);
@@ -1420,6 +1608,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -1453,6 +1646,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -1481,6 +1679,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -1517,6 +1720,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -1546,6 +1754,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -1583,6 +1796,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -1617,6 +1835,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
@@ -1643,6 +1866,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -1681,6 +1909,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.YELLOW_FEVER);
@@ -1707,6 +1940,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -1739,6 +1977,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.YELLOW_FEVER);
@@ -1765,6 +2008,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -1797,6 +2045,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.YELLOW_FEVER);
@@ -1823,6 +2076,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -1855,6 +2113,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.DENGUE);
@@ -1881,6 +2144,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -1913,6 +2181,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.MONKEYPOX);
@@ -1939,6 +2212,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -1971,6 +2249,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.MONKEYPOX);
@@ -1997,6 +2280,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -2029,6 +2317,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
 
@@ -2054,6 +2347,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -2085,6 +2383,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.CSM);
@@ -2111,6 +2414,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -2171,6 +2479,23 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         public T getChildViewModel() {
             return mChildViewModel;
         }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            List<Symptom<T>> list = new ArrayList<Symptom<T>>() {{
+                add(mChildViewModel.getLesionsThatItches());
+                add(mChildViewModel.getLesionsInSameState());
+                add(mChildViewModel.getLesionsSameSize());
+                add(mChildViewModel.getLesionsDeepAndProfound());
+                add(mChildViewModel.getLesionsResemblePic1());
+                add(mChildViewModel.getLesionsResemblePic2());
+                add(mChildViewModel.getLesionsResemblePic3());
+                add(mChildViewModel.getLesionsResemblePic4());
+            }};
+
+            callback.call(list);
+        }
+
     }
 
     private static class LymphadenopathyInguinal<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2191,6 +2516,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -2223,6 +2553,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.MONKEYPOX);
@@ -2249,6 +2584,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -2283,6 +2623,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.MONKEYPOX);
@@ -2309,6 +2654,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -2341,6 +2691,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.MONKEYPOX);
@@ -2367,6 +2722,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -2399,6 +2759,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.MONKEYPOX);
@@ -2425,6 +2790,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -2457,6 +2827,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
                 add(Disease.MONKEYPOX);
@@ -2483,6 +2858,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             } catch (IllegalAccessException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
         }
 
         @Override
@@ -2524,6 +2904,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             private boolean _copiedSupportedDiseases;
             private List<Disease> _originalList;
             private List<Disease> _copy;
+
+            /*@Override
+            protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+                callback.call(null);
+            }*/
+
+            @Override
+            protected void setChildState(SymptomState state, Callback.IAction callback) {
+                _s.setChildState(state, callback);
+            }
 
             @Override
             public List<Disease> getSupportDisease() {

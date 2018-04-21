@@ -3,6 +3,7 @@ package de.symeda.sormas.app.symptom;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.core.Callback;
 
 /**
  * Created by Orson on 15/02/2018.
@@ -15,11 +16,11 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 public class SymptomFacade {
 
 
-    public static List<Symptom> loadState(List<Symptom> list, Symptoms record) {
+    public static List<Symptom> loadState(final List<Symptom> list, final Symptoms record) {
         if (record == null)
             return list;
 
-        for (Symptom symptom : list) {
+        for (final Symptom symptom : list) {
             if (symptom.equals(Symptom.FEVER)) {
                 symptom.setState(record.getFever());
             } else if (symptom.equals(Symptom.VOMITING)) {
@@ -149,7 +150,45 @@ public class SymptomFacade {
             } else if (symptom.equals(Symptom.DIFFICULTY_SWALLOWING)) {
                 symptom.setState(record.getBulgingFontanelle());
             } else if (symptom.equals(Symptom.LESIONS)) {
-                symptom.setState(record.getLesions());
+                symptom.setState(record.getLesions(), new Callback.IAction<List<Symptom<LesionChildViewModel>>>() {
+                    @Override
+                    public void call(List<Symptom<LesionChildViewModel>> result) {
+                        if (result == null)
+                            return;
+
+                        for (Symptom s : result) {
+                            if (s.equals(Symptom.LESIONS_THAT_ITCH)) {
+                                s.setState(record.getLesionsThatItch());
+                            } else if (s.equals(Symptom.LESIONS_SAME_STATE)) {
+                                s.setState(record.getLesionsSameState());
+                            } else if (s.equals(Symptom.LESIONS_SAME_SIZE)) {
+                                s.setState(record.getLesionsSameSize());
+                            } else if (s.equals(Symptom.LESIONS_SAME_PROFOUND)) {
+                                s.setState(record.getLesionsDeepProfound());
+                            } else if (s.equals(Symptom.LESIONS_LIKE_PIC1)) {
+                                s.setState(record.getLesionsResembleImg1());
+                            } else if (s.equals(Symptom.LESIONS_LIKE_PIC2)) {
+                                s.setState(record.getLesionsResembleImg2());
+                            } else if (s.equals(Symptom.LESIONS_LIKE_PIC3)) {
+                                s.setState(record.getLesionsResembleImg3());
+                            } else if (s.equals(Symptom.LESIONS_LIKE_PIC4)) {
+                                s.setState(record.getLesionsResembleImg4());
+                            }
+                        }
+                    }
+                });
+
+                LesionChildViewModel viewModel = ((LesionChildViewModel)symptom.getChildViewModel());
+
+                viewModel.setLocationFace(record.getLesionsFace() == null? false : record.getLesionsFace());
+                viewModel.setLocationLegs(record.getLesionsLegs() == null? false : record.getLesionsLegs());
+                viewModel.setLocationSolesOfFeet(record.getLesionsSolesFeet() == null? false : record.getLesionsSolesFeet());
+                viewModel.setLocationPalmOfHands(record.getLesionsPalmsHands() == null? false : record.getLesionsPalmsHands());
+                viewModel.setLocationThroax(record.getLesionsThorax() == null? false : record.getLesionsThorax());
+                viewModel.setLocationArms(record.getLesionsArms() == null? false : record.getLesionsArms());
+                viewModel.setLocationGenitals(record.getLesionsGenitals() == null? false : record.getLesionsGenitals());
+                viewModel.setLocationAllBody(record.getLesionsAllOverBody() == null? false : record.getLesionsAllOverBody());
+
             } else if (symptom.equals(Symptom.LYMPHADENOPATHY_INGUINAL)) {
                 symptom.setState(record.getLymphadenopathyInguinal());
             } else if (symptom.equals(Symptom.LYMPHADENOPATHY_AXILLARY)) {
