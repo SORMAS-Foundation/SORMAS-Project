@@ -73,6 +73,9 @@ import de.symeda.sormas.app.util.SyncCallback;
 public class ReportFragment extends BaseReportActivityFragment<FragmentReportWeeklyLayoutBinding, WeeklyReport> {
 
     private AsyncTask onConfirmReportTask;
+    private AsyncTask onWeeklyReportTask;
+    private AsyncTask onPendingReportTask;
+    private AsyncTask onWeeklyReportOverviewTask;
     private Tracker mTracker;
     private ReportFilterViewModel mReportFilter = new ReportFilterViewModel();
     private OnTeboSwitchCheckedChangeListener mOnReportFilterChangeCallback;
@@ -241,7 +244,7 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
     }
 
 
-    private void showPendingReport(BaseEpiWeekCategory c) {
+    private void showPendingReport(final BaseEpiWeekCategory c) {
         getContentBinding().reportContentFrame.setVisibility(c.showReportTable()? View.VISIBLE : View.GONE);
 
         if (!c.showReportTable())
@@ -254,21 +257,64 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
             return;
 
         if (mUser.hasUserRole(UserRole.INFORMANT)) {
-            List<PendingReportViewModel> list = new ArrayList<>();
 
-            for (WeeklyReportEntry entry : DatabaseHelper.getWeeklyReportEntryDao().getAllByWeeklyReport(c.getReport())) {
-                list.add(new PendingReportViewModel(entry.getDisease(), entry.getNumberOfCases()));
+
+
+
+            try {
+                ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                    private String saveUnsuccessful;
+
+                    @Override
+                    public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                        //getActivityCommunicator().showPreloader();
+                        //getActivityCommunicator().hideFragmentView();
+                        changeButtonsEnabledStatus(false);
+                    }
+
+                    @Override
+                    public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                        List<PendingReportViewModel> list = new ArrayList<>();
+                        for (WeeklyReportEntry entry : DatabaseHelper.getWeeklyReportEntryDao().getAllByWeeklyReport(c.getReport())) {
+                            list.add(new PendingReportViewModel(entry.getDisease(), entry.getNumberOfCases()));
+                        }
+
+                        resultHolder.forOther().add(list);
+                    }
+                });
+                onPendingReportTask = executor.execute(new ITaskResultCallback() {
+                    @Override
+                    public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                        //getActivityCommunicator().hidePreloader();
+                        //getActivityCommunicator().showFragmentView();
+
+                        changeButtonsEnabledStatus(true);
+
+                        if (resultHolder == null){
+                            return;
+                        }
+
+                        List<PendingReportViewModel> list = new ArrayList<>();
+                        ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
+
+                        if (otherIterator.hasNext())
+                            list = otherIterator.next();
+
+                        mPendingReportAdapter = new PendingReportAdapter(ReportFragment.this.getActivity(), R.layout.row_pending_report_list_item_layout, list);
+                        getContentBinding().recyclerViewForList.setLayoutManager(mLinearLayoutManager);
+                        getContentBinding().recyclerViewForList.setAdapter(mPendingReportAdapter);
+                        mPendingReportAdapter.notifyDataSetChanged();
+                    }
+                });
+            } catch (Exception ex) {
+                //getActivityCommunicator().hidePreloader();
+                //getActivityCommunicator().showFragmentView();
             }
-
-            mPendingReportAdapter = new PendingReportAdapter(this.getActivity(), R.layout.row_pending_report_list_item_layout, list);
-            getContentBinding().recyclerViewForList.setLayoutManager(mLinearLayoutManager);
-            getContentBinding().recyclerViewForList.setAdapter(mPendingReportAdapter);
-            mPendingReportAdapter.notifyDataSetChanged();
         }
 
     }
 
-    private void showWeeklyReport(BaseEpiWeekCategory c) {
+    private void showWeeklyReport(final BaseEpiWeekCategory c) {
         getContentBinding().reportContentFrame.setVisibility(c.showReportTable()? View.VISIBLE : View.GONE);
 
         if (!c.showReportTable())
@@ -281,16 +327,55 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
             return;
 
         if (mUser.hasUserRole(UserRole.INFORMANT)) {
-            List<WeeklyReportViewModel> list = new ArrayList<>();
+            try {
+                ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                    private String saveUnsuccessful;
 
-            for (WeeklyReportEntry entry : DatabaseHelper.getWeeklyReportEntryDao().getAllByWeeklyReport(c.getReport())) {
-                list.add(new WeeklyReportViewModel(entry.getDisease(), entry.getNumberOfCases()));
+                    @Override
+                    public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                        //getActivityCommunicator().showPreloader();
+                        //getActivityCommunicator().hideFragmentView();
+                        changeButtonsEnabledStatus(false);
+                    }
+
+                    @Override
+                    public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                        List<WeeklyReportViewModel> list = new ArrayList<>();
+                        for (WeeklyReportEntry entry : DatabaseHelper.getWeeklyReportEntryDao().getAllByWeeklyReport(c.getReport())) {
+                            list.add(new WeeklyReportViewModel(entry.getDisease(), entry.getNumberOfCases()));
+                        }
+
+                        resultHolder.forOther().add(list);
+                    }
+                });
+                onWeeklyReportTask = executor.execute(new ITaskResultCallback() {
+                    @Override
+                    public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                        //getActivityCommunicator().hidePreloader();
+                        //getActivityCommunicator().showFragmentView();
+
+                        changeButtonsEnabledStatus(true);
+
+                        if (resultHolder == null){
+                            return;
+                        }
+
+                        List<WeeklyReportViewModel> list = new ArrayList<>();
+                        ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
+
+                        if (otherIterator.hasNext())
+                            list = otherIterator.next();
+
+                        mWeeklyReportAdapter = new WeeklyReportAdapter(ReportFragment.this.getActivity(), R.layout.row_weekly_report_list_item_layout, list);
+                        getContentBinding().recyclerViewForList.setLayoutManager(mLinearLayoutManager);
+                        getContentBinding().recyclerViewForList.setAdapter(mWeeklyReportAdapter);
+                        mWeeklyReportAdapter.notifyDataSetChanged();
+                    }
+                });
+            } catch (Exception ex) {
+                //getActivityCommunicator().hidePreloader();
+                //getActivityCommunicator().showFragmentView();
             }
-
-            mWeeklyReportAdapter = new WeeklyReportAdapter(this.getActivity(), R.layout.row_weekly_report_list_item_layout, list);
-            getContentBinding().recyclerViewForList.setLayoutManager(mLinearLayoutManager);
-            getContentBinding().recyclerViewForList.setAdapter(mWeeklyReportAdapter);
-            mWeeklyReportAdapter.notifyDataSetChanged();
         }
 
     }
@@ -302,19 +387,58 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
         if (mUser == null)
             return;
 
-        List<WeeklyReportOverviewViewModel> list = new ArrayList<>();
-        List<User> informants = DatabaseHelper.getUserDao().getByDistrictAndRole(mUser.getDistrict(), UserRole.INFORMANT, User.HEALTH_FACILITY + "_id");
-        for (User informant : informants) {
-            WeeklyReport report = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(mReportFilter.getEpiWeek(), informant);
-            int numberOfCases = DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeek(mReportFilter.getEpiWeek(), informant);
-            list.add(new WeeklyReportOverviewViewModel(informant.getHealthFacility(), informant, UserRole.INFORMANT, numberOfCases, report != null));
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                private String saveUnsuccessful;
 
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                    changeButtonsEnabledStatus(false);
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    List<WeeklyReportOverviewViewModel> list = new ArrayList<>();
+                    List<User> informants = DatabaseHelper.getUserDao().getByDistrictAndRole(mUser.getDistrict(), UserRole.INFORMANT, User.HEALTH_FACILITY + "_id");
+                    for (User informant : informants) {
+                        WeeklyReport report = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(mReportFilter.getEpiWeek(), informant);
+                        int numberOfCases = DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeek(mReportFilter.getEpiWeek(), informant);
+                        list.add(new WeeklyReportOverviewViewModel(informant.getHealthFacility(), informant, UserRole.INFORMANT, numberOfCases, report != null));
+                    }
+
+                    resultHolder.forOther().add(list);
+                }
+            });
+            onWeeklyReportOverviewTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    changeButtonsEnabledStatus(true);
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    List<WeeklyReportOverviewViewModel> list = new ArrayList<>();
+                    ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
+
+                    if (otherIterator.hasNext())
+                        list = otherIterator.next();
+
+                    mWeeklyReportOverviewAdapter = new WeeklyReportOverviewAdapter(ReportFragment.this.getActivity(), R.layout.row_weekly_report_overview_list_item_layout, list);
+                    getContentBinding().recyclerViewForList.setLayoutManager(mLinearLayoutManager);
+                    getContentBinding().recyclerViewForList.setAdapter(mWeeklyReportOverviewAdapter);
+                    mWeeklyReportOverviewAdapter.notifyDataSetChanged();
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
         }
-
-        mWeeklyReportOverviewAdapter = new WeeklyReportOverviewAdapter(this.getActivity(), R.layout.row_weekly_report_overview_list_item_layout, list);
-        getContentBinding().recyclerViewForList.setLayoutManager(mLinearLayoutManager);
-        getContentBinding().recyclerViewForList.setAdapter(mWeeklyReportOverviewAdapter);
-        mWeeklyReportOverviewAdapter.notifyDataSetChanged();
     }
 
     private void hideReportControls() {
@@ -490,6 +614,15 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
 
         if (onConfirmReportTask != null && !onConfirmReportTask.isCancelled())
             onConfirmReportTask.cancel(true);
+
+        if (onWeeklyReportTask != null && !onWeeklyReportTask.isCancelled())
+            onWeeklyReportTask.cancel(true);
+
+        if (onPendingReportTask != null && !onPendingReportTask.isCancelled())
+            onPendingReportTask.cancel(true);
+
+        if (onWeeklyReportOverviewTask != null && !onWeeklyReportOverviewTask.isCancelled())
+            onWeeklyReportOverviewTask.cancel(true);
     }
 
 }
