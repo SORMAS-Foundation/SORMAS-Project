@@ -71,7 +71,7 @@ public abstract class BaseDashboardActivity extends AbstractSormasActivity imple
 
     protected void initializeBaseActivity(Bundle savedInstanceState) {
         rootView = findViewById(R.id.base_layout);
-        subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingListActivityTitle);
+        subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingActivityTitle);
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
 

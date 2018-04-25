@@ -6,6 +6,7 @@ import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseReadActivity;
+import de.symeda.sormas.app.BaseReportActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.dialog.UserReportDialog;
 
@@ -17,6 +18,26 @@ import de.symeda.sormas.app.component.dialog.UserReportDialog;
  * sampson.orson@technologyboard.org
  */
 public class MenuOptionsHelper {
+
+    public static boolean handleListModuleOptionsItemSelected(BaseReportActivity activity, MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.option_menu_action_sync:
+                activity.synchronizeChangedData();
+                return true;
+
+            case R.id.option_menu_action_markAllAsRead:
+                MarkAllAsReadHelper.markCases(activity, null);
+                return true;
+
+            // Report problem button
+            case R.id.action_report:
+                showUserReportDialog(activity);
+
+                return true;
+        }
+
+        return false;
+    }
 
     public static boolean handleListModuleOptionsItemSelected(BaseListActivity activity, MenuItem item) {
         switch(item.getItemId()) {

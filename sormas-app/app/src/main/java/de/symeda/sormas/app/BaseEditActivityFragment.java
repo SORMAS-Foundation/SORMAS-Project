@@ -123,18 +123,6 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
         rootBinding = DataBindingUtil.inflate(inflater, getRootEditLayout(), container, false);
         rootView = rootBinding.getRoot();
 
-
-
-
-
-
-
-
-
-
-
-
-
         if (getEditLayout() > 0) {
             final ViewStub vsChildFragmentFrame = (ViewStub)rootView.findViewById(R.id.vsChildFragmentFrame);
 

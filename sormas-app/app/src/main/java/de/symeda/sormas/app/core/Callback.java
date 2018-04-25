@@ -11,6 +11,11 @@ public class Callback {
     public static interface IAction<T> {
         void call(T result);
     }
+
+    public static interface IAction2<T1, T2> {
+        void call(T1 result1, T2 result2);
+    }
+
     public static interface IAction3<T1, T2, T3> {
         void call(T1 result1, T2 result2, T3 result3);
     }

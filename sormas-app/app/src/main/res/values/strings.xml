@@ -221,7 +221,7 @@
     <string name="hint_no_weekly_report">You have not yet confirmed the report for last week.</string>
     <string name="hint_weekly_report_no_data">No data available for this epi week.</string>
     <string name="hint_report_not_yet_submitted">Not yet submitted</string>
-    <string name="hint_report_not_submitted">No report submitted</string>
+    <string name="hint_report_not_submitted">No <i>report</i> submitted</string>
 
     <string name="message_update_app_required">A new version of the SORMAS app is available. It is strongly recommended to download it by clicking the \'Download\' button below.</string>
     <string name="message_update_app_not_possible">A new version of the SORMAS app is available, but the download is currently not possible. Your supervisor will automatically be notified about this issue.</string>
@@ -423,6 +423,7 @@
 
 
 
+    <string name="invalid">Invalid</string>
     <string name="not_available">N/A</string>
     <string name="unknown">Unknown</string>
     <string name="case_uuid_unknown">Case ID N/A</string>
@@ -450,6 +451,10 @@
     <string name="visit_remarks_unknown">Remarks N/A</string>
     <string name="visit_date_unknown">Visit Date N/A</string>
     <string name="visit_time_unknown">Visit Time N/A</string>
+    <string name="no_of_cases_unknown">No. of Cases Unknown</string>
+    <string name="cases_confirmed_unknown">Cases Confirmed Unknown</string>
+    <string name="user_unknown">User Unknown</string>
+    <string name="user_role_unknown">User Role Unknown</string>
 
 
 
@@ -721,6 +726,8 @@
     <string name="caption_visit_information">Visit Information</string>
     <string name="caption_case_contacts">Case Contacts</string>
     <string name="caption_new_sample">New Sample</string>
+    <string name="caption_report_date">Report Date: %1$s</string>
+    <string name="caption_confirmation_date">Confirmation Date: %1$s</string>
 
 
 

@@ -26,7 +26,7 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.util.LandingNavigationHelper;
+import de.symeda.sormas.app.util.NavigationHelper;
 import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
 import de.symeda.sormas.app.util.SyncCallback;
@@ -248,9 +248,9 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     private void openLandingActivity() {
         Intent intent;
         if (ConfigProvider.getUser().hasUserRole(UserRole.CONTACT_OFFICER)) {
-            LandingNavigationHelper.gotoContact(LoginActivity.this);
+            NavigationHelper.gotoContact(LoginActivity.this);
         } else {
-            LandingNavigationHelper.gotoCase(LoginActivity.this);
+            NavigationHelper.gotoCase(LoginActivity.this);
         }
 
 

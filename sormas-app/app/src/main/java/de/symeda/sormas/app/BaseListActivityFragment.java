@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import de.symeda.sormas.app.core.IActivityCommunicator;
@@ -31,7 +30,6 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
     private BaseListActivity baseListActivity;
     private IUpdateSubHeadingTitle subHeadingHandler;
     private TListAdapter adapter;
-    private ProgressBar preloader;
     private IActivityCommunicator activityCommunicator;
 
     @Override

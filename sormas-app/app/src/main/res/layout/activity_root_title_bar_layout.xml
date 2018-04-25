@@ -12,7 +12,7 @@
     android:elevation="@dimen/activitySubHeadingElevation"
     >
     <TextView
-        android:id="@+id/subHeadingListActivityTitle"
+        android:id="@+id/subHeadingActivityTitle"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"

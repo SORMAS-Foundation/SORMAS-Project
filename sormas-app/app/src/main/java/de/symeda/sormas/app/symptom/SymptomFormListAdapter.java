@@ -175,18 +175,11 @@ public class SymptomFormListAdapter extends DataBoundAdapter<RowEditSymptomListI
         if (s.getChildViewModel() instanceof LesionChildViewModel) {
             RowSymptomDetailsLesionsChildLayoutBinding binding = (RowSymptomDetailsLesionsChildLayoutBinding)childLayoutBinding;
 
-            //LesionChildViewModel lesionChildViewModel = (LesionChildViewModel)s.getChildViewModel();
-
             binding.setShowNotificationCallback(holder.binding.getShowNotificationCallback());
             binding.setHideNotificationCallback(holder.binding.getHideNotificationCallback());
             binding.setData((LesionChildViewModel)s.getChildViewModel());
             binding.setSymptomStateClass(SymptomState.class);
             binding.setCheckedCallback(createCallback(s, holder));
-
-
-            /*if (!LesionChildViewModel.setVariable(BR.lesionsChildViewModel, s.getChildViewModel())) {
-                Log.e(TAG, "There is no variable 'lesionsChildViewModel' in layout " + layoutName);
-            }*/
         }
     }
 

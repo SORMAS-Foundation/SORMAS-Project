@@ -356,6 +356,23 @@ public class TextViewBindingAdapters {
         }
     }
 
+    @BindingAdapter(value={"diseaseValue", "valueFormat", "defaultValue"}, requireAll=false)
+    public static void setDiseaseValue(TextView textField, Disease disease, String valueFormat, String defaultValue) {
+        String val = defaultValue;
+
+        if (disease == null) {
+            textField.setText(val);
+        } else {
+            val = disease.toString();
+
+            if (valueFormat != null && valueFormat.trim() != "") {
+                textField.setText(String.format(valueFormat, val));
+            } else {
+                textField.setText(val);
+            }
+        }
+    }
+
     @BindingAdapter(value={"value", "defaultValue"}, requireAll=true)
     public static void setValue(TextView textField, Enum enumValue, String defaultValue) {
         setValue(textField, enumValue, defaultValue, null);

@@ -54,6 +54,7 @@ public class GenericTask extends AsyncTask<Void, Void, AsyncTaskResult<TaskResul
 
             return new AsyncTaskResult<TaskResultHolder>(_resultStatus, resultHolder);
         } catch (Exception e) {
+            //TODO: Errors seams to be swallowed; resultHolder is null
             Log.w(TAG, (e != null)? e.getMessage() : "Error executing a job definition!");
             return new AsyncTaskResult<TaskResultHolder>(mResultStatus, e);
         }

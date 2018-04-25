@@ -119,7 +119,7 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
 
     protected void initializeBaseActivity(Bundle savedInstanceState) {
         rootView = findViewById(R.id.base_layout);
-        subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingListActivityTitle);
+        subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingActivityTitle);
         fragmentFrame = findViewById(R.id.fragment_frame);
         menuList = new ArrayList<LandingPageMenuItem>();
         pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);

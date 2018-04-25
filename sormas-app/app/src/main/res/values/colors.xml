@@ -88,11 +88,12 @@
 
     <color name="lightestBlue">#ffe1e7f0</color>
     <color name="lightestBlue50">#80e1e7f0</color>
+    <color name="lightestBlue40">#66e1e7f0</color>
 
 
     <color name="ic_launcher_background">#FFFFFF</color>
 
-    <color name="formListSectionBackground">@color/lightestBlue50</color>
+    <color name="formListSectionBackground">@color/lightestBlue40</color>
     <color name="activityBackground">@color/whiteOpaque</color>
 
 

@@ -549,6 +549,11 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
         view.setInitialized(true);
     }
 
+    @BindingAdapter(value={"value", "enumClass", "defaultValue", "onCheckedChangeListener"}, requireAll=true)
+    public static void setValue(TeboSwitch view, Object value, Class c, Object defaultValue, OnTeboSwitchCheckedChangeListener listener) {
+        setValue(view, value, false, c, defaultValue, false, listener);
+    }
+
 
     public void setIncludeUnknown(boolean includeUnknown) {
         this.includeUnknown = includeUnknown;

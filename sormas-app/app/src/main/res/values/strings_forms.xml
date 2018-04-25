@@ -1214,7 +1214,29 @@
     <string name="tag_symptom_lesions_pic_title">pictureTitle</string>
     <string name="tag_symptom_lesions_pic_answer">pictureControl</string>
     <string name="tag_symptom_lesions_pic">piture</string>
+    <!-- ........................................................................ -->
 
+
+
+    <!-- Weekly Report -->
+    <!-- ........................................................................ -->
+    <!-- Label -->
+    <string name="label_report_year">Year</string>
+    <string name="label_report_epi_week">Epi Week</string>
+    <string name="label_report_start_period">Start Period</string>
+    <string name="label_report_end_period">End Period</string>
+
+    <!-- Description -->
+    <string name="desc_report_year">Year</string>
+    <string name="desc_report_epi_week">Epi Week</string>
+    <string name="desc_report_start_period">Start Period</string>
+    <string name="desc_report_end_period">End Period</string>
+
+    <!-- Hint -->
+    <string name="hint_report_year">Year</string>
+    <string name="hint_report_epi_week">Epi Week</string>
+    <string name="hint_report_start_period">Start Period</string>
+    <string name="hint_report_end_period">End Period</string>
     <!-- ........................................................................ -->
 
 

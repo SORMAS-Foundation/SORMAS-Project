@@ -363,7 +363,7 @@
 
 
         <activity
-            android:name=".report.ReportsLandingActivity"
+            android:name=".report.ReportLandingActivity"
             android:theme="@style/ActivityWithOverflowMenuTheme"
             android:launchMode="singleTop" />
 

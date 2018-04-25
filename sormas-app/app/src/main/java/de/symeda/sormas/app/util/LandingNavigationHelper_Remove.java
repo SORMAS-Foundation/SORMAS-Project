@@ -6,6 +6,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.list.CaseListActivity;
 import de.symeda.sormas.app.contact.list.ContactListActivity;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
@@ -13,6 +14,7 @@ import de.symeda.sormas.app.core.ListNavigationCapsule;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.event.list.EventListActivity;
 import de.symeda.sormas.app.sample.list.SampleListActivity;
+import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.task.list.TaskListActivity;
 
@@ -23,7 +25,7 @@ import de.symeda.sormas.app.task.list.TaskListActivity;
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
-public class LandingNavigationHelper {
+public class LandingNavigationHelper_Remove {
 
 
     public static void gotoDashboard(Context context) {
@@ -62,5 +64,11 @@ public class LandingNavigationHelper {
 
     public static void gotoReport(Context context) {
 
+    }
+
+    public static void gotoNewCase(Context context) {
+        CaseFormNavigationCapsule dataCapsule = (CaseFormNavigationCapsule)new CaseFormNavigationCapsule(context,
+                null).setEditPageStatus(InvestigationStatus.PENDING).setPersonUuid(null);
+        CaseNewActivity.goToActivity(context, dataCapsule);
     }
 }

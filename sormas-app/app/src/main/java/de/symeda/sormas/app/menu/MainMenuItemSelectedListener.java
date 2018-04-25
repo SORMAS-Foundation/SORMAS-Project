@@ -9,9 +9,9 @@ import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.dashboard.DashboardActivity;
-import de.symeda.sormas.app.report.ReportsLandingActivity;
+import de.symeda.sormas.app.report.ReportLandingActivity;
 import de.symeda.sormas.app.settings.SettingsActivity;
-import de.symeda.sormas.app.util.LandingNavigationHelper;
+import de.symeda.sormas.app.util.NavigationHelper;
 
 /**
  * Created by Orson on 22/11/2017.
@@ -62,7 +62,7 @@ public class MainMenuItemSelectedListener implements NavigationView.OnNavigation
     }
 
     public void showCasesView() {
-        LandingNavigationHelper.gotoCase(activity);
+        NavigationHelper.gotoCase(activity);
     }
 
     public void showCaseNewView() {
@@ -71,19 +71,19 @@ public class MainMenuItemSelectedListener implements NavigationView.OnNavigation
     }
 
     public void showContactsView() {
-        LandingNavigationHelper.gotoContact(activity);
+        NavigationHelper.gotoContact(activity);
     }
 
     public void showEventsView() {
-        LandingNavigationHelper.gotoEvent(activity);
+        NavigationHelper.gotoEvent(activity);
     }
 
     public void showSamplesView() {
-        LandingNavigationHelper.gotoSample(activity);
+        NavigationHelper.gotoSample(activity);
     }
 
     public void showTasksView() {
-        LandingNavigationHelper.gotoTask(activity);
+        NavigationHelper.gotoTask(activity);
     }
 
 
@@ -92,7 +92,7 @@ public class MainMenuItemSelectedListener implements NavigationView.OnNavigation
 
 
     public void showReportsView() {
-        Intent intent = new Intent(activity, ReportsLandingActivity.class);
+        Intent intent = new Intent(activity, ReportLandingActivity.class);
         activity.startActivity(intent);
     }
 

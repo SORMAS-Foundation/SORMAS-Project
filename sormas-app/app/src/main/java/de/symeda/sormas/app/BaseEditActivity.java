@@ -150,7 +150,7 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
     protected void initializeBaseActivity(Bundle savedInstanceState) {
         menuList = new ArrayList<LandingPageMenuItem>();
         rootView = findViewById(R.id.base_layout);
-        subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingListActivityTitle);
+        subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingActivityTitle);
         fragmentFrame = findViewById(R.id.fragment_frame);
         pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);
         notificationFrame = (LinearLayout)findViewById(R.id.notificationFrame);

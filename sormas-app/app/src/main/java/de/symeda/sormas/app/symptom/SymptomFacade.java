@@ -189,6 +189,8 @@ public class SymptomFacade {
                 viewModel.setLocationGenitals(record.getLesionsGenitals() == null? false : record.getLesionsGenitals());
                 viewModel.setLocationAllBody(record.getLesionsAllOverBody() == null? false : record.getLesionsAllOverBody());
 
+                viewModel.setLesionsOnsetDate(record.getLesionsOnsetDate());
+
             } else if (symptom.equals(Symptom.LYMPHADENOPATHY_INGUINAL)) {
                 symptom.setState(record.getLymphadenopathyInguinal());
             } else if (symptom.equals(Symptom.LYMPHADENOPATHY_AXILLARY)) {

@@ -19,4 +19,6 @@
     <string name="due_timeago_format">due %1$s</string>
     <string name="text_with_bracket_desc_format">%1$s (%2$s)</string>
     <string name="question_pregnant_format">Pregnancy? %1$s</string>
+
+    <string name="number_of_cases_format">Cases - %1$s</string>
 </resources>
