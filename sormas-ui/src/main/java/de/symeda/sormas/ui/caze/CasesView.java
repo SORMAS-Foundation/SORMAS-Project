@@ -68,6 +68,7 @@ public class CasesView extends AbstractView {
 	private CaseGrid grid;    
 	private Button importButton;
 	private Button exportButton;
+	private Button extendedExportButton;
 	private Button createButton;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
@@ -122,6 +123,16 @@ public class CasesView extends AbstractView {
 			fileDownloader.extend(exportButton);
 			
 			addHeaderComponent(exportButton);
+			
+			extendedExportButton = new Button("Extended Export");
+			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			extendedExportButton.setIcon(FontAwesome.DOWNLOAD);
+			
+			StreamResource extendedStreamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_cases", "sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			new FileDownloader(extendedStreamResource).extend(extendedExportButton);
+			
+			addHeaderComponent(extendedExportButton);
+
 		}
 
 		if (LoginHelper.hasUserRight(UserRight.CASE_CREATE)) {

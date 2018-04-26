@@ -33,6 +33,7 @@ import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -220,6 +221,19 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		List<CaseIndexDto> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+	
+
+	
+	@Override
+	public List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria) {
+		
+		User user = userService.getByUuid(userUuid);
+
+		return caseService.findBy(caseCriteria, user)
+				.stream()
+				.map(c -> toExportDto(c))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -651,6 +665,33 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setOutcome(source.getOutcome());
 		target.setOutcomeDate(source.getOutcomeDate());
 
+		return target;
+	}
+
+	public static CaseExportDto toExportDto(Case source) {
+		CaseExportDto target = new CaseExportDto();
+
+		target.setUuid(source.getUuid());
+		target.setEpidNumber(source.getEpidNumber());
+		target.setDisease(DiseaseHelper.toString(source.getDisease(), source.getDiseaseDetails()));
+		target.setReportDate(source.getReportDate());
+		target.setName(PersonDto.buildCaption(source.getPerson().getFirstName(), source.getPerson().getLastName()));
+		target.setSex(source.getPerson().getSex());
+		// TODO calculate based on birthdate or use age. Include age type -> AgeHelper
+		target.setAge(DataHelper.toStringNullable(source.getPerson().getApproximateAge()));
+		target.setOnsetDate(source.getSymptoms().getOnsetDate());
+		target.setAdmissionDate(source.getHospitalization().getAdmissionDate());
+		target.setCaseClassification(source.getCaseClassification());
+		target.setInvestigationStatus(source.getInvestigationStatus());
+		target.setPresentCondition(source.getPerson().getPresentCondition());
+		target.setOutcome(source.getOutcome());
+		target.setRegionName(source.getRegion().getName());
+		target.setDistrictName(source.getDistrict().getName());
+		target.setCommunityName(source.getCommunity().getName());
+		// TODO include facilityDetails (for other)
+		target.setHealthFacility(source.getHealthFacility().toString());
+		target.setSymptoms(source.getSymptoms().toHumanString(false));
+		
 		return target;
 	}
 

@@ -16,6 +16,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -30,7 +31,6 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -77,9 +77,7 @@ public class CaseGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				CaseIndexDto caseDto = (CaseIndexDto) itemId;
-				return caseDto.getDisease() != Disease.OTHER 
-						? (caseDto.getDisease() != null ? caseDto.getDisease().toShortString() : "")
-						: DataHelper.toStringNullable(caseDto.getDiseaseDetails());
+				return DiseaseHelper.toString(caseDto.getDisease(), caseDto.getDiseaseDetails());
 			}
 			@Override
 			public Class<String> getType() {

@@ -84,13 +84,15 @@ public class CaseService extends AbstractAdoService<Case> {
 		return caze;
 	}
 	
-	public List<Case> findBy(CaseCriteria caseCriteria) {
+	public List<Case> findBy(CaseCriteria caseCriteria, User user) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
 
 		Predicate filter = buildCriteriaFilter(caseCriteria, cb, from);
+		filter = and(cb, filter, createUserFilter(cb, cq, from, user));
+		
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -454,7 +456,8 @@ public class CaseService extends AbstractAdoService<Case> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, User user) {
 		// National users can access all cases in the system
-		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
+		if (user == null
+				|| user.getUserRoles().contains(UserRole.NATIONAL_USER)
 				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}

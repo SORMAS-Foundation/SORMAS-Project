@@ -31,6 +31,8 @@ public interface CaseFacade {
 
 	List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria);
 	
+	List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria);
+	
 	CaseDataDto getCaseDataByUuid(String uuid);
     
 	/**

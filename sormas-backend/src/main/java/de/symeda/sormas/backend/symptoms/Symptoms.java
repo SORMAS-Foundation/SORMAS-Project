@@ -10,7 +10,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ImportIgnore;
@@ -115,6 +117,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState bulgingFontanelle;
 	private String otherNonHemorrhagicSymptomsText;
 	private String symptomsComments;
+	// when adding new fields make sure to extend toHumanString
 
 	@Temporal(TemporalType.DATE)
 	public Date getOnsetDate() {
@@ -897,4 +900,130 @@ public class Symptoms extends AbstractDomainObject {
 		return symptomsComments;
 	}
 
+	public String toHumanString(boolean includeOnset) {
+		StringBuilder string = new StringBuilder();
+
+		// would be much nicer to have some automatism for this
+		if (includeOnset) {
+			appendNotNullValue(string, onsetDate, SymptomsDto.ONSET_DATE);
+		}
+		// onsetSymptom;
+		// symptomatic;
+		// patientIllLocation;
+		appendNotNullValue(string, temperature, SymptomsDto.TEMPERATURE);
+		appendNotNullValue(string, temperatureSource, SymptomsDto.TEMPERATURE_SOURCE);
+		appendYesSymptom(string, fever, SymptomsDto.FEVER);
+		appendYesSymptom(string, vomiting, SymptomsDto.VOMITING);
+		appendYesSymptom(string, diarrhea, SymptomsDto.DIARRHEA);
+		appendYesSymptom(string, bloodInStool, SymptomsDto.BLOOD_IN_STOOL);
+		appendYesSymptom(string, nausea, SymptomsDto.NAUSEA);
+		appendYesSymptom(string, abdominalPain, SymptomsDto.ABDOMINAL_PAIN);
+		appendYesSymptom(string, headache, SymptomsDto.HEADACHE);
+		appendYesSymptom(string, musclePain, SymptomsDto.MUSCLE_PAIN);
+		appendYesSymptom(string, fatigueWeakness, SymptomsDto.FATIGUE_WEAKNESS);
+		appendYesSymptom(string, unexplainedBleeding, SymptomsDto.UNEXPLAINED_BLEEDING);
+		appendYesSymptom(string, gumsBleeding, SymptomsDto.GUMS_BLEEDING);
+		appendYesSymptom(string, injectionSiteBleeding, SymptomsDto.INJECTION_SITE_BLEEDING);
+		appendYesSymptom(string, noseBleeding, SymptomsDto.NOSE_BLEEDING);
+		appendYesSymptom(string, bloodyBlackStool, SymptomsDto.BLOODY_BLACK_STOOL);
+		appendYesSymptom(string, redBloodVomit, SymptomsDto.RED_BLOOD_VOMIT);
+		appendYesSymptom(string, digestedBloodVomit, SymptomsDto.DIGESTED_BLOOD_VOMIT);
+		appendYesSymptom(string, coughingBlood, SymptomsDto.COUGHING_BLOOD);
+		appendYesSymptom(string, bleedingVagina, SymptomsDto.BLEEDING_VAGINA);
+		appendYesSymptom(string, skinBruising, SymptomsDto.SKIN_BRUISING);
+		appendYesSymptom(string, bloodUrine, SymptomsDto.BLOOD_URINE);
+		//otherHemorrhagicSymptoms
+		appendNotNullValue(string, otherHemorrhagicSymptomsText, SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT);
+		appendYesSymptom(string, skinRash, SymptomsDto.SKIN_RASH);
+		appendYesSymptom(string, neckStiffness, SymptomsDto.NECK_STIFFNESS);
+		appendYesSymptom(string, soreThroat, SymptomsDto.SORE_THROAT);
+		appendYesSymptom(string, cough, SymptomsDto.COUGH);
+		appendYesSymptom(string, runnyNose, SymptomsDto.RUNNY_NOSE);
+		appendYesSymptom(string, difficultyBreathing, SymptomsDto.DIFFICULTY_BREATHING);
+		appendYesSymptom(string, chestPain, SymptomsDto.CHEST_PAIN);
+		appendYesSymptom(string, confusedDisoriented, SymptomsDto.CONFUSED_DISORIENTED);
+		appendYesSymptom(string, seizures, SymptomsDto.SEIZURES);
+		appendYesSymptom(string, alteredConsciousness, SymptomsDto.ALTERED_CONSCIOUSNESS);
+		appendYesSymptom(string, conjunctivitis, SymptomsDto.CONJUNCTIVITIS);
+		appendYesSymptom(string, eyePainLightSensitive, SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE);
+		appendYesSymptom(string, kopliksSpots, SymptomsDto.KOPLIKS_SPOTS);
+		appendYesSymptom(string, throbocytopenia, SymptomsDto.THROBOCYTOPENIA);
+		appendYesSymptom(string, otitisMedia, SymptomsDto.OTITIS_MEDIA);
+		appendYesSymptom(string, hearingloss, SymptomsDto.HEARINGLOSS);
+		appendYesSymptom(string, dehydration, SymptomsDto.DEHYDRATION);
+		appendYesSymptom(string, anorexiaAppetiteLoss, SymptomsDto.ANOREXIA_APPETITE_LOSS);
+		appendYesSymptom(string, refusalFeedorDrink, SymptomsDto.REFUSAL_FEEDOR_DRINK);
+		appendYesSymptom(string, jointPain, SymptomsDto.JOINT_PAIN);
+		appendYesSymptom(string, shock, SymptomsDto.SHOCK);
+		appendYesSymptom(string, hiccups, SymptomsDto.HICCUPS);
+		// otherNonHemorrhagicSymptoms
+		appendNotNullValue(string, otherNonHemorrhagicSymptomsText, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT);
+		appendYesSymptom(string, backache, SymptomsDto.BACKACHE);
+		appendYesSymptom(string, eyesBleeding, SymptomsDto.EYES_BLEEDING);
+		appendYesSymptom(string, jaundice, SymptomsDto.JAUNDICE);
+		appendYesSymptom(string, darkUrine, SymptomsDto.DARK_URINE);
+		appendYesSymptom(string, stomachBleeding, SymptomsDto.STOMACH_BLEEDING);
+		appendYesSymptom(string, rapidBreathing, SymptomsDto.RAPID_BREATHING);
+		appendYesSymptom(string, swollenGlands, SymptomsDto.SWOLLEN_GLANDS);
+		appendYesSymptom(string, lesions, SymptomsDto.LESIONS);
+		appendYesSymptom(string, lesionsSameState, SymptomsDto.LESIONS_SAME_STATE);
+		appendYesSymptom(string, lesionsSameSize, SymptomsDto.LESIONS_SAME_SIZE);
+		appendYesSymptom(string, lesionsDeepProfound, SymptomsDto.LESIONS_DEEP_PROFOUND);
+		appendYesSymptom(string, lesionsThatItch, SymptomsDto.LESIONS_THAT_ITCH);
+		appendTrue(string, lesionsFace, SymptomsDto.LESIONS_FACE);
+		appendTrue(string, lesionsLegs, SymptomsDto.LESIONS_LEGS);
+		appendTrue(string, lesionsSolesFeet, SymptomsDto.LESIONS_SOLES_FEET);
+		appendTrue(string, lesionsPalmsHands, SymptomsDto.LESIONS_PALMS_HANDS);
+		appendTrue(string, lesionsThorax, SymptomsDto.LESIONS_THORAX);
+		appendTrue(string, lesionsArms, SymptomsDto.LESIONS_ARMS);
+		appendTrue(string, lesionsGenitals, SymptomsDto.LESIONS_GENITALS);
+		appendTrue(string, lesionsAllOverBody, SymptomsDto.LESIONS_ALL_OVER_BODY);
+		// TODO images should have more specific caption to be included here
+//		appendYesSymptom(string, lesionsResembleImg1, SymptomsDto.LESIONS_RESEMBLE_IMG1);
+//		appendYesSymptom(string, lesionsResembleImg2, SymptomsDto.LESIONS_RESEMBLE_IMG2);
+//		appendYesSymptom(string, lesionsResembleImg3, SymptomsDto.LESIONS_RESEMBLE_IMG3);
+//		appendYesSymptom(string, lesionsResembleImg4, SymptomsDto.LESIONS_RESEMBLE_IMG4);
+		appendNotNullValue(string, lesionsOnsetDate, SymptomsDto.LESIONS_ONSET_DATE);
+		appendYesSymptom(string, lymphadenopathyInguinal, SymptomsDto.LYMPHADENOPATHY_INGUINAL);
+		appendYesSymptom(string, lymphadenopathyAxillary, SymptomsDto.LYMPHADENOPATHY_AXILLARY);
+		appendYesSymptom(string, lymphadenopathyCervical, SymptomsDto.LYMPHADENOPATHY_CERVICAL);
+		appendYesSymptom(string, chillsSweats, SymptomsDto.CHILLS_SWEATS);
+		appendYesSymptom(string, bedridden, SymptomsDto.BEDRIDDEN);
+		appendYesSymptom(string, oralUlcers, SymptomsDto.ORAL_ULCERS);
+		appendYesSymptom(string, painfulLymphadenitis, SymptomsDto.PAINFUL_LYMPHADENITIS);
+		appendYesSymptom(string, blackeningDeathOfTissue, SymptomsDto.BLACKENING_DEATH_OF_TISSUE);
+		appendYesSymptom(string, buboesGroinArmpitNeck, SymptomsDto.BUBOES_GROIN_ARMPIT_NECK);
+		appendYesSymptom(string, bulgingFontanelle, SymptomsDto.BULGING_FONTANELLE);
+		// symptomsComments;
+		
+		return string.toString();
+	}
+	
+	private static void appendNotNullValue(StringBuilder stringBuilder, Object value, String dtoPropertyId) {
+		if (value != null) {
+			if (stringBuilder.length() > 0) {
+				stringBuilder.append(", ");
+			}
+			stringBuilder.append(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null))
+				.append(": ").append(value);
+		}
+	}
+	
+	private static void appendYesSymptom(StringBuilder stringBuilder, SymptomState symptom, String dtoPropertyId) {
+		if (symptom == SymptomState.YES) {
+			if (stringBuilder.length() > 0) {
+				stringBuilder.append(", ");
+			}
+			stringBuilder.append(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null));
+		}
+	}
+
+	private static void appendTrue(StringBuilder stringBuilder, Boolean value, String dtoPropertyId) {
+		if (value != null && Boolean.TRUE.equals(value)) {
+			if (stringBuilder.length() > 0) {
+				stringBuilder.append(", ");
+			}
+			stringBuilder.append(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null));
+		}
+	}
 }
