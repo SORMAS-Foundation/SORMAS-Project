@@ -9,7 +9,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 
-public class CaseCriteria implements Serializable {
+public class CaseCriteria implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -100,4 +100,12 @@ public class CaseCriteria implements Serializable {
 		return mustHaveNoGeoCoordinates;
 	}
 	
+	@Override
+	public CaseCriteria clone() {
+		try {
+			return (CaseCriteria)super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

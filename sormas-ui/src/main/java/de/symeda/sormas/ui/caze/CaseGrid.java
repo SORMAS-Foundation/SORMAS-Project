@@ -212,6 +212,10 @@ public class CaseGrid extends Grid {
 		}
 	}
 	
+	public CaseCriteria getFilterCriteria() {
+		return caseCriteria;
+	}
+	
     @SuppressWarnings("unchecked")
 	public BeanItemContainer<CaseIndexDto> getContainer() {
     	GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();

@@ -41,10 +41,13 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
@@ -66,6 +69,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -102,6 +106,7 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sample.SampleTest;
 import de.symeda.sormas.backend.sample.SampleTestService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
@@ -668,28 +673,79 @@ public class CaseFacadeEjb implements CaseFacade {
 		return target;
 	}
 
-	public static CaseExportDto toExportDto(Case source) {
+	public CaseExportDto toExportDto(Case source) {
+		
+		Person sourcePerson = source.getPerson();
+		
 		CaseExportDto target = new CaseExportDto();
 
 		target.setUuid(source.getUuid());
 		target.setEpidNumber(source.getEpidNumber());
 		target.setDisease(DiseaseHelper.toString(source.getDisease(), source.getDiseaseDetails()));
+		target.setPerson(PersonDto.buildCaption(sourcePerson.getFirstName(), sourcePerson.getLastName()));
+		target.setSex(sourcePerson.getSex());
+		target.setApproximateAge(PersonHelper.buildAgeString(sourcePerson.getApproximateAge(), sourcePerson.getApproximateAgeType()));
 		target.setReportDate(source.getReportDate());
-		target.setName(PersonDto.buildCaption(source.getPerson().getFirstName(), source.getPerson().getLastName()));
-		target.setSex(source.getPerson().getSex());
-		// TODO calculate based on birthdate or use age. Include age type -> AgeHelper
-		target.setAge(DataHelper.toStringNullable(source.getPerson().getApproximateAge()));
-		target.setOnsetDate(source.getSymptoms().getOnsetDate());
+		target.setRegion(source.getRegion().getName());
+		target.setDistrict(source.getDistrict().getName());
+		if (source.getCommunity() != null) {
+			target.setCommunity(source.getCommunity().getName());
+		}
 		target.setAdmissionDate(source.getHospitalization().getAdmissionDate());
+		target.setHealthFacility(FacilityHelper.buildFacilityString(
+				source.getHealthFacility().getName(), source.getHealthFacilityDetails()));
+		target.setHealthFacility(source.getHealthFacility().toString());
+
+		// samples
+		List<Sample> sourceSamples = sampleService.getAllByCase(source);
+		target.setSampleTaken(sourceSamples.size() > 0 ? YesNoUnknown.YES : YesNoUnknown.NO);
+		String sampleDates = "", labResults = "";
+		for (Sample sourceSample : sourceSamples) {
+			if (sourceSample.getSampleDateTime() != null) {
+				if (sampleDates.length() > 0) {
+					sampleDates += ", "; 
+				}
+				sampleDates += DateHelper.formatShortDate(sourceSample.getSampleDateTime());
+			}
+			
+			for (SampleTest sourceSampleTest : sourceSample.getSampleTests()) {
+				if (sourceSampleTest.getTestResult() != null) {
+					if (labResults.length() > 0) {
+						labResults += ", "; 
+					}
+					labResults += sourceSampleTest.getTestResult();
+				}
+			}
+		}
+		target.setSampleDates(sampleDates);
+		target.setLabResults(labResults);
+		
 		target.setCaseClassification(source.getCaseClassification());
 		target.setInvestigationStatus(source.getInvestigationStatus());
-		target.setPresentCondition(source.getPerson().getPresentCondition());
+		target.setPresentCondition(sourcePerson.getPresentCondition());
 		target.setOutcome(source.getOutcome());
-		target.setRegionName(source.getRegion().getName());
-		target.setDistrictName(source.getDistrict().getName());
-		target.setCommunityName(source.getCommunity().getName());
-		// TODO include facilityDetails (for other)
-		target.setHealthFacility(source.getHealthFacility().toString());
+		target.setDeathDate(sourcePerson.getDeathDate());
+
+		target.setAddress(sourcePerson.getAddress().toString());
+		target.setPhone(PersonHelper.buildPhoneString(sourcePerson.getPhone(), sourcePerson.getPhoneOwner()));
+		target.setOccupationType(PersonHelper.buildOccupationString(sourcePerson.getOccupationType(), sourcePerson.getOccupationDetails(), 
+				sourcePerson.getOccupationFacility() != null ? sourcePerson.getOccupationFacility().getName() : null));
+		
+		target.setTravelHistory(source.getEpiData().getTravels().stream()
+				.map(t -> EpiDataTravelHelper.buildTravelString(t.getTravelType(), t.getTravelDestination(), t.getTravelDateFrom(), t.getTravelDateTo()))
+				.collect(Collectors.joining(", ")));
+		target.setContactWithRodent(source.getEpiData().getRodents());
+		// contact with confirmed case
+		target.setContactWithConfirmedCase(YesNoUnknown.NO);
+		List<Contact> sourceContacts = contactService.getAllByResultingCase(source);
+		for (Contact sourceContact : sourceContacts) {
+			if (sourceContact.getCaze().getCaseClassification() == CaseClassification.CONFIRMED) {
+				target.setContactWithConfirmedCase(YesNoUnknown.YES);
+				break;
+			}
+		}
+		
+		target.setOnsetDate(source.getSymptoms().getOnsetDate());
 		target.setSymptoms(source.getSymptoms().toHumanString(false));
 		
 		return target;
