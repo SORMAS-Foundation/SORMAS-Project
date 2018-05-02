@@ -88,6 +88,9 @@ public final class CssStyles {
 	public static final String LABEL_BAR_TOP_MINOR = "bar-top-minor";
 	public static final String LABEL_BOTTOM_LINE = "bottom-line";
 	
+	// Layout stlyes
+	public static final String LAYOUT_MINIMAL = "minimal";
+	
 	// Button styles
 	public static final String VAADIN_BUTTON = "v-button";
 	public static final String BUTTON_CRITICAL = "critical";

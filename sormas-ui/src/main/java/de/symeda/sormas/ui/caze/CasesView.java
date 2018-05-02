@@ -1,28 +1,15 @@
 package de.symeda.sormas.ui.caze;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
-import com.opencsv.CSVWriter;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.StreamResource.StreamSource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -42,7 +29,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -58,10 +44,8 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -139,14 +123,17 @@ public class CasesView extends AbstractView {
 			PopupButton exportButton = new PopupButton("Export"); 
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
 			VerticalLayout exportLayout = new VerticalLayout();
-			exportLayout.setSpacing(true); // TODO make spacing smaller
+			exportLayout.setSpacing(true); 
+			exportLayout.setMargin(true);
+			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 			exportLayout.setWidth(200, Unit.PIXELS);
 			exportButton.setContent(exportLayout);
 			addHeaderComponent(exportButton);
 
 			basicExportButton = new Button("Basic Export");
+			basicExportButton.setDescription("Export the columns and rows that are shown in the table below.");
 			basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			basicExportButton.setIcon(FontAwesome.DOWNLOAD);
+			basicExportButton.setIcon(FontAwesome.TABLE);
 			basicExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(basicExportButton);
 			
@@ -155,82 +142,23 @@ public class CasesView extends AbstractView {
 			fileDownloader.extend(basicExportButton);
 			
 			extendedExportButton = new Button("Full Export");
+			extendedExportButton.setDescription("Export the rows that are shown in the table below with an extended set of columns.");
 			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			extendedExportButton.setIcon(FontAwesome.DOWNLOAD);
+			extendedExportButton.setIcon(FontAwesome.FILE_TEXT);
 			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(extendedExportButton);
 			
-			CaseCriteria filterCriteria = grid.getFilterCriteria().clone();
-			StreamResource extendedStreamResource = new StreamResource(new StreamSource() {
-				@Override
-				public InputStream getStream() {
-					
-					try {
-
-						List<CaseExportDto> cases = FacadeProvider.getCaseFacade().getExportList(LoginHelper.getCurrentUser().getUuid(), filterCriteria);
-
-						ByteArrayOutputStream baos = new ByteArrayOutputStream();
-						OutputStreamWriter osw = new OutputStreamWriter(baos, StandardCharsets.UTF_8.name());
-						CSVWriter writer = CSVUtils.createCSVWriter(osw);
-						
-						// fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
-						Method[] readMethods = Arrays.stream(CaseExportDto.class.getDeclaredMethods())
-								.filter(m -> m.getName().startsWith("get") || m.getName().startsWith("is"))
-								.sorted((a,b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(), 
-										b.getAnnotationsByType(Order.class)[0].value()))
-								.toArray(Method[]::new);
-										
-						String[] fieldValues = new String[readMethods.length];
-						for (int i=0; i<readMethods.length; i++) {
-							Method method = readMethods[i];
-							String propertyId = method.getName().startsWith("get") 
-									? method.getName().substring(3)
-									: method.getName().substring(2); 
-									propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
-							// field caption - export, case, person, symptoms, hospitalization
-							fieldValues[i] = 
-								I18nProperties.getPrefixFieldCaption(CaseExportDto.I18N_PREFIX, propertyId,
-									I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId,
-										I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, propertyId,
-											I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, propertyId,
-												I18nProperties.getPrefixFieldCaption(HospitalizationDto.I18N_PREFIX, propertyId)))));
-						}
-						writer.writeNext(fieldValues);
-						
-						try {
-							for (CaseExportDto caze : cases) {
-								for (int i=0; i<readMethods.length; i++) {
-									Method method = readMethods[i];
-									Object value = method.invoke(caze);
-									if (value == null) {
-										fieldValues[i] = "";
-									} else if (value instanceof Date) {
-										fieldValues[i] = DateHelper.formatShortDate((Date)value);
-									} else {
-										fieldValues[i] = value.toString();
-									}
-								}
-								writer.writeNext(fieldValues);
-							};
-						} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
-							throw new RuntimeException(e);
-						}
-
-						osw.flush();
-						baos.flush();
-						
-						return new BufferedInputStream(new ByteArrayInputStream(baos.toByteArray()));
-					} catch (IOException e) {
-						// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
-						// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
-						new Notification("Export failed", "There was an error trying to provide the data to export. Please contact an admin and inform them about this issue.", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
-						return null;
-					}
-				}
-			}, "sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
-			extendedStreamResource.setMIMEType("text/csv");
-			extendedStreamResource.setCacheTime(0);
-			new FileDownloader(extendedStreamResource).extend(extendedExportButton);
+			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class,
+					() -> FacadeProvider.getCaseFacade().getExportList(LoginHelper.getCurrentUser().getUuid(), grid.getFilterCriteria()), 
+					propertyId -> {
+						return I18nProperties.getPrefixFieldCaption(CaseExportDto.I18N_PREFIX, propertyId,
+							I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId,
+								I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, propertyId,
+									I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, propertyId,
+										I18nProperties.getPrefixFieldCaption(HospitalizationDto.I18N_PREFIX, propertyId)))));
+					},
+					"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
 		}
 
 		if (LoginHelper.hasUserRight(UserRight.CASE_CREATE)) {

@@ -72,6 +72,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @import "components/menu.scss";
 @import "components/notification.scss";
 @import "components/optiongroup.scss";
+@import "components/orderedlayout.scss";
 @import "components/panel.scss";
 @import "components/svg.scss";
 @import "components/tabsheet.scss";
@@ -116,6 +117,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-menu;
   @include sormas-notification;
   @include sormas-optiongroup;
+  @include sormas-orderedlayout;
   @include sormas-panel;
   @include sormas-svg;
   @include sormas-tabsheet;

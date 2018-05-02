@@ -1,0 +1,26 @@
+
+@mixin sormas-orderedlayout {
+	
+	.v-layout, .v-popupview-popup .popupContent > .v-layout {
+		
+		&.minimal {
+		
+		  	&.v-margin-top {
+    			padding-top: 4px;
+  			}
+		  	&.v-margin-bottom {
+    			padding-bottom: 4px;
+  			}
+		  	&.v-margin-left {
+    			padding-left: 4px;
+  			}
+		  	&.v-margin-right {
+    			padding-right: 4px;
+  			}
+			.v-spacing {
+				width: 8px;
+				height: 8px;
+			}
+		}
+	}
+}
