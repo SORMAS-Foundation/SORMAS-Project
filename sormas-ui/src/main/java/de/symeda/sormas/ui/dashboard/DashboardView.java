@@ -190,6 +190,10 @@ public class DashboardView extends AbstractView {
 		filterLayout.addComponent(diseaseFilter);
 
 		// Date filters
+		HorizontalLayout dateFilterLayout = new HorizontalLayout();
+		dateFilterLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+		dateFilterLayout.setSpacing(true);
+		filterLayout.addComponent(dateFilterLayout);
 		Date now = new Date();
 
 		Button todayButton = new Button("Today");
@@ -297,7 +301,7 @@ public class DashboardView extends AbstractView {
 			customButton.setContent(customDateFilterLayout);
 		}
 
-		filterLayout.addComponents(todayButton, yesterdayButton, thisWeekButton, lastWeekButton,
+		dateFilterLayout.addComponents(todayButton, yesterdayButton, thisWeekButton, lastWeekButton,
 				thisYearButton, lastYearButton, customButton);
 
 		Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
