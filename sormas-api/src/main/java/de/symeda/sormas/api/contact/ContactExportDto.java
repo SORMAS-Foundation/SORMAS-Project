@@ -27,6 +27,7 @@ public class ContactExportDto implements Serializable {
 	private Date reportDate;
 	private ContactProximity contactProximity;
 	private ContactStatus contactStatus;
+	private FollowUpStatus followUpStatus;
 	private PresentCondition presentCondition;
 	private Date deathDate;
 	private String address;
@@ -103,46 +104,51 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(12)
+	public FollowUpStatus getFollowUpStatus() {
+		return followUpStatus;
+	}
+
+	@Order(13)
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
 
-	@Order(13)
+	@Order(14)
 	public Date getDeathDate() {
 		return deathDate;
 	}
 
-	@Order(14)
+	@Order(15)
 	public String getAddress() {
 		return address;
 	}
 
-	@Order(15)
+	@Order(16)
 	public String getPhone() {
 		return phone;
 	}
 
-	@Order(16)
+	@Order(17)
 	public String getOccupationType() {
 		return occupationType;
 	}
 
-	@Order(17)
+	@Order(18)
 	public int getNumberOfVisits() {
 		return numberOfVisits;
 	}
 
-	@Order(18)
+	@Order(19)
 	public YesNoUnknown getSymptomatic() {
 		return symptomatic;
 	}
 
-	@Order(19)
+	@Order(20)
 	public Date getLastVisitDate() {
 		return lastVisitDate;
 	}
 
-	@Order(20)
+	@Order(21)
 	public String getLastSymptoms() {
 		return lastSymptoms;
 	}
@@ -205,6 +211,10 @@ public class ContactExportDto implements Serializable {
 		this.contactStatus = contactStatus;
 	}
 
+
+	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
+		this.followUpStatus = followUpStatus;
+	}
 
 	public void setNumberOfVisits(int numberOfVisits) {
 		this.numberOfVisits = numberOfVisits;

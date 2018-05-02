@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.caze;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -91,7 +90,7 @@ public class CaseContactsView extends AbstractCaseView {
 		districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISTRICT_UUID));
 		districtFilter.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-			grid.setDistrictFilter(district != null ? district.getUuid() : null);
+			grid.setDistrictFilter(district);
 		});
 		topLayout.addComponent(districtFilter);
 
@@ -100,7 +99,7 @@ public class CaseContactsView extends AbstractCaseView {
 		officerFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
 		officerFilter.addValueChangeListener(e -> {
 			UserReferenceDto officer = (UserReferenceDto) e.getProperty().getValue();
-			grid.setContactOfficerFilter(officer != null ? officer.getUuid() : null);
+			grid.setContactOfficerFilter(officer);
 		});
 		topLayout.addComponent(officerFilter);
 

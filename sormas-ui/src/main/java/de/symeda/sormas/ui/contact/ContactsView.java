@@ -99,8 +99,9 @@ public class ContactsView extends AbstractView {
 			addHeaderComponent(exportButton);
 			
 			Button basicExportButton = new Button("Basic Export");
+			basicExportButton.setDescription("Export the columns and rows that are shown in the table below.");
 			basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			basicExportButton.setIcon(FontAwesome.DOWNLOAD);
+			basicExportButton.setIcon(FontAwesome.TABLE);
 			basicExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(basicExportButton);
 
@@ -164,7 +165,7 @@ public class ContactsView extends AbstractView {
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
-				grid.setRegionFilter(region != null ? region.getUuid() : null);
+				grid.setRegionFilter(region);
 			});
 			filterLayout.addComponent(regionFilter);
 		}
@@ -175,7 +176,7 @@ public class ContactsView extends AbstractView {
 		districtFilter.setDescription("Select a district in the state");
 		districtFilter.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-			grid.setDistrictFilter(district != null ? district.getUuid() : null);
+			grid.setDistrictFilter(district);
 		});
 
 		if (user.getRegion() != null) {
@@ -202,7 +203,7 @@ public class ContactsView extends AbstractView {
 		facilityFilter.setDescription("Select a facility in the LGA");
 		facilityFilter.addValueChangeListener(e -> {
 			FacilityReferenceDto facility = (FacilityReferenceDto) e.getProperty().getValue();
-			grid.setHealthFacilityFilter(facility != null ? facility.getUuid() : null);
+			grid.setHealthFacilityFilter(facility);
 		});
 		facilityFilter.setEnabled(false);
 		filterLayout.addComponent(facilityFilter);
@@ -226,7 +227,7 @@ public class ContactsView extends AbstractView {
 		}
 		officerFilter.addValueChangeListener(e -> {
 			UserReferenceDto officer = (UserReferenceDto) e.getProperty().getValue();
-			grid.setContactOfficerFilter(officer != null ? officer.getUuid() : null);
+			grid.setContactOfficerFilter(officer);
 		});
 		filterLayout.addComponent(officerFilter);
 

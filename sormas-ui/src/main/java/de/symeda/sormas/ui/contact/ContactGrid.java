@@ -8,7 +8,6 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
@@ -22,6 +21,10 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -120,7 +123,7 @@ public class ContactGrid extends Grid {
 	}
 
     public void setDiseaseFilter(Disease disease) {
-		contactCriteria.caseDieasesEquals(disease);
+		contactCriteria.caseDiseaseEquals(disease);
 		reload();
 	}
 
@@ -129,60 +132,39 @@ public class ContactGrid extends Grid {
     	reload();
     }
     
-    public void setRegionFilter(String regionUuid) {
-		getContainer().removeContainerFilters(ContactIndexDto.CASE_REGION_UUID);
-		if (regionUuid != null) {
-	    	Equal filter = new Equal(ContactIndexDto.CASE_REGION_UUID, regionUuid);  
-	        getContainer().addContainerFilter(filter);
-		}
+    public void setRegionFilter(RegionReferenceDto region) {
+    	contactCriteria.caseRegion(region);
+    	reload();
 	}
     
-    public void setDistrictFilter(String districtUuid) {
-		getContainer().removeContainerFilters(ContactIndexDto.CASE_DISTRICT_UUID);
-		if (districtUuid != null) {
-	    	Equal filter = new Equal(ContactIndexDto.CASE_DISTRICT_UUID, districtUuid);  
-	        getContainer().addContainerFilter(filter);
-		}
+    public void setDistrictFilter(DistrictReferenceDto district) {
+    	contactCriteria.caseDistrict(district);
+    	reload();
 	}
     
-    public void setHealthFacilityFilter(String facilityUuid) {
-		getContainer().removeContainerFilters(ContactIndexDto.CASE_HEALTH_FACILITY_UUID);
-		if (facilityUuid != null) {
-	    	Equal filter = new Equal(ContactIndexDto.CASE_HEALTH_FACILITY_UUID, facilityUuid);  
-	        getContainer().addContainerFilter(filter);
-		}
+    public void setHealthFacilityFilter(FacilityReferenceDto facility) {
+    	contactCriteria.caseFacility(facility);
+    	reload();
 	}
     
-    public void setContactOfficerFilter(String contactOfficerUuid) {
-		getContainer().removeContainerFilters(ContactIndexDto.CONTACT_OFFICER_UUID);
-		if (contactOfficerUuid != null) {
-	    	Equal filter = new Equal(ContactIndexDto.CONTACT_OFFICER_UUID, contactOfficerUuid);  
-	        getContainer().addContainerFilter(filter);
-		}
+    public void setContactOfficerFilter(UserReferenceDto contactOfficer) {
+    	contactCriteria.contactOfficer(contactOfficer);
+    	reload();
 	}
 
-	public void setClassificationFilter(ContactClassification status) {
-		getContainer().removeContainerFilters(ContactIndexDto.CONTACT_CLASSIFICATION);
-    	if (status != null) {
-	    	Equal filter = new Equal(ContactIndexDto.CONTACT_CLASSIFICATION, status);  
-	        getContainer().addContainerFilter(filter);
-    	}
+	public void setClassificationFilter(ContactClassification contactClassification) {
+		contactCriteria.contactClassification(contactClassification);
+		reload();
     }
 	
 	public void setStatusFilter(ContactStatus status) {
-		getContainer().removeContainerFilters(ContactIndexDto.CONTACT_STATUS);
-		if (status != null) {
-			Equal filter = new Equal(ContactIndexDto.CONTACT_STATUS, status);
-			getContainer().addContainerFilter(filter);
-		}
+		contactCriteria.contactStatus(status);
+		reload();
 	}
 	
 	public void setFollowUpStatusFilter(FollowUpStatus status) {
-		getContainer().removeContainerFilters(ContactIndexDto.FOLLOW_UP_STATUS);
-		if(status != null) {
-			Equal filter = new Equal(ContactIndexDto.FOLLOW_UP_STATUS, status);
-			getContainer().addContainerFilter(filter);
-		}
+		contactCriteria.followUpStatus(status);
+		reload();
 	}
 
 	public void filterByText(String text) {

@@ -34,6 +34,7 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
@@ -459,23 +460,40 @@ public class ContactService extends AbstractAdoService<Contact> {
 	public Predicate buildCriteriaFilter(ContactCriteria contactCriteria, CriteriaBuilder cb, Root<Contact> from) {
 		Predicate filter = null;
 		Join<Contact, Case> caze = from.join(Contact.CAZE, JoinType.LEFT);
+		
 		if (contactCriteria.getReportingUserRole() != null) {
 			filter = and(cb, filter, cb.isMember(
 					contactCriteria.getReportingUserRole(), 
 					from.join(Contact.REPORTING_USER, JoinType.LEFT).get(User.USER_ROLES)));
 		}
 		if (contactCriteria.getCaseDisease() != null) {
-			if (caze == null) {
-				caze = from.join(Contact.CAZE, JoinType.LEFT);
-			}
 			filter = and(cb, filter, cb.equal(caze.get(Case.DISEASE), contactCriteria.getCaseDisease()));
 		}
 		if (contactCriteria.getCaze() != null) {
-			if (caze == null) {
-				caze = from.join(Contact.CAZE, JoinType.LEFT);
-			}
 			filter = and(cb, filter, cb.equal(caze.get(Case.UUID), contactCriteria.getCaze().getUuid()));
 		}
+		if (contactCriteria.getCaseRegion() != null) {
+			filter = and(cb, filter, cb.equal(caze.join(Case.REGION, JoinType.LEFT).get(Region.UUID), contactCriteria.getCaseRegion().getUuid()));
+		}
+		if (contactCriteria.getCaseDistrict() != null) {
+			filter = and(cb, filter, cb.equal(caze.join(Case.DISTRICT, JoinType.LEFT).get(District.UUID), contactCriteria.getCaseDistrict().getUuid()));
+		}
+		if (contactCriteria.getCaseFacility() != null) {
+			filter = and(cb, filter, cb.equal(caze.join(Case.HEALTH_FACILITY, JoinType.LEFT).get(Facility.UUID), contactCriteria.getCaseFacility().getUuid()));
+		}
+		if (contactCriteria.getContactOfficer() != null) {
+			filter = and(cb, filter, cb.equal(from.join(Contact.CONTACT_OFFICER, JoinType.LEFT).get(User.UUID), contactCriteria.getContactOfficer().getUuid()));
+		}
+		if (contactCriteria.getContactClassification() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Contact.CONTACT_CLASSIFICATION), contactCriteria.getContactClassification()));
+		}
+		if (contactCriteria.getContactStatus() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Contact.CONTACT_STATUS), contactCriteria.getContactStatus()));
+		}
+		if (contactCriteria.getFollowUpStatus() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Contact.FOLLOW_UP_STATUS), contactCriteria.getFollowUpStatus()));
+		}
+
 		return filter;
 	}
 }

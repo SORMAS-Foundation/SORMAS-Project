@@ -384,6 +384,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportDate(source.getReportDateTime());
 		target.setContactProximity(source.getContactProximity());
 		target.setContactStatus(source.getContactStatus());
+		target.setFollowUpStatus(source.getFollowUpStatus());
 		target.setPresentCondition(sourcePerson.getPresentCondition());
 		target.setDeathDate(sourcePerson.getDeathDate());
 		target.setAddress(sourcePerson.getAddress().toString());

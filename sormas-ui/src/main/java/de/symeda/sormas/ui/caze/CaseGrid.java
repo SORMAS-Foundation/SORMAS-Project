@@ -9,7 +9,6 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
@@ -121,35 +120,23 @@ public class CaseGrid extends Grid {
 	}
 
     public void setRegionFilter(RegionReferenceDto region) {
-		getContainer().removeContainerFilters(CaseIndexDto.REGION_UUID);
-		if (region != null) {
-	    	Equal filter = new Equal(CaseIndexDto.REGION_UUID, region.getUuid());  
-	        getContainer().addContainerFilter(filter);
-		}
+		caseCriteria.regionEquals(region);
+		reload();
 	}
 
     public void setDistrictFilter(DistrictReferenceDto district) {
-		getContainer().removeContainerFilters(CaseIndexDto.DISTRICT_UUID);
-		if (district != null) {
-	    	Equal filter = new Equal(CaseIndexDto.DISTRICT_UUID, district.getUuid());  
-	        getContainer().addContainerFilter(filter);
-		}
+		caseCriteria.districtEquals(district);
+		reload();
 	}
 
     public void setHealthFacilityFilter(FacilityReferenceDto facility) {
-		getContainer().removeContainerFilters(CaseIndexDto.HEALTH_FACILITY_UUID);
-		if (facility != null) {
-	    	Equal filter = new Equal(CaseIndexDto.HEALTH_FACILITY_UUID, facility.getUuid());  
-	        getContainer().addContainerFilter(filter);
-		}
+		caseCriteria.healthFacility(facility);
+		reload();
 	}
     
     public void setSurveillanceOfficerFilter(UserReferenceDto surveillanceOfficer) {
-		getContainer().removeContainerFilters(CaseIndexDto.SURVEILLANCE_OFFICER_UUID);
-		if (surveillanceOfficer != null) {
-	    	Equal filter = new Equal(CaseIndexDto.SURVEILLANCE_OFFICER_UUID, surveillanceOfficer.getUuid());  
-	        getContainer().addContainerFilter(filter);
-		}
+    	caseCriteria.surveillanceOfficer(surveillanceOfficer);
+    	reload();
 	}
     
     public void setReportedByFilter(UserRole reportingUserRole) {
@@ -158,27 +145,18 @@ public class CaseGrid extends Grid {
     }
 
 	public void setClassificationFilter(CaseClassification classficiation) {
-		getContainer().removeContainerFilters(CaseIndexDto.CASE_CLASSIFICATION);
-    	if (classficiation != null) {
-	    	Equal filter = new Equal(CaseIndexDto.CASE_CLASSIFICATION, classficiation);  
-	        getContainer().addContainerFilter(filter);
-    	}
+    	caseCriteria.caseClassification(classficiation);
+    	reload();
     }
 
 	public void setInvestigationFilter(InvestigationStatus status) {
-		getContainer().removeContainerFilters(CaseIndexDto.INVESTIGATION_STATUS);
-    	if (status != null) {
-	    	Equal filter = new Equal(CaseIndexDto.INVESTIGATION_STATUS, status);  
-	        getContainer().addContainerFilter(filter);
-    	}
+    	caseCriteria.investigationStatus(status);
+    	reload();
     }
 	
 	public void setPresentConditionFilter(PresentCondition presentCondition) {
-		getContainer().removeContainerFilters(CaseIndexDto.PRESENT_CONDITION);
-    	if (presentCondition != null) {
-	    	Equal filter = new Equal(CaseIndexDto.PRESENT_CONDITION, presentCondition);  
-	        getContainer().addContainerFilter(filter);
-    	}
+    	caseCriteria.presentCondition(presentCondition);
+    	reload();
     }
 	
 	public void setNoGeoCoordinatesFilter(boolean showOnlyCasesWithoutGPSCoords) {
