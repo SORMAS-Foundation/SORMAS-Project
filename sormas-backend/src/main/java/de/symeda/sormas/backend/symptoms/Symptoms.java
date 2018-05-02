@@ -14,6 +14,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ImportIgnore;
 
@@ -1005,7 +1006,12 @@ public class Symptoms extends AbstractDomainObject {
 				stringBuilder.append(", ");
 			}
 			stringBuilder.append(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null))
-				.append(": ").append(value);
+				.append(": ");
+			if (value instanceof Date) {
+				stringBuilder.append(DateHelper.formatShortDate((Date)value));
+			} else {
+				stringBuilder.append(value);
+			}
 		}
 	}
 	

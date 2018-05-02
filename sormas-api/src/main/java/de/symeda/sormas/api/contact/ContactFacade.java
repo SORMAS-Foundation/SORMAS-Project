@@ -40,4 +40,6 @@ public interface ContactFacade {
 	List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria);
 	
 	List<ContactReferenceDto> getAllByVisit(VisitReferenceDto visitRef);
+
+	List<ContactExportDto> getExportList(String userUuid, ContactCriteria contactCriteria);
 }

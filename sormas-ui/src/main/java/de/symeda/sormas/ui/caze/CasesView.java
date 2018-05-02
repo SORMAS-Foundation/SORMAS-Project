@@ -71,9 +71,6 @@ public class CasesView extends AbstractView {
 	public static final String SEARCH_FIELD = "searchField";
 
 	private CaseGrid grid;    
-	private Button importButton;
-	private Button basicExportButton;
-	private Button extendedExportButton;
 	private Button createButton;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
@@ -105,7 +102,7 @@ public class CasesView extends AbstractView {
 		});
 		
 		if (LoginHelper.hasUserRight(UserRight.CASE_IMPORT)) {
-			importButton = new Button("Import");
+			Button importButton = new Button("Import");
 			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			importButton.setIcon(FontAwesome.UPLOAD);
 			importButton.addClickListener(e -> {
@@ -130,7 +127,7 @@ public class CasesView extends AbstractView {
 			exportButton.setContent(exportLayout);
 			addHeaderComponent(exportButton);
 
-			basicExportButton = new Button("Basic Export");
+			Button basicExportButton = new Button("Basic Export");
 			basicExportButton.setDescription("Export the columns and rows that are shown in the table below.");
 			basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			basicExportButton.setIcon(FontAwesome.TABLE);
@@ -141,8 +138,8 @@ public class CasesView extends AbstractView {
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
 			
-			extendedExportButton = new Button("Full Export");
-			extendedExportButton.setDescription("Export the rows that are shown in the table below with an extended set of columns.");
+			Button extendedExportButton = new Button("Full Export");
+			extendedExportButton.setDescription("Export the rows that are shown in the table below with an extended set of columns. This may take a while.");
 			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			extendedExportButton.setIcon(FontAwesome.FILE_TEXT);
 			extendedExportButton.setWidth(100, Unit.PERCENTAGE);

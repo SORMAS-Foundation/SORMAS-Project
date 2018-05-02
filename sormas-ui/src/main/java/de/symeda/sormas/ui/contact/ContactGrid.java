@@ -202,7 +202,10 @@ public class ContactGrid extends Grid {
 		}
 	}
 	
-	
+	public ContactCriteria getFilterCriteria() {
+		return contactCriteria;
+	}
+		
     @SuppressWarnings("unchecked")
 	public BeanItemContainer<ContactIndexDto> getContainer() {
     	GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();

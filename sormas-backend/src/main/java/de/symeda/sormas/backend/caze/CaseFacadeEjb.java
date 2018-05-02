@@ -228,8 +228,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		return resultList;
 	}
 	
-
-	
 	@Override
 	public List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria) {
 		

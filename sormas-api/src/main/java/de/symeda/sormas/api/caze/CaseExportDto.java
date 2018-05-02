@@ -47,11 +47,6 @@ public class CaseExportDto implements Serializable {
 	public CaseReferenceDto toReference() {
 		return new CaseReferenceDto(uuid, person);
 	}
-	
-	@Override
-	public String toString() {
-		return CaseReferenceDto.buildCaption(uuid, person);
-	}
 
 	@Order(0)
 	public String getUuid() {

@@ -60,6 +60,25 @@ public class ContactService extends AbstractAdoService<Contact> {
 		super(Contact.class);
 	}
 	
+	public List<Contact> findBy(ContactCriteria contactCriteria, User user) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
+		Root<Contact> from = cq.from(getElementClass());
+
+		Predicate filter = buildCriteriaFilter(contactCriteria, cb, from);
+		filter = and(cb, filter, createUserFilter(cb, cq, from, user));
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.asc(from.get(Contact.CREATION_DATE)));
+
+		List<Contact> resultList = em.createQuery(cq).getResultList();
+		return resultList;	
+	}
+	
+	
 	public List<Contact> getAllByCase(Case caze) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
