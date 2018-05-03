@@ -20,7 +20,7 @@ public class AbstractStatisticsView extends AbstractSubNavigationView {
 	@Override
 	public void refreshMenu(SubNavigationMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		menu.removeAllViews();
-		menu.addView(StatisticsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(I18N_PREFIX, StatisticsView.VIEW_NAME), params);
+		//menu.addView(StatisticsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(I18N_PREFIX, StatisticsView.VIEW_NAME), params);
 		menu.addView(BasicStatisticsView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(I18N_PREFIX, BasicStatisticsView.VIEW_NAME), params);
 		if (LoginHelper.hasUserRight(UserRight.DATABASE_EXPORT_ACCESS)) {
 			menu.addView(DatabaseExportView.VIEW_NAME, I18nProperties.getPrefixFieldCaption(I18N_PREFIX, "database-export"), params);

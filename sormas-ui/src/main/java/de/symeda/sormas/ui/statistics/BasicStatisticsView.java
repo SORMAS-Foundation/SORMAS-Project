@@ -37,7 +37,7 @@ public class BasicStatisticsView extends AbstractStatisticsView {
 
 	private static final long serialVersionUID = -4440568319850399685L;
 
-	public static final String VIEW_NAME = "basic-statistics";
+	public static final String VIEW_NAME = "statistics";
 
 	private VerticalLayout statisticsLayout;
 	private StatisticsAgeSexGrid ageSexGrid;

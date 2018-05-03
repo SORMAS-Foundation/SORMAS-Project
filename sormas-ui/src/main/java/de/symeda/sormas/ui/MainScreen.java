@@ -88,7 +88,7 @@ public class MainScreen extends HorizontalLayout {
         	menu.addView(ReportsView.class, ReportsView.VIEW_NAME, "Reports", FontAwesome.FILE_TEXT);
         }
         ControllerProvider.getStatisticsController().registerViews(navigator);
-        menu.addView(StatisticsView.class, StatisticsView.VIEW_NAME, "Statistics", FontAwesome.BAR_CHART);
+        menu.addView(BasicStatisticsView.class, BasicStatisticsView.VIEW_NAME, "Statistics", FontAwesome.BAR_CHART);
         if (LoginHelper.hasUserRight(UserRight.USER_VIEW)) {
         	menu.addView(UsersView.class, UsersView.VIEW_NAME, "Users", FontAwesome.USERS);
         }
