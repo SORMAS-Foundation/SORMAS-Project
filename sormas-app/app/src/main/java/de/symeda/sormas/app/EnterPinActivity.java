@@ -54,7 +54,7 @@ public class EnterPinActivity extends AppCompatActivity {
         );
 
         // sync...
-        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, EnterPinActivity.this, null);
+        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, EnterPinActivity.this, null);
     }
 
     @Override

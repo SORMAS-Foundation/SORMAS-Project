@@ -14,17 +14,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.gms.analytics.Tracker;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -271,7 +266,7 @@ public class EventEditActivity extends AbstractEditTabActivity {
                             eventDao.saveAndSnapshot(event);
 
                             if (RetroProvider.isConnected()) {
-                                SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
+                                SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, this, new SyncCallback() {
                                     @Override
                                     public void call(boolean syncFailed, String syncFailedMessage) {
                                         if (syncFailed) {
