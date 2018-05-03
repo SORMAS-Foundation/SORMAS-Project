@@ -393,11 +393,11 @@ public class ContactFacadeEjb implements ContactFacade {
 				sourcePerson.getOccupationFacility() != null ? sourcePerson.getOccupationFacility().getName() : null));
 		
 		target.setNumberOfVisits(visitService.getVisitCount(source, null));
-		Visit lastSourceVisit = visitService.getLastVisitByContact(source, VisitStatus.COOPERATIVE);
-		if (lastSourceVisit != null) {
-			target.setSymptomatic(YesNoUnknown.valueOf(lastSourceVisit.getSymptoms().getSymptomatic()));
-			target.setLastVisitDate(lastSourceVisit.getVisitDateTime());
-			target.setLastSymptoms(lastSourceVisit.getSymptoms().toHumanString(true));
+		Visit sourceLastCooperativeVisit = visitService.getLastVisitByContact(source, VisitStatus.COOPERATIVE);
+		if (sourceLastCooperativeVisit != null) {
+			target.setLastCooperativeVisitSymptomatic(YesNoUnknown.valueOf(sourceLastCooperativeVisit.getSymptoms().getSymptomatic()));
+			target.setLastCooperativeVisitDate(sourceLastCooperativeVisit.getVisitDateTime());
+			target.setLastCooperativeVisitSymptoms(sourceLastCooperativeVisit.getSymptoms().toHumanString(true));
 		}
 		
 		return target;

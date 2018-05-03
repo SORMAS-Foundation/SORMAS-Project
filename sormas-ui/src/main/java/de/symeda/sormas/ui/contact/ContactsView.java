@@ -109,7 +109,7 @@ public class ContactsView extends AbstractView {
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
 			
-			Button extendedExportButton = new Button("Full Export");
+			Button extendedExportButton = new Button("Detailed Export");
 			extendedExportButton.setDescription("Export the rows that are shown in the table below with an extended set of columns. This may take a while.");
 			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			extendedExportButton.setIcon(FontAwesome.FILE_TEXT);

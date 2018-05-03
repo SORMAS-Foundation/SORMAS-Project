@@ -1002,6 +1002,9 @@ public class Symptoms extends AbstractDomainObject {
 	
 	private static void appendNotNullValue(StringBuilder stringBuilder, Object value, String dtoPropertyId) {
 		if (value != null) {
+			if (value instanceof String && ((String)value).isEmpty()) {
+				return; // ignore empty strings
+			}
 			if (stringBuilder.length() > 0) {
 				stringBuilder.append(", ");
 			}

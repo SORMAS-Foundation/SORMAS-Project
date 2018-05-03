@@ -34,9 +34,9 @@ public class ContactExportDto implements Serializable {
 	private String phone;
 	private String occupationType;
 	private int numberOfVisits;
-	private YesNoUnknown symptomatic;
-	private Date lastVisitDate;
-	private String lastSymptoms;
+	private YesNoUnknown lastCooperativeVisitSymptomatic;
+	private Date lastCooperativeVisitDate;
+	private String lastCooperativeVisitSymptoms;
 
 
 	public ContactReferenceDto toReference() {
@@ -139,18 +139,18 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(19)
-	public YesNoUnknown getSymptomatic() {
-		return symptomatic;
+	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
+		return lastCooperativeVisitSymptomatic;
 	}
 
 	@Order(20)
-	public Date getLastVisitDate() {
-		return lastVisitDate;
+	public Date getLastCooperativeVisitDate() {
+		return lastCooperativeVisitDate;
 	}
 
 	@Order(21)
-	public String getLastSymptoms() {
-		return lastSymptoms;
+	public String getLastCooperativeVisitSymptoms() {
+		return lastCooperativeVisitSymptoms;
 	}
 
 
@@ -246,16 +246,16 @@ public class ContactExportDto implements Serializable {
 	}
 
 
-	public void setSymptomatic(YesNoUnknown symptomatic) {
-		this.symptomatic = symptomatic;
+	public void setLastCooperativeVisitSymptomatic(YesNoUnknown lastCooperativeVisitSymptomatic) {
+		this.lastCooperativeVisitSymptomatic = lastCooperativeVisitSymptomatic;
 	}
 
 
-	public void setLastVisitDate(Date lastVisitDate) {
-		this.lastVisitDate = lastVisitDate;
+	public void setLastCooperativeVisitDate(Date lastCooperativeVisitDate) {
+		this.lastCooperativeVisitDate = lastCooperativeVisitDate;
 	}
 
-	public void setLastSymptoms(String lastSymptoms) {
-		this.lastSymptoms = lastSymptoms;
+	public void setLastCooperativeVisitSymptoms(String lastCooperativeVisitSymptoms) {
+		this.lastCooperativeVisitSymptoms = lastCooperativeVisitSymptoms;
 	}
 }
