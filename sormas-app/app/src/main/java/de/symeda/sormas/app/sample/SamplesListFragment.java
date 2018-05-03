@@ -16,7 +16,6 @@ import java.util.List;
 import de.symeda.sormas.app.AbstractTabActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -108,7 +107,7 @@ public class SamplesListFragment extends ListFragment {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ((AbstractTabActivity)getActivity()).synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, false, true, refreshLayout, null);
+                ((AbstractTabActivity)getActivity()).synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, refreshLayout, null);
             }
         });
 

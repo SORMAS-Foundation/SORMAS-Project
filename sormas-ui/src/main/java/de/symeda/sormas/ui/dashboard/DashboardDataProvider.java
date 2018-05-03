@@ -15,20 +15,17 @@ import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.task.DashboardTaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.login.LoginHelper;
 
 public class DashboardDataProvider {
-	
+
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private Disease disease;
 	private DateFilterOption dateFilterOption;
 	private Date fromDate;
 	private Date toDate;
-	private EpiWeek fromWeek;
-	private EpiWeek toWeek;
-	
+
 	private List<DashboardCaseDto> cases = new ArrayList<>();
 	private List<DashboardCaseDto> previousCases = new ArrayList<>();
 	private List<DashboardEventDto> events = new ArrayList<>();
@@ -38,50 +35,32 @@ public class DashboardDataProvider {
 	private List<DashboardSampleDto> samples = new ArrayList<>();
 	private List<DashboardTaskDto> tasks = new ArrayList<>();
 	private List<DashboardTaskDto> pendingTasks = new ArrayList<>();
-	
+
 	public void refreshData() {
 		// Update the entities lists according to the filters
 		String userUuid = LoginHelper.getCurrentUser().getUuid();
-		
-		if (dateFilterOption == DateFilterOption.DATE) {
-			int period = DateHelper.getDaysBetween(fromDate, toDate);
-			Date previousFromDate = DateHelper.subtractDays(fromDate, period);
-			Date previousToDate = DateHelper.subtractDays(toDate, period);
-			// Cases
-			setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease, fromDate, toDate, userUuid));
-			setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease, previousFromDate, previousToDate, userUuid));
-			// Events
-			setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease, fromDate, toDate, userUuid));
-			setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease, previousFromDate, previousToDate, userUuid));
-			// Test results
-			setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease, fromDate, toDate, userUuid));
-			setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease, previousFromDate, previousToDate, userUuid));
-			// Samples
-			setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(region, district, disease, fromDate, toDate, userUuid));
-		} else {
-			int period = toWeek.getWeek() - fromWeek.getWeek() + 1;
-			Date epiWeekStart = DateHelper.getEpiWeekStart(fromWeek);
-			Date epiWeekEnd = DateHelper.getEpiWeekEnd(toWeek);
-			Date previousEpiWeekStart = DateHelper.getEpiWeekStart(DateHelper.getPreviousEpiWeek(fromWeek, period));
-			Date previousEpiWeekEnd = DateHelper.getEpiWeekEnd(DateHelper.getPreviousEpiWeek(toWeek, period));
-			// Cases
-			setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease, epiWeekStart, epiWeekEnd, userUuid));
-			setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease, previousEpiWeekStart, previousEpiWeekEnd, userUuid));
-			// Events
-			setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease, epiWeekStart, epiWeekEnd, userUuid));
-			setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease, previousEpiWeekStart, previousEpiWeekEnd, userUuid));
-			// Test results
-			setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease, epiWeekStart, epiWeekEnd, userUuid));
-			setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease, previousEpiWeekStart, previousEpiWeekEnd, userUuid));
-			// Samples
-			setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(region, district, disease, epiWeekStart, epiWeekEnd, userUuid));
-		}
+
+		int period = DateHelper.getDaysBetween(fromDate, toDate);
+		Date previousFromDate = DateHelper.getStartOfDay(DateHelper.subtractDays(fromDate, period));
+		Date previousToDate = DateHelper.getEndOfDay(DateHelper.subtractDays(toDate, period));
+		// Cases
+		setCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease, fromDate, toDate, userUuid));
+		setPreviousCases(FacadeProvider.getCaseFacade().getNewCasesForDashboard(region, district, disease, previousFromDate, previousToDate, userUuid));
+		// Events
+		setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease, fromDate, toDate, userUuid));
+		setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(region, district, disease, previousFromDate, previousToDate, userUuid));
+		// Test results
+		setTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease, fromDate, toDate, userUuid));
+		setPreviousTestResults(FacadeProvider.getSampleTestFacade().getNewTestResultsForDashboard(region, district, disease, previousFromDate, previousToDate, userUuid));
+		// Samples
+		setSamples(FacadeProvider.getSampleFacade().getNewSamplesForDashboard(region, district, disease, fromDate, toDate, userUuid));
+
 		// Tasks
 		setTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(null, 
 				DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(new Date())), DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(new Date())), userUuid));
 		setPendingTasks(FacadeProvider.getTaskFacade().getAllByUserForDashboard(TaskStatus.PENDING, null, null, userUuid));
 	}
-	
+
 	public List<DashboardCaseDto> getCases() {
 		return cases;
 	}
@@ -171,18 +150,6 @@ public class DashboardDataProvider {
 	}
 	public void setToDate(Date toDate) {
 		this.toDate = toDate;
-	}
-	public EpiWeek getFromWeek() {
-		return fromWeek;
-	}
-	public void setFromWeek(EpiWeek fromWeek) {
-		this.fromWeek = fromWeek;
-	}
-	public EpiWeek getToWeek() {
-		return toWeek;
-	}
-	public void setToWeek(EpiWeek toWeek) {
-		this.toWeek = toWeek;
 	}
 
 }

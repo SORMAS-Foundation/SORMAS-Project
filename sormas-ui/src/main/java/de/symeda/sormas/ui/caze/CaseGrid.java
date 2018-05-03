@@ -9,13 +9,13 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
-import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -30,7 +30,6 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
@@ -77,9 +76,7 @@ public class CaseGrid extends Grid {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				CaseIndexDto caseDto = (CaseIndexDto) itemId;
-				return caseDto.getDisease() != Disease.OTHER 
-						? (caseDto.getDisease() != null ? caseDto.getDisease().toShortString() : "")
-						: DataHelper.toStringNullable(caseDto.getDiseaseDetails());
+				return DiseaseHelper.toString(caseDto.getDisease(), caseDto.getDiseaseDetails());
 			}
 			@Override
 			public Class<String> getType() {
@@ -90,7 +87,8 @@ public class CaseGrid extends Grid {
         setColumns(CaseIndexDto.UUID, CaseIndexDto.EPID_NUMBER, DISEASE_SHORT, 
         		CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.OUTCOME, CaseIndexDto.INVESTIGATION_STATUS, 
         		CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME, 
-        		CaseIndexDto.DISTRICT_NAME, CaseIndexDto.REPORT_DATE, NUMBER_OF_PENDING_TASKS);
+        		CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME,
+        		CaseIndexDto.REPORT_DATE, NUMBER_OF_PENDING_TASKS);
 
         getColumn(CaseIndexDto.UUID).setRenderer(new UuidRenderer());
         getColumn(CaseIndexDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
@@ -123,35 +121,23 @@ public class CaseGrid extends Grid {
 	}
 
     public void setRegionFilter(RegionReferenceDto region) {
-		getContainer().removeContainerFilters(CaseIndexDto.REGION_UUID);
-		if (region != null) {
-	    	Equal filter = new Equal(CaseIndexDto.REGION_UUID, region.getUuid());  
-	        getContainer().addContainerFilter(filter);
-		}
+		caseCriteria.regionEquals(region);
+		reload();
 	}
 
     public void setDistrictFilter(DistrictReferenceDto district) {
-		getContainer().removeContainerFilters(CaseIndexDto.DISTRICT_UUID);
-		if (district != null) {
-	    	Equal filter = new Equal(CaseIndexDto.DISTRICT_UUID, district.getUuid());  
-	        getContainer().addContainerFilter(filter);
-		}
+		caseCriteria.districtEquals(district);
+		reload();
 	}
 
     public void setHealthFacilityFilter(FacilityReferenceDto facility) {
-		getContainer().removeContainerFilters(CaseIndexDto.HEALTH_FACILITY_UUID);
-		if (facility != null) {
-	    	Equal filter = new Equal(CaseIndexDto.HEALTH_FACILITY_UUID, facility.getUuid());  
-	        getContainer().addContainerFilter(filter);
-		}
+		caseCriteria.healthFacility(facility);
+		reload();
 	}
     
     public void setSurveillanceOfficerFilter(UserReferenceDto surveillanceOfficer) {
-		getContainer().removeContainerFilters(CaseIndexDto.SURVEILLANCE_OFFICER_UUID);
-		if (surveillanceOfficer != null) {
-	    	Equal filter = new Equal(CaseIndexDto.SURVEILLANCE_OFFICER_UUID, surveillanceOfficer.getUuid());  
-	        getContainer().addContainerFilter(filter);
-		}
+    	caseCriteria.surveillanceOfficer(surveillanceOfficer);
+    	reload();
 	}
     
     public void setReportedByFilter(UserRole reportingUserRole) {
@@ -160,27 +146,18 @@ public class CaseGrid extends Grid {
     }
 
 	public void setClassificationFilter(CaseClassification classficiation) {
-		getContainer().removeContainerFilters(CaseIndexDto.CASE_CLASSIFICATION);
-    	if (classficiation != null) {
-	    	Equal filter = new Equal(CaseIndexDto.CASE_CLASSIFICATION, classficiation);  
-	        getContainer().addContainerFilter(filter);
-    	}
+    	caseCriteria.caseClassification(classficiation);
+    	reload();
     }
 
 	public void setInvestigationFilter(InvestigationStatus status) {
-		getContainer().removeContainerFilters(CaseIndexDto.INVESTIGATION_STATUS);
-    	if (status != null) {
-	    	Equal filter = new Equal(CaseIndexDto.INVESTIGATION_STATUS, status);  
-	        getContainer().addContainerFilter(filter);
-    	}
+    	caseCriteria.investigationStatus(status);
+    	reload();
     }
 	
 	public void setPresentConditionFilter(PresentCondition presentCondition) {
-		getContainer().removeContainerFilters(CaseIndexDto.PRESENT_CONDITION);
-    	if (presentCondition != null) {
-	    	Equal filter = new Equal(CaseIndexDto.PRESENT_CONDITION, presentCondition);  
-	        getContainer().addContainerFilter(filter);
-    	}
+    	caseCriteria.presentCondition(presentCondition);
+    	reload();
     }
 	
 	public void setNoGeoCoordinatesFilter(boolean showOnlyCasesWithoutGPSCoords) {
@@ -212,6 +189,10 @@ public class CaseGrid extends Grid {
     		orFilters.add(new DateFilter(CaseIndexDto.REPORT_DATE, text));
             getContainer().addContainerFilter(new Or(orFilters.stream().toArray(Filter[]::new)));
 		}
+	}
+	
+	public CaseCriteria getFilterCriteria() {
+		return caseCriteria;
 	}
 	
     @SuppressWarnings("unchecked")

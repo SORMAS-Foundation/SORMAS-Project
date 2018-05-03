@@ -89,7 +89,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                 // we HAVE to be connected now. Otherwise reset the authentication data
                 ConfigProvider.clearUsernameAndPassword();
             } else {
-                SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, LoginActivity.this, new SyncCallback() {
+                SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, LoginActivity.this, new SyncCallback() {
                     @Override
                     public void call(boolean syncFailed, String syncFailedMessage) {
                         // logged in?
@@ -163,7 +163,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
             // valid login
             if (ConfigProvider.getUser() == null) {
                 // no user yet? sync...
-                SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesAndInfrastructure, LoginActivity.this, new SyncCallback() {
+                SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, LoginActivity.this, new SyncCallback() {
                     @Override
                     public void call(boolean syncFailed, String syncFailedMessage) {
                         if (ConfigProvider.getUser() != null) {

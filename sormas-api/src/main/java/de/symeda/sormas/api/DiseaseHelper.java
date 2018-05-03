@@ -2,6 +2,7 @@ package de.symeda.sormas.api;
 
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class DiseaseHelper {
 
@@ -61,5 +62,11 @@ public class DiseaseHelper {
 		default:
 			return 21; // max
 		}
+	}
+	
+	public static String toString(Disease disease, String diseaseDetails) {
+		return disease != Disease.OTHER 
+				? (disease != null ? disease.toShortString() : "")
+				: DataHelper.toStringNullable(diseaseDetails);
 	}
 }

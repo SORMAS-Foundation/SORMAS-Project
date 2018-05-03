@@ -12,4 +12,13 @@ public enum YesNoUnknown {
 		return I18nProperties.getEnumCaption(this);
 	}
 
+	public static YesNoUnknown valueOf(Boolean value) {
+		if (value == null) {
+			return null;
+		} else if (Boolean.TRUE.equals(value)) {
+			return YES;
+		} else {
+			return NO;
+		}
+	}
 }

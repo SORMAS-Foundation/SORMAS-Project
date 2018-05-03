@@ -32,10 +32,13 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.MapContactDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
@@ -44,7 +47,9 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -217,6 +222,17 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 	
 	@Override
+	public List<ContactExportDto> getExportList(String userUuid, ContactCriteria contactCriteria) {
+		
+		User user = userService.getByUuid(userUuid);
+
+		return contactService.findBy(contactCriteria, user)
+				.stream()
+				.map(c -> toExportDto(c))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
 	public List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ContactIndexDto> cq = cb.createQuery(ContactIndexDto.class);
@@ -349,6 +365,44 @@ public class ContactFacadeEjb implements ContactFacade {
 		return target;
 	}
 
+	public ContactExportDto toExportDto(Contact source) {
+		
+		Person sourcePerson = source.getPerson();
+		Case sourceCase = source.getCaze();
+		
+		ContactExportDto target = new ContactExportDto();
+
+		target.setUuid(source.getUuid());
+		target.setSourceCaseUuid(sourceCase.getUuid());
+		target.setCaseClassification(sourceCase.getCaseClassification());
+		target.setDisease(DiseaseHelper.toString(sourceCase.getDisease(), sourceCase.getDiseaseDetails()));
+		target.setContactClassification(source.getContactClassification());
+		target.setLastContactDate(source.getLastContactDate());
+		target.setPerson(PersonDto.buildCaption(sourcePerson.getFirstName(), sourcePerson.getLastName()));
+		target.setSex(sourcePerson.getSex());
+		target.setApproximateAge(PersonHelper.buildAgeString(sourcePerson.getApproximateAge(), sourcePerson.getApproximateAgeType()));
+		target.setReportDate(source.getReportDateTime());
+		target.setContactProximity(source.getContactProximity());
+		target.setContactStatus(source.getContactStatus());
+		target.setFollowUpStatus(source.getFollowUpStatus());
+		target.setPresentCondition(sourcePerson.getPresentCondition());
+		target.setDeathDate(sourcePerson.getDeathDate());
+		target.setAddress(sourcePerson.getAddress().toString());
+		target.setPhone(PersonHelper.buildPhoneString(sourcePerson.getPhone(), sourcePerson.getPhoneOwner()));
+		target.setOccupationType(PersonHelper.buildOccupationString(sourcePerson.getOccupationType(), sourcePerson.getOccupationDetails(), 
+				sourcePerson.getOccupationFacility() != null ? sourcePerson.getOccupationFacility().getName() : null));
+		
+		target.setNumberOfVisits(visitService.getVisitCount(source, null));
+		Visit sourceLastCooperativeVisit = visitService.getLastVisitByContact(source, VisitStatus.COOPERATIVE);
+		if (sourceLastCooperativeVisit != null) {
+			target.setLastCooperativeVisitSymptomatic(YesNoUnknown.valueOf(sourceLastCooperativeVisit.getSymptoms().getSymptomatic()));
+			target.setLastCooperativeVisitDate(sourceLastCooperativeVisit.getVisitDateTime());
+			target.setLastCooperativeVisitSymptoms(sourceLastCooperativeVisit.getSymptoms().toHumanString(true));
+		}
+		
+		return target;
+	}
+	
 	@RolesAllowed(UserRole._SYSTEM)
 	public void generateContactFollowUpTasks() {
 

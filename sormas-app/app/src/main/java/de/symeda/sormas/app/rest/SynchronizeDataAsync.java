@@ -65,10 +65,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
         try {
             switch (syncMode) {
-                case ChangesOnly:
-                    synchronizeChangedData();
-                    break;
-                case ChangesAndInfrastructure:
+                case Changes:
+                    // infrastructure always has to be pulled - otherwise referenced data may be lost (e.g. #586)
                     pullInfrastructure();
                     synchronizeChangedData();
                     break;
@@ -98,10 +96,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
             SyncMode newSyncMode = null;
             switch (syncMode) {
-                case ChangesOnly:
-                    newSyncMode = SyncMode.ChangesAndInfrastructure;
-                    break;
-                case ChangesAndInfrastructure:
+                case Changes:
                     newSyncMode = SyncMode.Complete;
                     break;
                 case Complete:
@@ -381,8 +376,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
     }
 
     public enum SyncMode {
-        ChangesOnly,
-        ChangesAndInfrastructure,
+        Changes,
         Complete,
         /**
          * Also repulls all non-infrastructure data and users

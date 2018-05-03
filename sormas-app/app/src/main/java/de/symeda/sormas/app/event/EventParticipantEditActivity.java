@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -13,17 +12,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.gms.analytics.Tracker;
-
-import java.util.Date;
-
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.event.EventParticipantDao;
 import de.symeda.sormas.app.backend.person.Person;
@@ -81,6 +75,7 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
                     Intent intent = new Intent(this, EventsActivity.class);
                     startActivity(intent);
                     finish();
+                    return;
                 }
 
                 DatabaseHelper.getEventParticipantDao().markAsRead(initialEntity);
@@ -100,6 +95,7 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
             Intent intent = new Intent(this, EventsActivity.class);
             startActivity(intent);
             finish();
+            return;
         }
 
         if (currentEntity.isUnreadOrChildUnread()) {
@@ -190,7 +186,7 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
                     eventParticipantDao.saveAndSnapshot(eventParticipant);
 
                     if (RetroProvider.isConnected()) {
-                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
+                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, this, new SyncCallback() {
                             @Override
                             public void call(boolean syncFailed, String syncFailedMessage) {
                                 if (syncFailed) {

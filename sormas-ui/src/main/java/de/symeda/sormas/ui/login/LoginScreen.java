@@ -81,7 +81,7 @@ public class LoginScreen extends CssLayout {
                 ContentMode.HTML);
         innerLayout.addComponent(loginInfoText);
         
-        Label loginInfoCopyright = new Label ("© 2017 SORMAS. All Rights Reserved.");
+        Label loginInfoCopyright = new Label ("© 2018 SORMAS. All Rights Reserved.");
         innerLayout.addComponent(loginInfoCopyright);
         innerLayout.setComponentAlignment(loginInfoCopyright, Alignment.BOTTOM_LEFT);
         

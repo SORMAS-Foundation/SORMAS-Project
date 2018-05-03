@@ -29,6 +29,7 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CASE_OFFICER,
 			CONTACT_SUPERVISOR,
+			CONTACT_OFFICER,
 			INFORMANT,
 			LAB_USER,
 			RUMOR_MANAGER
@@ -56,6 +57,7 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CASE_OFFICER,
 			CONTACT_SUPERVISOR,
+			CONTACT_OFFICER,
 			INFORMANT,
 			LAB_USER,
 			RUMOR_MANAGER
@@ -221,9 +223,12 @@ public enum UserRight {
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER
 	),
+	// users that are allowed to convert a contact to a case need to be allowed to create a case
 	CONTACT_CONVERT(
 			ADMIN,
 			NATIONAL_USER,
+			SURVEILLANCE_SUPERVISOR,
+			SURVEILLANCE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER
 	),

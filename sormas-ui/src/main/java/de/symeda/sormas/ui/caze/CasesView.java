@@ -3,6 +3,8 @@ package de.symeda.sormas.ui.caze;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
@@ -14,9 +16,9 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -28,13 +30,16 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -66,8 +71,6 @@ public class CasesView extends AbstractView {
 	public static final String SEARCH_FIELD = "searchField";
 
 	private CaseGrid grid;    
-	private Button importButton;
-	private Button exportButton;
 	private Button createButton;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
@@ -99,7 +102,7 @@ public class CasesView extends AbstractView {
 		});
 		
 		if (LoginHelper.hasUserRight(UserRight.CASE_IMPORT)) {
-			importButton = new Button("Import");
+			Button importButton = new Button("Import");
 			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			importButton.setIcon(FontAwesome.UPLOAD);
 			importButton.addClickListener(e -> {
@@ -113,15 +116,46 @@ public class CasesView extends AbstractView {
 		}
 
 		if (LoginHelper.hasUserRight(UserRight.CASE_EXPORT)) {
-			exportButton = new Button("Export");
-			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			
+			PopupButton exportButton = new PopupButton("Export"); 
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
+			VerticalLayout exportLayout = new VerticalLayout();
+			exportLayout.setSpacing(true); 
+			exportLayout.setMargin(true);
+			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+			exportLayout.setWidth(200, Unit.PIXELS);
+			exportButton.setContent(exportLayout);
+			addHeaderComponent(exportButton);
+
+			Button basicExportButton = new Button("Basic Export");
+			basicExportButton.setDescription("Export the columns and rows that are shown in the table below.");
+			basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			basicExportButton.setIcon(FontAwesome.TABLE);
+			basicExportButton.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(basicExportButton);
 			
 			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_cases", "sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
-			fileDownloader.extend(exportButton);
+			fileDownloader.extend(basicExportButton);
 			
-			addHeaderComponent(exportButton);
+			Button extendedExportButton = new Button("Detailed Export");
+			extendedExportButton.setDescription("Export the rows that are shown in the table below with an extended set of columns. This may take a while.");
+			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			extendedExportButton.setIcon(FontAwesome.FILE_TEXT);
+			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(extendedExportButton);
+			
+			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class,
+					() -> FacadeProvider.getCaseFacade().getExportList(LoginHelper.getCurrentUser().getUuid(), grid.getFilterCriteria()), 
+					propertyId -> {
+						return I18nProperties.getPrefixFieldCaption(CaseExportDto.I18N_PREFIX, propertyId,
+							I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId,
+								I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, propertyId,
+									I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, propertyId,
+										I18nProperties.getPrefixFieldCaption(HospitalizationDto.I18N_PREFIX, propertyId)))));
+					},
+					"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
 		}
 
 		if (LoginHelper.hasUserRight(UserRight.CASE_CREATE)) {

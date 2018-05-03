@@ -88,6 +88,9 @@ public final class CssStyles {
 	public static final String LABEL_BAR_TOP_MINOR = "bar-top-minor";
 	public static final String LABEL_BOTTOM_LINE = "bottom-line";
 	
+	// Layout stlyes
+	public static final String LAYOUT_MINIMAL = "minimal";
+	
 	// Button styles
 	public static final String VAADIN_BUTTON = "v-button";
 	public static final String BUTTON_CRITICAL = "critical";
@@ -97,6 +100,7 @@ public final class CssStyles {
 	public static final String LINK_ACTIVE = "active";
 	public static final String LINK_HIGHLIGHTED = "link-highlighted";
 	public static final String LINK_HIGHLIGHTED_LIGHT = "link-highlighted-light";
+	public static final String LINK_HIGHLIGHTED_DARK = "link-highlighted-dark";
 	
 	// SVG fill and stroke styles
 	public static final String SVG_FILL_BACKGROUND = "svg-fill-background";

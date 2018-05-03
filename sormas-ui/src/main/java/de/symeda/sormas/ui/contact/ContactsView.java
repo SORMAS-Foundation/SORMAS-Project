@@ -1,8 +1,9 @@
 package de.symeda.sormas.ui.contact;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+
+import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -22,13 +23,19 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -80,15 +87,47 @@ public class ContactsView extends AbstractView {
 		});
 
 		if (LoginHelper.hasUserRight(UserRight.CONTACT_EXPORT)) {
-			Button exportButton = new Button("Export");
-			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			
+			PopupButton exportButton = new PopupButton("Export"); 
 			exportButton.setIcon(FontAwesome.DOWNLOAD);
+			VerticalLayout exportLayout = new VerticalLayout();
+			exportLayout.setSpacing(true); 
+			exportLayout.setMargin(true);
+			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+			exportLayout.setWidth(200, Unit.PIXELS);
+			exportButton.setContent(exportLayout);
+			addHeaderComponent(exportButton);
+			
+			Button basicExportButton = new Button("Basic Export");
+			basicExportButton.setDescription("Export the columns and rows that are shown in the table below.");
+			basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			basicExportButton.setIcon(FontAwesome.TABLE);
+			basicExportButton.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(basicExportButton);
 
 			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(grid.getContainerDataSource(), grid.getColumns(), "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
-			fileDownloader.extend(exportButton);
-
-			addHeaderComponent(exportButton);
+			fileDownloader.extend(basicExportButton);
+			
+			Button extendedExportButton = new Button("Detailed Export");
+			extendedExportButton.setDescription("Export the rows that are shown in the table below with an extended set of columns. This may take a while.");
+			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			extendedExportButton.setIcon(FontAwesome.FILE_TEXT);
+			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(extendedExportButton);
+			
+			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactExportDto.class,
+					() -> FacadeProvider.getContactFacade().getExportList(LoginHelper.getCurrentUser().getUuid(), grid.getFilterCriteria()), 
+					propertyId -> {
+						return I18nProperties.getPrefixFieldCaption(ContactExportDto.I18N_PREFIX, propertyId,
+							I18nProperties.getPrefixFieldCaption(ContactDto.I18N_PREFIX, propertyId,
+								I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, propertyId,
+									I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, propertyId,
+										I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, propertyId,
+											I18nProperties.getPrefixFieldCaption(HospitalizationDto.I18N_PREFIX, propertyId))))));
+					},
+					"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
 		}
 
 		addComponent(gridLayout);
@@ -126,7 +165,7 @@ public class ContactsView extends AbstractView {
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
-				grid.setRegionFilter(region != null ? region.getUuid() : null);
+				grid.setRegionFilter(region);
 			});
 			filterLayout.addComponent(regionFilter);
 		}
@@ -137,7 +176,7 @@ public class ContactsView extends AbstractView {
 		districtFilter.setDescription("Select a district in the state");
 		districtFilter.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-			grid.setDistrictFilter(district != null ? district.getUuid() : null);
+			grid.setDistrictFilter(district);
 		});
 
 		if (user.getRegion() != null) {
@@ -164,7 +203,7 @@ public class ContactsView extends AbstractView {
 		facilityFilter.setDescription("Select a facility in the LGA");
 		facilityFilter.addValueChangeListener(e -> {
 			FacilityReferenceDto facility = (FacilityReferenceDto) e.getProperty().getValue();
-			grid.setHealthFacilityFilter(facility != null ? facility.getUuid() : null);
+			grid.setHealthFacilityFilter(facility);
 		});
 		facilityFilter.setEnabled(false);
 		filterLayout.addComponent(facilityFilter);
@@ -188,7 +227,7 @@ public class ContactsView extends AbstractView {
 		}
 		officerFilter.addValueChangeListener(e -> {
 			UserReferenceDto officer = (UserReferenceDto) e.getProperty().getValue();
-			grid.setContactOfficerFilter(officer != null ? officer.getUuid() : null);
+			grid.setContactOfficerFilter(officer);
 		});
 		filterLayout.addComponent(officerFilter);
 

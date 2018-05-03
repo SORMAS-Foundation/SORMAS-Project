@@ -3,6 +3,8 @@ package de.symeda.sormas.api.person;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
+import de.symeda.sormas.api.utils.DataHelper;
+
 public class PersonHelper {
 	
 	private final static double SIMILARITY_THRESHOLD = 0.65;
@@ -13,6 +15,9 @@ public class PersonHelper {
 	 * if the similarity is high enough to consider them a possible match.
 	 */
 	public static boolean areNamesSimilar(String firstName, String secondName) {
+		firstName = firstName.toLowerCase();
+		secondName = secondName.toLowerCase();
+		
 		// Split names at whitespaces and the symbols _ and -
 		String[] firstNameParts = StringUtils.split(firstName.trim(), " _-", 0);
 		String[] secondNameParts = StringUtils.split(secondName.trim(), " _-", 0);
@@ -84,5 +89,48 @@ public class PersonHelper {
         
         return 1 - ((double) levenshteinDistance / (double) len);
 	}
+	
+	public static String buildAgeString(Integer approximateAge, ApproximateAgeType approximateAgeType) {
+		if (approximateAge == null) {
+			return "";
+		}
 
+		if (approximateAgeType == ApproximateAgeType.MONTHS) {
+			return approximateAge + " " + approximateAgeType;
+		} else if (approximateAgeType == null || approximateAgeType == ApproximateAgeType.YEARS) {
+			return approximateAge.toString();
+		} else { 
+			throw new IllegalArgumentException(approximateAgeType.toString());
+		}
+	}
+	
+	public static String buildPhoneString(String phone, String phoneOwner) {
+		StringBuilder result = new StringBuilder();
+		if (!DataHelper.isNullOrEmpty(phone)) {
+			result.append(phone);
+		}
+		if (!DataHelper.isNullOrEmpty(phoneOwner)) {
+			if (result.length() > 0) {
+				result.append(" - ");
+			}
+			result.append(phoneOwner);
+		}
+		return result.toString();
+	}
+
+	public static String buildOccupationString(OccupationType occupationType, String occupationDetails, String occupationFacilityName) {
+		StringBuilder result = new StringBuilder();
+		if (occupationType == OccupationType.OTHER) {
+			result.append(occupationDetails);
+		} else if (occupationType != null) {
+			result.append(occupationType);
+		}
+		if (!DataHelper.isNullOrEmpty(occupationFacilityName)) {
+			if (result.length() > 0) {
+				result.append(", ");
+			}
+			result.append(occupationFacilityName);
+		}
+		return result.toString();
+	}
 }

@@ -246,24 +246,35 @@ public final class DateHelper {
 	}
 	
 	/**
-	 * Calculate days between the two given dates.
+	 * Calculate days between the two given dates. This includes both the
+	 * start and end dates, so a one-week period from Monday to Sunday
+	 * will return 7.
 	 */
 	public static int getDaysBetween(Date start, Date end) {
 		return Days.daysBetween(
 				new LocalDate(start.getTime()), 
-                new LocalDate(end.getTime())).getDays();
+                new LocalDate(end.getTime())).getDays() + 1;
 	}
-	
+
+	/**
+	 * Calculate days between the two given dates. This includes both the
+	 * start and end dates, so week 1 to week 4 of a year will return 4.
+	 */
 	public static int getWeeksBetween(Date start, Date end) {
 		return Weeks.weeksBetween(
 				new LocalDate(start.getTime()),
-				new LocalDate(end.getTime())).getWeeks();
+				new LocalDate(end.getTime())).getWeeks() + 1;
 	}
 	
+	/**
+	 * Calculate days between the two given dates. This includes both the
+	 * start and end dates, so a one-year period from January to December
+	 * will return 12.
+	 */
 	public static int getMonthsBetween(Date start, Date end) {
 		return Months.monthsBetween(
 				new LocalDate(start.getTime()),
-				new LocalDate(end.getTime())).getMonths();
+				new LocalDate(end.getTime())).getMonths() + 1;
 	}
 	
 	public static Date addDays(Date date, int amountOfDays) {
@@ -290,6 +301,10 @@ public final class DateHelper {
 		return new LocalDate(date).minusMonths(amountOfMonths).toDate();
 	}
 	
+	public static Date subtractYears(Date date, int amountOfYears) {
+		return new LocalDate(date).minusYears(amountOfYears).toDate();
+	}
+	
 	public static Date addSeconds(Date date, int amountOfSeconds) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
@@ -306,21 +321,31 @@ public final class DateHelper {
 	}
 	
 	public static Date getStartOfWeek(Date date) {
-		return new LocalDateTime(date).withDayOfWeek(1).toDate();
+		return new LocalDateTime(getStartOfDay(date)).withDayOfWeek(1).toDate();
 	}
 	
 	public static Date getEndOfWeek(Date date) {
-		return new LocalDateTime(date).withDayOfWeek(7).toDate();
+		return new LocalDateTime(getEndOfDay(date)).withDayOfWeek(7).toDate();
 	}
 	
 	public static Date getStartOfMonth(Date date) {
-		return new LocalDateTime(date).withDayOfMonth(1).toDate();
+		return new LocalDateTime(getStartOfDay(date)).withDayOfMonth(1).toDate();
 	}
 	
 	public static Date getEndOfMonth(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
-		return new LocalDateTime(date).withDayOfMonth(calendar.getActualMaximum(Calendar.DAY_OF_MONTH)).toDate();
+		return new LocalDateTime(getEndOfDay(date)).withDayOfMonth(calendar.getActualMaximum(Calendar.DAY_OF_MONTH)).toDate();
+	}
+	
+	public static Date getStartOfYear(Date date) {
+		return new LocalDateTime(getStartOfDay(date)).withDayOfYear(1).toDate();
+	}
+	
+	public static Date getEndOfYear(Date date) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(getEndOfDay(date));
+		return new LocalDateTime(calendar.getTime()).withDayOfYear(calendar.getActualMaximum(Calendar.DAY_OF_YEAR)).toDate();
 	}
 	
 	/**

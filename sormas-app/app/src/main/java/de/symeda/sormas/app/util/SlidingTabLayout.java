@@ -197,13 +197,14 @@ public class SlidingTabLayout extends HorizontalScrollView {
                         false);
                 tabTitleView = (TextView) tabView.findViewById(mTabViewTextViewId);
             }
-
             if (tabView == null) {
                 tabView = createDefaultTabView(getContext());
             }
-
             if (tabTitleView == null && TextView.class.isInstance(tabView)) {
                 tabTitleView = (TextView) tabView;
+            }
+            if (tabTitleView != null) {
+                tabTitleView.setText(adapter.getPageTitle(i));
             }
 
             LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) tabView.getLayoutParams();
@@ -213,7 +214,6 @@ public class SlidingTabLayout extends HorizontalScrollView {
                 lp.width = 0;
             }
 
-            tabTitleView.setText(adapter.getPageTitle(i));
             tabView.setOnClickListener(tabClickListener);
             String desc = mContentDescriptions.get(i, null);
             if (desc != null) {

@@ -101,7 +101,7 @@ public abstract class AbstractRootTabActivity extends AbstractTabActivity implem
             }
         }
 
-        synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, false, false, false, null, null);
+        synchronizeData(SynchronizeDataAsync.SyncMode.Changes, false, false, false, null, null);
     }
 
     @Override

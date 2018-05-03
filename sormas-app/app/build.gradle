@@ -85,5 +85,13 @@ dependencies {
     androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
 }
 
-
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'org.sonarqube'
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "de.symeda.sormas:sormas-app"
+        property "sonar.projectVersion", "$sormasVersion"
+        property "sonar.projectName", "sormas-app"
+    }
+}

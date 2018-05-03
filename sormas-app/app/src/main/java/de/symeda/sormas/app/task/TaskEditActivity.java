@@ -15,18 +15,12 @@ import android.view.View;
 
 import com.google.android.gms.analytics.Tracker;
 
-import de.symeda.sormas.api.caze.CaseLogic;
-import de.symeda.sormas.api.task.TaskStatus;
-import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
-import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.component.UserReportDialog;
@@ -90,6 +84,7 @@ public class TaskEditActivity extends AbstractSormasActivity {
                     Intent intent = new Intent(this, TasksActivity.class);
                     startActivity(intent);
                     finish();
+                    return;
                 }
 
                 DatabaseHelper.getTaskDao().markAsRead(initialEntity);
@@ -121,6 +116,7 @@ public class TaskEditActivity extends AbstractSormasActivity {
             Intent intent = new Intent(this, TasksActivity.class);
             startActivity(intent);
             finish();
+            return;
         }
 
         if (currentEntity.isUnreadOrChildUnread()) {
@@ -186,7 +182,7 @@ public class TaskEditActivity extends AbstractSormasActivity {
                     taskDao.saveAndSnapshot(task);
 
                     if (RetroProvider.isConnected()) {
-                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
+                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, this, new SyncCallback() {
                             @Override
                             public void call(boolean syncFailed, String syncFailedMessage) {
                                 onResume();

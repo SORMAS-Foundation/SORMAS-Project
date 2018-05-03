@@ -211,7 +211,7 @@ public class ContactNewActivity extends AppCompatActivity {
         contactDao.saveAndSnapshot(contact);
 
         if (RetroProvider.isConnected()) {
-            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
+            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, this, new SyncCallback() {
                 @Override
                 public void call(boolean syncFailed, String syncFailedMessage) {
                     if (syncFailed) {

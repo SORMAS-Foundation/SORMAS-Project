@@ -57,8 +57,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -76,7 +74,6 @@ public class MapComponent extends VerticalLayout {
 	// Layouts and components
 	private final DashboardDataProvider dashboardDataProvider;
 	private final GoogleMap map;
-	private Label mapDateLabel;
 	private PopupButton mapKeyDropdown;
 
 	// Layers
@@ -183,10 +180,8 @@ public class MapComponent extends VerticalLayout {
 		clearContactMarkers();
 		clearEventMarkers();
 
-		Date fromDate = dashboardDataProvider.getDateFilterOption() == DateFilterOption.DATE ? dashboardDataProvider.getFromDate() :
-			DateHelper.getEpiWeekStart(dashboardDataProvider.getFromWeek());
-		Date toDate = dashboardDataProvider.getDateFilterOption() == DateFilterOption.DATE ? dashboardDataProvider.getToDate() :
-			DateHelper.getEpiWeekEnd(dashboardDataProvider.getToWeek());
+		Date fromDate = dashboardDataProvider.getFromDate();
+		Date toDate = dashboardDataProvider.getToDate();
 		RegionReferenceDto region = dashboardDataProvider.getRegion();
 		DistrictReferenceDto district = dashboardDataProvider.getDistrict();
 		Disease disease = dashboardDataProvider.getDisease();
@@ -236,27 +231,6 @@ public class MapComponent extends VerticalLayout {
 		return casesWithoutGPSTag;
 	}
 
-	public void updateDateLabel() {
-		if (dashboardDataProvider.getDateFilterOption() == DateFilterOption.EPI_WEEK) {
-			EpiWeek fromWeek = dashboardDataProvider.getFromWeek();
-			EpiWeek toWeek = dashboardDataProvider.getToWeek();
-			if (fromWeek.getWeek() == toWeek.getWeek()) {
-				mapDateLabel.setValue("ACTIVE CASES, CONTACTS AND EVENTS IN EPI WEEK " + fromWeek.getWeek());
-			} else {
-				mapDateLabel.setValue("ACTIVE CASES, CONTACTS AND EVENTS BETWEEN EPI WEEK " + fromWeek.getWeek() + " AND " + toWeek.getWeek());
-			}
-		} else {
-			Date fromDate = dashboardDataProvider.getFromDate();
-			Date toDate = dashboardDataProvider.getToDate();
-			if (DateHelper.isSameDay(fromDate, toDate)) {
-				mapDateLabel.setValue("ACTIVE CASES, CONTACTS AND EVENTS ON " + DateHelper.formatShortDate(fromDate));
-			} else {
-				mapDateLabel.setValue("ACTIVE CASES, CONTACTS AND EVENTS BETWEEN " + DateHelper.formatShortDate(fromDate) + 
-						" AND " + DateHelper.formatShortDate(toDate));
-			}
-		}
-	}
-
 	public void setExpandListener(ClickListener listener) {
 		externalExpandButtonListener = listener;
 	}
@@ -271,24 +245,13 @@ public class MapComponent extends VerticalLayout {
 		mapHeaderLayout.setSpacing(true);
 		CssStyles.style(mapHeaderLayout, CssStyles.VSPACE_4);
 
-		// Map and date labels
-		VerticalLayout mapLabelLayout = new VerticalLayout();
-		{
-			mapLabelLayout.setSizeUndefined();
-			Label caseMapLabel = new Label("Case Status Map");
-			caseMapLabel.setSizeUndefined();
-			CssStyles.style(caseMapLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-			mapLabelLayout.addComponent(caseMapLabel);
-
-			mapDateLabel = new Label();
-			mapDateLabel.setSizeUndefined();
-			CssStyles.style(mapDateLabel, CssStyles.H4, CssStyles.VSPACE_TOP_NONE);
-			updateDateLabel();
-			mapLabelLayout.addComponent(mapDateLabel);
-		}
-		mapHeaderLayout.addComponent(mapLabelLayout);
-		mapHeaderLayout.setComponentAlignment(mapLabelLayout, Alignment.BOTTOM_LEFT);
-		mapHeaderLayout.setExpandRatio(mapLabelLayout, 1);
+		Label caseMapLabel = new Label("Case Status Map");
+		caseMapLabel.setSizeUndefined();
+		CssStyles.style(caseMapLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+	
+		mapHeaderLayout.addComponent(caseMapLabel);
+		mapHeaderLayout.setComponentAlignment(caseMapLabel, Alignment.BOTTOM_LEFT);
+		mapHeaderLayout.setExpandRatio(caseMapLabel, 1);
 
 		// Map key dropdown button
 		mapKeyDropdown = new PopupButton("Map Key");
@@ -1086,9 +1049,5 @@ public class MapComponent extends VerticalLayout {
 			return "VAADIN/themes/sormas/mapicons/" + imgName + ".png";
 		};
 	}
-
-	public Label getMapDateLabel() {
-		return mapDateLabel;
-	}
-
+	
 }

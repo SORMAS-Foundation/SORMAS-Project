@@ -26,8 +26,8 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
-import de.symeda.sormas.api.caze.StatisticsCaseDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.statistics.StatisticsCaseDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -84,13 +84,15 @@ public class CaseService extends AbstractAdoService<Case> {
 		return caze;
 	}
 	
-	public List<Case> findBy(CaseCriteria caseCriteria) {
+	public List<Case> findBy(CaseCriteria caseCriteria, User user) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
 
 		Predicate filter = buildCriteriaFilter(caseCriteria, cb, from);
+		filter = and(cb, filter, createUserFilter(cb, cq, from, user));
+		
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -454,7 +456,8 @@ public class CaseService extends AbstractAdoService<Case> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, User user) {
 		// National users can access all cases in the system
-		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
+		if (user == null
+				|| user.getUserRoles().contains(UserRole.NATIONAL_USER)
 				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}
@@ -611,9 +614,6 @@ public class CaseService extends AbstractAdoService<Case> {
 	
 	public Predicate buildCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, Root<Case> from) {
 		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
-		Join<Person, Location> personAddress = person.join(Person.ADDRESS, JoinType.LEFT);
-		Join<Case, Region> region = from.join(Case.REGION, JoinType.LEFT);
-		Join<Case, District> district = from.join(Case.DISTRICT, JoinType.LEFT);
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
 			filter = and(cb, filter, cb.isMember(
@@ -627,10 +627,25 @@ public class CaseService extends AbstractAdoService<Case> {
 			filter = and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
 		}
 		if (caseCriteria.getRegion() != null) {
-			filter = and(cb, filter, cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()));
+			filter = and(cb, filter, cb.equal(from.join(Case.REGION, JoinType.LEFT).get(Region.UUID), caseCriteria.getRegion().getUuid()));
 		}
 		if (caseCriteria.getDistrict() != null) {
-			filter = and(cb, filter, cb.equal(district.get(District.UUID), caseCriteria.getDistrict().getUuid()));
+			filter = and(cb, filter, cb.equal(from.join(Case.DISTRICT, JoinType.LEFT).get(District.UUID), caseCriteria.getDistrict().getUuid()));
+		}
+		if (caseCriteria.getHealthFacility() != null) {
+			filter = and(cb, filter, cb.equal(from.join(Case.HEALTH_FACILITY, JoinType.LEFT).get(Facility.UUID), caseCriteria.getHealthFacility().getUuid()));
+		}
+		if (caseCriteria.getSurveillanceOfficer() != null) {
+			filter = and(cb, filter, cb.equal(from.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID), caseCriteria.getSurveillanceOfficer().getUuid()));
+		}
+		if (caseCriteria.getCaseClassification() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Case.CASE_CLASSIFICATION), caseCriteria.getCaseClassification()));
+		}
+		if (caseCriteria.getInvestigationStatus() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Case.INVESTIGATION_STATUS), caseCriteria.getInvestigationStatus()));
+		}
+		if (caseCriteria.getPresentCondition() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.PRESENT_CONDITION), caseCriteria.getPresentCondition()));
 		}
 		if (caseCriteria.getNewCaseDateFrom() != null && caseCriteria.getNewCaseDateTo() != null) {
 			filter = and(cb, filter, createNewCaseFilter(cb, from, caseCriteria.getNewCaseDateFrom(), caseCriteria.getNewCaseDateTo()));
@@ -639,6 +654,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			filter = and(cb, filter, cb.equal(from.join(Case.PERSON, JoinType.LEFT).get(Person.UUID), caseCriteria.getPerson().getUuid()));
 		}
 		if (caseCriteria.isMustHaveNoGeoCoordinates() != null && caseCriteria.isMustHaveNoGeoCoordinates() == true) {
+			Join<Person, Location> personAddress = person.join(Person.ADDRESS, JoinType.LEFT);
 			filter = and(cb, filter, 
 					cb.and(
 						cb.or(

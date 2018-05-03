@@ -24,7 +24,6 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -35,9 +34,6 @@ public class EpiCurveComponent extends VerticalLayout {
 	// Components
 	private final DashboardDataProvider dashboardDataProvider;
 	private final HighChart epiCurveChart;
-
-	// UI elements
-	private Label epiCurveDateLabel;
 
 	// Others
 	private EpiCurveGrouping epiCurveGrouping;
@@ -234,27 +230,6 @@ public class EpiCurveComponent extends VerticalLayout {
 		epiCurveChart.setHcjs(hcjs.toString());	
 	}
 
-	public void updateDateLabel() {
-		if (dashboardDataProvider.getDateFilterOption() == DateFilterOption.EPI_WEEK) {
-			EpiWeek fromWeek = dashboardDataProvider.getFromWeek();
-			EpiWeek toWeek = dashboardDataProvider.getToWeek();
-			if (fromWeek.getWeek() == toWeek.getWeek()) {
-				epiCurveDateLabel.setValue("NEW CASES IN EPI WEEK " + fromWeek.getWeek());
-			} else {
-				epiCurveDateLabel.setValue("NEW CASES BETWEEN EPI WEEK " + fromWeek.getWeek() + " AND " + toWeek.getWeek());
-			}
-		} else {
-			Date fromDate = dashboardDataProvider.getFromDate();
-			Date toDate = dashboardDataProvider.getToDate();
-			if (DateHelper.isSameDay(fromDate, toDate)) {
-				epiCurveDateLabel.setValue("NEW CASES ON " + DateHelper.formatShortDate(fromDate));
-			} else {
-				epiCurveDateLabel.setValue("NEW CASES BETWEEN " + DateHelper.formatShortDate(fromDate) + 
-						" AND " + DateHelper.formatShortDate(toDate));
-			}
-		}
-	}
-
 	public void setExpandListener(ClickListener listener) {
 		externalExpandButtonListener = listener;
 	}
@@ -269,24 +244,13 @@ public class EpiCurveComponent extends VerticalLayout {
 		epiCurveHeaderLayout.setSpacing(true);
 		CssStyles.style(epiCurveHeaderLayout, CssStyles.VSPACE_4);
 
-		// Curve and date labels
-		VerticalLayout epiCurveLabelLayout = new VerticalLayout();
-		{
-			epiCurveLabelLayout.setSizeUndefined();
-			Label epiCurveLabel = new Label("Epidemiological Curve");
-			epiCurveLabel.setSizeUndefined();
-			CssStyles.style(epiCurveLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-			epiCurveLabelLayout.addComponent(epiCurveLabel);
-
-			epiCurveDateLabel = new Label();
-			epiCurveDateLabel.setSizeUndefined();
-			CssStyles.style(epiCurveDateLabel, CssStyles.H4, CssStyles.VSPACE_TOP_NONE);
-			updateDateLabel();
-			epiCurveLabelLayout.addComponent(epiCurveDateLabel);
-		}
-		epiCurveHeaderLayout.addComponent(epiCurveLabelLayout);
-		epiCurveHeaderLayout.setComponentAlignment(epiCurveLabelLayout, Alignment.BOTTOM_LEFT);
-		epiCurveHeaderLayout.setExpandRatio(epiCurveLabelLayout, 1);
+		Label epiCurveLabel = new Label("Epidemiological Curve");
+		epiCurveLabel.setSizeUndefined();
+		CssStyles.style(epiCurveLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		
+		epiCurveHeaderLayout.addComponent(epiCurveLabel);
+		epiCurveHeaderLayout.setComponentAlignment(epiCurveLabel, Alignment.BOTTOM_LEFT);
+		epiCurveHeaderLayout.setExpandRatio(epiCurveLabel, 1);
 
 		// Grouping
 		PopupButton groupingDropdown = new PopupButton("Grouping");
@@ -369,11 +333,8 @@ public class EpiCurveComponent extends VerticalLayout {
 	 */
 	private List<Date> buildListOfFilteredDates() {
 		List<Date> filteredDates = new ArrayList<>();
-		DateFilterOption dateFilterOption = dashboardDataProvider.getDateFilterOption();
-		Date fromDate = dateFilterOption == DateFilterOption.DATE ? DateHelper.getStartOfDay(dashboardDataProvider.getFromDate()) :
-			DateHelper.getStartOfDay(DateHelper.getEpiWeekStart(dashboardDataProvider.getFromWeek()));
-		Date toDate = dateFilterOption == DateFilterOption.DATE ? DateHelper.getEndOfDay(dashboardDataProvider.getToDate()) :
-			DateHelper.getEndOfDay(DateHelper.getEpiWeekEnd(dashboardDataProvider.getToWeek()));
+		Date fromDate = DateHelper.getStartOfDay(dashboardDataProvider.getFromDate());
+		Date toDate = DateHelper.getEndOfDay(dashboardDataProvider.getToDate());
 		Date currentDate;
 
 		if (epiCurveGrouping == EpiCurveGrouping.DAY) {
@@ -409,10 +370,6 @@ public class EpiCurveComponent extends VerticalLayout {
 		}
 
 		return filteredDates;
-	}
-
-	public Label getEpiCurveDateLabel() {
-		return epiCurveDateLabel;
 	}
 
 	public EpiCurveMode getEpiCurveMode() {

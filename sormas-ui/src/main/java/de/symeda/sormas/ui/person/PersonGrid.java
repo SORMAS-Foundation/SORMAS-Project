@@ -100,7 +100,7 @@ public class PersonGrid extends Grid {
 
 		getContainer().removeAllItems();
 		getContainer().addAll(entries);    
-		setHeightByRows(entries.size() > 0 ? entries.size() : 1);
+		setHeightByRows(entries.size() > 0 ? (entries.size() <= 10 ? entries.size() : 10) : 1);
 	}
 
 	public void refresh(PersonIndexDto entry) {

@@ -10,14 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.google.android.gms.analytics.Tracker;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -39,7 +37,6 @@ import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.report.WeeklyReportEntry;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.FieldHelper;
-import de.symeda.sormas.app.component.SpinnerField;
 import de.symeda.sormas.app.databinding.WeeklyReportFragmentLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -151,7 +148,7 @@ public class WeeklyReportForm extends FormTab {
                         DatabaseHelper.getWeeklyReportDao().create(epiWeek);
 
                         if (RetroProvider.isConnected()) {
-                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, WeeklyReportForm.this.getContext(), new SyncCallback() {
+                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, WeeklyReportForm.this.getContext(), new SyncCallback() {
                                 @Override
                                 public void call(boolean syncFailed, String syncFailedMessage) {
                                     if (syncFailed) {

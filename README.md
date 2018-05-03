@@ -21,6 +21,7 @@ All commands mentioned are linux commands.
 * Get the latest release files (deploy.zip): https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest
 * Copy/upload to /root/deploy/sormas/$(date +%F)
 * ``cd /root/deploy/sormas/$(date +%F)``
+* Show log to track the deploy process: ``tail -f /var/log/glassfish/sormas/server.log``
 
 #### Version specifics
 * 0.15.0: update the glassfish config with the new apk filename: sormas-release.apk
@@ -54,7 +55,9 @@ For information on what libs are used see pom.xml in sormas-base project: https:
     * ``mkdir /root/deploy/sormas/backup``
 * Create a backup of the database
     * ``cd /root/deploy/sormas/backup``
-    * ``pg_dump -Fc -b -h localhost -U sormas_user sormas_db > "sormas_db_"`date +"%Y-%m-%d_%H-%M-%S"`".dump"``
+    * ``sudo -u postgres pg_dump -Fc -b sormas_db > "sormas_db_"`date +"%Y-%m-%d_%H-%M-%S"`".dump"`` \
+     (to restore the data you can use: sudo -u postgres pg_restore -Fc -d sormas_db sormas_db_....dump)
+    * ``sudo -u postgres pg_dump -Fc -b sormas_audit_db > "sormas_audit_db_"`date +"%Y-%m-%d_%H-%M-%S"`".dump"``
     * ``cd /root/deploy/sormas/$(date +%F)``	
 * Update the database schema
     * ``cd /root/deploy/sormas/$(date +%F)/sql``
@@ -69,7 +72,7 @@ For information on what libs are used see pom.xml in sormas-base project: https:
     * Edit sql/sormas_schema.sql
         * ``Remove everything until after the INSERT with the read schema version``
         * ``Surround the remaining with BEGIN; and COMMIT;``
-    * Update the Database schema: ``psql -U sormas_user -h localhost -W sormas_db < sql/sormas_schema.sql``
+    * Update the Database schema: ``sudo -u postgres psql sormas_db < sql/sormas_schema.sql``
 * If something goes wrong, restorte the database using ``pg_restore -U sormas_user -Fc -d sormas_db < sormas_db_....``
 
 #### Web Applications
@@ -81,7 +84,7 @@ For information on what libs are used see pom.xml in sormas-base project: https:
 
 #### Final Steps
 
-* Wait until the deployment is done (see log):  ``tail -f /var/log/glassfish/sormas/server.log``
+* Wait until the deployment is done (see log)
 * a2ensite your.sormas.server.url.conf
 * service apache2 reload
 * Try to login at https://localhost:6081/sormas-ui (or the webadress of the server). 
@@ -93,13 +96,14 @@ For information on what libs are used see pom.xml in sormas-base project: https:
 ### Postgres Database
 
 * Install PostgreSQL (currently 9.5 or 9.6) on your system
-* **set max_prepared_transactions = 64 (at least) in postgresql.conf**
+* **set max_prepared_transactions = 64 (at least) in postgresql.conf** (e.g. /etc/postgresql/9.5/main/postgresql.conf)
 * Install the "temporal tables" addon for Postgres (https://github.com/arkhipov/temporal_tables)
     * Windows: Download latest version for your postgres version: https://github.com/arkhipov/temporal_tables/releases/latest Then you must copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.	
     * Linux (see https://github.com/arkhipov/temporal_tables#installation):
         * ``sudo apt-get install libpq-dev``
         * ``sudo apt-get install postgresql-server-dev-all``
         * ``sudo apt install pgxnclient``
+	* Check for GCC: ``gcc --version`` - install if missing
         * ``pgxn install temporal_tables``
 * Create a PostgreSQL database named "sormas_db" and "sormas_audit_db" with user "sormas_user" (make sure to generate a secure password) as its owner.
     * ``sudo -u postgres psql``
@@ -125,6 +129,11 @@ For information on what libs are used see pom.xml in sormas-base project: https:
 * Set up a payara domain called "sormas" by executing it: ``./glassfish-config.sh`` Press enter whenever asked for it.
 * Adjust the logging configuration in opt/domains/sormas/config/logback.xml based on your needs 
 * Make sure the domain folder is owned by the glassfish user: ``chown -R glassfish:glassfish opt/domains/sormas/``
+* Create two folders called "/opt/sormas-temp" and "/opt/sormas-generated" (if you choose another path, you have to adjust the sormas.properties file accordingly)
+* Set user rights for postgres and glassfish users: ``setfacl -m u:postgres:rwx /opt/sormas-temp
+setfacl -m u:glassfish:rwx /opt/sormas-temp
+setfacl -m u:postgres:rwx /opt/sormas-generated
+setfacl -m u:glassfish:rwx /opt/sormas-generated``
 * Copy the startup script to init.d: ``cp payara-sormas /etc/init.d``
 * Add the server startup sequence: ``update-rc.d payara-sormas defaults``
 * Start the server: ``service payara-sormas start``

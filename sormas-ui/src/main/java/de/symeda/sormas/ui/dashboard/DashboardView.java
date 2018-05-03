@@ -1,7 +1,10 @@
 package de.symeda.sormas.ui.dashboard;
 
-import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -12,11 +15,11 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -98,6 +101,8 @@ public class DashboardView extends AbstractView {
 	private Date toDate = new Date();
 	private EpiWeek fromWeek;
 	private EpiWeek toWeek;
+	private Set<Button> dateFilterButtons;
+	private PopupButton customButton;
 
 	// Others
 	private DashboardDataProvider dashboardDataProvider;
@@ -114,6 +119,7 @@ public class DashboardView extends AbstractView {
 		dashboardLayout.setStyleName("crud-main-layout");
 
 		// Add filter bar
+		dateFilterButtons = new HashSet<>();
 		dashboardLayout.addComponent(createFilterBar());
 
 		// Add statistics
@@ -127,23 +133,6 @@ public class DashboardView extends AbstractView {
 
 		addComponent(dashboardLayout);
 	}
-	
-	public void updateDateLabel(Label dateLabel) {
-		if (dateFilterOption == DateFilterOption.EPI_WEEK) {
-			if (fromWeek.getWeek() == toWeek.getWeek()) {
-				dateLabel.setValue("EPI WEEK " + fromWeek.getWeek());
-			} else {
-				dateLabel.setValue("EPI WEEK " + fromWeek.getWeek() + " TO " + toWeek.getWeek());
-			}
-		} else {
-			if (DateHelper.isSameDay(fromDate, toDate)) {
-				dateLabel.setValue("ON " + DateHelper.formatShortDate(fromDate));
-			} else {
-				dateLabel.setValue("FROM " + DateHelper.formatShortDate(fromDate) + 
-						" TO " + DateHelper.formatShortDate(toDate));
-			}
-		}
-	}
 
 	private HorizontalLayout createFilterBar() {
 		HorizontalLayout filterLayout = new HorizontalLayout();
@@ -156,17 +145,15 @@ public class DashboardView extends AbstractView {
 		ComboBox districtFilter = new ComboBox();
 		ComboBox diseaseFilter = new ComboBox();
 
-		// 'Apply Filter' button
-		Button applyButton = new Button(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, APPLY));
-		CssStyles.style(applyButton, CssStyles.FORCE_CAPTION);
-		
 		// Region filter
 		if (LoginHelper.getCurrentUser().getRegion() == null) {
 			regionFilter.setWidth(200, Unit.PIXELS);
 			regionFilter.setInputPrompt("State");
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 			regionFilter.addValueChangeListener(e -> {
-				applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+				region = (RegionReferenceDto) regionFilter.getValue();
+				dashboardDataProvider.setRegion(region);
+				refreshDashboard();
 			});
 			regionFilter.setCaption("State");
 			filterLayout.addComponent(regionFilter);
@@ -180,7 +167,9 @@ public class DashboardView extends AbstractView {
 			districtFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DISTRICT));
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(LoginHelper.getCurrentUser().getRegion().getUuid()));
 			districtFilter.addValueChangeListener(e -> {
-				applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+				district = (DistrictReferenceDto) districtFilter.getValue();
+				dashboardDataProvider.setDistrict(district);
+				refreshDashboard();
 			});
 			districtFilter.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DISTRICT));
 			filterLayout.addComponent(districtFilter);
@@ -193,26 +182,128 @@ public class DashboardView extends AbstractView {
 		diseaseFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DISEASE));
 		diseaseFilter.addItems((Object[])Disease.values());
 		diseaseFilter.addValueChangeListener(e -> {
-			applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			disease = (Disease) diseaseFilter.getValue();
+			dashboardDataProvider.setDisease(disease);
+			refreshDashboard();
 		});
 		diseaseFilter.setCaption(I18nProperties.getPrefixFieldCaption(I18N_PREFIX, DISEASE));
 		filterLayout.addComponent(diseaseFilter);
 
-		Calendar c = Calendar.getInstance();
-		c.setTime(new Date());
+		// Date filters
+		HorizontalLayout dateFilterLayout = new HorizontalLayout();
+		dateFilterLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+		dateFilterLayout.setSpacing(true);
+		filterLayout.addComponent(dateFilterLayout);
+		Date now = new Date();
 
-		// Date & Epi Week filter
-		EpiWeekAndDateFilterComponent weekAndDateFilter = new EpiWeekAndDateFilterComponent(applyButton, true, true);
-		filterLayout.addComponent(weekAndDateFilter);
-		dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
-		dashboardDataProvider.setDateFilterOption(dateFilterOption);
-		fromWeek = (EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue();
-		dashboardDataProvider.setFromWeek(fromWeek);
-		toWeek = (EpiWeek) weekAndDateFilter.getWeekToFilter().getValue();
-		dashboardDataProvider.setToWeek(toWeek);
-		
-		filterLayout.addComponent(applyButton);
-		
+		Button todayButton = new Button("Today");
+		initializeDateFilterButton(todayButton);
+		todayButton.addClickListener(e -> {
+			setDateFilter(DateHelper.getStartOfDay(now), DateHelper.getEndOfDay(now));
+			refreshDashboard();
+		});
+		Button yesterdayButton = new Button("Yesterday");
+		initializeDateFilterButton(yesterdayButton);
+		yesterdayButton.addClickListener(e -> {
+			setDateFilter(DateHelper.getStartOfDay(DateHelper.subtractDays(now, 1)),
+					DateHelper.getEndOfDay(DateHelper.subtractDays(now, 1)));
+			refreshDashboard();
+		});
+		Button thisWeekButton = new Button("This week");
+		initializeDateFilterButton(thisWeekButton);
+		thisWeekButton.addClickListener(e -> {
+			setDateFilter(DateHelper.getStartOfWeek(now), DateHelper.getEndOfWeek(now));
+			refreshDashboard();
+		});
+		CssStyles.style(thisWeekButton, CssStyles.LINK_HIGHLIGHTED_DARK);
+		CssStyles.removeStyles(thisWeekButton, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		Button lastWeekButton = new Button("Last week");
+		initializeDateFilterButton(lastWeekButton);
+		lastWeekButton.addClickListener(e -> {
+			setDateFilter(DateHelper.getStartOfWeek(DateHelper.subtractWeeks(now, 1)),
+					DateHelper.getEndOfWeek(DateHelper.subtractWeeks(now, 1)));
+			refreshDashboard();
+		});
+		Button thisYearButton = new Button("This year");
+		initializeDateFilterButton(thisYearButton);
+		thisYearButton.addClickListener(e -> {
+			setDateFilter(DateHelper.getStartOfYear(now), DateHelper.getEndOfYear(now));
+			refreshDashboard();
+		});
+		Button lastYearButton = new Button("Last year");
+		initializeDateFilterButton(lastYearButton);
+		lastYearButton.addClickListener(e -> {
+			setDateFilter(DateHelper.getStartOfYear(DateHelper.subtractYears(now, 1)),
+					DateHelper.getEndOfYear(DateHelper.subtractYears(now, 1)));
+			refreshDashboard();
+		});
+		customButton = new PopupButton("Custom");
+		initializeDateFilterButton(customButton);
+
+		// Custom filter
+		{
+			HorizontalLayout customDateFilterLayout = new HorizontalLayout();
+			customDateFilterLayout.setSpacing(true);
+			customDateFilterLayout.setMargin(true);
+
+			// 'Apply custom filter' button
+			Button applyButton = new Button("Apply custom filter");
+			CssStyles.style(applyButton, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
+
+			// Date & Epi Week filter
+			EpiWeekAndDateFilterComponent weekAndDateFilter = new EpiWeekAndDateFilterComponent(applyButton, true, true);
+			customDateFilterLayout.addComponent(weekAndDateFilter);
+			dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
+			dashboardDataProvider.setDateFilterOption(dateFilterOption);
+			fromWeek = (EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue();
+			dashboardDataProvider.setFromDate(DateHelper.getEpiWeekStart(fromWeek));
+			toWeek = (EpiWeek) weekAndDateFilter.getWeekToFilter().getValue();
+			dashboardDataProvider.setToDate(DateHelper.getEpiWeekEnd(toWeek));
+
+			customDateFilterLayout.addComponent(applyButton);
+
+			// Apply button listener
+			applyButton.addClickListener(new ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
+					dashboardDataProvider.setDateFilterOption(dateFilterOption);
+					if (dateFilterOption == DateFilterOption.DATE) {
+						fromDate = weekAndDateFilter.getDateFromFilter().getValue();
+						dashboardDataProvider.setFromDate(fromDate);
+						toDate = weekAndDateFilter.getDateToFilter().getValue();
+						dashboardDataProvider.setToDate(toDate);
+					} else {
+						fromWeek = (EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue();
+						dashboardDataProvider.setFromDate(DateHelper.getEpiWeekStart(fromWeek));
+						toWeek = (EpiWeek) weekAndDateFilter.getWeekToFilter().getValue();
+						dashboardDataProvider.setToDate(DateHelper.getEpiWeekEnd(toWeek));
+					}
+
+					if (fromDate != null && toDate != null) {
+						changeDateFilterButtonsStyles(customButton);
+						refreshDashboard();
+						if (dateFilterOption == DateFilterOption.DATE) {
+							customButton.setCaption(DateHelper.formatShortDate(fromDate) + " - " + DateHelper.formatShortDate(toDate));
+						} else {
+							customButton.setCaption(fromWeek.toShortString() + " - " + toWeek.toShortString());
+						}
+					} else {
+						if (dateFilterOption == DateFilterOption.DATE) {
+							new Notification("Missing date filter", "Please fill in both date filter fields", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+						} else {
+							new Notification("Missing epi week filter", "Please fill in both epi week filter fields", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+						}
+					}
+				}
+			});
+
+			customButton.setContent(customDateFilterLayout);
+		}
+
+		dateFilterLayout.addComponents(todayButton, yesterdayButton, thisWeekButton, lastWeekButton,
+				thisYearButton, lastYearButton, customButton);
+
 		Label infoLabel = new Label(FontAwesome.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		infoLabel.setSizeUndefined();
 		infoLabel.setDescription("All Dashboard elements that display cases (the 'New Cases' statistics, the Epidemiological Curve and the Case Status Map) use the onset date of the first symptom for the date/epi week filter. If this date is not available, the reception date or date of report is used instead.");
@@ -220,43 +311,6 @@ public class DashboardView extends AbstractView {
 		filterLayout.addComponent(infoLabel);
 		filterLayout.setComponentAlignment(infoLabel, Alignment.MIDDLE_RIGHT);
 
-		// Apply button listener
-		applyButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				region = (RegionReferenceDto) regionFilter.getValue();
-				dashboardDataProvider.setRegion(region);
-				district = (DistrictReferenceDto) districtFilter.getValue();
-				dashboardDataProvider.setDistrict(district);
-				disease = (Disease) diseaseFilter.getValue();
-				dashboardDataProvider.setDisease(disease);
-				dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
-				dashboardDataProvider.setDateFilterOption(dateFilterOption);
-				if (dateFilterOption == DateFilterOption.DATE) {
-					fromDate = weekAndDateFilter.getDateFromFilter().getValue();
-					dashboardDataProvider.setFromDate(fromDate);
-					toDate = weekAndDateFilter.getDateToFilter().getValue();
-					dashboardDataProvider.setToDate(toDate);
-				} else {
-					fromWeek = (EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue();
-					dashboardDataProvider.setFromWeek(fromWeek);
-					toWeek = (EpiWeek) weekAndDateFilter.getWeekToFilter().getValue();
-					dashboardDataProvider.setToWeek(toWeek);
-				}
-				
-				if (fromDate != null && toDate != null) {
-					applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-					refreshDashboard();
-				} else {
-					if (dateFilterOption == DateFilterOption.DATE) {
-						new Notification("Missing date filter", "Please fill in both date filter fields", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
-					} else {
-						new Notification("Missing epi week filter", "Please fill in both epi week filter fields", Type.ERROR_MESSAGE, false).show(Page.getCurrent());
-					}
-				}
-			}
-		});
-		
 		return filterLayout;
 	}
 
@@ -284,10 +338,10 @@ public class DashboardView extends AbstractView {
 
 		epiCurveComponent = new EpiCurveComponent(dashboardDataProvider);
 		epiCurveComponent.setSizeFull();
-		
+
 		layout.addComponent(epiCurveComponent);
 		layout.setExpandRatio(epiCurveComponent, 1);
-		
+
 		epiCurveComponent.setExpandListener(e -> {
 			dashboardLayout.removeComponent(statisticsComponent);
 			epiCurveAndMapLayout.removeComponent(mapLayout);
@@ -295,7 +349,7 @@ public class DashboardView extends AbstractView {
 			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
 			epiCurveLayout.setSizeFull();			
 		});
-		
+
 		epiCurveComponent.setCollapseListener(e -> {
 			dashboardLayout.addComponent(statisticsComponent, 1);
 			epiCurveAndMapLayout.addComponent(mapLayout, 1);
@@ -314,7 +368,7 @@ public class DashboardView extends AbstractView {
 
 		mapComponent = new MapComponent(dashboardDataProvider);
 		mapComponent.setSizeFull();
-		
+
 		layout.addComponent(mapComponent);
 		layout.setExpandRatio(mapComponent, 1);
 
@@ -339,19 +393,49 @@ public class DashboardView extends AbstractView {
 
 	private void refreshDashboard() {		
 		dashboardDataProvider.refreshData();
-		
+
 		// Updates statistics
 		statisticsComponent.updateStatistics(disease);
-		
+
 		// Update cases and contacts shown on the map
 		mapComponent.refreshMap();
 
 		// Epi curve chart has to be created again due to a canvas resizing issue when simply refreshing the component
 		epiCurveComponent.clearAndFillEpiCurveChart();
-		
-		// Update epi curve and map date labels
-		epiCurveComponent.updateDateLabel();
-		mapComponent.updateDateLabel();
+	}
+
+	private void initializeDateFilterButton(Button button) {
+		if (button != customButton) {
+			button.addClickListener(e -> {
+				changeDateFilterButtonsStyles(button);
+			});
+		}
+		CssStyles.style(button, ValoTheme.BUTTON_LINK, CssStyles.LINK_HIGHLIGHTED, CssStyles.LINK_HIGHLIGHTED_LIGHT, CssStyles.FORCE_CAPTION);
+		dateFilterButtons.add(button);
+	}
+
+	private void setDateFilter(Date from, Date to) {
+		dateFilterOption = DateFilterOption.DATE;
+		dashboardDataProvider.setDateFilterOption(DateFilterOption.DATE);
+		fromDate = from;
+		dashboardDataProvider.setFromDate(fromDate);
+		toDate = to;
+		dashboardDataProvider.setToDate(toDate);
+	}
+
+	private void changeDateFilterButtonsStyles(Button activeFilterButton) {
+		CssStyles.style(activeFilterButton, CssStyles.LINK_HIGHLIGHTED_DARK);
+		CssStyles.removeStyles(activeFilterButton, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+		if (customButton != activeFilterButton) {
+			customButton.setCaption("Custom");
+		}
+
+		dateFilterButtons.forEach(b -> {
+			if (b != activeFilterButton) {
+				CssStyles.style(b, CssStyles.LINK_HIGHLIGHTED_LIGHT);
+				CssStyles.removeStyles(b, CssStyles.LINK_HIGHLIGHTED_DARK);
+			}
+		});
 	}
 
 	@Override

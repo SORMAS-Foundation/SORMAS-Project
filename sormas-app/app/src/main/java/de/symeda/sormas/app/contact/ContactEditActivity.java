@@ -94,6 +94,7 @@ public class ContactEditActivity extends AbstractEditTabActivity {
                     Intent intent = new Intent(this, ContactsActivity.class);
                     startActivity(intent);
                     finish();
+                    return;
                 }
 
                 if (toolbar != null) {
@@ -123,6 +124,7 @@ public class ContactEditActivity extends AbstractEditTabActivity {
             Intent intent = new Intent(this, ContactsActivity.class);
             startActivity(intent);
             finish();
+            return;
         }
 
         if (currentEntity.isUnreadOrChildUnread()) {

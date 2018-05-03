@@ -16,6 +16,10 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.statistics.CasesStatisticField;
+import de.symeda.sormas.api.statistics.StatisticSubField;
+import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
+import de.symeda.sormas.api.statistics.StatisticsCaseDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -26,6 +30,8 @@ public interface CaseFacade {
 	List<CaseDataDto> getAllCasesAfter(Date date, String userUuid);
 
 	List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria);
+	
+	List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria);
 	
 	CaseDataDto getCaseDataByUuid(String uuid);
     
@@ -72,4 +78,6 @@ public interface CaseFacade {
 	CaseDataDto getLatestCaseByPerson(String personUuid, String userUuid);
 	
 	void deleteCase(CaseReferenceDto caseRef, String userUuid);
+
+	List<Object[]> queryCaseCount(StatisticsCaseCriteria caseCriteria, CasesStatisticField groupingA, StatisticSubField subGroupingA);
 }

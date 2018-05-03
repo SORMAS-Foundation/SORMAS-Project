@@ -33,6 +33,7 @@ import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -40,17 +41,22 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
-import de.symeda.sormas.api.caze.StatisticsCaseDto;
-import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
+import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.statistics.CasesStatisticField;
+import de.symeda.sormas.api.statistics.StatisticSubField;
+import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
+import de.symeda.sormas.api.statistics.StatisticsCaseDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -62,6 +68,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -98,7 +105,9 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sample.SampleTest;
 import de.symeda.sormas.backend.sample.SampleTestService;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
@@ -200,7 +209,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), caze.get(Case.CASE_CLASSIFICATION),
 				caze.get(Case.INVESTIGATION_STATUS), person.get(Person.PRESENT_CONDITION),
 				caze.get(Case.REPORT_DATE), region.get(Region.UUID), district.get(District.UUID), district.get(District.NAME), 
-				facility.get(Facility.UUID), surveillanceOfficer.get(User.UUID), caze.get(Case.OUTCOME));
+				facility.get(Facility.UUID), facility.get(Facility.NAME), caze.get(Case.HEALTH_FACILITY_DETAILS),
+				surveillanceOfficer.get(User.UUID), caze.get(Case.OUTCOME));
 
 		User user = userService.getByUuid(userUuid);		
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
@@ -216,6 +226,17 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		List<CaseIndexDto> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+	
+	@Override
+	public List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria) {
+		
+		User user = userService.getByUuid(userUuid);
+
+		return caseService.findBy(caseCriteria, user)
+				.stream()
+				.map(c -> toExportDto(c))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -354,7 +375,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		// If the case is new and the geo coordinates of the case's health facility are null, set its coordinates to the
 		// case's report coordinates, if available
 		Facility facility = newCase.getHealthFacility();
-		if (existingCase == null && facility != null && facility.getUuid() != FacilityDto.OTHER_FACILITY_UUID && facility.getUuid() != FacilityDto.NONE_FACILITY_UUID
+		if (existingCase == null && facility != null 
+				&& !FacilityHelper.isOtherOrNoneHealthFacility(facility.getUuid())
 				&& (facility.getLatitude() == null || facility.getLongitude() == null)) {
 			if (newCase.getReportLat() != null && newCase.getReportLon() != null) {
 				facility.setLatitude(newCase.getReportLat());
@@ -650,6 +672,84 @@ public class CaseFacadeEjb implements CaseFacade {
 		return target;
 	}
 
+	public CaseExportDto toExportDto(Case source) {
+		
+		Person sourcePerson = source.getPerson();
+		
+		CaseExportDto target = new CaseExportDto();
+
+		target.setUuid(source.getUuid());
+		target.setEpidNumber(source.getEpidNumber());
+		target.setDisease(DiseaseHelper.toString(source.getDisease(), source.getDiseaseDetails()));
+		target.setPerson(PersonDto.buildCaption(sourcePerson.getFirstName(), sourcePerson.getLastName()));
+		target.setSex(sourcePerson.getSex());
+		target.setApproximateAge(PersonHelper.buildAgeString(sourcePerson.getApproximateAge(), sourcePerson.getApproximateAgeType()));
+		target.setReportDate(source.getReportDate());
+		target.setRegion(source.getRegion().getName());
+		target.setDistrict(source.getDistrict().getName());
+		if (source.getCommunity() != null) {
+			target.setCommunity(source.getCommunity().getName());
+		}
+		target.setAdmissionDate(source.getHospitalization().getAdmissionDate());
+		target.setHealthFacility(FacilityHelper.buildFacilityString(
+				source.getHealthFacility().getName(), source.getHealthFacilityDetails()));
+		target.setHealthFacility(source.getHealthFacility().toString());
+
+		// samples
+		List<Sample> sourceSamples = sampleService.getAllByCase(source);
+		target.setSampleTaken(sourceSamples.size() > 0 ? YesNoUnknown.YES : YesNoUnknown.NO);
+		String sampleDates = "", labResults = "";
+		for (Sample sourceSample : sourceSamples) {
+			if (sourceSample.getSampleDateTime() != null) {
+				if (sampleDates.length() > 0) {
+					sampleDates += ", "; 
+				}
+				sampleDates += DateHelper.formatShortDate(sourceSample.getSampleDateTime());
+			}
+			
+			for (SampleTest sourceSampleTest : sourceSample.getSampleTests()) {
+				if (sourceSampleTest.getTestResult() != null) {
+					if (labResults.length() > 0) {
+						labResults += ", "; 
+					}
+					labResults += sourceSampleTest.getTestResult();
+				}
+			}
+		}
+		target.setSampleDates(sampleDates);
+		target.setLabResults(labResults);
+		
+		target.setCaseClassification(source.getCaseClassification());
+		target.setInvestigationStatus(source.getInvestigationStatus());
+		target.setPresentCondition(sourcePerson.getPresentCondition());
+		target.setOutcome(source.getOutcome());
+		target.setDeathDate(sourcePerson.getDeathDate());
+
+		target.setAddress(sourcePerson.getAddress().toString());
+		target.setPhone(PersonHelper.buildPhoneString(sourcePerson.getPhone(), sourcePerson.getPhoneOwner()));
+		target.setOccupationType(PersonHelper.buildOccupationString(sourcePerson.getOccupationType(), sourcePerson.getOccupationDetails(), 
+				sourcePerson.getOccupationFacility() != null ? sourcePerson.getOccupationFacility().getName() : null));
+		
+		target.setTravelHistory(source.getEpiData().getTravels().stream()
+				.map(t -> EpiDataTravelHelper.buildTravelString(t.getTravelType(), t.getTravelDestination(), t.getTravelDateFrom(), t.getTravelDateTo()))
+				.collect(Collectors.joining(", ")));
+		target.setContactWithRodent(source.getEpiData().getRodents());
+		// contact with confirmed case
+		target.setContactWithConfirmedCase(YesNoUnknown.NO);
+		List<Contact> sourceContacts = contactService.getAllByResultingCase(source);
+		for (Contact sourceContact : sourceContacts) {
+			if (sourceContact.getCaze().getCaseClassification() == CaseClassification.CONFIRMED) {
+				target.setContactWithConfirmedCase(YesNoUnknown.YES);
+				break;
+			}
+		}
+		
+		target.setOnsetDate(source.getSymptoms().getOnsetDate());
+		target.setSymptoms(source.getSymptoms().toHumanString(false));
+		
+		return target;
+	}
+
 	public void updateInvestigationByStatus(CaseDataDto existingCase, Case caze) {
 		CaseReferenceDto caseRef = caze.toReference();
 		InvestigationStatus investigationStatus = caze.getInvestigationStatus();
@@ -895,9 +995,89 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 	}
+	
+	@Override
+	public List<Object[]> queryCaseCount(StatisticsCaseCriteria caseCriteria, CasesStatisticField groupingA, StatisticSubField subGroupingA) {
+
+		
+		StringBuilder sqlBuilder = new StringBuilder();
+		sqlBuilder
+			.append("FROM ").append(Case.TABLE_NAME)
+			.append(" LEFT JOIN ").append(Symptoms.TABLE_NAME)
+			.append(" ON ").append(Case.TABLE_NAME).append(".").append(Case.SYMPTOMS).append("_id")
+			.append(" = ").append(Symptoms.TABLE_NAME).append(".").append(Symptoms.ID)
+			;
+
+		if (groupingA == CasesStatisticField.PLACE) {
+			if (subGroupingA == StatisticSubField.REGION) {
+				sqlBuilder
+				.append(" LEFT JOIN ").append(Region.TABLE_NAME)
+				.append(" ON ").append(Case.TABLE_NAME).append(".").append(Case.REGION).append("_id")
+				.append(" = ").append(Region.TABLE_NAME).append(".").append(Region.ID);
+			}
+		}
+		
+		StringBuilder filterBuilder = new StringBuilder();
+		
+		if (caseCriteria.getOnsetYears() != null && !caseCriteria.getOnsetYears().isEmpty()) {
+			
+			if (filterBuilder.length() > 0) {
+				filterBuilder.append(" AND ");
+			}
+
+			filterBuilder.append("EXTRACT(YEAR FROM ").append(Symptoms.TABLE_NAME).append(".").append(Symptoms.ONSET_DATE).append(")")
+					.append(" IN (");
+			for (Object onsetYear : caseCriteria.getOnsetYears()) {
+				filterBuilder.append(onsetYear).append(",");
+			}
+			filterBuilder.deleteCharAt(filterBuilder.length()-1);
+			filterBuilder.append(")");
+		}
+		
+		if (filterBuilder.length() > 0) {
+			sqlBuilder.append(" WHERE ").append(filterBuilder);
+		}
+		
+		String groupAAlias = "groupA";
+		String groupingSelectQueryA = buildGroupingSelectQuery(groupingA, subGroupingA, groupAAlias);
+		
+		sqlBuilder.append(" GROUP BY ").append(groupAAlias);
+		
+		// SELECT
+		sqlBuilder.insert(0, "SELECT COUNT(*)," + groupingSelectQueryA + " ");
+		
+		List<Object[]> results = (List<Object[]>)em.createNativeQuery(sqlBuilder.toString()).getResultList();
+		return results;
+	}
+
+	private String buildGroupingSelectQuery(CasesStatisticField grouping, StatisticSubField subGrouping, String groupAlias) {
+		// grouping
+		StringBuilder groupingSelectPartBuilder = new StringBuilder();
+		switch(grouping) {
+		case PLACE: { 
+			switch(subGrouping) {
+			case REGION:
+				groupingSelectPartBuilder.append(Case.TABLE_NAME).append(".").append(Case.REGION).append("_id AS ").append(groupAlias)
+					.append(", MAX(").append(Region.TABLE_NAME).append(".").append(Region.NAME).append(")");
+				break;
+			case DISTRICT:
+				//TODO
+				break;
+			default:
+				throw new IllegalArgumentException(subGrouping.toString());
+			}
+		}
+		break;
+		// TODO
+		default:
+			throw new IllegalArgumentException(subGrouping.toString());
+		}
+		return groupingSelectPartBuilder.toString();
+	}
 
 	@LocalBean
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
 	}
+
 }

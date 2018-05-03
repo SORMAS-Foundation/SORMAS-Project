@@ -180,7 +180,7 @@ public class EventParticipantNewActivity extends AppCompatActivity {
         eventParticipantDao.saveAndSnapshot(eventParticipant);
 
         if (RetroProvider.isConnected()) {
-            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
+            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, this, new SyncCallback() {
                 @Override
                 public void call(boolean syncFailed, String syncFailedMessage) {
                     if (syncFailed) {

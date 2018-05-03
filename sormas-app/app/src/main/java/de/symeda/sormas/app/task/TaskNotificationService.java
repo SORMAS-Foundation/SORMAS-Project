@@ -79,7 +79,7 @@ public class TaskNotificationService extends Service {
             }
 
             if (RetroProvider.isConnected()) {
-                SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.ChangesOnly, this, new SyncCallback() {
+                SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.Changes, this, new SyncCallback() {
                     @Override
                     public void call(boolean syncFailed, String syncFailedMessage) {
                         if (syncFailed) {

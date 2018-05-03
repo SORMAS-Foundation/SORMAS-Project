@@ -192,7 +192,7 @@ public class PersonFacadeEjb implements PersonFacade {
 				// present condition changed -> update cases
 				
 				// CHECK Should we better use only dtos here and use CaseFacade.saveCase?
-				List<Case> personCases = caseService.findBy(new CaseCriteria().personEquals(new PersonReferenceDto(newPerson.getUuid())));
+				List<Case> personCases = caseService.findBy(new CaseCriteria().personEquals(new PersonReferenceDto(newPerson.getUuid())), null);
 
 				for (Case personCase : personCases) {
 					if (newPerson.getPresentCondition().isDeceased()) {

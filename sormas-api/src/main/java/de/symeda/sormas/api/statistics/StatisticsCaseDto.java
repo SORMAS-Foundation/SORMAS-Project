@@ -1,4 +1,4 @@
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.api.statistics;
 
 import java.io.Serializable;
 
