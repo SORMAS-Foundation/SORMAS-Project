@@ -42,7 +42,6 @@ import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
-import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.CauseOfDeath;
@@ -210,7 +209,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), caze.get(Case.CASE_CLASSIFICATION),
 				caze.get(Case.INVESTIGATION_STATUS), person.get(Person.PRESENT_CONDITION),
 				caze.get(Case.REPORT_DATE), region.get(Region.UUID), district.get(District.UUID), district.get(District.NAME), 
-				facility.get(Facility.UUID), surveillanceOfficer.get(User.UUID), caze.get(Case.OUTCOME));
+				facility.get(Facility.UUID), facility.get(Facility.NAME), caze.get(Case.HEALTH_FACILITY_DETAILS),
+				surveillanceOfficer.get(User.UUID), caze.get(Case.OUTCOME));
 
 		User user = userService.getByUuid(userUuid);		
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
@@ -375,7 +375,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		// If the case is new and the geo coordinates of the case's health facility are null, set its coordinates to the
 		// case's report coordinates, if available
 		Facility facility = newCase.getHealthFacility();
-		if (existingCase == null && facility != null && facility.getUuid() != FacilityDto.OTHER_FACILITY_UUID && facility.getUuid() != FacilityDto.NONE_FACILITY_UUID
+		if (existingCase == null && facility != null 
+				&& !FacilityHelper.isOtherOrNoneHealthFacility(facility.getUuid())
 				&& (facility.getLatitude() == null || facility.getLongitude() == null)) {
 			if (newCase.getReportLat() != null && newCase.getReportLon() != null) {
 				facility.setLatitude(newCase.getReportLat());

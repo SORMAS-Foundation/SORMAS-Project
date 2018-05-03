@@ -87,7 +87,8 @@ public class CaseGrid extends Grid {
         setColumns(CaseIndexDto.UUID, CaseIndexDto.EPID_NUMBER, DISEASE_SHORT, 
         		CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.OUTCOME, CaseIndexDto.INVESTIGATION_STATUS, 
         		CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME, 
-        		CaseIndexDto.DISTRICT_NAME, CaseIndexDto.REPORT_DATE, NUMBER_OF_PENDING_TASKS);
+        		CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME,
+        		CaseIndexDto.REPORT_DATE, NUMBER_OF_PENDING_TASKS);
 
         getColumn(CaseIndexDto.UUID).setRenderer(new UuidRenderer());
         getColumn(CaseIndexDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));

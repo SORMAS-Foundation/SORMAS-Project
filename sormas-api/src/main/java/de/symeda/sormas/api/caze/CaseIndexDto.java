@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.person.PresentCondition;
 
 public class CaseIndexDto implements Serializable {
@@ -26,6 +27,7 @@ public class CaseIndexDto implements Serializable {
 	public static final String DISTRICT_UUID = "districtUuid";
 	public static final String DISTRICT_NAME = "districtName";
 	public static final String HEALTH_FACILITY_UUID = "healthFacilityUuid";
+	public static final String HEALTH_FACILITY_NAME = "healthFacilityName";
 	public static final String SURVEILLANCE_OFFICER_UUID = "surveillanceOfficerUuid";
 	public static final String OUTCOME = "outcome";
 
@@ -43,13 +45,15 @@ public class CaseIndexDto implements Serializable {
 	private String districtUuid;
 	private String districtName;
 	private String healthFacilityUuid;
+	private String healthFacilityName;
 	private String surveillanceOfficerUuid;
 	private CaseOutcome outcome;
 	
 	public CaseIndexDto(String uuid, String epidNumber, String personFirstName, String personLastName, Disease disease,
 			String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 			PresentCondition presentCondition, Date reportDate, String regionUuid, 
-			String districtUuid, String districtName, String healthFacilityUuid, String surveillanceOfficerUuid, CaseOutcome outcome) {
+			String districtUuid, String districtName, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
+			String surveillanceOfficerUuid, CaseOutcome outcome) {
 		this.uuid = uuid;
 		this.epidNumber = epidNumber;
 		this.personFirstName = personFirstName;
@@ -64,6 +68,11 @@ public class CaseIndexDto implements Serializable {
 		this.districtUuid = districtUuid;
 		this.districtName = districtName;
 		this.healthFacilityUuid = healthFacilityUuid;
+		if (FacilityHelper.isOtherOrNoneHealthFacility(healthFacilityUuid)) {
+			this.healthFacilityName = healthFacilityDetails;
+		} else {
+			this.healthFacilityName = healthFacilityName;
+		}
 		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
 		this.outcome = outcome;
 	}
@@ -152,6 +161,14 @@ public class CaseIndexDto implements Serializable {
 	public void setHealthFacilityUuid(String healthFacilityUuid) {
 		this.healthFacilityUuid = healthFacilityUuid;
 	}
+	public String getHealthFacilityName() {
+		return healthFacilityName;
+	}
+
+	public void setHealthFacilityName(String healthFacilityName) {
+		this.healthFacilityName = healthFacilityName;
+	}
+
 	public CaseOutcome getOutcome() {
 		return outcome;
 	}

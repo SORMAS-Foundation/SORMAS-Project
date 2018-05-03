@@ -17,4 +17,9 @@ public class FacilityHelper {
 		}		
 		return result.toString();
 	}
+	
+	public static boolean isOtherOrNoneHealthFacility(String facilityUuid) {
+		return FacilityDto.OTHER_FACILITY_UUID.equals(facilityUuid)
+				|| FacilityDto.NONE_FACILITY_UUID.equals(facilityUuid);
+	}
 }

@@ -14,7 +14,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -88,7 +88,7 @@ public class CasePopupGrid extends Grid {
         getColumn(CaseDataDto.UUID).setRenderer(new UuidRenderer());
         getColumn(CaseDataDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getDateTimeFormat()));
         
-        if (facility == null || !facility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
+        if (facility == null || !FacilityHelper.isOtherOrNoneHealthFacility(facility.getUuid())) {
         	getColumn(CaseDataDto.HEALTH_FACILITY_DETAILS).setHidden(true);
         }
         
