@@ -84,6 +84,7 @@ public class TaskEditActivity extends AbstractSormasActivity {
                     Intent intent = new Intent(this, TasksActivity.class);
                     startActivity(intent);
                     finish();
+                    return;
                 }
 
                 DatabaseHelper.getTaskDao().markAsRead(initialEntity);
@@ -115,6 +116,7 @@ public class TaskEditActivity extends AbstractSormasActivity {
             Intent intent = new Intent(this, TasksActivity.class);
             startActivity(intent);
             finish();
+            return;
         }
 
         if (currentEntity.isUnreadOrChildUnread()) {

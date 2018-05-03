@@ -119,6 +119,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
                     Intent intent = new Intent(this, CasesActivity.class);
                     startActivity(intent);
                     finish();
+                    return;
                 }
 
                 if (toolbar != null) {
@@ -148,6 +149,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
             Intent intent = new Intent(this, CasesActivity.class);
             startActivity(intent);
             finish();
+            return;
         }
 
         if (currentEntity.isUnreadOrChildUnread()) {

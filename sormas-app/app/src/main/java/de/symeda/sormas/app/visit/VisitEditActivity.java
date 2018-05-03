@@ -78,6 +78,7 @@ public class VisitEditActivity extends AbstractEditTabActivity {
                 Intent intent = new Intent(this, CasesActivity.class);
                 startActivity(intent);
                 finish();
+                return;
             }
 
             DatabaseHelper.getVisitDao().markAsRead(initialEntity);
@@ -103,6 +104,7 @@ public class VisitEditActivity extends AbstractEditTabActivity {
                 Intent intent = new Intent(this, CasesActivity.class);
                 startActivity(intent);
                 finish();
+                return;
             }
 
             if (currentEntity.isUnreadOrChildUnread()) {

@@ -75,6 +75,7 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
                     Intent intent = new Intent(this, EventsActivity.class);
                     startActivity(intent);
                     finish();
+                    return;
                 }
 
                 DatabaseHelper.getEventParticipantDao().markAsRead(initialEntity);
@@ -94,6 +95,7 @@ public class EventParticipantEditActivity extends AbstractSormasActivity {
             Intent intent = new Intent(this, EventsActivity.class);
             startActivity(intent);
             finish();
+            return;
         }
 
         if (currentEntity.isUnreadOrChildUnread()) {

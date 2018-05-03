@@ -83,6 +83,7 @@ public class SampleEditActivity extends AbstractSormasActivity {
                 Intent intent = new Intent(this, SamplesActivity.class);
                 startActivity(intent);
                 finish();
+                return;
             }
 
             DatabaseHelper.getSampleDao().markAsRead(initialEntity);
@@ -104,6 +105,7 @@ public class SampleEditActivity extends AbstractSormasActivity {
                 Intent intent = new Intent(this, SamplesActivity.class);
                 startActivity(intent);
                 finish();
+                return;
             }
 
             if (currentEntity.isUnreadOrChildUnread()) {

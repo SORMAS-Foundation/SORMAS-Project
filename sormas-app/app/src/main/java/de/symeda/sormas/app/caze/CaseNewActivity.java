@@ -216,8 +216,8 @@ public class CaseNewActivity extends AppCompatActivity {
 
         Calendar calendar = Calendar.getInstance();
         String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-        caze.setEpidNumber(caze.getRegion().getEpidCode() != null ? caze.getRegion().getEpidCode() : ""
-                + "-" + caze.getDistrict().getEpidCode() != null ? caze.getDistrict().getEpidCode() : ""
+        caze.setEpidNumber((caze.getRegion().getEpidCode() != null ? caze.getRegion().getEpidCode() : "")
+                + "-" + (caze.getDistrict().getEpidCode() != null ? caze.getDistrict().getEpidCode() : "")
                 + "-" + year + "-");
 
         CaseDao caseDao = DatabaseHelper.getCaseDao();

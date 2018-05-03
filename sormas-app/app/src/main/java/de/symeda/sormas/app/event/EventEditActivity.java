@@ -86,6 +86,7 @@ public class EventEditActivity extends AbstractEditTabActivity {
                     Intent intent = new Intent(this, EventsActivity.class);
                     startActivity(intent);
                     finish();
+                    return;
                 }
 
                 DatabaseHelper.getEventDao().markAsRead(initialEntity);
@@ -112,6 +113,7 @@ public class EventEditActivity extends AbstractEditTabActivity {
                 Intent intent = new Intent(this, EventsActivity.class);
                 startActivity(intent);
                 finish();
+                return;
             }
 
             if (currentEntity.isUnreadOrChildUnread()) {
