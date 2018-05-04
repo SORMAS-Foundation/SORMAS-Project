@@ -90,7 +90,7 @@ public class DashboardView extends AbstractView {
 	private HorizontalLayout epiCurveAndMapLayout;
 	private MapComponent mapComponent;
 	private EpiCurveComponent epiCurveComponent;
-	private StatisticsComponent statisticsComponent;
+	private DashboardStatisticsComponent dashboardStatisticsComponent;
 
 	// Filters
 	private RegionReferenceDto region;
@@ -123,8 +123,8 @@ public class DashboardView extends AbstractView {
 		dashboardLayout.addComponent(createFilterBar());
 
 		// Add statistics
-		statisticsComponent = new StatisticsComponent(dashboardDataProvider);
-		dashboardLayout.addComponent(statisticsComponent);
+		dashboardStatisticsComponent = new DashboardStatisticsComponent(dashboardDataProvider);
+		dashboardLayout.addComponent(dashboardStatisticsComponent);
 
 		// Add epi curve and map
 		epiCurveAndMapLayout = createEpiCurveAndMapLayout();
@@ -343,7 +343,7 @@ public class DashboardView extends AbstractView {
 		layout.setExpandRatio(epiCurveComponent, 1);
 
 		epiCurveComponent.setExpandListener(e -> {
-			dashboardLayout.removeComponent(statisticsComponent);
+			dashboardLayout.removeComponent(dashboardStatisticsComponent);
 			epiCurveAndMapLayout.removeComponent(mapLayout);
 			DashboardView.this.setHeight(100, Unit.PERCENTAGE);
 			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
@@ -351,7 +351,7 @@ public class DashboardView extends AbstractView {
 		});
 
 		epiCurveComponent.setCollapseListener(e -> {
-			dashboardLayout.addComponent(statisticsComponent, 1);
+			dashboardLayout.addComponent(dashboardStatisticsComponent, 1);
 			epiCurveAndMapLayout.addComponent(mapLayout, 1);
 			epiCurveLayout.setHeight(400, Unit.PIXELS);
 			DashboardView.this.setHeightUndefined();
@@ -373,7 +373,7 @@ public class DashboardView extends AbstractView {
 		layout.setExpandRatio(mapComponent, 1);
 
 		mapComponent.setExpandListener(e -> {
-			dashboardLayout.removeComponent(statisticsComponent);
+			dashboardLayout.removeComponent(dashboardStatisticsComponent);
 			epiCurveAndMapLayout.removeComponent(epiCurveLayout);
 			DashboardView.this.setHeight(100, Unit.PERCENTAGE);
 			epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
@@ -381,7 +381,7 @@ public class DashboardView extends AbstractView {
 		});
 
 		mapComponent.setCollapseListener(e -> {
-			dashboardLayout.addComponent(statisticsComponent, 1);
+			dashboardLayout.addComponent(dashboardStatisticsComponent, 1);
 			epiCurveAndMapLayout.addComponent(epiCurveLayout, 0);
 			mapLayout.setHeight(400, Unit.PIXELS);
 			DashboardView.this.setHeightUndefined();
@@ -395,7 +395,7 @@ public class DashboardView extends AbstractView {
 		dashboardDataProvider.refreshData();
 
 		// Updates statistics
-		statisticsComponent.updateStatistics(disease);
+		dashboardStatisticsComponent.updateStatistics(disease);
 
 		// Update cases and contacts shown on the map
 		mapComponent.refreshMap();

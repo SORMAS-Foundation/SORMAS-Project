@@ -87,6 +87,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @import "views/dashboard.scss";
 @import "views/login.scss";
 @import "views/configuration.scss";
+@import "views/statistics.scss";
 
 @import "../valo/valo.scss";
 
@@ -132,6 +133,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-dashboard-view;
   @include sormas-login-view;
   @include sormas-configuration-view;
+  @include sormas-statistics-view;
   
   @include sormas-bootstrap-grid;
   @include sormas-deprecated;

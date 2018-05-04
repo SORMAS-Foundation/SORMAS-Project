@@ -1,31 +1,34 @@
 package de.symeda.sormas.ui.statistics;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
-import com.explicatis.ext_token_field.ExtTokenField;
-import com.explicatis.ext_token_field.Tokenizable;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.IntegerRange;
+import de.symeda.sormas.api.Month;
+import de.symeda.sormas.api.MonthOfYear;
+import de.symeda.sormas.api.QuarterOfYear;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.statistics.CasesStatisticField;
-import de.symeda.sormas.api.statistics.StatisticSubField;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
+import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.ui.statistics.StatisticsFilterElement.TokenizableValue;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 public class StatisticsView extends AbstractStatisticsView {
 
@@ -33,180 +36,269 @@ public class StatisticsView extends AbstractStatisticsView {
 
 	public static final String VIEW_NAME = "statistics";
 
-	private StatisticsCaseCriteria caseCriteria = new StatisticsCaseCriteria();
-	private Label resultLabel = new Label("", ContentMode.HTML);
-	
+	private VerticalLayout statisticsLayout;
+	private VerticalLayout filtersLayout;
+	private StatisticsDisplayedAttributesElement displayedAttributesElement;
+	private VerticalLayout resultsLayout;
+	private StatisticsCaseGrid statisticsCaseGrid;
+	private List<StatisticsFilterComponent> filterComponents = new ArrayList<>();
+
 	public StatisticsView() {
 		super(VIEW_NAME);
-		
-		VerticalLayout statisticsLayout = new VerticalLayout();
+		setWidth(100, Unit.PERCENTAGE);
+
+		statisticsLayout = new VerticalLayout();
 		statisticsLayout.setMargin(true);
 		statisticsLayout.setSpacing(true);
-		
-		// FILTERS
-		VerticalLayout filtersLayout = new VerticalLayout();
-		
-		// TODO very hacky -> move to specific filter component(s)
-		VerticalLayout filterLayout = new VerticalLayout();
-		ComboBox filterFieldSelect = new ComboBox("Attribute", Arrays.asList(CasesStatisticField.values()));
-		filterLayout.addComponent(filterFieldSelect);
-		filterFieldSelect.addValueChangeListener(new ValueChangeListener() {
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				CasesStatisticField casesStatisticField  = (CasesStatisticField)event.getProperty().getValue();
-				filterLayout.removeAllComponents();
-				filterLayout.addComponent(filterFieldSelect);
-				if (casesStatisticField != null) {
-					switch (casesStatisticField) {
-					case ONSET_TIME:
-					case RECEPTION_TIME:
-					case REPORT_TIME:
-					case PERSON_AGE_GROUP:
-					case PERSON_SEX:
-					case DISEASE:
-					case CLASSIFICATION:
-					case OUTCOME:
-						// TODO for time we need a second field to select the time period 
-						
-						ExtTokenField defaultTokenField = new ExtTokenField();
-						ComboBox addSelect = new ComboBox("Test", getFilterValues(casesStatisticField));
-						defaultTokenField.setInputField(addSelect);
-						addSelect.addValueChangeListener(new ValueChangeListener() {
-							@Override
-							public void valueChange(ValueChangeEvent event) {
-								TokenizableValue token = (TokenizableValue)event.getProperty().getValue();
-								if (token != null) {
-									defaultTokenField.addTokenizable(token);
-								}
-								
-							}
-						});
-						defaultTokenField.setWidth(300, Unit.PIXELS);
-						filterLayout.addComponent(defaultTokenField);
-						
-						defaultTokenField.addValueChangeListener(new ValueChangeListener() {
-							
-							@Override
-							public void valueChange(ValueChangeEvent event) {
-								List<TokenizableValue> tokens = (List<TokenizableValue>)event.getProperty().getValue();
-								switch (casesStatisticField) {
-								case ONSET_TIME:
-									caseCriteria.onsetYears(tokens.stream().map(token -> (Integer)token.getValue()).collect(Collectors.toList()));
-									break;
-									// TODO
-								}
-							}
-						});
-						break;
-						
-					case PLACE:
-						// TODO;
-						break;
-					}
-				}
-				
-			}
-		});
-		filtersLayout.addComponent(filterLayout);
-		
-		statisticsLayout.addComponent(filtersLayout);
-		
-		
-		NativeButton updateButton = new NativeButton("Update");
-		updateButton.addClickListener(new ClickListener() {
-			
-			@Override
-			public void buttonClick(ClickEvent event) {
-				refreshData();
-			}
-		});
-		statisticsLayout.addComponent(updateButton);
-		
-		statisticsLayout.addComponent(resultLabel);
+		statisticsLayout.setWidth(100, Unit.PERCENTAGE);
 
+		Label filtersLayoutTitle = new Label("Filters");
+		filtersLayoutTitle.setWidthUndefined();
+		CssStyles.style(filtersLayoutTitle, CssStyles.STATISTICS_TITLE);
+		statisticsLayout.addComponent(filtersLayoutTitle);
+		
+		filtersLayout = new VerticalLayout();
+		CssStyles.style(filtersLayout, CssStyles.STATISTICS_TITLE_BOX);
+		filtersLayout.setSpacing(true);
+		filtersLayout.setWidth(100, Unit.PERCENTAGE);
+		Label filtersInfoText = new Label("You can restrict the collected data by defining attribute filters. To add a new filter, click on the + icon at the bottom of\n" + 
+				"the list, and to specify the values you want to include, simply type the value in the appropriate filter bar.");
+		filtersLayout.addComponent(filtersInfoText);
+		filtersLayout.addComponent(createAddFilterButton());
+		statisticsLayout.addComponent(filtersLayout);
+
+		Label displayedAttributesTitle = new Label("Displayed Attributes");
+		displayedAttributesTitle.setWidthUndefined();
+		CssStyles.style(displayedAttributesTitle, CssStyles.STATISTICS_TITLE);
+		statisticsLayout.addComponent(displayedAttributesTitle);
+		
+		displayedAttributesElement = new StatisticsDisplayedAttributesElement();
+		CssStyles.style(displayedAttributesElement, CssStyles.STATISTICS_TITLE_BOX);
+		statisticsLayout.addComponent(displayedAttributesElement);
+
+		HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setSpacing(true);
+		{
+			Button generateButton = new Button("Generate statistics");
+			CssStyles.style(generateButton, ValoTheme.BUTTON_PRIMARY);
+			generateButton.addClickListener(e -> {
+				if (statisticsCaseGrid != null) {
+					statisticsLayout.removeComponent(statisticsCaseGrid);
+				}
+				generateStatistics();
+			});
+			buttonLayout.addComponent(generateButton);
+
+			Button resetFiltersButton = new Button("Reset filters");
+			resetFiltersButton.addClickListener(e -> {
+				filtersLayout.removeAllComponents();
+				filtersLayout.addComponent(createAddFilterButton());
+				statisticsLayout.removeComponent(statisticsCaseGrid);
+				statisticsCaseGrid = null;
+			});
+			buttonLayout.addComponent(resetFiltersButton);
+		}
+
+		statisticsLayout.addComponent(buttonLayout);
+
+		Label resultsLayoutTitle = new Label("Results");
+		resultsLayoutTitle.setWidthUndefined();
+		CssStyles.style(resultsLayoutTitle, CssStyles.STATISTICS_TITLE);
+		statisticsLayout.addComponent(resultsLayoutTitle);
+		
+		resultsLayout = new VerticalLayout();
+		resultsLayout.setWidth(100, Unit.PERCENTAGE);
+		CssStyles.style(resultsLayout, CssStyles.STATISTICS_TITLE_BOX);
+		statisticsLayout.addComponent(resultsLayout);
+		
 		addComponent(statisticsLayout);
 	}
-	
-	public void refreshData() {
 
-		// TODO grouping should be defined using a component
-		// TODO add second grouping
-		List<Object[]> resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria, CasesStatisticField.PLACE, StatisticSubField.REGION);
-		
-		String resultString = "";
-		for (Object[] resultDataRow : resultData) {
-			for (Object resultDataCell : resultDataRow) {
-				resultString += resultDataCell.toString() + ", ";
+	public void generateStatistics() {
+		StatisticsCaseCriteria caseCriteria = new StatisticsCaseCriteria();
+
+		for (StatisticsFilterComponent filterComponent : filterComponents) {
+			Map<Object, StatisticsFilterElement> filterElements = filterComponent.getFilterElements();
+			switch (filterComponent.getSelectedAttribute()) {
+			case SEX:
+				if (filterElements.get(StatisticsCaseAttribute.SEX).getSelectedValues() != null) {
+					List<Sex> sexes = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseAttribute.SEX).getSelectedValues()) {
+						sexes.add((Sex) tokenizableValue.getValue());
+					}
+					caseCriteria.sexes(sexes);
+				}
+				break;
+			case DISEASE:
+				if (filterElements.get(StatisticsCaseAttribute.DISEASE).getSelectedValues() != null) {
+					List<Disease> diseases = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseAttribute.DISEASE).getSelectedValues()) {
+						diseases.add((Disease) tokenizableValue.getValue());
+					}
+					caseCriteria.diseases(diseases);
+				}
+				break;
+			case CLASSIFICATION:
+				if (filterElements.get(StatisticsCaseAttribute.CLASSIFICATION).getSelectedValues() != null) {
+					List<CaseClassification> classifications = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseAttribute.CLASSIFICATION).getSelectedValues()) {
+						classifications.add((CaseClassification) tokenizableValue.getValue());
+					}
+					caseCriteria.classifications(classifications);
+				}
+				break;	
+			case OUTCOME:
+				if (filterElements.get(StatisticsCaseAttribute.OUTCOME).getSelectedValues() != null) {
+					List<CaseOutcome> outcomes = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseAttribute.OUTCOME).getSelectedValues()) {
+						outcomes.add((CaseOutcome) tokenizableValue.getValue());
+					}
+					caseCriteria.outcomes(outcomes);
+				}
+				break;
+			case AGE_INTERVAL_1_YEAR:
+			case AGE_INTERVAL_5_YEARS:
+			case AGE_INTERVAL_CHILDREN_COARSE:
+			case AGE_INTERVAL_CHILDREN_FINE:
+			case AGE_INTERVAL_CHILDREN_MEDIUM:
+				if (filterElements.get(filterComponent.getSelectedAttribute()).getSelectedValues() != null) {
+					List<IntegerRange> ageIntervals = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : filterElements.get(filterComponent.getSelectedAttribute()).getSelectedValues()) {
+						ageIntervals.add((IntegerRange) tokenizableValue.getValue());
+					}
+					caseCriteria.addAgeIntervals(ageIntervals);
+				}
+				break;
+			case REGION_DISTRICT:
+				if (filterElements.get(StatisticsCaseSubAttribute.REGION).getSelectedValues() != null) {
+					List<RegionReferenceDto> regions = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.REGION).getSelectedValues()) {
+						regions.add((RegionReferenceDto) tokenizableValue.getValue());
+					}
+					caseCriteria.regions(regions);
+				}
+				if (filterElements.get(StatisticsCaseSubAttribute.DISTRICT).getSelectedValues() != null) {
+					List<DistrictReferenceDto> districts = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.DISTRICT).getSelectedValues()) {
+						districts.add((DistrictReferenceDto) tokenizableValue.getValue());
+					}
+					caseCriteria.districts(districts);
+				}
+				break;
+			default:
+				switch (filterComponent.getSelectedSubAttribute()) {
+				case YEAR:
+					if (filterElements.get(StatisticsCaseSubAttribute.YEAR).getSelectedValues() != null) {
+						List<Integer> years = new ArrayList<>();
+						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.YEAR).getSelectedValues()) {
+							years.add((Integer) tokenizableValue.getValue());
+						}
+						caseCriteria.years(years, filterComponent.getSelectedAttribute());
+					}
+					break;
+				case QUARTER:
+					if (filterElements.get(StatisticsCaseSubAttribute.QUARTER).getSelectedValues() != null) {
+						List<Integer> quarters = new ArrayList<>();
+						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.QUARTER).getSelectedValues()) {
+							quarters.add((Integer) tokenizableValue.getValue());
+						}
+						caseCriteria.quarters(quarters, filterComponent.getSelectedAttribute());
+					}
+					break;
+				case MONTH:
+					if (filterElements.get(StatisticsCaseSubAttribute.MONTH).getSelectedValues() != null) {
+						List<Month> months = new ArrayList<>();
+						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.MONTH).getSelectedValues()) {
+							months.add((Month) tokenizableValue.getValue());
+						}
+						caseCriteria.months(months, filterComponent.getSelectedAttribute());
+					}
+					break;
+				case EPI_WEEK:
+					if (filterElements.get(StatisticsCaseSubAttribute.EPI_WEEK).getSelectedValues() != null) {
+						List<EpiWeek> epiWeeks = new ArrayList<>();
+						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.EPI_WEEK).getSelectedValues()) {
+							epiWeeks.add((EpiWeek) tokenizableValue.getValue());
+						}
+						caseCriteria.epiWeeks(epiWeeks, filterComponent.getSelectedAttribute());
+					}
+					break;
+				case QUARTER_OF_YEAR:
+					if (filterElements.get(StatisticsCaseSubAttribute.QUARTER_OF_YEAR).getSelectedValues() != null) {
+						List<QuarterOfYear> quartersOfYear = new ArrayList<>();
+						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.QUARTER_OF_YEAR).getSelectedValues()) {
+							quartersOfYear.add((QuarterOfYear) tokenizableValue.getValue());
+						}
+						caseCriteria.quartersOfYear(quartersOfYear, filterComponent.getSelectedAttribute());
+					}
+					break;
+				case MONTH_OF_YEAR:
+					if (filterElements.get(StatisticsCaseSubAttribute.MONTH_OF_YEAR).getSelectedValues() != null) {
+						List<MonthOfYear> monthsOfYear = new ArrayList<>();
+						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.MONTH_OF_YEAR).getSelectedValues()) {
+							monthsOfYear.add((MonthOfYear) tokenizableValue.getValue());
+						}
+						caseCriteria.monthsOfYear(monthsOfYear, filterComponent.getSelectedAttribute());
+					}
+					break;
+				case EPI_WEEK_OF_YEAR:
+					if (filterElements.get(StatisticsCaseSubAttribute.EPI_WEEK_OF_YEAR).getSelectedValues() != null) {
+						List<EpiWeek> epiWeeksOfYear = new ArrayList<>();
+						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.EPI_WEEK_OF_YEAR).getSelectedValues()) {
+							epiWeeksOfYear.add((EpiWeek) tokenizableValue.getValue());
+						}
+						caseCriteria.epiWeeksOfYear(epiWeeksOfYear, filterComponent.getSelectedAttribute());
+					}
+					break;
+				case DATE_RANGE:
+					caseCriteria.dateRange((Date) filterElements.get(StatisticsCaseSubAttribute.DATE_RANGE).getSelectedValues().get(0).getValue(), 
+							(Date) filterElements.get(StatisticsCaseSubAttribute.DATE_RANGE).getSelectedValues().get(1).getValue(), 
+							filterComponent.getSelectedAttribute());
+					break;
+				default:
+					throw new IllegalArgumentException(filterComponent.getSelectedSubAttribute().toString());
+				}
 			}
-			resultString += "<br>";
-		}
-		resultLabel.setValue(resultString);
-	}
-
-	
-	
-	public List<TokenizableValue> getFilterValues(CasesStatisticField casesStatisticField) {
-		
-		// TODO add StatisticsSubField
-		
-		switch(casesStatisticField) {
-		case ONSET_TIME:
-			return createTokens((Integer)2017, (Integer)2018);
-
-		case PERSON_SEX:
-			return createTokens((Object[])Sex.values());
-		case DISEASE:
-			return createTokens((Object[])Disease.values());
-		case CLASSIFICATION:
-			return createTokens((Object[])CaseClassification.values());
-		case OUTCOME:
-			return createTokens((Object[])CaseOutcome.values());
-			
-		default:
-			throw new IllegalArgumentException(this.toString()); 
-		}
-	}
-	
-	public List<TokenizableValue> createTokens(Object ...values) {
-		List<TokenizableValue> result = new ArrayList<TokenizableValue>(values.length);
-		for (int i=0; i<values.length; i++) {
-			result.add(new TokenizableValue(values[i], i));
-		}
-		return result;
-	}
-	
-	public static class TokenizableValue implements Tokenizable {
-
-		private final Object value;
-		private final long id;
-		
-		public TokenizableValue(Object value, long id) {
-			this.value = value;
-			this.id = id;
-		}
-		
-		public Object getValue() {
-			return value;
-		}
-		
-		@Override
-		public String getStringValue() {
-			return value.toString();
 		}
 
-		@Override
-		public long getIdentifier() {
-			return id;
-		}
-		
-		@Override
-		public String toString() {
-			return getStringValue();
-		}
+		List<Object[]> resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria, displayedAttributesElement.getSelectedRowsAttribute(), displayedAttributesElement.getSelectedRowsSubAttribute(), displayedAttributesElement.getSelectedColumnsAttribute(), displayedAttributesElement.getSelectedColumnsSubAttribute());
+
+		statisticsCaseGrid = new StatisticsCaseGrid(displayedAttributesElement.getSelectedRowsAttribute(), displayedAttributesElement.getSelectedRowsSubAttribute(), displayedAttributesElement.getSelectedColumnsAttribute(), displayedAttributesElement.getSelectedColumnsSubAttribute(), resultData);
+		resultsLayout.addComponent(statisticsCaseGrid);
 	}
 
-	@Override
-	public void enter(ViewChangeEvent event) {
-		super.enter(event);
+	private Button createAddFilterButton() {
+		Button addFilterButton = new Button(FontAwesome.PLUS);
+		CssStyles.style(addFilterButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+		addFilterButton.addClickListener(e -> {
+			filtersLayout.removeComponent(addFilterButton);
+			filtersLayout.addComponent(createFilterComponentLayout());
+			filtersLayout.addComponent(createAddFilterButton());
+		});
+
+		return addFilterButton;
 	}
+
+	private HorizontalLayout createFilterComponentLayout() {
+		HorizontalLayout filterComponentLayout = new HorizontalLayout();
+		filterComponentLayout.setSpacing(true);
+		filterComponentLayout.setWidth(100, Unit.PERCENTAGE);
+
+		StatisticsFilterComponent filterComponent = new StatisticsFilterComponent();
+
+		Button removeFilterButton = new Button(FontAwesome.TIMES);
+		CssStyles.style(removeFilterButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+		removeFilterButton.addClickListener(e -> {
+			filterComponents.remove(filterComponent);
+			filtersLayout.removeComponent(filterComponentLayout);
+		});
+
+		filterComponentLayout.addComponent(removeFilterButton);
+		filterComponents.add(filterComponent);
+		filterComponentLayout.addComponent(filterComponent);
+		filterComponentLayout.setExpandRatio(filterComponent, 1);
+
+		return filterComponentLayout;
+	}
+
 }

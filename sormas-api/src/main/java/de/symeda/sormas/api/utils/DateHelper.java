@@ -357,8 +357,11 @@ public final class DateHelper {
 	public static Calendar getEpiCalendar() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setFirstDayOfWeek(Calendar.MONDAY);
+		// Makes sure that the 1st of January is always in week 1
 		calendar.setMinimalDaysInFirstWeek(1);
-		calendar.clear(); // this is necessary, because in some old java versions there a problems updating the fields based on the date
+		// This is necessary because some old Java versions have problems 
+		// updating the fields based on the date
+		calendar.clear(); 
 		return calendar;
 	}
 	
@@ -499,10 +502,14 @@ public final class DateHelper {
 	}
 	
 	/**
+	 * Returns the maximum possible number of EpiWeeks in a year
+	 */
+	public static int getMaximumEpiWeekNumber() {
+		return 53;
+	}
+	
+	/**
 	 * Creates a list of EpiWeeks for the whole given year.
-	 * 
-	 * @param year
-	 * @return
 	 */
 	public static List<EpiWeek> createEpiWeekList(int year) {
         Calendar calendar = getEpiCalendar();
@@ -516,10 +523,6 @@ public final class DateHelper {
 	
 	/**
 	 * Creates a list of EpiWeeks, starting with the given week in the given year, going back exactly one year.
-	 * 
-	 * @param year
-	 * @param week
-	 * @return
 	 */
 	public static List<EpiWeek> createEpiWeekList(int year, int week) {
         Calendar calendar = getEpiCalendar();

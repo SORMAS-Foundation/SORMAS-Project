@@ -8,12 +8,12 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
-public class StatisticsPercentageElement extends VerticalLayout {
+public class DashboardStatisticsPercentageElement extends VerticalLayout {
 	
 	private SvgBarElement svgBarElement;
 	private Label percentageLabel;
 	
-	public StatisticsPercentageElement(String caption, String svgFillClass) {
+	public DashboardStatisticsPercentageElement(String caption, String svgFillClass) {
 		HorizontalLayout captionAndValueLayout = new HorizontalLayout();
 		captionAndValueLayout.setWidth(100, Unit.PERCENTAGE);
 		

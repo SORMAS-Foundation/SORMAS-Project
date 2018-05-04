@@ -10,13 +10,13 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
-public class StatisticsGrowthElement extends VerticalLayout {
+public class DashboardStatisticsGrowthElement extends VerticalLayout {
 	
 	private Label countLabel;
 	private Label growthLabel;
 	private Label percentageLabel;
 
-	public StatisticsGrowthElement(String caption, String captionClass, Alignment alignment) {
+	public DashboardStatisticsGrowthElement(String caption, String captionClass, Alignment alignment) {
 		setDefaultComponentAlignment(alignment);
 		CssStyles.style(this, CssStyles.VSPACE_3);
 		

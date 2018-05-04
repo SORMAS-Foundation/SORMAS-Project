@@ -2,12 +2,14 @@ package de.symeda.sormas.backend.caze;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -29,7 +31,12 @@ import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.IntegerRange;
+import de.symeda.sormas.api.Month;
+import de.symeda.sormas.api.MonthOfYear;
 import de.symeda.sormas.api.PlagueType;
+import de.symeda.sormas.api.QuarterOfYear;
+import de.symeda.sormas.api.QuarterOfYear;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -48,15 +55,15 @@ import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.statistics.CasesStatisticField;
-import de.symeda.sormas.api.statistics.StatisticSubField;
+import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
-import de.symeda.sormas.api.statistics.StatisticsCaseDto;
+import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -278,15 +285,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<StatisticsCaseDto> getCasesForStatistics(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
-		Region region = regionService.getByReferenceDto(regionRef);
-		District district = districtService.getByReferenceDto(districtRef);
-		User user = userService.getByUuid(userUuid);
-
-		return caseService.getCasesForStatistics(region, district, disease, from, to, user);
-	}
-
-	@Override
 	public CaseDataDto getLatestCaseByPerson(String personUuid, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		Person person = personService.getByUuid(personUuid);
@@ -359,7 +357,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caze.getHealthFacility().getRegion() != null && !caze.getRegion().equals(caze.getHealthFacility().getRegion())) {
 			throw new ValidationRuntimeException("Could not find a database entry for the specified health facility in the specified region");
 		}
-		
+
 		caseService.ensurePersisted(caze);
 
 		onCaseChanged(existingCaseDto, caze);
@@ -394,7 +392,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		updateInvestigationByStatus(existingCase, newCase);
-		
+
 		updatePersonAndCaseByOutcome(existingCase, newCase);
 
 		// Send an email to all responsible supervisors when the case classification has changed
@@ -451,7 +449,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			} else if (newCase.getOutcomeDate() == null) {
 				newCase.setOutcomeDate(new Date());
 			}
-			
+
 			if (newCase.getOutcome() == CaseOutcome.DECEASED) {
 				if (newCase.getPerson().getPresentCondition() != PresentCondition.DEAD
 						&& newCase.getPerson().getPresentCondition() != PresentCondition.BURIED) {
@@ -567,7 +565,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			target.setReportDate(new Date());
 			// TODO set target.setReportingUser(user); from sesssion context
 		}
-		
+
 		DtoHelper.validateDto(source, target);
 
 		target.setDisease(source.getDisease());
@@ -920,8 +918,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		return resultMap;
 	}
 
-
-
 	@Override
 	public List<Pair<DistrictDto, BigDecimal>> getCaseMeasurePerDistrict(Date fromDate, Date toDate, Disease disease, CaseMeasure caseMeasure) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -995,84 +991,558 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 	}
-	
-	@Override
-	public List<Object[]> queryCaseCount(StatisticsCaseCriteria caseCriteria, CasesStatisticField groupingA, StatisticSubField subGroupingA) {
 
-		
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Object[]> queryCaseCount(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA, StatisticsCaseSubAttribute subGroupingA,
+			StatisticsCaseAttribute groupingB, StatisticsCaseSubAttribute subGroupingB) {
+
+		// Join tables that cases are grouped by or that are used in the caseCriteria
+
 		StringBuilder sqlBuilder = new StringBuilder();
 		sqlBuilder
-			.append("FROM ").append(Case.TABLE_NAME)
-			.append(" LEFT JOIN ").append(Symptoms.TABLE_NAME)
-			.append(" ON ").append(Case.TABLE_NAME).append(".").append(Case.SYMPTOMS).append("_id")
-			.append(" = ").append(Symptoms.TABLE_NAME).append(".").append(Symptoms.ID)
-			;
+		.append("FROM ").append(Case.TABLE_NAME)
+		.append(" LEFT JOIN ").append(Symptoms.TABLE_NAME)
+		.append(" ON ").append(Case.TABLE_NAME).append(".").append(Case.SYMPTOMS).append("_id")
+		.append(" = ").append(Symptoms.TABLE_NAME).append(".").append(Symptoms.ID)
+		;
 
-		if (groupingA == CasesStatisticField.PLACE) {
-			if (subGroupingA == StatisticSubField.REGION) {
-				sqlBuilder
-				.append(" LEFT JOIN ").append(Region.TABLE_NAME)
-				.append(" ON ").append(Case.TABLE_NAME).append(".").append(Case.REGION).append("_id")
-				.append(" = ").append(Region.TABLE_NAME).append(".").append(Region.ID);
-			}
+		if (subGroupingA == StatisticsCaseSubAttribute.REGION || subGroupingB == StatisticsCaseSubAttribute.REGION 
+				|| caseCriteria.getRegions() != null) {
+			sqlBuilder
+			.append(" LEFT JOIN ").append(Region.TABLE_NAME)
+			.append(" ON ").append(Case.TABLE_NAME).append(".").append(Case.REGION).append("_id")
+			.append(" = ").append(Region.TABLE_NAME).append(".").append(Region.ID);
 		}
-		
+
+		if (subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT
+				|| caseCriteria.getDistricts() != null) {
+			sqlBuilder
+			.append(" LEFT JOIN ").append(District.TABLE_NAME)
+			.append(" ON ").append(Case.TABLE_NAME).append(".").append(Case.DISTRICT).append("_id")
+			.append(" = ").append(District.TABLE_NAME).append(".").append(District.ID);
+		}
+
+		if (groupingA == StatisticsCaseAttribute.SEX || groupingB == StatisticsCaseAttribute.SEX || groupingA == StatisticsCaseAttribute.AGE_INTERVAL_1_YEAR
+				|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_1_YEAR || groupingA == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS
+				|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS || groupingA == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_COARSE
+				|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_COARSE || groupingA == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_FINE
+				|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_FINE || groupingA == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_MEDIUM
+				|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_MEDIUM || caseCriteria.getSexes() != null || caseCriteria.getAgeIntervals() != null) {
+			sqlBuilder
+			.append(" LEFT JOIN ").append(Person.TABLE_NAME)
+			.append(" ON ").append(Case.TABLE_NAME).append(".").append(Case.PERSON).append("_id")
+			.append(" = ").append(Person.TABLE_NAME).append(".").append(Person.ID);
+		}
+
+		// Build filter based on caseCriteria
+
 		StringBuilder filterBuilder = new StringBuilder();
-		
+
 		if (caseCriteria.getOnsetYears() != null && !caseCriteria.getOnsetYears().isEmpty()) {
-			
+			extendFilterBuilderWithDateElement(filterBuilder, "YEAR", Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
+			for (Object onsetYear : caseCriteria.getOnsetYears()) {
+				filterBuilder.append(onsetYear).append(",");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		if (caseCriteria.getOnsetQuarters() != null && !caseCriteria.getOnsetQuarters().isEmpty()) {
+			extendFilterBuilderWithDateElement(filterBuilder, "QUARTER", Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
+			for (Object onsetQuarter : caseCriteria.getOnsetQuarters()) {
+				filterBuilder.append(onsetQuarter).append(",");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		if (caseCriteria.getOnsetMonths() != null && !caseCriteria.getOnsetMonths().isEmpty()) {
+			extendFilterBuilderWithDateElement(filterBuilder, "MONTH", Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
+			for (Month onsetMonth : caseCriteria.getOnsetMonths()) {
+				filterBuilder.append(onsetMonth.ordinal() + 1).append(",");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		//		if (caseCriteria.getOnsetEpiWeeks() != null && !caseCriteria.getOnsetEpiWeeks().isEmpty()) {
+		//			if (filterBuilder.length() > 0) {
+		//				filterBuilder.append(" AND ");
+		//			}
+		//			
+		//			filterBuilder.append("EXTRACT()
+		//		}
+
+		if (caseCriteria.getOnsetQuartersOfYear() != null && !caseCriteria.getOnsetQuartersOfYear().isEmpty()) {
+			extendFilterBuilderWithQuarterOfYear(filterBuilder, Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
+			for (QuarterOfYear quarterOfYear : caseCriteria.getOnsetQuartersOfYear()) {
+				filterBuilder.append(quarterOfYear.getYear() * 10 + quarterOfYear.getQuarter()).append(",");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		if (caseCriteria.getOnsetMonthsOfYear() != null && !caseCriteria.getOnsetMonthsOfYear().isEmpty()) {
+			extendFilterBuilderWithMonthOfYear(filterBuilder, Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
+			for (MonthOfYear monthOfYear : caseCriteria.getOnsetMonthsOfYear()) {
+				filterBuilder.append(monthOfYear.getYear() * 100 + monthOfYear.getMonth().ordinal()).append(",");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		// TODO EpiWeekOfYear
+		
+		if (caseCriteria.getOnsetDateFrom() != null && caseCriteria.getOnsetDateTo() != null) {
+			extendFilterBuilderWithDate(filterBuilder, caseCriteria.getOnsetDateFrom(), caseCriteria.getOnsetDateTo(), Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
+		}
+
+		if (caseCriteria.getReceptionYears() != null && !caseCriteria.getReceptionYears().isEmpty()) {
+			extendFilterBuilderWithDateElement(filterBuilder, "YEAR", Case.TABLE_NAME, Case.RECEPTION_DATE);
+			for (Object receptionYear : caseCriteria.getReceptionYears()) {
+				filterBuilder.append(receptionYear).append(",");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		if (caseCriteria.getReceptionQuarters() != null && !caseCriteria.getReceptionQuarters().isEmpty()) {
+			extendFilterBuilderWithDateElement(filterBuilder, "QUARTER", Case.TABLE_NAME, Case.RECEPTION_DATE);
+			for (Object receptionQuarter : caseCriteria.getReceptionQuarters()) {
+				filterBuilder.append(receptionQuarter).append(",");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		if (caseCriteria.getReceptionMonths() != null && !caseCriteria.getReceptionMonths().isEmpty()) {
+			extendFilterBuilderWithDateElement(filterBuilder, "MONTH", Case.TABLE_NAME, Case.RECEPTION_DATE);
+			for (Month receptionMonth : caseCriteria.getReceptionMonths()) {
+				filterBuilder.append(receptionMonth.ordinal() + 1).append(",");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		//		if (caseCriteria.getOnsetEpiWeeks() != null && !caseCriteria.getOnsetEpiWeeks().isEmpty()) {
+		//			if (filterBuilder.length() > 0) {
+		//				filterBuilder.append(" AND ");
+		//			}
+		//			
+		//			filterBuilder.append("EXTRACT()
+		//		}
+
+		if (caseCriteria.getReceptionQuartersOfYear() != null && !caseCriteria.getReceptionQuartersOfYear().isEmpty()) {
+			extendFilterBuilderWithQuarterOfYear(filterBuilder,Case.TABLE_NAME, Case.RECEPTION_DATE);
+			for (QuarterOfYear quarterOfYear : caseCriteria.getReceptionQuartersOfYear()) {
+				filterBuilder.append(quarterOfYear.getYear() * 10 + quarterOfYear.getQuarter()).append(",");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		if (caseCriteria.getReceptionMonthsOfYear() != null && !caseCriteria.getReceptionMonthsOfYear().isEmpty()) {
+			extendFilterBuilderWithMonthOfYear(filterBuilder, Case.TABLE_NAME, Case.RECEPTION_DATE);
+			for (MonthOfYear monthOfYear : caseCriteria.getReceptionMonthsOfYear()) {
+				filterBuilder.append(monthOfYear.getYear() * 100 + monthOfYear.getMonth().ordinal()).append(",");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		// TODO EpiWeekOfYear
+		
+		if (caseCriteria.getReceptionDateFrom() != null && caseCriteria.getReceptionDateTo() != null) {
+			extendFilterBuilderWithDate(filterBuilder, caseCriteria.getReceptionDateFrom(), caseCriteria.getReceptionDateTo(), Case.TABLE_NAME, Case.RECEPTION_DATE);
+		}
+
+		if (caseCriteria.getReportYears() != null && !caseCriteria.getReportYears().isEmpty()) {
+			extendFilterBuilderWithDateElement(filterBuilder, "YEAR", Case.TABLE_NAME, Case.REPORT_DATE);
+			for (Object reportYear : caseCriteria.getReportYears()) {
+				filterBuilder.append(reportYear).append(",");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		if (caseCriteria.getReportQuarters() != null && !caseCriteria.getReportQuarters().isEmpty()) {
+			extendFilterBuilderWithDateElement(filterBuilder, "QUARTER", Case.TABLE_NAME, Case.REPORT_DATE);
+			for (Object reportQuarter : caseCriteria.getReportQuarters()) {
+				filterBuilder.append(reportQuarter).append(",");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		if (caseCriteria.getReportMonths() != null && !caseCriteria.getReportMonths().isEmpty()) {
+			extendFilterBuilderWithDateElement(filterBuilder, "MONTH", Case.TABLE_NAME, Case.REPORT_DATE);
+			for (Month reportMonth : caseCriteria.getReportMonths()) {
+				filterBuilder.append(reportMonth.ordinal() + 1).append(",");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		//		if (caseCriteria.getOnsetEpiWeeks() != null && !caseCriteria.getOnsetEpiWeeks().isEmpty()) {
+		//			if (filterBuilder.length() > 0) {
+		//				filterBuilder.append(" AND ");
+		//			}
+		//			
+		//			filterBuilder.append("EXTRACT()
+		//		}
+
+		if (caseCriteria.getReportQuartersOfYear() != null && !caseCriteria.getReportQuartersOfYear().isEmpty()) {
+			extendFilterBuilderWithQuarterOfYear(filterBuilder, Case.TABLE_NAME, Case.REPORT_DATE);
+			for (QuarterOfYear quarterOfYear : caseCriteria.getReportQuartersOfYear()) {
+				filterBuilder.append(quarterOfYear.getYear() * 10 + quarterOfYear.getQuarter()).append(",");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		if (caseCriteria.getReportMonthsOfYear() != null && !caseCriteria.getReportMonthsOfYear().isEmpty()) {
+			extendFilterBuilderWithMonthOfYear(filterBuilder, Case.TABLE_NAME, Case.REPORT_DATE);
+			for (MonthOfYear monthOfYear : caseCriteria.getReportMonthsOfYear()) {
+				filterBuilder.append(monthOfYear.getYear() * 100 + monthOfYear.getMonth().ordinal()).append(",");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		// TODO EpiWeekOfYear
+		
+		if (caseCriteria.getReportDateFrom() != null && caseCriteria.getReportDateTo() != null) {
+			extendFilterBuilderWithDate(filterBuilder, caseCriteria.getReportDateFrom(), caseCriteria.getReportDateTo(), Case.TABLE_NAME, Case.REPORT_DATE);
+		}
+
+		if (caseCriteria.getSexes() != null && !caseCriteria.getSexes().isEmpty()) {
+			extendFilterBuilderWithSimpleValue(filterBuilder, Person.TABLE_NAME, Person.SEX);
+			for (Sex sex : caseCriteria.getSexes()) {
+				filterBuilder.append("'" + sex.toString() + "',");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		if (caseCriteria.getAgeIntervals() != null && !caseCriteria.getAgeIntervals().isEmpty()) {
 			if (filterBuilder.length() > 0) {
 				filterBuilder.append(" AND ");
 			}
 
-			filterBuilder.append("EXTRACT(YEAR FROM ").append(Symptoms.TABLE_NAME).append(".").append(Symptoms.ONSET_DATE).append(")")
-					.append(" IN (");
-			for (Object onsetYear : caseCriteria.getOnsetYears()) {
-				filterBuilder.append(onsetYear).append(",");
+			filterBuilder.append(Person.TABLE_NAME).append(".").append(Person.APPROXIMATE_AGE).append(" CASE WHEN ").append(Person.TABLE_NAME).append(".").append(Person.APPROXIMATE_AGE_TYPE).append(" = 'MONTH' THEN 0").append(" IN (");
+			//			boolean includeZeroYears = false;
+			for (IntegerRange range : caseCriteria.getAgeIntervals()) {
+				//				if (includeZeroYears == false && (range.getFrom() == 0 || range.getTo() == 0)) {
+				//					includeZeroYears = true;
+				//				}
+
+				for (int age : IntStream.rangeClosed(range.getFrom(), range.getTo()).toArray()) {
+					filterBuilder.append(age + ",");
+				}
 			}
-			filterBuilder.deleteCharAt(filterBuilder.length()-1);
-			filterBuilder.append(")");
+			finalizeFilterBuilderSegment(filterBuilder);
+
+			//			if (includeZeroYears) {
+			//				filterBuilder.append(" OR ");
+			//				
+			//				filterBuilder.append(Person.TABLE_NAME).append(".").append(Person.APPROXIMATE_AGE_TYPE).append(" = 'MONTHS' AND ")
+			//				.append(Person.TABLE_NAME).append(".").append(Person.APPROXIMATE_AGE).append(" = 0");
+			//			}
 		}
-		
+
+		if (caseCriteria.getDiseases() != null && !caseCriteria.getDiseases().isEmpty()) {
+			extendFilterBuilderWithSimpleValue(filterBuilder, Case.TABLE_NAME, Case.DISEASE);
+			for (Disease disease : caseCriteria.getDiseases()) {
+				filterBuilder.append("'" + disease.toShortString() + "',");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		if (caseCriteria.getClassifications() != null && !caseCriteria.getClassifications().isEmpty()) {
+			extendFilterBuilderWithSimpleValue(filterBuilder, Case.TABLE_NAME, Case.CASE_CLASSIFICATION);
+			for (CaseClassification classification : caseCriteria.getClassifications()) {
+				filterBuilder.append("'" + classification.toString() + "',");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		if (caseCriteria.getOutcomes() != null && !caseCriteria.getOutcomes().isEmpty()) {
+			extendFilterBuilderWithSimpleValue(filterBuilder, Case.TABLE_NAME, Case.OUTCOME);
+			for (CaseOutcome outcome : caseCriteria.getOutcomes()) {
+				filterBuilder.append("'" + outcome.toString() + "',");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		if (caseCriteria.getRegions() != null && !caseCriteria.getRegions().isEmpty()) {
+			extendFilterBuilderWithSimpleValue(filterBuilder, Region.TABLE_NAME, Region.UUID);
+			for (RegionReferenceDto region : caseCriteria.getRegions()) {
+				filterBuilder.append("'" + region.getUuid() + "',");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		if (caseCriteria.getDistricts() != null && !caseCriteria.getDistricts().isEmpty()) {
+			extendFilterBuilderWithSimpleValue(filterBuilder, District.TABLE_NAME, District.UUID);
+			for (DistrictReferenceDto district : caseCriteria.getDistricts()) {
+				filterBuilder.append("'" + district.getUuid() + "',");
+			}
+			finalizeFilterBuilderSegment(filterBuilder);
+		}
+
+		// Apply filter
+
 		if (filterBuilder.length() > 0) {
 			sqlBuilder.append(" WHERE ").append(filterBuilder);
 		}
-		
+
 		String groupAAlias = "groupA";
 		String groupingSelectQueryA = buildGroupingSelectQuery(groupingA, subGroupingA, groupAAlias);
-		
-		sqlBuilder.append(" GROUP BY ").append(groupAAlias);
-		
-		// SELECT
-		sqlBuilder.insert(0, "SELECT COUNT(*)," + groupingSelectQueryA + " ");
-		
-		List<Object[]> results = (List<Object[]>)em.createNativeQuery(sqlBuilder.toString()).getResultList();
+
+		String groupBAlias = "groupB";
+		String groupingSelectQueryB = buildGroupingSelectQuery(groupingB, subGroupingB, groupBAlias);
+
+		sqlBuilder.append(" GROUP BY ")
+			.append(groupAAlias)
+			.append(",")
+			.append(groupBAlias);
+		sqlBuilder.append(" ORDER BY ")
+			.append(groupAAlias)
+			.append(" NULLS LAST,")
+			.append(groupBAlias)
+			.append(" NULLS LAST");
+
+		// Select
+
+		sqlBuilder.insert(0, "SELECT COUNT(*)," + groupingSelectQueryA + ", " + groupingSelectQueryB + " ");
+
+		List<Object[]> results = (List<Object[]>) em.createNativeQuery(sqlBuilder.toString()).getResultList();
 		return results;
 	}
 
-	private String buildGroupingSelectQuery(CasesStatisticField grouping, StatisticSubField subGrouping, String groupAlias) {
-		// grouping
+	private StringBuilder extendFilterBuilderWithSimpleValue(StringBuilder filterBuilder, String tableName, String fieldName) {
+		if (filterBuilder.length() > 0) {
+			filterBuilder.append(" AND ");
+		}
+
+		filterBuilder.append(tableName).append(".").append(fieldName).append(" IN (");
+
+		return filterBuilder;
+	}
+	
+	private StringBuilder extendFilterBuilderWithDate(StringBuilder filterBuilder, Date from, Date to, String tableName, String fieldName) {
+		if (filterBuilder.length() > 0) {
+			filterBuilder.append(" AND ");
+		}
+		
+		filterBuilder.append(tableName).append(".").append(fieldName).append(" BETWEEN '").append(from).append("' AND '").append(to).append("'");
+		
+		return filterBuilder;
+	}
+
+	private StringBuilder extendFilterBuilderWithDateElement(StringBuilder filterBuilder, String dateElementToExtract, String tableName, String fieldName) {
+		if (filterBuilder.length() > 0) {
+			filterBuilder.append(" AND ");
+		}
+
+		filterBuilder.append("(EXTRACT(" + dateElementToExtract + " FROM ").append(tableName).append(".").append(fieldName).append(")::integer)")
+		.append(" IN (");
+
+		return filterBuilder;
+	}
+
+	private StringBuilder extendFilterBuilderWithQuarterOfYear(StringBuilder filterBuilder, String tableName, String fieldName) {
+		if (filterBuilder.length() > 0) {
+			filterBuilder.append(" AND ");
+		}
+
+		filterBuilder.append("((EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(")")
+		.append(" * 10)::integer) + (EXTRACT(QUARTER FROM ").append(tableName).append(".").append(fieldName).append(")::integer)")
+		.append(" IN (");
+
+		return filterBuilder;
+	}
+
+	private StringBuilder extendFilterBuilderWithMonthOfYear(StringBuilder filterBuilder, String tableName, String fieldName) {
+		if (filterBuilder.length() > 0) {
+			filterBuilder.append(" AND ");
+		}
+
+		filterBuilder.append("((EXTRACT(YEAR FROM ").append(tableName).append(":").append(fieldName).append(")")
+		.append(" * 100)::integer) + (EXTRACT(MONTH FROM ").append(tableName).append(".").append(fieldName).append(")::integer)")
+		.append(" IN (");
+
+		return filterBuilder;
+	}
+
+	private StringBuilder finalizeFilterBuilderSegment(StringBuilder filterBuilder) {
+		filterBuilder.deleteCharAt(filterBuilder.length() - 1);
+		filterBuilder.append(")");
+
+		return filterBuilder;
+	}
+
+	@Override
+	public Date getOldestCaseOnsetDate() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Timestamp> cq = cb.createQuery(Timestamp.class);
+		Root<Case> from = cq.from(Case.class);
+		Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS, JoinType.LEFT);
+
+		cq.select(cb.least(symptoms.get(Symptoms.ONSET_DATE)));
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	public Date getOldestCaseReceptionDate() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Timestamp> cq = cb.createQuery(Timestamp.class);
+		Root<Case> from = cq.from(Case.class);
+
+		cq.select(cb.least(from.get(Case.RECEPTION_DATE)));
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	public Date getOldestCaseReportDate() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Timestamp> cq = cb.createQuery(Timestamp.class);
+		Root<Case> from = cq.from(Case.class);
+
+		cq.select(cb.least(from.get(Case.REPORT_DATE)));
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	private String buildGroupingSelectQuery(StatisticsCaseAttribute grouping, StatisticsCaseSubAttribute subGrouping, String groupAlias) {
 		StringBuilder groupingSelectPartBuilder = new StringBuilder();
 		switch(grouping) {
-		case PLACE: { 
+		case SEX:
+			groupingSelectPartBuilder.append(Person.TABLE_NAME).append(".").append(Person.SEX).append(" AS ").append(groupAlias);
+			break;
+		case DISEASE:
+			groupingSelectPartBuilder.append(Case.TABLE_NAME).append(".").append(Case.DISEASE).append(" AS ").append(groupAlias);
+			break;
+		case CLASSIFICATION:
+			groupingSelectPartBuilder.append(Case.TABLE_NAME).append(".").append(Case.CASE_CLASSIFICATION).append(" AS ").append(groupAlias);
+			break;
+		case OUTCOME:
+			groupingSelectPartBuilder.append(Case.TABLE_NAME).append(".").append(Case.OUTCOME).append(" AS ").append(groupAlias);
+			break;
+		case REGION_DISTRICT: { 
 			switch(subGrouping) {
 			case REGION:
-				groupingSelectPartBuilder.append(Case.TABLE_NAME).append(".").append(Case.REGION).append("_id AS ").append(groupAlias)
-					.append(", MAX(").append(Region.TABLE_NAME).append(".").append(Region.NAME).append(")");
+				groupingSelectPartBuilder.append(Case.TABLE_NAME).append(".").append(Case.REGION).append("_id AS ").append(groupAlias);
 				break;
 			case DISTRICT:
-				//TODO
+				groupingSelectPartBuilder.append(Case.TABLE_NAME).append(".").append(Case.DISTRICT).append("_id AS ").append(groupAlias);
 				break;
 			default:
 				throw new IllegalArgumentException(subGrouping.toString());
 			}
+			break;
 		}
-		break;
-		// TODO
+		case AGE_INTERVAL_1_YEAR:
+		case AGE_INTERVAL_5_YEARS:
+		case AGE_INTERVAL_CHILDREN_COARSE:
+		case AGE_INTERVAL_CHILDREN_FINE:
+		case AGE_INTERVAL_CHILDREN_MEDIUM:
+			groupingSelectPartBuilder.append(Person.TABLE_NAME).append(".").append(Person.APPROXIMATE_AGE).append(" CASE WHEN ")
+			.append(Person.TABLE_NAME).append(".").append(Person.APPROXIMATE_AGE_TYPE).append(" = 'MONTH' THEN 0").append(" AS ").append(groupAlias);
+			break;
+		case ONSET_TIME:
+			switch (subGrouping) {
+			case YEAR:
+				extendGroupingBuilderWithDate(groupingSelectPartBuilder, "YEAR", Symptoms.TABLE_NAME, Symptoms.ONSET_DATE, groupAlias);
+				break;
+			case QUARTER:
+				extendGroupingBuilderWithDate(groupingSelectPartBuilder, "QUARTER", Symptoms.TABLE_NAME, Symptoms.ONSET_DATE, groupAlias);
+				break;
+			case MONTH:
+				extendGroupingBuilderWithDate(groupingSelectPartBuilder, "MONTH", Symptoms.TABLE_NAME, Symptoms.ONSET_DATE, groupAlias);
+				break;
+			case EPI_WEEK:
+				// TODO implement
+				break;
+			case QUARTER_OF_YEAR:
+				extendGroupingBuilderWithQuarterOfYear(groupingSelectPartBuilder, Symptoms.TABLE_NAME, Symptoms.ONSET_DATE, groupAlias);
+				break;
+			case MONTH_OF_YEAR:
+				extendGroupingBuilderWithMonthOfYear(groupingSelectPartBuilder, Symptoms.TABLE_NAME, Symptoms.ONSET_DATE, groupAlias);
+				break;
+			case EPI_WEEK_OF_YEAR:
+				// TODO implement
+				break;
+			case DATE_RANGE:
+				// TODO implement
+				break;
+			default:
+				throw new IllegalArgumentException(subGrouping.toString());
+			}
+			break;
+		case RECEPTION_TIME:
+			switch (subGrouping) {
+			case YEAR:
+				extendGroupingBuilderWithDate(groupingSelectPartBuilder, "YEAR", Case.TABLE_NAME, Case.RECEPTION_DATE, groupAlias);
+				break;
+			case QUARTER:
+				extendGroupingBuilderWithDate(groupingSelectPartBuilder, "QUARTER", Case.TABLE_NAME, Case.RECEPTION_DATE, groupAlias);
+				break;
+			case MONTH:
+				extendGroupingBuilderWithDate(groupingSelectPartBuilder, "MONTH", Case.TABLE_NAME, Case.RECEPTION_DATE, groupAlias);
+				break;
+			case EPI_WEEK:
+				// TODO implement
+				break;
+			case QUARTER_OF_YEAR:
+				extendGroupingBuilderWithQuarterOfYear(groupingSelectPartBuilder, Case.TABLE_NAME, Case.RECEPTION_DATE, groupAlias);
+				break;
+			case MONTH_OF_YEAR:
+				extendGroupingBuilderWithMonthOfYear(groupingSelectPartBuilder, Case.TABLE_NAME, Case.RECEPTION_DATE, groupAlias);
+				break;
+			case EPI_WEEK_OF_YEAR:
+				// TODO implement
+				break;
+			case DATE_RANGE:
+				// TODO implement
+				break;
+			default:
+				throw new IllegalArgumentException(subGrouping.toString());
+			}
+			break;
+		case REPORT_TIME:
+			switch (subGrouping) {
+			case YEAR:
+				extendGroupingBuilderWithDate(groupingSelectPartBuilder, "YEAR", Case.TABLE_NAME, Case.REPORT_DATE, groupAlias);
+				break;
+			case QUARTER:
+				extendGroupingBuilderWithDate(groupingSelectPartBuilder, "QUARTER", Case.TABLE_NAME, Case.REPORT_DATE, groupAlias);
+				break;
+			case MONTH:
+				extendGroupingBuilderWithDate(groupingSelectPartBuilder, "MONTH", Case.TABLE_NAME, Case.REPORT_DATE, groupAlias);
+				break;
+			case EPI_WEEK:
+				// TODO implement
+				break;
+			case QUARTER_OF_YEAR:
+				extendGroupingBuilderWithQuarterOfYear(groupingSelectPartBuilder, Case.TABLE_NAME, Case.REPORT_DATE, groupAlias);
+				break;
+			case MONTH_OF_YEAR:
+				extendGroupingBuilderWithMonthOfYear(groupingSelectPartBuilder, Case.TABLE_NAME, Case.REPORT_DATE, groupAlias);
+				break;
+			case EPI_WEEK_OF_YEAR:
+				// TODO implement
+				break;
+			case DATE_RANGE:
+				// TODO implement
+				break;
+			default:
+				throw new IllegalArgumentException(subGrouping.toString());
+			}
+			break;
 		default:
 			throw new IllegalArgumentException(subGrouping.toString());
 		}
 		return groupingSelectPartBuilder.toString();
+	}
+
+	private void extendGroupingBuilderWithDate(StringBuilder groupingBuilder, String dateToExtract, String tableName, String fieldName, String groupAlias) {
+		groupingBuilder.append("(EXTRACT(" + dateToExtract + " FROM ").append(tableName).append(".").append(fieldName).append(")::integer) AS ").append(groupAlias);
+	}
+
+	// TODO start here, only 20191 is taken for some reason
+	private void extendGroupingBuilderWithQuarterOfYear(StringBuilder groupingBuilder, String tableName, String fieldName, String groupAlias) {
+		groupingBuilder.append("((EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(") * 10)::integer) + (EXTRACT(QUARTER FROM ").append(tableName)
+		.append(".").append(fieldName).append(")::integer) AS ").append(groupAlias);
+	}
+
+	private void extendGroupingBuilderWithMonthOfYear(StringBuilder groupingBuilder, String tableName, String fieldName, String groupAlias) {
+		groupingBuilder.append("((EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(") * 100)::integer) + (EXTRACT(MONTH FROM ").append(tableName)
+		.append(".").append(fieldName).append(")::integer) AS ").append(groupAlias);
 	}
 
 	@LocalBean

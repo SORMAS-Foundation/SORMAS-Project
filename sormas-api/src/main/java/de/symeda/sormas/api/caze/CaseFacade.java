@@ -16,10 +16,9 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.statistics.CasesStatisticField;
-import de.symeda.sormas.api.statistics.StatisticSubField;
+import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
+import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
-import de.symeda.sormas.api.statistics.StatisticsCaseDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -55,8 +54,6 @@ public interface CaseFacade {
 
 	List<MapCaseDto> getCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
-	List<StatisticsCaseDto> getCasesForStatistics(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
-	
 	Map<CaseClassification, Long> getNewCaseCountPerClassification(CaseCriteria caseCriteria, String userUuid);
 	
 	Map<PresentCondition, Long> getNewCaseCountPerPersonCondition(CaseCriteria caseCriteria, String userUuid);
@@ -79,5 +76,12 @@ public interface CaseFacade {
 	
 	void deleteCase(CaseReferenceDto caseRef, String userUuid);
 
-	List<Object[]> queryCaseCount(StatisticsCaseCriteria caseCriteria, CasesStatisticField groupingA, StatisticSubField subGroupingA);
+	List<Object[]> queryCaseCount(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA, StatisticsCaseSubAttribute subGroupingA,
+			StatisticsCaseAttribute groupingB, StatisticsCaseSubAttribute subGroupingB);
+	
+	Date getOldestCaseOnsetDate();
+	
+	Date getOldestCaseReceptionDate();
+	
+	Date getOldestCaseReportDate();
 }

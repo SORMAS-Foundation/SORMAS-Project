@@ -27,7 +27,6 @@ import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.statistics.StatisticsCaseDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -298,64 +297,6 @@ public class CaseService extends AbstractAdoService<Case> {
 			for (MapCaseDto mapCaseDto : result) {
 				mapCaseDto.setPerson(personFacade.getReferenceByUuid(mapCaseDto.getPersonUuid()));
 			}
-		} else {
-			result = Collections.emptyList();
-		}
-
-		return result;
-	}
-	
-	// TODO use aggregating query instead of a list of DTOs
-	public List<StatisticsCaseDto> getCasesForStatistics(Region region, District district, Disease disease, Date from, Date to, User user) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<StatisticsCaseDto> cq = cb.createQuery(StatisticsCaseDto.class);
-		Root<Case> caze = cq.from(getElementClass());
-		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);	
-		
-		Predicate filter = createUserFilter(cb, cq, caze, user);
-		Predicate dateFilter = createActiveCaseFilter(cb, caze, from, to);
-		if (filter != null) {
-			filter = cb.and(filter, dateFilter);
-		} else {
-			filter = dateFilter;
-		}
-		
-		if (region != null) {
-			Predicate regionFilter = cb.equal(caze.get(Case.REGION), region);
-			if (filter != null) {
-				filter = cb.and(filter, regionFilter);
-			} else {
-				filter = regionFilter;
-			}
-		}
-
-		if (district != null) {
-			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
-			if (filter != null) {
-				filter = cb.and(filter, districtFilter);
-			} else {
-				filter = districtFilter;
-			}
-		}
-
-		if (disease != null) {
-			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
-			if (filter != null) {
-				filter = cb.and(filter, diseaseFilter);
-			} else {
-				filter = diseaseFilter;
-			}
-		}
-
-		List<StatisticsCaseDto> result;
-		if (filter != null) {
-			cq.where(filter);
-			cq.multiselect(
-					person.get(Person.APPROXIMATE_AGE),
-					person.get(Person.SEX)
-					);
-
-			result = em.createQuery(cq).getResultList();
 		} else {
 			result = Collections.emptyList();
 		}

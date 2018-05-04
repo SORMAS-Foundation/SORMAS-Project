@@ -1,7 +1,7 @@
 package de.symeda.sormas.api;
 
 public enum Month {
-
+	
 	JANUARY,
 	FEBRUARY,
 	MARCH,

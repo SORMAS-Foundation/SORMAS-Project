@@ -79,6 +79,11 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		return toReferenceDto(districtService.getByUuid(uuid));
 	}
 	
+	@Override
+	public DistrictReferenceDto getDistrictReferenceById(int id) {
+		return toReferenceDto(districtService.getById(id));
+	}
+	
 	public static DistrictReferenceDto toReferenceDto(District entity) {
 		if (entity == null) {
 			return null;
