@@ -142,9 +142,9 @@ public class StatisticsCaseGrid extends Grid {
 				int month = Integer.valueOf(rawHeader.substring(4));
 				return Month.values()[month - 1].toString() + " " + rawHeader.substring(0, 4);
 			case REGION:
-				return FacadeProvider.getRegionFacade().getRegionReferenceById(Integer.valueOf(rawHeader)).toString();
+				return FacadeProvider.getRegionFacade().getRegionByUuid(rawHeader).toString();
 			case DISTRICT:
-				return FacadeProvider.getDistrictFacade().getDistrictReferenceById(Integer.valueOf(rawHeader)).toString();
+				return FacadeProvider.getDistrictFacade().getDistrictByUuid(rawHeader).toString();
 			default:
 				return rawHeader;
 			}

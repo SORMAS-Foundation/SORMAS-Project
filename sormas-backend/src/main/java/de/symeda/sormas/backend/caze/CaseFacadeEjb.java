@@ -36,7 +36,6 @@ import de.symeda.sormas.api.Month;
 import de.symeda.sormas.api.MonthOfYear;
 import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.QuarterOfYear;
-import de.symeda.sormas.api.QuarterOfYear;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -994,14 +993,15 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object[]> queryCaseCount(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA, StatisticsCaseSubAttribute subGroupingA,
+	public List<Object[]> queryCaseCount(StatisticsCaseCriteria caseCriteria,
+			StatisticsCaseAttribute groupingA, StatisticsCaseSubAttribute subGroupingA,
 			StatisticsCaseAttribute groupingB, StatisticsCaseSubAttribute subGroupingB) {
 
 		// Join tables that cases are grouped by or that are used in the caseCriteria
 
 		StringBuilder sqlBuilder = new StringBuilder();
 		sqlBuilder
-		.append("FROM ").append(Case.TABLE_NAME)
+		.append(" FROM ").append(Case.TABLE_NAME)
 		.append(" LEFT JOIN ").append(Symptoms.TABLE_NAME)
 		.append(" ON ").append(Case.TABLE_NAME).append(".").append(Case.SYMPTOMS).append("_id")
 		.append(" = ").append(Symptoms.TABLE_NAME).append(".").append(Symptoms.ID)
@@ -1281,25 +1281,45 @@ public class CaseFacadeEjb implements CaseFacade {
 			sqlBuilder.append(" WHERE ").append(filterBuilder);
 		}
 
-		String groupAAlias = "groupA";
-		String groupingSelectQueryA = buildGroupingSelectQuery(groupingA, subGroupingA, groupAAlias);
+		if (groupingA != null || groupingB != null) {
+			
+			sqlBuilder.append(" GROUP BY ");
+			String groupAAlias = "groupA";
+			String groupBAlias = "groupB";
+			String groupingSelectQueryA = null, groupingSelectQueryB = null;
 
-		String groupBAlias = "groupB";
-		String groupingSelectQueryB = buildGroupingSelectQuery(groupingB, subGroupingB, groupBAlias);
-
-		sqlBuilder.append(" GROUP BY ")
-			.append(groupAAlias)
-			.append(",")
-			.append(groupBAlias);
-		sqlBuilder.append(" ORDER BY ")
-			.append(groupAAlias)
-			.append(" NULLS LAST,")
-			.append(groupBAlias)
-			.append(" NULLS LAST");
-
-		// Select
-
-		sqlBuilder.insert(0, "SELECT COUNT(*)," + groupingSelectQueryA + ", " + groupingSelectQueryB + " ");
+			if (groupingA != null) {
+				groupingSelectQueryA = buildGroupingSelectQuery(groupingA, subGroupingA, groupAAlias);
+				sqlBuilder.append(groupAAlias);
+			}
+			if (groupingB != null) {
+				groupingSelectQueryB = buildGroupingSelectQuery(groupingB, subGroupingB, groupBAlias);
+				if (groupingA != null) {
+					sqlBuilder.append(",");
+				}
+				sqlBuilder.append(groupBAlias);
+			}
+			
+			sqlBuilder.append(" ORDER BY ");
+			if (groupingA != null) {
+				sqlBuilder.append(groupAAlias).append(" NULLS LAST");
+			}
+			if (groupingB != null) {
+				if (groupingA != null) {
+					sqlBuilder.append(",");
+				}
+				sqlBuilder.append(groupBAlias).append(" NULLS LAST");
+			}
+			
+			// Select
+			if (groupingSelectQueryB != null) {
+				sqlBuilder.insert(0, "," + groupingSelectQueryB);
+			}
+			if (groupingSelectQueryA != null) {
+				sqlBuilder.insert(0, "," + groupingSelectQueryA);
+			}
+		}
+		sqlBuilder.insert(0, "SELECT COUNT(*)");
 
 		List<Object[]> results = (List<Object[]>) em.createNativeQuery(sqlBuilder.toString()).getResultList();
 		return results;
@@ -1416,10 +1436,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		case REGION_DISTRICT: { 
 			switch(subGrouping) {
 			case REGION:
-				groupingSelectPartBuilder.append(Case.TABLE_NAME).append(".").append(Case.REGION).append("_id AS ").append(groupAlias);
+				groupingSelectPartBuilder.append(Region.TABLE_NAME).append(".").append(Region.UUID).append(" AS ").append(groupAlias);
 				break;
 			case DISTRICT:
-				groupingSelectPartBuilder.append(Case.TABLE_NAME).append(".").append(Case.DISTRICT).append("_id AS ").append(groupAlias);
+				groupingSelectPartBuilder.append(District.TABLE_NAME).append(".").append(District.UUID).append(" AS ").append(groupAlias);
 				break;
 			default:
 				throw new IllegalArgumentException(subGrouping.toString());

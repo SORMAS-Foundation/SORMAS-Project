@@ -1,9 +1,15 @@
 package de.symeda.sormas.ui.statistics;
 
+import java.util.Arrays;
+
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.ui.OptionGroup;
 
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttributeGroup;
@@ -15,25 +21,66 @@ public class StatisticsDisplayedAttributesElement extends HorizontalLayout {
 
 	private static final String SPECIFY_YOUR_SELECTION = "Specify your selection";
 
+	private StatisticsVisualizationType selectedVisualizationType;
 	private StatisticsCaseAttribute selectedRowsAttribute;
 	private StatisticsCaseSubAttribute selectedRowsSubAttribute;
 	private StatisticsCaseAttribute selectedColumnsAttribute;
 	private StatisticsCaseSubAttribute selectedColumnsSubAttribute;
 
+	private final OptionGroup visualizationSelect;
+	private HorizontalLayout rowsLayout;
+	private HorizontalLayout columnsLayout;
+
 	public StatisticsDisplayedAttributesElement() {
 		setSpacing(true);
 		setWidth(100, Unit.PERCENTAGE);
 
-		HorizontalLayout rowsLayout = createRowsOrColumnsLayout(true);
-		HorizontalLayout columnsLayout = createRowsOrColumnsLayout(false);
+		visualizationSelect = new OptionGroup("Type", Arrays.asList(StatisticsVisualizationType.values()));
+		visualizationSelect.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				setSelectedVisualizationType((StatisticsVisualizationType)event.getProperty().getValue());
+			}
+		});
+		CssStyles.style(visualizationSelect, CssStyles.VSPACE_NONE, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.SOFT_REQUIRED);
+		visualizationSelect.setNullSelectionAllowed(false);
+		addComponent(visualizationSelect);
+		setExpandRatio(visualizationSelect, 0);
+		
+		rowsLayout = createRowsOrColumnsLayout(true);
 		addComponent(rowsLayout);
-		addComponent(columnsLayout);
 		setExpandRatio(rowsLayout, 0);
+		
+		columnsLayout = createRowsOrColumnsLayout(false);
+		addComponent(columnsLayout);
 		setExpandRatio(columnsLayout, 1);
+		
+		visualizationSelect.setValue(StatisticsVisualizationType.TABLE);
 	}
+	
+	private void setSelectedVisualizationType(StatisticsVisualizationType value) {
+		if (selectedVisualizationType == value) {
+			return;
+		}
+		selectedVisualizationType = value;
+		visualizationSelect.setValue(selectedVisualizationType);
+		switch (selectedVisualizationType) {
+		case REGIONS_MAP:
+		case DISTRICTS_MAP:
+			rowsLayout.setVisible(false);
+			columnsLayout.setVisible(false);
+			break;
+		default:
+			rowsLayout.setVisible(true);
+			columnsLayout.setVisible(true);
+			break;
+		}
+	}
+
 
 	private HorizontalLayout createRowsOrColumnsLayout(boolean rows) {
 		HorizontalLayout rowsOrColumnsLayout = new HorizontalLayout();
+		CssStyles.style(rowsOrColumnsLayout, CssStyles.LAYOUT_MINIMAL);
 		rowsOrColumnsLayout.setSpacing(true);
 		rowsOrColumnsLayout.setWidthUndefined();
 
@@ -103,6 +150,10 @@ public class StatisticsDisplayedAttributesElement extends HorizontalLayout {
 		return rowsOrColumnsLayout;
 	}
 
+	public StatisticsVisualizationType getSelectedVisualizationType() {
+		return selectedVisualizationType;
+	}
+
 	public StatisticsCaseAttribute getSelectedRowsAttribute() {
 		return selectedRowsAttribute;
 	}
@@ -118,5 +169,4 @@ public class StatisticsDisplayedAttributesElement extends HorizontalLayout {
 	public StatisticsCaseSubAttribute getSelectedColumnsSubAttribute() {
 		return selectedColumnsSubAttribute;
 	}
-
 }

@@ -1,11 +1,16 @@
 package de.symeda.sormas.ui.statistics;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.vaadin.server.FontAwesome;
+import com.vaadin.tapio.googlemaps.GoogleMap;
+import com.vaadin.tapio.googlemaps.client.LatLon;
+import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapPolygon;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -22,6 +27,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
@@ -67,7 +73,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		filtersLayout.addComponent(createAddFilterButton());
 		statisticsLayout.addComponent(filtersLayout);
 
-		Label displayedAttributesTitle = new Label("Displayed Attributes");
+		Label displayedAttributesTitle = new Label("Visualization");
 		displayedAttributesTitle.setWidthUndefined();
 		CssStyles.style(displayedAttributesTitle, CssStyles.STATISTICS_TITLE);
 		statisticsLayout.addComponent(displayedAttributesTitle);
@@ -79,13 +85,21 @@ public class StatisticsView extends AbstractStatisticsView {
 		HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setSpacing(true);
 		{
-			Button generateButton = new Button("Generate statistics");
+			Button generateButton = new Button("Generate");
 			CssStyles.style(generateButton, ValoTheme.BUTTON_PRIMARY);
 			generateButton.addClickListener(e -> {
-				if (statisticsCaseGrid != null) {
-					statisticsLayout.removeComponent(statisticsCaseGrid);
+				resultsLayout.removeAllComponents();
+				switch (displayedAttributesElement.getSelectedVisualizationType()) {
+				case TABLE:
+					generateTable();
+					break;
+				case REGIONS_MAP:
+				case DISTRICTS_MAP:
+					generateMap();
+					break;
+				default:
+					throw new IllegalArgumentException(displayedAttributesElement.getSelectedVisualizationType().toString());
 				}
-				generateStatistics();
 			});
 			buttonLayout.addComponent(generateButton);
 
@@ -117,7 +131,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		addComponent(statisticsLayout);
 	}
 
-	public void generateStatistics() {
+	private List<Object[]> generateStatistics() {
 		StatisticsCaseCriteria caseCriteria = new StatisticsCaseCriteria();
 
 		for (StatisticsFilterComponent filterComponent : filterComponents) {
@@ -264,10 +278,140 @@ public class StatisticsView extends AbstractStatisticsView {
 			}
 		}
 
-		List<Object[]> resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria, displayedAttributesElement.getSelectedRowsAttribute(), displayedAttributesElement.getSelectedRowsSubAttribute(), displayedAttributesElement.getSelectedColumnsAttribute(), displayedAttributesElement.getSelectedColumnsSubAttribute());
+		List<Object[]> resultData;
+		switch (displayedAttributesElement.getSelectedVisualizationType()) {
+		case REGIONS_MAP:
+			resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria, 
+					StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.REGION, null, null);
+			break;
+		case DISTRICTS_MAP:
+			resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria, 
+					StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.DISTRICT, null, null);
+			break;
+		default:
+			resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria, 
+					displayedAttributesElement.getSelectedRowsAttribute(), displayedAttributesElement.getSelectedRowsSubAttribute(), 
+					displayedAttributesElement.getSelectedColumnsAttribute(), displayedAttributesElement.getSelectedColumnsSubAttribute());
+			break;
+		}
 
+		return resultData;
+	}
+	
+	public void generateTable() {
+		
+		List<Object[]> resultData = generateStatistics();
 		statisticsCaseGrid = new StatisticsCaseGrid(displayedAttributesElement.getSelectedRowsAttribute(), displayedAttributesElement.getSelectedRowsSubAttribute(), displayedAttributesElement.getSelectedColumnsAttribute(), displayedAttributesElement.getSelectedColumnsSubAttribute(), resultData);
+		statisticsCaseGrid.setWidth(100, Unit.PERCENTAGE);
 		resultsLayout.addComponent(statisticsCaseGrid);
+	}
+	
+	public void generateMap() {
+		
+		GoogleMap map = new GoogleMap("AIzaSyAaJpN8a_NhEU-02-t5uVi02cAaZtKafkw", null, null);
+		map.addStyleName("no-tiles");
+		map.setWidth(100, Unit.PERCENTAGE);
+		map.setHeight(580, Unit.PIXELS);
+		map.setMinZoom(4);
+		map.setMaxZoom(16);
+		map.setZoom(6);
+		GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
+		map.setCenter(new LatLon(mapCenter.getLon(), mapCenter.getLat()));
+
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllAsReference();
+
+		// draw outlines of all regions
+		for (RegionReferenceDto region : regions) {
+
+			GeoLatLon[][] regionShape = FacadeProvider.getGeoShapeProvider().getRegionShape(region);
+			if (regionShape == null) {
+				continue;
+			}
+
+			GoogleMapPolygon[] regionPolygons = new GoogleMapPolygon[regionShape.length];
+			for (int part = 0; part<regionShape.length; part++) {
+				GeoLatLon[] regionShapePart = regionShape[part];
+				GoogleMapPolygon polygon = new GoogleMapPolygon(
+						Arrays.stream(regionShapePart)
+						.map(c -> new LatLon(c.getLat(), c.getLon()))
+						.collect(Collectors.toList()));
+
+				polygon.setStrokeOpacity(0.5);
+				polygon.setFillOpacity(0);
+				regionPolygons[part] = polygon;
+				map.addPolygonOverlay(polygon);
+			}
+		}
+
+		List<Object[]> resultData = generateStatistics();
+		resultData.sort((a,b) -> {
+			return Long.compare((Long)a[0], (Long)b[0]);
+		});
+
+		Long valuesLowerQuartile = resultData.size() > 0 ? (Long)resultData.get((int) (resultData.size()  * 0.25))[0] : null;
+		Long valuesMedian = resultData.size() > 0 ? (Long)resultData.get((int) (resultData.size() * 0.5))[0] : null;
+		Long valuesUpperQuartile = resultData.size() > 0 ? (Long)resultData.get((int) (resultData.size() * 0.75))[0] : null;
+
+		// Draw relevant district fills
+		for (Object[] resultRow : resultData) {
+			
+			String shapeUuid = (String)resultRow[1];
+			Long shapeValue = (Long)resultRow[0];
+			GeoLatLon[][] shape;
+			if (displayedAttributesElement.getSelectedVisualizationType() == StatisticsVisualizationType.REGIONS_MAP) {
+				shape = FacadeProvider.getGeoShapeProvider().getRegionShape(new RegionReferenceDto(shapeUuid));
+			} else if (displayedAttributesElement.getSelectedVisualizationType() == StatisticsVisualizationType.DISTRICTS_MAP) {
+				shape = FacadeProvider.getGeoShapeProvider().getDistrictShape(new DistrictReferenceDto(shapeUuid));
+			} else {
+				throw new IllegalArgumentException(displayedAttributesElement.getSelectedVisualizationType().toString());
+			}
+			
+			if (shape == null) {
+				continue;
+			}
+
+			GoogleMapPolygon[] shapePolygons = new GoogleMapPolygon[shape.length];
+			for (int part = 0; part < shape.length; part++) {
+				GeoLatLon[] shapePart = shape[part];
+				GoogleMapPolygon polygon = new GoogleMapPolygon(
+						Arrays.stream(shapePart)
+						.map(c -> new LatLon(c.getLat(), c.getLon()))
+						.collect(Collectors.toList()));
+
+				polygon.setStrokeOpacity(0);
+
+				if (shapeValue.compareTo(0l) == 0) {
+					polygon.setFillOpacity(0);
+				} else if (shapeValue.compareTo(valuesLowerQuartile) <= 0) {
+					polygon.setFillColor("#FEDD6C");
+					polygon.setFillOpacity(0.5);
+				} else if (shapeValue.compareTo(valuesMedian) <= 0) {
+					polygon.setFillColor("#FDBF44");
+					polygon.setFillOpacity(0.5);
+				} else if (shapeValue.compareTo(valuesUpperQuartile) <= 0) {
+					polygon.setFillColor("#F47B20");
+					polygon.setFillOpacity(0.5);							
+				} else {
+					polygon.setFillColor("#ED1B24");
+					polygon.setFillOpacity(0.5);
+				}
+
+//				if (caseMeasure == CaseMeasure.CASE_INCIDENCE) {
+//					if (district.getPopulation() == null || district.getPopulation() <= 0) {
+//						// grey when region has no population data
+//						emptyPopulationDistrictPresent = true;
+//						polygon.setFillColor("#999999");
+//						polygon.setFillOpacity(0.5);
+//					}
+//				}
+
+				shapePolygons[part] = polygon;
+				map.addPolygonOverlay(polygon);
+			}
+		}
+		
+		resultsLayout.addComponent(map);
+		resultsLayout.setExpandRatio(map, 1);
 	}
 
 	private Button createAddFilterButton() {
