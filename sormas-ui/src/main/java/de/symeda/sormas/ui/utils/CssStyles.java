@@ -101,6 +101,7 @@ public final class CssStyles {
 	public static final String LINK_HIGHLIGHTED = "link-highlighted";
 	public static final String LINK_HIGHLIGHTED_LIGHT = "link-highlighted-light";
 	public static final String LINK_HIGHLIGHTED_DARK = "link-highlighted-dark";
+	public static final String BUTTON_FONT_SIZE_LARGE = "font-size-large";
 	
 	// SVG fill and stroke styles
 	public static final String SVG_FILL_BACKGROUND = "svg-fill-background";

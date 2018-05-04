@@ -12,6 +12,7 @@ import com.explicatis.ext_token_field.Tokenizable;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -58,9 +59,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		addComponent(utilityButtonsLayout);
 		setExpandRatio(tokenField, 1);
 		setExpandRatio(utilityButtonsLayout, 0);
-		
-//		addComponent(createTokenField(caption));
-//		addComponent(createUtilityButtonsLayout());
+		setComponentAlignment(utilityButtonsLayout, Alignment.MIDDLE_RIGHT);
 	}
 
 	private ExtTokenField createTokenField(String caption) {
@@ -86,16 +85,16 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 	private HorizontalLayout createUtilityButtonsLayout() {
 		HorizontalLayout utilityButtonsLayout = new HorizontalLayout();
 
-		Button addAllButton = new Button(FontAwesome.PLUS);
-		CssStyles.style(addAllButton, ValoTheme.BUTTON_PRIMARY);
+		Button addAllButton = new Button(FontAwesome.PLUS_CIRCLE);
+		CssStyles.style(addAllButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_FONT_SIZE_LARGE);
 		addAllButton.addClickListener(e -> {
 			for (TokenizableValue tokenizable : getFilterValues()) {
 				tokenField.addTokenizable(tokenizable);
 			}
 		});
 
-		Button removeAllButton = new Button(FontAwesome.TIMES);
-		CssStyles.style(removeAllButton, ValoTheme.BUTTON_PRIMARY);
+		Button removeAllButton = new Button(FontAwesome.TIMES_CIRCLE);
+		CssStyles.style(removeAllButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_FONT_SIZE_LARGE);
 		removeAllButton.addClickListener(e -> {
 			for (Tokenizable tokenizable : tokenField.getValue()) {
 				tokenField.removeTokenizable(tokenizable);

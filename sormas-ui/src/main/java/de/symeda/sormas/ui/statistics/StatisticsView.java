@@ -92,9 +92,12 @@ public class StatisticsView extends AbstractStatisticsView {
 			Button resetFiltersButton = new Button("Reset filters");
 			resetFiltersButton.addClickListener(e -> {
 				filtersLayout.removeAllComponents();
+				filtersLayout.addComponent(filtersInfoText);
 				filtersLayout.addComponent(createAddFilterButton());
-				statisticsLayout.removeComponent(statisticsCaseGrid);
-				statisticsCaseGrid = null;
+				if (statisticsCaseGrid != null) {
+					resultsLayout.removeComponent(statisticsCaseGrid);
+					statisticsCaseGrid = null;
+				}
 			});
 			buttonLayout.addComponent(resetFiltersButton);
 		}
