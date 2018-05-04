@@ -29,7 +29,7 @@ public final class DateHelper {
 	private static final SimpleDateFormat DATABASE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private static final SimpleDateFormat EXPORT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private static final SimpleDateFormat DATE_WITHOUT_YEAR_FORMAT = new SimpleDateFormat("dd/MM");
-	private static final SimpleDateFormat DATE_WITH_MONTH_ABBREVIATION_FORMAT = new SimpleDateFormat("MMM YYYY");
+	private static final SimpleDateFormat DATE_WITH_MONTH_ABBREVIATION_FORMAT = new SimpleDateFormat("MMM yyyy");
 	
 	public static String formatTime(Date date) {
 		if (date != null) {
