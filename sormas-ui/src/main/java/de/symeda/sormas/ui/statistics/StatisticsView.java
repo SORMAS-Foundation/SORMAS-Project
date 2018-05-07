@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.statistics;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,8 +33,11 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.statistics.StatisticsFilterElement.TokenizableValue;
+import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationChartType;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class StatisticsView extends AbstractStatisticsView {
@@ -89,16 +93,17 @@ public class StatisticsView extends AbstractStatisticsView {
 			CssStyles.style(generateButton, ValoTheme.BUTTON_PRIMARY);
 			generateButton.addClickListener(e -> {
 				resultsLayout.removeAllComponents();
-				switch (displayedAttributesElement.getSelectedVisualizationType()) {
+				switch (displayedAttributesElement.getVisualizationType()) {
 				case TABLE:
 					generateTable();
 					break;
-				case REGIONS_MAP:
-				case DISTRICTS_MAP:
+				case MAP:
 					generateMap();
 					break;
 				default:
-					throw new IllegalArgumentException(displayedAttributesElement.getSelectedVisualizationType().toString());
+					generateChart();
+					break;
+					//throw new IllegalArgumentException(displayedAttributesElement.getSelectedVisualizationType().toString());
 				}
 			});
 			buttonLayout.addComponent(generateButton);
@@ -277,33 +282,204 @@ public class StatisticsView extends AbstractStatisticsView {
 				}
 			}
 		}
-
-		List<Object[]> resultData;
-		switch (displayedAttributesElement.getSelectedVisualizationType()) {
-		case REGIONS_MAP:
-			resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria, 
-					StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.REGION, null, null);
-			break;
-		case DISTRICTS_MAP:
-			resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria, 
-					StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.DISTRICT, null, null);
-			break;
-		default:
-			resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria, 
-					displayedAttributesElement.getSelectedRowsAttribute(), displayedAttributesElement.getSelectedRowsSubAttribute(), 
-					displayedAttributesElement.getSelectedColumnsAttribute(), displayedAttributesElement.getSelectedColumnsSubAttribute());
-			break;
-		}
-
+		
+		List<Object[]> resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria,
+				displayedAttributesElement.getRowsAttribute(), displayedAttributesElement.getRowsSubAttribute(),
+				displayedAttributesElement.getColumnsAttribute(),  displayedAttributesElement.getColumnsSubAttribute());
 		return resultData;
 	}
 	
 	public void generateTable() {
 		
 		List<Object[]> resultData = generateStatistics();
-		statisticsCaseGrid = new StatisticsCaseGrid(displayedAttributesElement.getSelectedRowsAttribute(), displayedAttributesElement.getSelectedRowsSubAttribute(), displayedAttributesElement.getSelectedColumnsAttribute(), displayedAttributesElement.getSelectedColumnsSubAttribute(), resultData);
+		statisticsCaseGrid = new StatisticsCaseGrid(displayedAttributesElement.getRowsAttribute(), displayedAttributesElement.getRowsSubAttribute(), displayedAttributesElement.getColumnsAttribute(), displayedAttributesElement.getColumnsSubAttribute(), resultData);
 		statisticsCaseGrid.setWidth(100, Unit.PERCENTAGE);
 		resultsLayout.addComponent(statisticsCaseGrid);
+	}
+	
+	public static String UNKNOWN = "Unknown";
+	
+	/**
+	 * TODO merge with StatisticsCaseGrid.buildHeader
+	 */
+	private String buildIdCaption(Object idRaw, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
+		if (idRaw == null) {
+			return UNKNOWN;
+		}
+		String idString = idRaw.toString();
+		if (idString.isEmpty()) {
+			return UNKNOWN;
+		}
+		
+		if (subAttribute != null) {
+			switch (subAttribute) {
+			case QUARTER:
+				return "Q" + idString;
+			case MONTH:
+				return Month.values()[Integer.valueOf(idString) - 1].toString();
+			case QUARTER_OF_YEAR:
+				return idString.substring(0, 4) + " " + "Q" + idString.charAt(idString.length() - 1);
+			case MONTH_OF_YEAR:
+				int month = Integer.valueOf(idString.substring(4));
+				return idString.substring(0, 4)  + " " +  Month.values()[month - 1].toString();
+			case REGION:
+				return FacadeProvider.getRegionFacade().getRegionByUuid(idString).toString();
+			case DISTRICT:
+				return FacadeProvider.getDistrictFacade().getDistrictByUuid(idString).toString();
+			default:
+				return idString;
+			}
+		} else {
+			switch (attribute) {
+			case CLASSIFICATION:
+				return CaseClassification.valueOf(idString).toString();
+			case OUTCOME:
+				return CaseOutcome.valueOf(idString).toString();
+			case SEX:
+				return Sex.valueOf(idString).toString();
+			case DISEASE:
+				return Disease.valueOf(idString).toString();
+			default:
+				return idString;
+			}
+		}
+	}
+	
+	public void generateChart() {
+		
+		StatisticsVisualizationChartType chartType = displayedAttributesElement.getVisualizationChartType();
+		StatisticsCaseAttribute columnsAttribute = displayedAttributesElement.getColumnsAttribute();
+		StatisticsCaseSubAttribute columnsSubAttribute = displayedAttributesElement.getColumnsSubAttribute();
+		StatisticsCaseAttribute rowsAttribute = displayedAttributesElement.getRowsAttribute();
+		StatisticsCaseSubAttribute rowsSubAttribute = displayedAttributesElement.getRowsSubAttribute();
+
+		HighChart chart = new HighChart();
+		chart.setWidth(100, Unit.PERCENTAGE);
+		chart.setHeight(580, Unit.PIXELS);
+		
+		StringBuilder hcjs = new StringBuilder();
+		hcjs.append("var options = {");
+		
+		final int columnIdIndex;
+		final int rowIdIndex;
+		hcjs.append("chart:{ "
+						+ " type: '");
+		switch (chartType) {
+		case COLUMN:
+		case STACKED_COLUMN:
+			hcjs.append("column");
+			columnIdIndex = 2;
+			rowIdIndex = 1;
+			break;
+		case LINE:
+			hcjs.append("line");
+			columnIdIndex = 2;
+			rowIdIndex = 1;
+			break;
+		case PIE:
+			hcjs.append("pie");
+			columnIdIndex = 1;
+			rowIdIndex = -1;
+			break;
+		default:
+			throw new IllegalArgumentException(chartType.toString());
+		}
+		hcjs.append("', "
+						+ " backgroundColor: 'transparent' "
+						+ "},"
+						+ "credits:{ enabled: false },"
+						+ "exporting:{ "
+						+ " enabled: true,"
+						+ " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }"
+						+ "},"
+						+ "title:{ text: '' },"
+				);
+
+		List<Object[]> resultData = generateStatistics();
+		HashMap<Object,String> idCaptions = new HashMap<>();
+		for (Object[] row : resultData) {
+			if (!idCaptions.containsKey(row[columnIdIndex])) {
+				idCaptions.put(row[columnIdIndex], buildIdCaption(row[columnIdIndex], columnsAttribute, columnsSubAttribute));
+			}
+			row[columnIdIndex] = idCaptions.get(row[columnIdIndex]);
+			if (rowIdIndex >= 0) {
+				if (!idCaptions.containsKey(row[rowIdIndex])) {
+					idCaptions.put(row[rowIdIndex], buildIdCaption(row[rowIdIndex], rowsAttribute, rowsSubAttribute));
+				}
+				row[rowIdIndex] = idCaptions.get(row[rowIdIndex]);
+			}
+		}
+		resultData.sort((a,b) -> {
+			if (rowIdIndex >= 0) {
+				int rowCompare = ((String)a[rowIdIndex]).compareTo((String)b[rowIdIndex]);
+				if (rowCompare != 0)
+					return rowCompare;
+			}
+			int columnCompare = ((String)a[columnIdIndex]).compareTo((String)b[columnIdIndex]);
+			if (columnCompare != 0)
+				return columnCompare;
+			return ((String)a[0]).compareTo((String)b[0]);
+		});
+		
+		if (chartType != StatisticsVisualizationChartType.PIE) {
+			hcjs.append("xAxis: { categories: [");
+			resultData.stream().map(row -> row[columnIdIndex]).distinct()
+			.forEachOrdered(columnId -> {
+				hcjs.append("'" + columnId + "',");
+			});
+			hcjs.append("]},");
+			
+			hcjs.append("yAxis: { min: 0, title: { text: 'Number of Cases' }, allowDecimals: false, softMax: 10, "
+					+ "stackLabels: { enabled: true, "
+					+ "style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },");
+			
+			hcjs.append("tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'},");
+		}
+
+		hcjs.append("legend: { verticalAlign: 'top', backgroundColor: 'transparent', align: 'left', "
+				+ "borderWidth: 0, shadow: false, margin: 30, padding: 0 },");
+		
+		
+		hcjs.append("colors: ['#FF0000','#6691C4','#ffba08','#519e8a','#ed254e','#39a0ed','#FF8C00','#344055','#D36135','#82d173'],");
+
+		hcjs.append("plotOptions: { column: { borderWidth: 0, ");
+		if (displayedAttributesElement.getVisualizationChartType() == StatisticsVisualizationChartType.STACKED_COLUMN) {
+			hcjs.append("stacking: 'normal', ");
+		}
+		hcjs.append("groupPadding: 0.05, pointPadding: 0, dataLabels: {"
+				+ "enabled: true, formatter: function() { if (this.y > 0) return this.y; },"
+				+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
+		
+		hcjs.append("series: [");
+		if (displayedAttributesElement.getVisualizationChartType() == StatisticsVisualizationChartType.PIE) {
+			hcjs.append("{ name: 'Number of cases', dataLabels: { allowOverlap: false }")
+				.append(", data: [");
+			for (Object[] row : resultData) {
+				Object value = row[0];
+				Object columnId = row[columnIdIndex];
+				hcjs.append("['").append(columnId).append("',").append(value).append("],");
+			}
+		} else {
+			Object seriesId = null;
+			for (Object[] row : resultData) {
+				if (!DataHelper.equal(seriesId, row[1])) {
+					if (seriesId != null) {
+						hcjs.append("]},");
+					}
+					seriesId = row[1];
+					hcjs.append("{ name: '").append(seriesId).append("', dataLabels: { allowOverlap: false }, data: [");
+				}
+				
+				Object value = row[0];
+				Object columnId = row[columnIdIndex];
+				hcjs.append("['").append(columnId).append("',").append(value).append("],");
+			}
+		}
+		hcjs.append("]}]};");		
+
+		chart.setHcjs(hcjs.toString());	
+		resultsLayout.addComponent(chart);
+		resultsLayout.setExpandRatio(chart, 1);
 	}
 	
 	public void generateMap() {
@@ -358,12 +534,15 @@ public class StatisticsView extends AbstractStatisticsView {
 			String shapeUuid = (String)resultRow[1];
 			Long shapeValue = (Long)resultRow[0];
 			GeoLatLon[][] shape;
-			if (displayedAttributesElement.getSelectedVisualizationType() == StatisticsVisualizationType.REGIONS_MAP) {
+			switch (displayedAttributesElement.getVisualizationMapType()) {
+			case REGIONS:
 				shape = FacadeProvider.getGeoShapeProvider().getRegionShape(new RegionReferenceDto(shapeUuid));
-			} else if (displayedAttributesElement.getSelectedVisualizationType() == StatisticsVisualizationType.DISTRICTS_MAP) {
+				break;
+			case DISTRICTS:
 				shape = FacadeProvider.getGeoShapeProvider().getDistrictShape(new DistrictReferenceDto(shapeUuid));
-			} else {
-				throw new IllegalArgumentException(displayedAttributesElement.getSelectedVisualizationType().toString());
+				break;
+				default:
+				throw new IllegalArgumentException(displayedAttributesElement.getVisualizationMapType().toString());
 			}
 			
 			if (shape == null) {
