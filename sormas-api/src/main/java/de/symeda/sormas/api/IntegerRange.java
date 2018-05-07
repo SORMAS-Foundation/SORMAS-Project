@@ -1,7 +1,11 @@
 package de.symeda.sormas.api;
 
-public class IntegerRange {
+import java.io.Serializable;
 
+public class IntegerRange implements Serializable {
+
+	private static final long serialVersionUID = 4459253785381816968L;
+	
 	private Integer from;
 	private Integer to;
 	

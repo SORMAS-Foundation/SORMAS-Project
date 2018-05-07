@@ -204,7 +204,8 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			QuarterOfYear latestQuarter = new QuarterOfYear(4, now.getYear());
 			int tokenId = 0;
 			while (earliestQuarter.getYear() <= latestQuarter.getYear()) {
-				quarterOfYearList.add(new TokenizableValue(earliestQuarter, earliestQuarter.toString(), tokenId++));
+				QuarterOfYear newQuarter = new QuarterOfYear(earliestQuarter.getQuarter(), earliestQuarter.getYear());
+				quarterOfYearList.add(new TokenizableValue(newQuarter, newQuarter.toString(), tokenId++));
 				earliestQuarter.increaseQuarter();
 			}
 			return quarterOfYearList;

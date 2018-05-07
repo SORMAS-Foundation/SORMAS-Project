@@ -1204,7 +1204,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caseCriteria.getSexes() != null && !caseCriteria.getSexes().isEmpty()) {
 			extendFilterBuilderWithSimpleValue(filterBuilder, Person.TABLE_NAME, Person.SEX);
 			for (Sex sex : caseCriteria.getSexes()) {
-				filterBuilder.append("'" + sex.toString() + "',");
+				filterBuilder.append("'" + sex.name() + "',");
 			}
 			finalizeFilterBuilderSegment(filterBuilder);
 		}
@@ -1238,7 +1238,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caseCriteria.getDiseases() != null && !caseCriteria.getDiseases().isEmpty()) {
 			extendFilterBuilderWithSimpleValue(filterBuilder, Case.TABLE_NAME, Case.DISEASE);
 			for (Disease disease : caseCriteria.getDiseases()) {
-				filterBuilder.append("'" + disease.toShortString() + "',");
+				filterBuilder.append("'" + disease.name() + "',");
 			}
 			finalizeFilterBuilderSegment(filterBuilder);
 		}
@@ -1246,7 +1246,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caseCriteria.getClassifications() != null && !caseCriteria.getClassifications().isEmpty()) {
 			extendFilterBuilderWithSimpleValue(filterBuilder, Case.TABLE_NAME, Case.CASE_CLASSIFICATION);
 			for (CaseClassification classification : caseCriteria.getClassifications()) {
-				filterBuilder.append("'" + classification.toString() + "',");
+				filterBuilder.append("'" + classification.name() + "',");
 			}
 			finalizeFilterBuilderSegment(filterBuilder);
 		}
@@ -1254,7 +1254,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caseCriteria.getOutcomes() != null && !caseCriteria.getOutcomes().isEmpty()) {
 			extendFilterBuilderWithSimpleValue(filterBuilder, Case.TABLE_NAME, Case.OUTCOME);
 			for (CaseOutcome outcome : caseCriteria.getOutcomes()) {
-				filterBuilder.append("'" + outcome.toString() + "',");
+				filterBuilder.append("'" + outcome.name() + "',");
 			}
 			finalizeFilterBuilderSegment(filterBuilder);
 		}
@@ -1356,6 +1356,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		return filterBuilder;
 	}
 
+	// TODO THIS DOESN'T WORK
 	private StringBuilder extendFilterBuilderWithQuarterOfYear(StringBuilder filterBuilder, String tableName, String fieldName) {
 		if (filterBuilder.length() > 0) {
 			filterBuilder.append(" AND ");
@@ -1373,7 +1374,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			filterBuilder.append(" AND ");
 		}
 
-		filterBuilder.append("((EXTRACT(YEAR FROM ").append(tableName).append(":").append(fieldName).append(")")
+		filterBuilder.append("((EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(")")
 		.append(" * 100)::integer) + (EXTRACT(MONTH FROM ").append(tableName).append(".").append(fieldName).append(")::integer)")
 		.append(" IN (");
 
@@ -1477,9 +1478,6 @@ public class CaseFacadeEjb implements CaseFacade {
 			case EPI_WEEK_OF_YEAR:
 				// TODO implement
 				break;
-			case DATE_RANGE:
-				// TODO implement
-				break;
 			default:
 				throw new IllegalArgumentException(subGrouping.toString());
 			}
@@ -1505,9 +1503,6 @@ public class CaseFacadeEjb implements CaseFacade {
 				extendGroupingBuilderWithMonthOfYear(groupingSelectPartBuilder, Case.TABLE_NAME, Case.RECEPTION_DATE, groupAlias);
 				break;
 			case EPI_WEEK_OF_YEAR:
-				// TODO implement
-				break;
-			case DATE_RANGE:
 				// TODO implement
 				break;
 			default:
