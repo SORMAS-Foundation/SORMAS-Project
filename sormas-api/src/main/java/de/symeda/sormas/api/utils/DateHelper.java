@@ -16,6 +16,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
 import org.joda.time.Weeks;
+import org.joda.time.Years;
 
 public final class DateHelper {
 
@@ -257,7 +258,7 @@ public final class DateHelper {
 	}
 
 	/**
-	 * Calculate days between the two given dates. This includes both the
+	 * Calculate weeks between the two given dates. This includes both the
 	 * start and end dates, so week 1 to week 4 of a year will return 4.
 	 */
 	public static int getWeeksBetween(Date start, Date end) {
@@ -267,7 +268,7 @@ public final class DateHelper {
 	}
 	
 	/**
-	 * Calculate days between the two given dates. This includes both the
+	 * Calculate months between the two given dates. This includes both the
 	 * start and end dates, so a one-year period from January to December
 	 * will return 12.
 	 */
@@ -275,6 +276,15 @@ public final class DateHelper {
 		return Months.monthsBetween(
 				new LocalDate(start.getTime()),
 				new LocalDate(end.getTime())).getMonths() + 1;
+	}
+	
+	/**
+	 * Calculate years between the two given dates.
+	 */
+	public static int getYearsBetween(Date start, Date end) {
+		return Years.yearsBetween(
+				new LocalDate(start.getTime()),
+				new LocalDate(end.getTime())).getYears();
 	}
 	
 	public static Date addDays(Date date, int amountOfDays) {

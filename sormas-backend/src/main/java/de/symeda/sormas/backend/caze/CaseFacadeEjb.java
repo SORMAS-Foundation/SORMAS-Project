@@ -42,6 +42,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
@@ -50,6 +51,7 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
@@ -233,10 +235,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<CaseIndexDto> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
-	
+
 	@Override
 	public List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria) {
-		
+
 		User user = userService.getByUuid(userUuid);
 
 		return caseService.findBy(caseCriteria, user)
@@ -394,6 +396,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		updatePersonAndCaseByOutcome(existingCase, newCase);
 
+		updateCaseAge(existingCase, newCase);
+
 		// Send an email to all responsible supervisors when the case classification has changed
 		if (existingCase != null && existingCase.getCaseClassification() != newCase.getCaseClassification()) {
 			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(newCase.getRegion(), 
@@ -469,6 +473,24 @@ public class CaseFacadeEjb implements CaseFacade {
 					personFacade.onPersonChanged(existingPerson, newCase.getPerson());
 				}
 			}
+		}
+	}
+
+	private void updateCaseAge(CaseDataDto existingCase, Case newCase) {
+		if (existingCase != null && newCase.getPerson().getApproximateAge() != null &&
+				CaseLogic.getStartDate(existingCase.getSymptoms().getOnsetDate(), existingCase.getReceptionDate(), existingCase.getReportDate()) != 
+				CaseLogic.getStartDate(newCase.getSymptoms().getOnsetDate(), newCase.getReceptionDate(), newCase.getReportDate())) {
+			if (newCase.getPerson().getApproximateAgeType() == ApproximateAgeType.MONTHS) {
+				newCase.setCaseAge(0);
+			} else {
+				Date personChangeDate = newCase.getPerson().getChangeDate();
+				Date referenceDate = CaseLogic.getStartDate(newCase.getSymptoms().getOnsetDate(), newCase.getReceptionDate(), newCase.getReportDate());
+				newCase.setCaseAge(newCase.getPerson().getApproximateAge() - DateHelper.getYearsBetween(referenceDate, personChangeDate));
+				if (newCase.getCaseAge() < 0) {
+					newCase.setCaseAge(0);
+				}
+			}
+
 		}
 	}
 
@@ -670,9 +692,9 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	public CaseExportDto toExportDto(Case source) {
-		
+
 		Person sourcePerson = source.getPerson();
-		
+
 		CaseExportDto target = new CaseExportDto();
 
 		target.setUuid(source.getUuid());
@@ -703,7 +725,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 				sampleDates += DateHelper.formatShortDate(sourceSample.getSampleDateTime());
 			}
-			
+
 			for (SampleTest sourceSampleTest : sourceSample.getSampleTests()) {
 				if (sourceSampleTest.getTestResult() != null) {
 					if (labResults.length() > 0) {
@@ -715,7 +737,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		target.setSampleDates(sampleDates);
 		target.setLabResults(labResults);
-		
+
 		target.setCaseClassification(source.getCaseClassification());
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setPresentCondition(sourcePerson.getPresentCondition());
@@ -726,7 +748,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPhone(PersonHelper.buildPhoneString(sourcePerson.getPhone(), sourcePerson.getPhoneOwner()));
 		target.setOccupationType(PersonHelper.buildOccupationString(sourcePerson.getOccupationType(), sourcePerson.getOccupationDetails(), 
 				sourcePerson.getOccupationFacility() != null ? sourcePerson.getOccupationFacility().getName() : null));
-		
+
 		target.setTravelHistory(source.getEpiData().getTravels().stream()
 				.map(t -> EpiDataTravelHelper.buildTravelString(t.getTravelType(), t.getTravelDestination(), t.getTravelDateFrom(), t.getTravelDateTo()))
 				.collect(Collectors.joining(", ")));
@@ -740,10 +762,10 @@ public class CaseFacadeEjb implements CaseFacade {
 				break;
 			}
 		}
-		
+
 		target.setOnsetDate(source.getSymptoms().getOnsetDate());
 		target.setSymptoms(source.getSymptoms().toHumanString(false));
-		
+
 		return target;
 	}
 
@@ -1088,7 +1110,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		// TODO EpiWeekOfYear
-		
+
 		if (caseCriteria.getOnsetDateFrom() != null && caseCriteria.getOnsetDateTo() != null) {
 			extendFilterBuilderWithDate(filterBuilder, caseCriteria.getOnsetDateFrom(), caseCriteria.getOnsetDateTo(), Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
 		}
@@ -1142,7 +1164,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		// TODO EpiWeekOfYear
-		
+
 		if (caseCriteria.getReceptionDateFrom() != null && caseCriteria.getReceptionDateTo() != null) {
 			extendFilterBuilderWithDate(filterBuilder, caseCriteria.getReceptionDateFrom(), caseCriteria.getReceptionDateTo(), Case.TABLE_NAME, Case.RECEPTION_DATE);
 		}
@@ -1196,7 +1218,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		// TODO EpiWeekOfYear
-		
+
 		if (caseCriteria.getReportDateFrom() != null && caseCriteria.getReportDateTo() != null) {
 			extendFilterBuilderWithDate(filterBuilder, caseCriteria.getReportDateFrom(), caseCriteria.getReportDateTo(), Case.TABLE_NAME, Case.REPORT_DATE);
 		}
@@ -1210,29 +1232,54 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		if (caseCriteria.getAgeIntervals() != null && !caseCriteria.getAgeIntervals().isEmpty()) {
+			StringBuilder ageIntervalStringBuilder = new StringBuilder();
+
 			if (filterBuilder.length() > 0) {
-				filterBuilder.append(" AND ");
+				filterBuilder.append(" AND (");
+			} else {
+				filterBuilder.append(" (");
 			}
 
-			filterBuilder.append(Person.TABLE_NAME).append(".").append(Person.APPROXIMATE_AGE).append(" CASE WHEN ").append(Person.TABLE_NAME).append(".").append(Person.APPROXIMATE_AGE_TYPE).append(" = 'MONTH' THEN 0").append(" IN (");
-			//			boolean includeZeroYears = false;
+			boolean append80Plus = false;
+			boolean appendUnknown = false;
 			for (IntegerRange range : caseCriteria.getAgeIntervals()) {
-				//				if (includeZeroYears == false && (range.getFrom() == 0 || range.getTo() == 0)) {
-				//					includeZeroYears = true;
-				//				}
-
-				for (int age : IntStream.rangeClosed(range.getFrom(), range.getTo()).toArray()) {
-					filterBuilder.append(age + ",");
+				if (range.getTo() == null) {
+					if (range.getFrom() == null) {
+						appendUnknown = true;
+					} else {
+						append80Plus = true;
+					}
+				} else {
+					for (int age : IntStream.rangeClosed(range.getFrom(), range.getTo()).toArray()) {
+						if (ageIntervalStringBuilder.length() == 0) {
+							ageIntervalStringBuilder.append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE).append(" IN (");
+						}
+						ageIntervalStringBuilder.append(age + ",");
+					}
 				}
 			}
-			finalizeFilterBuilderSegment(filterBuilder);
 
-			//			if (includeZeroYears) {
-			//				filterBuilder.append(" OR ");
-			//				
-			//				filterBuilder.append(Person.TABLE_NAME).append(".").append(Person.APPROXIMATE_AGE_TYPE).append(" = 'MONTHS' AND ")
-			//				.append(Person.TABLE_NAME).append(".").append(Person.APPROXIMATE_AGE).append(" = 0");
-			//			}
+			if (ageIntervalStringBuilder.length() > 0) {
+				finalizeFilterBuilderSegment(ageIntervalStringBuilder);
+			}
+
+			if (append80Plus) {
+				if (ageIntervalStringBuilder.length() > 0) {
+					ageIntervalStringBuilder.append(" OR ");
+				}
+				ageIntervalStringBuilder.append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE).append(" >= 80");
+			}
+
+			if (appendUnknown) {
+				if (ageIntervalStringBuilder.length() > 0) {
+					ageIntervalStringBuilder.append(" OR ");
+				}
+				ageIntervalStringBuilder.append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE).append(" IS NULL");
+			}
+
+			ageIntervalStringBuilder.append(")");
+
+			filterBuilder.append(ageIntervalStringBuilder);
 		}
 
 		if (caseCriteria.getDiseases() != null && !caseCriteria.getDiseases().isEmpty()) {
@@ -1282,7 +1329,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		if (groupingA != null || groupingB != null) {
-			
+
 			sqlBuilder.append(" GROUP BY ");
 			String groupAAlias = "groupA";
 			String groupBAlias = "groupB";
@@ -1299,7 +1346,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 				sqlBuilder.append(groupBAlias);
 			}
-			
+
 			sqlBuilder.append(" ORDER BY ");
 			if (groupingA != null) {
 				sqlBuilder.append(groupAAlias).append(" NULLS LAST");
@@ -1310,7 +1357,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 				sqlBuilder.append(groupBAlias).append(" NULLS LAST");
 			}
-			
+
 			// Select
 			if (groupingSelectQueryB != null) {
 				sqlBuilder.insert(0, "," + groupingSelectQueryB);
@@ -1334,14 +1381,14 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		return filterBuilder;
 	}
-	
+
 	private StringBuilder extendFilterBuilderWithDate(StringBuilder filterBuilder, Date from, Date to, String tableName, String fieldName) {
 		if (filterBuilder.length() > 0) {
 			filterBuilder.append(" AND ");
 		}
-		
+
 		filterBuilder.append(tableName).append(".").append(fieldName).append(" BETWEEN '").append(from).append("' AND '").append(to).append("'");
-		
+
 		return filterBuilder;
 	}
 
@@ -1452,8 +1499,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		case AGE_INTERVAL_CHILDREN_COARSE:
 		case AGE_INTERVAL_CHILDREN_FINE:
 		case AGE_INTERVAL_CHILDREN_MEDIUM:
-			groupingSelectPartBuilder.append(Person.TABLE_NAME).append(".").append(Person.APPROXIMATE_AGE).append(" CASE WHEN ")
-			.append(Person.TABLE_NAME).append(".").append(Person.APPROXIMATE_AGE_TYPE).append(" = 'MONTH' THEN 0").append(" AS ").append(groupAlias);
+			extendGroupingBuilderWithAgeInterval(groupingSelectPartBuilder, grouping, groupAlias);
 			break;
 		case ONSET_TIME:
 			switch (subGrouping) {
@@ -1549,7 +1595,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		groupingBuilder.append("(EXTRACT(" + dateToExtract + " FROM ").append(tableName).append(".").append(fieldName).append(")::integer) AS ").append(groupAlias);
 	}
 
-	// TODO start here, only 20191 is taken for some reason
 	private void extendGroupingBuilderWithQuarterOfYear(StringBuilder groupingBuilder, String tableName, String fieldName, String groupAlias) {
 		groupingBuilder.append("((EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(") * 10)::integer) + (EXTRACT(QUARTER FROM ").append(tableName)
 		.append(".").append(fieldName).append(")::integer) AS ").append(groupAlias);
@@ -1558,6 +1603,62 @@ public class CaseFacadeEjb implements CaseFacade {
 	private void extendGroupingBuilderWithMonthOfYear(StringBuilder groupingBuilder, String tableName, String fieldName, String groupAlias) {
 		groupingBuilder.append("((EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(") * 100)::integer) + (EXTRACT(MONTH FROM ").append(tableName)
 		.append(".").append(fieldName).append(")::integer) AS ").append(groupAlias);
+	}
+
+	private void extendGroupingBuilderWithAgeInterval(StringBuilder groupingBuilder, StatisticsCaseAttribute grouping, String groupAlias) {
+		groupingBuilder.append("CASE ");
+		switch (grouping) {
+		case AGE_INTERVAL_1_YEAR:
+			for (int i = 0; i < 80; i++) {
+				groupingBuilder.append("WHEN ").append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE)
+				.append(" = ").append(i).append(" THEN ").append("'").append(i).append("-").append(i).append("' ");
+			}
+			break;
+		case AGE_INTERVAL_5_YEARS:
+			for (int i = 0; i < 80; i += 5) {
+				addAgeIntervalToStringBuilder(groupingBuilder, i, 4);
+			}
+			break;
+		case AGE_INTERVAL_CHILDREN_COARSE:
+			for (int i = 0; i < 30; i += 5) {
+				addAgeIntervalToStringBuilder(groupingBuilder, i, 4);
+			}
+			for (int i = 30; i < 80; i += 10) {
+				addAgeIntervalToStringBuilder(groupingBuilder, i, 9);
+			}
+			break;
+		case AGE_INTERVAL_CHILDREN_FINE:
+			for (int i = 0; i < 5; i++) {
+				groupingBuilder.append("WHEN ").append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE)
+				.append(" = ").append(i).append(" THEN ").append("'").append(i).append("-").append(i).append("' ");
+			}
+			for (int i = 5; i < 30; i += 5) {
+				addAgeIntervalToStringBuilder(groupingBuilder, i, 4);
+			}
+			for (int i = 30; i < 80; i += 10) {
+				addAgeIntervalToStringBuilder(groupingBuilder, i, 9);
+			}
+			break;
+		case AGE_INTERVAL_CHILDREN_MEDIUM:
+			for (int i = 0; i < 30; i += 5) {
+				addAgeIntervalToStringBuilder(groupingBuilder, i, 4);
+			}
+			for (int i = 30; i < 80; i += 10) {
+				addAgeIntervalToStringBuilder(groupingBuilder, i, 9);
+			}
+			break;
+		default:
+			throw new IllegalArgumentException(grouping.toString());
+		}
+		
+		groupingBuilder.append("WHEN ").append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE).append(" >= 80 THEN '80+' ");
+		groupingBuilder.append("ELSE 'Unknown' END AS " + groupAlias);
+	}
+	
+	private void addAgeIntervalToStringBuilder(StringBuilder groupingBuilder, int number, int increase) {
+		groupingBuilder.append("WHEN ").append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE)
+		.append(" BETWEEN ").append(number).append(" AND ").append(number + increase)
+		.append(" THEN '").append(number).append("-").append(number + increase).append("' ");
 	}
 
 	@LocalBean
