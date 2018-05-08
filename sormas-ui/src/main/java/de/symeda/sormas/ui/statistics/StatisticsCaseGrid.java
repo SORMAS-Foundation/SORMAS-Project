@@ -16,13 +16,15 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public class StatisticsCaseGrid extends Grid {
 
-	private static final String UNKNOWN = "Unknown";
-	
+	private static final String COLUMN_UNKNOWN = "Column_Unknown";
+	private static final String COLUMN_TOTAL = "Column_Total";
+
 	private final StatisticsCaseAttribute rowsAttribute;
 	private final StatisticsCaseSubAttribute rowsSubAttribute;
 	private final StatisticsCaseAttribute columnsAttribute;
@@ -57,69 +59,127 @@ public class StatisticsCaseGrid extends Grid {
 			return;
 		}
 
-		// Set columns
-		Map<String, String> columns = new TreeMap<>();
-		for (Object[] entry : content) {
-			formatContentEntry(entry);
-			
-			String rawColumnName = null;
-			String columnName = null;
-			
-			if (entry[entry.length - 1] == null) {
-				rawColumnName = UNKNOWN;
-				columnName = UNKNOWN;
+		// If no displayed attributes are selected, simply show the total number of cases
+		if (rowsAttribute == null && columnsAttribute == null) {
+			addColumn("Number of cases");
+			addRow(new Object[]{String.valueOf(content.get(0))});
+		} else {
+			// Set columns
+			Map<Object, Integer> columnsMap = null;
+
+			addColumn("");
+
+			if (columnsAttribute != null || columnsSubAttribute != null) {
+				Map<String, String> columns = new TreeMap<>();
+				for (Object[] entry : content) {
+					formatContentEntry(entry, entry.length - 1, columnsAttribute, columnsSubAttribute);
+
+					String rawColumnName = null;
+					String columnName = null;
+
+					if (entry[entry.length - 1] == null) {
+						rawColumnName = COLUMN_UNKNOWN;
+						columnName = "Unknown";
+					} else {
+						rawColumnName = entry[entry.length - 1].toString();
+						columnName = buildHeader(rawColumnName != null ? rawColumnName : null, columnsAttribute, columnsSubAttribute);
+					}
+
+					columns.put(rawColumnName, columnName);
+				}
+
+				if (columnsAttribute.isNeedsSorting()) {
+					for (Map.Entry<String, String> mapEntry : DataHelper.entriesSortedByValues(columns)) {
+						addColumn(mapEntry.getKey());
+						getColumn(mapEntry.getKey()).setHeaderCaption(mapEntry.getValue());
+					}
+				} else {
+					for (String column : columns.keySet()) {
+						addColumn(column);
+						getColumn(column).setHeaderCaption(columns.get(column));
+					}
+				}
+
+				addColumn(COLUMN_TOTAL);
+				getColumn(COLUMN_TOTAL).setHeaderCaption("Total");
+
+				// Build map of column properties
+				columnsMap = new HashMap<>();
+				List<Column> gridColumns = getColumns();
+				for (Column column : gridColumns) {
+					columnsMap.put(column.getPropertyId(), gridColumns.indexOf(column));
+				}
 			} else {
-				rawColumnName = entry[entry.length - 1].toString();
-				columnName = buildHeader(rawColumnName != null ? rawColumnName : null, columnsAttribute, columnsSubAttribute);
-			}
-			
-			columns.put(rawColumnName, columnName);
-		}
-
-		addColumn("");
-
-		for (String column : columns.keySet()) {
-			addColumn(column);
-			getColumn(column).setHeaderCaption(columns.get(column));
-		}
-
-		// Build map of column properties
-		Map<Object, Integer> columnsMap = new HashMap<>();
-		List<Column> gridColumns = getColumns();
-		for (Column column : gridColumns) {
-			columnsMap.put(column.getPropertyId(), gridColumns.indexOf(column));
-		}
-
-		// Add data
-		Object[] currentRow = null;
-		Object rowHeader = null;
-		for (Object[] entry : content) {
-			if (currentRow != null && rowHeader != null && !rowHeader.equals(entry[1])) {
-				addRow(currentRow);
-				currentRow = null;
-				rowHeader = null;
-			}
-			
-			if (currentRow == null && rowHeader == null) {
-				currentRow = new Object[getColumns().size()];
-				currentRow[0] = buildHeader(entry[1] == null ? null : entry[1].toString(), rowsAttribute, rowsSubAttribute);
-				rowHeader = entry[1];
+				addColumn("Number of cases");
 			}
 
-			int columnIndex;
-			if (entry[entry.length - 1] != null) {
-				columnIndex = columnsMap.get(entry[entry.length - 1].toString());
+			// Add data
+			if (rowsAttribute != null || rowsSubAttribute != null) {
+				Object[] currentRow = null;
+				Object rowHeader = null;
+
+				long[] columnTotals = new long[getColumns().size()];
+				for (Object[] entry : content) {
+					if (columnsAttribute != null || columnsSubAttribute != null) {
+						formatContentEntry(entry, 1, rowsAttribute, rowsSubAttribute);
+
+						if (currentRow != null && rowHeader != null && !rowHeader.equals(entry[1])) {
+							int totalForRow = calculateTotalForRow(currentRow);
+							currentRow[currentRow.length - 1] = String.valueOf(totalForRow);
+							columnTotals[columnTotals.length - 1] += totalForRow;
+							addRow(currentRow);
+							currentRow = null;
+							rowHeader = null;
+						}
+
+						if (currentRow == null && rowHeader == null) {
+							currentRow = new Object[getColumns().size()];
+							currentRow[0] = buildHeader(entry[1] == null ? null : entry[1].toString(), rowsAttribute, rowsSubAttribute);
+							rowHeader = entry[1];
+						}
+
+						int columnIndex;
+						if (entry[entry.length - 1] != null) {
+							columnIndex = columnsMap.get(entry[entry.length - 1].toString());
+						} else {
+							columnIndex = columnsMap.get(COLUMN_UNKNOWN);
+						}
+						currentRow[columnIndex] = entry[0].toString();
+						columnTotals[columnIndex] += (long) entry[0];
+					} else {
+						currentRow = new Object[getColumns().size()];
+						currentRow[0] = buildHeader(entry[1] == null ? null : entry[1].toString(), rowsAttribute, rowsSubAttribute);
+						currentRow[1] = entry[0].toString();
+						addRow(currentRow);
+					}
+				}
+
+				if (columnsAttribute != null || columnsSubAttribute != null) {
+					if (currentRow[0] != null) {
+						int totalForRow = calculateTotalForRow(currentRow);
+						currentRow[currentRow.length - 1] = String.valueOf(totalForRow);
+						columnTotals[columnTotals.length - 1] += totalForRow;
+						addRow(currentRow);
+					}
+				}
+
+				if (rowsAttribute.isNeedsSorting()) {
+					sort("");
+				}
+
+				// Total row
+				if (columnsAttribute != null || columnsSubAttribute != null) {
+					currentRow = new Object[getColumns().size()];
+					currentRow[0] = "Total";
+					for (int i = 1; i < columnTotals.length; i++) {
+						currentRow[i] = String.valueOf(columnTotals[i]);
+					}
+					addRow(currentRow);
+				}
 			} else {
-				columnIndex = columnsMap.get(UNKNOWN);
+				//
 			}
-			currentRow[columnIndex] = entry[0].toString();
 		}
-
-		if (currentRow[0] != null) {
-			addRow(currentRow);
-		}
-
-		setCaption("Case count by " + "Row" + " and " + "Column");
 
 		setHeightMode(HeightMode.ROW);
 		setHeightByRows(getContainerDataSource().size() >= 15 ? 15 : getContainerDataSource().size());
@@ -127,9 +187,9 @@ public class StatisticsCaseGrid extends Grid {
 
 	private String buildHeader(String rawHeader, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
 		if (rawHeader == null) {
-			return UNKNOWN;
+			return "Unknown";
 		}
-		
+
 		if (subAttribute != null) {
 			switch (subAttribute) {
 			case QUARTER:
@@ -150,6 +210,8 @@ public class StatisticsCaseGrid extends Grid {
 			}
 		} else {
 			switch (attribute) {
+			//			case DISEASE:
+			//				return Disease.valueOf(rawHeader).toShortString();
 			case CLASSIFICATION:
 				return CaseClassification.valueOf(rawHeader).toString();
 			case OUTCOME:
@@ -162,18 +224,34 @@ public class StatisticsCaseGrid extends Grid {
 		}
 	}
 
-	private void formatContentEntry(Object[] entry) {
-		if (columnsAttribute == StatisticsCaseAttribute.DISEASE) {
-			entry[entry.length - 1] = Disease.valueOf(entry[entry.length - 1].toString()).toShortString();
+	private void formatContentEntry(Object[] entry, int indexToFormat, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
+		if (entry[indexToFormat] == null) {
 			return;
 		}
-		
-		if (columnsSubAttribute == StatisticsCaseSubAttribute.MONTH) {
-			if ((int) entry[entry.length - 1] < 10) {
-				entry[entry.length - 1] = "0" + entry[entry.length - 1];
+
+		if (attribute == StatisticsCaseAttribute.DISEASE) {
+			entry[indexToFormat] = Disease.valueOf(entry[indexToFormat].toString()).toShortString();
+			return;
+		}
+
+		if (subAttribute == StatisticsCaseSubAttribute.MONTH) {
+			if ((int) entry[indexToFormat] < 10) {
+				entry[indexToFormat] = "0" + entry[indexToFormat];
 			}
 			return;
 		}
 	}
-	
+
+	private int calculateTotalForRow(Object[] row) {
+		int total = 0;
+		for (int i = 1; i < row.length; i++) {
+			if (row[i] != null) {
+				total += Integer.valueOf(row[i].toString());
+			}
+		}
+
+		return total;
+	}
+
+
 }

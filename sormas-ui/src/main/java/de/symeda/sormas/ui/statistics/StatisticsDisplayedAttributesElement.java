@@ -137,6 +137,22 @@ public class StatisticsDisplayedAttributesElement extends HorizontalLayout {
 		CssStyles.style(displayedSubAttributeDropdown, CssStyles.FORCE_CAPTION);
 		MenuItem displayedSubAttributeItem = displayedSubAttributeDropdown.addItem(SPECIFY_YOUR_SELECTION, null);
 
+		// Empty selections
+		Command emptyItemCommand = selectedItem -> {
+			rowsAttribute = null;
+			rowsSubAttribute = null;
+			columnsAttribute = null;
+			columnsSubAttribute = null;
+			displayedSubAttributeItem.removeChildren();
+			displayedSubAttributeItem.setText(SPECIFY_YOUR_SELECTION);
+			rowsOrColumnsLayout.removeComponent(displayedSubAttributeDropdown);
+			displayedAttributeItem.setText("");
+			for (MenuItem menuItem : displayedAttributeItem.getChildren()) {
+				menuItem.setStyleName("");
+			}
+		};
+		displayedAttributeItem.addItem("", emptyItemCommand);
+		
 		// Add attribute groups
 		for (StatisticsCaseAttributeGroup attributeGroup : StatisticsCaseAttributeGroup.values()) {
 			MenuItem attributeGroupItem = displayedAttributeItem.addItem(attributeGroup.toString(), null);

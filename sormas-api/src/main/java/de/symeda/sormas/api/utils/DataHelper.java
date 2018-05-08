@@ -8,7 +8,11 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.HasUuid;
@@ -144,6 +148,20 @@ public final class DataHelper {
 	
 	public static BigDecimal getTruncatedBigDecimal(BigDecimal number) {
 		return number.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0 ? number.setScale(0,  RoundingMode.HALF_UP) : number;
+	}
+	
+	public static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
+	    SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
+	        new Comparator<Map.Entry<K,V>>() {
+	            @Override 
+	            public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
+	                int res = e1.getValue().compareTo(e2.getValue());
+	                return res != 0 ? res : 1;
+	            }
+	        }
+	    );
+	    sortedEntries.addAll(map.entrySet());
+	    return sortedEntries;
 	}
 
 }

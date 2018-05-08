@@ -9,12 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.StreamResource;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapPolygon;
 import com.vaadin.ui.AbstractOrderedLayout;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.Alignment;import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -37,12 +40,14 @@ import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.dashboard.MapComponent;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.statistics.StatisticsFilterElement.TokenizableValue;
 import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationChartType;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DownloadUtil;
 
 public class StatisticsView extends AbstractStatisticsView {
 
@@ -55,6 +60,7 @@ public class StatisticsView extends AbstractStatisticsView {
 	private StatisticsDisplayedAttributesElement displayedAttributesElement;
 	private VerticalLayout resultsLayout;
 	private StatisticsCaseGrid statisticsCaseGrid;
+	private Button exportButton;
 	private List<StatisticsFilterComponent> filterComponents = new ArrayList<>();
 
 	public StatisticsView() {
@@ -75,8 +81,9 @@ public class StatisticsView extends AbstractStatisticsView {
 		CssStyles.style(filtersLayout, CssStyles.STATISTICS_TITLE_BOX);
 		filtersLayout.setSpacing(true);
 		filtersLayout.setWidth(100, Unit.PERCENTAGE);
-		Label filtersInfoText = new Label("You can restrict the collected data by defining attribute filters. To add a new filter, click on the + icon at the bottom of\n" + 
-				"the list, and to specify the values you want to include, simply type the value in the appropriate filter bar.");
+		Label filtersInfoText = new Label("You can restrict the collected data by defining attribute filters. To add a new filter, click on the + icon at the bottom of " + 
+				"the list, and to specify the values you want to include, simply type the value in the appropriate filter bar. Clicking on the x icon on the left of a " +
+				"filter will remove it. You can also use the two smaller buttons to the right of a filter to add or remove all allowed values from the input field.");
 		filtersLayout.addComponent(filtersInfoText);
 		filtersLayout.addComponent(createAddFilterButton());
 		statisticsLayout.addComponent(filtersLayout);
@@ -119,7 +126,9 @@ public class StatisticsView extends AbstractStatisticsView {
 				filtersLayout.addComponent(createAddFilterButton());
 				if (statisticsCaseGrid != null) {
 					resultsLayout.removeComponent(statisticsCaseGrid);
+					resultsLayout.removeComponent(exportButton);
 					statisticsCaseGrid = null;
+					exportButton = null;
 				}
 			});
 			buttonLayout.addComponent(resetFiltersButton);
@@ -134,6 +143,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		
 		resultsLayout = new VerticalLayout();
 		resultsLayout.setWidth(100, Unit.PERCENTAGE);
+		resultsLayout.setSpacing(true);
 		CssStyles.style(resultsLayout, CssStyles.STATISTICS_TITLE_BOX);
 		statisticsLayout.addComponent(resultsLayout);
 		
@@ -294,11 +304,20 @@ public class StatisticsView extends AbstractStatisticsView {
 	}
 	
 	public void generateTable() {
+		exportButton = new Button("Export");
+		exportButton.setDescription("Export the columns and rows that are shown in the table above.");
+		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		exportButton.setIcon(FontAwesome.TABLE);
+		resultsLayout.addComponent(exportButton);
 		
 		List<Object[]> resultData = generateStatistics();
 		statisticsCaseGrid = new StatisticsCaseGrid(displayedAttributesElement.getRowsAttribute(), displayedAttributesElement.getRowsSubAttribute(), displayedAttributesElement.getColumnsAttribute(), displayedAttributesElement.getColumnsSubAttribute(), resultData);
 		statisticsCaseGrid.setWidth(100, Unit.PERCENTAGE);
 		resultsLayout.addComponent(statisticsCaseGrid);
+		
+		StreamResource streamResource = DownloadUtil.createGridExportStreamResource(statisticsCaseGrid.getContainerDataSource(), statisticsCaseGrid.getColumns(), "sormas_statistics", "sormas_statistics_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+		FileDownloader fileDownloader = new FileDownloader(streamResource);
+		fileDownloader.extend(exportButton);
 	}
 	
 	public static String UNKNOWN = "Unknown";
