@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.statistics;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -12,12 +13,14 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapPolygon;
+import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.IntegerRange;
@@ -35,6 +38,7 @@ import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.ui.dashboard.MapComponent;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.statistics.StatisticsFilterElement.TokenizableValue;
 import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationChartType;
@@ -484,6 +488,12 @@ public class StatisticsView extends AbstractStatisticsView {
 	
 	public void generateMap() {
 		
+		HorizontalLayout mapLayout = new HorizontalLayout();
+		mapLayout.setSpacing(true);
+		mapLayout.setMargin(false);
+		mapLayout.setWidth(100, Unit.PERCENTAGE);
+		mapLayout.setHeightUndefined();
+		
 		GoogleMap map = new GoogleMap("AIzaSyAaJpN8a_NhEU-02-t5uVi02cAaZtKafkw", null, null);
 		map.addStyleName("no-tiles");
 		map.setWidth(100, Unit.PERCENTAGE);
@@ -524,15 +534,15 @@ public class StatisticsView extends AbstractStatisticsView {
 			return Long.compare((Long)a[0], (Long)b[0]);
 		});
 
-		Long valuesLowerQuartile = resultData.size() > 0 ? (Long)resultData.get((int) (resultData.size()  * 0.25))[0] : null;
-		Long valuesMedian = resultData.size() > 0 ? (Long)resultData.get((int) (resultData.size() * 0.5))[0] : null;
-		Long valuesUpperQuartile = resultData.size() > 0 ? (Long)resultData.get((int) (resultData.size() * 0.75))[0] : null;
+		BigDecimal valuesLowerQuartile = new BigDecimal(resultData.size() > 0 ? (Long)resultData.get((int) (resultData.size()  * 0.25))[0] : null);
+		BigDecimal valuesMedian = new BigDecimal(resultData.size() > 0 ? (Long)resultData.get((int) (resultData.size() * 0.5))[0] : null);
+		BigDecimal valuesUpperQuartile = new BigDecimal(resultData.size() > 0 ? (Long)resultData.get((int) (resultData.size() * 0.75))[0] : null);
 
 		// Draw relevant district fills
 		for (Object[] resultRow : resultData) {
 			
 			String shapeUuid = (String)resultRow[1];
-			Long shapeValue = (Long)resultRow[0];
+			BigDecimal shapeValue = new BigDecimal((Long)resultRow[0]);
 			GeoLatLon[][] shape;
 			switch (displayedAttributesElement.getVisualizationMapType()) {
 			case REGIONS:
@@ -559,15 +569,15 @@ public class StatisticsView extends AbstractStatisticsView {
 
 				polygon.setStrokeOpacity(0);
 
-				if (shapeValue.compareTo(0l) == 0) {
+				if (shapeValue.compareTo(BigDecimal.ZERO) == 0) {
 					polygon.setFillOpacity(0);
-				} else if (shapeValue.compareTo(valuesLowerQuartile) <= 0) {
+				} else if (shapeValue.compareTo(valuesLowerQuartile) < 0) {
 					polygon.setFillColor("#FEDD6C");
 					polygon.setFillOpacity(0.5);
-				} else if (shapeValue.compareTo(valuesMedian) <= 0) {
+				} else if (shapeValue.compareTo(valuesMedian) < 0) {
 					polygon.setFillColor("#FDBF44");
 					polygon.setFillOpacity(0.5);
-				} else if (shapeValue.compareTo(valuesUpperQuartile) <= 0) {
+				} else if (shapeValue.compareTo(valuesUpperQuartile) < 0) {
 					polygon.setFillColor("#F47B20");
 					polygon.setFillOpacity(0.5);							
 				} else {
@@ -588,9 +598,21 @@ public class StatisticsView extends AbstractStatisticsView {
 				map.addPolygonOverlay(polygon);
 			}
 		}
+		mapLayout.addComponent(map);
+		mapLayout.setExpandRatio(map, 1);
 		
-		resultsLayout.addComponent(map);
-		resultsLayout.setExpandRatio(map, 1);
+		AbstractOrderedLayout regionLegend = MapComponent.buildRegionLegend(
+				true, CaseMeasure.CASE_COUNT, false, 
+				valuesLowerQuartile, valuesMedian, valuesUpperQuartile);
+		Label legendHeader = new Label("Map key");
+		CssStyles.style(legendHeader, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		regionLegend.addComponent(legendHeader, 0);
+		
+		mapLayout.addComponent(regionLegend);
+		mapLayout.setExpandRatio(regionLegend, 0);
+		
+		resultsLayout.addComponent(mapLayout);
+		resultsLayout.setExpandRatio(mapLayout, 1);
 	}
 
 	private Button createAddFilterButton() {
