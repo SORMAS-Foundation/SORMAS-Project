@@ -21,16 +21,16 @@ public enum StatisticsCaseAttribute {
 	CLASSIFICATION(true),
 	OUTCOME(true);
 	
-	private final boolean needsSorting;
+	private final boolean sortByCaption;
 	private final StatisticsCaseSubAttribute[] subAttributes;
 
-	StatisticsCaseAttribute(boolean needsSorting, StatisticsCaseSubAttribute ...subAttributes) {
-		this.needsSorting = needsSorting;
+	StatisticsCaseAttribute(boolean sortByCaption, StatisticsCaseSubAttribute ...subAttributes) {
+		this.sortByCaption = sortByCaption;
 		this.subAttributes = subAttributes;
 	}
 	
-	public boolean isNeedsSorting() {
-		return needsSorting;
+	public boolean isSortByCaption() {
+		return sortByCaption;
 	}
 
 	public StatisticsCaseSubAttribute[] getSubAttributes() {

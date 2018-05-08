@@ -88,7 +88,7 @@ public class StatisticsCaseGrid extends Grid {
 					columns.put(rawColumnName, columnName);
 				}
 
-				if (columnsAttribute.isNeedsSorting()) {
+				if (columnsAttribute.isSortByCaption()) {
 					for (Map.Entry<String, String> mapEntry : DataHelper.entriesSortedByValues(columns)) {
 						addColumn(mapEntry.getKey());
 						getColumn(mapEntry.getKey()).setHeaderCaption(mapEntry.getValue());
@@ -163,7 +163,7 @@ public class StatisticsCaseGrid extends Grid {
 					}
 				}
 
-				if (rowsAttribute.isNeedsSorting()) {
+				if (rowsAttribute.isSortByCaption()) {
 					sort("");
 				}
 
@@ -182,7 +182,7 @@ public class StatisticsCaseGrid extends Grid {
 		}
 
 		setHeightMode(HeightMode.ROW);
-		setHeightByRows(getContainerDataSource().size() >= 15 ? 15 : getContainerDataSource().size());
+		setHeightByRows(Math.max(1, Math.min(getContainerDataSource().size(), 15)));
 	}
 
 	private String buildHeader(String rawHeader, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
