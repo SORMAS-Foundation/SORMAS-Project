@@ -568,6 +568,11 @@ public class TeboRadioGroup extends EditTeboPropertyField<Object> {
         }
     }
 
+    @Override
+    protected void setHint(String hint) {
+
+    }
+
     // </editor-fold>
 
     private class OnFocusChangeListenerHandler implements OnFocusChangeListener {

@@ -451,8 +451,6 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
 
     @Override
     protected void updateUI(FragmentReportWeeklyLayoutBinding contentBinding, WeeklyReport weeklyReport) {
-        //contentBinding.spnYear.setValue(mReportFilter.getYear(), true);
-        //contentBinding.spnEpiWeek.setValue(mReportFilter.getWeek(), true);
         contentBinding.txtStartPeroid.setValue(mReportFilter.getStartDate());
         contentBinding.txtEndPeroid.setValue(mReportFilter.getEndDate());
 

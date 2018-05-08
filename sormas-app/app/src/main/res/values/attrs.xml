@@ -197,7 +197,6 @@
         <attr name="textAlignment" />
         <attr name="gravity" />
         <attr name="description" />
-        <attr name="required" />
         <attr name="showCaption" />
         <attr name="nextFocusLeft" />
         <attr name="nextFocusRight" />
@@ -210,12 +209,17 @@
         <attr name="italicCaption" />
     </declare-styleable>
 
-    <declare-styleable name="TeboDatePicker">
+    <declare-styleable name="EditTeboPropertyField">
+        <attr name="required" />
         <attr name="hint" />
     </declare-styleable>
 
+    <declare-styleable name="TeboDatePicker">
+        <!--<attr name="hint" />-->
+    </declare-styleable>
+
     <declare-styleable name="TeboTimePicker">
-        <attr name="hint" />
+        <!--<attr name="hint" />-->
     </declare-styleable>
 
     <declare-styleable name="TeboDateTimePicker">
@@ -228,7 +232,7 @@
         <attr name="labelColor" />
         <attr name="textAlignment" />
         <attr name="gravity" />
-        <attr name="hint" />
+        <!--<attr name="hint" />-->
         <attr name="description" />
         <attr name="required" />
         <attr name="singleLine" />
@@ -243,7 +247,7 @@
         <attr name="labelColor" />
         <attr name="textAlignment" />
         <attr name="gravity" />
-        <attr name="hint" />
+        <!--<attr name="hint" />-->
         <attr name="description" />
         <attr name="required" />
         <attr name="singleLine" />
@@ -258,7 +262,7 @@
         <attr name="textColor" />
         <attr name="background" />
 
-        <attr name="hint" />
+        <!--<attr name="hint" />-->
         <attr name="singleLine" />
         <attr name="maxLines" />
         <attr name="inputType" />
@@ -277,7 +281,7 @@
         <attr name="textColor" />
         <attr name="background" />
 
-        <attr name="hint" />
+        <!--<attr name="hint" />-->
         <attr name="singleLine" />
         <attr name="maxLines" />
         <attr name="inputType" />
@@ -296,7 +300,7 @@
         <attr name="labelColor" />
         <attr name="textAlignment" />
         <attr name="gravity" />
-        <attr name="hint" />
+        <!--<attr name="hint" />-->
         <attr name="description" />
         <attr name="required" />
     </declare-styleable>
@@ -306,7 +310,7 @@
         <attr name="labelColor" />
         <attr name="textAlignment" />
         <attr name="gravity" />
-        <attr name="hint" />
+        <!--<attr name="hint" />-->
         <attr name="description" />
         <attr name="required" />
         <!--<attr name="showCaption" />-->

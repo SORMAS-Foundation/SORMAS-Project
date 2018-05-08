@@ -1,8 +1,10 @@
 package de.symeda.sormas.app.component;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.TextView;
 
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
@@ -29,17 +31,45 @@ public abstract class EditTeboPropertyField<T> extends TeboPropertyField<T> {
     private OnShowInputErrorListener onShowInputErrorListener;
     private OnHideInputErrorListener onHideInputErrorListener;
 
+    private TextView lblRequired;
+    private TextView lblSoftRequired;
+
+    private String hint;
+    private boolean required;
+
     public EditTeboPropertyField(Context context) {
         super(context);
+        initializePropertyFieldViews(context, null, 0);
     }
 
     public EditTeboPropertyField(Context context, AttributeSet attrs) {
         super(context, attrs);
+        initializePropertyFieldViews(context, attrs, 0);
     }
 
     public EditTeboPropertyField(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        initializePropertyFieldViews(context, attrs, defStyle);
     }
+
+    private void initializePropertyFieldViews(Context context, AttributeSet attrs, int defStyle) {
+        if (attrs != null) {
+            TypedArray a = context.getTheme().obtainStyledAttributes(
+                    attrs,
+                    R.styleable.EditTeboPropertyField,
+                    0, 0);
+
+            try {
+                hint = a.getString(R.styleable.EditTeboPropertyField_hint);
+                required = a.getBoolean(R.styleable.EditTeboPropertyField_required, false);
+            } finally {
+                a.recycle();
+            }
+        }
+    }
+
+
+
 
     public void setVisualState(VisualState state) {
         if (state == VisualState.ERROR)
@@ -185,6 +215,10 @@ public abstract class EditTeboPropertyField<T> extends TeboPropertyField<T> {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
+        lblRequired = (TextView) this.findViewById(R.id.lblRequired);
+        lblSoftRequired = (TextView) this.findViewById(R.id.lblSoftRequired);
+        setRequired(required);
+
         setOnInputErrorListener(new OnInputErrorListener() {
             @Override
             public void onInputErrorChange(View v, String message, boolean errorState) {
@@ -207,14 +241,53 @@ public abstract class EditTeboPropertyField<T> extends TeboPropertyField<T> {
         });
     }
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        //Set Hint
+        setHint(hint);
+    }
+
     public void changeVisualState(VisualState state) {
         changeVisualState(state, null);
     }
 
     public abstract void changeVisualState(VisualState state, UserRight editOrCreateUserRight);
 
+    protected abstract void setHint(String hint);
+
     @Override
     public int getCaptionColor() {
         return getResources().getColor(R.color.controlTextColor);
+    }
+
+    public void setRequired(boolean value) {
+        if(lblRequired == null)
+            return;
+
+        if(lblSoftRequired == null)
+            return;
+
+        lblRequired.setVisibility((value)? VISIBLE : GONE);
+        lblSoftRequired.setVisibility(GONE);
+    }
+
+    public void setSoftRequired(boolean value) {
+        if(lblRequired == null)
+            return;
+
+        if(lblSoftRequired == null)
+            return;
+
+        lblRequired.setVisibility(GONE);
+        lblSoftRequired.setVisibility((value)? VISIBLE : GONE);
+    }
+
+    public boolean isRequired() {
+        if(lblRequired == null)
+            return false;
+
+        return (lblRequired.getVisibility() == VISIBLE)? true : false;
     }
 }

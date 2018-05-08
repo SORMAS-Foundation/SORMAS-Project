@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.analytics.Tracker;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -23,10 +25,14 @@ import de.symeda.sormas.app.component.TeboPropertyField;
 public class BaseFragment extends Fragment {
     public final static String EDIT_OR_CREATE_USER_RIGHT = "editOrCreateUserRight";
     protected UserRight editOrCreateUserRight;
+    protected Tracker tracker;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SormasApplication application = (SormasApplication) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
 
         manageActivityWriteRights(editOrCreateUserRight);
     }

@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
@@ -45,7 +44,6 @@ public class TeboDatePicker extends EditTeboPropertyField<Date> implements ITebo
     private EditText txtControlInput;
     private InverseBindingListener inverseBindingListener;
     private FragmentManager fragmentManager;
-    private String hint;
 
     // <editor-fold defaultstate="collapsed" desc="Constructors">
 
@@ -121,7 +119,8 @@ public class TeboDatePicker extends EditTeboPropertyField<Date> implements ITebo
 
     }
 
-    public void setHint(String value) {
+    @Override
+    protected void setHint(String value) {
         txtControlInput.setHint(value);
     }
 
@@ -136,18 +135,18 @@ public class TeboDatePicker extends EditTeboPropertyField<Date> implements ITebo
 
     @Override
     protected void initializeViews(Context context, AttributeSet attrs, int defStyle) {
-        if (attrs != null) {
+        /*if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(
                     attrs,
                     R.styleable.TeboDatePicker,
                     0, 0);
 
             try {
-                hint = a.getString(R.styleable.TeboDatePicker_hint);
+
             } finally {
                 a.recycle();
             }
-        }
+        }*/
     }
 
     @Override
@@ -202,9 +201,6 @@ public class TeboDatePicker extends EditTeboPropertyField<Date> implements ITebo
                 onValueChanged();
             }
         });
-
-        //Set Hint
-        txtControlInput.setHint(hint);
 
 
         CompositeOnFocusChangeListener txtControlInputListeners = new CompositeOnFocusChangeListener();

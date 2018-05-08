@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.component;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -37,7 +38,6 @@ public class TeboAddress extends EditTeboPropertyField<Location> implements ICon
     protected InverseBindingListener inverseBindingListener;
 
     private Location location;
-    private String hint;
     private boolean singleLine;
     private int maxLines;
     private int inputType;
@@ -120,7 +120,8 @@ public class TeboAddress extends EditTeboPropertyField<Location> implements ICon
 
     }
 
-    public void setHint(String value) {
+    @Override
+    protected void setHint(String value) {
         txtControlInput.setHint(value);
     }
 
@@ -179,7 +180,6 @@ public class TeboAddress extends EditTeboPropertyField<Location> implements ICon
                     0, 0);
 
             try {
-                hint = a.getString(R.styleable.TeboAddress_hint);
                 singleLine = a.getBoolean(R.styleable.TeboAddress_singleLine, true);
                 maxLines = a.getInt(R.styleable.TeboAddress_maxLines, 1);
                 inputType = a.getInt(R.styleable.TeboAddress_inputType, InputType.TYPE_CLASS_TEXT);
@@ -213,6 +213,7 @@ public class TeboAddress extends EditTeboPropertyField<Location> implements ICon
 
     }
 
+    @SuppressLint("WrongConstant")
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -245,7 +246,6 @@ public class TeboAddress extends EditTeboPropertyField<Location> implements ICon
         });
 
         //Set Hint
-        txtControlInput.setHint(hint);
         setSingleLine(singleLine);
 
         txtControlInput.setOnFocusChangeListener(new NotificationVisibilityOnFocusChangeHandler(this));

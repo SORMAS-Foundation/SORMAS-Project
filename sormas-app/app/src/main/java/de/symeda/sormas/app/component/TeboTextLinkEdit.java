@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.component;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -36,7 +37,6 @@ public class TeboTextLinkEdit extends EditTeboPropertyField<String> implements I
     protected TextView txtControlInput;
     protected InverseBindingListener inverseBindingListener;
 
-    private String hint;
     private boolean singleLine;
     private int maxLines;
     private int inputType;
@@ -167,7 +167,8 @@ public class TeboTextLinkEdit extends EditTeboPropertyField<String> implements I
 
     }
 
-    public void setHint(String value) {
+    @Override
+    protected void setHint(String value) {
         txtControlInput.setHint(value);
     }
 
@@ -226,7 +227,6 @@ public class TeboTextLinkEdit extends EditTeboPropertyField<String> implements I
                     0, 0);
 
             try {
-                hint = a.getString(R.styleable.TeboTextLinkEdit_hint);
                 singleLine = a.getBoolean(R.styleable.TeboTextLinkEdit_singleLine, true);
                 maxLines = a.getInt(R.styleable.TeboTextLinkEdit_maxLines, 1);
                 inputType = a.getInt(R.styleable.TeboTextLinkEdit_inputType, InputType.TYPE_CLASS_TEXT);
@@ -260,6 +260,7 @@ public class TeboTextLinkEdit extends EditTeboPropertyField<String> implements I
 
     }
 
+    @SuppressLint("WrongConstant")
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -291,8 +292,6 @@ public class TeboTextLinkEdit extends EditTeboPropertyField<String> implements I
             }
         });
 
-        //Set Hint
-        txtControlInput.setHint(hint);
         setSingleLine(singleLine);
 
         txtControlInput.setOnFocusChangeListener(new NotificationVisibilityOnFocusChangeHandler(this));

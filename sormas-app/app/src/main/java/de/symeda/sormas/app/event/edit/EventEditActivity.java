@@ -9,33 +9,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
-import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.core.notification.NotificationType;
-import de.symeda.sormas.app.databinding.FragmentEventEditLayoutBinding;
 import de.symeda.sormas.app.event.edit.sub.EventNewPersonsInvolvedActivity;
-import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.core.ISaveable;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.util.ConstantHelper;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
-import de.symeda.sormas.app.util.SyncCallback;
 
 /**
  * Created by Orson on 07/02/2018.
@@ -201,102 +186,10 @@ public class EventEditActivity extends BaseEditActivity<Event> {
         if (activeFragment == null)
             return;
 
-        FragmentEventEditLayoutBinding binding = (FragmentEventEditLayoutBinding)activeFragment.getContentBinding();
-        EventDao eventDao = DatabaseHelper.getEventDao();
-        Event record = (Event)activeFragment.getPrimaryData();
+        ISaveable fragment = (ISaveable)activeFragment;
 
-        if (record == null)
-            return;
-
-
-        //TODO: Validation
-        //EventValidator.clearErrorsForEventData(binding);
-
-        /*if (!EventValidator.validateEventData(record, binding)) {
-            //Validation Failed
-            NotificationHelper.showNotification((INotificationContext) this, NotificationType.ERROR, resultStatus.getMessage());
-            return;
-        }*/
-
-        try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-                private EventDao dao;
-                private Event event;
-                private String saveUnsuccessful;
-
-                @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_event));
-                }
-
-                @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    try {
-                        this.dao.saveAndSnapshot(this.event);
-                    } catch (DaoException e) {
-                        Log.e(getClass().getName(), "Error while trying to save event", e);
-                        resultHolder.setResultStatus(new BoolResult(false, saveUnsuccessful));
-                        ErrorReportingHelper.sendCaughtException(tracker, e, event, true);
-                    }
-                }
-
-                private IJobDefinition init(EventDao dao, Event event) {
-                    this.dao = dao;
-                    this.event = event;
-
-                    return this;
-                }
-
-            }.init(eventDao, record));
-            saveTask = executor.execute(new ITaskResultCallback() {
-                private Event event;
-
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
-
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    if (!resultStatus.isSuccess()) {
-                        NotificationHelper.showNotification(EventEditActivity.this, NotificationType.ERROR, resultStatus.getMessage());
-                        return;
-                    } else {
-                        NotificationHelper.showNotification(EventEditActivity.this, NotificationType.SUCCESS, "Event " + DataHelper.getShortUuid(event.getUuid()) + " saved");
-                    }
-
-                    if (RetroProvider.isConnected()) {
-                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, EventEditActivity.this, new SyncCallback() {
-                            @Override
-                            public void call(boolean syncFailed, String syncFailedMessage) {
-                                if (syncFailed) {
-                                    NotificationHelper.showNotification(EventEditActivity.this, NotificationType.WARNING, String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_event)));
-                                } else {
-                                    NotificationHelper.showNotification(EventEditActivity.this, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_event)));
-                                }
-                                finish();
-                            }
-                        });
-                    } else {
-                        NotificationHelper.showNotification(EventEditActivity.this, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_event)));
-                        finish();
-                    }
-
-                }
-
-                private ITaskResultCallback init(Event event) {
-                    this.event = event;
-
-                    return this;
-                }
-
-            }.init(record));
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
+        if (fragment != null)
+            fragment.save(this);
     }
 
     public static <TActivity extends AbstractSormasActivity> void

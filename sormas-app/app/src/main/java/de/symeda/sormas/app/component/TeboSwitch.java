@@ -459,6 +459,11 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
         }
     }
 
+    @Override
+    protected void setHint(String hint) {
+
+    }
+
     private void changeRadioButtonState(boolean errorState) {
         int lastIndex = radioGroup.getChildCount() - 1;
         for (int i = 0; i < radioGroup.getChildCount(); i++) {

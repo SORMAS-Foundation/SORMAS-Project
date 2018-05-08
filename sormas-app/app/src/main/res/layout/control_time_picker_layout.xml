@@ -38,6 +38,17 @@
                 android:textColor="@color/watchOut"
                 android:textSize="@dimen/controlLabelSize"
                 android:fontFamily="sans-serif-medium"/>
+            <TextView
+                android:id="@+id/lblSoftRequired"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_gravity="top"
+                android:paddingLeft="@dimen/contentHorizontalSpacing"
+                android:text="*"
+                android:textColor="@color/warning"
+                android:textSize="@dimen/controlLabelSize"
+                android:fontFamily="sans-serif-medium"/>
         </LinearLayout>
         <EditText
             android:id="@+id/txtControlInput"

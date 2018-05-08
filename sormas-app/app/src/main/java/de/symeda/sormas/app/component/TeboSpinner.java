@@ -317,6 +317,11 @@ public class TeboSpinner extends EditTeboPropertyField<Object> implements IContr
     }
 
     @Override
+    protected void setHint(String hint) {
+
+    }
+
+    @Override
     public void setBackgroundResource(int resid) {
         int pl = spnControlInput.getPaddingLeft();
         int pt = spnControlInput.getPaddingTop();

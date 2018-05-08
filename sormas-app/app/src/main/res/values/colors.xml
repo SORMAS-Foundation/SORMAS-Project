@@ -20,6 +20,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">@color/lightBlue</color>
 
+    <color name="warning">@color/orange</color>
 
     <color name="infoBackground">@color/blue</color>
     <color name="successBackground">@color/green</color>

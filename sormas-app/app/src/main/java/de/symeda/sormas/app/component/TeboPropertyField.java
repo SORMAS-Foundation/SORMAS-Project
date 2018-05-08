@@ -32,14 +32,12 @@ import de.symeda.sormas.app.util.ControlLabelOnTouchListener;
 public abstract class TeboPropertyField<T> extends LinearLayout {
 
     protected TextView lblControlLabel;
-    private TextView lblRequired;
     private String description;
     private String caption;
     private boolean showCaption;
     private int captionColor;
     private int textAlignment;
     private int gravity;
-    private boolean required;
 
     private View captionFrame;
 
@@ -266,7 +264,6 @@ public abstract class TeboPropertyField<T> extends LinearLayout {
                         getResources().getColor(R.color.controlReadLabelColor));
                 textAlignment = a.getInt(R.styleable.TeboPropertyField_textAlignment, View.TEXT_ALIGNMENT_VIEW_START);
                 gravity = a.getInt(R.styleable.TeboPropertyField_gravity, Gravity.LEFT | Gravity.CENTER_VERTICAL);
-                required = a.getBoolean(R.styleable.TeboPropertyField_required, false);
 
 
                 nextFocusLeft = a.getResourceId(R.styleable.TeboPropertyField_nextFocusLeft, View.NO_ID);
@@ -317,8 +314,6 @@ public abstract class TeboPropertyField<T> extends LinearLayout {
         }
 
 
-        lblRequired = (TextView) this.findViewById(R.id.lblRequired);
-        setRequired(required);
 
         setShowCaption(showCaption);
     }
@@ -361,26 +356,12 @@ public abstract class TeboPropertyField<T> extends LinearLayout {
             lblControlLabel.setVisibility(showCaption ? VISIBLE : GONE);*/
     }
 
-    public void setRequired(boolean value) {
-        if(lblRequired == null)
-            return;
-
-        lblRequired.setVisibility((value)? VISIBLE : GONE);
-    }
-
     public boolean isSlim() {
         return slim;
     }
 
     public void setSlim(boolean slim) {
         this.slim = slim;
-    }
-
-    public boolean isRequired() {
-        if(lblRequired == null)
-            return false;
-
-        return (lblRequired.getVisibility() == VISIBLE)? true : false;
     }
 
 

@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.component;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
@@ -45,7 +46,6 @@ public class TeboPassword extends EditTeboPropertyField<String> implements IText
     protected EditText txtControlInput;
     protected InverseBindingListener inverseBindingListener;
 
-    private String hint;
     private boolean singleLine;
     private int maxLines;
     private int inputType;
@@ -185,7 +185,8 @@ public class TeboPassword extends EditTeboPropertyField<String> implements IText
 
     }
 
-    public void setHint(String value) {
+    @Override
+    protected void setHint(String value) {
         txtControlInput.setHint(value);
     }
 
@@ -238,7 +239,6 @@ public class TeboPassword extends EditTeboPropertyField<String> implements IText
                     0, 0);
 
             try {
-                hint = a.getString(R.styleable.TeboPassword_hint);
                 singleLine = a.getBoolean(R.styleable.TeboPassword_singleLine, true);
                 maxLines = a.getInt(R.styleable.TeboPassword_maxLines, 1);
                 inputType = a.getInt(R.styleable.TeboPassword_inputType, InputType.TYPE_CLASS_TEXT);
@@ -256,6 +256,7 @@ public class TeboPassword extends EditTeboPropertyField<String> implements IText
         inflater.inflate(R.layout.control_tebo_password_layout, this);
     }
 
+    @SuppressLint("WrongConstant")
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -290,9 +291,6 @@ public class TeboPassword extends EditTeboPropertyField<String> implements IText
             }
         });
         setOnEditorActionListener();
-
-        //Set Hint
-        txtControlInput.setHint(hint);
 
         ShowKeyboardOnEditTextFocus showKeyboardOnEditTextFocus = new ShowKeyboardOnEditTextFocus(getContext());
 

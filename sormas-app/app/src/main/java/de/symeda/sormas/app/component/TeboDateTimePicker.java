@@ -165,15 +165,21 @@ public class TeboDateTimePicker extends EditTeboPropertyField<Date> implements I
         return dateInput.getHint().toString();
     }
 
-    public void setDateHint(String dateHint) {
+    /*public void setDateHint(String dateHint) {
         dateInput.setHint(dateHint);
-    }
+    }*/
 
     public String getTimeHint() {
         return timeInput.getHint().toString();
     }
 
-    public void setTimeHint(String timeHint) {
+    /*public void setTimeHint(String timeHint) {
+        timeInput.setHint(timeHint);
+    }*/
+
+    @Override
+    protected void setHint(String value) {
+        dateInput.setHint(dateHint);
         timeInput.setHint(timeHint);
     }
 
@@ -276,10 +282,6 @@ public class TeboDateTimePicker extends EditTeboPropertyField<Date> implements I
                 onValueChanged();
             }
         });
-
-        //Set Hint
-        dateInput.setHint(dateHint);
-        timeInput.setHint(timeHint);
 
 
         TeboDateTimePicker.OnDateClickHandler dateItemTextClickHandler = new TeboDateTimePicker.OnDateClickHandler(getContext(), this);

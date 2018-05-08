@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -14,11 +15,14 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
@@ -31,15 +35,24 @@ import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
+import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentEventEditLayoutBinding;
+import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.core.ISaveable;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
+import de.symeda.sormas.app.validation.EventValidator;
 
 /**
  * Created by Orson on 07/02/2018.
@@ -49,9 +62,10 @@ import de.symeda.sormas.app.util.DataUtils;
  * sampson.orson@technologyboard.org
  */
 
-public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEditLayoutBinding, Event, Event> {
+public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEditLayoutBinding, Event, Event> implements ISaveable {
 
     private AsyncTask onResumeTask;
+    private AsyncTask saveEvent;
     private String recordUuid = null;
     private EventStatus pageStatus = null;
     private Event record;
@@ -135,8 +149,8 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
         // init fields
         //toggleTypeOfPlaceTextField();
 
-        //EventValidator.setRequiredHintsForEventData(binding);
-        //EventValidator.setSoftRequiredHintsForEventData(binding);
+        EventValidator.setRequiredHintsForEventData(contentBinding);
+        EventValidator.setSoftRequiredHintsForEventData(contentBinding);
 
         contentBinding.setData(record);
         contentBinding.setEventTypeClass(EventType.class);
@@ -352,5 +366,93 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
 
         if (onResumeTask != null && !onResumeTask.isCancelled())
             onResumeTask.cancel(true);
+
+        if (saveEvent != null && !saveEvent.isCancelled())
+            saveEvent.cancel(true);
+    }
+
+    @Override
+    public void save(final INotificationContext nContext) {
+        final Event eventToSave = getActivityRootData();
+
+        if (eventToSave == null)
+            throw new IllegalArgumentException("eventToSave is null");
+
+        EventValidator.clearErrorsForEventData(getContentBinding());
+        if (!EventValidator.validateEventData(nContext, eventToSave, getContentBinding())) {
+            return;
+        }
+
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                private EventDao dao;
+                private String saveUnsuccessful;
+
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    dao = DatabaseHelper.getEventDao();
+                    saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_event));
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    try {
+                        this.dao.saveAndSnapshot(eventToSave);
+                    } catch (DaoException e) {
+                        Log.e(getClass().getName(), "Error while trying to save event", e);
+                        resultHolder.setResultStatus(new BoolResult(false, saveUnsuccessful));
+                        ErrorReportingHelper.sendCaughtException(tracker, e, eventToSave, true);
+                    }
+                }
+            });
+            saveEvent = executor.execute(new ITaskResultCallback() {
+                private Event event;
+
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    if (!resultStatus.isSuccess()) {
+                        NotificationHelper.showNotification(nContext, NotificationType.ERROR, resultStatus.getMessage());
+                        return;
+                    } else {
+                        NotificationHelper.showNotification(nContext, NotificationType.SUCCESS, "Event " + DataHelper.getShortUuid(event.getUuid()) + " saved");
+                    }
+
+                    if (RetroProvider.isConnected()) {
+                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, getContext(), new SyncCallback() {
+                            @Override
+                            public void call(boolean syncFailed, String syncFailedMessage) {
+                                if (syncFailed) {
+                                    NotificationHelper.showNotification(nContext, NotificationType.WARNING, String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_event)));
+                                } else {
+                                    NotificationHelper.showNotification(nContext, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_event)));
+                                }
+                                getActivity().finish();
+                            }
+                        });
+                    } else {
+                        NotificationHelper.showNotification(nContext, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_event)));
+                        getActivity().finish();
+                    }
+
+                }
+
+                private ITaskResultCallback init(Event event) {
+                    this.event = event;
+
+                    return this;
+                }
+
+            }.init(record));
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
     }
 }

@@ -31,8 +31,12 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.backend.event.EventParticipantDao;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
 import de.symeda.sormas.app.component.TeboDatePicker;
@@ -50,8 +54,11 @@ import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.RegionLoader;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
+import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.ISaveableWithCallback;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
@@ -59,12 +66,20 @@ import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentEventNewPersonFullLayoutBinding;
+import de.symeda.sormas.app.rest.RetroProvider;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.shared.OnDateOfDeathChangeListener;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
+import de.symeda.sormas.app.util.SyncCallback;
+import de.symeda.sormas.app.util.TimeoutHelper;
 import de.symeda.sormas.app.util.layoutprocessor.OccupationTypeLayoutProcessor;
 import de.symeda.sormas.app.util.layoutprocessor.PresentConditionLayoutProcessor;
+import de.symeda.sormas.app.validation.EventParticipantValidator;
 
 /**
  * Created by Orson on 27/03/2018.
@@ -74,13 +89,14 @@ import de.symeda.sormas.app.util.layoutprocessor.PresentConditionLayoutProcessor
  * sampson.orson@technologyboard.org
  */
 
-public class EventNewPersonsInvolvedFullFragment extends BaseEditActivityFragment<FragmentEventNewPersonFullLayoutBinding, EventParticipant, EventParticipant> {
+public class EventNewPersonsInvolvedFullFragment extends BaseEditActivityFragment<FragmentEventNewPersonFullLayoutBinding, EventParticipant, EventParticipant> implements ISaveableWithCallback {
 
     public static final String TAG = EventNewPersonsInvolvedFullFragment.class.getSimpleName();
 
     private static final int DEFAULT_YEAR = 2000;
 
     private AsyncTask onResumeTask;
+    private AsyncTask saveEvent;
     private EventStatus pageStatus = null;
     private String recordUuid = null;
     private String eventUuid = null;
@@ -584,5 +600,106 @@ public class EventNewPersonsInvolvedFullFragment extends BaseEditActivityFragmen
 
         if (onResumeTask != null && !onResumeTask.isCancelled())
             onResumeTask.cancel(true);
+
+        if (saveEvent != null && !saveEvent.isCancelled())
+            saveEvent.cancel(true);
+    }
+
+    @Override
+    public void save(final INotificationContext nContext, final Callback.IAction callback) {
+        final EventParticipant eventParticipantToSave = getActivityRootData();
+
+        if (eventParticipantToSave == null)
+            throw new IllegalArgumentException("eventParticipantToSave is null");
+
+        //Validation
+        EventParticipantValidator.clearErrorsForEventParticipantData(getContentBinding());
+        //PersonValidator.clearErrors(personBinding);
+
+        boolean validationError = false;
+
+        /*if (!PersonValidator.validatePersonData(person, personBinding)) {
+            validationError = true;
+        }*/
+
+        eventParticipantToSave.setPerson(eventParticipantToSave.getPerson());
+        if (!EventParticipantValidator.validateEventParticipantData(nContext, eventParticipantToSave, getContentBinding())) {
+            validationError = true;
+        }
+
+        if (validationError) {
+            return;
+        }
+
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                private PersonDao personDao;
+                private EventParticipantDao eventParticipantDao;
+                private String saveUnsuccessful;
+
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    personDao = DatabaseHelper.getPersonDao();
+                    eventParticipantDao = DatabaseHelper.getEventParticipantDao();
+                    saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_event_person));
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    try {
+                        personDao.saveAndSnapshot(eventParticipantToSave.getPerson());
+                        eventParticipantDao.saveAndSnapshot(eventParticipantToSave);
+                    } catch (DaoException e) {
+                        Log.e(getClass().getName(), "Error while trying to save event person", e);
+                        resultHolder.setResultStatus(new BoolResult(false, saveUnsuccessful));
+                        ErrorReportingHelper.sendCaughtException(tracker, e, eventParticipantToSave, true);
+                    }
+                }
+            });
+            saveEvent = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    if (!resultStatus.isSuccess()) {
+                        NotificationHelper.showNotification(nContext, NotificationType.ERROR, resultStatus.getMessage());
+                        return;
+                    }
+
+                    if (RetroProvider.isConnected()) {
+                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, getContext(), new SyncCallback() {
+                            @Override
+                            public void call(boolean syncFailed, String syncFailedMessage) {
+                                if (syncFailed) {
+                                    NotificationHelper.showNotification(nContext, NotificationType.WARNING, String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_event_person)));
+                                } else {
+                                    NotificationHelper.showNotification(nContext, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_event_person)));
+                                }
+                                //finish();
+                            }
+                        });
+                    } else {
+                        NotificationHelper.showNotification(nContext, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_event_person)));
+                        //finish();
+                    }
+
+                    TimeoutHelper.executeIn5Seconds(new Callback.IAction<AsyncTask>() {
+                        @Override
+                        public void call(AsyncTask result) {
+                            if (callback != null)
+                                callback.call(null);
+                        }
+                    });
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
     }
 }

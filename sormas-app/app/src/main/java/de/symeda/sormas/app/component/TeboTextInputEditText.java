@@ -45,7 +45,6 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
     protected EditText txtControlInput;
     protected InverseBindingListener inverseBindingListener;
 
-    private String hint;
     private boolean singleLine;
     private int maxLines;
     private boolean textArea;
@@ -184,7 +183,8 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
 
     }
 
-    public void setHint(String value) {
+    @Override
+    protected void setHint(String value) {
         txtControlInput.setHint(value);
     }
 
@@ -240,7 +240,6 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
                     0, 0);
 
             try {
-                hint = a.getString(R.styleable.TeboTextInputEditText_hint);
                 singleLine = a.getBoolean(R.styleable.TeboTextInputEditText_singleLine, true);
                 maxLines = a.getInt(R.styleable.TeboTextInputEditText_maxLines, 1);
                 textArea = a.getBoolean(R.styleable.TeboTextInputEditText_textArea, true);
@@ -294,9 +293,6 @@ public class TeboTextInputEditText extends EditTeboPropertyField<String> impleme
         });
 
         setOnEditorActionListener();
-
-        //Set Hint
-        txtControlInput.setHint(hint);
 
         ShowKeyboardOnEditTextFocus showKeyboardOnEditTextFocus = new ShowKeyboardOnEditTextFocus(getContext());
 

@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.component;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.databinding.BindingAdapter;
@@ -84,6 +85,7 @@ public class TeboCheckBox extends EditTeboPropertyField<Boolean> {
         inflater.inflate(R.layout.control_checkbox_layout, this);
     }
 
+    @SuppressLint("WrongConstant")
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -257,6 +259,11 @@ public class TeboCheckBox extends EditTeboPropertyField<Boolean> {
             checkBox.setEnabled(true && (editOrCreateUserRight != null)? user.hasUserRight(editOrCreateUserRight) : true);
             return;
         }
+    }
+
+    @Override
+    protected void setHint(String hint) {
+
     }
 
     // </editor-fold>
