@@ -12,6 +12,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttributeGroup;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public class StatisticsFilterComponent extends VerticalLayout {
@@ -27,6 +28,7 @@ public class StatisticsFilterComponent extends VerticalLayout {
 
 	public StatisticsFilterComponent() {
 		setSpacing(true);
+		addStyleName(CssStyles.LAYOUT_MINIMAL);
 		setWidth(100, Unit.PERCENTAGE);
 
 		addComponent(createFilterAttributeElement());

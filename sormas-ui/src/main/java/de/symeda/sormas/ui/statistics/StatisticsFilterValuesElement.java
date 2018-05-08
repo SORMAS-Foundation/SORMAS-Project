@@ -15,7 +15,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
@@ -48,13 +48,14 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 
 	public StatisticsFilterValuesElement(String caption, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
 		setSpacing(true);
+		addStyleName(CssStyles.LAYOUT_MINIMAL);
 		setWidth(100, Unit.PERCENTAGE);
 
 		this.attribute = attribute;
 		this.subAttribute = subAttribute;
 
 		ExtTokenField tokenField = createTokenField(caption);
-		HorizontalLayout utilityButtonsLayout = createUtilityButtonsLayout();
+		VerticalLayout utilityButtonsLayout = createUtilityButtonsLayout();
 		addComponent(tokenField);
 		addComponent(utilityButtonsLayout);
 		setExpandRatio(tokenField, 1);
@@ -69,6 +70,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		tokenField.setEnableDefaultDeleteTokenAction(true);
 
 		addDropdown = new ComboBox("", getFilterValues());
+		addDropdown.addStyleName(CssStyles.VSPACE_NONE);
 		addDropdown.setInputPrompt("Type here to add...");
 		tokenField.setInputField(addDropdown);
 		addDropdown.addValueChangeListener(e -> {
@@ -82,19 +84,20 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		return tokenField;
 	}
 
-	private HorizontalLayout createUtilityButtonsLayout() {
-		HorizontalLayout utilityButtonsLayout = new HorizontalLayout();
+	private VerticalLayout createUtilityButtonsLayout() {
+		VerticalLayout utilityButtonsLayout = new VerticalLayout();
+		utilityButtonsLayout.setSizeUndefined();
 
-		Button addAllButton = new Button(FontAwesome.PLUS_CIRCLE);
-		CssStyles.style(addAllButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_FONT_SIZE_LARGE);
+		Button addAllButton = new Button("All", FontAwesome.PLUS_CIRCLE);
+		CssStyles.style(addAllButton, ValoTheme.BUTTON_LINK);//, CssStyles.BUTTON_FONT_SIZE_LARGE);
 		addAllButton.addClickListener(e -> {
 			for (TokenizableValue tokenizable : getFilterValues()) {
 				tokenField.addTokenizable(tokenizable);
 			}
 		});
 
-		Button removeAllButton = new Button(FontAwesome.TIMES_CIRCLE);
-		CssStyles.style(removeAllButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_FONT_SIZE_LARGE);
+		Button removeAllButton = new Button("Clear", FontAwesome.TIMES_CIRCLE);
+		CssStyles.style(removeAllButton, ValoTheme.BUTTON_LINK);//, CssStyles.BUTTON_FONT_SIZE_LARGE);
 		removeAllButton.addClickListener(e -> {
 			for (Tokenizable tokenizable : tokenField.getValue()) {
 				tokenField.removeTokenizable(tokenizable);

@@ -12,12 +12,13 @@ import java.util.stream.Collectors;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapPolygon;
 import com.vaadin.ui.AbstractOrderedLayout;
-import com.vaadin.ui.Alignment;import com.vaadin.ui.Button;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -55,7 +56,6 @@ public class StatisticsView extends AbstractStatisticsView {
 
 	public static final String VIEW_NAME = "statistics";
 
-	private VerticalLayout statisticsLayout;
 	private VerticalLayout filtersLayout;
 	private StatisticsDisplayedAttributesElement displayedAttributesElement;
 	private VerticalLayout resultsLayout;
@@ -67,28 +67,52 @@ public class StatisticsView extends AbstractStatisticsView {
 		super(VIEW_NAME);
 		setWidth(100, Unit.PERCENTAGE);
 
-		statisticsLayout = new VerticalLayout();
+		VerticalLayout statisticsLayout = new VerticalLayout();
 		statisticsLayout.setMargin(true);
 		statisticsLayout.setSpacing(true);
 		statisticsLayout.setWidth(100, Unit.PERCENTAGE);
 
-		Label filtersLayoutTitle = new Label("Filters");
+		Label filtersLayoutTitle = new Label("1. Filters");
 		filtersLayoutTitle.setWidthUndefined();
 		CssStyles.style(filtersLayoutTitle, CssStyles.STATISTICS_TITLE);
 		statisticsLayout.addComponent(filtersLayoutTitle);
 		
+		VerticalLayout filtersSectionLayout = new VerticalLayout();
+		CssStyles.style(filtersSectionLayout, CssStyles.STATISTICS_TITLE_BOX);
+		filtersSectionLayout.setSpacing(true);
+		filtersSectionLayout.setWidth(100, Unit.PERCENTAGE);
+		Label filtersInfoText = new Label("Add filters to restrict the aggregated data.<br>"
+				+ "If you use multiple filters only cases that pass all restrictions will be aggregated.", ContentMode.HTML);
+		filtersSectionLayout.addComponent(filtersInfoText);
+		
 		filtersLayout = new VerticalLayout();
-		CssStyles.style(filtersLayout, CssStyles.STATISTICS_TITLE_BOX);
 		filtersLayout.setSpacing(true);
-		filtersLayout.setWidth(100, Unit.PERCENTAGE);
-		Label filtersInfoText = new Label("You can restrict the collected data by defining attribute filters. To add a new filter, click on the + icon at the bottom of " + 
-				"the list, and to specify the values you want to include, simply type the value in the appropriate filter bar. Clicking on the x icon on the left of a " +
-				"filter will remove it. You can also use the two smaller buttons to the right of a filter to add or remove all allowed values from the input field.");
-		filtersLayout.addComponent(filtersInfoText);
-		filtersLayout.addComponent(createAddFilterButton());
-		statisticsLayout.addComponent(filtersLayout);
+		filtersSectionLayout.addComponent(filtersLayout);
+		
+		// filters footer
+		HorizontalLayout filtersSectionFooter = new HorizontalLayout();
+		{
+			filtersSectionFooter.setSpacing(true);
+			
+			Button addFilterButton = new Button("Add filter", FontAwesome.PLUS);
+			CssStyles.style(addFilterButton, ValoTheme.BUTTON_PRIMARY);
+			addFilterButton.addClickListener(e -> {
+				filtersLayout.addComponent(createFilterComponentLayout());
+			});
+			filtersSectionFooter.addComponent(addFilterButton);
 
-		Label displayedAttributesTitle = new Label("Visualization");
+			Button resetFiltersButton = new Button("Reset filters");
+			resetFiltersButton.addClickListener(e -> {
+				filtersLayout.removeAllComponents();
+				filterComponents.clear();
+			});
+			filtersSectionFooter.addComponent(resetFiltersButton);
+		}
+		filtersSectionLayout.addComponent(filtersSectionFooter);
+		
+		statisticsLayout.addComponent(filtersSectionLayout);
+
+		Label displayedAttributesTitle = new Label("2. Visualization");
 		displayedAttributesTitle.setWidthUndefined();
 		CssStyles.style(displayedAttributesTitle, CssStyles.STATISTICS_TITLE);
 		statisticsLayout.addComponent(displayedAttributesTitle);
@@ -100,7 +124,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setSpacing(true);
 		{
-			Button generateButton = new Button("Generate");
+			Button generateButton = new Button("3. Generate");
 			CssStyles.style(generateButton, ValoTheme.BUTTON_PRIMARY);
 			generateButton.addClickListener(e -> {
 				resultsLayout.removeAllComponents();
@@ -118,20 +142,6 @@ public class StatisticsView extends AbstractStatisticsView {
 				}
 			});
 			buttonLayout.addComponent(generateButton);
-
-			Button resetFiltersButton = new Button("Reset filters");
-			resetFiltersButton.addClickListener(e -> {
-				filtersLayout.removeAllComponents();
-				filtersLayout.addComponent(filtersInfoText);
-				filtersLayout.addComponent(createAddFilterButton());
-				if (statisticsCaseGrid != null) {
-					resultsLayout.removeComponent(statisticsCaseGrid);
-					resultsLayout.removeComponent(exportButton);
-					statisticsCaseGrid = null;
-					exportButton = null;
-				}
-			});
-			buttonLayout.addComponent(resetFiltersButton);
 		}
 
 		statisticsLayout.addComponent(buttonLayout);
@@ -145,12 +155,16 @@ public class StatisticsView extends AbstractStatisticsView {
 		resultsLayout.setWidth(100, Unit.PERCENTAGE);
 		resultsLayout.setSpacing(true);
 		CssStyles.style(resultsLayout, CssStyles.STATISTICS_TITLE_BOX);
+		resultsLayout.addComponent(new Label("Click the 'generate'-button to create a new table, map or chart."));
+		
 		statisticsLayout.addComponent(resultsLayout);
 		
 		addComponent(statisticsLayout);
 	}
 
 	private List<Object[]> generateStatistics() {
+		
+		// TODO move generation of the case criteria into another method
 		StatisticsCaseCriteria caseCriteria = new StatisticsCaseCriteria();
 
 		for (StatisticsFilterComponent filterComponent : filterComponents) {
@@ -309,6 +323,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		exportButton.setIcon(FontAwesome.TABLE);
 		resultsLayout.addComponent(exportButton);
+		resultsLayout.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
 		
 		List<Object[]> resultData = generateStatistics();
 		statisticsCaseGrid = new StatisticsCaseGrid(displayedAttributesElement.getRowsAttribute(), displayedAttributesElement.getRowsSubAttribute(), displayedAttributesElement.getColumnsAttribute(), displayedAttributesElement.getColumnsSubAttribute(), resultData);
@@ -391,22 +406,23 @@ public class StatisticsView extends AbstractStatisticsView {
 		case COLUMN:
 		case STACKED_COLUMN:
 			hcjs.append("column");
-			columnIdIndex = 2;
-			rowIdIndex = 1;
+			rowIdIndex = rowsAttribute != null ? 1 : -1;
+			columnIdIndex = columnsAttribute != null ? (rowIdIndex >= 1 ? 2 : 1) : -1;
 			break;
 		case LINE:
 			hcjs.append("line");
-			columnIdIndex = 2;
-			rowIdIndex = 1;
+			rowIdIndex = rowsAttribute != null ? 1 : -1;
+			columnIdIndex = columnsAttribute != null ? (rowIdIndex >= 1 ? 2 : 1) : -1;
 			break;
 		case PIE:
 			hcjs.append("pie");
-			columnIdIndex = 1;
 			rowIdIndex = -1;
+			columnIdIndex = columnsAttribute != null ? 1 : -1;
 			break;
 		default:
 			throw new IllegalArgumentException(chartType.toString());
 		}
+		
 		hcjs.append("', "
 						+ " backgroundColor: 'transparent' "
 						+ "},"
@@ -419,37 +435,98 @@ public class StatisticsView extends AbstractStatisticsView {
 				);
 
 		List<Object[]> resultData = generateStatistics();
+
 		HashMap<Object,String> idCaptions = new HashMap<>();
-		for (Object[] row : resultData) {
-			if (!idCaptions.containsKey(row[columnIdIndex])) {
-				idCaptions.put(row[columnIdIndex], buildIdCaption(row[columnIdIndex], columnsAttribute, columnsSubAttribute));
-			}
-			row[columnIdIndex] = idCaptions.get(row[columnIdIndex]);
-			if (rowIdIndex >= 0) {
-				if (!idCaptions.containsKey(row[rowIdIndex])) {
-					idCaptions.put(row[rowIdIndex], buildIdCaption(row[rowIdIndex], rowsAttribute, rowsSubAttribute));
+		if (columnIdIndex >= 1 || rowIdIndex >= 1) {
+
+			// build captions for rows and/or columns
+			for (Object[] row : resultData) {
+				if (columnIdIndex >= 1) {
+					if (!idCaptions.containsKey(row[columnIdIndex])) {
+						idCaptions.put(row[columnIdIndex], buildIdCaption(row[columnIdIndex], columnsAttribute, columnsSubAttribute));
+					}
 				}
-				row[rowIdIndex] = idCaptions.get(row[rowIdIndex]);
+				if (rowIdIndex >= 1) {
+					if (!idCaptions.containsKey(row[rowIdIndex])) {
+						idCaptions.put(row[rowIdIndex], buildIdCaption(row[rowIdIndex], rowsAttribute, rowsSubAttribute));
+					}
+				}
 			}
-		}
-		resultData.sort((a,b) -> {
-			if (rowIdIndex >= 0) {
-				int rowCompare = ((String)a[rowIdIndex]).compareTo((String)b[rowIdIndex]);
-				if (rowCompare != 0)
-					return rowCompare;
-			}
-			int columnCompare = ((String)a[columnIdIndex]).compareTo((String)b[columnIdIndex]);
-			if (columnCompare != 0)
-				return columnCompare;
-			return ((String)a[0]).compareTo((String)b[0]);
-		});
 		
+			// sort based on groupings
+			resultData.sort((a,b) -> {
+				if (rowIdIndex >= 0) {
+					if (a[rowIdIndex] == null) {
+						if (b[rowIdIndex] != null) {
+							return 1;
+						}
+					} else if (b[rowIdIndex] == null) {
+						return -1;
+					} else {
+						int comparison;
+						if (rowsAttribute.isSortByCaption()) {
+							comparison = (idCaptions.get(a[rowIdIndex])).compareTo(idCaptions.get(b[rowIdIndex]));
+						} else {
+							comparison = ((Comparable)a[rowIdIndex]).compareTo((Comparable)b[rowIdIndex]);
+						}						
+						if (comparison != 0) {
+							return comparison;
+						}
+					}
+				}
+				if (columnIdIndex >= 1) {
+					if (a[columnIdIndex] == null) {
+						if (b[columnIdIndex] != null) {
+							return 1;
+						}
+					} else if (b[columnIdIndex] == null) {
+						return -1;
+					} else {
+						int comparison;
+						if (columnsAttribute.isSortByCaption()) {
+							comparison = (idCaptions.get(a[columnIdIndex])).compareTo(idCaptions.get(b[columnIdIndex]));
+						} else {
+							comparison = ((Comparable)a[columnIdIndex]).compareTo((Comparable)b[columnIdIndex]);
+						}						
+						if (comparison != 0) {
+							return comparison;
+						}
+					}
+				}
+				return 0; // leave as is
+			});
+		}
+
 		if (chartType != StatisticsVisualizationChartType.PIE) {
 			hcjs.append("xAxis: { categories: [");
-			resultData.stream().map(row -> row[columnIdIndex]).distinct()
-			.forEachOrdered(columnId -> {
-				hcjs.append("'" + columnId + "',");
-			});
+			if (columnIdIndex >= 1) {
+				resultData.stream().map(row -> row[columnIdIndex]).distinct()
+				.sorted((a,b) -> { // sort the subset, because likely not all groupings have all elements
+					if (a == null) {
+						if (b != null) {
+							return 1;
+						}
+					} else if (b == null) {
+						return -1;
+					} else {
+						int comparison;
+						if (columnsAttribute.isSortByCaption()) {
+							comparison = (idCaptions.get(a)).compareTo(idCaptions.get(b));
+						} else {
+							comparison = ((Comparable)a).compareTo((Comparable)b);
+						}						
+						if (comparison != 0) {
+							return comparison;
+						}
+					}
+					return 0;
+				})
+				.forEachOrdered(columnId -> {
+					hcjs.append("'").append(idCaptions.get(columnId)).append("',");
+				});
+			} else {
+				hcjs.append("'Total'");
+			}
 			hcjs.append("]},");
 			
 			hcjs.append("yAxis: { min: 0, title: { text: 'Number of Cases' }, allowDecimals: false, softMax: 10, "
@@ -462,43 +539,72 @@ public class StatisticsView extends AbstractStatisticsView {
 		hcjs.append("legend: { verticalAlign: 'top', backgroundColor: 'transparent', align: 'left', "
 				+ "borderWidth: 0, shadow: false, margin: 30, padding: 0 },");
 		
-		
 		hcjs.append("colors: ['#FF0000','#6691C4','#ffba08','#519e8a','#ed254e','#39a0ed','#FF8C00','#344055','#D36135','#82d173'],");
 
-		hcjs.append("plotOptions: { column: { borderWidth: 0, ");
-		if (displayedAttributesElement.getVisualizationChartType() == StatisticsVisualizationChartType.STACKED_COLUMN) {
-			hcjs.append("stacking: 'normal', ");
+		if (chartType == StatisticsVisualizationChartType.STACKED_COLUMN
+				|| chartType == StatisticsVisualizationChartType.COLUMN) {
+			hcjs.append("plotOptions: { column: { borderWidth: 0, ");
+			if (chartType == StatisticsVisualizationChartType.STACKED_COLUMN) {
+				hcjs.append("stacking: 'normal', ");
+			}
+			hcjs.append("groupPadding: 0.05, pointPadding: 0, " +
+					"dataLabels: {" +
+					"enabled: true," +
+					"formatter: function() { if (this.y > 0) return this.y; }," +
+					"color: '#444'," + 
+					"backgroundColor: 'rgba(255, 255, 255, 0.75)'," + 
+					"borderRadius: 3," + 
+					"padding: 3," + 
+					"style:{textOutline:'none'}" +
+					"} } },");
 		}
-		hcjs.append("groupPadding: 0.05, pointPadding: 0, dataLabels: {"
-				+ "enabled: true, formatter: function() { if (this.y > 0) return this.y; },"
-				+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
 		
 		hcjs.append("series: [");
-		if (displayedAttributesElement.getVisualizationChartType() == StatisticsVisualizationChartType.PIE) {
+		if (rowIdIndex < 1 && columnIdIndex < 1) {
+			hcjs.append("{ name: 'Number of cases', dataLabels: { allowOverlap: false }")
+			.append(", data: [['Total',").append(resultData.get(0)).append("]]}");
+			
+		} else if (displayedAttributesElement.getVisualizationChartType() == StatisticsVisualizationChartType.PIE) {
 			hcjs.append("{ name: 'Number of cases', dataLabels: { allowOverlap: false }")
 				.append(", data: [");
 			for (Object[] row : resultData) {
 				Object value = row[0];
-				Object columnId = row[columnIdIndex];
-				hcjs.append("['").append(columnId).append("',").append(value).append("],");
+				if (columnIdIndex >= 1) {
+					Object columnId = row[columnIdIndex];
+					hcjs.append("['").append(idCaptions.get(columnId)).append("',").append(value).append("],");
+				} else {
+					hcjs.append("['Total',").append(value).append("],");
+				}
 			}
+			hcjs.append("]}");
 		} else {
-			Object seriesId = null;
+			Object seriesCaption = null;
 			for (Object[] row : resultData) {
-				if (!DataHelper.equal(seriesId, row[1])) {
-					if (seriesId != null) {
+				Object rowSeriesCaption;
+				if (rowIdIndex >= 1) {
+					rowSeriesCaption = idCaptions.get(row[rowIdIndex]);
+				} else {
+					rowSeriesCaption = "Total";
+				}
+				if (!DataHelper.equal(seriesCaption, rowSeriesCaption)) {
+					if (seriesCaption != null) {
 						hcjs.append("]},");
 					}
-					seriesId = row[1];
-					hcjs.append("{ name: '").append(seriesId).append("', dataLabels: { allowOverlap: false }, data: [");
+					seriesCaption = rowSeriesCaption;
+					hcjs.append("{ name: '").append(rowSeriesCaption).append("', dataLabels: { allowOverlap: false }, data: [");
 				}
 				
 				Object value = row[0];
-				Object columnId = row[columnIdIndex];
-				hcjs.append("['").append(columnId).append("',").append(value).append("],");
+				if (columnIdIndex >= 1) {
+					Object columnId = row[columnIdIndex];
+					hcjs.append("['").append(idCaptions.get(columnId)).append("',").append(value).append("],");
+				} else {
+					hcjs.append("['Total',").append(value).append("],");
+				}
 			}
+			hcjs.append("]}");
 		}
-		hcjs.append("]}]};");		
+		hcjs.append("]};");		
 
 		chart.setHcjs(hcjs.toString());	
 		resultsLayout.addComponent(chart);
@@ -634,18 +740,6 @@ public class StatisticsView extends AbstractStatisticsView {
 		resultsLayout.setExpandRatio(mapLayout, 1);
 	}
 
-	private Button createAddFilterButton() {
-		Button addFilterButton = new Button(FontAwesome.PLUS);
-		CssStyles.style(addFilterButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
-		addFilterButton.addClickListener(e -> {
-			filtersLayout.removeComponent(addFilterButton);
-			filtersLayout.addComponent(createFilterComponentLayout());
-			filtersLayout.addComponent(createAddFilterButton());
-		});
-
-		return addFilterButton;
-	}
-
 	private HorizontalLayout createFilterComponentLayout() {
 		HorizontalLayout filterComponentLayout = new HorizontalLayout();
 		filterComponentLayout.setSpacing(true);
@@ -654,7 +748,8 @@ public class StatisticsView extends AbstractStatisticsView {
 		StatisticsFilterComponent filterComponent = new StatisticsFilterComponent();
 
 		Button removeFilterButton = new Button(FontAwesome.TIMES);
-		CssStyles.style(removeFilterButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+		removeFilterButton.setDescription("Remove filter");
+		CssStyles.style(removeFilterButton, CssStyles.FORCE_CAPTION);
 		removeFilterButton.addClickListener(e -> {
 			filterComponents.remove(filterComponent);
 			filtersLayout.removeComponent(filterComponentLayout);
