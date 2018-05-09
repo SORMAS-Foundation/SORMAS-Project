@@ -37,7 +37,7 @@ public class StatisticsDisplayedAttributesElement extends HorizontalLayout {
 	private final OptionGroup visualizationChartSelect;
 	private HorizontalLayout rowsLayout;
 	private HorizontalLayout columnsLayout;
-//	private Button switchRowsAndColumnsButton;
+	//	private Button switchRowsAndColumnsButton;
 
 	public StatisticsDisplayedAttributesElement() {
 		setSpacing(true);
@@ -55,7 +55,7 @@ public class StatisticsDisplayedAttributesElement extends HorizontalLayout {
 		visualizationSelect.setNullSelectionAllowed(false);
 		addComponent(visualizationSelect);
 		setExpandRatio(visualizationSelect, 0);
-		
+
 		visualizationMapSelect = new OptionGroup("Map type", Arrays.asList(StatisticsVisualizationMapType.values()));
 		visualizationMapSelect.addValueChangeListener(new ValueChangeListener() {
 			@Override
@@ -67,7 +67,7 @@ public class StatisticsDisplayedAttributesElement extends HorizontalLayout {
 		visualizationMapSelect.setNullSelectionAllowed(false);
 		addComponent(visualizationMapSelect);
 		setExpandRatio(visualizationSelect, 0);
-		
+
 		visualizationChartSelect = new OptionGroup("Type", Arrays.asList(StatisticsVisualizationChartType.values()));
 		visualizationChartSelect.addValueChangeListener(new ValueChangeListener() {
 			@Override
@@ -80,41 +80,41 @@ public class StatisticsDisplayedAttributesElement extends HorizontalLayout {
 		visualizationChartSelect.setNullSelectionAllowed(false);
 		addComponent(visualizationChartSelect);
 		setExpandRatio(visualizationChartSelect, 0);
-		
+
 		rowsLayout = createRowsOrColumnsLayout(true);
 		addComponent(rowsLayout);
 		setExpandRatio(rowsLayout, 0);
-		
+
 		columnsLayout = createRowsOrColumnsLayout(false);
 		addComponent(columnsLayout);
 		setExpandRatio(columnsLayout, 0);
-		
-//		switchRowsAndColumnsButton = new Button();
-//		switchRowsAndColumnsButton.setIcon(FontAwesome.EXCHANGE);
-//		switchRowsAndColumnsButton.setDescription("Exchange rows and columns");
-//		switchRowsAndColumnsButton.addClickListener(new ClickListener() {
-//			@Override
-//			public void buttonClick(ClickEvent event) {
-//				// TODO
-//			}
-//		});
-//		addComponent(switchRowsAndColumnsButton);
-//		setExpandRatio(switchRowsAndColumnsButton, 0);
-		
+
+		//		switchRowsAndColumnsButton = new Button();
+		//		switchRowsAndColumnsButton.setIcon(FontAwesome.EXCHANGE);
+		//		switchRowsAndColumnsButton.setDescription("Exchange rows and columns");
+		//		switchRowsAndColumnsButton.addClickListener(new ClickListener() {
+		//			@Override
+		//			public void buttonClick(ClickEvent event) {
+		//				// TODO
+		//			}
+		//		});
+		//		addComponent(switchRowsAndColumnsButton);
+		//		setExpandRatio(switchRowsAndColumnsButton, 0);
+
 		Label spacer = new Label();
 		addComponent(spacer);
 		setExpandRatio(spacer, 1);
-		
+
 		visualizationSelect.setValue(StatisticsVisualizationType.TABLE);
 		visualizationChartSelect.setValue(StatisticsVisualizationChartType.STACKED_COLUMN);
 		visualizationMapSelect.setValue(StatisticsVisualizationMapType.REGIONS);
 	}
-	
+
 	private void updateComponentVisibility() {
-		
+
 		visualizationMapSelect.setVisible(visualizationType == StatisticsVisualizationType.MAP);
 		visualizationChartSelect.setVisible(visualizationType == StatisticsVisualizationType.CHART);
-		
+
 		rowsLayout.setVisible(visualizationType == StatisticsVisualizationType.TABLE
 				|| (visualizationType == StatisticsVisualizationType.CHART 
 				&& visualizationChartType != StatisticsVisualizationChartType.PIE));
@@ -139,20 +139,23 @@ public class StatisticsDisplayedAttributesElement extends HorizontalLayout {
 
 		// Empty selections
 		Command emptyItemCommand = selectedItem -> {
-			rowsAttribute = null;
-			rowsSubAttribute = null;
-			columnsAttribute = null;
-			columnsSubAttribute = null;
+			if (rows) {
+				rowsAttribute = null;
+				rowsSubAttribute = null;
+			} else {
+				columnsAttribute = null;
+				columnsSubAttribute = null;
+			}
 			displayedSubAttributeItem.removeChildren();
 			displayedSubAttributeItem.setText(SPECIFY_YOUR_SELECTION);
 			rowsOrColumnsLayout.removeComponent(displayedSubAttributeDropdown);
-			displayedAttributeItem.setText("");
+			displayedAttributeItem.setText(rows ? "Don't group rows" : "Don't group columns");
 			for (MenuItem menuItem : displayedAttributeItem.getChildren()) {
 				menuItem.setStyleName("");
 			}
 		};
-		displayedAttributeItem.addItem("", emptyItemCommand);
-		
+		displayedAttributeItem.addItem(rows ? "Don't group rows" : "Don't group columns", emptyItemCommand);
+
 		// Add attribute groups
 		for (StatisticsCaseAttributeGroup attributeGroup : StatisticsCaseAttributeGroup.values()) {
 			MenuItem attributeGroupItem = displayedAttributeItem.addItem(attributeGroup.toString(), null);

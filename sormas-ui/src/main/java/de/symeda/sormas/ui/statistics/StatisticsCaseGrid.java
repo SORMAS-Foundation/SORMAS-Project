@@ -120,8 +120,8 @@ public class StatisticsCaseGrid extends Grid {
 
 				long[] columnTotals = new long[getColumns().size()];
 				for (Object[] entry : content) {
+					formatContentEntry(entry, 1, rowsAttribute, rowsSubAttribute);
 					if (columnsAttribute != null || columnsSubAttribute != null) {
-						formatContentEntry(entry, 1, rowsAttribute, rowsSubAttribute);
 
 						if (currentRow != null && rowHeader != null && !rowHeader.equals(entry[1])) {
 							int totalForRow = calculateTotalForRow(currentRow);
@@ -151,6 +151,7 @@ public class StatisticsCaseGrid extends Grid {
 						currentRow[0] = buildHeader(entry[1] == null ? null : entry[1].toString(), rowsAttribute, rowsSubAttribute);
 						currentRow[1] = entry[0].toString();
 						addRow(currentRow);
+						columnTotals[columnTotals.length - 1] += (long) entry[0];
 					}
 				}
 
@@ -168,16 +169,28 @@ public class StatisticsCaseGrid extends Grid {
 				}
 
 				// Total row
-				if (columnsAttribute != null || columnsSubAttribute != null) {
-					currentRow = new Object[getColumns().size()];
-					currentRow[0] = "Total";
-					for (int i = 1; i < columnTotals.length; i++) {
-						currentRow[i] = String.valueOf(columnTotals[i]);
-					}
-					addRow(currentRow);
+				currentRow = new Object[getColumns().size()];
+				currentRow[0] = "Total";
+				for (int i = 1; i < columnTotals.length; i++) {
+					currentRow[i] = String.valueOf(columnTotals[i]);
 				}
+				addRow(currentRow);
 			} else {
-				//
+				Object[] row = new Object[getColumns().size()];
+				row[0] = "Number of cases";
+				long totalAmountOfCases = 0;
+				for (int i = 0; i < content.size(); i++) {
+					Object[] entry = content.get(i);
+					formatContentEntry(entry, 1, rowsAttribute, rowsSubAttribute);
+					if (entry[1] != null) {
+						row[columnsMap.get(entry[entry.length - 1].toString())] = entry[0].toString();
+					} else {
+						row[columnsMap.get(COLUMN_UNKNOWN)] = entry[0].toString();
+					}
+					totalAmountOfCases += (long) entry[0];
+				}
+				row[row.length - 1] = String.valueOf(totalAmountOfCases);
+				addRow(row);
 			}
 		}
 

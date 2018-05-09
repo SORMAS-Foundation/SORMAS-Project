@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.tapio.googlemaps.GoogleMap;
@@ -21,6 +22,8 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -127,18 +130,44 @@ public class StatisticsView extends AbstractStatisticsView {
 			Button generateButton = new Button("3. Generate");
 			CssStyles.style(generateButton, ValoTheme.BUTTON_PRIMARY);
 			generateButton.addClickListener(e -> {
-				resultsLayout.removeAllComponents();
-				switch (displayedAttributesElement.getVisualizationType()) {
-				case TABLE:
-					generateTable();
-					break;
-				case MAP:
-					generateMap();
-					break;
-				default:
-					generateChart();
-					break;
-					//throw new IllegalArgumentException(displayedAttributesElement.getSelectedVisualizationType().toString());
+				// Check whether there is any invalid empty filter or grouping data
+				Notification errorNotification = null;
+				for (StatisticsFilterComponent filterComponent : filterComponents) {
+					if (filterComponent.getSelectedAttribute() == null || 
+							filterComponent.getSelectedAttribute().getSubAttributes().length > 0 && 
+							filterComponent.getSelectedSubAttribute() == null) {
+						errorNotification = new Notification("Please specify all selected filter attributes and sub attributes", Type.WARNING_MESSAGE);
+						break;
+					}
+				}
+				
+				if (errorNotification == null && displayedAttributesElement.getRowsAttribute() != null && 
+						displayedAttributesElement.getRowsAttribute().getSubAttributes().length > 0 &&
+						displayedAttributesElement.getRowsSubAttribute() == null) {
+					errorNotification = new Notification("Please specify the row attribute you have chosen for the visualization", Type.WARNING_MESSAGE);
+				} else if (errorNotification == null && displayedAttributesElement.getColumnsAttribute() != null &&
+						displayedAttributesElement.getColumnsAttribute().getSubAttributes().length > 0 &&
+						displayedAttributesElement.getColumnsSubAttribute() == null) {
+					errorNotification = new Notification("Please specify the column attribute you have chosen for the visualization", Type.WARNING_MESSAGE);
+				}
+				
+				if (errorNotification != null) {
+					errorNotification.setDelayMsec(-1);
+					errorNotification.show(Page.getCurrent());
+				} else {
+					resultsLayout.removeAllComponents();
+					switch (displayedAttributesElement.getVisualizationType()) {
+					case TABLE:
+						generateTable();
+						break;
+					case MAP:
+						generateMap();
+						break;
+					default:
+						generateChart();
+						break;
+						//throw new IllegalArgumentException(displayedAttributesElement.getSelectedVisualizationType().toString());
+					}
 				}
 			});
 			buttonLayout.addComponent(generateButton);

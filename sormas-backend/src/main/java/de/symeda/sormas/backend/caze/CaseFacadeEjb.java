@@ -20,6 +20,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
@@ -1442,7 +1443,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> from = cq.from(Case.class);
 		Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS, JoinType.LEFT);
 
-		cq.select(cb.least(symptoms.get(Symptoms.ONSET_DATE)));
+		cq.select(cb.least((Path<Timestamp>) symptoms.<Timestamp>get(Symptoms.ONSET_DATE)));
 		return em.createQuery(cq).getSingleResult();
 	}
 
@@ -1452,7 +1453,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaQuery<Timestamp> cq = cb.createQuery(Timestamp.class);
 		Root<Case> from = cq.from(Case.class);
 
-		cq.select(cb.least(from.get(Case.RECEPTION_DATE)));
+		cq.select(cb.least(from.<Timestamp>get(Case.RECEPTION_DATE)));
 		return em.createQuery(cq).getSingleResult();
 	}
 
@@ -1462,7 +1463,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaQuery<Timestamp> cq = cb.createQuery(Timestamp.class);
 		Root<Case> from = cq.from(Case.class);
 
-		cq.select(cb.least(from.get(Case.REPORT_DATE)));
+		cq.select(cb.least(from.<Timestamp>get(Case.REPORT_DATE)));
 		return em.createQuery(cq).getSingleResult();
 	}
 
