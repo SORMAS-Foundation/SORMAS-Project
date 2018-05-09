@@ -8,9 +8,9 @@ import com.vaadin.ui.Label;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
-public class StatisticsDiseaseElement extends HorizontalLayout {
+public class DashboardStatisticsDiseaseElement extends HorizontalLayout {
 	
-	public StatisticsDiseaseElement(String caption, int count, int previousCount) {
+	public DashboardStatisticsDiseaseElement(String caption, int count, int previousCount) {
 		setSpacing(true);
 		Label captionLabel = new Label(caption);
 		captionLabel.setWidthUndefined();

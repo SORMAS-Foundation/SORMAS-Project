@@ -2254,3 +2254,12 @@ INSERT INTO schema_version (version_number, comment) VALUES (100, 'Create histor
 UPDATE person SET causeofdeathdisease = null WHERE causeofdeath != 'EPIDEMIC_DISEASE';
 
 INSERT INTO schema_version (version_number, comment) VALUES (101, 'Remove cause of death disease from persons that died due to another cause');
+
+-- 2018-05-07 Case age field #585
+ALTER TABLE cases ADD COLUMN caseage integer;
+ALTER TABLE cases_history ADD COLUMN caseage integer;
+
+UPDATE cases SET caseage = p.approximateage FROM person p WHERE cases.person_id = p.id AND p.approximateage IS NOT NULL AND p.approximateagetype = 0;
+UPDATE cases SET caseage = 0 FROM person p WHERE cases.person_id = p.id AND p.approximateage IS NOT NULL AND p.approximateagetype = 1;
+
+INSERT INTO schema_version (version_number, comment) VALUES (102, 'Case age field #585');

@@ -24,6 +24,7 @@ import com.vaadin.tapio.googlemaps.client.LatLon;
 import com.vaadin.tapio.googlemaps.client.events.MarkerClickListener;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapPolygon;
+import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -74,7 +75,7 @@ public class MapComponent extends VerticalLayout {
 	// Layouts and components
 	private final DashboardDataProvider dashboardDataProvider;
 	private final GoogleMap map;
-	private PopupButton mapKeyDropdown;
+	private PopupButton legendDropdown;
 
 	// Layers
 	private boolean showCases;
@@ -101,9 +102,9 @@ public class MapComponent extends VerticalLayout {
 	// Others
 	private CaseMeasure caseMeasure = CaseMeasure.CASE_COUNT;
 	private MapCaseDisplayMode mapCaseDisplayMode = MapCaseDisplayMode.CASES;
-	private BigDecimal districtShapesLowerQuartile;
-	private BigDecimal districtShapesMedian;
-	private BigDecimal districtShapesUpperQuartile;
+	private BigDecimal districtValuesLowerQuartile;
+	private BigDecimal districtValuesMedian;
+	private BigDecimal districtValuesUpperQuartile;
 	private ClickListener externalExpandButtonListener;
 	private ClickListener externalCollapseButtonListener;
 	private boolean emptyPopulationDistrictPresent;
@@ -206,7 +207,7 @@ public class MapComponent extends VerticalLayout {
 		}
 
 		// Re-create the map key layout to only show the keys for the selected layers
-		mapKeyDropdown.setContent(createMapKey());
+		legendDropdown.setContent(createLegend());
 	}
 
 	public List<CaseDataDto> getCasesForFacility(FacilityReferenceDto facility) {
@@ -254,12 +255,12 @@ public class MapComponent extends VerticalLayout {
 		mapHeaderLayout.setExpandRatio(caseMapLabel, 1);
 
 		// Map key dropdown button
-		mapKeyDropdown = new PopupButton("Map Key");
-		CssStyles.style(mapKeyDropdown, CssStyles.BUTTON_SUBTLE);
-		mapKeyDropdown.setContent(createMapKey());
-		mapHeaderLayout.addComponent(mapKeyDropdown);
-		mapHeaderLayout.setComponentAlignment(mapKeyDropdown, Alignment.MIDDLE_RIGHT);
-		mapHeaderLayout.setExpandRatio(mapKeyDropdown, 1);
+		legendDropdown = new PopupButton("Map Key");
+		CssStyles.style(legendDropdown, CssStyles.BUTTON_SUBTLE);
+		legendDropdown.setContent(createLegend());
+		mapHeaderLayout.addComponent(legendDropdown);
+		mapHeaderLayout.setComponentAlignment(legendDropdown, Alignment.MIDDLE_RIGHT);
+		mapHeaderLayout.setExpandRatio(legendDropdown, 1);
 
 		// Layers dropdown button
 		PopupButton layersDropdown = new PopupButton("Layers");
@@ -412,17 +413,17 @@ public class MapComponent extends VerticalLayout {
 		return mapHeaderLayout;
 	}
 
-	private VerticalLayout createMapKey() {
-		VerticalLayout mapKeyLayout = new VerticalLayout();
-		mapKeyLayout.setMargin(true);
-		mapKeyLayout.setSizeUndefined();
+	private VerticalLayout createLegend() {
+		VerticalLayout legendLayout = new VerticalLayout();
+		legendLayout.setMargin(true);
+		legendLayout.setSizeUndefined();
 
 		// Disable map key dropdown if no layers have been selected
 		if (showCases || showContacts || showRegions) {
-			mapKeyDropdown.setEnabled(true);
+			legendDropdown.setEnabled(true);
 		} else {
-			mapKeyDropdown.setEnabled(false);
-			return mapKeyLayout;
+			legendDropdown.setEnabled(false);
+			return legendLayout;
 		}
 
 		// Health facilities
@@ -432,24 +433,24 @@ public class MapComponent extends VerticalLayout {
 			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES || mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITIES_OR_ADDRESS) {
 				Label facilitiesKeyLabel = new Label("Health Facilities");
 				CssStyles.style(facilitiesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-				mapKeyLayout.addComponent(facilitiesKeyLabel);
+				legendLayout.addComponent(facilitiesKeyLabel);
 
 				HorizontalLayout facilitiesKeyLayout = new HorizontalLayout();
 				{
 					facilitiesKeyLayout.setSpacing(false);
-					HorizontalLayout legendEntry = createMapKeyEntry("mapicons/grey-house-small.png", "Only Not Yet Classified Cases");
+					HorizontalLayout legendEntry = buildLegendEntry("mapicons/grey-house-small.png", "Only Not Yet Classified Cases");
 					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 					facilitiesKeyLayout.addComponent(legendEntry);
-					legendEntry = createMapKeyEntry("mapicons/yellow-house-small.png", "> 1 Suspect Cases");
+					legendEntry = buildLegendEntry("mapicons/yellow-house-small.png", "> 1 Suspect Cases");
 					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 					facilitiesKeyLayout.addComponent(legendEntry);
-					legendEntry = createMapKeyEntry("mapicons/orange-house-small.png", "> 1 Probable Cases");
+					legendEntry = buildLegendEntry("mapicons/orange-house-small.png", "> 1 Probable Cases");
 					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 					facilitiesKeyLayout.addComponent(legendEntry);
-					legendEntry = createMapKeyEntry("mapicons/red-house-small.png", "> 1 Confirmed Cases");
+					legendEntry = buildLegendEntry("mapicons/red-house-small.png", "> 1 Confirmed Cases");
 					facilitiesKeyLayout.addComponent(legendEntry);
 				}
-				mapKeyLayout.addComponent(facilitiesKeyLayout);
+				legendLayout.addComponent(facilitiesKeyLayout);
 			}
 
 			Label casesKeyLabel = new Label("Cases");
@@ -458,24 +459,24 @@ public class MapComponent extends VerticalLayout {
 			} else {
 				CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 			}
-			mapKeyLayout.addComponent(casesKeyLabel);
+			legendLayout.addComponent(casesKeyLabel);
 
 			HorizontalLayout casesKeyLayout = new HorizontalLayout();
 			{
 				casesKeyLayout.setSpacing(false);
-				HorizontalLayout legendEntry = createMapKeyEntry("mapicons/grey-dot-small.png", "Not Yet Classified");
+				HorizontalLayout legendEntry = buildLegendEntry("mapicons/grey-dot-small.png", "Not Yet Classified");
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 				casesKeyLayout.addComponent(legendEntry);
-				legendEntry = createMapKeyEntry("mapicons/yellow-dot-small.png", "Suspect");
+				legendEntry = buildLegendEntry("mapicons/yellow-dot-small.png", "Suspect");
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 				casesKeyLayout.addComponent(legendEntry);
-				legendEntry = createMapKeyEntry("mapicons/orange-dot-small.png", "Probable");
+				legendEntry = buildLegendEntry("mapicons/orange-dot-small.png", "Probable");
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 				casesKeyLayout.addComponent(legendEntry);
-				legendEntry = createMapKeyEntry("mapicons/red-dot-small.png", "Confirmed");
+				legendEntry = buildLegendEntry("mapicons/red-dot-small.png", "Confirmed");
 				casesKeyLayout.addComponent(legendEntry);
 			}
-			mapKeyLayout.addComponent(casesKeyLayout);
+			legendLayout.addComponent(casesKeyLayout);
 		}
 
 		// Contacts
@@ -486,21 +487,21 @@ public class MapComponent extends VerticalLayout {
 			} else {
 				CssStyles.style(contactsKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 			}
-			mapKeyLayout.addComponent(contactsKeyLabel);
+			legendLayout.addComponent(contactsKeyLabel);
 
 			HorizontalLayout contactsKeyLayout = new HorizontalLayout();
 			{
 				contactsKeyLayout.setSpacing(false);
-				HorizontalLayout legendEntry = createMapKeyEntry("mapicons/green-contact.png", "Last Visit < 24h");
+				HorizontalLayout legendEntry = buildLegendEntry("mapicons/green-contact.png", "Last Visit < 24h");
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 				contactsKeyLayout.addComponent(legendEntry);
-				legendEntry = createMapKeyEntry("mapicons/orange-contact.png", "Last Visit < 48h");
+				legendEntry = buildLegendEntry("mapicons/orange-contact.png", "Last Visit < 48h");
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 				contactsKeyLayout.addComponent(legendEntry);
-				legendEntry = createMapKeyEntry("mapicons/red-contact.png", "Last Visit > 48h or No Visit");
+				legendEntry = buildLegendEntry("mapicons/red-contact.png", "Last Visit > 48h or No Visit");
 				contactsKeyLayout.addComponent(legendEntry);
 			}
-			mapKeyLayout.addComponent(contactsKeyLayout);
+			legendLayout.addComponent(contactsKeyLayout);
 		}
 
 		// Events
@@ -511,127 +512,37 @@ public class MapComponent extends VerticalLayout {
 			} else {
 				CssStyles.style(eventsKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 			}
-			mapKeyLayout.addComponent(eventsKeyLabel);
+			legendLayout.addComponent(eventsKeyLabel);
 
 			HorizontalLayout eventsKeyLayout = new HorizontalLayout();
 			{
 				eventsKeyLayout.setSpacing(false);
-				HorizontalLayout legendEntry = createMapKeyEntry("mapicons/outbreak.png", "Outbreak");
+				HorizontalLayout legendEntry = buildLegendEntry("mapicons/outbreak.png", "Outbreak");
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 				eventsKeyLayout.addComponent(legendEntry);
-				legendEntry = createMapKeyEntry("mapicons/rumor.png", "Rumor");
+				legendEntry = buildLegendEntry("mapicons/rumor.png", "Rumor");
 				eventsKeyLayout.addComponent(legendEntry);
 			}
-			mapKeyLayout.addComponent(eventsKeyLayout);
+			legendLayout.addComponent(eventsKeyLayout);
 		}
 
 		// Districts
-		if (showRegions && districtShapesLowerQuartile != null && districtShapesMedian != null && districtShapesUpperQuartile != null) {
+		if (showRegions && districtValuesLowerQuartile != null && districtValuesMedian != null && districtValuesUpperQuartile != null) {
 			Label districtsKeyLabel = new Label("Districts");
 			if (showCases || showContacts || showEvents) {
 				CssStyles.style(districtsKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_3);
 			} else {
 				CssStyles.style(districtsKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 			}
-			mapKeyLayout.addComponent(districtsKeyLabel);
-			mapKeyLayout.addComponent(createRegionKey());
+			legendLayout.addComponent(districtsKeyLabel);
+			legendLayout.addComponent(buildRegionLegend(false, caseMeasure, emptyPopulationDistrictPresent,
+					districtValuesLowerQuartile, districtValuesMedian, districtValuesUpperQuartile));
 		}
 
-		return mapKeyLayout;
+		return legendLayout;
 	}
 
-	private HorizontalLayout createRegionKey() {
-		HorizontalLayout regionKeyLayout = new HorizontalLayout();
-
-		HorizontalLayout legendEntry;
-		switch (caseMeasure) {
-		case CASE_COUNT:
-			legendEntry = createMapKeyEntry("mapicons/lowest-region-small.png", districtShapesLowerQuartile.compareTo(BigDecimal.ONE) > 0 ? "1 - " + districtShapesLowerQuartile + " cases" : "1 case");
-			break;
-		case CASE_INCIDENCE:
-			legendEntry = createMapKeyEntry("mapicons/lowest-region-small.png", "<= " + DataHelper.getTruncatedBigDecimal(districtShapesLowerQuartile) + " cases / " + DistrictDto.CASE_INCIDENCE_DIVISOR);
-			break;
-		default: throw new IllegalArgumentException(caseMeasure.toString());
-		}
-
-		regionKeyLayout.addComponent(legendEntry);
-		regionKeyLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-		regionKeyLayout.setExpandRatio(legendEntry, 0);
-
-		Label spacer = new Label();
-		spacer.setWidth(6, Unit.PIXELS);
-		regionKeyLayout.addComponent(spacer);
-
-		if (districtShapesLowerQuartile.compareTo(districtShapesMedian) < 0) {
-			switch (caseMeasure) {
-			case CASE_COUNT:
-				legendEntry = createMapKeyEntry("mapicons/low-region-small.png", districtShapesMedian.compareTo(districtShapesLowerQuartile.add(BigDecimal.ONE)) > 0 ? districtShapesLowerQuartile.add(BigDecimal.ONE) + " - " + districtShapesMedian + " cases" : districtShapesMedian + " cases");
-				break;
-			case CASE_INCIDENCE:
-				legendEntry = createMapKeyEntry("mapicons/low-region-small.png", DataHelper.getTruncatedBigDecimal(districtShapesLowerQuartile.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP)) + " - " + DataHelper.getTruncatedBigDecimal(districtShapesMedian) + " cases / " + DistrictDto.CASE_INCIDENCE_DIVISOR);
-				break;
-			default: throw new IllegalArgumentException(caseMeasure.toString());
-			}
-
-			regionKeyLayout.addComponent(legendEntry);
-			regionKeyLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-			regionKeyLayout.setExpandRatio(legendEntry, 0);
-
-			spacer = new Label();
-			spacer.setWidth(6, Unit.PIXELS);
-			regionKeyLayout.addComponent(spacer);
-		}
-
-		if (districtShapesMedian.compareTo(districtShapesUpperQuartile) < 0) {
-			switch (caseMeasure) {
-			case CASE_COUNT:
-				legendEntry = createMapKeyEntry("mapicons/high-region-small.png", districtShapesUpperQuartile.compareTo(districtShapesMedian.add(BigDecimal.ONE)) > 0 ? districtShapesMedian.add(BigDecimal.ONE) + " - " + districtShapesUpperQuartile + " cases" : districtShapesUpperQuartile + " cases");
-				break;
-			case CASE_INCIDENCE:
-				legendEntry = createMapKeyEntry("mapicons/high-region-small.png", DataHelper.getTruncatedBigDecimal(districtShapesMedian.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP)) + " - " + DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " cases / " + DistrictDto.CASE_INCIDENCE_DIVISOR);
-				break;
-			default: throw new IllegalArgumentException(caseMeasure.toString());
-			}	
-
-			regionKeyLayout.addComponent(legendEntry);
-			regionKeyLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-			regionKeyLayout.setExpandRatio(legendEntry, 0);
-
-			spacer = new Label();
-			spacer.setWidth(6, Unit.PIXELS);
-			regionKeyLayout.addComponent(spacer);
-		}
-
-		switch (caseMeasure) {
-		case CASE_COUNT:
-			legendEntry = createMapKeyEntry("mapicons/highest-region-small.png", "> " + districtShapesUpperQuartile + " cases");
-			break;
-		case CASE_INCIDENCE:
-			legendEntry = createMapKeyEntry("mapicons/red-region-small.png", "> " + DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " cases / " + DistrictDto.CASE_INCIDENCE_DIVISOR);
-			break;
-		default: throw new IllegalArgumentException(caseMeasure.toString());
-		}
-
-		regionKeyLayout.addComponent(legendEntry);
-		regionKeyLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-		regionKeyLayout.setExpandRatio(legendEntry, 1);
-
-		if (caseMeasure == CaseMeasure.CASE_INCIDENCE && emptyPopulationDistrictPresent) {
-			spacer = new Label();
-			spacer.setWidth(6, Unit.PIXELS);
-			regionKeyLayout.addComponent(spacer);
-
-			legendEntry = createMapKeyEntry("mapicons/no-population-region-small.png", "No population data available");
-
-			regionKeyLayout.addComponent(legendEntry);
-			regionKeyLayout.setComponentAlignment(legendEntry, Alignment.MIDDLE_LEFT);
-			regionKeyLayout.setExpandRatio(legendEntry, 1);
-		}
-
-		return regionKeyLayout;
-	}
-
-	private HorizontalLayout createMapKeyEntry(String iconThemeResource, String labelCaption) {
+	public static HorizontalLayout buildLegendEntry(String iconThemeResource, String labelCaption) {
 		HorizontalLayout entry = new HorizontalLayout();
 		entry.setSizeUndefined();
 		Image icon = new Image(null, new ThemeResource(iconThemeResource));
@@ -644,6 +555,72 @@ public class MapComponent extends VerticalLayout {
 		label.addStyleName(ValoTheme.LABEL_SMALL);
 		entry.addComponent(label);
 		return entry;
+	}
+
+	public static AbstractOrderedLayout buildRegionLegend(boolean vertical, CaseMeasure caseMeasure, boolean emptyPopulationDistrictPresent,
+			BigDecimal districtShapesLowerQuartile, BigDecimal districtShapesMedian, BigDecimal districtShapesUpperQuartile) {
+		AbstractOrderedLayout regionLegendLayout = vertical ? new VerticalLayout() : new HorizontalLayout();
+		regionLegendLayout.setSpacing(true);
+		CssStyles.style(regionLegendLayout, CssStyles.LAYOUT_MINIMAL);
+		regionLegendLayout.setSizeUndefined();
+		
+		HorizontalLayout legendEntry;
+		switch (caseMeasure) {
+		case CASE_COUNT:
+			legendEntry = buildLegendEntry("mapicons/lowest-region-small.png", districtShapesLowerQuartile.compareTo(BigDecimal.ONE) > 0 ? "1 - " + districtShapesLowerQuartile + " cases" : "1 case");
+			break;
+		case CASE_INCIDENCE:
+			legendEntry = buildLegendEntry("mapicons/lowest-region-small.png", "<= " + DataHelper.getTruncatedBigDecimal(districtShapesLowerQuartile) + " cases / " + DistrictDto.CASE_INCIDENCE_DIVISOR);
+			break;
+		default: throw new IllegalArgumentException(caseMeasure.toString());
+		}
+		regionLegendLayout.addComponent(legendEntry);
+
+		if (districtShapesLowerQuartile.compareTo(districtShapesMedian) < 0) {
+			switch (caseMeasure) {
+			case CASE_COUNT:
+				legendEntry = buildLegendEntry("mapicons/low-region-small.png", districtShapesMedian.compareTo(districtShapesLowerQuartile.add(BigDecimal.ONE)) > 0 ? districtShapesLowerQuartile.add(BigDecimal.ONE) + " - " + districtShapesMedian + " cases" : districtShapesMedian + " cases");
+				break;
+			case CASE_INCIDENCE:
+				legendEntry = buildLegendEntry("mapicons/low-region-small.png", DataHelper.getTruncatedBigDecimal(districtShapesLowerQuartile.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP)) + " - " + DataHelper.getTruncatedBigDecimal(districtShapesMedian) + " cases / " + DistrictDto.CASE_INCIDENCE_DIVISOR);
+				break;
+			default: throw new IllegalArgumentException(caseMeasure.toString());
+			}
+
+			regionLegendLayout.addComponent(legendEntry);
+		}
+
+		if (districtShapesMedian.compareTo(districtShapesUpperQuartile) < 0) {
+			switch (caseMeasure) {
+			case CASE_COUNT:
+				legendEntry = buildLegendEntry("mapicons/high-region-small.png", districtShapesUpperQuartile.compareTo(districtShapesMedian.add(BigDecimal.ONE)) > 0 ? districtShapesMedian.add(BigDecimal.ONE) + " - " + districtShapesUpperQuartile + " cases" : districtShapesUpperQuartile + " cases");
+				break;
+			case CASE_INCIDENCE:
+				legendEntry = buildLegendEntry("mapicons/high-region-small.png", DataHelper.getTruncatedBigDecimal(districtShapesMedian.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP)) + " - " + DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " cases / " + DistrictDto.CASE_INCIDENCE_DIVISOR);
+				break;
+			default: throw new IllegalArgumentException(caseMeasure.toString());
+			}	
+
+			regionLegendLayout.addComponent(legendEntry);
+		}
+
+		switch (caseMeasure) {
+		case CASE_COUNT:
+			legendEntry = buildLegendEntry("mapicons/highest-region-small.png", "> " + districtShapesUpperQuartile + " cases");
+			break;
+		case CASE_INCIDENCE:
+			legendEntry = buildLegendEntry("mapicons/red-region-small.png", "> " + DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " cases / " + DistrictDto.CASE_INCIDENCE_DIVISOR);
+			break;
+		default: throw new IllegalArgumentException(caseMeasure.toString());
+		}
+		regionLegendLayout.addComponent(legendEntry);
+
+		if (caseMeasure == CaseMeasure.CASE_INCIDENCE && emptyPopulationDistrictPresent) {
+			legendEntry = buildLegendEntry("mapicons/no-population-region-small.png", "No population data available");
+			regionLegendLayout.addComponent(legendEntry);
+		}
+
+		return regionLegendLayout;
 	}
 
 	private void clearRegionShapes() {
@@ -701,22 +678,22 @@ public class MapComponent extends VerticalLayout {
 
 		List<Pair<DistrictDto, BigDecimal>> measurePerDistrict = FacadeProvider.getCaseFacade().getCaseMeasurePerDistrict(fromDate, toDate, disease, caseMeasure);
 		if (caseMeasure == CaseMeasure.CASE_COUNT) {
-			districtShapesLowerQuartile = measurePerDistrict.size() > 0 ? 
+			districtValuesLowerQuartile = measurePerDistrict.size() > 0 ? 
 					measurePerDistrict.get((int) (measurePerDistrict.size()  * 0.25)).getElement1() : null;
-					districtShapesMedian = measurePerDistrict.size() > 0 ? 
-							measurePerDistrict.get((int) (measurePerDistrict.size() * 0.5)).getElement1() : null;
-							districtShapesUpperQuartile = measurePerDistrict.size() > 0 ? 
-									measurePerDistrict.get((int) (measurePerDistrict.size() * 0.75)).getElement1() : null;
+			districtValuesMedian = measurePerDistrict.size() > 0 ? 
+					measurePerDistrict.get((int) (measurePerDistrict.size() * 0.5)).getElement1() : null;
+			districtValuesUpperQuartile = measurePerDistrict.size() > 0 ? 
+					measurePerDistrict.get((int) (measurePerDistrict.size() * 0.75)).getElement1() : null;
 		} else {
 			// For case incidence, districts without or with a population <= 0 should not be used for the calculation of the quartiles because they will falsify the result
 			List<Pair<DistrictDto, BigDecimal>> measurePerDistrictWithoutMissingPopulations = new ArrayList<>();
 			measurePerDistrictWithoutMissingPopulations.addAll(measurePerDistrict);
 			measurePerDistrictWithoutMissingPopulations.removeIf(d -> d.getElement0().getPopulation() == null || d.getElement0().getPopulation() <= 0);
-			districtShapesLowerQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0 ? 
+			districtValuesLowerQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0 ? 
 					measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size()  * 0.25)).getElement1() : null;
-					districtShapesMedian = measurePerDistrictWithoutMissingPopulations.size() > 0 ? 
+					districtValuesMedian = measurePerDistrictWithoutMissingPopulations.size() > 0 ? 
 							measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.5)).getElement1() : null;
-							districtShapesUpperQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0 ? 
+							districtValuesUpperQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0 ? 
 									measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.75)).getElement1() : null;
 		}
 
@@ -743,13 +720,13 @@ public class MapComponent extends VerticalLayout {
 
 				if (districtValue.compareTo(BigDecimal.ZERO) == 0) {
 					polygon.setFillOpacity(0);
-				} else if (districtValue.compareTo(districtShapesLowerQuartile) <= 0) {
+				} else if (districtValue.compareTo(districtValuesLowerQuartile) < 0) {
 					polygon.setFillColor("#FEDD6C");
 					polygon.setFillOpacity(0.5);
-				} else if (districtValue.compareTo(districtShapesMedian) <= 0) {
+				} else if (districtValue.compareTo(districtValuesMedian) < 0) {
 					polygon.setFillColor("#FDBF44");
 					polygon.setFillOpacity(0.5);
-				} else if (districtValue.compareTo(districtShapesUpperQuartile) <= 0) {
+				} else if (districtValue.compareTo(districtValuesUpperQuartile) < 0) {
 					polygon.setFillColor("#F47B20");
 					polygon.setFillOpacity(0.5);							
 				} else {

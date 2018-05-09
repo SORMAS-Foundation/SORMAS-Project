@@ -7,11 +7,11 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
-public class StatisticsCountElement extends VerticalLayout {
+public class DashboardStatisticsCountElement extends VerticalLayout {
 
 	private Label countLabel;
 	
-	public StatisticsCountElement(String caption, String labelClass) {
+	public DashboardStatisticsCountElement(String caption, String labelClass) {
 		countLabel = new Label();
 		countLabel.setSizeUndefined();
 		CssStyles.style(countLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_5, CssStyles.VSPACE_TOP_NONE);

@@ -1,0 +1,47 @@
+
+@mixin sormas-statistics-view {
+
+	.v-menubar-popup {
+		
+		.v-menubar-menuitem {
+			padding-left: 13px;
+			
+			&.v-menubar-menuitem-selected-filter {
+				background: #005A9C;
+				color: #FEFEFE;
+				text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);	
+			}
+			
+			&.v-menubar-menuitem-disabled {
+				padding-left: 0px;
+				
+				.v-menubar-menuitem-caption {
+					font-weight: bold;
+					color: #000;
+				}
+			
+			}
+		
+		}
+	
+	}	
+
+	.title {
+		text-align: center;
+		margin-left: 10px;
+		position: relative;
+		background: $v-background-color;
+		padding-left: 10px;
+		padding-right: 10px;	
+		color: $s-secondary-color;
+		font-weight: 600;
+		font-size: 1.25em;
+	}
+
+	.title-box {
+		padding: 12px;
+		border: $s-primary-color 1px solid;
+		margin-top: -28px;
+	}
+	
+}

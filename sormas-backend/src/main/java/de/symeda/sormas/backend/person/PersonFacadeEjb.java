@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
@@ -30,6 +31,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -213,6 +215,27 @@ public class PersonFacadeEjb implements PersonFacade {
 						}
 					}
 				}
+			}
+		}
+		
+		// Update caseAge of all associated cases when approximateAge has changed
+		if ((existingPerson == null && newPerson.getApproximateAge() != null) || 
+				(existingPerson != null && existingPerson.getApproximateAge() != newPerson.getApproximateAge())) {
+			List<Case> personCases = caseService.findBy(new CaseCriteria().personEquals(new PersonReferenceDto(newPerson.getUuid())), null);
+			
+			for (Case personCase : personCases) {
+				CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+				if (newPerson.getApproximateAgeType() == ApproximateAgeType.MONTHS) {
+					personCase.setCaseAge(0);
+				} else {
+					Date now = new Date();
+					Date referenceDate = CaseLogic.getStartDate(personCase.getSymptoms().getOnsetDate(), personCase.getReceptionDate(), personCase.getReportDate());
+					personCase.setCaseAge(newPerson.getApproximateAge() - DateHelper.getYearsBetween(referenceDate, now));
+					if (personCase.getCaseAge() < 0) {
+						personCase.setCaseAge(0);
+					}
+				}
+				caseFacade.onCaseChanged(existingCase, personCase);
 			}
 		}
 	}

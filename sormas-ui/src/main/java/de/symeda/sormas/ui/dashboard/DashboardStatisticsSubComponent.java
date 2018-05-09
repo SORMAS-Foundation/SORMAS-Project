@@ -12,7 +12,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
-public class StatisticsSubComponent extends VerticalLayout {
+public class DashboardStatisticsSubComponent extends VerticalLayout {
 
 	// Layouts
 	private HorizontalLayout countLayout;
@@ -23,7 +23,7 @@ public class StatisticsSubComponent extends VerticalLayout {
 	// Components
 	private Label countLabel;
 	
-	public StatisticsSubComponent() {
+	public DashboardStatisticsSubComponent() {
 		this.setMargin(new MarginInfo(false, true, false, true));
 	}
 	

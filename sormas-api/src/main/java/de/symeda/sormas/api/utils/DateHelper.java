@@ -16,6 +16,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
 import org.joda.time.Weeks;
+import org.joda.time.Years;
 
 public final class DateHelper {
 
@@ -29,7 +30,7 @@ public final class DateHelper {
 	private static final SimpleDateFormat DATABASE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private static final SimpleDateFormat EXPORT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private static final SimpleDateFormat DATE_WITHOUT_YEAR_FORMAT = new SimpleDateFormat("dd/MM");
-	private static final SimpleDateFormat DATE_WITH_MONTH_ABBREVIATION_FORMAT = new SimpleDateFormat("MMM YYYY");
+	private static final SimpleDateFormat DATE_WITH_MONTH_ABBREVIATION_FORMAT = new SimpleDateFormat("MMM yyyy");
 	
 	public static String formatTime(Date date) {
 		if (date != null) {
@@ -257,7 +258,7 @@ public final class DateHelper {
 	}
 
 	/**
-	 * Calculate days between the two given dates. This includes both the
+	 * Calculate weeks between the two given dates. This includes both the
 	 * start and end dates, so week 1 to week 4 of a year will return 4.
 	 */
 	public static int getWeeksBetween(Date start, Date end) {
@@ -267,7 +268,7 @@ public final class DateHelper {
 	}
 	
 	/**
-	 * Calculate days between the two given dates. This includes both the
+	 * Calculate months between the two given dates. This includes both the
 	 * start and end dates, so a one-year period from January to December
 	 * will return 12.
 	 */
@@ -275,6 +276,15 @@ public final class DateHelper {
 		return Months.monthsBetween(
 				new LocalDate(start.getTime()),
 				new LocalDate(end.getTime())).getMonths() + 1;
+	}
+	
+	/**
+	 * Calculate years between the two given dates.
+	 */
+	public static int getYearsBetween(Date start, Date end) {
+		return Years.yearsBetween(
+				new LocalDate(start.getTime()),
+				new LocalDate(end.getTime())).getYears();
 	}
 	
 	public static Date addDays(Date date, int amountOfDays) {
@@ -357,8 +367,11 @@ public final class DateHelper {
 	public static Calendar getEpiCalendar() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setFirstDayOfWeek(Calendar.MONDAY);
+		// Makes sure that the 1st of January is always in week 1
 		calendar.setMinimalDaysInFirstWeek(1);
-		calendar.clear(); // this is necessary, because in some old java versions there a problems updating the fields based on the date
+		// This is necessary because some old Java versions have problems 
+		// updating the fields based on the date
+		calendar.clear(); 
 		return calendar;
 	}
 	
@@ -499,10 +512,14 @@ public final class DateHelper {
 	}
 	
 	/**
+	 * Returns the maximum possible number of EpiWeeks in a year
+	 */
+	public static int getMaximumEpiWeekNumber() {
+		return 53;
+	}
+	
+	/**
 	 * Creates a list of EpiWeeks for the whole given year.
-	 * 
-	 * @param year
-	 * @return
 	 */
 	public static List<EpiWeek> createEpiWeekList(int year) {
         Calendar calendar = getEpiCalendar();
@@ -516,10 +533,6 @@ public final class DateHelper {
 	
 	/**
 	 * Creates a list of EpiWeeks, starting with the given week in the given year, going back exactly one year.
-	 * 
-	 * @param year
-	 * @param week
-	 * @return
 	 */
 	public static List<EpiWeek> createEpiWeekList(int year, int week) {
         Calendar calendar = getEpiCalendar();

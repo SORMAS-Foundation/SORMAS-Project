@@ -78,6 +78,7 @@ public class Case extends AbstractDomainObject {
 	public static final String REPORT_LON = "reportLon";
 	public static final String OUTCOME = "outcome";
 	public static final String OUTCOME_DATE = "outcomeDate";
+	public static final String CASE_AGE = "caseAge";
 
 	private Person person;
 	private String description;
@@ -122,6 +123,8 @@ public class Case extends AbstractDomainObject {
 	
 	private CaseOutcome outcome;
 	private Date outcomeDate;
+	
+	private Integer caseAge;
 	
 	private List<Task> tasks;
 	
@@ -430,6 +433,13 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setOutcomeDate(Date outcomeDate) {
 		this.outcomeDate = outcomeDate;
+	}
+	
+	public Integer getCaseAge() {
+		return caseAge;
+	}
+	public void setCaseAge(Integer caseAge) {
+		this.caseAge = caseAge;
 	}
 	
 }

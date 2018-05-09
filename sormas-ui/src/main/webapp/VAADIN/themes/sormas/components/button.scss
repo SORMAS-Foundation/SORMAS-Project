@@ -5,7 +5,10 @@
     text-transform: uppercase;
     border-color: $v-selection-color;
     box-shadow: none;
-    
+  
+  	&.v-button-font-size-large {
+  	  font-size: 1.5em;
+  	}  
   
     &.v-button-subtle {
   	  background-color: inherit;
