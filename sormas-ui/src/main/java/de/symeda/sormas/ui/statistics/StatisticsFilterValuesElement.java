@@ -146,7 +146,9 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		} else {
 			switch (attribute) {
 			case SEX:
-				return createTokens((Object[]) Sex.values());
+				List<TokenizableValue> tokens = createTokens((Object[]) Sex.values());
+				tokens.add(new TokenizableValue("Unknown", tokens.size()));
+				return tokens;
 			case AGE_INTERVAL_1_YEAR:
 			case AGE_INTERVAL_5_YEARS:
 			case AGE_INTERVAL_CHILDREN_COARSE:

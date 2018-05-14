@@ -135,9 +135,10 @@ public class StatisticsView extends AbstractStatisticsView {
 				// Check whether there is any invalid empty filter or grouping data
 				Notification errorNotification = null;
 				for (StatisticsFilterComponent filterComponent : filterComponents) {
-					if (filterComponent.getSelectedAttribute() == null || 
+					if (filterComponent.getSelectedAttribute() != StatisticsCaseAttribute.REGION_DISTRICT && 
+							(filterComponent.getSelectedAttribute() == null || 
 							filterComponent.getSelectedAttribute().getSubAttributes().length > 0 && 
-							filterComponent.getSelectedSubAttribute() == null) {
+							filterComponent.getSelectedSubAttribute() == null)) {
 						errorNotification = new Notification("Please specify all selected filter attributes and sub attributes", Type.WARNING_MESSAGE);
 						break;
 					}
@@ -208,7 +209,11 @@ public class StatisticsView extends AbstractStatisticsView {
 				if (filterElements.get(StatisticsCaseAttribute.SEX).getSelectedValues() != null) {
 					List<Sex> sexes = new ArrayList<>();
 					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseAttribute.SEX).getSelectedValues()) {
-						sexes.add((Sex) tokenizableValue.getValue());
+						if (tokenizableValue.getValue() == "Unknown") {
+							caseCriteria.sexUnknown(true);
+						} else {
+							sexes.add((Sex) tokenizableValue.getValue());
+						}
 					}
 					caseCriteria.sexes(sexes);
 				}

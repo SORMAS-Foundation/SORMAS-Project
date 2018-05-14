@@ -1245,12 +1245,29 @@ public class CaseFacadeEjb implements CaseFacade {
 			extendFilterBuilderWithDate(filterBuilder, caseCriteria.getReportDateFrom(), caseCriteria.getReportDateTo(), Case.TABLE_NAME, Case.REPORT_DATE);
 		}
 
-		if (caseCriteria.getSexes() != null && !caseCriteria.getSexes().isEmpty()) {
-			extendFilterBuilderWithSimpleValue(filterBuilder, Person.TABLE_NAME, Person.SEX);
-			for (Sex sex : caseCriteria.getSexes()) {
-				filterBuilder.append("'" + sex.name() + "',");
+		if ((caseCriteria.getSexes() != null && !caseCriteria.getSexes().isEmpty()) || caseCriteria.isSexUnknown() != null) {
+			if (filterBuilder.length() > 0) {
+				filterBuilder.append(" AND ");
 			}
-			finalizeFilterBuilderSegment(filterBuilder);
+
+			filterBuilder.append("(").append(Person.TABLE_NAME).append(".").append(Person.SEX);
+			
+			if (caseCriteria.getSexes() != null && !caseCriteria.getSexes().isEmpty()) {
+				filterBuilder.append(" IN (");
+				for (Sex sex : caseCriteria.getSexes()) {
+					filterBuilder.append("'" + sex.name() + "',");
+				}
+				finalizeFilterBuilderSegment(filterBuilder);
+			} 
+
+			if (caseCriteria.isSexUnknown() != null) {
+				if (caseCriteria.getSexes() != null && !caseCriteria.getSexes().isEmpty()) {
+					filterBuilder.append(" OR ").append(Person.TABLE_NAME).append(".").append(Person.SEX);
+				}
+				filterBuilder.append(" IS ").append(caseCriteria.isSexUnknown() == true ? " NULL" : " NOT NULL");
+			}
+			
+			filterBuilder.append(")");
 		}
 
 		if (caseCriteria.getAgeIntervals() != null && !caseCriteria.getAgeIntervals().isEmpty()) {
@@ -1679,7 +1696,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		case AGE_INTERVAL_1_YEAR:
 			for (int i = 0; i < 80; i++) {
 				groupingBuilder.append("WHEN ").append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE)
-				.append(" = ").append(i).append(" THEN ").append("'").append(i).append("' ");
+				.append(" = ").append(i < 10 ? "0" + i : i).append(" THEN ").append("'").append(i < 10 ? "0" + i : i).append("' ");
 			}
 			break;
 		case AGE_INTERVAL_5_YEARS:
@@ -1698,7 +1715,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		case AGE_INTERVAL_CHILDREN_FINE:
 			for (int i = 0; i < 5; i++) {
 				groupingBuilder.append("WHEN ").append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE)
-				.append(" = ").append(i).append(" THEN ").append("'").append(i).append("-").append(i).append("' ");
+				.append(" = ").append(i).append(" THEN ").append("'").append("0" + i).append("-").append("0" + i).append("' ");
 			}
 			for (int i = 5; i < 30; i += 5) {
 				addAgeIntervalToStringBuilder(groupingBuilder, i, 4);
