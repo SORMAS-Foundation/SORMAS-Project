@@ -66,6 +66,8 @@ public class StatisticsView extends AbstractStatisticsView {
 	private Button exportButton;
 	private List<StatisticsFilterComponent> filterComponents = new ArrayList<>();
 
+	private final Label emptyResultLabel = new Label("No cases have been found for the selected filters and visualization options.");
+
 	public StatisticsView() {
 		super(VIEW_NAME);
 		setWidth(100, Unit.PERCENTAGE);
@@ -79,7 +81,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		filtersLayoutTitle.setWidthUndefined();
 		CssStyles.style(filtersLayoutTitle, CssStyles.STATISTICS_TITLE);
 		statisticsLayout.addComponent(filtersLayoutTitle);
-		
+
 		VerticalLayout filtersSectionLayout = new VerticalLayout();
 		CssStyles.style(filtersSectionLayout, CssStyles.STATISTICS_TITLE_BOX);
 		filtersSectionLayout.setSpacing(true);
@@ -87,16 +89,16 @@ public class StatisticsView extends AbstractStatisticsView {
 		Label filtersInfoText = new Label("Add filters to restrict the aggregated data.<br>"
 				+ "If you use multiple filters only cases that pass all restrictions will be aggregated.", ContentMode.HTML);
 		filtersSectionLayout.addComponent(filtersInfoText);
-		
+
 		filtersLayout = new VerticalLayout();
 		filtersLayout.setSpacing(true);
 		filtersSectionLayout.addComponent(filtersLayout);
-		
+
 		// filters footer
 		HorizontalLayout filtersSectionFooter = new HorizontalLayout();
 		{
 			filtersSectionFooter.setSpacing(true);
-			
+
 			Button addFilterButton = new Button("Add filter", FontAwesome.PLUS);
 			CssStyles.style(addFilterButton, ValoTheme.BUTTON_PRIMARY);
 			addFilterButton.addClickListener(e -> {
@@ -112,14 +114,14 @@ public class StatisticsView extends AbstractStatisticsView {
 			filtersSectionFooter.addComponent(resetFiltersButton);
 		}
 		filtersSectionLayout.addComponent(filtersSectionFooter);
-		
+
 		statisticsLayout.addComponent(filtersSectionLayout);
 
 		Label displayedAttributesTitle = new Label("2. Visualization");
 		displayedAttributesTitle.setWidthUndefined();
 		CssStyles.style(displayedAttributesTitle, CssStyles.STATISTICS_TITLE);
 		statisticsLayout.addComponent(displayedAttributesTitle);
-		
+
 		displayedAttributesElement = new StatisticsDisplayedAttributesElement();
 		CssStyles.style(displayedAttributesElement, CssStyles.STATISTICS_TITLE_BOX);
 		statisticsLayout.addComponent(displayedAttributesElement);
@@ -140,7 +142,7 @@ public class StatisticsView extends AbstractStatisticsView {
 						break;
 					}
 				}
-				
+
 				if (errorNotification == null && displayedAttributesElement.getRowsAttribute() != null && 
 						displayedAttributesElement.getRowsAttribute().getSubAttributes().length > 0 &&
 						displayedAttributesElement.getRowsSubAttribute() == null) {
@@ -150,7 +152,7 @@ public class StatisticsView extends AbstractStatisticsView {
 						displayedAttributesElement.getColumnsSubAttribute() == null) {
 					errorNotification = new Notification("Please specify the column attribute you have chosen for the visualization", Type.WARNING_MESSAGE);
 				}
-				
+
 				if (errorNotification != null) {
 					errorNotification.setDelayMsec(-1);
 					errorNotification.show(Page.getCurrent());
@@ -179,20 +181,23 @@ public class StatisticsView extends AbstractStatisticsView {
 		resultsLayoutTitle.setWidthUndefined();
 		CssStyles.style(resultsLayoutTitle, CssStyles.STATISTICS_TITLE);
 		statisticsLayout.addComponent(resultsLayoutTitle);
-		
+
 		resultsLayout = new VerticalLayout();
 		resultsLayout.setWidth(100, Unit.PERCENTAGE);
 		resultsLayout.setSpacing(true);
 		CssStyles.style(resultsLayout, CssStyles.STATISTICS_TITLE_BOX);
 		resultsLayout.addComponent(new Label("Click the 'generate'-button to create a new table, map or chart."));
-		
+
 		statisticsLayout.addComponent(resultsLayout);
-		
+
+		Label disclaimer = new Label(FontAwesome.INFO_CIRCLE.getHtml() + " All statistics on this page are aggregated data of the whole country. This includes cases you might not have read and write access to and therefore are not visible in the case directory.", ContentMode.HTML);
+		statisticsLayout.addComponent(disclaimer);
+
 		addComponent(statisticsLayout);
 	}
 
 	private List<Object[]> generateStatistics() {
-		
+
 		// TODO move generation of the case criteria into another method
 		StatisticsCaseCriteria caseCriteria = new StatisticsCaseCriteria();
 
@@ -339,33 +344,38 @@ public class StatisticsView extends AbstractStatisticsView {
 				}
 			}
 		}
-		
+
 		List<Object[]> resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria,
 				displayedAttributesElement.getRowsAttribute(), displayedAttributesElement.getRowsSubAttribute(),
 				displayedAttributesElement.getColumnsAttribute(),  displayedAttributesElement.getColumnsSubAttribute());
+		
 		return resultData;
 	}
-	
+
 	public void generateTable() {
-		exportButton = new Button("Export");
-		exportButton.setDescription("Export the columns and rows that are shown in the table above.");
-		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		exportButton.setIcon(FontAwesome.TABLE);
-		resultsLayout.addComponent(exportButton);
-		resultsLayout.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
-		
 		List<Object[]> resultData = generateStatistics();
-		statisticsCaseGrid = new StatisticsCaseGrid(displayedAttributesElement.getRowsAttribute(), displayedAttributesElement.getRowsSubAttribute(), displayedAttributesElement.getColumnsAttribute(), displayedAttributesElement.getColumnsSubAttribute(), resultData);
-		statisticsCaseGrid.setWidth(100, Unit.PERCENTAGE);
-		resultsLayout.addComponent(statisticsCaseGrid);
-		
-		StreamResource streamResource = DownloadUtil.createGridExportStreamResource(statisticsCaseGrid.getContainerDataSource(), statisticsCaseGrid.getColumns(), "sormas_statistics", "sormas_statistics_" + DateHelper.formatDateForExport(new Date()) + ".csv");
-		FileDownloader fileDownloader = new FileDownloader(streamResource);
-		fileDownloader.extend(exportButton);
+		if (!resultData.isEmpty()) {
+			exportButton = new Button("Export");
+			exportButton.setDescription("Export the columns and rows that are shown in the table above.");
+			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			exportButton.setIcon(FontAwesome.TABLE);
+			resultsLayout.addComponent(exportButton);
+			resultsLayout.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
+
+			statisticsCaseGrid = new StatisticsCaseGrid(displayedAttributesElement.getRowsAttribute(), displayedAttributesElement.getRowsSubAttribute(), displayedAttributesElement.getColumnsAttribute(), displayedAttributesElement.getColumnsSubAttribute(), resultData);
+			statisticsCaseGrid.setWidth(100, Unit.PERCENTAGE);
+			resultsLayout.addComponent(statisticsCaseGrid);
+
+			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(statisticsCaseGrid.getContainerDataSource(), statisticsCaseGrid.getColumns(), "sormas_statistics", "sormas_statistics_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
+		} else {
+			resultsLayout.addComponent(emptyResultLabel);
+		}
 	}
-	
+
 	public static String UNKNOWN = "Unknown";
-	
+
 	/**
 	 * TODO merge with StatisticsCaseGrid.buildHeader
 	 */
@@ -377,7 +387,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		if (idString.isEmpty()) {
 			return UNKNOWN;
 		}
-		
+
 		if (subAttribute != null) {
 			switch (subAttribute) {
 			case QUARTER:
@@ -411,9 +421,15 @@ public class StatisticsView extends AbstractStatisticsView {
 			}
 		}
 	}
-	
+
 	public void generateChart() {
-		
+		List<Object[]> resultData = generateStatistics();
+
+		if (resultData.isEmpty()) {
+			resultsLayout.addComponent(emptyResultLabel);
+			return;
+		}
+
 		StatisticsVisualizationChartType chartType = displayedAttributesElement.getVisualizationChartType();
 		StatisticsCaseAttribute columnsAttribute = displayedAttributesElement.getColumnsAttribute();
 		StatisticsCaseSubAttribute columnsSubAttribute = displayedAttributesElement.getColumnsSubAttribute();
@@ -423,14 +439,14 @@ public class StatisticsView extends AbstractStatisticsView {
 		HighChart chart = new HighChart();
 		chart.setWidth(100, Unit.PERCENTAGE);
 		chart.setHeight(580, Unit.PIXELS);
-		
+
 		StringBuilder hcjs = new StringBuilder();
 		hcjs.append("var options = {");
-		
+
 		final int columnIdIndex;
 		final int rowIdIndex;
 		hcjs.append("chart:{ "
-						+ " type: '");
+				+ " type: '");
 		switch (chartType) {
 		case COLUMN:
 		case STACKED_COLUMN:
@@ -451,19 +467,17 @@ public class StatisticsView extends AbstractStatisticsView {
 		default:
 			throw new IllegalArgumentException(chartType.toString());
 		}
-		
-		hcjs.append("', "
-						+ " backgroundColor: 'transparent' "
-						+ "},"
-						+ "credits:{ enabled: false },"
-						+ "exporting:{ "
-						+ " enabled: true,"
-						+ " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }"
-						+ "},"
-						+ "title:{ text: '' },"
-				);
 
-		List<Object[]> resultData = generateStatistics();
+		hcjs.append("', "
+				+ " backgroundColor: 'transparent' "
+				+ "},"
+				+ "credits:{ enabled: false },"
+				+ "exporting:{ "
+				+ " enabled: true,"
+				+ " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }"
+				+ "},"
+				+ "title:{ text: '' },"
+				);
 
 		HashMap<Object,String> idCaptions = new HashMap<>();
 		if (columnIdIndex >= 1 || rowIdIndex >= 1) {
@@ -481,7 +495,7 @@ public class StatisticsView extends AbstractStatisticsView {
 					}
 				}
 			}
-		
+
 			// sort based on groupings
 			resultData.sort((a,b) -> {
 				if (rowIdIndex >= 0) {
@@ -557,17 +571,17 @@ public class StatisticsView extends AbstractStatisticsView {
 				hcjs.append("'Total'");
 			}
 			hcjs.append("]},");
-			
+
 			hcjs.append("yAxis: { min: 0, title: { text: 'Number of Cases' }, allowDecimals: false, softMax: 10, "
 					+ "stackLabels: { enabled: true, "
 					+ "style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },");
-			
+
 			hcjs.append("tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'},");
 		}
 
 		hcjs.append("legend: { verticalAlign: 'top', backgroundColor: 'transparent', align: 'left', "
 				+ "borderWidth: 0, shadow: false, margin: 30, padding: 0 },");
-		
+
 		hcjs.append("colors: ['#FF0000','#6691C4','#ffba08','#519e8a','#ed254e','#39a0ed','#FF8C00','#344055','#D36135','#82d173'],");
 
 		if (chartType == StatisticsVisualizationChartType.STACKED_COLUMN
@@ -587,15 +601,15 @@ public class StatisticsView extends AbstractStatisticsView {
 					"style:{textOutline:'none'}" +
 					"} } },");
 		}
-		
+
 		hcjs.append("series: [");
 		if (rowIdIndex < 1 && columnIdIndex < 1) {
 			hcjs.append("{ name: 'Number of cases', dataLabels: { allowOverlap: false }")
 			.append(", data: [['Total',").append(resultData.get(0)).append("]]}");
-			
+
 		} else if (displayedAttributesElement.getVisualizationChartType() == StatisticsVisualizationChartType.PIE) {
 			hcjs.append("{ name: 'Number of cases', dataLabels: { allowOverlap: false }")
-				.append(", data: [");
+			.append(", data: [");
 			for (Object[] row : resultData) {
 				Object value = row[0];
 				if (columnIdIndex >= 1) {
@@ -622,7 +636,7 @@ public class StatisticsView extends AbstractStatisticsView {
 					seriesCaption = rowSeriesCaption;
 					hcjs.append("{ name: '").append(rowSeriesCaption).append("', dataLabels: { allowOverlap: false }, data: [");
 				}
-				
+
 				Object value = row[0];
 				if (columnIdIndex >= 1) {
 					Object columnId = row[columnIdIndex];
@@ -639,15 +653,21 @@ public class StatisticsView extends AbstractStatisticsView {
 		resultsLayout.addComponent(chart);
 		resultsLayout.setExpandRatio(chart, 1);
 	}
-	
+
 	public void generateMap() {
-		
+		List<Object[]> resultData = generateStatistics();
+
+		if (resultData.isEmpty()) {
+			resultsLayout.addComponent(emptyResultLabel);
+			return;
+		}
+
 		HorizontalLayout mapLayout = new HorizontalLayout();
 		mapLayout.setSpacing(true);
 		mapLayout.setMargin(false);
 		mapLayout.setWidth(100, Unit.PERCENTAGE);
 		mapLayout.setHeightUndefined();
-		
+
 		GoogleMap map = new GoogleMap("AIzaSyAaJpN8a_NhEU-02-t5uVi02cAaZtKafkw", null, null);
 		map.addStyleName("no-tiles");
 		map.setWidth(100, Unit.PERCENTAGE);
@@ -683,7 +703,6 @@ public class StatisticsView extends AbstractStatisticsView {
 			}
 		}
 
-		List<Object[]> resultData = generateStatistics();
 		resultData.sort((a,b) -> {
 			return Long.compare((Long)a[0], (Long)b[0]);
 		});
@@ -694,7 +713,7 @@ public class StatisticsView extends AbstractStatisticsView {
 
 		// Draw relevant district fills
 		for (Object[] resultRow : resultData) {
-			
+
 			String shapeUuid = (String)resultRow[1];
 			BigDecimal shapeValue = new BigDecimal((Long)resultRow[0]);
 			GeoLatLon[][] shape;
@@ -705,10 +724,10 @@ public class StatisticsView extends AbstractStatisticsView {
 			case DISTRICTS:
 				shape = FacadeProvider.getGeoShapeProvider().getDistrictShape(new DistrictReferenceDto(shapeUuid));
 				break;
-				default:
+			default:
 				throw new IllegalArgumentException(displayedAttributesElement.getVisualizationMapType().toString());
 			}
-			
+
 			if (shape == null) {
 				continue;
 			}
@@ -739,14 +758,14 @@ public class StatisticsView extends AbstractStatisticsView {
 					polygon.setFillOpacity(0.5);
 				}
 
-//				if (caseMeasure == CaseMeasure.CASE_INCIDENCE) {
-//					if (district.getPopulation() == null || district.getPopulation() <= 0) {
-//						// grey when region has no population data
-//						emptyPopulationDistrictPresent = true;
-//						polygon.setFillColor("#999999");
-//						polygon.setFillOpacity(0.5);
-//					}
-//				}
+				//				if (caseMeasure == CaseMeasure.CASE_INCIDENCE) {
+				//					if (district.getPopulation() == null || district.getPopulation() <= 0) {
+				//						// grey when region has no population data
+				//						emptyPopulationDistrictPresent = true;
+				//						polygon.setFillColor("#999999");
+				//						polygon.setFillOpacity(0.5);
+				//					}
+				//				}
 
 				shapePolygons[part] = polygon;
 				map.addPolygonOverlay(polygon);
@@ -754,17 +773,17 @@ public class StatisticsView extends AbstractStatisticsView {
 		}
 		mapLayout.addComponent(map);
 		mapLayout.setExpandRatio(map, 1);
-		
+
 		AbstractOrderedLayout regionLegend = MapComponent.buildRegionLegend(
 				true, CaseMeasure.CASE_COUNT, false, 
 				valuesLowerQuartile, valuesMedian, valuesUpperQuartile);
 		Label legendHeader = new Label("Map key");
 		CssStyles.style(legendHeader, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 		regionLegend.addComponent(legendHeader, 0);
-		
+
 		mapLayout.addComponent(regionLegend);
 		mapLayout.setExpandRatio(regionLegend, 0);
-		
+
 		resultsLayout.addComponent(mapLayout);
 		resultsLayout.setExpandRatio(mapLayout, 1);
 	}

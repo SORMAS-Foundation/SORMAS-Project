@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.caze;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -1369,8 +1370,21 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		sqlBuilder.insert(0, "SELECT COUNT(*)");
 
-		List<Object[]> results = (List<Object[]>) em.createNativeQuery(sqlBuilder.toString()).getResultList();
-		return results;
+		if (groupingA == null && groupingB == null) {
+			long result = (long) em.createNativeQuery(sqlBuilder.toString()).getSingleResult();
+			if (result == 0) {
+				// Return an empty list if no cases have been found
+				return new ArrayList<>();
+			} else {
+				Object[] resultArray = new Object[]{result};
+				List<Object[]> results = new ArrayList<>();
+				results.add(resultArray);
+				return results;
+			}
+		} else {
+			List<Object[]> results = (List<Object[]>) em.createNativeQuery(sqlBuilder.toString()).getResultList();
+			return results;
+		}
 	}
 
 	private StringBuilder extendFilterBuilderWithSimpleValue(StringBuilder filterBuilder, String tableName, String fieldName) {

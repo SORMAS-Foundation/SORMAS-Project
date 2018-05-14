@@ -62,7 +62,7 @@ public class StatisticsCaseGrid extends Grid {
 		// If no displayed attributes are selected, simply show the total number of cases
 		if (rowsAttribute == null && columnsAttribute == null) {
 			addColumn("Number of cases");
-			addRow(new Object[]{String.valueOf(content.get(0))});
+			addRow(new Object[]{String.valueOf(content.get(0)[0])});
 		} else {
 			// Set columns
 			Map<Object, Integer> columnsMap = null;
