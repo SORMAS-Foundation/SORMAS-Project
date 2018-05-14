@@ -394,11 +394,16 @@ public class StatisticsView extends AbstractStatisticsView {
 				return "Q" + idString;
 			case MONTH:
 				return Month.values()[Integer.valueOf(idString) - 1].toString();
+			case EPI_WEEK:
+				return "Wk " + idString;
 			case QUARTER_OF_YEAR:
-				return idString.substring(0, 4) + " " + "Q" + idString.charAt(idString.length() - 1);
+				return "Q" + idString.charAt(idString.length() - 1) + " " + idString.substring(0, 4);
 			case MONTH_OF_YEAR:
 				int month = Integer.valueOf(idString.substring(4));
-				return idString.substring(0, 4)  + " " +  Month.values()[month - 1].toString();
+				return Month.values()[month - 1].toString() + " " + idString.substring(0, 4);
+			case EPI_WEEK_OF_YEAR:
+				// see EpiWeek.toString
+				return "Wk " + idString.substring(4) + "-" + idString.substring(0, 4);
 			case REGION:
 				return FacadeProvider.getRegionFacade().getRegionByUuid(idString).toString();
 			case DISTRICT:

@@ -209,11 +209,16 @@ public class StatisticsCaseGrid extends Grid {
 				return "Q" + rawHeader;
 			case MONTH:
 				return Month.values()[Integer.valueOf(rawHeader) - 1].toString();
+			case EPI_WEEK:
+				return "Wk " + rawHeader;
 			case QUARTER_OF_YEAR:
 				return "Q" + rawHeader.charAt(rawHeader.length() - 1) + " " + rawHeader.substring(0, 4);
 			case MONTH_OF_YEAR:
 				int month = Integer.valueOf(rawHeader.substring(4));
 				return Month.values()[month - 1].toString() + " " + rawHeader.substring(0, 4);
+			case EPI_WEEK_OF_YEAR:
+				// see EpiWeek.toString
+				return "Wk " + rawHeader.substring(4) + "-" + rawHeader.substring(0, 4);
 			case REGION:
 				return FacadeProvider.getRegionFacade().getRegionByUuid(rawHeader).toString();
 			case DISTRICT:
