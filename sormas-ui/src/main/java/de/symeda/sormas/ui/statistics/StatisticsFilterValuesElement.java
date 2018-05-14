@@ -152,6 +152,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			case AGE_INTERVAL_CHILDREN_COARSE:
 			case AGE_INTERVAL_CHILDREN_FINE:
 			case AGE_INTERVAL_CHILDREN_MEDIUM:
+			case AGE_INTERVAL_BASIC:
 				return getListOfAgeIntervalValues();
 			case DISEASE:
 				return createTokens((Object[]) Disease.values());
@@ -288,11 +289,19 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 				ageIntervalList.add(new TokenizableValue(new IntegerRange(i, i + 9), tokenId++));
 			}
 			break;
+		case AGE_INTERVAL_BASIC:
+			ageIntervalList.add(new TokenizableValue(new IntegerRange(0, 0), tokenId++));
+			ageIntervalList.add(new TokenizableValue(new IntegerRange(1, 4), tokenId++));
+			ageIntervalList.add(new TokenizableValue(new IntegerRange(5, 14), tokenId++));
+			ageIntervalList.add(new TokenizableValue(new IntegerRange(15, null), tokenId++));
+			break;
 		default:
 			return ageIntervalList;
 		}
 
-		ageIntervalList.add(new TokenizableValue(new IntegerRange(80, null), tokenId++));
+		if (attribute != StatisticsCaseAttribute.AGE_INTERVAL_BASIC) {
+			ageIntervalList.add(new TokenizableValue(new IntegerRange(80, null), tokenId++));
+		}
 		ageIntervalList.add(new TokenizableValue(new IntegerRange(null, null), tokenId));
 		return ageIntervalList;
 	}

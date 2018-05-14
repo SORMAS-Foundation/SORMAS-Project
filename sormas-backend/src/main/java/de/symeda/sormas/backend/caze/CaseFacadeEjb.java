@@ -1053,7 +1053,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS || groupingA == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_COARSE
 				|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_COARSE || groupingA == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_FINE
 				|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_FINE || groupingA == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_MEDIUM
-				|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_MEDIUM || caseCriteria.getSexes() != null || caseCriteria.getAgeIntervals() != null) {
+				|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_MEDIUM || groupingA == StatisticsCaseAttribute.AGE_INTERVAL_BASIC
+				|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_BASIC || caseCriteria.getSexes() != null || caseCriteria.getAgeIntervals() != null) {
 			sqlBuilder
 			.append(" LEFT JOIN ").append(Person.TABLE_NAME)
 			.append(" ON ").append(Case.TABLE_NAME).append(".").append(Case.PERSON).append("_id")
@@ -1261,14 +1262,16 @@ public class CaseFacadeEjb implements CaseFacade {
 				filterBuilder.append(" (");
 			}
 
-			boolean append80Plus = false;
+			boolean appendUpperRange = false;
+			int upperRangeBoundary = 80;
 			boolean appendUnknown = false;
 			for (IntegerRange range : caseCriteria.getAgeIntervals()) {
 				if (range.getTo() == null) {
 					if (range.getFrom() == null) {
 						appendUnknown = true;
 					} else {
-						append80Plus = true;
+						appendUpperRange = true;
+						upperRangeBoundary = range.getFrom();
 					}
 				} else {
 					for (int age : IntStream.rangeClosed(range.getFrom(), range.getTo()).toArray()) {
@@ -1284,11 +1287,11 @@ public class CaseFacadeEjb implements CaseFacade {
 				finalizeFilterBuilderSegment(ageIntervalStringBuilder);
 			}
 
-			if (append80Plus) {
+			if (appendUpperRange) {
 				if (ageIntervalStringBuilder.length() > 0) {
 					ageIntervalStringBuilder.append(" OR ");
 				}
-				ageIntervalStringBuilder.append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE).append(" >= 80");
+				ageIntervalStringBuilder.append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE).append(" >= " + upperRangeBoundary);
 			}
 
 			if (appendUnknown) {
@@ -1557,6 +1560,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		case AGE_INTERVAL_CHILDREN_COARSE:
 		case AGE_INTERVAL_CHILDREN_FINE:
 		case AGE_INTERVAL_CHILDREN_MEDIUM:
+		case AGE_INTERVAL_BASIC:
 			extendGroupingBuilderWithAgeInterval(groupingSelectPartBuilder, grouping, groupAlias);
 			break;
 		case ONSET_TIME:
@@ -1711,18 +1715,28 @@ public class CaseFacadeEjb implements CaseFacade {
 				addAgeIntervalToStringBuilder(groupingBuilder, i, 9);
 			}
 			break;
+		case AGE_INTERVAL_BASIC:
+			addAgeIntervalToStringBuilder(groupingBuilder, 0, 0);
+			addAgeIntervalToStringBuilder(groupingBuilder, 1, 3);
+			addAgeIntervalToStringBuilder(groupingBuilder, 5, 9);
+			groupingBuilder.append("WHEN ").append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE).append(" >= 15 THEN '15+' ");
+			break;
 		default:
 			throw new IllegalArgumentException(grouping.toString());
 		}
 		
-		groupingBuilder.append("WHEN ").append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE).append(" >= 80 THEN '80+' ");
+		if (grouping != StatisticsCaseAttribute.AGE_INTERVAL_BASIC) {
+			groupingBuilder.append("WHEN ").append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE).append(" >= 80 THEN '80+' ");
+		}
 		groupingBuilder.append("ELSE 'Unknown' END AS " + groupAlias);
 	}
 	
 	private void addAgeIntervalToStringBuilder(StringBuilder groupingBuilder, int number, int increase) {
+		String lowerNumberString = number < 10 ? "0" + number : String.valueOf(number);
+		String higherNumberString = number + increase < 10 ? "0" + (number + increase) : String.valueOf(number + increase);
 		groupingBuilder.append("WHEN ").append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE)
 		.append(" BETWEEN ").append(number).append(" AND ").append(number + increase)
-		.append(" THEN '").append(number).append("-").append(number + increase).append("' ");
+		.append(" THEN '").append(lowerNumberString).append("-").append(higherNumberString).append("' ");
 	}
 
 	@LocalBean

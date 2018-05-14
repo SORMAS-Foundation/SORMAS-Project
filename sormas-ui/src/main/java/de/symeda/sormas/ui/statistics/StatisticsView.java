@@ -245,6 +245,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			case AGE_INTERVAL_CHILDREN_COARSE:
 			case AGE_INTERVAL_CHILDREN_FINE:
 			case AGE_INTERVAL_CHILDREN_MEDIUM:
+			case AGE_INTERVAL_BASIC:
 				if (filterElements.get(filterComponent.getSelectedAttribute()).getSelectedValues() != null) {
 					List<IntegerRange> ageIntervals = new ArrayList<>();
 					for (TokenizableValue tokenizableValue : filterElements.get(filterComponent.getSelectedAttribute()).getSelectedValues()) {
