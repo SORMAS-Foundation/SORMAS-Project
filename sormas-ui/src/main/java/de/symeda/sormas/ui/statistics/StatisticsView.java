@@ -13,6 +13,7 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
@@ -20,6 +21,7 @@ import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapPolygon;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -63,6 +65,7 @@ public class StatisticsView extends AbstractStatisticsView {
 	private StatisticsDisplayedAttributesElement displayedAttributesElement;
 	private VerticalLayout resultsLayout;
 	private StatisticsCaseGrid statisticsCaseGrid;
+	private CheckBox zeroValues;
 	private Button exportButton;
 	private List<StatisticsFilterComponent> filterComponents = new ArrayList<>();
 
@@ -126,6 +129,22 @@ public class StatisticsView extends AbstractStatisticsView {
 		CssStyles.style(displayedAttributesElement, CssStyles.STATISTICS_TITLE_BOX);
 		statisticsLayout.addComponent(displayedAttributesElement);
 
+//		Label optionsTitle = new Label("3. Options");
+//		optionsTitle.setWidthUndefined();
+//		CssStyles.style(optionsTitle, CssStyles.STATISTICS_TITLE);
+//		statisticsLayout.addComponent(optionsTitle);
+		
+//		HorizontalLayout optionsLayout = new HorizontalLayout();
+//		optionsLayout.setWidth(100, Unit.PERCENTAGE);
+//		optionsLayout.setSpacing(true);
+//		CssStyles.style(optionsLayout, CssStyles.STATISTICS_TITLE_BOX);
+//		{
+			zeroValues = new CheckBox("Show zero values");
+//			zeroValues.setValue(true);
+//			optionsLayout.addComponent(zeroValues);
+//		}
+//		statisticsLayout.addComponent(optionsLayout);
+		
 		HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setSpacing(true);
 		{
@@ -368,7 +387,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			resultsLayout.addComponent(exportButton);
 			resultsLayout.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
 
-			statisticsCaseGrid = new StatisticsCaseGrid(displayedAttributesElement.getRowsAttribute(), displayedAttributesElement.getRowsSubAttribute(), displayedAttributesElement.getColumnsAttribute(), displayedAttributesElement.getColumnsSubAttribute(), resultData);
+			statisticsCaseGrid = new StatisticsCaseGrid(displayedAttributesElement.getRowsAttribute(), displayedAttributesElement.getRowsSubAttribute(), displayedAttributesElement.getColumnsAttribute(), displayedAttributesElement.getColumnsSubAttribute(), zeroValues.getValue(), resultData);
 			statisticsCaseGrid.setWidth(100, Unit.PERCENTAGE);
 			resultsLayout.addComponent(statisticsCaseGrid);
 

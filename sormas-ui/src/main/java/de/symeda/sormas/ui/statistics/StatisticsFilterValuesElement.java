@@ -201,7 +201,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		case EPI_WEEK:
 			List<TokenizableValue> epiWeekList = new ArrayList<>();
 			for (int i = 1; i <= DateHelper.getMaximumEpiWeekNumber(); i++) {
-				epiWeekList.add(new TokenizableValue(i, "Wk " + i, i));
+				epiWeekList.add(new TokenizableValue(new EpiWeek(1900, i), "Wk " + i, i));
 			}
 			return epiWeekList;
 		case QUARTER_OF_YEAR:

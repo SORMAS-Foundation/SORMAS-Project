@@ -20,4 +20,6 @@ public interface RegionFacade {
 	
 	List<String> getAllUuids(String userUuid);
 	
+	List<String> getAllUuids();
+	
 }

@@ -1462,7 +1462,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			filterBuilder.append(" AND ");
 		}
 
-		filterBuilder.append("epi_week(").append(tableName).append(".").append(fieldName).append("))")
+		filterBuilder.append("epi_week(").append(tableName).append(".").append(fieldName).append(")")
 		.append(" IN (");
 
 		return filterBuilder;
