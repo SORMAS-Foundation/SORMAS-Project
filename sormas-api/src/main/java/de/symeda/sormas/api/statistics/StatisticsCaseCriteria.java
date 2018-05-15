@@ -50,6 +50,7 @@ public class StatisticsCaseCriteria implements Serializable {
 	private Date reportDateFrom;
 	private Date reportDateTo;
 	private List<Sex> sexes;
+	private Boolean sexUnknown;
 	private Set<IntegerRange> ageIntervals = new HashSet<>();
 	private List<Disease> diseases;
 	private List<CaseClassification> classifications;
@@ -167,6 +168,10 @@ public class StatisticsCaseCriteria implements Serializable {
 
 	public List<Sex> getSexes() {
 		return sexes;
+	}
+	
+	public Boolean isSexUnknown() {
+		return sexUnknown;
 	}
 
 	public Set<IntegerRange> getAgeIntervals() {
@@ -342,6 +347,11 @@ public class StatisticsCaseCriteria implements Serializable {
 
 	public StatisticsCaseCriteria sexes(List<Sex> sexes) {
 		this.sexes = sexes;
+		return this;
+	}
+	
+	public StatisticsCaseCriteria sexUnknown(Boolean sexUnknown) {
+		this.sexUnknown = sexUnknown;
 		return this;
 	}
 

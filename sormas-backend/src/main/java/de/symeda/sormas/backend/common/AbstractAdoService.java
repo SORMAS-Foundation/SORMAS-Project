@@ -135,9 +135,11 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<ADO> from = cq.from(getElementClass());
 
-		Predicate filter = createUserFilter(cb, cq, from, user);
-		if (filter != null) {
-			cq.where(filter);
+		if (user != null) {
+			Predicate filter = createUserFilter(cb, cq, from, user);
+			if (filter != null) {
+				cq.where(filter);
+			}
 		}
 		
 		cq.select(from.get(AbstractDomainObject.UUID));

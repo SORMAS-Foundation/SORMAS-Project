@@ -8,7 +8,7 @@ public enum StatisticsCaseAttributeGroup {
 	PLACE(StatisticsCaseAttribute.REGION_DISTRICT),
 	PERSON(StatisticsCaseAttribute.SEX,StatisticsCaseAttribute.AGE_INTERVAL_1_YEAR,StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS,
 			StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_COARSE,StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_FINE,
-			StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_MEDIUM),
+			StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_MEDIUM, StatisticsCaseAttribute.AGE_INTERVAL_BASIC),
 	CASE(StatisticsCaseAttribute.DISEASE,StatisticsCaseAttribute.CLASSIFICATION,StatisticsCaseAttribute.OUTCOME);
 	
 	private final StatisticsCaseAttribute[] attributes;

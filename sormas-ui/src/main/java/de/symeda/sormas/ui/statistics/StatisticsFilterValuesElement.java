@@ -146,12 +146,15 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		} else {
 			switch (attribute) {
 			case SEX:
-				return createTokens((Object[]) Sex.values());
+				List<TokenizableValue> tokens = createTokens((Object[]) Sex.values());
+				tokens.add(new TokenizableValue("Unknown", tokens.size()));
+				return tokens;
 			case AGE_INTERVAL_1_YEAR:
 			case AGE_INTERVAL_5_YEARS:
 			case AGE_INTERVAL_CHILDREN_COARSE:
 			case AGE_INTERVAL_CHILDREN_FINE:
 			case AGE_INTERVAL_CHILDREN_MEDIUM:
+			case AGE_INTERVAL_BASIC:
 				return getListOfAgeIntervalValues();
 			case DISEASE:
 				return createTokens((Object[]) Disease.values());
@@ -198,7 +201,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		case EPI_WEEK:
 			List<TokenizableValue> epiWeekList = new ArrayList<>();
 			for (int i = 1; i <= DateHelper.getMaximumEpiWeekNumber(); i++) {
-				epiWeekList.add(new TokenizableValue(i, "Wk " + i, i));
+				epiWeekList.add(new TokenizableValue(new EpiWeek(1900, i), "Wk " + i, i));
 			}
 			return epiWeekList;
 		case QUARTER_OF_YEAR:
@@ -288,11 +291,19 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 				ageIntervalList.add(new TokenizableValue(new IntegerRange(i, i + 9), tokenId++));
 			}
 			break;
+		case AGE_INTERVAL_BASIC:
+			ageIntervalList.add(new TokenizableValue(new IntegerRange(0, 0), tokenId++));
+			ageIntervalList.add(new TokenizableValue(new IntegerRange(1, 4), tokenId++));
+			ageIntervalList.add(new TokenizableValue(new IntegerRange(5, 14), tokenId++));
+			ageIntervalList.add(new TokenizableValue(new IntegerRange(15, null), tokenId++));
+			break;
 		default:
 			return ageIntervalList;
 		}
 
-		ageIntervalList.add(new TokenizableValue(new IntegerRange(80, null), tokenId++));
+		if (attribute != StatisticsCaseAttribute.AGE_INTERVAL_BASIC) {
+			ageIntervalList.add(new TokenizableValue(new IntegerRange(80, null), tokenId++));
+		}
 		ageIntervalList.add(new TokenizableValue(new IntegerRange(null, null), tokenId));
 		return ageIntervalList;
 	}

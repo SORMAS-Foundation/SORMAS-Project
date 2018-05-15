@@ -24,4 +24,6 @@ public interface DistrictFacade {
 
 	List<String> getAllUuids(String userUuid);
 	
+	List<String> getAllUuids();
+	
 }

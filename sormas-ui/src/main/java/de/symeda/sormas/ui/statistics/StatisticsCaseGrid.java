@@ -1,9 +1,17 @@
 package de.symeda.sormas.ui.statistics;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.apache.commons.lang3.EnumUtils;
 
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Grid;
@@ -11,12 +19,14 @@ import com.vaadin.ui.Grid;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Month;
+import de.symeda.sormas.api.QuarterOfYear;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -44,7 +54,7 @@ public class StatisticsCaseGrid extends Grid {
 	}
 
 	public StatisticsCaseGrid(StatisticsCaseAttribute rowsAttribute, StatisticsCaseSubAttribute rowsSubAttribute,
-			StatisticsCaseAttribute columnsAttribute, StatisticsCaseSubAttribute columnsSubAttribute, List<Object[]> content) {
+			StatisticsCaseAttribute columnsAttribute, StatisticsCaseSubAttribute columnsSubAttribute, boolean zeroValues, List<Object[]> content) {
 		super();
 
 		this.rowsAttribute = rowsAttribute;
@@ -62,7 +72,7 @@ public class StatisticsCaseGrid extends Grid {
 		// If no displayed attributes are selected, simply show the total number of cases
 		if (rowsAttribute == null && columnsAttribute == null) {
 			addColumn("Number of cases");
-			addRow(new Object[]{String.valueOf(content.get(0))});
+			addRow(new Object[]{String.valueOf(content.get(0)[0])});
 		} else {
 			// Set columns
 			Map<Object, Integer> columnsMap = null;
@@ -86,6 +96,16 @@ public class StatisticsCaseGrid extends Grid {
 					}
 
 					columns.put(rawColumnName, columnName);
+				}
+
+				// Add missing columns if zero values are ticked
+				if (zeroValues) {
+					List<Object> values = getAllAttributeValues(columnsAttribute, columnsSubAttribute);
+					for (Object value : values) {
+						Object[] valueArray = new Object[]{value};
+						formatContentEntry(valueArray, 0, columnsAttribute, columnsSubAttribute);
+						columns.put(valueArray[0].toString(), buildHeader(valueArray[0].toString() != null ? valueArray[0].toString() : null, columnsAttribute, columnsSubAttribute));
+					}
 				}
 
 				if (columnsAttribute.isSortByCaption()) {
@@ -194,8 +214,7 @@ public class StatisticsCaseGrid extends Grid {
 			}
 		}
 
-		setHeightMode(HeightMode.ROW);
-		setHeightByRows(Math.max(1, Math.min(getContainerDataSource().size(), 15)));
+		setHeightMode(HeightMode.UNDEFINED);
 	}
 
 	private String buildHeader(String rawHeader, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
@@ -209,11 +228,16 @@ public class StatisticsCaseGrid extends Grid {
 				return "Q" + rawHeader;
 			case MONTH:
 				return Month.values()[Integer.valueOf(rawHeader) - 1].toString();
+			case EPI_WEEK:
+				return "Wk " + rawHeader;
 			case QUARTER_OF_YEAR:
 				return "Q" + rawHeader.charAt(rawHeader.length() - 1) + " " + rawHeader.substring(0, 4);
 			case MONTH_OF_YEAR:
 				int month = Integer.valueOf(rawHeader.substring(4));
 				return Month.values()[month - 1].toString() + " " + rawHeader.substring(0, 4);
+			case EPI_WEEK_OF_YEAR:
+				// see EpiWeek.toString
+				return "Wk " + rawHeader.substring(4) + "-" + rawHeader.substring(0, 4);
 			case REGION:
 				return FacadeProvider.getRegionFacade().getRegionByUuid(rawHeader).toString();
 			case DISTRICT:
@@ -247,7 +271,7 @@ public class StatisticsCaseGrid extends Grid {
 			return;
 		}
 
-		if (subAttribute == StatisticsCaseSubAttribute.MONTH) {
+		if (subAttribute == StatisticsCaseSubAttribute.MONTH || subAttribute == StatisticsCaseSubAttribute.EPI_WEEK) {
 			if ((int) entry[indexToFormat] < 10) {
 				entry[indexToFormat] = "0" + entry[indexToFormat];
 			}
@@ -266,5 +290,105 @@ public class StatisticsCaseGrid extends Grid {
 		return total;
 	}
 
+	private List<Object> getAllAttributeValues(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
+		if (subAttribute != null) {
+			switch (subAttribute) {
+			case YEAR:
+			case QUARTER:
+			case MONTH:
+			case EPI_WEEK:
+			case QUARTER_OF_YEAR:
+			case MONTH_OF_YEAR:
+			case EPI_WEEK_OF_YEAR:
+				return getListOfDateValues(attribute, subAttribute);
+			case REGION:
+				return new ArrayList<>(FacadeProvider.getRegionFacade().getAllUuids());
+			case DISTRICT:
+				return new ArrayList<>(FacadeProvider.getDistrictFacade().getAllUuids());
+			default:
+				throw new IllegalArgumentException(this.toString());
+			}
+		} else {
+			switch (attribute) {
+			case DISEASE:
+				return new ArrayList<>(EnumUtils.getEnumList(Disease.class).stream()
+						.map(d -> d.getName())
+						.collect(Collectors.toList()));
+			case OUTCOME:
+				return new ArrayList<>(EnumUtils.getEnumList(CaseOutcome.class).stream()
+						.map(o -> o.getName())
+						.collect(Collectors.toList()));
+			default:
+				return null;
+			}
+		}
+	}
+
+	private List<Object> getListOfDateValues(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
+		Date oldestCaseDate = null;
+		switch (attribute) {
+		case ONSET_TIME:
+			oldestCaseDate = FacadeProvider.getCaseFacade().getOldestCaseOnsetDate();
+			break;
+		case RECEPTION_TIME:
+			oldestCaseDate = FacadeProvider.getCaseFacade().getOldestCaseReceptionDate();
+			break;
+		case REPORT_TIME:
+			oldestCaseDate = FacadeProvider.getCaseFacade().getOldestCaseReportDate();
+			break;
+		default:
+			return new ArrayList<>();
+		}
+
+		LocalDate earliest = oldestCaseDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate now = LocalDate.now();
+
+		switch (subAttribute) {
+		case YEAR:
+			return IntStream.rangeClosed(earliest.getYear(), now.getYear()).boxed()
+					.collect(Collectors.toList());
+		case QUARTER:
+			return IntStream.rangeClosed(1, 4).boxed()
+					.collect(Collectors.toList());
+		case MONTH:
+			return IntStream.rangeClosed(1, 12).boxed()
+					.collect(Collectors.toList());
+		case EPI_WEEK:
+			return IntStream.rangeClosed(1, DateHelper.getMaximumEpiWeekNumber()).boxed()
+					.collect(Collectors.toList());
+		case QUARTER_OF_YEAR:
+			List<Object> quarterOfYearList = new ArrayList<>();
+			QuarterOfYear earliestQuarter = new QuarterOfYear(1, earliest.getYear());
+			QuarterOfYear latestQuarter = new QuarterOfYear(4, now.getYear());
+			while (earliestQuarter.getYear() <= latestQuarter.getYear()) {
+				QuarterOfYear newQuarter = new QuarterOfYear(earliestQuarter.getQuarter(), earliestQuarter.getYear());
+				quarterOfYearList.add(newQuarter.getYear() * 10 + newQuarter.getQuarter());
+				earliestQuarter.increaseQuarter();
+			}
+			return quarterOfYearList;
+		case MONTH_OF_YEAR:
+			List<Object> monthOfYearList = new ArrayList<>();
+			for (int year = earliest.getYear(); year <= now.getYear(); year++) {
+				final int thisYear = year;
+				monthOfYearList.addAll(
+						IntStream.rangeClosed(1, 12).boxed()
+						.map(m -> thisYear * 100 + m)
+						.collect(Collectors.toList()));
+			}
+			return monthOfYearList;
+		case EPI_WEEK_OF_YEAR:
+			List<Object> epiWeekOfYearList = new ArrayList<>();
+			for (int year = earliest.getYear(); year <= now.getYear(); year++) {
+				final int thisYear = year;
+				epiWeekOfYearList.addAll(
+						IntStream.rangeClosed(1, DateHelper.createEpiWeekList(year).size()).boxed()
+						.map(w -> thisYear * 100 + w)
+						.collect(Collectors.toList()));
+			}
+			return epiWeekOfYearList;
+		default:
+			return new ArrayList<>();
+		}
+	}
 
 }

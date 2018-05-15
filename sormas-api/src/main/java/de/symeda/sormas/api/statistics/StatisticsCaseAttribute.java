@@ -17,6 +17,7 @@ public enum StatisticsCaseAttribute {
 	AGE_INTERVAL_CHILDREN_COARSE(false),
 	AGE_INTERVAL_CHILDREN_FINE(false),
 	AGE_INTERVAL_CHILDREN_MEDIUM(false),
+	AGE_INTERVAL_BASIC(false),
 	DISEASE(true),
 	CLASSIFICATION(true),
 	OUTCOME(true);

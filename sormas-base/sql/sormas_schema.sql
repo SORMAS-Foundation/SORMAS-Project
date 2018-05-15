@@ -2263,3 +2263,75 @@ UPDATE cases SET caseage = p.approximateage FROM person p WHERE cases.person_id 
 UPDATE cases SET caseage = 0 FROM person p WHERE cases.person_id = p.id AND p.approximateage IS NOT NULL AND p.approximateagetype = 1;
 
 INSERT INTO schema_version (version_number, comment) VALUES (102, 'Case age field #585');
+
+-- 2018-05-12 epi week functions #541
+
+-- week starts monday
+-- 1st of january is always in week 1
+CREATE OR REPLACE FUNCTION epi_week (indate timestamp)
+RETURNS integer AS 
+$$
+DECLARE year integer;
+	doy integer;
+	doy_end integer;
+	isodow_start_next integer;
+	isodow_start integer;
+	epi_week integer;
+BEGIN
+   year := date_part('year', indate);
+   -- days until end of year
+   -- DOY: The day of the year (1 - 365/366)
+   doy = date_part('DOY', indate);
+   doy_end := date_part('DOY', date (year || '-12-31'));
+   -- week day of first day in next year
+   -- isodow: The day of the week as Monday (1) to Sunday (7)
+   isodow_start_next := date_part('isodow', date ((year+1) || '-01-01'));
+   -- end of date year?
+   -- DOY 31.12 - DOY < DOY(01.01.Y+1)
+   if (doy_end - doy < isodow_start_next-1) THEN
+	-- falls into next epi year
+	epi_week := 1;
+   ELSE
+	-- 2018: 01.01 is monday -> ceil(doy/7) = epi-week
+	-- 2017: 01.01 is sunday -> ceil((doy+6)/7) = epi-week
+	-- 2016: 01.01 is friday -> ceil((doy+4)/7) = epi-week
+	isodow_start := date_part('isodow', date (year || '-01-01'));
+	epi_week := ceil((doy + isodow_start - 1) / 7.0);
+   END if;
+   
+   RETURN epi_week;
+END;
+$$ 
+LANGUAGE plpgsql;
+
+-- see epi_week
+CREATE OR REPLACE FUNCTION epi_year (indate timestamp)
+RETURNS integer AS 
+$$
+DECLARE year integer;
+	doy integer;
+	doy_end integer;
+	isodow_start_next integer;
+	isodow_start integer;
+	epi_year integer;
+BEGIN
+   year := date_part('year', indate);
+   doy = date_part('DOY', indate);
+   doy_end := date_part('DOY', date (year || '-12-31'));
+   isodow_start_next := date_part('isodow', date ((year+1) || '-01-01'));
+   if (doy_end - doy < isodow_start_next-1) THEN
+	-- next year
+	epi_year := year+1;
+   ELSE
+	epi_year := year;
+   END if;
+   
+   RETURN epi_year;
+END;
+$$ 
+LANGUAGE plpgsql;
+
+-- e.g. SELECT epi_week('2015-12-27'), epi_year('2015-12-27'); -- 52-2015
+-- e.g. SELECT epi_week('2015-12-28'), epi_year('2015-12-28'); -- 01-2016
+
+INSERT INTO schema_version (version_number, comment) VALUES (103, 'Epi week functions #541');

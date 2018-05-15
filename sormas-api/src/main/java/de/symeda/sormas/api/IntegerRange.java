@@ -25,13 +25,21 @@ public class IntegerRange implements Serializable {
 	@Override
 	public String toString() {
 		if (from != null && to != null) {
-			return from + "-" + to;
+			return formatNumber(from) + "-" + formatNumber(to);
 		} else if (from == null && to != null) {
-			return "< " + to;
+			return "< " + formatNumber(to);
 		} else if (from != null && to == null) {
-			return from + "+";
+			return formatNumber(from) + "+";
 		} else {
 			return "Unknown";
+		}
+	}
+	
+	private String formatNumber(Integer number) {
+		if (number < 10) {
+			return "0" + number;
+		} else {
+			return String.valueOf(number);
 		}
 	}
 	
