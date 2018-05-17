@@ -53,7 +53,8 @@ public class CaseEditDataForm extends FormTab {
         editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
         final String caseUuid = getArguments().getString(Case.UUID);
         final CaseDao caseDao = DatabaseHelper.getCaseDao();
-        Case caze = caseDao.queryUuid(caseUuid);
+        // IMPORTANT: We need to retrieve the complete case here, because it will be used for saving in CaeEditActivity
+        Case caze = caseDao.queryUuidWithEmbedded(caseUuid);
         binding.setCaze(caze);
 
         // case classification can only be edited by officers, not informants; additionally,

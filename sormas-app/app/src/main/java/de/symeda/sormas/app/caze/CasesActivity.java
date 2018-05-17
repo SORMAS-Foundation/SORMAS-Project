@@ -70,7 +70,6 @@ public class CasesActivity extends AbstractRootTabActivity {
 
             case R.id.action_markAllAsRead:
                 CaseDao caseDao = DatabaseHelper.getCaseDao();
-                PersonDao personDao = DatabaseHelper.getPersonDao();
                 List<Case> cases = caseDao.queryForAll();
                 for (Case caseToMark : cases) {
                     caseDao.markAsRead(caseToMark);

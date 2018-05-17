@@ -37,7 +37,7 @@ public class HospitalizationForm extends FormTab {
 
         final String caseUuid = getArguments().getString(HospitalizationForm.KEY_CASE_UUID);
 
-        final Case caze = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+        final Case caze = DatabaseHelper.getCaseDao().queryUuidBasic(caseUuid);
         if (caze.getHealthFacility() != null) {
             ((LabelField) view.findViewById(R.id.hospitalization_healthFacility)).setValue(caze.getHealthFacility().toString());
         }

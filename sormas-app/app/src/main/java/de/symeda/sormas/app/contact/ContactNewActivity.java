@@ -135,7 +135,7 @@ public class ContactNewActivity extends AppCompatActivity {
                 contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
                 contact.setReportingUser(ConfigProvider.getUser());
                 contact.setReportDateTime(new Date());
-                contact.setCaze(DatabaseHelper.getCaseDao().queryUuid(caseUuid));
+                contact.setCaze(DatabaseHelper.getCaseDao().queryUuidReference(caseUuid));
 
                 // Validation
                 ContactNewFragmentLayoutBinding binding = contactNewForm.getBinding();
