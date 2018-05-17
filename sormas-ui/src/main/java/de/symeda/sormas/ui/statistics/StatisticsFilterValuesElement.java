@@ -12,6 +12,7 @@ import com.explicatis.ext_token_field.Tokenizable;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -71,6 +72,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 
 		addDropdown = new ComboBox("", getFilterValues());
 		addDropdown.addStyleName(CssStyles.VSPACE_NONE);
+		addDropdown.setFilteringMode(FilteringMode.CONTAINS);
 		addDropdown.setInputPrompt("Type here to add...");
 		tokenField.setInputField(addDropdown);
 		addDropdown.addValueChangeListener(e -> {

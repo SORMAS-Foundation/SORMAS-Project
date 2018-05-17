@@ -9,6 +9,10 @@ public enum CaseClassification {
 	CONFIRMED, 
 	NO_CASE 
 	;
+
+	public String getName() {
+		return this.name();
+	}
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

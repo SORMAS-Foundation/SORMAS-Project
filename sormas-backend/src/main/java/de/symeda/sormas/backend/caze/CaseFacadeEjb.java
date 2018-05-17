@@ -1279,15 +1279,13 @@ public class CaseFacadeEjb implements CaseFacade {
 				filterBuilder.append(" (");
 			}
 
-			boolean appendUpperRange = false;
-			int upperRangeBoundary = 80;
+			Integer upperRangeBoundary = null;
 			boolean appendUnknown = false;
 			for (IntegerRange range : caseCriteria.getAgeIntervals()) {
 				if (range.getTo() == null) {
 					if (range.getFrom() == null) {
 						appendUnknown = true;
 					} else {
-						appendUpperRange = true;
 						upperRangeBoundary = range.getFrom();
 					}
 				} else {
@@ -1304,7 +1302,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				finalizeFilterBuilderSegment(ageIntervalStringBuilder);
 			}
 
-			if (appendUpperRange) {
+			if (upperRangeBoundary != null) {
 				if (ageIntervalStringBuilder.length() > 0) {
 					ageIntervalStringBuilder.append(" OR ");
 				}
@@ -1705,7 +1703,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 			break;
 		case AGE_INTERVAL_CHILDREN_COARSE:
-			for (int i = 0; i < 30; i += 5) {
+			addAgeIntervalToStringBuilder(groupingBuilder, 0, 14);
+			for (int i = 15; i < 30; i += 5) {
 				addAgeIntervalToStringBuilder(groupingBuilder, i, 4);
 			}
 			for (int i = 30; i < 80; i += 10) {

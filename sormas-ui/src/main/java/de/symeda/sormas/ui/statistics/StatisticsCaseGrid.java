@@ -13,11 +13,13 @@ import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.EnumUtils;
 
+import com.vaadin.data.Item;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Grid;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.Month;
 import de.symeda.sormas.api.QuarterOfYear;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -32,6 +34,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 @SuppressWarnings("serial")
 public class StatisticsCaseGrid extends Grid {
 
+	private static final String COLUMN_ID = "Column_ID";
 	private static final String COLUMN_UNKNOWN = "Column_Unknown";
 	private static final String COLUMN_TOTAL = "Column_Total";
 
@@ -77,6 +80,7 @@ public class StatisticsCaseGrid extends Grid {
 			// Set columns
 			Map<Object, Integer> columnsMap = null;
 
+			addColumn(COLUMN_ID);
 			addColumn("");
 
 			if (columnsAttribute != null || columnsSubAttribute != null) {
@@ -132,7 +136,7 @@ public class StatisticsCaseGrid extends Grid {
 			} else {
 				addColumn("Number of cases");
 			}
-
+			
 			// Add data
 			if (rowsAttribute != null || rowsSubAttribute != null) {
 				Object[] currentRow = null;
@@ -154,7 +158,8 @@ public class StatisticsCaseGrid extends Grid {
 
 						if (currentRow == null && rowHeader == null) {
 							currentRow = new Object[getColumns().size()];
-							currentRow[0] = buildHeader(entry[1] == null ? null : entry[1].toString(), rowsAttribute, rowsSubAttribute);
+							currentRow[0] = entry[1] != null ? entry[1] : COLUMN_UNKNOWN;
+							currentRow[1] = buildHeader(entry[1] == null ? null : entry[1].toString(), rowsAttribute, rowsSubAttribute);
 							rowHeader = entry[1];
 						}
 
@@ -168,36 +173,69 @@ public class StatisticsCaseGrid extends Grid {
 						columnTotals[columnIndex] += (long) entry[0];
 					} else {
 						currentRow = new Object[getColumns().size()];
-						currentRow[0] = buildHeader(entry[1] == null ? null : entry[1].toString(), rowsAttribute, rowsSubAttribute);
-						currentRow[1] = entry[0].toString();
+						currentRow[1] = buildHeader(entry[1] == null ? null : entry[1].toString(), rowsAttribute, rowsSubAttribute);
+						currentRow[2] = entry[0].toString();
 						addRow(currentRow);
 						columnTotals[columnTotals.length - 1] += (long) entry[0];
 					}
 				}
-
+				
+				// Add missing rows if zero values are ticked
+//				if (zeroValues) {
+//					List<Object> values = getAllAttributeValues(rowsAttribute, rowsSubAttribute);
+//					List<Object> existingValues = new ArrayList<>();
+//					for (Object itemId : getContainerDataSource().getItemIds()) {
+//						existingValues.add(getContainerDataSource().getContainerProperty(itemId, "").getValue());
+//					}
+//					
+//					for (Object value : values) {
+//						Object[] valueArray = new Object[]{value};
+//						formatContentEntry(valueArray, 0, columnsAttribute, columnsSubAttribute);
+//						Object[] row = new Object[getColumns().size()];
+//						String header = buildHeader(valueArray[0].toString() != null ? valueArray[0].toString() : null, rowsAttribute, rowsSubAttribute);
+//						if (!existingValues.contains(header)) {
+//							row[1] = header;
+//							addRow(row);
+//						}
+//					}
+//				}
+				
 				if (columnsAttribute != null || columnsSubAttribute != null) {
-					if (currentRow[0] != null) {
+					if (currentRow[1] != null) {
 						int totalForRow = calculateTotalForRow(currentRow);
 						currentRow[currentRow.length - 1] = String.valueOf(totalForRow);
 						columnTotals[columnTotals.length - 1] += totalForRow;
 						addRow(currentRow);
 					}
 				}
+				
+//				if (rowsAttribute.isSortByCaption() || zeroValues) {
+//					getColumn("").setHidden(true);
+//					sort("");
+//				}
+				getColumn(COLUMN_ID).setHidden(true);
+				sort(COLUMN_ID);
 
-				if (rowsAttribute.isSortByCaption()) {
-					sort("");
+
+				Item unknownItem = getContainerDataSource().getItem(COLUMN_UNKNOWN);
+				if (unknownItem != null) {
+					getContainerDataSource().removeItem(unknownItem);
+					Item newItem = getContainerDataSource().addItemAt(getContainerDataSource().indexOfId(COLUMN_TOTAL), COLUMN_UNKNOWN);
+					for (Object propertyId : getContainerDataSource().getContainerPropertyIds()) {
+						newItem.getItemProperty(propertyId).setValue(unknownItem.getItemProperty(propertyId).getValue());
+					}
 				}
 
 				// Total row
 				currentRow = new Object[getColumns().size()];
-				currentRow[0] = "Total";
-				for (int i = 1; i < columnTotals.length; i++) {
+				currentRow[1] = "Total";
+				for (int i = 2; i < columnTotals.length; i++) {
 					currentRow[i] = String.valueOf(columnTotals[i]);
 				}
 				addRow(currentRow);
 			} else {
 				Object[] row = new Object[getColumns().size()];
-				row[0] = "Number of cases";
+				row[1] = "Number of cases";
 				long totalAmountOfCases = 0;
 				for (int i = 0; i < content.size(); i++) {
 					Object[] entry = content.get(i);
@@ -281,7 +319,7 @@ public class StatisticsCaseGrid extends Grid {
 
 	private int calculateTotalForRow(Object[] row) {
 		int total = 0;
-		for (int i = 1; i < row.length; i++) {
+		for (int i = 2; i < row.length; i++) {
 			if (row[i] != null) {
 				total += Integer.valueOf(row[i].toString());
 			}
@@ -306,20 +344,35 @@ public class StatisticsCaseGrid extends Grid {
 			case DISTRICT:
 				return new ArrayList<>(FacadeProvider.getDistrictFacade().getAllUuids());
 			default:
-				throw new IllegalArgumentException(this.toString());
+				throw new IllegalArgumentException(subAttribute.toString());
 			}
 		} else {
 			switch (attribute) {
+			case SEX:
+				return new ArrayList<>(EnumUtils.getEnumList(Sex.class).stream()
+						.map(s -> s.getName())
+						.collect(Collectors.toList()));
 			case DISEASE:
 				return new ArrayList<>(EnumUtils.getEnumList(Disease.class).stream()
 						.map(d -> d.getName())
+						.collect(Collectors.toList()));
+			case CLASSIFICATION:
+				return new ArrayList<>(EnumUtils.getEnumList(CaseClassification.class).stream()
+						.map(c -> c.getName())
 						.collect(Collectors.toList()));
 			case OUTCOME:
 				return new ArrayList<>(EnumUtils.getEnumList(CaseOutcome.class).stream()
 						.map(o -> o.getName())
 						.collect(Collectors.toList()));
+			case AGE_INTERVAL_1_YEAR:
+			case AGE_INTERVAL_5_YEARS:
+			case AGE_INTERVAL_CHILDREN_COARSE:
+			case AGE_INTERVAL_CHILDREN_FINE:
+			case AGE_INTERVAL_CHILDREN_MEDIUM:
+			case AGE_INTERVAL_BASIC:
+				return getListOfAgeIntervalValues(attribute);
 			default:
-				return null;
+				throw new IllegalArgumentException(attribute.toString());
 			}
 		}
 	}
@@ -389,6 +442,64 @@ public class StatisticsCaseGrid extends Grid {
 		default:
 			return new ArrayList<>();
 		}
+	}
+
+	private List<Object> getListOfAgeIntervalValues(StatisticsCaseAttribute attribute) {
+		List<Object> ageIntervalList = new ArrayList<>();
+		switch (attribute) {
+		case AGE_INTERVAL_1_YEAR:
+			for (int i = 0; i < 80; i++) {
+				ageIntervalList.add(i < 10 ? "0" + i : String.valueOf(i));
+			}
+			break;
+		case AGE_INTERVAL_5_YEARS:
+			for (int i = 0; i < 80; i += 5) {
+				ageIntervalList.add(new IntegerRange(i, i + 4));
+			}
+			break;
+		case AGE_INTERVAL_CHILDREN_COARSE:
+			ageIntervalList.add(new IntegerRange(0, 14));
+			for (int i = 15; i < 30; i += 5) {
+				ageIntervalList.add(new IntegerRange(i, i + 4));
+			}
+			for (int i = 30; i < 80; i += 10) {
+				ageIntervalList.add(new IntegerRange(i, i + 9));
+			}
+			break;
+		case AGE_INTERVAL_CHILDREN_FINE:
+			for (int i = 0; i < 5; i++) {
+				ageIntervalList.add(new IntegerRange(i, i));
+			}
+			for (int i = 5; i < 30; i += 5) {
+				ageIntervalList.add(new IntegerRange(i, i + 4));
+			}
+			for (int i = 30; i < 80; i += 10) {
+				ageIntervalList.add(new IntegerRange(i, i + 9));
+			}
+			break;
+		case AGE_INTERVAL_CHILDREN_MEDIUM:
+			for (int i = 0; i < 30; i += 5) {
+				ageIntervalList.add(new IntegerRange(i, i + 4));
+			}
+			for (int i = 30; i < 80; i += 10) {
+				ageIntervalList.add(new IntegerRange(i, i + 9));
+			}
+			break;
+		case AGE_INTERVAL_BASIC:
+			ageIntervalList.add(new IntegerRange(0, 0));
+			ageIntervalList.add(new IntegerRange(1, 4));
+			ageIntervalList.add(new IntegerRange(5, 14));
+			ageIntervalList.add(new IntegerRange(15, null));
+			break;
+		default:
+			throw new IllegalArgumentException(attribute.toString());
+		}
+		
+		if (attribute != StatisticsCaseAttribute.AGE_INTERVAL_BASIC) {
+			ageIntervalList.add(new IntegerRange(80, null));
+		}
+		ageIntervalList.add(new IntegerRange(null, null));
+		return ageIntervalList;
 	}
 
 }

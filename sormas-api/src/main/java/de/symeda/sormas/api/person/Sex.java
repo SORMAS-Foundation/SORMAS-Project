@@ -7,6 +7,11 @@ public enum Sex {
 	FEMALE
 	;
 	
+
+	public String getName() {
+		return this.name();
+	}
+	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	};

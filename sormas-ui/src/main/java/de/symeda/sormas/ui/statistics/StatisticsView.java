@@ -129,21 +129,21 @@ public class StatisticsView extends AbstractStatisticsView {
 		CssStyles.style(displayedAttributesElement, CssStyles.STATISTICS_TITLE_BOX);
 		statisticsLayout.addComponent(displayedAttributesElement);
 
-//		Label optionsTitle = new Label("3. Options");
-//		optionsTitle.setWidthUndefined();
-//		CssStyles.style(optionsTitle, CssStyles.STATISTICS_TITLE);
-//		statisticsLayout.addComponent(optionsTitle);
+		Label optionsTitle = new Label("3. Options");
+		optionsTitle.setWidthUndefined();
+		CssStyles.style(optionsTitle, CssStyles.STATISTICS_TITLE);
+		statisticsLayout.addComponent(optionsTitle);
 		
-//		HorizontalLayout optionsLayout = new HorizontalLayout();
-//		optionsLayout.setWidth(100, Unit.PERCENTAGE);
-//		optionsLayout.setSpacing(true);
-//		CssStyles.style(optionsLayout, CssStyles.STATISTICS_TITLE_BOX);
-//		{
+		HorizontalLayout optionsLayout = new HorizontalLayout();
+		optionsLayout.setWidth(100, Unit.PERCENTAGE);
+		optionsLayout.setSpacing(true);
+		CssStyles.style(optionsLayout, CssStyles.STATISTICS_TITLE_BOX);
+		{
 			zeroValues = new CheckBox("Show zero values");
-//			zeroValues.setValue(true);
-//			optionsLayout.addComponent(zeroValues);
-//		}
-//		statisticsLayout.addComponent(optionsLayout);
+			zeroValues.setValue(true);
+			optionsLayout.addComponent(zeroValues);
+		}
+		statisticsLayout.addComponent(optionsLayout);
 		
 		HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setSpacing(true);
