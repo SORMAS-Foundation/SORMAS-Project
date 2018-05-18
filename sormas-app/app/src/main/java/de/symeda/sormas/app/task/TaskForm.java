@@ -182,7 +182,7 @@ public class TaskForm extends FormTab {
             public void onClick(View v) {
                 if (binding.getTask().getCaze() != null) {
                     final CaseDao caseDao = DatabaseHelper.getCaseDao();
-                    final Case caze = caseDao.queryUuid(binding.getTask().getCaze().getUuid());
+                    final Case caze = caseDao.queryUuidReference(binding.getTask().getCaze().getUuid());
                     showCaseEditView(caze);
                 }
             }

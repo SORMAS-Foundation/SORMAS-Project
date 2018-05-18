@@ -48,7 +48,7 @@ public class EventParticipantsListArrayAdapter extends ArrayAdapter<EventPartici
 
         if (eventParticipant.getResultingCaseUuid() != null) {
             TextView caseStatus = (TextView) convertView.findViewById(R.id.eventParticipant_case_li);
-            Case caze = DatabaseHelper.getCaseDao().queryUuid(eventParticipant.getResultingCaseUuid());
+            Case caze = DatabaseHelper.getCaseDao().queryUuidBasic(eventParticipant.getResultingCaseUuid());
             caseStatus.setText(caze != null ? caze.getInvestigationStatus().toString() : "");
         }
 

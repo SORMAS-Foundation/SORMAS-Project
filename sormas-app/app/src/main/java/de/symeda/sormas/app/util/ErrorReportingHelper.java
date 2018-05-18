@@ -91,6 +91,9 @@ public class ErrorReportingHelper {
         if (ConfigProvider.getUser() != null && ConfigProvider.getUser().getUuid() != null) {
             description.append(" - User: " + ConfigProvider.getUser().getUuid());
         }
+        if (ConfigProvider.getServerRestUrl() != null) {
+            description.append(" - System: " + ConfigProvider.getServerRestUrl());
+        }
         for (String s : additionalInformation) {
             description.append(s);
         }

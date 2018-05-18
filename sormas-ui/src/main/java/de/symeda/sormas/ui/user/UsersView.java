@@ -99,7 +99,7 @@ public class UsersView extends AbstractView {
         filter.setStyleName("filter-textfield");
         filter.setInputPrompt("Search user");
         filter.setImmediate(true);
-        filter.addTextChangeListener(e -> grid.setNameFilter(e.getText()));
+        filter.addTextChangeListener(e -> grid.filterByText(e.getText()));
         filterLayout.addComponent(filter);
 
         return filterLayout;

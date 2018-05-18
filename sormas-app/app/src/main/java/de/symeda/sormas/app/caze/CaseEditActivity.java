@@ -112,7 +112,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         if (params != null) {
             if (params.containsKey(KEY_CASE_UUID)) {
                 caseUuid = params.getString(KEY_CASE_UUID);
-                initialEntity = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+                initialEntity = DatabaseHelper.getCaseDao().queryUuidBasic(caseUuid);
                 // If the case has been removed from the database in the meantime, redirect the user to the cases overview
                 // TODO add Snackbar and test
                 if (initialEntity == null) {
@@ -143,7 +143,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
     protected void onResume() {
         super.onResume();
 
-        Case currentEntity = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+        Case currentEntity = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(caseUuid);
         // If the case has been removed from the database in the meantime, redirect the user to the cases overview
         if (currentEntity == null) {
             Intent intent = new Intent(this, CasesActivity.class);
@@ -318,7 +318,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
             // Save button
             case R.id.action_save:
-                final Case caseBeforeSaving = DatabaseHelper.getCaseDao().queryUuid(editedCase.getUuid());
+                final Case caseBeforeSaving = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(editedCase.getUuid());
                 boolean showPlagueTypeChangeAlert = false;
                 if (editedCase.getDisease() == Disease.PLAGUE) {
                     showPlagueTypeChangeAlert = updatePlagueType(editedCase);
@@ -414,7 +414,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
             final Consumer positiveCallback = new Consumer() {
                 @Override
                 public void accept(Object success) {
-                    Case updatedCase = DatabaseHelper.getCaseDao().queryUuid(caseBinding.getCaze().getUuid());
+                    Case updatedCase = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(caseBinding.getCaze().getUuid());
                     caseBinding.setCaze(updatedCase);
 
                     if ((boolean) success) {
@@ -587,7 +587,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
         // TODO #558 can be removed when new tab-less UI is done
         // reset adapter?
-        Case savedCase = DatabaseHelper.getCaseDao().queryUuid(caze.getUuid());
+        Case savedCase = DatabaseHelper.getCaseDao().queryUuidBasic(caze.getUuid());
         boolean needsRefresh = false;
         // for Plague cases to make sure that the Contact tab is displayed or hidden correctly
         needsRefresh |= savedCase.getDisease() == Disease.PLAGUE && caseBeforeSaving.getPlagueType() != savedCase.getPlagueType() &&

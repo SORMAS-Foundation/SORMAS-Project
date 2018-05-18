@@ -63,6 +63,19 @@ public class CaseDao extends AbstractAdoDao<Case> {
     }
 
     @Override
+    @Deprecated
+    /**
+     * Deprecated: Call queryUuidBasic, queryUuidReference or queryUuidWithEmbedded instead
+     */
+    public Case queryUuid(String uuid) {
+        return super.queryUuid(uuid);
+    }
+
+    public Case queryUuidBasic(String uuid) {
+        return super.queryUuid(uuid);
+    }
+
+    @Override
     public Date getLatestChangeDate() {
         Date date = super.getLatestChangeDate();
         if (date == null) {
@@ -242,6 +255,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
     }
 
     @Override
+    /**
+     * @param caze person has to be initialized
+     */
     public void markAsRead(Case caze) {
         super.markAsRead(caze);
         DatabaseHelper.getPersonDao().markAsRead(caze.getPerson());
@@ -249,7 +265,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
     @Override
     public Case mergeOrCreate(Case source) throws DaoException {
-        Case currentCase = queryUuid(source.getUuid());
+        Case currentCase = super.queryUuid(source.getUuid());
 
         // date of outcome can be set by the server site automatically and at the same time in the app
         // see CaseEditActivity.updateOutcomeAndPersonCondition
