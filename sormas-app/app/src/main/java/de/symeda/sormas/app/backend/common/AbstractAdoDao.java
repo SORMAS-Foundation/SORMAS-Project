@@ -936,6 +936,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     /**
      * Sets the last opened date OF THE ORIGINAL OBJECT in the database and its embedded objects to the current date.
      * This does NOT manipulate the entity given as the parameter to avoid the unintended saving of other fields.
+     * @param ado It's ok if the ADO object only contains the id of the entity
      */
     public void markAsRead(ADO ado) {
         ADO originalAdo = queryForId(ado.getId());

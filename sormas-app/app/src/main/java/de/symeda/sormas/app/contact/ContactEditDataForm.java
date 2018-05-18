@@ -72,7 +72,7 @@ public class ContactEditDataForm extends FormTab {
         } else {
             LabelField associatedCaseLabel = binding.contactAssociatedCase;
             associatedCaseLabel.setValue(DataHelper.getShortUuid(contact.getResultingCaseUuid()));
-            final Case resultingCase = DatabaseHelper.getCaseDao().queryUuid(contact.getResultingCaseUuid());
+            final Case resultingCase = DatabaseHelper.getCaseDao().queryUuidReference(contact.getResultingCaseUuid());
             if (resultingCase != null) {
                 associatedCaseLabel.makeLink(new View.OnClickListener() {
                     @Override
@@ -101,7 +101,7 @@ public class ContactEditDataForm extends FormTab {
             public void onClick(View v) {
                 if (binding.getContact().getCaze() != null) {
                     final CaseDao caseDao = DatabaseHelper.getCaseDao();
-                    final Case caze = caseDao.queryUuid(binding.getContact().getCaze().getUuid());
+                    final Case caze = caseDao.queryUuidReference(binding.getContact().getCaze().getUuid());
                     showCaseEditView(caze);
                 }
             }

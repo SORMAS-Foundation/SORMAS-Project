@@ -83,13 +83,18 @@ public class UserGrid extends Grid {
     	}
     }
 	
-	public void setNameFilter(String filterString) {
+	public void filterByText(String filterString) {
     	getContainer().removeContainerFilters(UserDto.NAME);
+    	getContainer().removeContainerFilters(UserDto.USER_NAME);
+    	getContainer().removeContainerFilters(UserDto.USER_EMAIL);
+    	getContainer().removeContainerFilters(UserDto.PHONE);
         if (filterString.length() > 0) {
             SimpleStringFilter nameFilter = new SimpleStringFilter(UserDto.NAME, filterString, true, false);
+            SimpleStringFilter userNameFilter = new SimpleStringFilter(UserDto.USER_NAME, filterString, true, false);
+            SimpleStringFilter emailFilter = new SimpleStringFilter(UserDto.USER_EMAIL, filterString, true, false);
+            SimpleStringFilter phoneFilter = new SimpleStringFilter(UserDto.PHONE, filterString, true, false);
             getContainer().addContainerFilter(
-//            new Or(nameFilter, descFilter, statusFilter));
-            new Or(nameFilter));
+            		new Or(nameFilter, userNameFilter, emailFilter, phoneFilter));
         }
     }
 

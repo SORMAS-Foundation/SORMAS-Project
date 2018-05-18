@@ -171,7 +171,7 @@ public class CaseBackendTest {
         DatabaseHelper.getPersonDao().mergeOrCreate(mergeCase.getPerson());
 
         // Assert that the merging algorithm has correctly changed or kept the respective values
-        Case updatedCase = DatabaseHelper.getCaseDao().queryUuid(caze.getUuid());
+        Case updatedCase = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(caze.getUuid());
         assertThat(updatedCase.getEpidNumber(), is("ServerEpidNumber"));
         assertThat(updatedCase.getHospitalization().getIsolated(), is(YesNoUnknown.YES));
         assertThat(updatedCase.getSymptoms().getTemperature(), is(36.5f));
@@ -188,14 +188,14 @@ public class CaseBackendTest {
         caze.setVaccination(Vaccination.VACCINATED);
 
         DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
-        caze = DatabaseHelper.getCaseDao().queryUuid(caze.getUuid());
+        caze = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(caze.getUuid());
 
         // Snapshot should be present and entity should be modified after saving
         assertThat(caze.isModified(), is(true));
         assertNotNull(DatabaseHelper.getCaseDao().querySnapshotByUuid(caze.getUuid()));
 
         DatabaseHelper.getCaseDao().accept(caze);
-        caze = DatabaseHelper.getCaseDao().queryUuid(caze.getUuid());
+        caze = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(caze.getUuid());
 
         // Snapshot should be removed and entity should not be modified after accepting
         assertNull(DatabaseHelper.getCaseDao().querySnapshotByUuid(caze.getUuid()));
@@ -214,7 +214,7 @@ public class CaseBackendTest {
         assertThat(caze.isUnreadOrChildUnread(), is(true));
 
         caseDao.markAsRead(caze);
-        caze = DatabaseHelper.getCaseDao().queryUuid(caze.getUuid());
+        caze = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(caze.getUuid());
         // Case shouldn't be marked as unread after markAsRead has been called
         assertThat(caze.isUnreadOrChildUnread(), is(false));
         // UUID of embedded object should still be the same
