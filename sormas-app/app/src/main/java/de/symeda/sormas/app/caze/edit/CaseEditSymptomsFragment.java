@@ -185,7 +185,6 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
             }
         });
 
-
         contentBinding.recyclerViewForList.setAdapter(symptomAdapter);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -347,6 +346,10 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
     @Override
     public boolean showAddAction() {
         return false;
+    }
+
+    public List<Symptom> getSymptomList() {
+        return symptomList;
     }
 
     private void setupCallback() {

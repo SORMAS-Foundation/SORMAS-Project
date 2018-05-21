@@ -33,6 +33,12 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
     private int mLastCheckedId = -1;
 
 
+
+    private SymptomType type;
+
+
+
+
     /*private SymptomState state;
     private boolean hasDetail;
     private String detail;
@@ -142,6 +148,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         this.hasDetail = s.hasDetail();
         this.detailTemplateResId = s.getDetailTemplateResId();
         this.mChildViewModel = (TChildViewModel)s.getChildViewModel();
+        this.type = s.getType();
         /*
         this.hasDetail = s.hasDetail();
         this.state = s.getState();
@@ -149,19 +156,19 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         this.detailTemplateResId = s.getDetailTemplateResId()*/;
     }
 
-    protected Symptom(int value, String name) { //TViewModel viewModel,
-        this(value, name, null, null);
+    protected Symptom(int value, String name, SymptomType type) { //TViewModel viewModel,
+        this(value, name, type, null, null);
     }
 
-    protected Symptom(int value, String name, TChildViewModel childViewModel) { //TViewModel viewModel,
-        this(value, name, null, childViewModel);
+    protected Symptom(int value, String name, SymptomType type, TChildViewModel childViewModel) { //TViewModel viewModel,
+        this(value, name, type, null, childViewModel);
     }
 
-    protected Symptom(int value, String name, int detailTemplateResId) { //TViewModel viewModel,
-        this(value, name, detailTemplateResId, null);
+    protected Symptom(int value, String name, SymptomType type, int detailTemplateResId) { //TViewModel viewModel,
+        this(value, name, type, detailTemplateResId, null);
     }
 
-    protected Symptom(int value, String name, Integer detailTemplateResId, TChildViewModel childViewModel) { //, TViewModel viewModel
+    protected Symptom(int value, String name, SymptomType type, Integer detailTemplateResId, TChildViewModel childViewModel) { //, TViewModel viewModel
         this.value = value;
         this.name = name;
         this.state = SymptomState.UNKNOWN;
@@ -172,6 +179,8 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         /*this.state = SymptomState.UNKNOWN;
         this.detailTemplateResId = hasDetail ? detailTemplateResId : -1;
         this.detail = "";*/
+
+        this.type = type;
     }
 
     // </editor-fold>
@@ -245,6 +254,10 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         this.mChildViewModel = childViewModel;
     }
 
+    public SymptomType getType() {
+        return type;
+    }
+
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Enumurations">
@@ -255,7 +268,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public Fever(Class<T> cls) {
-            super(0, "Fever");
+            super(0, "Fever", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -296,7 +309,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public Vomiting(Class<T> cls) {
-            super(1, "Vomiting");
+            super(1, "Vomiting", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -338,7 +351,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public Diarrhea(Class<T> cls) {
-            super(2, "Diarrhea");
+            super(2, "Diarrhea", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -377,7 +390,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public BloodInStool(Class<T> cls) {
-            super(3, "Blood in Stool");
+            super(3, "Blood in Stool", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -412,7 +425,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public Nausea(Class<T> cls) {
-            super(4, "Nausea");
+            super(4, "Nausea", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -453,7 +466,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public AbdominalPain(Class<T> cls) {
-            super(5, "Abdominal pain");
+            super(5, "Abdominal pain", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -492,7 +505,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public Headache(Class<T> cls) {
-            super(6, "Headache");
+            super(6, "Headache", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -532,7 +545,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public MusclePain(Class<T> cls) {
-            super(7, "Muscle pain");
+            super(7, "Muscle pain", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -574,7 +587,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public FatigueGeneralWeakness(Class<T> cls) {
-            super(8, "Fatigue/general weakness");
+            super(8, "Fatigue/general weakness", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -616,7 +629,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public UnexplainedBleedingBruising(Class<T> cls) {
-            super(9, "Unexplained bleeding or bruising");
+            super(9, "Unexplained bleeding or bruising", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -651,7 +664,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public BleedingGum(Class<T> cls) {
-            super(10, "Bleeding of the gums");
+            super(10, "Bleeding of the gums", SymptomType.CONDITIONAL_BLEEDING);
 
             if (cls == null)
                 return;
@@ -688,7 +701,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public BleedingFromInjectionSite(Class<T> cls) {
-            super(11, "Bleeding from injection site");
+            super(11, "Bleeding from injection site", SymptomType.CONDITIONAL_BLEEDING);
 
             if (cls == null)
                 return;
@@ -723,7 +736,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public NoseBleed(Class<T> cls) {
-            super(12, "Nose bleed (epistaxis)");
+            super(12, "Nose bleed (epistaxis)", SymptomType.CONDITIONAL_BLEEDING);
 
             if (cls == null)
                 return;
@@ -759,7 +772,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public BloodyBlackStool(Class<T> cls) {
-            super(13, "Bloody or black stools (melena)");
+            super(13, "Bloody or black stools (melena)", SymptomType.CONDITIONAL_BLEEDING);
 
             if (cls == null)
                 return;
@@ -794,7 +807,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public BloodInVomit(Class<T> cls) {
-            super(14, "Fresh/red blood in vomit (hematemesis)");
+            super(14, "Fresh/red blood in vomit (hematemesis)", SymptomType.CONDITIONAL_BLEEDING);
 
             if (cls == null)
                 return;
@@ -830,7 +843,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public DigestedBloodInVomit(Class<T> cls) {
-            super(15, "Digested blood\"coffee grounds\" in vomit");
+            super(15, "Digested blood\"coffee grounds\" in vomit", SymptomType.CONDITIONAL_BLEEDING);
 
             if (cls == null)
                 return;
@@ -865,7 +878,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public CoughingBlood(Class<T> cls) {
-            super(16, "Coughing up blood (haemoptysis)");
+            super(16, "Coughing up blood (haemoptysis)", SymptomType.CONDITIONAL_BLEEDING);
 
             if (cls == null)
                 return;
@@ -900,7 +913,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public BleedingFromVagina(Class<T> cls) {
-            super(17, "Bleeding from vagina, other than menstruation");
+            super(17, "Bleeding from vagina, other than menstruation", SymptomType.CONDITIONAL_BLEEDING);
 
             if (cls == null)
                 return;
@@ -935,7 +948,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public BruisedSkin(Class<T> cls) {
-            super(18, "Bruising of the skin (petechiae/ecchymosis)");
+            super(18, "Bruising of the skin (petechiae/ecchymosis)", SymptomType.CONDITIONAL_BLEEDING);
 
             if (cls == null)
                 return;
@@ -970,7 +983,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public BloodInUrine(Class<T> cls) {
-            super(19, "Blood in urine (hematuria)");
+            super(19, "Blood in urine (hematuria)", SymptomType.CONDITIONAL_BLEEDING);
 
             if (cls == null)
                 return;
@@ -1005,7 +1018,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public OtherHemorrhagic(Class<T> cls) {
-            super(20, "Other hemorrhagic symptoms");
+            super(20, "Other hemorrhagic symptoms", SymptomType.CONDITIONAL_BLEEDING);
 
             if (cls == null)
                 return;
@@ -1040,7 +1053,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public SkinRash(Class<T> cls) {
-            super(21, "Skin rash");
+            super(21, "Skin rash", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1079,7 +1092,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public StiffNeck(Class<T> cls) {
-            super(22, "Stiff neck");
+            super(22, "Stiff neck", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1113,7 +1126,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public SoreThroat(Class<T> cls) {
-            super(23, "Sore throat/pharyngitis");
+            super(23, "Sore throat/pharyngitis", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1151,7 +1164,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public Cough(Class<T> cls) {
-            super(24, "Cough");
+            super(24, "Cough", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1189,7 +1202,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public RunnyNose(Class<T> cls) {
-            super(25, "Runny nose");
+            super(25, "Runny nose", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1224,7 +1237,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public DifficultyBreathing(Class<T> cls) {
-            super(26, "Difficulty breathing");
+            super(26, "Difficulty breathing", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1261,7 +1274,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public ChestPain(Class<T> cls) {
-            super(27, "Chest pain");
+            super(27, "Chest pain", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1297,7 +1310,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public ConfusedOrDisoriented(Class<T> cls) {
-            super(28, "Confused or disoriented");
+            super(28, "Confused or disoriented", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1336,7 +1349,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public ConvulsionsOrSeizures(Class<T> cls) {
-            super(29, "Convulsions or Seizures");
+            super(29, "Convulsions or Seizures", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1375,7 +1388,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public AlteredConsciousness(Class<T> cls) {
-            super(30, "Altered level of consciousness");
+            super(30, "Altered level of consciousness", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1414,7 +1427,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public Conjunctivitis(Class<T> cls) {
-            super(31, "Conjunctivitis (red eyes)");
+            super(31, "Conjunctivitis (red eyes)", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1452,7 +1465,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public PainBehindEyes(Class<T> cls) {
-            super(32, "Pain behind eyes/Sensitivity to light");
+            super(32, "Pain behind eyes/Sensitivity to light", SymptomType.CONDITIONAL_BLEEDING);
 
             if (cls == null)
                 return;
@@ -1492,7 +1505,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public KoplikSpots(Class<T> cls) {
-            super(33, "Koplik's Spots");
+            super(33, "Koplik's Spots", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1526,7 +1539,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public Thrombocytopenia(Class<T> cls) {
-            super(34, "Thrombocytopenia");
+            super(34, "Thrombocytopenia", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1561,7 +1574,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public MiddleEarInflammation(Class<T> cls) {
-            super(35, "Middle ear inflammation (otitis media)");
+            super(35, "Middle ear inflammation (otitis media)", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1596,7 +1609,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public AcuteHearingLoss(Class<T> cls) {
-            super(36, "Acute hearing loss");
+            super(36, "Acute hearing loss", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1631,7 +1644,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public Dehydration(Class<T> cls) {
-            super(37, "Dehydration");
+            super(37, "Dehydration", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1667,7 +1680,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public LossOfAppetite(Class<T> cls) {
-            super(38, "Anorexia/loss of appetite");
+            super(38, "Anorexia/loss of appetite", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1705,7 +1718,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public RefusalToFeed(Class<T> cls) {
-            super(39, "Refusal to feed or drink");
+            super(39, "Refusal to feed or drink", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1742,7 +1755,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public JointPain(Class<T> cls) {
-            super(40, "Joint pain or arthritis");
+            super(40, "Joint pain or arthritis", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1781,7 +1794,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public Shock(Class<T> cls) {
-            super(41, "Shock (Systolic bp <90)");
+            super(41, "Shock (Systolic bp <90)", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1820,7 +1833,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public Hiccups(Class<T> cls) {
-            super(42, "Hiccups");
+            super(42, "Hiccups", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1854,7 +1867,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public OtherNonHemorrhagic(Class<T> cls) {
-            super(43, "Other clinical symptom");
+            super(43, "Other clinical symptom", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1894,7 +1907,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public Backache(Class<T> cls) {
-            super(44, "Backache");
+            super(44, "Backache", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1928,7 +1941,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public BleedingFromEyes(Class<T> cls) {
-            super(45, "Bleeding from the eyes");
+            super(45, "Bleeding from the eyes", SymptomType.CONDITIONAL_BLEEDING);
 
             if (cls == null)
                 return;
@@ -1962,7 +1975,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public Jaundice(Class<T> cls) {
-            super(46, "Jaundice");
+            super(46, "Jaundice", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -1996,7 +2009,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public DarkUrine(Class<T> cls) {
-            super(47, "Dark Urine");
+            super(47, "Dark Urine", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -2030,7 +2043,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public BleedingFromStomach(Class<T> cls) {
-            super(48, "Bleeding from the stomach");
+            super(48, "Bleeding from the stomach", SymptomType.CONDITIONAL_BLEEDING);
 
             if (cls == null)
                 return;
@@ -2064,7 +2077,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public RapidBreathing(Class<T> cls) {
-            super(49, "Rapid breathing");
+            super(49, "Rapid breathing", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -2098,7 +2111,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public SwollenGlands(Class<T> cls) {
-            super(50, "Swollen glands");
+            super(50, "Swollen glands", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -2132,7 +2145,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public CutaneousEruption(Class<T> cls) {
-            super(51, "Cutaneous eruption");
+            super(51, "Cutaneous eruption", SymptomType.MONKEYPOX);
 
             if (cls == null)
                 return;
@@ -2166,7 +2179,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public ChillsOrSweat(Class<T> cls) {
-            super(52, "Chills or sweats");
+            super(52, "Chills or sweats", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -2200,7 +2213,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public Bedridden(Class<T> cls) {
-            super(54, "Is the patient bedridden?");
+            super(54, "Is the patient bedridden?", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -2234,7 +2247,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public OralUlcers(Class<T> cls) {
-            super(55, "Oral ulcers");
+            super(55, "Oral ulcers", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -2268,7 +2281,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public PainfulLymphadenitis(Class<T> cls) {
-            super(56, "Painful lymphadenitis");
+            super(56, "Painful lymphadenitis", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -2302,7 +2315,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public BlackeningDeathOfTissue(Class<T> cls) {
-            super(57, "Blackening and death of tissue in extremities");
+            super(57, "Blackening and death of tissue in extremities", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -2335,7 +2348,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public BuboesGroinArmpitNeck(Class<T> cls) {
-            super(58, "Buboes in the groin, armpit or neck");
+            super(58, "Buboes in the groin, armpit or neck", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -2368,7 +2381,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public BulgingFontanelle(Class<T> cls) {
-            super(59, "Bulging fontanelle");
+            super(59, "Bulging fontanelle", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -2402,7 +2415,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public DifficultySwallowing(Class<T> cls) {
-            super(60, "Difficulty Swallowing");
+            super(60, "Difficulty Swallowing", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -2438,7 +2451,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public Lesions(Class<T> cls) {
-            super(61, "Does the patient have lesions?",  R.layout.row_symptom_details_lesions_child_layout);
+            super(61, "Does the patient have lesions?", SymptomType.LESIONS,  R.layout.row_symptom_details_lesions_child_layout);
 
             if (cls == null)
                 return;
@@ -2504,7 +2517,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public LymphadenopathyInguinal(Class<T> cls) {
-            super(62, "Lymphadenopathy, inguinal");
+            super(62, "Lymphadenopathy, inguinal", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -2538,7 +2551,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public LymphadenopathyAxillary(Class<T> cls) {
-            super(63, "Lymphadenopathy, axillary");
+            super(63, "Lymphadenopathy, axillary", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -2572,7 +2585,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public LymphadenopathyCervical(Class<T> cls) {
-            super(64, "Lymphadenopathy, cervical");
+            super(64, "Lymphadenopathy, cervical", SymptomType.NON_CONDITIONAL);
 
             if (cls == null)
                 return;
@@ -2608,7 +2621,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public LesionsThatItch(Class<T> cls) {
-            super(65, "Lesions that itch");
+            super(65, "Lesions that itch", SymptomType.LESIONS);
 
             if (cls == null)
                 return;
@@ -2642,7 +2655,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public LesionsSameState(Class<T> cls) {
-            super(66, "Are the lesions in the same state of development on the body?");
+            super(66, "Are the lesions in the same state of development on the body?", SymptomType.LESIONS);
 
             if (cls == null)
                 return;
@@ -2676,7 +2689,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public LesionsSameSize(Class<T> cls) {
-            super(67, "Are all of the lesions the same size and state of development?");
+            super(67, "Are all of the lesions the same size and state of development?", SymptomType.LESIONS);
 
             if (cls == null)
                 return;
@@ -2710,7 +2723,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public LesionsDeepProfound(Class<T> cls) {
-            super(68, "Are the lesions deep and profound?");
+            super(68, "Are the lesions deep and profound?", SymptomType.LESIONS);
 
             if (cls == null)
                 return;
@@ -2744,7 +2757,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public LesionsLikePic1(Class<T> cls) {
-            super(69, "Does the rash resemble the picture below?");
+            super(69, "Does the rash resemble the picture below?", SymptomType.MONKEYPOX);
 
             if (cls == null)
                 return;
@@ -2778,7 +2791,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public LesionsLikePic2(Class<T> cls) {
-            super(70, "Does the rash resemble the picture below?");
+            super(70, "Does the rash resemble the picture below?", SymptomType.MONKEYPOX);
 
             if (cls == null)
                 return;
@@ -2812,7 +2825,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public LesionsLikePic3(Class<T> cls) {
-            super(71, "Does the rash resemble the picture below?");
+            super(71, "Does the rash resemble the picture below?", SymptomType.MONKEYPOX);
 
             if (cls == null)
                 return;
@@ -2846,7 +2859,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }
 
         public LesionsLikePic4(Class<T> cls) {
-            super(72, "Does the rash resemble the picture below?");
+            super(72, "Does the rash resemble the picture below?", SymptomType.MONKEYPOX);
 
             if (cls == null)
                 return;
@@ -2899,7 +2912,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
     // <editor-fold defaultstate="collapsed" desc="Private Methods">
 
     private static Symptom newSymptom(Symptom s) {
-        Symptom newSymptom = new Symptom(s.getValue(), s.getName(), s.getDetailTemplateResId(), s.getChildViewModel()) {
+        Symptom newSymptom = new Symptom(s.getValue(), s.getName(), s.getType(), s.getDetailTemplateResId(), s.getChildViewModel()) {
             private Symptom _s;
             private boolean _copiedSupportedDiseases;
             private List<Disease> _originalList;

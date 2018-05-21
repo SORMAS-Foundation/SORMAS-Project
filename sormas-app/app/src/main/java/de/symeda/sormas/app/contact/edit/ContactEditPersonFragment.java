@@ -18,6 +18,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.BurialConductor;
@@ -31,10 +32,13 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
 import de.symeda.sormas.app.component.TeboDatePicker;
@@ -52,8 +56,11 @@ import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.RegionLoader;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
+import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.ISaveableWithCallback;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
@@ -61,12 +68,16 @@ import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentContactEditPersonLayoutBinding;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.shared.OnDateOfDeathChangeListener;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.layoutprocessor.OccupationTypeLayoutProcessor;
 import de.symeda.sormas.app.util.layoutprocessor.PresentConditionLayoutProcessor;
+import de.symeda.sormas.app.validation.PersonValidator;
 
 /**
  * Created by Orson on 13/02/2018.
@@ -76,13 +87,14 @@ import de.symeda.sormas.app.util.layoutprocessor.PresentConditionLayoutProcessor
  * sampson.orson@technologyboard.org
  */
 
-public class ContactEditPersonFragment extends BaseEditActivityFragment<FragmentContactEditPersonLayoutBinding, Person, Contact> {
+public class ContactEditPersonFragment extends BaseEditActivityFragment<FragmentContactEditPersonLayoutBinding, Person, Contact> implements ISaveableWithCallback {
 
     public static final String TAG = ContactEditPersonFragment.class.getSimpleName();
 
     private static final int DEFAULT_YEAR = 2000;
 
     private AsyncTask onResumeTask;
+    private AsyncTask saveContact;
     private String recordUuid = null;
     private ContactClassification pageStatus = null;
     private Person record;
@@ -609,5 +621,87 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
 
         if (onResumeTask != null && !onResumeTask.isCancelled())
             onResumeTask.cancel(true);
+
+        if (saveContact != null && !saveContact.isCancelled())
+            saveContact.cancel(true);
+    }
+
+    @Override
+    public void save(final INotificationContext nContext, final Callback.IAction callback) {
+
+        final Contact contactToSave = getActivityRootData();
+
+        if (contactToSave == null)
+            throw new IllegalArgumentException("contactToSave is null");
+
+        final Person personToSave = contactToSave.getPerson();
+
+        if (personToSave == null)
+            throw new IllegalArgumentException("personToSave is null");
+
+        PersonValidator.clearErrors(getContentBinding());
+        if (!PersonValidator.validatePersonData(nContext, personToSave, getContentBinding())) {
+            return;
+        }
+
+        try {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                private ContactDao cDao;
+                private PersonDao pDao;
+                private String saveUnsuccessful;
+
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    cDao = DatabaseHelper.getContactDao();
+                    pDao = DatabaseHelper.getPersonDao();
+                    saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_contact));
+
+                    if (contactToSave.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && personToSave.getAddress().isEmptyLocation()) {
+                        personToSave.getAddress().setRegion(contactToSave.getCaze().getRegion());
+                        personToSave.getAddress().setDistrict(contactToSave.getCaze().getDistrict());
+                        personToSave.getAddress().setCommunity(contactToSave.getCaze().getCommunity());
+                    }
+                }
+
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    try {
+                        if (personToSave != null)
+                            pDao.saveAndSnapshot(personToSave);
+
+                        if (contactToSave != null)
+                            cDao.saveAndSnapshot(contactToSave);
+                    } catch (DaoException e) {
+                        Log.e(getClass().getName(), "Error while trying to save contact", e);
+                        resultHolder.setResultStatus(new BoolResult(false, saveUnsuccessful));
+                        ErrorReportingHelper.sendCaughtException(tracker, e, contactToSave, true);
+                    }
+                }
+            });
+            saveContact = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
+
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    if (!resultStatus.isSuccess()) {
+                        NotificationHelper.showNotification(nContext, NotificationType.ERROR, resultStatus.getMessage());
+                        return;
+                    } else {
+                        NotificationHelper.showNotification(nContext, NotificationType.SUCCESS, "Contact " + DataHelper.getShortUuid(contactToSave.getUuid()) + " saved");
+                    }
+
+                    if (callback != null)
+                        callback.call(null);
+                }
+            });
+        } catch (Exception ex) {
+            //getActivityCommunicator().hidePreloader();
+            //getActivityCommunicator().showFragmentView();
+        }
     }
 }

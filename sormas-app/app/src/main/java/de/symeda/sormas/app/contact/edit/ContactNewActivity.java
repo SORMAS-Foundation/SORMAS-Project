@@ -33,6 +33,7 @@ import de.symeda.sormas.app.component.dialog.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
+import de.symeda.sormas.app.core.ISaveableWithCallback;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -177,6 +178,36 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
     @Override
     public void saveData() {
+        if (activeFragment == null)
+            return;
+
+        ISaveableWithCallback fragment = (ISaveableWithCallback)activeFragment;
+
+        if (fragment != null)
+            fragment.save(this, new Callback.IAction() {
+                @Override
+                public void call(Object result) {
+                    goToCaseContacts();
+                }
+            });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         if (activeFragment == null)
             return;
 

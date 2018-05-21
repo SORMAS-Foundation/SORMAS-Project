@@ -41,6 +41,8 @@ import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.databinding.FragmentCaseEditPatientLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentCaseEditSymptomsInfoLayoutBinding;
 import de.symeda.sormas.app.sample.edit.SampleNewActivity;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
@@ -49,6 +51,8 @@ import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.symptom.Symptom;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
+import de.symeda.sormas.app.validation.NewSymptomValidator;
+import de.symeda.sormas.app.validation.PersonValidator;
 
 /**
  * Created by Orson on 16/02/2018.
@@ -446,31 +450,23 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         }
 
         if (activeMenuKey == MENU_INDEX_PATIENT_INFO) {
-            //person = cazeToSave.getPerson();
-            //person = (Person)activeFragment.getPrimaryData();
-
-            //caseEditPatientBinding = (FragmentCaseEditPatientLayoutBinding)activeFragment.getContentBinding();
-
-            //TODO: Validation
-            /*if (person != null) {
-                PersonValidator.clearErrors(personBinding);
-                if (!PersonValidator.validatePersonData(person, personBinding)) {
-                    NotificationHelper.showNotification((INotificationContext)CaseEditActivity.this,
-                            NotificationType.ERROR, String.format(r.getString(R.string.validation_record_error), r.getString(R.string.entity_case_patient)));
-                }
-            }*/
-        }
-
-        if (activeMenuKey == MENU_INDEX_HOSPITALIZATION) {
-            //hospitalization = cazeToSave.getHospitalization();
-            //hospitalization = (Hospitalization)activeFragment.getPrimaryData();
-            //caseEditHospitaliztionBinding =(FragmentCaseEditHospitalizationLayoutBinding)activeFragment.getContentBinding();
+            FragmentCaseEditPatientLayoutBinding personBinding = (FragmentCaseEditPatientLayoutBinding)activeFragment.getContentBinding();
+            PersonValidator.clearErrors(personBinding);
+            if (!PersonValidator.validatePersonData(this, cazeToSave.getPerson(), personBinding)) {
+                return;
+            }
         }
 
         if (activeMenuKey == MENU_INDEX_SYMPTOMS) {
             Symptoms symptoms = cazeToSave.getSymptoms();
             //symptoms = (Symptoms)activeFragment.getPrimaryData();
-            //caseEditSymptomsBinding =(FragmentCaseEditSymptomsInfoLayoutBinding)activeFragment.getContentBinding();
+
+            CaseEditSymptomsFragment symptomsFragment = (CaseEditSymptomsFragment)activeFragment;
+
+            if (symptomsFragment == null)
+                return;
+
+            FragmentCaseEditSymptomsInfoLayoutBinding symptomsBinding = symptomsFragment.getContentBinding();
 
             if (symptoms != null) {
                 // Necessary because the entry could've been automatically set, in which case the setValue method of the
@@ -480,23 +476,14 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 if (s != null)
                     symptoms.setOnsetSymptom(s.getName());
 
-                //TODO: Validation
+                NewSymptomValidator.init(symptomsFragment.getSymptomList());
+
                 /*SymptomsValidator.clearErrorsForSymptoms(symptomsBinding);
                 if (!SymptomsValidator.validateCaseSymptoms(symptoms, symptomsBinding)) {
-                    NotificationHelper.showNotification((INotificationContext)CaseEditActivity.this,
-                            NotificationType.ERROR, String.format(r.getString(R.string.validation_record_error), r.getString(R.string.entity_case_symptoms)));
                     return;
                 }*/
             }
         }
-
-        if (activeMenuKey == MENU_INDEX_EPIDEMIOLOGICAL_DATA) {
-            //epid = cazeToSave.getEpiData();
-            //epid = (EpiData)activeFragment.getPrimaryData();
-            //caseEditEpidBinding =(FragmentCaseEditEpidLayoutBinding)activeFragment.getContentBinding();
-        }
-
-        //TODO: Validation
 
 
         try {
@@ -543,7 +530,8 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                         NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.SUCCESS, "Case " + DataHelper.getShortUuid(cazeToSave.getUuid()) + " saved");
                     }
 
-                    callback.call(resultStatus);
+                    if (callback != null)
+                        callback.call(resultStatus);
                     /*if (!goToNextMenu())
                         NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.INFO, R.string.notification_reach_last_menu);*/
 

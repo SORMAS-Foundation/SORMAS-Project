@@ -527,5 +527,4 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
         if (moveCaseTask != null && !moveCaseTask.isCancelled())
             moveCaseTask.cancel(true);
     }
-
 }
