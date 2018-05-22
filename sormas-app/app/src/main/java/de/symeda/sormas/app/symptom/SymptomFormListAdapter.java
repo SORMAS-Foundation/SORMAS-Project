@@ -85,36 +85,40 @@ public class SymptomFormListAdapter extends DataBoundAdapter<RowEditSymptomListI
             }
         });
 
-        DetailsViewModel detailsViewModel = (DetailsViewModel)record.getChildViewModel();
+        if (record.getChildViewModel() instanceof DetailsViewModel) {
+            DetailsViewModel detailsViewModel = (DetailsViewModel)record.getChildViewModel();
 
-        if (detailsViewModel != null) {
-            detailsViewModel.setOnDetailsViewModelErrorStateChanged(new OnDetailsViewModelErrorStateChanged() {
-                @Override
-                public void onChanged(DetailsViewModel viewModel, boolean errorState, Integer errorMessageResId) {
-                    if (errorState)
-                        holder.binding.txtSymptomDetail.enableErrorState(notificationContext, errorMessageResId == null? -1 : errorMessageResId);
-                    else {
-                        holder.binding.txtSymptomDetail.disableErrorState(notificationContext);
+            if (detailsViewModel != null) {
+                detailsViewModel.setOnDetailsViewModelErrorStateChanged(new OnDetailsViewModelErrorStateChanged() {
+                    @Override
+                    public void onChanged(DetailsViewModel viewModel, boolean errorState, Integer errorMessageResId) {
+                        if (errorState)
+                            holder.binding.txtSymptomDetail.enableErrorState(notificationContext, errorMessageResId == null? -1 : errorMessageResId);
+                        else {
+                            holder.binding.txtSymptomDetail.disableErrorState(notificationContext);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
 
-        LesionChildViewModel lesionChildViewModel = (LesionChildViewModel)record.getChildViewModel();
 
-        if (lesionChildViewModel != null) {
-            lesionChildViewModel.setOnLesionChildViewModelErrorStateChanged(new OnLesionChildViewModelErrorStateChanged() {
-                @Override
-                public void onChanged(LesionChildViewModel viewModel, boolean errorState, Integer errorMessageResId) {
-                    if (errorState)
-                        holder.binding.swhSymptomState.enableErrorState(notificationContext, errorMessageResId == null? -1 : errorMessageResId);
-                    else {
-                        holder.binding.swhSymptomState.disableErrorState(notificationContext);
+        if (record.getChildViewModel() instanceof LesionChildViewModel) {
+            LesionChildViewModel lesionChildViewModel = (LesionChildViewModel)record.getChildViewModel();
+
+            if (lesionChildViewModel != null) {
+                lesionChildViewModel.setOnLesionChildViewModelErrorStateChanged(new OnLesionChildViewModelErrorStateChanged() {
+                    @Override
+                    public void onChanged(LesionChildViewModel viewModel, boolean errorState, Integer errorMessageResId) {
+                        if (errorState)
+                            holder.binding.swhSymptomState.enableErrorState(notificationContext, errorMessageResId == null? -1 : errorMessageResId);
+                        else {
+                            holder.binding.swhSymptomState.disableErrorState(notificationContext);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
-
 
         holder.setData(record);
 
