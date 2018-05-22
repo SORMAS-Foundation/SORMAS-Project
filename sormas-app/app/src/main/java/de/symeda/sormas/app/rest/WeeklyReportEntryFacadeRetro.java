@@ -18,8 +18,8 @@ public interface WeeklyReportEntryFacadeRetro {
     @GET("weeklyreportentries/all/{since}")
     Call<List<WeeklyReportEntryDto>> pullAllSince(@Path("since") long since);
 
-    @GET("weeklyreportentries/query")
-    Call<List<WeeklyReportEntryDto>> pullByUuids(@Query("uuids") List<String> uuids);
+    @POST("weeklyreportentries/query")
+    Call<List<WeeklyReportEntryDto>> pullByUuids(@Body List<String> uuids);
 
     @POST("weeklyreportentries/push")
     Call<Integer> pushAll(@Body List<WeeklyReportEntryDto> dtos);

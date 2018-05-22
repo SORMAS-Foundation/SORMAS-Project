@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -33,6 +34,14 @@ public class CommunityResource {
 		return FacadeProvider.getCommunityFacade().getAllAfter(new Date(since));
 	}	
 	
+	@POST
+	@Path("/query")
+	public List<CommunityDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+
+		List<CommunityDto> result = FacadeProvider.getCommunityFacade().getByUuids(uuids); 
+		return result;
+	}
+
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids(@Context SecurityContext sc) {

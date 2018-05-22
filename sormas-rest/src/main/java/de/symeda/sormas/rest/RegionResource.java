@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -30,6 +31,14 @@ public class RegionResource {
 	public List<RegionDto> getAll(@PathParam("since") long since) {
 		return FacadeProvider.getRegionFacade().getAllAfter(new Date(since));
 	}	
+	
+	@POST
+	@Path("/query")
+	public List<RegionDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+
+		List<RegionDto> result = FacadeProvider.getRegionFacade().getByUuids(uuids); 
+		return result;
+	}
 	
 	@GET
 	@Path("/uuids")

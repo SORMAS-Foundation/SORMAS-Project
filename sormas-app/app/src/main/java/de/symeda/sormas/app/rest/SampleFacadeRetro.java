@@ -20,8 +20,8 @@ public interface SampleFacadeRetro {
     @GET("samples/all/{since}")
     Call<List<SampleDto>> pullAllSince(@Path("since") long since);
 
-    @GET("samples/query")
-    Call<List<SampleDto>> pullByUuids(@Query("uuids") List<String> uuids);
+    @POST("samples/query")
+    Call<List<SampleDto>> pullByUuids(@Body List<String> uuids);
 
     @POST("samples/push")
     Call<Integer> pushAll(@Body List<SampleDto> dtos);

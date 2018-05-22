@@ -22,4 +22,5 @@ public interface RegionFacade {
 	
 	List<String> getAllUuids();
 	
+	List<RegionDto> getByUuids(List<String> uuids);
 }

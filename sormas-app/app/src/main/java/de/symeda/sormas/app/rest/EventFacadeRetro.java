@@ -16,8 +16,8 @@ public interface EventFacadeRetro {
     @GET("events/all/{since}")
     Call<List<EventDto>> pullAllSince(@Path("since") long since);
 
-    @GET("events/query")
-    Call<List<EventDto>> pullByUuids(@Query("uuids") List<String> uuids);
+    @POST("events/query")
+    Call<List<EventDto>> pullByUuids(@Body List<String> uuids);
 
     @POST("events/push")
     Call<Integer> pushAll(@Body List<EventDto> dtos);

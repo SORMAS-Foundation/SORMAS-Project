@@ -42,12 +42,24 @@ public class ContactResource {
 	
 	@GET
 	@Path("/query")
-	public List<ContactDto> getByUuids(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
+	@Deprecated
+	/**
+	 * Used by app before version 0.22.2
+	 */
+	public List<ContactDto> getByUuidsPre222(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
 
 		List<ContactDto> result = FacadeProvider.getContactFacade().getByUuids(uuids); 
 		return result;
 	}
-	
+
+	@POST
+	@Path("/query")
+	public List<ContactDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+
+		List<ContactDto> result = FacadeProvider.getContactFacade().getByUuids(uuids); 
+		return result;
+	}
+
 	@POST 
 	@Path("/push")
 	public Integer postContacts(List<ContactDto> dtos) {

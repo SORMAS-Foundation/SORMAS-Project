@@ -26,4 +26,6 @@ public interface DistrictFacade {
 	
 	List<String> getAllUuids();
 	
+	List<DistrictDto> getByUuids(List<String> uuids);
+	
 }

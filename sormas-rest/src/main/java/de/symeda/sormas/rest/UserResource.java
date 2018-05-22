@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -36,7 +37,19 @@ public class UserResource {
 	
 	@GET
 	@Path("/query")
-	public List<UserDto> getByUuids(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
+	@Deprecated
+	/**
+	 * Used by app before version 0.22.2
+	 */
+	public List<UserDto> getByUuidsPre222(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
+
+		List<UserDto> result = FacadeProvider.getUserFacade().getByUuids(uuids); 
+		return result;
+	}
+	
+	@POST
+	@Path("/query")
+	public List<UserDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
 
 		List<UserDto> result = FacadeProvider.getUserFacade().getByUuids(uuids); 
 		return result;

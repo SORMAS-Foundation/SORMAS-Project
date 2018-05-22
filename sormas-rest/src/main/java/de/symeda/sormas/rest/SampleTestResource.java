@@ -37,7 +37,19 @@ public class SampleTestResource {
 	
 	@GET
 	@Path("/query")
-	public List<SampleTestDto> getByUuids(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
+	@Deprecated
+	/**
+	 * Used by app before version 0.22.2
+	 */
+	public List<SampleTestDto> getByUuidsPre222(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
+
+		List<SampleTestDto> result = FacadeProvider.getSampleTestFacade().getByUuids(uuids); 
+		return result;
+	}	
+	
+	@POST
+	@Path("/query")
+	public List<SampleTestDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
 
 		List<SampleTestDto> result = FacadeProvider.getSampleTestFacade().getByUuids(uuids); 
 		return result;

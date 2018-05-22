@@ -37,12 +37,25 @@ public class CaseResource {
 	
 	@GET
 	@Path("/query")
-	public List<CaseDataDto> getByUuids(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
+	@Deprecated
+	/**
+	 * Used by app before version 0.22.2
+	 */
+	public List<CaseDataDto> getByUuidsPre222(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
+
+		List<CaseDataDto> result = FacadeProvider.getCaseFacade().getByUuids(uuids); 
+		return result;
+	}
+
+	@POST
+	@Path("/query")
+	public List<CaseDataDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
 
 		List<CaseDataDto> result = FacadeProvider.getCaseFacade().getByUuids(uuids); 
 		return result;
 	}
 	
+
 	@POST 
 	@Path("/push")
 	public Integer postCases(List<CaseDataDto> dtos) {

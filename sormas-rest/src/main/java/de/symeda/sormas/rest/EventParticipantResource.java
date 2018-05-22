@@ -42,7 +42,19 @@ public class EventParticipantResource {
 	
 	@GET
 	@Path("/query")
-	public List<EventParticipantDto> getByUuids(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
+	@Deprecated
+	/**
+	 * Used by app before version 0.22.2
+	 */
+	public List<EventParticipantDto> getByUuidsPre222(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
+
+		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getByUuids(uuids); 
+		return result;
+	}
+	
+	@POST
+	@Path("/query")
+	public List<EventParticipantDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
 
 		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getByUuids(uuids); 
 		return result;

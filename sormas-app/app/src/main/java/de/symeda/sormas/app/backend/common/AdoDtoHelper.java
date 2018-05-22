@@ -197,7 +197,12 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         }
     }
 
+    public boolean isAnyMissing(List<String> uuids) throws ServerConnectionException {
 
+        final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
+        uuids = dao.filterMissing(uuids);
+        return !uuids.isEmpty();
+    }
 
     public void pullMissing(List<String> uuids) throws ServerConnectionException {
 

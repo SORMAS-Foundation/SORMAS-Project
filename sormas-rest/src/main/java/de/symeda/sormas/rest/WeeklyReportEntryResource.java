@@ -37,7 +37,19 @@ public class WeeklyReportEntryResource {
 	
 	@GET
 	@Path("/query")
-	public List<WeeklyReportEntryDto> getByUuids(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
+	@Deprecated
+	/**
+	 * Used by app before version 0.22.2
+	 */
+	public List<WeeklyReportEntryDto> getByUuidsPre222(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
+		
+		List<WeeklyReportEntryDto> result = FacadeProvider.getWeeklyReportEntryFacade().getByUuids(uuids);
+		return result;
+	}
+	
+	@POST
+	@Path("/query")
+	public List<WeeklyReportEntryDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
 		
 		List<WeeklyReportEntryDto> result = FacadeProvider.getWeeklyReportEntryFacade().getByUuids(uuids);
 		return result;

@@ -19,8 +19,8 @@ public interface CaseFacadeRetro {
     @GET("cases/all/{since}")
     Call<List<CaseDataDto>> pullAllSince(@Path("since") long since);
 
-    @GET("cases/query")
-    Call<List<CaseDataDto>> pullByUuids(@Query("uuids") List<String> uuids);
+    @POST("cases/query")
+    Call<List<CaseDataDto>> pullByUuids(@Body List<String> uuids);
 
     @POST("cases/push")
     Call<Integer> pushAll(@Body List<CaseDataDto> dtos);

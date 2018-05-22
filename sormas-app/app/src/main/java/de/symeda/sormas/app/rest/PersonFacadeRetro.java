@@ -19,8 +19,8 @@ public interface PersonFacadeRetro {
     @GET("persons/all/{since}")
     Call<List<PersonDto>> pullAllSince(@Path("since") long since);
 
-    @GET("persons/query")
-    Call<List<PersonDto>> pullByUuids(@Query("uuids") List<String> uuids);
+    @POST("persons/query")
+    Call<List<PersonDto>> pullByUuids(@Body List<String> uuids);
 
     @POST("persons/push")
     Call<Integer> pushAll(@Body List<PersonDto> dtos);
