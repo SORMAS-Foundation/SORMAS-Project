@@ -8,5 +8,5 @@ package de.symeda.sormas.app.symptom;
  * sampson.orson@technologyboard.org
  */
 public interface OnSymptomErrorStateChanged {
-    void onChanged(Symptom symptom, boolean errorState);
+    void onChanged(Symptom symptom, boolean errorState, Integer errorMessageResId);
 }

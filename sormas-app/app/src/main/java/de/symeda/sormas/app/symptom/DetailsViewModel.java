@@ -12,6 +12,11 @@ public class DetailsViewModel implements ISymptomViewModel {
     private String mDetail;
     private boolean error;
 
+    private OnDetailsViewModelErrorStateChanged onDetailsViewModelErrorStateChanged;
+
+    public void setOnDetailsViewModelErrorStateChanged(OnDetailsViewModelErrorStateChanged onDetailsViewModelErrorStateChanged) {
+        this.onDetailsViewModelErrorStateChanged = onDetailsViewModelErrorStateChanged;
+    }
 
     public boolean isError() {
         return error;
@@ -19,6 +24,16 @@ public class DetailsViewModel implements ISymptomViewModel {
 
     public void setError(boolean error) {
         this.error = error;
+
+        if (onDetailsViewModelErrorStateChanged != null)
+            onDetailsViewModelErrorStateChanged.onChanged(this, error, null);
+    }
+
+    public void setError(boolean error, int errorMessageResId) {
+        this.error = error;
+
+        if (onDetailsViewModelErrorStateChanged != null)
+            onDetailsViewModelErrorStateChanged.onChanged(this, error, errorMessageResId);
     }
 
     public DetailsViewModel() {

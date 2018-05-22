@@ -76,14 +76,45 @@ public class SymptomFormListAdapter extends DataBoundAdapter<RowEditSymptomListI
 
         record.setOnSymptomErrorStateChanged(new OnSymptomErrorStateChanged() {
             @Override
-            public void onChanged(Symptom symptom, boolean errorState) {
+            public void onChanged(Symptom symptom, boolean errorState, Integer errorMessageResId) {
                 if (errorState)
-                    holder.binding.swhSymptomState.enableErrorState(notificationContext, R.string.validation_person_last_name);
+                    holder.binding.swhSymptomState.enableErrorState(notificationContext, errorMessageResId == null? -1 : errorMessageResId);
                 else {
                     holder.binding.swhSymptomState.disableErrorState(notificationContext);
                 }
             }
         });
+
+        DetailsViewModel detailsViewModel = (DetailsViewModel)record.getChildViewModel();
+
+        if (detailsViewModel != null) {
+            detailsViewModel.setOnDetailsViewModelErrorStateChanged(new OnDetailsViewModelErrorStateChanged() {
+                @Override
+                public void onChanged(DetailsViewModel viewModel, boolean errorState, Integer errorMessageResId) {
+                    if (errorState)
+                        holder.binding.txtSymptomDetail.enableErrorState(notificationContext, errorMessageResId == null? -1 : errorMessageResId);
+                    else {
+                        holder.binding.txtSymptomDetail.disableErrorState(notificationContext);
+                    }
+                }
+            });
+        }
+
+        LesionChildViewModel lesionChildViewModel = (LesionChildViewModel)record.getChildViewModel();
+
+        if (lesionChildViewModel != null) {
+            lesionChildViewModel.setOnLesionChildViewModelErrorStateChanged(new OnLesionChildViewModelErrorStateChanged() {
+                @Override
+                public void onChanged(LesionChildViewModel viewModel, boolean errorState, Integer errorMessageResId) {
+                    if (errorState)
+                        holder.binding.swhSymptomState.enableErrorState(notificationContext, errorMessageResId == null? -1 : errorMessageResId);
+                    else {
+                        holder.binding.swhSymptomState.disableErrorState(notificationContext);
+                    }
+                }
+            });
+        }
+
 
         holder.setData(record);
 

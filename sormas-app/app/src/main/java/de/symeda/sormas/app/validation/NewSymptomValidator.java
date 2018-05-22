@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.symeda.sormas.app.component.EditTeboPropertyField;
+import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditSymptomsInfoLayoutBinding;
 import de.symeda.sormas.app.symptom.Symptom;
@@ -47,7 +48,7 @@ public class NewSymptomValidator {
     }
 
     public static boolean validateCaseSymptoms(List<Symptom> list) {
-        boolean success = true;
+        BoolResult success = BoolResult.TRUE;
 
         for(Symptom s: list) {
             success = s.validate(s, list);
@@ -103,7 +104,7 @@ public class NewSymptomValidator {
         }
 
         return success;*/
-        return false;
+        return success.isSuccess();
     }
 
 

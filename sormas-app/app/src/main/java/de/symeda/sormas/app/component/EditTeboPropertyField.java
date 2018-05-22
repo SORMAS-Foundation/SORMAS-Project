@@ -90,10 +90,11 @@ public abstract class EditTeboPropertyField<T> extends TeboPropertyField<T> {
 
 
     public void enableErrorState(INotificationContext communicator, int messageResId) {
-        if (messageResId <= 0)
-            return;
+        String message = "";
 
-        String message  = getResources().getString(messageResId);
+        if (messageResId != -1) {
+            message  = getResources().getString(messageResId);
+        }
 
         this.communicator = communicator;
         this.errorState = true;
@@ -117,10 +118,11 @@ public abstract class EditTeboPropertyField<T> extends TeboPropertyField<T> {
     }
 
     public void enableErrorState(INotificationContext communicator, int messageResId, boolean showNotification) {
-        if (messageResId <= 0)
-            return;
+        String message = "";
 
-        String message  = getResources().getString(messageResId);
+        if (messageResId != -1) {
+            message  = getResources().getString(messageResId);
+        }
 
         this.communicator = communicator;
         this.errorState = true;

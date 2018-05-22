@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.core;
 
+import android.content.res.Resources;
+
 /**
  * Created by Orson on 03/03/2018.
  * <p>
@@ -13,6 +15,7 @@ public class BoolResult {
     private final int mValue;
     private final boolean mSuccess;
     private final String mMessage;
+    private final int mMessageResId;
 
     public static final BoolResult TRUE = new BoolResult(true, "");
     public static final BoolResult FALSE = new BoolResult(false, "");
@@ -21,6 +24,14 @@ public class BoolResult {
         this.mValue = (success)? 1 : 0;
         this.mSuccess = success;
         this.mMessage = message;
+        this.mMessageResId = -1;
+    }
+
+    public BoolResult(boolean success, int messageResId) {
+        this.mValue = (success)? 1 : 0;
+        this.mSuccess = success;
+        this.mMessage = "";
+        this.mMessageResId = messageResId;
     }
 
     public boolean isSuccess() {
@@ -29,6 +40,10 @@ public class BoolResult {
 
     public String getMessage() {
         return mMessage;
+    }
+
+    public String getMessage(Resources resources) {
+        return resources.getString(mMessageResId);
     }
 
     /*public void setStatus(BoolResult status) {

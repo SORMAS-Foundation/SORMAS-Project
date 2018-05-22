@@ -11,6 +11,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.ReadOnly;
 
@@ -272,7 +273,14 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         this.error = error;
 
         if (onSymptomErrorStateChanged != null)
-            onSymptomErrorStateChanged.onChanged(this, error);
+            onSymptomErrorStateChanged.onChanged(this, error, null);
+    }
+
+    public void setError(boolean error, int errorMessageResId) {
+        this.error = error;
+
+        if (onSymptomErrorStateChanged != null)
+            onSymptomErrorStateChanged.onChanged(this, error, errorMessageResId);
     }
 
     public void setOnSymptomErrorStateChanged(OnSymptomErrorStateChanged onSymptomErrorStateChanged) {
@@ -366,19 +374,19 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 s.setError(true);
                 setError(true);
             } else {
-                s.setError(false);
-                setError(false);
+                s.setError(false, R.string.validation_symptoms_symptom);
+                setError(false, R.string.validation_symptoms_symptom);
             }
         }
     }
 
     public abstract ISymptomValidationLogic getValidationLogic();
 
-    public boolean validate(Symptom s, List<Symptom> list) {
+    public BoolResult validate(Symptom s, List<Symptom> list) {
         ISymptomValidationLogic logic = getValidationLogic();
 
         if (logic == null)
-            return true;
+            return BoolResult.TRUE;
 
         return logic.validate(s, list);
     }
@@ -878,12 +886,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             if (validationLogic == null) {
                 validationLogic = new ISymptomValidationLogic() {
                     @Override
-                    public boolean validate(Symptom s, List<Symptom> list) {
+                    public BoolResult validate(Symptom s, List<Symptom> list) {
                         if (s.getState() == SymptomState.YES) {
                             s.markAnySymptomSetTo(null, getConditionalBleedingSymptoms(list));
                         }
 
-                        return !s.isError();
+                        if (s.isError()) {
+                            return new BoolResult(false, R.string.validation_symptoms_symptom);
+                        } else {
+                            return BoolResult.TRUE;
+                        }
                     }
                 };
             }
@@ -1397,11 +1409,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             if (validationLogic == null) {
                 validationLogic = new ISymptomValidationLogic() {
                     @Override
-                    public boolean validate(Symptom s, List<Symptom> list) {
+                    public BoolResult validate(Symptom s, List<Symptom> list) {
                         DetailsViewModel viewModel = (DetailsViewModel)s.getChildViewModel();
 
                         if (viewModel == null)
-                            return true;
+                            return BoolResult.TRUE;
 
                         String detail = viewModel.getDetail();
 
@@ -1409,11 +1421,15 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                             viewModel.setError(true);
                             s.setError(true);
                         } else {
-                            viewModel.setError(false);
-                            s.setError(false);
+                            viewModel.setError(false, R.string.validation_symptoms_other_hemorrhagic);
+                            s.setError(false, R.string.validation_symptoms_other_hemorrhagic);
                         }
 
-                        return !s.isError();
+                        if (s.isError()) {
+                            return new BoolResult(false, R.string.validation_symptoms_other_hemorrhagic);
+                        } else {
+                            return BoolResult.TRUE;
+                        }
                     }
                 };
             }
@@ -2523,11 +2539,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             if (validationLogic == null) {
                 validationLogic = new ISymptomValidationLogic() {
                     @Override
-                    public boolean validate(Symptom s, List<Symptom> list) {
+                    public BoolResult validate(Symptom s, List<Symptom> list) {
                         DetailsViewModel viewModel = (DetailsViewModel)s.getChildViewModel();
 
                         if (viewModel == null)
-                            return true;
+                            return BoolResult.TRUE;
 
                         String detail = viewModel.getDetail();
 
@@ -2535,11 +2551,15 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                             viewModel.setError(true);
                             s.setError(true);
                         } else {
-                            viewModel.setError(false);
-                            s.setError(false);
+                            viewModel.setError(false, R.string.validation_symptoms_other_clinical);
+                            s.setError(false, R.string.validation_symptoms_other_clinical);
                         }
 
-                        return !s.isError();
+                        if (s.isError()) {
+                            return new BoolResult(false, R.string.validation_symptoms_other_clinical);
+                        } else {
+                            return BoolResult.TRUE;
+                        }
                     }
                 };
             }
@@ -3344,12 +3364,17 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             if (validationLogic == null) {
                 validationLogic = new ISymptomValidationLogic() {
                     @Override
-                    public boolean validate(Symptom s, List<Symptom> list) {
+                    public BoolResult validate(Symptom s, List<Symptom> list) {
                         if (s.getState() == SymptomState.YES) {
                             s.markAnySymptomSetTo(null, getLesionsFields(list));
                             s.markAnySymptomSetTo(null, getMonkeypoxFields(list));
                         }
-                        return !s.isError();
+
+                        if (s.isError()) {
+                            return new BoolResult(false, R.string.validation_symptoms_symptom);
+                        } else {
+                            return BoolResult.TRUE;
+                        }
                     }
                 };
             }

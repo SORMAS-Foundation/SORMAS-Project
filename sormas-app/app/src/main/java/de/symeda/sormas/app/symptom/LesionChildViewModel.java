@@ -31,6 +31,10 @@ public class LesionChildViewModel implements ISymptomViewModel {
     private boolean locationGenitals;
     private boolean locationAllBody;
 
+    private boolean error;
+
+    private OnLesionChildViewModelErrorStateChanged onLesionChildViewModelErrorStateChanged;
+
 
     public LesionChildViewModel(Symptom s) {
         this.symptom = s;
@@ -180,5 +184,28 @@ public class LesionChildViewModel implements ISymptomViewModel {
 
     public void setLocationAllBody(boolean locationAllBody) {
         this.locationAllBody = locationAllBody;
+    }
+
+
+    public void setOnLesionChildViewModelErrorStateChanged(OnLesionChildViewModelErrorStateChanged onLesionChildViewModelErrorStateChanged) {
+        this.onLesionChildViewModelErrorStateChanged = onLesionChildViewModelErrorStateChanged;
+    }
+
+    public boolean isError() {
+        return error;
+    }
+
+    public void setError(boolean error) {
+        this.error = error;
+
+        if (onLesionChildViewModelErrorStateChanged != null)
+            onLesionChildViewModelErrorStateChanged.onChanged(this, error, null);
+    }
+
+    public void setError(boolean error, int errorMessageResId) {
+        this.error = error;
+
+        if (onLesionChildViewModelErrorStateChanged != null)
+            onLesionChildViewModelErrorStateChanged.onChanged(this, error, errorMessageResId);
     }
 }
