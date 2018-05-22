@@ -15,16 +15,12 @@ import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseDao;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDtoHelper;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
@@ -49,7 +45,6 @@ import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.symptom.Symptom;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
 import de.symeda.sormas.app.validation.NewSymptomValidator;
 import de.symeda.sormas.app.validation.PersonValidator;
@@ -476,7 +471,8 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 if (s != null)
                     symptoms.setOnsetSymptom(s.getName());
 
-                NewSymptomValidator.init(symptomsFragment.getSymptomList());
+                NewSymptomValidator.validateCaseSymptoms(symptomsFragment.getSymptomList());
+                //NewSymptomValidator.init(symptomsFragment.getSymptomList());
 
                 /*SymptomsValidator.clearErrorsForSymptoms(symptomsBinding);
                 if (!SymptomsValidator.validateCaseSymptoms(symptoms, symptomsBinding)) {
@@ -486,7 +482,9 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         }
 
 
-        try {
+
+
+/*        try {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
                 private CaseDao caseDao = DatabaseHelper.getCaseDao();
                 private PersonDao personDao = DatabaseHelper.getPersonDao();
@@ -532,15 +530,15 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
                     if (callback != null)
                         callback.call(resultStatus);
-                    /*if (!goToNextMenu())
-                        NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.INFO, R.string.notification_reach_last_menu);*/
+                    *//*if (!goToNextMenu())
+                        NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.INFO, R.string.notification_reach_last_menu);*//*
 
                 }
             });
         } catch (Exception ex) {
             //getActivityCommunicator().hidePreloader();
             //getActivityCommunicator().showFragmentView();
-        }
+        }*/
     }
 
     public static <TActivity extends AbstractSormasActivity> void

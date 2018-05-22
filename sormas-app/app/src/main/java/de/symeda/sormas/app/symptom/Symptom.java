@@ -35,8 +35,15 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
 
 
     private SymptomType type;
+    private boolean error;
+
+    private static List<Symptom> nonConditionalSymptomList;
+    private static List<Symptom> conditionalBleedingSymptomList;
+    private static List<Symptom> lesionsSymptomList;
+    private static List<Symptom> monkeypoxSymptomList;
 
 
+    private OnSymptomErrorStateChanged onSymptomErrorStateChanged;
 
 
     /*private SymptomState state;
@@ -185,7 +192,6 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
 
     // </editor-fold>
 
-
     // <editor-fold defaultstate="collapsed" desc="Getters & Setters">
 
     public String getName() {
@@ -258,7 +264,124 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         return type;
     }
 
+    public boolean isError() {
+        return error;
+    }
+
+    public void setError(boolean error) {
+        this.error = error;
+
+        if (onSymptomErrorStateChanged != null)
+            onSymptomErrorStateChanged.onChanged(this, error);
+    }
+
+    public void setOnSymptomErrorStateChanged(OnSymptomErrorStateChanged onSymptomErrorStateChanged) {
+        this.onSymptomErrorStateChanged = onSymptomErrorStateChanged;
+    }
+
+    public OnSymptomErrorStateChanged getOnSymptomErrorStateChanged() {
+        return onSymptomErrorStateChanged;
+    }
+
     // </editor-fold>
+
+    protected static List<Symptom> getNonConditionalSymptoms(List<Symptom> list) {
+        getSymptomDatabase();
+        if (nonConditionalSymptomList != null && nonConditionalSymptomList.size() > 0)
+            return nonConditionalSymptomList;
+
+        if (nonConditionalSymptomList == null)
+            nonConditionalSymptomList = new ArrayList<>();
+
+        //List<Symptom> filterList = new ArrayList<>();
+        nonConditionalSymptomList.clear();
+        for(Symptom s: list) {
+            if (s.getType() == SymptomType.NON_CONDITIONAL) {
+                nonConditionalSymptomList.add(s);
+            }
+        }
+
+        return nonConditionalSymptomList;
+    }
+
+    protected static List<Symptom> getConditionalBleedingSymptoms(List<Symptom> list) {
+        if (conditionalBleedingSymptomList != null && conditionalBleedingSymptomList.size() > 0)
+            return conditionalBleedingSymptomList;
+
+        if (conditionalBleedingSymptomList == null)
+            conditionalBleedingSymptomList = new ArrayList<>();
+
+        //List<Symptom> filterList = new ArrayList<>();
+        conditionalBleedingSymptomList.clear();
+        for(Symptom s: list) {
+            if (s.getType() == SymptomType.CONDITIONAL_BLEEDING) {
+                conditionalBleedingSymptomList.add(s);
+            }
+        }
+
+        return conditionalBleedingSymptomList;
+    }
+
+    protected static List<Symptom> getLesionsFields(List<Symptom> list) {
+        if (lesionsSymptomList != null && lesionsSymptomList.size() > 0)
+            return lesionsSymptomList;
+
+        if (lesionsSymptomList == null)
+            lesionsSymptomList = new ArrayList<>();
+
+        //List<Symptom> filterList = new ArrayList<>();
+        lesionsSymptomList.clear();
+        for(Symptom s: list) {
+            if (s.getType() == SymptomType.LESIONS) {
+                lesionsSymptomList.add(s);
+            }
+        }
+
+        return lesionsSymptomList;
+    }
+
+    protected static List<Symptom> getMonkeypoxFields(List<Symptom> list) {
+        if (monkeypoxSymptomList != null && monkeypoxSymptomList.size() > 0)
+            return monkeypoxSymptomList;
+
+        if (monkeypoxSymptomList == null)
+            monkeypoxSymptomList = new ArrayList<>();
+
+        //List<Symptom> filterList = new ArrayList<>();
+        monkeypoxSymptomList.clear();
+        for(Symptom s: list) {
+            if (s.getType() == SymptomType.MONKEYPOX) {
+                monkeypoxSymptomList.add(s);
+            }
+        }
+
+        return monkeypoxSymptomList;
+    }
+
+
+
+    protected void markAnySymptomSetTo(SymptomState state, List<Symptom> list) {
+        for(Symptom s: list) {
+            if (s.getState() == null) {
+                s.setError(true);
+                setError(true);
+            } else {
+                s.setError(false);
+                setError(false);
+            }
+        }
+    }
+
+    public abstract ISymptomValidationLogic getValidationLogic();
+
+    public boolean validate(Symptom s, List<Symptom> list) {
+        ISymptomValidationLogic logic = getValidationLogic();
+
+        if (logic == null)
+            return true;
+
+        return logic.validate(s, list);
+    }
 
     // <editor-fold defaultstate="collapsed" desc="Enumurations">
 
@@ -301,6 +424,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.MONKEYPOX);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class Vomiting<T extends ISymptomViewModel> extends Symptom<T> {
@@ -343,6 +476,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class Diarrhea<T extends ISymptomViewModel> extends Symptom<T> {
@@ -382,6 +525,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class BloodInStool<T extends ISymptomViewModel> extends Symptom<T> {
@@ -417,6 +570,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class Nausea<T extends ISymptomViewModel> extends Symptom<T> {
@@ -458,6 +621,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class AbdominalPain<T extends ISymptomViewModel> extends Symptom<T> {
@@ -497,6 +670,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class Headache<T extends ISymptomViewModel> extends Symptom<T> {
@@ -537,6 +720,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class MusclePain<T extends ISymptomViewModel> extends Symptom<T> {
@@ -579,6 +772,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class FatigueGeneralWeakness<T extends ISymptomViewModel> extends Symptom<T> {
@@ -621,9 +824,22 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class UnexplainedBleedingBruising<T extends ISymptomViewModel> extends Symptom<T> {
+
+        private ISymptomValidationLogic validationLogic;
+
         public UnexplainedBleedingBruising() {
             this(null);
         }
@@ -656,6 +872,33 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            if (validationLogic == null) {
+                validationLogic = new ISymptomValidationLogic() {
+                    @Override
+                    public boolean validate(Symptom s, List<Symptom> list) {
+                        if (s.getState() == SymptomState.YES) {
+                            s.markAnySymptomSetTo(null, getConditionalBleedingSymptoms(list));
+                        }
+
+                        return !s.isError();
+                    }
+                };
+            }
+
+            return validationLogic;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            if (getState() == SymptomState.YES) {
+                markAnySymptomSetTo(null, getConditionalBleedingSymptoms(list));
+            }
+
+            return !isError();
+        }*/
     }
 
     private static class BleedingGum<T extends ISymptomViewModel> extends Symptom<T> {
@@ -693,6 +936,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
     //Other
     private static class BleedingFromInjectionSite<T extends ISymptomViewModel> extends Symptom<T> {
@@ -728,6 +981,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class NoseBleed<T extends ISymptomViewModel> extends Symptom<T> {
@@ -764,6 +1027,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class BloodyBlackStool<T extends ISymptomViewModel> extends Symptom<T> {
@@ -799,6 +1072,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class BloodInVomit<T extends ISymptomViewModel> extends Symptom<T> {
@@ -835,6 +1118,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class DigestedBloodInVomit<T extends ISymptomViewModel> extends Symptom<T> {
@@ -870,6 +1163,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class CoughingBlood<T extends ISymptomViewModel> extends Symptom<T> {
@@ -905,6 +1208,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class BleedingFromVagina<T extends ISymptomViewModel> extends Symptom<T> {
@@ -940,6 +1253,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class BruisedSkin<T extends ISymptomViewModel> extends Symptom<T> {
@@ -975,6 +1298,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class BloodInUrine<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1010,9 +1343,22 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class OtherHemorrhagic<T extends ISymptomViewModel> extends Symptom<T> {
+
+        private ISymptomValidationLogic validationLogic;
+
         public OtherHemorrhagic() {
             this(null);
         }
@@ -1045,6 +1391,55 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            if (validationLogic == null) {
+                validationLogic = new ISymptomValidationLogic() {
+                    @Override
+                    public boolean validate(Symptom s, List<Symptom> list) {
+                        DetailsViewModel viewModel = (DetailsViewModel)s.getChildViewModel();
+
+                        if (viewModel == null)
+                            return true;
+
+                        String detail = viewModel.getDetail();
+
+                        if (s.getState() == SymptomState.YES && (detail == null || detail.trim().isEmpty())) {
+                            viewModel.setError(true);
+                            s.setError(true);
+                        } else {
+                            viewModel.setError(false);
+                            s.setError(false);
+                        }
+
+                        return !s.isError();
+                    }
+                };
+            }
+
+            return validationLogic;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            DetailsViewModel viewModel = (DetailsViewModel)mChildViewModel;
+
+            if (viewModel == null)
+                return true;
+
+            String detail = viewModel.getDetail();
+
+            if (getState() == SymptomState.YES && (detail == null || detail.trim().isEmpty())) {
+                viewModel.setError(true);
+                setError(true);
+            } else {
+                viewModel.setError(false);
+                setError(false);
+            }
+
+            return !isError();
+        }*/
     }
 
     private static class SkinRash<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1084,6 +1479,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class StiffNeck<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1118,6 +1523,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class SoreThroat<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1156,6 +1571,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class Cough<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1194,6 +1619,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class RunnyNose<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1229,6 +1664,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class DifficultyBreathing<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1266,6 +1711,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class ChestPain<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1302,6 +1757,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class ConfusedOrDisoriented<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1341,6 +1806,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class ConvulsionsOrSeizures<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1380,6 +1855,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class AlteredConsciousness<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1419,6 +1904,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class Conjunctivitis<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1457,6 +1952,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class PainBehindEyes<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1497,6 +2002,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class KoplikSpots<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1531,6 +2046,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class Thrombocytopenia<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1566,6 +2091,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class MiddleEarInflammation<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1601,6 +2136,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class AcuteHearingLoss<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1636,6 +2181,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class Dehydration<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1672,6 +2227,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class LossOfAppetite<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1710,6 +2275,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class RefusalToFeed<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1747,6 +2322,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class JointPain<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1786,6 +2371,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class Shock<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1825,6 +2420,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class Hiccups<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1859,9 +2464,22 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class OtherNonHemorrhagic<T extends ISymptomViewModel> extends Symptom<T> {
+
+        private ISymptomValidationLogic validationLogic;
+
         public OtherNonHemorrhagic() {
             this(null);
         }
@@ -1899,6 +2517,55 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            if (validationLogic == null) {
+                validationLogic = new ISymptomValidationLogic() {
+                    @Override
+                    public boolean validate(Symptom s, List<Symptom> list) {
+                        DetailsViewModel viewModel = (DetailsViewModel)s.getChildViewModel();
+
+                        if (viewModel == null)
+                            return true;
+
+                        String detail = viewModel.getDetail();
+
+                        if (s.getState() == SymptomState.YES && (detail == null || detail.trim().isEmpty())) {
+                            viewModel.setError(true);
+                            s.setError(true);
+                        } else {
+                            viewModel.setError(false);
+                            s.setError(false);
+                        }
+
+                        return !s.isError();
+                    }
+                };
+            }
+
+            return validationLogic;
+        }
+
+        /*@Override
+        public boolean validate(Symptom s, List<Symptom> list) {
+            DetailsViewModel viewModel = (DetailsViewModel)s.getChildViewModel();
+
+            if (viewModel == null)
+                return true;
+
+            String detail = viewModel.getDetail();
+
+            if (s.getState() == SymptomState.YES && (detail == null || detail.trim().isEmpty())) {
+                viewModel.setError(true);
+                s.setError(true);
+            } else {
+                viewModel.setError(false);
+                s.setError(false);
+            }
+
+            return !s.isError();
+        }*/
     }
 
     private static class Backache<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1933,6 +2600,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class BleedingFromEyes<T extends ISymptomViewModel> extends Symptom<T> {
@@ -1967,6 +2644,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class Jaundice<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2001,6 +2688,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class DarkUrine<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2035,6 +2732,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class BleedingFromStomach<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2069,6 +2776,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class RapidBreathing<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2103,6 +2820,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class SwollenGlands<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2137,6 +2864,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class CutaneousEruption<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2171,6 +2908,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class ChillsOrSweat<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2205,6 +2952,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class Bedridden<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2239,6 +2996,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class OralUlcers<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2273,6 +3040,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class PainfulLymphadenitis<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2307,6 +3084,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class BlackeningDeathOfTissue<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2340,6 +3127,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
 
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class BuboesGroinArmpitNeck<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2373,6 +3170,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
 
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class BulgingFontanelle<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2406,6 +3213,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.CSM);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     //NEW
@@ -2443,9 +3260,22 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class Lesions<T extends LesionChildViewModel & ISymptomViewModel> extends Symptom<T> {
+
+        private ISymptomValidationLogic validationLogic;
+
         public Lesions() {
             this(null);
         }
@@ -2509,6 +3339,33 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             callback.call(list);
         }
 
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            if (validationLogic == null) {
+                validationLogic = new ISymptomValidationLogic() {
+                    @Override
+                    public boolean validate(Symptom s, List<Symptom> list) {
+                        if (s.getState() == SymptomState.YES) {
+                            s.markAnySymptomSetTo(null, getLesionsFields(list));
+                            s.markAnySymptomSetTo(null, getMonkeypoxFields(list));
+                        }
+                        return !s.isError();
+                    }
+                };
+            }
+
+            return validationLogic;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            if (getState() == SymptomState.YES) {
+                markAnySymptomSetTo(null, getLesionsFields(list));
+                markAnySymptomSetTo(null, getMonkeypoxFields(list));
+            }
+            return !isError();
+        }*/
+
     }
 
     private static class LymphadenopathyInguinal<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2543,6 +3400,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class LymphadenopathyAxillary<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2577,6 +3444,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class LymphadenopathyCervical<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2611,6 +3488,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
 
@@ -2647,6 +3534,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class LesionsSameState<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2681,6 +3578,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class LesionsSameSize<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2715,6 +3622,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class LesionsDeepProfound<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2749,6 +3666,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class LesionsLikePic1<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2783,6 +3710,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class LesionsLikePic2<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2817,6 +3754,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class LesionsLikePic3<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2851,6 +3798,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     private static class LesionsLikePic4<T extends ISymptomViewModel> extends Symptom<T> {
@@ -2885,6 +3842,16 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
                 add(Disease.OTHER);
             }};
         }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
     }
 
     // </editor-fold>
@@ -2929,6 +3896,11 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             }
 
             @Override
+            public ISymptomValidationLogic getValidationLogic() {
+                return _s.getValidationLogic();
+            }
+
+            @Override
             public List<Disease> getSupportDisease() {
                 if (!_copiedSupportedDiseases) {
                     _originalList = _s.getSupportDisease();
@@ -2950,6 +3922,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
 
                 //this.setViewModel(symptom.getViewModel());
                 this.setChildViewModel(symptom.getChildViewModel());
+                this.setOnSymptomErrorStateChanged(symptom.getOnSymptomErrorStateChanged());
                 return this;
             }
 

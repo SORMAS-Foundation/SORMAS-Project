@@ -248,9 +248,10 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
             });
         }
 
-        if (user != null && user.hasUserRight(UserRight.CASE_MOVE)) {
+        //TODO: Commented out because of 0.23.0-SNAPSHOT
+        /*if (user != null && user.hasUserRight(UserRight.CASE_MOVE)) {
             contentBinding.casePageBottomCtrlPanel.setVisibility(View.VISIBLE);
-        }
+        }*/
 
         if (user.hasUserRight(UserRight.CASE_CLASSIFY)) {
             contentBinding.spnOutcome.addValueChangedListener(new TeboPropertyField.ValueChangeListener() {

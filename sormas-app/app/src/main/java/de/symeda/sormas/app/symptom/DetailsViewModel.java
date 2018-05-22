@@ -10,6 +10,16 @@ package de.symeda.sormas.app.symptom;
 public class DetailsViewModel implements ISymptomViewModel {
 
     private String mDetail;
+    private boolean error;
+
+
+    public boolean isError() {
+        return error;
+    }
+
+    public void setError(boolean error) {
+        this.error = error;
+    }
 
     public DetailsViewModel() {
         this.mDetail = "";

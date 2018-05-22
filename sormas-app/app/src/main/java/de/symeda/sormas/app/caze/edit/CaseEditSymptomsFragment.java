@@ -30,6 +30,7 @@ import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
+import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.OnRecyclerViewReadyListener;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
@@ -164,7 +165,7 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
                 return false;
             }
         };
-        symptomAdapter = new SymptomFormListAdapter(this.getActivity(), R.layout.row_edit_symptom_list_item_layout, symptomList, getFragmentManager());
+        symptomAdapter = new SymptomFormListAdapter(this.getActivity(), (INotificationContext)getActivity(), R.layout.row_edit_symptom_list_item_layout, symptomList, getFragmentManager());
         symptomAdapter.setOnSymptomStateChangeListener(new OnSymptomStateChangeListener() {
             @Override
             public void onChange(final Symptom symptom, SymptomState state) {

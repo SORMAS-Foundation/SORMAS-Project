@@ -21,6 +21,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
 import de.symeda.sormas.app.component.TeboDatePicker;
 import de.symeda.sormas.app.component.TeboSwitch;
+import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.databinding.RowEditSymptomListItemLayoutBinding;
@@ -44,16 +45,19 @@ public class SymptomFormListAdapter extends DataBoundAdapter<RowEditSymptomListI
     private final String layoutName;
     private List<Symptom> data = new ArrayList<>();
 
+    private INotificationContext notificationContext;
+
     //private OnTeboSwitchCheckedChangeListener mOnSymptomCheckedCallback;
     private OnSymptomStateChangeListener mOnSymptomStateChangeListener;
 
-    public SymptomFormListAdapter(Context context, int rowLayout, FragmentManager fragmentManager) {
-        this(context, rowLayout, new ArrayList<Symptom>(), fragmentManager);
+    public SymptomFormListAdapter(Context context, INotificationContext notificationContext, int rowLayout, FragmentManager fragmentManager) {
+        this(context, notificationContext, rowLayout, new ArrayList<Symptom>(), fragmentManager);
     }
 
-    public SymptomFormListAdapter(Context context, int rowLayout, List<Symptom> data, FragmentManager fragmentManager) {
+    public SymptomFormListAdapter(Context context, INotificationContext notificationContext, int rowLayout, List<Symptom> data, FragmentManager fragmentManager) {
         super(rowLayout);
         this.context = context;
+        this.notificationContext = notificationContext;
         this.fragmentManager = fragmentManager;
         this.rowLayout = rowLayout;
         this.layoutName = context.getResources().getResourceEntryName(rowLayout);
@@ -61,14 +65,25 @@ public class SymptomFormListAdapter extends DataBoundAdapter<RowEditSymptomListI
         if (data == null)
             this.data = new ArrayList<>();
         else
-            this.data = new ArrayList<>(data);
+            this.data = data;
     }
 
     @Override
-    protected void bindItem(DataBoundViewHolder<RowEditSymptomListItemLayoutBinding> holder,
+    protected void bindItem(final DataBoundViewHolder<RowEditSymptomListItemLayoutBinding> holder,
                             int position, List<Object> payloads) {
 
         Symptom record = data.get(position);
+
+        record.setOnSymptomErrorStateChanged(new OnSymptomErrorStateChanged() {
+            @Override
+            public void onChanged(Symptom symptom, boolean errorState) {
+                if (errorState)
+                    holder.binding.swhSymptomState.enableErrorState(notificationContext, R.string.validation_person_last_name);
+                else {
+                    holder.binding.swhSymptomState.disableErrorState(notificationContext);
+                }
+            }
+        });
 
         holder.setData(record);
 
