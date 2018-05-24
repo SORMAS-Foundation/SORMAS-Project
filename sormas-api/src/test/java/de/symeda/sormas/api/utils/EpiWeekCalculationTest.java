@@ -1,6 +1,8 @@
 package de.symeda.sormas.api.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -13,16 +15,16 @@ public class EpiWeekCalculationTest {
 	public void testCalculatePreviousEpiWeek() {
 		EpiWeek epiWeek = new EpiWeek(2017, 1);
 		EpiWeek previousEpiWeek = DateHelper.getPreviousEpiWeek(epiWeek);
-		assertEquals(previousEpiWeek.getYear(), 2016);
-		assertEquals(previousEpiWeek.getWeek(), 52);
+		assertEquals(previousEpiWeek.getYear(), new Integer(2016));
+		assertEquals(previousEpiWeek.getWeek(), new Integer(52));
 	}
 	
 	@Test
 	public void testCalculateNextEpiWeek() {
 		EpiWeek epiWeek = new EpiWeek(2017, 53);
 		EpiWeek nextEpiWeek = DateHelper.getNextEpiWeek(epiWeek);
-		assertEquals(nextEpiWeek.getYear(), 2018);
-		assertEquals(nextEpiWeek.getWeek(), 1);
+		assertEquals(nextEpiWeek.getYear(), new Integer(2018));
+		assertEquals(nextEpiWeek.getWeek(), new Integer(1));
 	}
 	
 	/**

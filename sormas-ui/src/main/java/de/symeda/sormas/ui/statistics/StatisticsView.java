@@ -13,7 +13,6 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
@@ -35,7 +34,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.Month;
 import de.symeda.sormas.api.MonthOfYear;
+import de.symeda.sormas.api.Quarter;
 import de.symeda.sormas.api.QuarterOfYear;
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.Year;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.person.Sex;
@@ -61,26 +63,63 @@ public class StatisticsView extends AbstractStatisticsView {
 
 	public static final String VIEW_NAME = "statistics";
 
+	public static final String UNKNOWN = "Unknown";
+
 	private VerticalLayout filtersLayout;
-	private StatisticsDisplayedAttributesElement displayedAttributesElement;
 	private VerticalLayout resultsLayout;
-	private StatisticsCaseGrid statisticsCaseGrid;
 	private CheckBox zeroValues;
 	private Button exportButton;
+	private final Label emptyResultLabel;
+	private StatisticsCaseGrid statisticsCaseGrid;
+	private StatisticsVisualizationComponent visualizationComponent;
 	private List<StatisticsFilterComponent> filterComponents = new ArrayList<>();
-
-	private final Label emptyResultLabel = new Label("No cases have been found for the selected filters and visualization options.");
+	private StatisticsCaseCriteria caseCriteria;
 
 	public StatisticsView() {
 		super(VIEW_NAME);
 		setWidth(100, Unit.PERCENTAGE);
 
+		emptyResultLabel = new Label("No cases have been found for the selected filters and visualization options.");
+
+		// Main layout
 		VerticalLayout statisticsLayout = new VerticalLayout();
 		statisticsLayout.setMargin(true);
 		statisticsLayout.setSpacing(true);
 		statisticsLayout.setWidth(100, Unit.PERCENTAGE);
 
-		Label filtersLayoutTitle = new Label("1. Filters");
+		// Filters layout
+		addFiltersLayout(statisticsLayout);
+
+		// Visualization layout
+		Label visualizationTitle = new Label("Visualization");
+		visualizationTitle.setWidthUndefined();
+		CssStyles.style(visualizationTitle, CssStyles.STATISTICS_TITLE);
+		statisticsLayout.addComponent(visualizationTitle);
+
+		visualizationComponent = new StatisticsVisualizationComponent();
+		CssStyles.style(visualizationComponent, CssStyles.STATISTICS_TITLE_BOX);
+		statisticsLayout.addComponent(visualizationComponent);
+
+		// Options layout
+		addOptionsLayout(statisticsLayout);
+
+		// Generate button
+		addGenerateButton(statisticsLayout);
+
+		// Results layout
+		addResultsLayout(statisticsLayout);
+
+		// Disclaimer
+		Label disclaimer = new Label(FontAwesome.INFO_CIRCLE.getHtml() + " All statistics on this page are aggregated data "
+				+ "of the whole country. This includes cases you might not have read and write access to and therefore are "
+				+ "not visible in the case directory.", ContentMode.HTML);
+		statisticsLayout.addComponent(disclaimer);
+
+		addComponent(statisticsLayout);
+	}
+
+	private void addFiltersLayout(VerticalLayout statisticsLayout) {
+		Label filtersLayoutTitle = new Label("Filters");
 		filtersLayoutTitle.setWidthUndefined();
 		CssStyles.style(filtersLayoutTitle, CssStyles.STATISTICS_TITLE);
 		statisticsLayout.addComponent(filtersLayoutTitle);
@@ -97,7 +136,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		filtersLayout.setSpacing(true);
 		filtersSectionLayout.addComponent(filtersLayout);
 
-		// filters footer
+		// Filters footer
 		HorizontalLayout filtersSectionFooter = new HorizontalLayout();
 		{
 			filtersSectionFooter.setSpacing(true);
@@ -119,84 +158,32 @@ public class StatisticsView extends AbstractStatisticsView {
 		filtersSectionLayout.addComponent(filtersSectionFooter);
 
 		statisticsLayout.addComponent(filtersSectionLayout);
+	}
 
-		Label displayedAttributesTitle = new Label("2. Visualization");
-		displayedAttributesTitle.setWidthUndefined();
-		CssStyles.style(displayedAttributesTitle, CssStyles.STATISTICS_TITLE);
-		statisticsLayout.addComponent(displayedAttributesTitle);
+	private HorizontalLayout createFilterComponentLayout() {
+		HorizontalLayout filterComponentLayout = new HorizontalLayout();
+		filterComponentLayout.setSpacing(true);
+		filterComponentLayout.setWidth(100, Unit.PERCENTAGE);
 
-		displayedAttributesElement = new StatisticsDisplayedAttributesElement();
-		CssStyles.style(displayedAttributesElement, CssStyles.STATISTICS_TITLE_BOX);
-		statisticsLayout.addComponent(displayedAttributesElement);
+		StatisticsFilterComponent filterComponent = new StatisticsFilterComponent();
 
-		Label optionsTitle = new Label("3. Options");
-		optionsTitle.setWidthUndefined();
-		CssStyles.style(optionsTitle, CssStyles.STATISTICS_TITLE);
-		statisticsLayout.addComponent(optionsTitle);
-		
-		HorizontalLayout optionsLayout = new HorizontalLayout();
-		optionsLayout.setWidth(100, Unit.PERCENTAGE);
-		optionsLayout.setSpacing(true);
-		CssStyles.style(optionsLayout, CssStyles.STATISTICS_TITLE_BOX);
-		{
-			zeroValues = new CheckBox("Show zero values");
-			zeroValues.setValue(true);
-			optionsLayout.addComponent(zeroValues);
-		}
-		statisticsLayout.addComponent(optionsLayout);
-		
-		HorizontalLayout buttonLayout = new HorizontalLayout();
-		buttonLayout.setSpacing(true);
-		{
-			Button generateButton = new Button("3. Generate");
-			CssStyles.style(generateButton, ValoTheme.BUTTON_PRIMARY);
-			generateButton.addClickListener(e -> {
-				// Check whether there is any invalid empty filter or grouping data
-				Notification errorNotification = null;
-				for (StatisticsFilterComponent filterComponent : filterComponents) {
-					if (filterComponent.getSelectedAttribute() != StatisticsCaseAttribute.REGION_DISTRICT && 
-							(filterComponent.getSelectedAttribute() == null || 
-							filterComponent.getSelectedAttribute().getSubAttributes().length > 0 && 
-							filterComponent.getSelectedSubAttribute() == null)) {
-						errorNotification = new Notification("Please specify all selected filter attributes and sub attributes", Type.WARNING_MESSAGE);
-						break;
-					}
-				}
+		Button removeFilterButton = new Button(FontAwesome.TIMES);
+		removeFilterButton.setDescription("Remove filter");
+		CssStyles.style(removeFilterButton, CssStyles.FORCE_CAPTION);
+		removeFilterButton.addClickListener(e -> {
+			filterComponents.remove(filterComponent);
+			filtersLayout.removeComponent(filterComponentLayout);
+		});
 
-				if (errorNotification == null && displayedAttributesElement.getRowsAttribute() != null && 
-						displayedAttributesElement.getRowsAttribute().getSubAttributes().length > 0 &&
-						displayedAttributesElement.getRowsSubAttribute() == null) {
-					errorNotification = new Notification("Please specify the row attribute you have chosen for the visualization", Type.WARNING_MESSAGE);
-				} else if (errorNotification == null && displayedAttributesElement.getColumnsAttribute() != null &&
-						displayedAttributesElement.getColumnsAttribute().getSubAttributes().length > 0 &&
-						displayedAttributesElement.getColumnsSubAttribute() == null) {
-					errorNotification = new Notification("Please specify the column attribute you have chosen for the visualization", Type.WARNING_MESSAGE);
-				}
+		filterComponentLayout.addComponent(removeFilterButton);
+		filterComponents.add(filterComponent);
+		filterComponentLayout.addComponent(filterComponent);
+		filterComponentLayout.setExpandRatio(filterComponent, 1);
 
-				if (errorNotification != null) {
-					errorNotification.setDelayMsec(-1);
-					errorNotification.show(Page.getCurrent());
-				} else {
-					resultsLayout.removeAllComponents();
-					switch (displayedAttributesElement.getVisualizationType()) {
-					case TABLE:
-						generateTable();
-						break;
-					case MAP:
-						generateMap();
-						break;
-					default:
-						generateChart();
-						break;
-						//throw new IllegalArgumentException(displayedAttributesElement.getSelectedVisualizationType().toString());
-					}
-				}
-			});
-			buttonLayout.addComponent(generateButton);
-		}
+		return filterComponentLayout;
+	}
 
-		statisticsLayout.addComponent(buttonLayout);
-
+	private void addResultsLayout(VerticalLayout statisticsLayout) {
 		Label resultsLayoutTitle = new Label("Results");
 		resultsLayoutTitle.setWidthUndefined();
 		CssStyles.style(resultsLayoutTitle, CssStyles.STATISTICS_TITLE);
@@ -209,249 +196,101 @@ public class StatisticsView extends AbstractStatisticsView {
 		resultsLayout.addComponent(new Label("Click the 'generate'-button to create a new table, map or chart."));
 
 		statisticsLayout.addComponent(resultsLayout);
-
-		Label disclaimer = new Label(FontAwesome.INFO_CIRCLE.getHtml() + " All statistics on this page are aggregated data of the whole country. This includes cases you might not have read and write access to and therefore are not visible in the case directory.", ContentMode.HTML);
-		statisticsLayout.addComponent(disclaimer);
-
-		addComponent(statisticsLayout);
 	}
 
-	private List<Object[]> generateStatistics() {
+	private void addOptionsLayout(VerticalLayout statisticsLayout) {
+		Label optionsTitle = new Label("Options");
+		optionsTitle.setWidthUndefined();
+		CssStyles.style(optionsTitle, CssStyles.STATISTICS_TITLE);
+		statisticsLayout.addComponent(optionsTitle);
 
-		// TODO move generation of the case criteria into another method
-		StatisticsCaseCriteria caseCriteria = new StatisticsCaseCriteria();
+		HorizontalLayout optionsLayout = new HorizontalLayout();
+		optionsLayout.setWidth(100, Unit.PERCENTAGE);
+		optionsLayout.setSpacing(true);
+		CssStyles.style(optionsLayout, CssStyles.STATISTICS_TITLE_BOX);
+		{
+			zeroValues = new CheckBox("Show zero values");
+			zeroValues.setValue(false);
+			optionsLayout.addComponent(zeroValues);
+		}
+		statisticsLayout.addComponent(optionsLayout);
+	}
 
-		for (StatisticsFilterComponent filterComponent : filterComponents) {
-			Map<Object, StatisticsFilterElement> filterElements = filterComponent.getFilterElements();
-			switch (filterComponent.getSelectedAttribute()) {
-			case SEX:
-				if (filterElements.get(StatisticsCaseAttribute.SEX).getSelectedValues() != null) {
-					List<Sex> sexes = new ArrayList<>();
-					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseAttribute.SEX).getSelectedValues()) {
-						if (tokenizableValue.getValue() == "Unknown") {
-							caseCriteria.sexUnknown(true);
-						} else {
-							sexes.add((Sex) tokenizableValue.getValue());
-						}
-					}
-					caseCriteria.sexes(sexes);
-				}
-				break;
-			case DISEASE:
-				if (filterElements.get(StatisticsCaseAttribute.DISEASE).getSelectedValues() != null) {
-					List<Disease> diseases = new ArrayList<>();
-					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseAttribute.DISEASE).getSelectedValues()) {
-						diseases.add((Disease) tokenizableValue.getValue());
-					}
-					caseCriteria.diseases(diseases);
-				}
-				break;
-			case CLASSIFICATION:
-				if (filterElements.get(StatisticsCaseAttribute.CLASSIFICATION).getSelectedValues() != null) {
-					List<CaseClassification> classifications = new ArrayList<>();
-					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseAttribute.CLASSIFICATION).getSelectedValues()) {
-						classifications.add((CaseClassification) tokenizableValue.getValue());
-					}
-					caseCriteria.classifications(classifications);
-				}
-				break;	
-			case OUTCOME:
-				if (filterElements.get(StatisticsCaseAttribute.OUTCOME).getSelectedValues() != null) {
-					List<CaseOutcome> outcomes = new ArrayList<>();
-					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseAttribute.OUTCOME).getSelectedValues()) {
-						outcomes.add((CaseOutcome) tokenizableValue.getValue());
-					}
-					caseCriteria.outcomes(outcomes);
-				}
-				break;
-			case AGE_INTERVAL_1_YEAR:
-			case AGE_INTERVAL_5_YEARS:
-			case AGE_INTERVAL_CHILDREN_COARSE:
-			case AGE_INTERVAL_CHILDREN_FINE:
-			case AGE_INTERVAL_CHILDREN_MEDIUM:
-			case AGE_INTERVAL_BASIC:
-				if (filterElements.get(filterComponent.getSelectedAttribute()).getSelectedValues() != null) {
-					List<IntegerRange> ageIntervals = new ArrayList<>();
-					for (TokenizableValue tokenizableValue : filterElements.get(filterComponent.getSelectedAttribute()).getSelectedValues()) {
-						ageIntervals.add((IntegerRange) tokenizableValue.getValue());
-					}
-					caseCriteria.addAgeIntervals(ageIntervals);
-				}
-				break;
-			case REGION_DISTRICT:
-				if (filterElements.get(StatisticsCaseSubAttribute.REGION).getSelectedValues() != null) {
-					List<RegionReferenceDto> regions = new ArrayList<>();
-					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.REGION).getSelectedValues()) {
-						regions.add((RegionReferenceDto) tokenizableValue.getValue());
-					}
-					caseCriteria.regions(regions);
-				}
-				if (filterElements.get(StatisticsCaseSubAttribute.DISTRICT).getSelectedValues() != null) {
-					List<DistrictReferenceDto> districts = new ArrayList<>();
-					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.DISTRICT).getSelectedValues()) {
-						districts.add((DistrictReferenceDto) tokenizableValue.getValue());
-					}
-					caseCriteria.districts(districts);
-				}
-				break;
-			default:
-				switch (filterComponent.getSelectedSubAttribute()) {
-				case YEAR:
-					if (filterElements.get(StatisticsCaseSubAttribute.YEAR).getSelectedValues() != null) {
-						List<Integer> years = new ArrayList<>();
-						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.YEAR).getSelectedValues()) {
-							years.add((Integer) tokenizableValue.getValue());
-						}
-						caseCriteria.years(years, filterComponent.getSelectedAttribute());
-					}
+	private void addGenerateButton(VerticalLayout statisticsLayout) {
+		Button generateButton = new Button("Generate");
+		CssStyles.style(generateButton, ValoTheme.BUTTON_PRIMARY);
+		generateButton.addClickListener(e -> {
+			// Check whether there is any invalid empty filter or grouping data
+			Notification errorNotification = null;
+			for (StatisticsFilterComponent filterComponent : filterComponents) {
+				if (filterComponent.getSelectedAttribute() != StatisticsCaseAttribute.REGION_DISTRICT && 
+						(filterComponent.getSelectedAttribute() == null || 
+						filterComponent.getSelectedAttribute().getSubAttributes().length > 0 && 
+						filterComponent.getSelectedSubAttribute() == null)) {
+					errorNotification = new Notification("Please specify all selected filter attributes and sub attributes", Type.WARNING_MESSAGE);
 					break;
-				case QUARTER:
-					if (filterElements.get(StatisticsCaseSubAttribute.QUARTER).getSelectedValues() != null) {
-						List<Integer> quarters = new ArrayList<>();
-						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.QUARTER).getSelectedValues()) {
-							quarters.add((Integer) tokenizableValue.getValue());
-						}
-						caseCriteria.quarters(quarters, filterComponent.getSelectedAttribute());
-					}
-					break;
-				case MONTH:
-					if (filterElements.get(StatisticsCaseSubAttribute.MONTH).getSelectedValues() != null) {
-						List<Month> months = new ArrayList<>();
-						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.MONTH).getSelectedValues()) {
-							months.add((Month) tokenizableValue.getValue());
-						}
-						caseCriteria.months(months, filterComponent.getSelectedAttribute());
-					}
-					break;
-				case EPI_WEEK:
-					if (filterElements.get(StatisticsCaseSubAttribute.EPI_WEEK).getSelectedValues() != null) {
-						List<EpiWeek> epiWeeks = new ArrayList<>();
-						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.EPI_WEEK).getSelectedValues()) {
-							epiWeeks.add((EpiWeek) tokenizableValue.getValue());
-						}
-						caseCriteria.epiWeeks(epiWeeks, filterComponent.getSelectedAttribute());
-					}
-					break;
-				case QUARTER_OF_YEAR:
-					if (filterElements.get(StatisticsCaseSubAttribute.QUARTER_OF_YEAR).getSelectedValues() != null) {
-						List<QuarterOfYear> quartersOfYear = new ArrayList<>();
-						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.QUARTER_OF_YEAR).getSelectedValues()) {
-							quartersOfYear.add((QuarterOfYear) tokenizableValue.getValue());
-						}
-						caseCriteria.quartersOfYear(quartersOfYear, filterComponent.getSelectedAttribute());
-					}
-					break;
-				case MONTH_OF_YEAR:
-					if (filterElements.get(StatisticsCaseSubAttribute.MONTH_OF_YEAR).getSelectedValues() != null) {
-						List<MonthOfYear> monthsOfYear = new ArrayList<>();
-						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.MONTH_OF_YEAR).getSelectedValues()) {
-							monthsOfYear.add((MonthOfYear) tokenizableValue.getValue());
-						}
-						caseCriteria.monthsOfYear(monthsOfYear, filterComponent.getSelectedAttribute());
-					}
-					break;
-				case EPI_WEEK_OF_YEAR:
-					if (filterElements.get(StatisticsCaseSubAttribute.EPI_WEEK_OF_YEAR).getSelectedValues() != null) {
-						List<EpiWeek> epiWeeksOfYear = new ArrayList<>();
-						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.EPI_WEEK_OF_YEAR).getSelectedValues()) {
-							epiWeeksOfYear.add((EpiWeek) tokenizableValue.getValue());
-						}
-						caseCriteria.epiWeeksOfYear(epiWeeksOfYear, filterComponent.getSelectedAttribute());
-					}
-					break;
-				case DATE_RANGE:
-					caseCriteria.dateRange((Date) filterElements.get(StatisticsCaseSubAttribute.DATE_RANGE).getSelectedValues().get(0).getValue(), 
-							(Date) filterElements.get(StatisticsCaseSubAttribute.DATE_RANGE).getSelectedValues().get(1).getValue(), 
-							filterComponent.getSelectedAttribute());
-					break;
-				default:
-					throw new IllegalArgumentException(filterComponent.getSelectedSubAttribute().toString());
 				}
 			}
-		}
 
-		List<Object[]> resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria,
-				displayedAttributesElement.getRowsAttribute(), displayedAttributesElement.getRowsSubAttribute(),
-				displayedAttributesElement.getColumnsAttribute(),  displayedAttributesElement.getColumnsSubAttribute());
-		
-		return resultData;
+			if (errorNotification == null && visualizationComponent.getRowsAttribute() != null && 
+					visualizationComponent.getRowsAttribute().getSubAttributes().length > 0 &&
+					visualizationComponent.getRowsSubAttribute() == null) {
+				errorNotification = new Notification("Please specify the row attribute you have chosen for the visualization", Type.WARNING_MESSAGE);
+			} else if (errorNotification == null && visualizationComponent.getColumnsAttribute() != null &&
+					visualizationComponent.getColumnsAttribute().getSubAttributes().length > 0 &&
+					visualizationComponent.getColumnsSubAttribute() == null) {
+				errorNotification = new Notification("Please specify the column attribute you have chosen for the visualization", Type.WARNING_MESSAGE);
+			}
+
+			if (errorNotification != null) {
+				errorNotification.setDelayMsec(-1);
+				errorNotification.show(Page.getCurrent());
+			} else {
+				resultsLayout.removeAllComponents();
+				switch (visualizationComponent.getVisualizationType()) {
+				case TABLE:
+					generateTable();
+					break;
+				case MAP:
+					generateMap();
+					break;
+				default:
+					generateChart();
+					break;
+				}
+			}
+		});
+
+		statisticsLayout.addComponent(generateButton);
 	}
 
 	public void generateTable() {
 		List<Object[]> resultData = generateStatistics();
-		if (!resultData.isEmpty()) {
-			exportButton = new Button("Export");
-			exportButton.setDescription("Export the columns and rows that are shown in the table above.");
-			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			exportButton.setIcon(FontAwesome.TABLE);
-			resultsLayout.addComponent(exportButton);
-			resultsLayout.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
 
-			statisticsCaseGrid = new StatisticsCaseGrid(displayedAttributesElement.getRowsAttribute(), displayedAttributesElement.getRowsSubAttribute(), displayedAttributesElement.getColumnsAttribute(), displayedAttributesElement.getColumnsSubAttribute(), zeroValues.getValue(), resultData);
-			statisticsCaseGrid.setWidth(100, Unit.PERCENTAGE);
-			resultsLayout.addComponent(statisticsCaseGrid);
-
-			StreamResource streamResource = DownloadUtil.createGridExportStreamResource(statisticsCaseGrid.getContainerDataSource(), statisticsCaseGrid.getColumns(), "sormas_statistics", "sormas_statistics_" + DateHelper.formatDateForExport(new Date()) + ".csv");
-			FileDownloader fileDownloader = new FileDownloader(streamResource);
-			fileDownloader.extend(exportButton);
-		} else {
+		if (resultData.isEmpty()) {
 			resultsLayout.addComponent(emptyResultLabel);
+			return;
 		}
+
+		exportButton = new Button("Export");
+		exportButton.setDescription("Export the columns and rows that are shown in the table above.");
+		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		exportButton.setIcon(FontAwesome.TABLE);
+		resultsLayout.addComponent(exportButton);
+		resultsLayout.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
+
+		statisticsCaseGrid = new StatisticsCaseGrid(visualizationComponent.getRowsAttribute(), visualizationComponent.getRowsSubAttribute(), 
+				visualizationComponent.getColumnsAttribute(), visualizationComponent.getColumnsSubAttribute(), zeroValues.getValue(), resultData, caseCriteria);
+		resultsLayout.addComponent(statisticsCaseGrid);
+		resultsLayout.setExpandRatio(statisticsCaseGrid, 1);
+
+		StreamResource streamResource = DownloadUtil.createGridExportStreamResource(statisticsCaseGrid.getContainerDataSource(), statisticsCaseGrid.getColumns(), 
+				"sormas_statistics", "sormas_statistics_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+		FileDownloader fileDownloader = new FileDownloader(streamResource);
+		fileDownloader.extend(exportButton);
 	}
 
-	public static String UNKNOWN = "Unknown";
-
-	/**
-	 * TODO merge with StatisticsCaseGrid.buildHeader
-	 */
-	private String buildIdCaption(Object idRaw, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
-		if (idRaw == null) {
-			return UNKNOWN;
-		}
-		String idString = idRaw.toString();
-		if (idString.isEmpty()) {
-			return UNKNOWN;
-		}
-
-		if (subAttribute != null) {
-			switch (subAttribute) {
-			case QUARTER:
-				return "Q" + idString;
-			case MONTH:
-				return Month.values()[Integer.valueOf(idString) - 1].toString();
-			case EPI_WEEK:
-				return "Wk " + idString;
-			case QUARTER_OF_YEAR:
-				return "Q" + idString.charAt(idString.length() - 1) + " " + idString.substring(0, 4);
-			case MONTH_OF_YEAR:
-				int month = Integer.valueOf(idString.substring(4));
-				return Month.values()[month - 1].toString() + " " + idString.substring(0, 4);
-			case EPI_WEEK_OF_YEAR:
-				// see EpiWeek.toString
-				return "Wk " + idString.substring(4) + "-" + idString.substring(0, 4);
-			case REGION:
-				return FacadeProvider.getRegionFacade().getRegionByUuid(idString).toString();
-			case DISTRICT:
-				return FacadeProvider.getDistrictFacade().getDistrictByUuid(idString).toString();
-			default:
-				return idString;
-			}
-		} else {
-			switch (attribute) {
-			case CLASSIFICATION:
-				return CaseClassification.valueOf(idString).toString();
-			case OUTCOME:
-				return CaseOutcome.valueOf(idString).toString();
-			case SEX:
-				return Sex.valueOf(idString).toString();
-			case DISEASE:
-				return Disease.valueOf(idString).toString();
-			default:
-				return idString;
-			}
-		}
-	}
-
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void generateChart() {
 		List<Object[]> resultData = generateStatistics();
 
@@ -460,11 +299,11 @@ public class StatisticsView extends AbstractStatisticsView {
 			return;
 		}
 
-		StatisticsVisualizationChartType chartType = displayedAttributesElement.getVisualizationChartType();
-		StatisticsCaseAttribute columnsAttribute = displayedAttributesElement.getColumnsAttribute();
-		StatisticsCaseSubAttribute columnsSubAttribute = displayedAttributesElement.getColumnsSubAttribute();
-		StatisticsCaseAttribute rowsAttribute = displayedAttributesElement.getRowsAttribute();
-		StatisticsCaseSubAttribute rowsSubAttribute = displayedAttributesElement.getRowsSubAttribute();
+		StatisticsVisualizationChartType chartType = visualizationComponent.getVisualizationChartType();
+		StatisticsCaseAttribute columnsAttribute = visualizationComponent.getColumnsAttribute();
+		StatisticsCaseSubAttribute columnsSubAttribute = visualizationComponent.getColumnsSubAttribute();
+		StatisticsCaseAttribute rowsAttribute = visualizationComponent.getRowsAttribute();
+		StatisticsCaseSubAttribute rowsSubAttribute = visualizationComponent.getRowsSubAttribute();
 
 		HighChart chart = new HighChart();
 		chart.setWidth(100, Unit.PERCENTAGE);
@@ -637,7 +476,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			hcjs.append("{ name: 'Number of cases', dataLabels: { allowOverlap: false }")
 			.append(", data: [['Total',").append(resultData.get(0)).append("]]}");
 
-		} else if (displayedAttributesElement.getVisualizationChartType() == StatisticsVisualizationChartType.PIE) {
+		} else if (visualizationComponent.getVisualizationChartType() == StatisticsVisualizationChartType.PIE) {
 			hcjs.append("{ name: 'Number of cases', dataLabels: { allowOverlap: false }")
 			.append(", data: [");
 			for (Object[] row : resultData) {
@@ -682,6 +521,57 @@ public class StatisticsView extends AbstractStatisticsView {
 		chart.setHcjs(hcjs.toString());	
 		resultsLayout.addComponent(chart);
 		resultsLayout.setExpandRatio(chart, 1);
+	}
+
+	/**
+	 * TODO merge with StatisticsCaseGrid.buildHeader
+	 */
+	private String buildIdCaption(Object idRaw, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
+		if (idRaw == null) {
+			return UNKNOWN;
+		}
+		String idString = idRaw.toString();
+		if (idString.isEmpty()) {
+			return UNKNOWN;
+		}
+
+		if (subAttribute != null) {
+			switch (subAttribute) {
+			case QUARTER:
+				return "Q" + idString;
+			case MONTH:
+				return Month.values()[Integer.valueOf(idString) - 1].toString();
+			case EPI_WEEK:
+				return "Wk " + idString;
+			case QUARTER_OF_YEAR:
+				return "Q" + idString.charAt(idString.length() - 1) + " " + idString.substring(0, 4);
+			case MONTH_OF_YEAR:
+				int month = Integer.valueOf(idString.substring(4));
+				return Month.values()[month - 1].toString() + " " + idString.substring(0, 4);
+			case EPI_WEEK_OF_YEAR:
+				// see EpiWeek.toString
+				return "Wk " + idString.substring(4) + "-" + idString.substring(0, 4);
+			case REGION:
+				return FacadeProvider.getRegionFacade().getRegionByUuid(idString).toString();
+			case DISTRICT:
+				return FacadeProvider.getDistrictFacade().getDistrictByUuid(idString).toString();
+			default:
+				return idString;
+			}
+		} else {
+			switch (attribute) {
+			case CLASSIFICATION:
+				return CaseClassification.valueOf(idString).toString();
+			case OUTCOME:
+				return CaseOutcome.valueOf(idString).toString();
+			case SEX:
+				return Sex.valueOf(idString).toString();
+			case DISEASE:
+				return Disease.valueOf(idString).toString();
+			default:
+				return idString;
+			}
+		}
 	}
 
 	public void generateMap() {
@@ -744,10 +634,10 @@ public class StatisticsView extends AbstractStatisticsView {
 		// Draw relevant district fills
 		for (Object[] resultRow : resultData) {
 
-			String shapeUuid = (String)resultRow[1];
+			String shapeUuid = ((ReferenceDto) resultRow[1]).getUuid();
 			BigDecimal shapeValue = new BigDecimal((Long)resultRow[0]);
 			GeoLatLon[][] shape;
-			switch (displayedAttributesElement.getVisualizationMapType()) {
+			switch (visualizationComponent.getVisualizationMapType()) {
 			case REGIONS:
 				shape = FacadeProvider.getGeoShapeProvider().getRegionShape(new RegionReferenceDto(shapeUuid));
 				break;
@@ -755,7 +645,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				shape = FacadeProvider.getGeoShapeProvider().getDistrictShape(new DistrictReferenceDto(shapeUuid));
 				break;
 			default:
-				throw new IllegalArgumentException(displayedAttributesElement.getVisualizationMapType().toString());
+				throw new IllegalArgumentException(visualizationComponent.getVisualizationMapType().toString());
 			}
 
 			if (shape == null) {
@@ -818,27 +708,167 @@ public class StatisticsView extends AbstractStatisticsView {
 		resultsLayout.setExpandRatio(mapLayout, 1);
 	}
 
-	private HorizontalLayout createFilterComponentLayout() {
-		HorizontalLayout filterComponentLayout = new HorizontalLayout();
-		filterComponentLayout.setSpacing(true);
-		filterComponentLayout.setWidth(100, Unit.PERCENTAGE);
+	private List<Object[]> generateStatistics() {
+		fillCaseCriteria();
+		
+		List<Object[]> resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria,
+				visualizationComponent.getRowsAttribute(), visualizationComponent.getRowsSubAttribute(),
+				visualizationComponent.getColumnsAttribute(),  visualizationComponent.getColumnsSubAttribute());
 
-		StatisticsFilterComponent filterComponent = new StatisticsFilterComponent();
+		return resultData;
+	}
+	
+	private void fillCaseCriteria() {
+		caseCriteria = new StatisticsCaseCriteria();
 
-		Button removeFilterButton = new Button(FontAwesome.TIMES);
-		removeFilterButton.setDescription("Remove filter");
-		CssStyles.style(removeFilterButton, CssStyles.FORCE_CAPTION);
-		removeFilterButton.addClickListener(e -> {
-			filterComponents.remove(filterComponent);
-			filtersLayout.removeComponent(filterComponentLayout);
-		});
-
-		filterComponentLayout.addComponent(removeFilterButton);
-		filterComponents.add(filterComponent);
-		filterComponentLayout.addComponent(filterComponent);
-		filterComponentLayout.setExpandRatio(filterComponent, 1);
-
-		return filterComponentLayout;
+		for (StatisticsFilterComponent filterComponent : filterComponents) {
+			Map<Object, StatisticsFilterElement> filterElements = filterComponent.getFilterElements();
+			switch (filterComponent.getSelectedAttribute()) {
+			case SEX:
+				if (filterElements.get(StatisticsCaseAttribute.SEX).getSelectedValues() != null) {
+					List<Sex> sexes = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseAttribute.SEX).getSelectedValues()) {
+						if (tokenizableValue.getValue() == "Unknown") {
+							caseCriteria.sexUnknown(true);
+						} else {
+							sexes.add((Sex) tokenizableValue.getValue());
+						}
+					}
+					caseCriteria.sexes(sexes);
+				}
+				break;
+			case DISEASE:
+				if (filterElements.get(StatisticsCaseAttribute.DISEASE).getSelectedValues() != null) {
+					List<Disease> diseases = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseAttribute.DISEASE).getSelectedValues()) {
+						diseases.add((Disease) tokenizableValue.getValue());
+					}
+					caseCriteria.diseases(diseases);
+				}
+				break;
+			case CLASSIFICATION:
+				if (filterElements.get(StatisticsCaseAttribute.CLASSIFICATION).getSelectedValues() != null) {
+					List<CaseClassification> classifications = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseAttribute.CLASSIFICATION).getSelectedValues()) {
+						classifications.add((CaseClassification) tokenizableValue.getValue());
+					}
+					caseCriteria.classifications(classifications);
+				}
+				break;	
+			case OUTCOME:
+				if (filterElements.get(StatisticsCaseAttribute.OUTCOME).getSelectedValues() != null) {
+					List<CaseOutcome> outcomes = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseAttribute.OUTCOME).getSelectedValues()) {
+						outcomes.add((CaseOutcome) tokenizableValue.getValue());
+					}
+					caseCriteria.outcomes(outcomes);
+				}
+				break;
+			case AGE_INTERVAL_1_YEAR:
+			case AGE_INTERVAL_5_YEARS:
+			case AGE_INTERVAL_CHILDREN_COARSE:
+			case AGE_INTERVAL_CHILDREN_FINE:
+			case AGE_INTERVAL_CHILDREN_MEDIUM:
+			case AGE_INTERVAL_BASIC:
+				if (filterElements.get(filterComponent.getSelectedAttribute()).getSelectedValues() != null) {
+					List<IntegerRange> ageIntervals = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : filterElements.get(filterComponent.getSelectedAttribute()).getSelectedValues()) {
+						ageIntervals.add((IntegerRange) tokenizableValue.getValue());
+					}
+					caseCriteria.addAgeIntervals(ageIntervals);
+				}
+				break;
+			case REGION_DISTRICT:
+				if (filterElements.get(StatisticsCaseSubAttribute.REGION).getSelectedValues() != null) {
+					List<RegionReferenceDto> regions = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.REGION).getSelectedValues()) {
+						regions.add((RegionReferenceDto) tokenizableValue.getValue());
+					}
+					caseCriteria.regions(regions);
+				}
+				if (filterElements.get(StatisticsCaseSubAttribute.DISTRICT).getSelectedValues() != null) {
+					List<DistrictReferenceDto> districts = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.DISTRICT).getSelectedValues()) {
+						districts.add((DistrictReferenceDto) tokenizableValue.getValue());
+					}
+					caseCriteria.districts(districts);
+				}
+				break;
+			default:
+				switch (filterComponent.getSelectedSubAttribute()) {
+				case YEAR:
+					if (filterElements.get(StatisticsCaseSubAttribute.YEAR).getSelectedValues() != null) {
+						List<Year> years = new ArrayList<>();
+						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.YEAR).getSelectedValues()) {
+							years.add(new Year((Integer) tokenizableValue.getValue()));
+						}
+						caseCriteria.years(years, filterComponent.getSelectedAttribute());
+					}
+					break;
+				case QUARTER:
+					if (filterElements.get(StatisticsCaseSubAttribute.QUARTER).getSelectedValues() != null) {
+						List<Quarter> quarters = new ArrayList<>();
+						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.QUARTER).getSelectedValues()) {
+							quarters.add(new Quarter((Integer) tokenizableValue.getValue()));
+						}
+						caseCriteria.quarters(quarters, filterComponent.getSelectedAttribute());
+					}
+					break;
+				case MONTH:
+					if (filterElements.get(StatisticsCaseSubAttribute.MONTH).getSelectedValues() != null) {
+						List<Month> months = new ArrayList<>();
+						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.MONTH).getSelectedValues()) {
+							months.add((Month) tokenizableValue.getValue());
+						}
+						caseCriteria.months(months, filterComponent.getSelectedAttribute());
+					}
+					break;
+				case EPI_WEEK:
+					if (filterElements.get(StatisticsCaseSubAttribute.EPI_WEEK).getSelectedValues() != null) {
+						List<EpiWeek> epiWeeks = new ArrayList<>();
+						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.EPI_WEEK).getSelectedValues()) {
+							epiWeeks.add((EpiWeek) tokenizableValue.getValue());
+						}
+						caseCriteria.epiWeeks(epiWeeks, filterComponent.getSelectedAttribute());
+					}
+					break;
+				case QUARTER_OF_YEAR:
+					if (filterElements.get(StatisticsCaseSubAttribute.QUARTER_OF_YEAR).getSelectedValues() != null) {
+						List<QuarterOfYear> quartersOfYear = new ArrayList<>();
+						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.QUARTER_OF_YEAR).getSelectedValues()) {
+							quartersOfYear.add((QuarterOfYear) tokenizableValue.getValue());
+						}
+						caseCriteria.quartersOfYear(quartersOfYear, filterComponent.getSelectedAttribute());
+					}
+					break;
+				case MONTH_OF_YEAR:
+					if (filterElements.get(StatisticsCaseSubAttribute.MONTH_OF_YEAR).getSelectedValues() != null) {
+						List<MonthOfYear> monthsOfYear = new ArrayList<>();
+						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.MONTH_OF_YEAR).getSelectedValues()) {
+							monthsOfYear.add((MonthOfYear) tokenizableValue.getValue());
+						}
+						caseCriteria.monthsOfYear(monthsOfYear, filterComponent.getSelectedAttribute());
+					}
+					break;
+				case EPI_WEEK_OF_YEAR:
+					if (filterElements.get(StatisticsCaseSubAttribute.EPI_WEEK_OF_YEAR).getSelectedValues() != null) {
+						List<EpiWeek> epiWeeksOfYear = new ArrayList<>();
+						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.EPI_WEEK_OF_YEAR).getSelectedValues()) {
+							epiWeeksOfYear.add((EpiWeek) tokenizableValue.getValue());
+						}
+						caseCriteria.epiWeeksOfYear(epiWeeksOfYear, filterComponent.getSelectedAttribute());
+					}
+					break;
+				case DATE_RANGE:
+					caseCriteria.dateRange((Date) filterElements.get(StatisticsCaseSubAttribute.DATE_RANGE).getSelectedValues().get(0).getValue(), 
+							(Date) filterElements.get(StatisticsCaseSubAttribute.DATE_RANGE).getSelectedValues().get(1).getValue(), 
+							filterComponent.getSelectedAttribute());
+					break;
+				default:
+					throw new IllegalArgumentException(filterComponent.getSelectedSubAttribute().toString());
+				}
+			}
+		}
 	}
 
 }

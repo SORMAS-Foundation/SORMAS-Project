@@ -1,15 +1,37 @@
 package de.symeda.sormas.ui.statistics;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.explicatis.ext_token_field.Tokenizable;
 import com.vaadin.ui.HorizontalLayout;
+
+import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
+import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.api.statistics.StatisticsHelper;
 
 @SuppressWarnings("serial")
 public abstract class StatisticsFilterElement extends HorizontalLayout {
 
 	abstract List<TokenizableValue> getSelectedValues();
 
+	protected List<TokenizableValue> createTokens(Object ...values) {
+		return createTokens(null, null, values);
+	}
+	
+	protected List<TokenizableValue> createTokens(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute, Object ...values) {
+		List<TokenizableValue> result = new ArrayList<>(values.length);
+		for (int i = 0; i < values.length; i++) {
+			if (attribute != null || subAttribute != null) {
+				result.add(new TokenizableValue(StatisticsHelper.formatAttributeValue(values[i], attribute, subAttribute), i));
+			} else {
+				result.add(new TokenizableValue(values[i], i));
+			}
+		}
+
+		return result;
+	}
+	
 	public static class TokenizableValue implements Tokenizable {
 
 		private final Object value;

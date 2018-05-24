@@ -6,8 +6,7 @@ public enum StatisticsVisualizationType {
 
 	TABLE,
 	MAP,
-	CHART,
-	;
+	CHART;
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
@@ -15,8 +14,7 @@ public enum StatisticsVisualizationType {
 	
 	public enum StatisticsVisualizationMapType {
 		REGIONS,
-		DISTRICTS,
-		;
+		DISTRICTS;
 
 		public String toString() {
 			return I18nProperties.getEnumCaption(this);
@@ -27,8 +25,7 @@ public enum StatisticsVisualizationType {
 		COLUMN,
 		STACKED_COLUMN,
 		LINE,
-		PIE,
-		;
+		PIE;
 
 		public String toString() {
 			return I18nProperties.getEnumCaption(this);

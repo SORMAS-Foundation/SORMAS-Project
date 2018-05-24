@@ -1,11 +1,9 @@
 package de.symeda.sormas.ui.statistics;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.stream.IntStream;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import com.explicatis.ext_token_field.ExtTokenField;
 import com.explicatis.ext_token_field.Tokenizable;
@@ -21,10 +19,6 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.IntegerRange;
-import de.symeda.sormas.api.Month;
-import de.symeda.sormas.api.MonthOfYear;
-import de.symeda.sormas.api.QuarterOfYear;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.person.Sex;
@@ -32,8 +26,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.statistics.StatisticsHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -41,7 +34,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 
 	private final StatisticsCaseAttribute attribute;
 	private final StatisticsCaseSubAttribute subAttribute;
-
+	
 	private StatisticsFilterValuesElement relatedElement;
 	private ValueChangeListener valueChangeListener;
 	private ExtTokenField tokenField;
@@ -62,6 +55,26 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		setExpandRatio(tokenField, 1);
 		setExpandRatio(utilityButtonsLayout, 0);
 		setComponentAlignment(utilityButtonsLayout, Alignment.MIDDLE_RIGHT);
+	}
+
+	public void updateRelatedElementOnValueChange(boolean update) {
+		if (!update && valueChangeListener != null) {
+			tokenField.removeValueChangeListener(valueChangeListener);
+			valueChangeListener = null;
+		} else if (update) {
+			valueChangeListener = new ValueChangeListener() {
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+					relatedElement.updateDropdownContent();					
+				}
+			};
+			tokenField.addValueChangeListener(valueChangeListener);
+		}
+	}
+
+	public void updateDropdownContent() {
+		addDropdown.removeAllItems();
+		addDropdown.addItems(getFilterValues());
 	}
 
 	private ExtTokenField createTokenField(String caption) {
@@ -91,7 +104,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		utilityButtonsLayout.setSizeUndefined();
 
 		Button addAllButton = new Button("All", FontAwesome.PLUS_CIRCLE);
-		CssStyles.style(addAllButton, ValoTheme.BUTTON_LINK);//, CssStyles.BUTTON_FONT_SIZE_LARGE);
+		CssStyles.style(addAllButton, ValoTheme.BUTTON_LINK);
 		addAllButton.addClickListener(e -> {
 			for (TokenizableValue tokenizable : getFilterValues()) {
 				tokenField.addTokenizable(tokenizable);
@@ -99,7 +112,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		});
 
 		Button removeAllButton = new Button("Clear", FontAwesome.TIMES_CIRCLE);
-		CssStyles.style(removeAllButton, ValoTheme.BUTTON_LINK);//, CssStyles.BUTTON_FONT_SIZE_LARGE);
+		CssStyles.style(removeAllButton, ValoTheme.BUTTON_LINK);
 		removeAllButton.addClickListener(e -> {
 			for (Tokenizable tokenizable : tokenField.getValue()) {
 				tokenField.removeTokenizable(tokenizable);
@@ -113,7 +126,6 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 	}
 
 	private List<TokenizableValue> getFilterValues() {
-		// If a sub attribute is present, always use it
 		if (subAttribute != null) {
 			switch (subAttribute) {
 			case YEAR:
@@ -123,13 +135,14 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			case QUARTER_OF_YEAR:
 			case MONTH_OF_YEAR:
 			case EPI_WEEK_OF_YEAR:
-				return getListOfDateValues();
+				List<Object> dateValues = StatisticsHelper.getListOfDateValues(attribute, subAttribute);
+				return createTokens(dateValues.toArray());
 			case REGION:
 				return createTokens(FacadeProvider.getRegionFacade().getAllAsReference().toArray());
 			case DISTRICT:
 				if (relatedElement != null) {
 					List<TokenizableValue> selectedRegionTokenizables = relatedElement.getSelectedValues();
-					if (selectedRegionTokenizables != null && selectedRegionTokenizables.size() > 0) {
+					if (CollectionUtils.isNotEmpty(selectedRegionTokenizables)) {
 						List<DistrictReferenceDto> districts = new ArrayList<>();
 						for (TokenizableValue selectedRegionTokenizable : selectedRegionTokenizables) {
 							RegionReferenceDto selectedRegion = (RegionReferenceDto) selectedRegionTokenizable.getValue();
@@ -157,7 +170,8 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			case AGE_INTERVAL_CHILDREN_FINE:
 			case AGE_INTERVAL_CHILDREN_MEDIUM:
 			case AGE_INTERVAL_BASIC:
-				return getListOfAgeIntervalValues();
+				List<Object> ageIntervalValues = StatisticsHelper.getListOfAgeIntervalValues(attribute);
+				return createTokens(ageIntervalValues.toArray());
 			case DISEASE:
 				return createTokens((Object[]) Disease.values());
 			case CLASSIFICATION:
@@ -170,182 +184,14 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		}
 	}
 
-	private List<TokenizableValue> getListOfDateValues() {
-		Date oldestCaseDate = null;
-		switch (attribute) {
-		case ONSET_TIME:
-			oldestCaseDate = FacadeProvider.getCaseFacade().getOldestCaseOnsetDate();
-			break;
-		case RECEPTION_TIME:
-			oldestCaseDate = FacadeProvider.getCaseFacade().getOldestCaseReceptionDate();
-			break;
-		case REPORT_TIME:
-			oldestCaseDate = FacadeProvider.getCaseFacade().getOldestCaseReportDate();
-			break;
-		default:
-			return new ArrayList<>();
-		}
-
-		LocalDate earliest = oldestCaseDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalDate now = LocalDate.now();
-
-		switch (subAttribute) {
-		case YEAR:
-			return createTokens(IntStream.rangeClosed(earliest.getYear(), now.getYear()).boxed().toArray());
-		case QUARTER:
-			List<TokenizableValue> quarterList = new ArrayList<>();
-			for (int i = 1; i <= 4; i++) {
-				quarterList.add(new TokenizableValue(i, "Q" + i, i));
-			}
-			return quarterList;
-		case MONTH:
-			return createTokens((Object[]) Month.values());
-		case EPI_WEEK:
-			List<TokenizableValue> epiWeekList = new ArrayList<>();
-			for (int i = 1; i <= DateHelper.getMaximumEpiWeekNumber(); i++) {
-				epiWeekList.add(new TokenizableValue(new EpiWeek(1900, i), "Wk " + i, i));
-			}
-			return epiWeekList;
-		case QUARTER_OF_YEAR:
-			List<TokenizableValue> quarterOfYearList = new ArrayList<>();
-			QuarterOfYear earliestQuarter = new QuarterOfYear(1, earliest.getYear());
-			QuarterOfYear latestQuarter = new QuarterOfYear(4, now.getYear());
-			int tokenId = 0;
-			while (earliestQuarter.getYear() <= latestQuarter.getYear()) {
-				QuarterOfYear newQuarter = new QuarterOfYear(earliestQuarter.getQuarter(), earliestQuarter.getYear());
-				quarterOfYearList.add(new TokenizableValue(newQuarter, newQuarter.toString(), tokenId++));
-				earliestQuarter.increaseQuarter();
-			}
-			return quarterOfYearList;
-		case MONTH_OF_YEAR:
-			List<TokenizableValue> monthOfYearList = new ArrayList<>();
-			tokenId = 0;
-			for (int year = earliest.getYear(); year <= now.getYear(); year++) {
-				monthOfYearList.add(new TokenizableValue(new MonthOfYear(Month.JANUARY, year), tokenId++));
-				monthOfYearList.add(new TokenizableValue(new MonthOfYear(Month.FEBRUARY, year), tokenId++));
-				monthOfYearList.add(new TokenizableValue(new MonthOfYear(Month.MARCH, year), tokenId++));
-				monthOfYearList.add(new TokenizableValue(new MonthOfYear(Month.APRIL, year), tokenId++));
-				monthOfYearList.add(new TokenizableValue(new MonthOfYear(Month.MAY, year), tokenId++));
-				monthOfYearList.add(new TokenizableValue(new MonthOfYear(Month.JUNE, year), tokenId++));
-				monthOfYearList.add(new TokenizableValue(new MonthOfYear(Month.JULY, year), tokenId++));
-				monthOfYearList.add(new TokenizableValue(new MonthOfYear(Month.AUGUST, year), tokenId++));
-				monthOfYearList.add(new TokenizableValue(new MonthOfYear(Month.SEPTEMBER, year), tokenId++));
-				monthOfYearList.add(new TokenizableValue(new MonthOfYear(Month.OCTOBER, year), tokenId++));
-				monthOfYearList.add(new TokenizableValue(new MonthOfYear(Month.NOVEMBER, year), tokenId++));
-				monthOfYearList.add(new TokenizableValue(new MonthOfYear(Month.DECEMBER, year), tokenId++));
-			}
-			return monthOfYearList;
-		case EPI_WEEK_OF_YEAR:
-			List<TokenizableValue> epiWeekOfYearList = new ArrayList<>();
-			tokenId = 0;
-			for (int year = earliest.getYear(); year <= now.getYear(); year++) {
-				List<EpiWeek> epiWeeksOfYear = DateHelper.createEpiWeekList(year);
-				for (EpiWeek epiWeekOfYear : epiWeeksOfYear) {
-					epiWeekOfYearList.add(new TokenizableValue(epiWeekOfYear, tokenId++));
-				}
-			}
-			return epiWeekOfYearList;
-		default:
-			return new ArrayList<>();
-		}
-	}
-
-	private List<TokenizableValue> getListOfAgeIntervalValues() {
-		List<TokenizableValue> ageIntervalList = new ArrayList<>();
-		int tokenId = 0;
-
-		switch (attribute) {
-		case AGE_INTERVAL_1_YEAR:
-			for (int i = 0; i < 80; i++) {
-				ageIntervalList.add(new TokenizableValue(new IntegerRange(i, i), tokenId++));
-			}
-			break;
-		case AGE_INTERVAL_5_YEARS:
-			for (int i = 0; i < 80; i += 5) {
-				ageIntervalList.add(new TokenizableValue(new IntegerRange(i, i + 4), tokenId++));
-			}
-			break;
-		case AGE_INTERVAL_CHILDREN_COARSE:
-			ageIntervalList.add(new TokenizableValue(new IntegerRange(0, 14), tokenId++));
-			for (int i = 15; i < 30; i += 5) {
-				ageIntervalList.add(new TokenizableValue(new IntegerRange(i, i + 4), tokenId++));
-			}
-			for (int i = 30; i < 80; i += 10) {
-				ageIntervalList.add(new TokenizableValue(new IntegerRange(i, i + 9), tokenId++));
-			}
-			break;
-		case AGE_INTERVAL_CHILDREN_FINE:
-			for (int i = 0; i < 5; i++) {
-				ageIntervalList.add(new TokenizableValue(new IntegerRange(i, i), tokenId++));
-			}
-			for (int i = 5; i < 30; i += 5) {
-				ageIntervalList.add(new TokenizableValue(new IntegerRange(i, i + 4), tokenId++));
-			}
-			for (int i = 30; i < 80; i += 10) {
-				ageIntervalList.add(new TokenizableValue(new IntegerRange(i, i + 9), tokenId++));
-			}
-			break;
-		case AGE_INTERVAL_CHILDREN_MEDIUM:
-			for (int i = 0; i < 30; i += 5) {
-				ageIntervalList.add(new TokenizableValue(new IntegerRange(i, i + 4), tokenId++));
-			}
-			for (int i = 30; i < 80; i += 10) {
-				ageIntervalList.add(new TokenizableValue(new IntegerRange(i, i + 9), tokenId++));
-			}
-			break;
-		case AGE_INTERVAL_BASIC:
-			ageIntervalList.add(new TokenizableValue(new IntegerRange(0, 0), tokenId++));
-			ageIntervalList.add(new TokenizableValue(new IntegerRange(1, 4), tokenId++));
-			ageIntervalList.add(new TokenizableValue(new IntegerRange(5, 14), tokenId++));
-			ageIntervalList.add(new TokenizableValue(new IntegerRange(15, null), tokenId++));
-			break;
-		default:
-			return ageIntervalList;
-		}
-
-		if (attribute != StatisticsCaseAttribute.AGE_INTERVAL_BASIC) {
-			ageIntervalList.add(new TokenizableValue(new IntegerRange(80, null), tokenId++));
-		}
-		ageIntervalList.add(new TokenizableValue(new IntegerRange(null, null), tokenId));
-		return ageIntervalList;
-	}
-
-	private List<TokenizableValue> createTokens(Object ...values) {
-		List<TokenizableValue> result = new ArrayList<>(values.length);
-		for (int i = 0; i < values.length; i++) {
-			result.add(new TokenizableValue(values[i], i));
-		}
-
-		return result;
-	}
-
 	public void setRelatedElement(StatisticsFilterValuesElement relatedElement) {
 		this.relatedElement = relatedElement;
 	}
-
-	public void updateRelatedElementOnValueChange(boolean update) {
-		if (!update && valueChangeListener != null) {
-			tokenField.removeValueChangeListener(valueChangeListener);
-			valueChangeListener = null;
-		} else if (update) {
-			valueChangeListener = new ValueChangeListener() {
-				@Override
-				public void valueChange(ValueChangeEvent event) {
-					relatedElement.updateDropdownContent();					
-				}
-			};
-			tokenField.addValueChangeListener(valueChangeListener);
-		}
-	}
-
-	public void updateDropdownContent() {
-		addDropdown.removeAllItems();
-		addDropdown.addItems(getFilterValues());
-	}
-
+	
 	@SuppressWarnings("unchecked")
 	public List<TokenizableValue> getSelectedValues() {
 		return (List<TokenizableValue>) tokenField.getValue();
 	}
+	
 
 }
