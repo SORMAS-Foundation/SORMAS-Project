@@ -20,6 +20,10 @@ $valo-menu-background-color: $s-default-color !default;
       border-bottom: 3px solid $s-critical-color;
     }
     
+    .valo-menu-part {
+      overflow-x: hidden; /* no x-scrollbar */
+    }
+    
     .valo-menu-logo {
       height: 32px !important;
       width: auto !important;

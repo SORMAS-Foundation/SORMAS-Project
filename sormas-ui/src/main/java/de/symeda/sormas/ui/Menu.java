@@ -75,8 +75,6 @@ public class Menu extends CssLayout {
 
             }
         });
-
-        logoutMenu.addStyleName("user-menu");
         menuPart.addComponent(logoutMenu);
 
         // button for toggling the visibility of the menu when on a small screen

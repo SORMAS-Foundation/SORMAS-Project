@@ -92,6 +92,12 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 
 @import "../valo/valo.scss";
 
+// #613 see https://stackoverflow.com/questions/36281582/vaadin-modal-window-how-to-get-scrollbars-on-the-parent-view
+// must be outside theme mixin as per https://vaadin.com/wiki/-/wiki/Main/Adding+a+splash+screen
+.v-generated-body {
+  // change the overflow from hidden to auto
+  overflow: auto;
+}
 
 @function valo-font-color ($bg-color, $contrast: $v-font-color-contrast) {
   @if type-of($bg-color) == color {
