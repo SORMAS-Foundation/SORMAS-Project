@@ -84,7 +84,7 @@ public class EventsActivity extends AbstractRootTabActivity {
 
                 return true;
 
-            case R.id.action_new_case:
+            case R.id.action_new_event:
                 showNewEventView();
                 return true;
 

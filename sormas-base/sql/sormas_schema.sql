@@ -2335,3 +2335,12 @@ LANGUAGE plpgsql;
 -- e.g. SELECT epi_week('2015-12-28'), epi_year('2015-12-28'); -- 01-2016
 
 INSERT INTO schema_version (version_number, comment) VALUES (103, 'Epi week functions #541');
+
+-- 2018-05-28 Creating new event in app not working #614
+
+ALTER TABLE events ALTER COLUMN typeofplace DROP NOT NULL;
+ALTER TABLE events ALTER COLUMN srcfirstname DROP NOT NULL;
+ALTER TABLE events ALTER COLUMN srclastname DROP NOT NULL;
+ALTER TABLE events ALTER COLUMN srctelno DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (104, 'Creating new event in app not working #614');
