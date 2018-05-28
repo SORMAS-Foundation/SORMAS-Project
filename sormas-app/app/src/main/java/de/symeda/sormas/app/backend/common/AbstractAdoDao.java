@@ -735,7 +735,9 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             throw new DaoException("Can't accept a snapshot");
         }
         if (!ado.isModified()) {
-            throw new DaoException("Can't accept an unmodified entity");
+            // this does not justify throwing an exception
+            //throw new DaoException("Can't accept an unmodified entity");
+            Log.w(this.getClass().getSimpleName(), "Accepting an unmodified entity - maybe data is corrupt due to a previous error");
         }
 
         try {
