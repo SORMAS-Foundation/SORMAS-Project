@@ -3,9 +3,14 @@ package de.symeda.sormas.app.epidata;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.epidata.AnimalCondition;
@@ -64,41 +69,7 @@ public class EpiDataForm extends FormTab {
                 new Consumer() {
                     @Override
                     public void accept(Object burial) {
-                        if (burial == null) {
-                            burial = DatabaseHelper.getEpiDataBurialDao().build();
-                        }
-                        final EpiDataBurialForm burialTab = new EpiDataBurialForm();
-                        burialTab.initialize(
-                                (EpiDataBurial) burial,
-                                new Consumer() {
-                                    @Override
-                                    public void accept(Object burialDialog) {
-                                        if (EpiDataValidator.validateBurialData(burialTab.getBinding())) {
-                                            binding.epiDataBurials.setValue(
-                                                    ListField.updateList(
-                                                            binding.epiDataBurials.getValue(),
-                                                            (EpiDataBurial) burialDialog
-                                                    )
-                                            );
-                                            burialTab.dismiss();
-                                            updateBurialsHint();
-                                        }
-                                    }
-                                }, new Consumer() {
-                                    @Override
-                                    public void accept(Object burialDialog) {
-                                        binding.epiDataBurials.setValue(
-                                                ListField.removeFromList(
-                                                        binding.epiDataBurials.getValue(),
-                                                        (EpiDataBurial) burialDialog
-                                                )
-                                        );
-                                        updateBurialsHint();
-                                    }
-                                },
-                                getActivity().getResources().getString(R.string.headline_burial)
-                        );
-                        burialTab.show(getFragmentManager(), "epidata_burial_edit_fragment");
+                        editBurial((EpiDataBurial)burial);
                     }
                 }
         );
@@ -110,39 +81,7 @@ public class EpiDataForm extends FormTab {
                 new Consumer() {
                     @Override
                     public void accept(Object gathering) {
-                        if (gathering == null) {
-                            gathering = DatabaseHelper.getEpiDataGatheringDao().build();
-                        }
-                        final EpiDataGatheringForm gatheringTab = new EpiDataGatheringForm();
-                        gatheringTab.initialize(
-                                (EpiDataGathering) gathering,
-                                new Consumer() {
-                                    @Override
-                                    public void accept(Object gatheringDialog) {
-                                        binding.epiDataGatherings.setValue(
-                                                ListField.updateList(
-                                                        binding.epiDataGatherings.getValue(),
-                                                        (EpiDataGathering) gatheringDialog
-                                                )
-                                        );
-                                        gatheringTab.dismiss();
-                                        updateGatheringsHint();
-                                    }
-                                }, new Consumer() {
-                                    @Override
-                                    public void accept(Object gatheringDialog) {
-                                        binding.epiDataGatherings.setValue(
-                                                ListField.removeFromList(
-                                                        binding.epiDataGatherings.getValue(),
-                                                        (EpiDataGathering) gatheringDialog
-                                                )
-                                        );
-                                        updateGatheringsHint();
-                                    }
-                                },
-                                getActivity().getResources().getString(R.string.headline_gathering)
-                        );
-                        gatheringTab.show(getFragmentManager(), "epidata_gathering_edit_fragment");
+                        editGathering((EpiDataGathering)gathering);
                     }
                 }
         );
@@ -154,41 +93,7 @@ public class EpiDataForm extends FormTab {
                 new Consumer() {
                     @Override
                     public void accept(Object travel) {
-                        if (travel == null) {
-                            travel = DatabaseHelper.getEpiDataTravelDao().build();
-                        }
-                        final EpiDataTravelForm travelTab = new EpiDataTravelForm();
-                        travelTab.initialize(
-                                (EpiDataTravel) travel,
-                                new Consumer() {
-                                    @Override
-                                    public void accept(Object travelDialog) {
-                                        if (EpiDataValidator.validateTravelData(travelTab.getBinding())) {
-                                            binding.epiDataTravels.setValue(
-                                                    ListField.updateList(
-                                                            binding.epiDataTravels.getValue(),
-                                                            (EpiDataTravel) travelDialog
-                                                    )
-                                            );
-                                            travelTab.dismiss();
-                                            updateTravelsHint();
-                                        }
-                                    }
-                                }, new Consumer() {
-                                    @Override
-                                    public void accept(Object travelDialog) {
-                                        binding.epiDataTravels.setValue(
-                                                ListField.removeFromList(
-                                                        binding.epiDataTravels.getValue(),
-                                                        (EpiDataTravel) travelDialog
-                                                )
-                                        );
-                                        updateTravelsHint();
-                                    }
-                                },
-                                getActivity().getResources().getString(R.string.headline_travel)
-                        );
-                        travelTab.show(getFragmentManager(), "epidata_travel_edit_fragment");
+                        editTravel((EpiDataTravel)travel);
                     }
                 }
         );
@@ -285,9 +190,116 @@ public class EpiDataForm extends FormTab {
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    private void editTravel(EpiDataTravel travel) {
+        if (travel == null) {
+            travel = DatabaseHelper.getEpiDataTravelDao().build();
+        }
+        final EpiDataTravelForm travelDialog = new EpiDataTravelForm();
+        travelDialog.initialize(
+                travel,
+                new Consumer() {
+                    @Override
+                    public void accept(Object travel) {
+                        if (EpiDataValidator.validateTravelData(travelDialog.getBinding())) {
+                            binding.epiDataTravels.setValue(
+                                    ListField.updateList(
+                                            binding.epiDataTravels.getValue(),
+                                            (EpiDataTravel) travel
+                                    )
+                            );
+                            travelDialog.dismiss();
+                            updateTravelsHint();
+                        }
+                    }
+                }, new Consumer() {
+                    @Override
+                    public void accept(Object travel) {
+                        binding.epiDataTravels.setValue(
+                                ListField.removeFromList(
+                                        binding.epiDataTravels.getValue(),
+                                        (EpiDataTravel) travel
+                                )
+                        );
+                        updateTravelsHint();
+                    }
+                },
+                getActivity().getResources().getString(R.string.headline_travel)
+        );
+        travelDialog.show(getFragmentManager(), "epidata_travel_edit_fragment");
+    }
+
+    private void editGathering(EpiDataGathering gathering) {
+        if (gathering == null) {
+            gathering = DatabaseHelper.getEpiDataGatheringDao().build();
+        }
+        final EpiDataGatheringForm gatheringDialog = new EpiDataGatheringForm();
+        gatheringDialog.initialize(
+                gathering,
+                new Consumer() {
+                    @Override
+                    public void accept(Object gathering) {
+                        binding.epiDataGatherings.setValue(
+                                ListField.updateList(
+                                        binding.epiDataGatherings.getValue(),
+                                        (EpiDataGathering) gathering
+                                )
+                        );
+                        gatheringDialog.dismiss();
+                        updateGatheringsHint();
+                    }
+                }, new Consumer() {
+                    @Override
+                    public void accept(Object gathering) {
+                        binding.epiDataGatherings.setValue(
+                                ListField.removeFromList(
+                                        binding.epiDataGatherings.getValue(),
+                                        (EpiDataGathering) gathering
+                                )
+                        );
+                        updateGatheringsHint();
+                    }
+                },
+                getActivity().getResources().getString(R.string.headline_gathering)
+        );
+        gatheringDialog.show(getFragmentManager(), "epidata_gathering_edit_fragment");
+    }
+
+    private void editBurial(EpiDataBurial burial) {
+        if (burial == null) {
+            burial = DatabaseHelper.getEpiDataBurialDao().build();
+        }
+        final EpiDataBurialForm burialDialog = new EpiDataBurialForm();
+        burialDialog.initialize(
+                burial,
+                new Consumer() {
+                    @Override
+                    public void accept(Object burial) {
+                        if (EpiDataValidator.validateBurialData(burialDialog.getBinding())) {
+                            binding.epiDataBurials.setValue(
+                                    ListField.updateList(
+                                            binding.epiDataBurials.getValue(),
+                                            (EpiDataBurial) burial
+                                    )
+                            );
+                            burialDialog.dismiss();
+                            updateBurialsHint();
+                        }
+                    }
+                }, new Consumer() {
+                    @Override
+                    public void accept(Object burialDialog) {
+                        binding.epiDataBurials.setValue(
+                                ListField.removeFromList(
+                                        binding.epiDataBurials.getValue(),
+                                        (EpiDataBurial) burialDialog
+                                )
+                        );
+                        updateBurialsHint();
+                    }
+                },
+                getActivity().getResources().getString(R.string.headline_burial)
+        );
+        burialDialog.show(getChildFragmentManager(), "epidata_burial_edit_fragment");
     }
 
     private void showOrHideHeadlines() {
