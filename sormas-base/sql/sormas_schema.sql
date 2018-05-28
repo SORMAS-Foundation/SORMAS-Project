@@ -2342,5 +2342,9 @@ ALTER TABLE events ALTER COLUMN typeofplace DROP NOT NULL;
 ALTER TABLE events ALTER COLUMN srcfirstname DROP NOT NULL;
 ALTER TABLE events ALTER COLUMN srclastname DROP NOT NULL;
 ALTER TABLE events ALTER COLUMN srctelno DROP NOT NULL;
+ALTER TABLE events_history ALTER COLUMN typeofplace DROP NOT NULL;
+ALTER TABLE events_history ALTER COLUMN srcfirstname DROP NOT NULL;
+ALTER TABLE events_history ALTER COLUMN srclastname DROP NOT NULL;
+ALTER TABLE events_history ALTER COLUMN srctelno DROP NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (104, 'Creating new event in app not working #614');

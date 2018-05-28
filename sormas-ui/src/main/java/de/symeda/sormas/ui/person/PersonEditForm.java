@@ -96,6 +96,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			LayoutUtil.fluidRowLocs(PersonDto.ADDRESS)
 			;
 
+	private boolean initialized = false;
+	
 	public PersonEditForm(Disease disease, String diseaseDetails, UserRight editOrCreateUserRight, ViewMode viewMode) {
 		super(PersonDto.class, PersonDto.I18N_PREFIX, editOrCreateUserRight);
 		this.disease = disease;
@@ -105,16 +107,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
 		getContent().addComponent(addressHeader, ADDRESS_HEADER);
 
+		initialized = true;
 		addFields();
 	}
 
 	@Override
 	protected void addFields() {
-		if (disease == null) {
+		
+		if (!initialized) {
+			// vars have to be set first
 			return;
 		}
-
-		// Add fields
 
 		addField(PersonDto.FIRST_NAME, TextField.class);
 		addField(PersonDto.LAST_NAME, TextField.class);

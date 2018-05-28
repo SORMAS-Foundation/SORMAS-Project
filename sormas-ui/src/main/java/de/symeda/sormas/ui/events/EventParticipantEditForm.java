@@ -22,7 +22,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 	public EventParticipantEditForm(EventDto event, UserRight editOrCreateUserRight) {
 		super(EventParticipantDto.class, EventParticipantDto.I18N_PREFIX, editOrCreateUserRight);
 		this.event = event;
-		if(event == null) {
+		if (event == null) {
 			throw new IllegalArgumentException("Event cannot be null");
 		}
 		addFields();
@@ -30,7 +30,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 	
 	@Override
 	protected void addFields() {
-		if(event == null) {
+		if (event == null) {
 			// workaround to stop initialization until event is set
 			return;
 		}
