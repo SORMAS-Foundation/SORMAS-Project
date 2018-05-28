@@ -1,5 +1,6 @@
 package de.symeda.sormas.app;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ public class EnterPinActivity extends AppCompatActivity {
     private boolean confirmedCurrentPIN;
     private boolean triedAgain;
     private EditText[] pinFields;
+    private ProgressDialog progressDialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +56,16 @@ public class EnterPinActivity extends AppCompatActivity {
         );
 
         // sync...
-        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, EnterPinActivity.this, null);
+        progressDialog = SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, EnterPinActivity.this, null);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+
+        super.onDestroy();
     }
 
     @Override

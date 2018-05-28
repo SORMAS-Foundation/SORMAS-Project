@@ -2,6 +2,7 @@ package de.symeda.sormas.app;
 
 import android.accounts.AuthenticatorException;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -29,6 +30,8 @@ import de.symeda.sormas.app.util.SyncCallback;
  */
 public class LoginActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
+    private ProgressDialog progressDialog = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +50,15 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
             processLogin(false);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+
+        super.onDestroy();
     }
 
     public void login(View view) {
@@ -89,7 +101,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                 // we HAVE to be connected now. Otherwise reset the authentication data
                 ConfigProvider.clearUsernameAndPassword();
             } else {
-                SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, LoginActivity.this, new SyncCallback() {
+                progressDialog = SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, LoginActivity.this, new SyncCallback() {
                     @Override
                     public void call(boolean syncFailed, String syncFailedMessage) {
                         // logged in?
@@ -163,7 +175,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
             // valid login
             if (ConfigProvider.getUser() == null) {
                 // no user yet? sync...
-                SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, LoginActivity.this, new SyncCallback() {
+                progressDialog = SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, LoginActivity.this, new SyncCallback() {
                     @Override
                     public void call(boolean syncFailed, String syncFailedMessage) {
                         if (ConfigProvider.getUser() != null) {

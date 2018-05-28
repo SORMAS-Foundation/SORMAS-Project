@@ -352,19 +352,23 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
      * @param context
      * @param callback
      */
-    public static void callWithProgressDialog(SyncMode syncMode, final Context context, final SyncCallback callback) {
+    public static ProgressDialog callWithProgressDialog(SyncMode syncMode, final Context context, final SyncCallback callback) {
         final ProgressDialog progressDialog = ProgressDialog.show(context, context.getString(R.string.headline_synchronization),
                 context.getString(R.string.hint_synchronization), true);
 
         call(syncMode, context, new SyncCallback() {
             @Override
             public void call(boolean syncFailed, String syncFailedMessage) {
-                progressDialog.dismiss();
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
                 if (callback != null) {
                     callback.call(syncFailed, syncFailedMessage);
                 }
             }
         });
+
+        return progressDialog;
     }
 
 
@@ -372,6 +376,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new SynchronizeDataAsync(syncMode, context) {
             @Override
             protected void onPostExecute(Void aVoid) {
+
                 if (callback != null) {
                     callback.call(syncFailed, syncFailedMessage);
                 }
