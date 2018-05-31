@@ -7,16 +7,28 @@ public enum StatisticsVisualizationElementType {
 	ROWS,
 	COLUMNS;
 
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
+	public String toString(StatisticsVisualizationType visualizationType) {
+		if (visualizationType == StatisticsVisualizationType.CHART) {
+			return I18nProperties.getEnumCaption(this, "Chart");
+		} else {
+			return I18nProperties.getEnumCaption(this);
+		}
 	}
 
-	public String getEmptySelectionString() {
+	public String getEmptySelectionString(StatisticsVisualizationType visualizationType) {
 		switch (this) {
 		case ROWS:
-			return "Don't group rows";
+			if (visualizationType == StatisticsVisualizationType.CHART) {
+				return "Don't group series";
+			} else {
+				return "Don't group rows";
+			}
 		case COLUMNS:
-			return "Don't group columns";
+			if (visualizationType == StatisticsVisualizationType.CHART) {
+				return "Don't group x-axis";
+			} else {
+				return "Don't group columns";
+			}
 		default:
 			return null;
 		}

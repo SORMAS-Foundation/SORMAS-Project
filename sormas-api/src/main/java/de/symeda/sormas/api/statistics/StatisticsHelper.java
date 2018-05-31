@@ -3,8 +3,11 @@ package de.symeda.sormas.api.statistics;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.commons.lang3.EnumUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -90,7 +93,7 @@ public class StatisticsHelper {
 		switch (attribute) {
 		case AGE_INTERVAL_1_YEAR:
 			for (int i = 0; i < 80; i++) {
-				ageIntervalList.add(i < 10 ? "0" + i : String.valueOf(i));
+				ageIntervalList.add(new IntegerRange(i, i));
 			}
 			break;
 		case AGE_INTERVAL_5_YEARS:
@@ -220,8 +223,71 @@ public class StatisticsHelper {
 		}
 	}	
 	
+	public static List<Object> getAllAttributeValues(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
+		if (subAttribute != null) {
+			switch (subAttribute) {
+			case YEAR:
+			case QUARTER:
+			case MONTH:
+			case EPI_WEEK:
+			case QUARTER_OF_YEAR:
+			case MONTH_OF_YEAR:
+			case EPI_WEEK_OF_YEAR:
+				return StatisticsHelper.getListOfDateValues(attribute, subAttribute);
+			case REGION:
+				return new ArrayList<Object>(FacadeProvider.getRegionFacade().getAllUuids());
+			case DISTRICT:
+				return new ArrayList<Object>(FacadeProvider.getDistrictFacade().getAllUuids());
+			default:
+				throw new IllegalArgumentException(subAttribute.toString());
+			}
+		} else {
+			switch (attribute) {
+			case SEX:
+				ArrayList<Object> sexList = new ArrayList<>();
+				for (Sex sex : EnumUtils.getEnumList(Sex.class)) {
+					sexList.add(sex.getName());
+				}
+				return sexList;
+			case DISEASE:
+				ArrayList<Object> diseaseList = new ArrayList<>();
+				for (Disease disease : EnumUtils.getEnumList(Disease.class)) {
+					diseaseList.add(disease.getName());
+				}
+				return diseaseList;
+			case CLASSIFICATION:
+				ArrayList<Object> classificationList = new ArrayList<>();
+				for (CaseClassification classification : EnumUtils.getEnumList(CaseClassification.class)) {
+					classificationList.add(classification.getName());
+				}
+				return classificationList;
+			case OUTCOME:
+				ArrayList<Object> outcomeList = new ArrayList<>();
+				for (CaseOutcome outcome : EnumUtils.getEnumList(CaseOutcome.class)) {
+					outcomeList.add(outcome.getName());
+				}
+				return outcomeList;
+			case AGE_INTERVAL_1_YEAR:
+			case AGE_INTERVAL_5_YEARS:
+			case AGE_INTERVAL_CHILDREN_COARSE:
+			case AGE_INTERVAL_CHILDREN_FINE:
+			case AGE_INTERVAL_CHILDREN_MEDIUM:
+			case AGE_INTERVAL_BASIC:
+				return StatisticsHelper.getListOfAgeIntervalValues(attribute);
+			default:
+				throw new IllegalArgumentException(attribute.toString());
+			}
+		}
+	}
+	
 	public static boolean isNullOrUnknown(Object value) {
 		return value == null || value.equals(UNKNOWN);
+	}
+	
+	public static class StatisticsKeyComparator implements Comparator<StatisticsGroupingKey> {
+		public int compare(StatisticsGroupingKey a, StatisticsGroupingKey b) {
+			return a.keyCompareTo(b);
+		}
 	}
 	
 }

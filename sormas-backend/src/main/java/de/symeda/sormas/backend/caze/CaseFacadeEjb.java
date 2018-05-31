@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -1034,7 +1033,13 @@ public class CaseFacadeEjb implements CaseFacade {
 			StatisticsCaseAttribute groupingA, StatisticsCaseSubAttribute subGroupingA,
 			StatisticsCaseAttribute groupingB, StatisticsCaseSubAttribute subGroupingB) {
 
-		// Join tables that cases are grouped by or that are used in the caseCriteria
+		// Steps to build the query:
+		// 1. Join the required tables
+		// 2. Build the filter query
+		// 3. Add selected groupings
+		// 4. Retrieve and prepare the results
+		
+		// 1. Join tables that cases are grouped by or that are used in the caseCriteria
 
 		StringBuilder sqlBuilder = new StringBuilder();
 		sqlBuilder
@@ -1073,14 +1078,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			.append(" = ").append(Person.TABLE_NAME).append(".").append(Person.ID);
 		}
 
-		// Build filter based on caseCriteria
+		// 2. Build filter based on caseCriteria
 
 		StringBuilder filterBuilder = new StringBuilder();
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getOnsetYears())) {
 			extendFilterBuilderWithDateElement(filterBuilder, "YEAR", Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
 			for (Year onsetYear : caseCriteria.getOnsetYears()) {
-				filterBuilder.append(onsetYear).append(",");
+				filterBuilder.append(onsetYear.getValue()).append(",");
 			}
 			finalizeFilterBuilderSegment(filterBuilder);
 		}
@@ -1088,7 +1093,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (CollectionUtils.isNotEmpty(caseCriteria.getOnsetQuarters())) {
 			extendFilterBuilderWithDateElement(filterBuilder, "QUARTER", Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
 			for (Quarter onsetQuarter : caseCriteria.getOnsetQuarters()) {
-				filterBuilder.append(onsetQuarter).append(",");
+				filterBuilder.append(onsetQuarter.getValue()).append(",");
 			}
 			finalizeFilterBuilderSegment(filterBuilder);
 		}
@@ -1120,7 +1125,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (CollectionUtils.isNotEmpty(caseCriteria.getOnsetMonthsOfYear())) {
 			extendFilterBuilderWithMonthOfYear(filterBuilder, Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
 			for (MonthOfYear monthOfYear : caseCriteria.getOnsetMonthsOfYear()) {
-				filterBuilder.append(monthOfYear.getYear().getValue() * 100 + monthOfYear.getMonth().ordinal()).append(",");
+				filterBuilder.append(monthOfYear.getYear().getValue() * 100 + (monthOfYear.getMonth().ordinal() + 1)).append(",");
 			}
 			finalizeFilterBuilderSegment(filterBuilder);
 		}
@@ -1140,7 +1145,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReceptionYears())) {
 			extendFilterBuilderWithDateElement(filterBuilder, "YEAR", Case.TABLE_NAME, Case.RECEPTION_DATE);
 			for (Year receptionYear : caseCriteria.getReceptionYears()) {
-				filterBuilder.append(receptionYear).append(",");
+				filterBuilder.append(receptionYear.getValue()).append(",");
 			}
 			finalizeFilterBuilderSegment(filterBuilder);
 		}
@@ -1148,7 +1153,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReceptionQuarters())) {
 			extendFilterBuilderWithDateElement(filterBuilder, "QUARTER", Case.TABLE_NAME, Case.RECEPTION_DATE);
 			for (Quarter receptionQuarter : caseCriteria.getReceptionQuarters()) {
-				filterBuilder.append(receptionQuarter).append(",");
+				filterBuilder.append(receptionQuarter.getValue()).append(",");
 			}
 			finalizeFilterBuilderSegment(filterBuilder);
 		}
@@ -1180,7 +1185,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReceptionMonthsOfYear())) {
 			extendFilterBuilderWithMonthOfYear(filterBuilder, Case.TABLE_NAME, Case.RECEPTION_DATE);
 			for (MonthOfYear monthOfYear : caseCriteria.getReceptionMonthsOfYear()) {
-				filterBuilder.append(monthOfYear.getYear().getValue() * 100 + monthOfYear.getMonth().ordinal()).append(",");
+				filterBuilder.append(monthOfYear.getYear().getValue() * 100 + (monthOfYear.getMonth().ordinal() + 1)).append(",");
 			}
 			finalizeFilterBuilderSegment(filterBuilder);
 		}
@@ -1200,7 +1205,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReportYears())) {
 			extendFilterBuilderWithDateElement(filterBuilder, "YEAR", Case.TABLE_NAME, Case.REPORT_DATE);
 			for (Year reportYear : caseCriteria.getReportYears()) {
-				filterBuilder.append(reportYear).append(",");
+				filterBuilder.append(reportYear.getValue()).append(",");
 			}
 			finalizeFilterBuilderSegment(filterBuilder);
 		}
@@ -1208,7 +1213,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReportQuarters())) {
 			extendFilterBuilderWithDateElement(filterBuilder, "QUARTER", Case.TABLE_NAME, Case.REPORT_DATE);
 			for (Quarter reportQuarter : caseCriteria.getReportQuarters()) {
-				filterBuilder.append(reportQuarter).append(",");
+				filterBuilder.append(reportQuarter.getValue()).append(",");
 			}
 			finalizeFilterBuilderSegment(filterBuilder);
 		}
@@ -1240,7 +1245,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReportMonthsOfYear())) {
 			extendFilterBuilderWithMonthOfYear(filterBuilder, Case.TABLE_NAME, Case.REPORT_DATE);
 			for (MonthOfYear monthOfYear : caseCriteria.getReportMonthsOfYear()) {
-				filterBuilder.append(monthOfYear.getYear().getValue() * 100 + monthOfYear.getMonth().ordinal()).append(",");
+				filterBuilder.append(monthOfYear.getYear().getValue() * 100 + (monthOfYear.getMonth().ordinal() + 1)).append(",");
 			}
 			finalizeFilterBuilderSegment(filterBuilder);
 		}
@@ -1373,14 +1378,13 @@ public class CaseFacadeEjb implements CaseFacade {
 			finalizeFilterBuilderSegment(filterBuilder);
 		}
 
-		// Apply filter
-
 		if (filterBuilder.length() > 0) {
 			sqlBuilder.append(" WHERE ").append(filterBuilder);
 		}
 
+		// 3. Add selected groupings
+		
 		if (groupingA != null || groupingB != null) {
-
 			sqlBuilder.append(" GROUP BY ");
 			String groupAAlias = "groupA";
 			String groupBAlias = "groupB";
@@ -1419,6 +1423,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		sqlBuilder.insert(0, "SELECT COUNT(*)");
 
+		// 4. Retrieve the results of the query and prepare the results for usage in the UI
+		
 		if (groupingA == null && groupingB == null) {
 			long result = (long) em.createNativeQuery(sqlBuilder.toString()).getSingleResult();
 			if (result == 0) {

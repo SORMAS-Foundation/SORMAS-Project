@@ -4,10 +4,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
@@ -47,6 +49,9 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
+import de.symeda.sormas.api.statistics.StatisticsHelper;
+import de.symeda.sormas.api.statistics.StatisticsHelper.StatisticsKeyComparator;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -290,7 +295,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		fileDownloader.extend(exportButton);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings("unchecked")
 	public void generateChart() {
 		List<Object[]> resultData = generateStatistics();
 
@@ -300,10 +305,9 @@ public class StatisticsView extends AbstractStatisticsView {
 		}
 
 		StatisticsVisualizationChartType chartType = visualizationComponent.getVisualizationChartType();
-		StatisticsCaseAttribute columnsAttribute = visualizationComponent.getColumnsAttribute();
-		StatisticsCaseSubAttribute columnsSubAttribute = visualizationComponent.getColumnsSubAttribute();
-		StatisticsCaseAttribute rowsAttribute = visualizationComponent.getRowsAttribute();
-		StatisticsCaseSubAttribute rowsSubAttribute = visualizationComponent.getRowsSubAttribute();
+		StatisticsCaseAttribute xAxisAttribute = visualizationComponent.getColumnsAttribute();
+		StatisticsCaseSubAttribute xAxisSubAttribute = visualizationComponent.getColumnsSubAttribute();
+		StatisticsCaseAttribute seriesAttribute = visualizationComponent.getRowsAttribute();
 
 		HighChart chart = new HighChart();
 		chart.setWidth(100, Unit.PERCENTAGE);
@@ -312,26 +316,26 @@ public class StatisticsView extends AbstractStatisticsView {
 		StringBuilder hcjs = new StringBuilder();
 		hcjs.append("var options = {");
 
-		final int columnIdIndex;
-		final int rowIdIndex;
+		final int xAxisIdIndex;
+		final int seriesIdIndex;
 		hcjs.append("chart:{ "
 				+ " type: '");
 		switch (chartType) {
 		case COLUMN:
 		case STACKED_COLUMN:
 			hcjs.append("column");
-			rowIdIndex = rowsAttribute != null ? 1 : -1;
-			columnIdIndex = columnsAttribute != null ? (rowIdIndex >= 1 ? 2 : 1) : -1;
+			seriesIdIndex = seriesAttribute != null ? 1 : -1;
+			xAxisIdIndex = xAxisAttribute != null ? (seriesIdIndex >= 1 ? 2 : 1) : -1;
 			break;
 		case LINE:
 			hcjs.append("line");
-			rowIdIndex = rowsAttribute != null ? 1 : -1;
-			columnIdIndex = columnsAttribute != null ? (rowIdIndex >= 1 ? 2 : 1) : -1;
+			seriesIdIndex = seriesAttribute != null ? 1 : -1;
+			xAxisIdIndex = xAxisAttribute != null ? (seriesIdIndex >= 1 ? 2 : 1) : -1;
 			break;
 		case PIE:
 			hcjs.append("pie");
-			rowIdIndex = -1;
-			columnIdIndex = columnsAttribute != null ? 1 : -1;
+			xAxisIdIndex = -1;
+			seriesIdIndex = seriesAttribute != null ? 1 : -1;
 			break;
 		default:
 			throw new IllegalArgumentException(chartType.toString());
@@ -348,94 +352,50 @@ public class StatisticsView extends AbstractStatisticsView {
 				+ "title:{ text: '' },"
 				);
 
-		HashMap<Object,String> idCaptions = new HashMap<>();
-		if (columnIdIndex >= 1 || rowIdIndex >= 1) {
-
-			// build captions for rows and/or columns
+		TreeMap<StatisticsGroupingKey, String> xAxisCaptions = new TreeMap<>(new StatisticsKeyComparator());
+		TreeMap<StatisticsGroupingKey, String> seriesCaptions = new TreeMap<>(new StatisticsKeyComparator());
+		boolean appendUnknownXAxisCaption = false;
+		if (xAxisIdIndex >= 1 || seriesIdIndex >= 1) {
+			// Build captions for x-axis and/or series
 			for (Object[] row : resultData) {
-				if (columnIdIndex >= 1) {
-					if (!idCaptions.containsKey(row[columnIdIndex])) {
-						idCaptions.put(row[columnIdIndex], buildIdCaption(row[columnIdIndex], columnsAttribute, columnsSubAttribute));
+				if (xAxisIdIndex >= 1) {
+					if (!StatisticsHelper.isNullOrUnknown(row[xAxisIdIndex])) {
+						xAxisCaptions.putIfAbsent((StatisticsGroupingKey) row[xAxisIdIndex], row[xAxisIdIndex].toString());
+					} else {
+						appendUnknownXAxisCaption = true;
 					}
 				}
-				if (rowIdIndex >= 1) {
-					if (!idCaptions.containsKey(row[rowIdIndex])) {
-						idCaptions.put(row[rowIdIndex], buildIdCaption(row[rowIdIndex], rowsAttribute, rowsSubAttribute));
+				if (seriesIdIndex >= 1) {
+					if (!StatisticsHelper.isNullOrUnknown(row[seriesIdIndex])) {
+						seriesCaptions.putIfAbsent((StatisticsGroupingKey) row[seriesIdIndex], row[seriesIdIndex].toString());
 					}
 				}
 			}
-
-			// sort based on groupings
-			resultData.sort((a,b) -> {
-				if (rowIdIndex >= 0) {
-					if (a[rowIdIndex] == null) {
-						if (b[rowIdIndex] != null) {
-							return 1;
-						}
-					} else if (b[rowIdIndex] == null) {
-						return -1;
-					} else {
-						int comparison;
-						if (rowsAttribute.isSortByCaption()) {
-							comparison = (idCaptions.get(a[rowIdIndex])).compareTo(idCaptions.get(b[rowIdIndex]));
-						} else {
-							comparison = ((Comparable)a[rowIdIndex]).compareTo((Comparable)b[rowIdIndex]);
-						}						
-						if (comparison != 0) {
-							return comparison;
-						}
-					}
-				}
-				if (columnIdIndex >= 1) {
-					if (a[columnIdIndex] == null) {
-						if (b[columnIdIndex] != null) {
-							return 1;
-						}
-					} else if (b[columnIdIndex] == null) {
-						return -1;
-					} else {
-						int comparison;
-						if (columnsAttribute.isSortByCaption()) {
-							comparison = (idCaptions.get(a[columnIdIndex])).compareTo(idCaptions.get(b[columnIdIndex]));
-						} else {
-							comparison = ((Comparable)a[columnIdIndex]).compareTo((Comparable)b[columnIdIndex]);
-						}						
-						if (comparison != 0) {
-							return comparison;
-						}
-					}
-				}
-				return 0; // leave as is
-			});
 		}
 
 		if (chartType != StatisticsVisualizationChartType.PIE) {
-			hcjs.append("xAxis: { categories: [");
-			if (columnIdIndex >= 1) {
-				resultData.stream().map(row -> row[columnIdIndex]).distinct()
-				.sorted((a,b) -> { // sort the subset, because likely not all groupings have all elements
-					if (a == null) {
-						if (b != null) {
-							return 1;
-						}
-					} else if (b == null) {
-						return -1;
-					} else {
-						int comparison;
-						if (columnsAttribute.isSortByCaption()) {
-							comparison = (idCaptions.get(a)).compareTo(idCaptions.get(b));
-						} else {
-							comparison = ((Comparable)a).compareTo((Comparable)b);
-						}						
-						if (comparison != 0) {
-							return comparison;
-						}
+			// If zero values are ticked, add missing captions to the list; this involves every possible value of the chosen attribute unless a filter has been
+			// set for the same attribute; in this case, only values that are part of the filter are chosen
+			if (zeroValues.getValue() == true) {
+				List<Object> values = StatisticsHelper.getAllAttributeValues(xAxisAttribute, xAxisSubAttribute);
+				List<StatisticsGroupingKey> filterValues = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(xAxisAttribute, xAxisSubAttribute);
+				for (Object value : values) {
+					Object formattedValue = StatisticsHelper.formatAttributeValue(value, xAxisAttribute, xAxisSubAttribute);
+					if (formattedValue != null && (CollectionUtils.isEmpty(filterValues) || filterValues.contains(formattedValue))) {
+						xAxisCaptions.putIfAbsent((StatisticsGroupingKey) formattedValue, formattedValue.toString());
 					}
-					return 0;
-				})
-				.forEachOrdered(columnId -> {
-					hcjs.append("'").append(idCaptions.get(columnId)).append("',");
+				}
+			}
+			
+			hcjs.append("xAxis: { categories: [");
+			if (xAxisIdIndex >= 1) {
+				xAxisCaptions.forEach((key, value) -> {
+					hcjs.append("'").append(xAxisCaptions.get(key)).append("',");
 				});
+
+				if (appendUnknownXAxisCaption) {
+					hcjs.append("'Unknown'");
+				}
 			} else {
 				hcjs.append("'Total'");
 			}
@@ -472,48 +432,106 @@ public class StatisticsView extends AbstractStatisticsView {
 		}
 
 		hcjs.append("series: [");
-		if (rowIdIndex < 1 && columnIdIndex < 1) {
+		if (seriesIdIndex < 1 && xAxisIdIndex < 1) {
 			hcjs.append("{ name: 'Number of cases', dataLabels: { allowOverlap: false }")
-			.append(", data: [['Total',").append(resultData.get(0)).append("]]}");
-
+			.append(", data: [['Total',").append(resultData.get(0)[0].toString()).append("]]}");
 		} else if (visualizationComponent.getVisualizationChartType() == StatisticsVisualizationChartType.PIE) {
 			hcjs.append("{ name: 'Number of cases', dataLabels: { allowOverlap: false }")
 			.append(", data: [");
+			TreeMap<StatisticsGroupingKey, Object[]> seriesElements = new TreeMap<>(new StatisticsKeyComparator());
+			Object[] unknownSeriesElement = null;
 			for (Object[] row : resultData) {
-				Object value = row[0];
-				if (columnIdIndex >= 1) {
-					Object columnId = row[columnIdIndex];
-					hcjs.append("['").append(idCaptions.get(columnId)).append("',").append(value).append("],");
+				Object seriesId = row[seriesIdIndex];
+				if (StatisticsHelper.isNullOrUnknown(seriesId)) {
+					unknownSeriesElement = row;
 				} else {
-					hcjs.append("['Total',").append(value).append("],");
+					seriesElements.put((StatisticsGroupingKey) seriesId, row);
 				}
+			}
+
+			seriesElements.forEach((key, value) -> {
+				Object seriesValue = value[0];
+				Object seriesId = value[seriesIdIndex];
+				hcjs.append("['").append(seriesCaptions.get(seriesId)).append("',").append(seriesValue).append("],");
+			});
+			if (unknownSeriesElement != null) {
+				Object seriesValue = unknownSeriesElement[0];
+				hcjs.append("['").append("Unknown").append("',").append(seriesValue).append("],");
 			}
 			hcjs.append("]}");
 		} else {
+			StatisticsGroupingKey seriesKey = null;
 			Object seriesCaption = null;
+			TreeMap<StatisticsGroupingKey, String> seriesStrings = new TreeMap<>(new StatisticsKeyComparator());
+			final StringBuilder currentSeriesString = new StringBuilder();
+			final StringBuilder unknownSeriesString = new StringBuilder();
+			final StringBuilder totalSeriesString = new StringBuilder();
+			TreeMap<Integer, Long> currentSeriesValues = new TreeMap<>();
+
 			for (Object[] row : resultData) {
+				// Retrieve series caption of the current row
 				Object rowSeriesCaption;
-				if (rowIdIndex >= 1) {
-					rowSeriesCaption = idCaptions.get(row[rowIdIndex]);
+				if (seriesIdIndex >= 1) {
+					if (!StatisticsHelper.isNullOrUnknown(row[seriesIdIndex])) {
+						rowSeriesCaption = seriesCaptions.get(row[seriesIdIndex]);
+					} else {
+						rowSeriesCaption = "Unknown";
+					}
 				} else {
 					rowSeriesCaption = "Total";
 				}
+
+				// If the first row or a row with a new caption is processed, save the data and begin a new series
 				if (!DataHelper.equal(seriesCaption, rowSeriesCaption)) {
-					if (seriesCaption != null) {
-						hcjs.append("]},");
+					finalizeChartSegment(seriesCaption, currentSeriesValues, unknownSeriesString, currentSeriesString, totalSeriesString, seriesStrings, seriesKey);
+
+					// Append the start sequence of the next series String
+					if (StatisticsHelper.isNullOrUnknown(rowSeriesCaption)) {
+						seriesCaption = "Unknown";
+						seriesKey = null;
+						unknownSeriesString.append("{ name: '").append("Unknown").append("', dataLabels: { allowOverlap: false }, data: [");
+					} else if (rowSeriesCaption.equals("Total")) {
+						seriesCaption = "Total";
+						seriesKey = null;
+						totalSeriesString.append("{name : '").append("Total").append("', dataLabels: { allowOverlap: false }, data: [");
+					} else {
+						seriesCaption = rowSeriesCaption;
+						seriesKey = (StatisticsGroupingKey) row[seriesIdIndex];
+						currentSeriesString.append("{ name: '").append(rowSeriesCaption).append("', dataLabels: { allowOverlap: false }, data: [");
 					}
-					seriesCaption = rowSeriesCaption;
-					hcjs.append("{ name: '").append(rowSeriesCaption).append("', dataLabels: { allowOverlap: false }, data: [");
 				}
 
 				Object value = row[0];
-				if (columnIdIndex >= 1) {
-					Object columnId = row[columnIdIndex];
-					hcjs.append("['").append(idCaptions.get(columnId)).append("',").append(value).append("],");
+				if (xAxisIdIndex >= 1) {
+					Object xAxisId = row[xAxisIdIndex];
+					int captionPosition = StatisticsHelper.isNullOrUnknown(xAxisId) ? xAxisCaptions.size() 
+							: xAxisCaptions.headMap((StatisticsGroupingKey) xAxisId).size();
+					currentSeriesValues.put(captionPosition, (long) value);
 				} else {
-					hcjs.append("['Total',").append(value).append("],");
+					currentSeriesValues.put(0, (long) value);
 				}
 			}
+
+			// Add the last series
+			finalizeChartSegment(seriesCaption, currentSeriesValues, unknownSeriesString, currentSeriesString, totalSeriesString, seriesStrings, seriesKey);
+
+			seriesStrings.forEach((key, value) -> {
+				hcjs.append(value);
+			});
+
+			// Add the "Unknown" series
+			if (unknownSeriesString.length() > 0) {
+				hcjs.append(unknownSeriesString.toString());
+			}
+
+			// Add the "Total" series
+			if (totalSeriesString.length() > 0) {
+				hcjs.append(totalSeriesString.toString());
+			}
+
+			// Remove last three characters to avoid invalid chart
+			hcjs.delete(hcjs.length() - 3, hcjs.length());
+			
 			hcjs.append("]}");
 		}
 		hcjs.append("]};");		
@@ -523,53 +541,32 @@ public class StatisticsView extends AbstractStatisticsView {
 		resultsLayout.setExpandRatio(chart, 1);
 	}
 
-	/**
-	 * TODO merge with StatisticsCaseGrid.buildHeader
-	 */
-	private String buildIdCaption(Object idRaw, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
-		if (idRaw == null) {
-			return UNKNOWN;
-		}
-		String idString = idRaw.toString();
-		if (idString.isEmpty()) {
-			return UNKNOWN;
-		}
-
-		if (subAttribute != null) {
-			switch (subAttribute) {
-			case QUARTER:
-				return "Q" + idString;
-			case MONTH:
-				return Month.values()[Integer.valueOf(idString) - 1].toString();
-			case EPI_WEEK:
-				return "Wk " + idString;
-			case QUARTER_OF_YEAR:
-				return "Q" + idString.charAt(idString.length() - 1) + " " + idString.substring(0, 4);
-			case MONTH_OF_YEAR:
-				int month = Integer.valueOf(idString.substring(4));
-				return Month.values()[month - 1].toString() + " " + idString.substring(0, 4);
-			case EPI_WEEK_OF_YEAR:
-				// see EpiWeek.toString
-				return "Wk " + idString.substring(4) + "-" + idString.substring(0, 4);
-			case REGION:
-				return FacadeProvider.getRegionFacade().getRegionByUuid(idString).toString();
-			case DISTRICT:
-				return FacadeProvider.getDistrictFacade().getDistrictByUuid(idString).toString();
-			default:
-				return idString;
-			}
-		} else {
-			switch (attribute) {
-			case CLASSIFICATION:
-				return CaseClassification.valueOf(idString).toString();
-			case OUTCOME:
-				return CaseOutcome.valueOf(idString).toString();
-			case SEX:
-				return Sex.valueOf(idString).toString();
-			case DISEASE:
-				return Disease.valueOf(idString).toString();
-			default:
-				return idString;
+	private void finalizeChartSegment(Object seriesCaption, TreeMap<Integer, Long> currentKeyValues, final StringBuilder unknownKeyString,
+			final StringBuilder currentKeyString, final StringBuilder totalKeyString, TreeMap<StatisticsGroupingKey, String> columnStrings,
+			StatisticsGroupingKey seriesKey) {
+		if (seriesCaption != null) {
+			if (StatisticsHelper.isNullOrUnknown(seriesCaption)) {
+				currentKeyValues.forEach((key, value) -> {
+					unknownKeyString.append("[").append(key).append(",").append(value).append("],");
+				});
+				unknownKeyString.append("]},");
+				currentKeyValues.clear();
+				currentKeyString.setLength(0);
+			} else if (seriesCaption.equals("Total")) {
+				currentKeyValues.forEach((key, value) -> {
+					totalKeyString.append("[").append(key).append(",").append(value).append("],");
+				});
+				totalKeyString.append("]},");
+				currentKeyValues.clear();
+				currentKeyString.setLength(0);
+			} else {
+				currentKeyValues.forEach((key, value) -> {
+					currentKeyString.append("[").append(key).append(",").append(value).append("],");
+				});
+				currentKeyString.append("]},");
+				columnStrings.put(seriesKey, currentKeyString.toString());
+				currentKeyValues.clear();
+				currentKeyString.setLength(0);
 			}
 		}
 	}
@@ -710,14 +707,14 @@ public class StatisticsView extends AbstractStatisticsView {
 
 	private List<Object[]> generateStatistics() {
 		fillCaseCriteria();
-		
+
 		List<Object[]> resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria,
 				visualizationComponent.getRowsAttribute(), visualizationComponent.getRowsSubAttribute(),
 				visualizationComponent.getColumnsAttribute(),  visualizationComponent.getColumnsSubAttribute());
 
 		return resultData;
 	}
-	
+
 	private void fillCaseCriteria() {
 		caseCriteria = new StatisticsCaseCriteria();
 
@@ -779,16 +776,17 @@ public class StatisticsView extends AbstractStatisticsView {
 				}
 				break;
 			case REGION_DISTRICT:
-				if (filterElements.get(StatisticsCaseSubAttribute.REGION).getSelectedValues() != null) {
+				StatisticsFilterRegionDistrictElement regionDistrictElement = (StatisticsFilterRegionDistrictElement) filterElements.get(StatisticsCaseAttribute.REGION_DISTRICT);
+				if (regionDistrictElement.getSelectedRegions() != null) {
 					List<RegionReferenceDto> regions = new ArrayList<>();
-					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.REGION).getSelectedValues()) {
+					for (TokenizableValue tokenizableValue : regionDistrictElement.getSelectedRegions()) {
 						regions.add((RegionReferenceDto) tokenizableValue.getValue());
 					}
 					caseCriteria.regions(regions);
 				}
-				if (filterElements.get(StatisticsCaseSubAttribute.DISTRICT).getSelectedValues() != null) {
+				if (regionDistrictElement.getSelectedDistricts() != null) {
 					List<DistrictReferenceDto> districts = new ArrayList<>();
-					for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.DISTRICT).getSelectedValues()) {
+					for (TokenizableValue tokenizableValue : regionDistrictElement.getSelectedDistricts()) {
 						districts.add((DistrictReferenceDto) tokenizableValue.getValue());
 					}
 					caseCriteria.districts(districts);
@@ -800,7 +798,7 @@ public class StatisticsView extends AbstractStatisticsView {
 					if (filterElements.get(StatisticsCaseSubAttribute.YEAR).getSelectedValues() != null) {
 						List<Year> years = new ArrayList<>();
 						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.YEAR).getSelectedValues()) {
-							years.add(new Year((Integer) tokenizableValue.getValue()));
+							years.add((Year) tokenizableValue.getValue());
 						}
 						caseCriteria.years(years, filterComponent.getSelectedAttribute());
 					}
@@ -809,7 +807,7 @@ public class StatisticsView extends AbstractStatisticsView {
 					if (filterElements.get(StatisticsCaseSubAttribute.QUARTER).getSelectedValues() != null) {
 						List<Quarter> quarters = new ArrayList<>();
 						for (TokenizableValue tokenizableValue : filterElements.get(StatisticsCaseSubAttribute.QUARTER).getSelectedValues()) {
-							quarters.add(new Quarter((Integer) tokenizableValue.getValue()));
+							quarters.add((Quarter) tokenizableValue.getValue());
 						}
 						caseCriteria.quarters(quarters, filterComponent.getSelectedAttribute());
 					}

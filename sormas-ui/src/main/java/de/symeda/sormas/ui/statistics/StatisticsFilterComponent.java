@@ -124,15 +124,9 @@ public class StatisticsFilterComponent extends VerticalLayout {
 			filterElements.put(StatisticsCaseSubAttribute.DATE_RANGE, element);
 			filterValuesLayout.addComponent(element);
 		} else if (selectedAttribute == StatisticsCaseAttribute.REGION_DISTRICT) {
-			StatisticsFilterValuesElement regionElement = new StatisticsFilterValuesElement("Region", selectedAttribute, StatisticsCaseSubAttribute.REGION);
-			StatisticsFilterValuesElement districtElement = new StatisticsFilterValuesElement("District", selectedAttribute, StatisticsCaseSubAttribute.DISTRICT);
-			regionElement.setRelatedElement(districtElement);
-			districtElement.setRelatedElement(regionElement);
-			regionElement.updateRelatedElementOnValueChange(true);
-			filterElements.put(StatisticsCaseSubAttribute.REGION, regionElement);
-			filterElements.put(StatisticsCaseSubAttribute.DISTRICT, districtElement);
-			filterValuesLayout.addComponent(regionElement);
-			filterValuesLayout.addComponent(districtElement);
+			StatisticsFilterRegionDistrictElement element = new StatisticsFilterRegionDistrictElement();
+			filterElements.put(StatisticsCaseAttribute.REGION_DISTRICT, element);
+			filterValuesLayout.addComponent(element);
 		} else {
 			StatisticsFilterValuesElement element = new StatisticsFilterValuesElement(
 					selectedAttribute.toString() + (selectedSubAttribute != null ? " (" + selectedSubAttribute.toString() + ")" : ""), 

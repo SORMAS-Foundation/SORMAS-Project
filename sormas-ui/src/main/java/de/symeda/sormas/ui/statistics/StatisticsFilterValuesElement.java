@@ -2,12 +2,12 @@ package de.symeda.sormas.ui.statistics;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 
 import com.explicatis.ext_token_field.ExtTokenField;
 import com.explicatis.ext_token_field.Tokenizable;
-import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.combobox.FilteringMode;
@@ -34,11 +34,15 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 
 	private final StatisticsCaseAttribute attribute;
 	private final StatisticsCaseSubAttribute subAttribute;
-	
-	private StatisticsFilterValuesElement relatedElement;
+
 	private ValueChangeListener valueChangeListener;
 	private ExtTokenField tokenField;
 	private ComboBox addDropdown;
+
+	/**
+	 * Only needed when this element is part of a Region/District element.
+	 */
+	private StatisticsFilterRegionDistrictElement regionDistrictElement;
 
 	public StatisticsFilterValuesElement(String caption, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
 		setSpacing(true);
@@ -57,19 +61,9 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		setComponentAlignment(utilityButtonsLayout, Alignment.MIDDLE_RIGHT);
 	}
 
-	public void updateRelatedElementOnValueChange(boolean update) {
-		if (!update && valueChangeListener != null) {
-			tokenField.removeValueChangeListener(valueChangeListener);
-			valueChangeListener = null;
-		} else if (update) {
-			valueChangeListener = new ValueChangeListener() {
-				@Override
-				public void valueChange(ValueChangeEvent event) {
-					relatedElement.updateDropdownContent();					
-				}
-			};
-			tokenField.addValueChangeListener(valueChangeListener);
-		}
+	public StatisticsFilterValuesElement(String caption, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute, StatisticsFilterRegionDistrictElement regionDistrictElement) {
+		this(caption, attribute, subAttribute);
+		this.regionDistrictElement = regionDistrictElement;
 	}
 
 	public void updateDropdownContent() {
@@ -136,22 +130,23 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			case MONTH_OF_YEAR:
 			case EPI_WEEK_OF_YEAR:
 				List<Object> dateValues = StatisticsHelper.getListOfDateValues(attribute, subAttribute);
-				return createTokens(dateValues.toArray());
+				return createTokens(dateValues.stream().map(v -> StatisticsHelper.formatAttributeValue(v, attribute, subAttribute)).
+						collect(Collectors.toList()).toArray());
 			case REGION:
 				return createTokens(FacadeProvider.getRegionFacade().getAllAsReference().toArray());
 			case DISTRICT:
-				if (relatedElement != null) {
-					List<TokenizableValue> selectedRegionTokenizables = relatedElement.getSelectedValues();
-					if (CollectionUtils.isNotEmpty(selectedRegionTokenizables)) {
-						List<DistrictReferenceDto> districts = new ArrayList<>();
-						for (TokenizableValue selectedRegionTokenizable : selectedRegionTokenizables) {
-							RegionReferenceDto selectedRegion = (RegionReferenceDto) selectedRegionTokenizable.getValue();
-							districts.addAll(FacadeProvider.getDistrictFacade().getAllByRegion(selectedRegion.getUuid()));
-						}
-						return createTokens(districts.toArray());
-					} else {
-						return createTokens(FacadeProvider.getDistrictFacade().getAllAsReference().toArray());
+				if (regionDistrictElement == null) {
+					return createTokens(FacadeProvider.getDistrictFacade().getAllAsReference().toArray());
+				}
+				
+				List<TokenizableValue> selectedRegionTokenizables = regionDistrictElement.getSelectedRegions();
+				if (CollectionUtils.isNotEmpty(selectedRegionTokenizables)) {
+					List<DistrictReferenceDto> districts = new ArrayList<>();
+					for (TokenizableValue selectedRegionTokenizable : selectedRegionTokenizables) {
+						RegionReferenceDto selectedRegion = (RegionReferenceDto) selectedRegionTokenizable.getValue();
+						districts.addAll(FacadeProvider.getDistrictFacade().getAllByRegion(selectedRegion.getUuid()));
 					}
+					return createTokens(districts.toArray());
 				} else {
 					return createTokens(FacadeProvider.getDistrictFacade().getAllAsReference().toArray());
 				}
@@ -184,14 +179,26 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		}
 	}
 
-	public void setRelatedElement(StatisticsFilterValuesElement relatedElement) {
-		this.relatedElement = relatedElement;
+	public void setValueChangeListener(ValueChangeListener valueChangeListener) {
+		if (this.valueChangeListener != null) {
+			tokenField.removeValueChangeListener(this.valueChangeListener);
+			this.valueChangeListener = null;
+		}
+
+		if (valueChangeListener != null) {
+			this.valueChangeListener = valueChangeListener;
+			tokenField.addValueChangeListener(valueChangeListener);
+		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
+	@Override
 	public List<TokenizableValue> getSelectedValues() {
 		return (List<TokenizableValue>) tokenField.getValue();
 	}
-	
 
+	public ExtTokenField getTokenField() {
+		return tokenField;
+	}
+	
 }

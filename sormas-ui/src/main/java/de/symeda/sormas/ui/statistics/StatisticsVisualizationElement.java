@@ -20,11 +20,13 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 	private MenuItem displayedSubAttributeItem;
 
 	private StatisticsVisualizationElementType type;
+	private StatisticsVisualizationType visualizationType;
 	private StatisticsCaseAttribute attribute;
 	private StatisticsCaseSubAttribute subAttribute;
 	
-	public StatisticsVisualizationElement(StatisticsVisualizationElementType type) {
+	public StatisticsVisualizationElement(StatisticsVisualizationElementType type, StatisticsVisualizationType visualizationType) {
 		this.type = type;
+		this.visualizationType = visualizationType;
 		
 		CssStyles.style(this, CssStyles.LAYOUT_MINIMAL);
 		setSpacing(true);
@@ -35,8 +37,8 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 	
 	private void createAndAddComponents() {
 		displayedAttributeDropdown = new MenuBar();
-		displayedAttributeDropdown.setCaption(type.toString());
-		displayedAttributeItem = displayedAttributeDropdown.addItem(type.getEmptySelectionString(), null);
+		displayedAttributeDropdown.setCaption(type.toString(visualizationType));
+		displayedAttributeItem = displayedAttributeDropdown.addItem(type.getEmptySelectionString(visualizationType), null);
 		
 		displayedSubAttributeDropdown = new MenuBar();
 		CssStyles.style(displayedSubAttributeDropdown, CssStyles.FORCE_CAPTION);
@@ -47,10 +49,10 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 			attribute = null;
 			subAttribute = null;
 			resetSubAttributeDropdown();
-			displayedAttributeItem.setText(type.getEmptySelectionString());
+			displayedAttributeItem.setText(type.getEmptySelectionString(visualizationType));
 			removeSelections(displayedAttributeItem);
 		};
-		emptySelectionItem = displayedAttributeItem.addItem(type.getEmptySelectionString(), emptyItemCommand);
+		emptySelectionItem = displayedAttributeItem.addItem(type.getEmptySelectionString(visualizationType), emptyItemCommand);
 		
 		// Add attribute groups
 		for (StatisticsCaseAttributeGroup attributeGroup : StatisticsCaseAttributeGroup.values()) {
@@ -117,12 +119,13 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 		return type;
 	}
 	
-	public void setType(StatisticsVisualizationElementType type) {
+	public void setType(StatisticsVisualizationElementType type, StatisticsVisualizationType visualizationType) {
 		this.type = type;
-		displayedAttributeDropdown.setCaption(type.toString());
-		emptySelectionItem.setText(type.getEmptySelectionString());
+		this.visualizationType = visualizationType;
+		displayedAttributeDropdown.setCaption(type.toString(visualizationType));
+		emptySelectionItem.setText(type.getEmptySelectionString(visualizationType));
 		if (attribute == null && subAttribute == null) {
-			displayedAttributeItem.setText(type.getEmptySelectionString());
+			displayedAttributeItem.setText(type.getEmptySelectionString(visualizationType));
 		}
 	}
 	

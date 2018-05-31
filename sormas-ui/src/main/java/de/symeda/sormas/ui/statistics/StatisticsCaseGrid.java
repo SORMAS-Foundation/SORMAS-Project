@@ -1,27 +1,19 @@
 package de.symeda.sormas.ui.statistics;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.EnumUtils;
 
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Grid;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.statistics.StatisticsHelper;
+import de.symeda.sormas.api.statistics.StatisticsHelper.StatisticsKeyComparator;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -93,7 +85,7 @@ public class StatisticsCaseGrid extends Grid {
 			// If zero values are ticked, add missing columns to the list; this involves every possible value of the chosen column attribute unless a filter has been
 			// set for the same attribute; in this case, only values that are part of the filter are chosen
 			if (zeroValues) {
-				List<Object> values = getAllAttributeValues(columnsAttribute, columnsSubAttribute);
+				List<Object> values = StatisticsHelper.getAllAttributeValues(columnsAttribute, columnsSubAttribute);
 				List<StatisticsGroupingKey> filterValues = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(columnsAttribute, columnsSubAttribute);
 				for (Object value : values) {
 					Object formattedValue = StatisticsHelper.formatAttributeValue(value, columnsAttribute, columnsSubAttribute);
@@ -229,7 +221,7 @@ public class StatisticsCaseGrid extends Grid {
 			// If zero values are ticked, add missing rows to the list; this involves every possible value of the chosen row attribute unless a filter has been
 			// set for the same attribute; in this case, only values that are part of the filter are chosen
 			if (zeroValues) {
-				List<Object> values = getAllAttributeValues(rowsAttribute, rowsSubAttribute);
+				List<Object> values = StatisticsHelper.getAllAttributeValues(rowsAttribute, rowsSubAttribute);
 				List<StatisticsGroupingKey> filterValues = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(rowsAttribute, rowsSubAttribute);
 				for (Object value : values) {
 					Object formattedValue = StatisticsHelper.formatAttributeValue(value, rowsAttribute, rowsSubAttribute);
@@ -275,61 +267,6 @@ public class StatisticsCaseGrid extends Grid {
 		}
 
 		return total;
-	}
-
-	private List<Object> getAllAttributeValues(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
-		if (subAttribute != null) {
-			switch (subAttribute) {
-			case YEAR:
-			case QUARTER:
-			case MONTH:
-			case EPI_WEEK:
-			case QUARTER_OF_YEAR:
-			case MONTH_OF_YEAR:
-			case EPI_WEEK_OF_YEAR:
-				return StatisticsHelper.getListOfDateValues(attribute, subAttribute);
-			case REGION:
-				return new ArrayList<>(FacadeProvider.getRegionFacade().getAllUuids());
-			case DISTRICT:
-				return new ArrayList<>(FacadeProvider.getDistrictFacade().getAllUuids());
-			default:
-				throw new IllegalArgumentException(subAttribute.toString());
-			}
-		} else {
-			switch (attribute) {
-			case SEX:
-				return new ArrayList<>(EnumUtils.getEnumList(Sex.class).stream()
-						.map(s -> s.getName())
-						.collect(Collectors.toList()));
-			case DISEASE:
-				return new ArrayList<>(EnumUtils.getEnumList(Disease.class).stream()
-						.map(d -> d.getName())
-						.collect(Collectors.toList()));
-			case CLASSIFICATION:
-				return new ArrayList<>(EnumUtils.getEnumList(CaseClassification.class).stream()
-						.map(c -> c.getName())
-						.collect(Collectors.toList()));
-			case OUTCOME:
-				return new ArrayList<>(EnumUtils.getEnumList(CaseOutcome.class).stream()
-						.map(o -> o.getName())
-						.collect(Collectors.toList()));
-			case AGE_INTERVAL_1_YEAR:
-			case AGE_INTERVAL_5_YEARS:
-			case AGE_INTERVAL_CHILDREN_COARSE:
-			case AGE_INTERVAL_CHILDREN_FINE:
-			case AGE_INTERVAL_CHILDREN_MEDIUM:
-			case AGE_INTERVAL_BASIC:
-				return StatisticsHelper.getListOfAgeIntervalValues(attribute);
-			default:
-				throw new IllegalArgumentException(attribute.toString());
-			}
-		}
-	}
-
-	private class StatisticsKeyComparator implements Comparator<StatisticsGroupingKey> {
-		public int compare(StatisticsGroupingKey a, StatisticsGroupingKey b) {
-			return a.keyCompareTo(b);
-		}
 	}
 
 }

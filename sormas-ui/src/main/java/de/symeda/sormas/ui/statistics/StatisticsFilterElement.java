@@ -13,7 +13,7 @@ import de.symeda.sormas.api.statistics.StatisticsHelper;
 @SuppressWarnings("serial")
 public abstract class StatisticsFilterElement extends HorizontalLayout {
 
-	abstract List<TokenizableValue> getSelectedValues();
+	abstract public List<TokenizableValue> getSelectedValues();
 
 	protected List<TokenizableValue> createTokens(Object ...values) {
 		return createTokens(null, null, values);

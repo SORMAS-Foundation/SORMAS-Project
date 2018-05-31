@@ -22,8 +22,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 @SuppressWarnings("serial")
 public class StatisticsVisualizationComponent extends HorizontalLayout {
 
-	private static final String SPECIFY_YOUR_SELECTION = "Specify your selection";
-
 	private StatisticsVisualizationType visualizationType;
 	private StatisticsVisualizationMapType visualizationMapType;
 	private StatisticsVisualizationChartType visualizationChartType;
@@ -45,6 +43,12 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 			public void valueChange(ValueChangeEvent event) {
 				visualizationType = (StatisticsVisualizationType) event.getProperty().getValue();
 				updateComponentVisibility();
+				if (rowsElement != null) {
+					rowsElement.setType(rowsElement.getType(), visualizationType);
+				}
+				if (columnsElement != null) {
+					columnsElement.setType(columnsElement.getType(), visualizationType);
+				}
 			}
 		});
 		CssStyles.style(visualizationSelect, CssStyles.VSPACE_NONE, ValoTheme.OPTIONGROUP_HORIZONTAL,
@@ -81,7 +85,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		addComponent(visualizationChartSelect);
 		setExpandRatio(visualizationChartSelect, 0);
 
-		rowsElement = new StatisticsVisualizationElement(StatisticsVisualizationElementType.ROWS);
+		rowsElement = new StatisticsVisualizationElement(StatisticsVisualizationElementType.ROWS, visualizationType);
 		addComponent(rowsElement);
 		setExpandRatio(rowsElement, 0);
 
@@ -93,9 +97,9 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				StatisticsVisualizationElement newRowsElement = columnsElement;
-				newRowsElement.setType(StatisticsVisualizationElementType.ROWS);
+				newRowsElement.setType(StatisticsVisualizationElementType.ROWS, visualizationType);
 				StatisticsVisualizationElement newColumnsElement = rowsElement;
-				newColumnsElement.setType(StatisticsVisualizationElementType.COLUMNS);
+				newColumnsElement.setType(StatisticsVisualizationElementType.COLUMNS, visualizationType);
 				removeComponent(rowsElement);
 				removeComponent(columnsElement);
 				addComponent(newRowsElement, getComponentIndex(switchRowsAndColumnsButton));
@@ -109,7 +113,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		addComponent(switchRowsAndColumnsButton);
 		setExpandRatio(switchRowsAndColumnsButton, 0);
 
-		columnsElement = new StatisticsVisualizationElement(StatisticsVisualizationElementType.COLUMNS);
+		columnsElement = new StatisticsVisualizationElement(StatisticsVisualizationElementType.COLUMNS, visualizationType);
 		addComponent(columnsElement);
 		setExpandRatio(columnsElement, 0);
 
@@ -127,28 +131,21 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		visualizationChartSelect.setVisible(visualizationType == StatisticsVisualizationType.CHART);
 
 		rowsElement.setVisible(visualizationType == StatisticsVisualizationType.TABLE
-				|| (visualizationType == StatisticsVisualizationType.CHART
-						&& visualizationChartType != StatisticsVisualizationChartType.PIE));
+				|| visualizationType == StatisticsVisualizationType.CHART);
 
 		switchRowsAndColumnsButton.setVisible(visualizationType == StatisticsVisualizationType.TABLE
 				|| (visualizationType == StatisticsVisualizationType.CHART
-						&& visualizationChartType != StatisticsVisualizationChartType.PIE));
+				&& visualizationChartType != StatisticsVisualizationChartType.PIE));
 
 		columnsElement.setVisible(visualizationType == StatisticsVisualizationType.TABLE
-				|| visualizationType == StatisticsVisualizationType.CHART);
+				|| (visualizationType == StatisticsVisualizationType.CHART
+				&& visualizationChartType != StatisticsVisualizationChartType.PIE));
 	}
 
 	public StatisticsCaseAttribute getRowsAttribute() {
 		switch (visualizationType) {
 		case MAP:
 			return StatisticsCaseAttribute.REGION_DISTRICT;
-		case CHART:
-			switch (visualizationChartType) {
-			case PIE:
-				return null;
-			default:
-				break;
-			}
 		default:
 			break;
 		}
@@ -166,13 +163,6 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 			default:
 				throw new IllegalArgumentException(visualizationMapType.toString());
 			}
-		case CHART:
-			switch (visualizationChartType) {
-			case PIE:
-				return null;
-			default:
-				break;
-			}
 		default:
 			break;
 		}
@@ -183,6 +173,13 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		switch (visualizationType) {
 		case MAP:
 			return null;
+		case CHART:
+			switch (visualizationChartType) {
+			case PIE:
+				return null;
+			default:
+				break;
+			}
 		default:
 			break;
 		}
@@ -193,6 +190,13 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		switch (visualizationType) {
 		case MAP:
 			return null;
+		case CHART:
+			switch (visualizationChartType) {
+			case PIE:
+				return null;
+			default:
+				break;
+			}
 		default:
 			break;
 		}
