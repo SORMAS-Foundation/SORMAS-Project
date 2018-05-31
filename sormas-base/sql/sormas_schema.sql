@@ -2348,3 +2348,25 @@ ALTER TABLE events_history ALTER COLUMN srclastname DROP NOT NULL;
 ALTER TABLE events_history ALTER COLUMN srctelno DROP NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (104, 'Creating new event in app not working #614');
+
+-- 2018-05-31 Case data changes for automatic case classification #628
+
+ALTER TABLE cases ADD COLUMN denguefevertype character varying(255);
+ALTER TABLE cases ADD COLUMN classificationcomment character varying(512);
+ALTER TABLE cases ADD COLUMN classificationdate timestamp without time zone;
+ALTER TABLE cases ADD COLUMN classificationuser_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_classificationuser_id FOREIGN KEY (classificationuser_id) REFERENCES public.users (id);
+
+UPDATE cases SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+UPDATE cases_history SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+UPDATE events SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+UPDATE events_history SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+UPDATE outbreak SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+UPDATE outbreak_history SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+UPDATE person SET causeofdeathdisease = 'NEW_INFLUENCA' where causeofdeathdisease = 'AVIAN_INFLUENCA';
+UPDATE person_history SET causeofdeathdisease = 'NEW_INFLUENCA' where causeofdeathdisease = 'AVIAN_INFLUENCA';
+UPDATE visit SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+UPDATE visit_history SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+UPDATE weeklyreportentry SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+
+INSERT INTO schema_version (version_number, comment) VALUES (105, 'Case data changes for automatic case classification #628');

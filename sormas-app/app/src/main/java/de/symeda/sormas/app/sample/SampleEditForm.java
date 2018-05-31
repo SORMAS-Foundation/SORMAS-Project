@@ -108,7 +108,7 @@ public class SampleEditForm extends FormTab {
         binding.sampleDateTime.initialize(this);
         FieldHelper.initSpinnerField(binding.sampleMaterial, SampleMaterial.class);
         FieldHelper.initSpinnerField(binding.sampleSampleSource, SampleSource.class);
-        if (binding.getSample().getAssociatedCase().getDisease() != Disease.AVIAN_INFLUENCA) {
+        if (binding.getSample().getAssociatedCase().getDisease() != Disease.NEW_INFLUENCA) {
             binding.sampleSampleSource.setVisibility(View.GONE);
         }
 

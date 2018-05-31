@@ -43,6 +43,7 @@ import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.LayoutUtil.FluidColumn;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -67,9 +68,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					LayoutUtil.threeOfFourCol(CaseDataDto.OUTCOME),
 					LayoutUtil.oneOfFourCol(CaseDataDto.OUTCOME_DATE)
 			) +
-			LayoutUtil.fluidRowLocs(CaseDataDto.DISEASE, "") +
-			// one or the other
-			LayoutUtil.fluidRow("", LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE)) +
+			LayoutUtil.fluidRow(
+					new FluidColumn(null, 4, 0, CaseDataDto.DISEASE, null),
+					new FluidColumn(null, 8, 0, null, LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE))
+			) +
 			LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
 			LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
 			LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS) +
@@ -121,6 +123,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox diseaseField = addField(CaseDataDto.DISEASE, ComboBox.class);
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
 		OptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
+		addField(CaseDataDto.DENGUE_FEVER_TYPE, OptionGroup.class);
 		TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		addField(CaseDataDto.REGION, ComboBox.class);
 		ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);

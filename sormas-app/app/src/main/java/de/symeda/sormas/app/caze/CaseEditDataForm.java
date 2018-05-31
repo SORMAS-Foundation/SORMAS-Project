@@ -11,10 +11,11 @@ import android.view.ViewGroup;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.DengueFeverType;
+import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -73,6 +74,7 @@ public class CaseEditDataForm extends FormTab {
         FieldHelper.initSpinnerField(binding.caseDataVaccination, Vaccination.class);
         FieldHelper.initSpinnerField(binding.caseDataVaccinationInfoSource, VaccinationInfoSource.class);
         FieldHelper.initSpinnerField(binding.caseDataPlagueType, PlagueType.class);
+        FieldHelper.initSpinnerField(binding.caseDataDengueFeverType, DengueFeverType.class);
         FieldHelper.initSpinnerField(binding.caseDataOutcome, CaseOutcome.class);
         binding.caseDataOutcomeDate.initialize(this);
         binding.caseDataVaccinationDate.initialize(this);
@@ -196,9 +198,11 @@ public class CaseEditDataForm extends FormTab {
         if (binding.getCaze().getDisease() != Disease.OTHER) {
             binding.caseDataDiseaseDetails.setVisibility(View.GONE);
         }
-
         if (binding.getCaze().getDisease() != Disease.PLAGUE) {
             binding.caseDataPlagueType.setVisibility(View.GONE);
+        }
+        if (binding.getCaze().getDisease() != Disease.DENGUE) {
+            binding.caseDataDengueFeverType.setVisibility(View.GONE);
         }
 
         return binding.getRoot();

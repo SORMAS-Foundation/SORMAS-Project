@@ -52,9 +52,9 @@ public class EpiDataDto extends EntityDto {
 	
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private YesNoUnknown burialAttended;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
 	private YesNoUnknown gatheringAttended;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private YesNoUnknown traveled;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private YesNoUnknown rodents;
@@ -66,33 +66,33 @@ public class EpiDataDto extends EntityDto {
 	private YesNoUnknown swine;
 	@Diseases({Disease.EVD,Disease.LASSA})
 	private YesNoUnknown birds;
-	@Diseases({Disease.AVIAN_INFLUENCA,Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA,Disease.OTHER})
 	private YesNoUnknown poultryEat;
-	@Diseases({Disease.AVIAN_INFLUENCA,Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA,Disease.OTHER})
 	private YesNoUnknown poultry;
-	@Diseases({Disease.AVIAN_INFLUENCA,Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA,Disease.OTHER})
 	private String poultryDetails;
-	@Diseases({Disease.AVIAN_INFLUENCA,Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA,Disease.OTHER})
 	private YesNoUnknown poultrySick;
-	@Diseases({Disease.AVIAN_INFLUENCA,Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA,Disease.OTHER})
 	private String poultrySickDetails;
-	@Diseases({Disease.AVIAN_INFLUENCA})
+	@Diseases({Disease.NEW_INFLUENCA})
 	private Date poultryDate;
-	@Diseases({Disease.AVIAN_INFLUENCA})
+	@Diseases({Disease.NEW_INFLUENCA})
 	private String poultryLocation;
-	@Diseases({Disease.AVIAN_INFLUENCA,Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA,Disease.OTHER})
 	private YesNoUnknown wildbirds;
-	@Diseases({Disease.AVIAN_INFLUENCA,Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA,Disease.OTHER})
 	private String wildbirdsDetails;
-	@Diseases({Disease.AVIAN_INFLUENCA})
+	@Diseases({Disease.NEW_INFLUENCA})
 	private Date wildbirdsDate;
-	@Diseases({Disease.AVIAN_INFLUENCA})
+	@Diseases({Disease.NEW_INFLUENCA})
 	private String wildbirdsLocation;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private YesNoUnknown cattle;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.MONKEYPOX,Disease.OTHER})
 	private YesNoUnknown otherAnimals;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.AVIAN_INFLUENCA,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.MONKEYPOX,Disease.OTHER})
 	private String otherAnimalsDetails;
 	@Diseases({Disease.CHOLERA,Disease.OTHER})
 	private WaterSource waterSource;

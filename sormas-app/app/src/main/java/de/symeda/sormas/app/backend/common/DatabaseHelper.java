@@ -78,7 +78,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 123;
+	private static final int DATABASE_VERSION = 124;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -449,6 +449,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				case 122:
 					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN resultingCaseUuid varchar(36);");
 					getDao(EventParticipant.class).executeRaw("ALTER TABLE eventParticipants ADD COLUMN resultingCaseUuid varchar(36);");
+				case 123:
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN dengueFeverType varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN classificationDate timestamp;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN classificationComment varchar(512);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN classificationUser_id bigint REFERENCES users(id);");
+					getDao(Case.class).executeRaw("UPDATE cases SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';");
+					getDao(Event.class).executeRaw("UPDATE events SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';");
+					getDao(Outbreak.class).executeRaw("UPDATE outbreak SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';");
+					getDao(Person.class).executeRaw("UPDATE person SET causeofdeathdisease = 'NEW_INFLUENCA' where causeofdeathdisease = 'AVIAN_INFLUENCA';");
+					getDao(Visit.class).executeRaw("UPDATE visits SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';");
+					getDao(WeeklyReportEntry.class).executeRaw("UPDATE weeklyreportentry SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';");
 
 					// ATTENTION: break should only be done after last version
 					break;

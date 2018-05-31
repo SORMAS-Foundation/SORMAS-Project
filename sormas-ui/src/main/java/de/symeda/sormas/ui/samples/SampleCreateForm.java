@@ -83,7 +83,7 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 		
 		addValueChangeListener(e -> {
 			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getAssociatedCase().getUuid());
-			if (caze.getDisease() != Disease.AVIAN_INFLUENCA) {
+			if (caze.getDisease() != Disease.NEW_INFLUENCA) {
 				sampleSource.setVisible(false);
 			}
 

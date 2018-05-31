@@ -15,10 +15,11 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -68,9 +69,19 @@ public class Case extends AbstractDomainObject {
 	@Column(length=255)
 	private PlagueType plagueType;
 
+	@Column(length=255)
+	private DengueFeverType dengueFeverType;
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private CaseClassification caseClassification;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private User classificationUser;
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+    private Date classificationDate;
+	@Column(length=512)
+    private String classificationComment;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -430,5 +441,37 @@ public class Case extends AbstractDomainObject {
 
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
+
+	public DengueFeverType getDengueFeverType() {
+		return dengueFeverType;
+	}
+
+	public void setDengueFeverType(DengueFeverType dengueFeverType) {
+		this.dengueFeverType = dengueFeverType;
+	}
+
+	public User getClassificationUser() {
+		return classificationUser;
+	}
+
+	public void setClassificationUser(User classificationUser) {
+		this.classificationUser = classificationUser;
+	}
+
+	public Date getClassificationDate() {
+		return classificationDate;
+	}
+
+	public void setClassificationDate(Date classificationDate) {
+		this.classificationDate = classificationDate;
+	}
+
+	public String getClassificationComment() {
+		return classificationComment;
+	}
+
+	public void setClassificationComment(String classificationComment) {
+		this.classificationComment = classificationComment;
 	}
 }

@@ -4,7 +4,6 @@ import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 public enum Disease implements StatisticsGroupingKey {
 	
-	AVIAN_INFLUENCA,
 	CHOLERA,
 	CSM,
 	DENGUE,
@@ -12,6 +11,7 @@ public enum Disease implements StatisticsGroupingKey {
 	LASSA,
 	MEASLES,
 	MONKEYPOX,
+	NEW_INFLUENCA,
 	PLAGUE,
 	YELLOW_FEVER,
 	OTHER;
