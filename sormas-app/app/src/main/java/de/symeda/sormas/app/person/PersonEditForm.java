@@ -17,6 +17,9 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.BurialConductor;
@@ -52,6 +55,8 @@ import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
 import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.validation.PersonValidator;
+
+import static de.symeda.sormas.app.component.FacilityChangeDialogBuilder.NONE_HEALTH_FACILITY_DETAILS;
 
 /**
  * Created by Stefan Szczesny on 27.07.2016.
@@ -279,21 +284,24 @@ public class PersonEditForm extends FormTab {
     }
 
     private void initFacilityFields(Facility facility) {
-
         final List emptyList = new ArrayList<>();
+        final List districtsByRegion = DataUtils.toItems(binding.getPerson().getOccupationRegion() != null ? DatabaseHelper.getDistrictDao().getByRegion(binding.getPerson().getOccupationRegion()) : DataUtils.toItems(emptyList), true);
+        final List communitiesByDistrict = DataUtils.toItems(binding.getPerson().getOccupationDistrict() != null ? DatabaseHelper.getCommunityDao().getByDistrict(binding.getPerson().getOccupationDistrict()) : DataUtils.toItems(emptyList), true);
+        final List facilities = DataUtils.toItems(binding.getPerson().getOccupationCommunity() != null ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(binding.getPerson().getOccupationCommunity(), true) :
+                binding.getPerson().getOccupationDistrict() != null ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(binding.getPerson().getOccupationDistrict(), true) : DataUtils.toItems(emptyList), true);
 
-        FieldHelper.initRegionSpinnerField(binding.personFacilityRegion, new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initRegionSpinnerField(binding.personOccupationRegion, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Object selectedValue = binding.personFacilityRegion.getValue();
-                if(binding.personFacilityDistrict != null) {
+                Object selectedValue = binding.personOccupationRegion.getValue();
+                if(binding.personOccupationDistrict != null) {
                     List<District> districtList = emptyList;
                     if(selectedValue != null) {
                         districtList = DatabaseHelper.getDistrictDao().getByRegion((Region)selectedValue);
                     } else {
-                        binding.personFacilityDistrict.setValue(null);
+                        binding.personOccupationDistrict.setValue(null);
                     }
-                    binding.personFacilityDistrict.setAdapterAndValue(binding.personFacilityDistrict.getValue(), DataUtils.toItems(districtList));
+                    binding.personOccupationDistrict.setAdapterAndValue(binding.personOccupationDistrict.getValue(), DataUtils.toItems(districtList));
                 }
             }
             @Override
@@ -301,26 +309,20 @@ public class PersonEditForm extends FormTab {
             }
         });
 
-        List districtList = new ArrayList<>();
-        if (facility != null) {
-            binding.personFacilityRegion.setValue(facility.getRegion());
-            districtList = DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(facility.getRegion()));
-        }
-
-        FieldHelper.initSpinnerField(binding.personFacilityDistrict, districtList, new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initSpinnerField(binding.personOccupationDistrict, districtsByRegion, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Object selectedValue = binding.personFacilityDistrict.getValue();
-                if(binding.personFacilityCommunity != null) {
+                Object selectedValue = binding.personOccupationDistrict.getValue();
+                if(binding.personOccupationCommunity != null) {
                     List<Community> communityList = emptyList;
                     List<Facility> facilityList = emptyList;
                     if(selectedValue != null) {
                         communityList = DatabaseHelper.getCommunityDao().getByDistrict((District)selectedValue);
-                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) selectedValue, false);
+                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) selectedValue, true);
                     } else {
-                        binding.personFacilityCommunity.setValue(null);
+                        binding.personOccupationCommunity.setValue(null);
                     }
-                    binding.personFacilityCommunity.setAdapterAndValue(binding.personFacilityCommunity.getValue(), DataUtils.toItems(communityList));
+                    binding.personOccupationCommunity.setAdapterAndValue(binding.personOccupationCommunity.getValue(), DataUtils.toItems(communityList));
                     binding.personOccupationFacility.setAdapterAndValue(binding.personOccupationFacility.getValue(), DataUtils.toItems(facilityList));
                 }
             }
@@ -329,23 +331,17 @@ public class PersonEditForm extends FormTab {
             }
         });
 
-        List communityList = new ArrayList<>();
-        if(facility != null) {
-            binding.personFacilityDistrict.setValue(facility.getDistrict());
-            communityList = DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(facility.getDistrict()));
-        }
-
-        FieldHelper.initSpinnerField(binding.personFacilityCommunity, communityList, new AdapterView.OnItemSelectedListener() {
+        FieldHelper.initSpinnerField(binding.personOccupationCommunity, communitiesByDistrict, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 SpinnerField spinnerField = binding.personOccupationFacility;
-                Object selectedValue = binding.personFacilityCommunity.getValue();
+                Object selectedValue = binding.personOccupationCommunity.getValue();
                 if (spinnerField != null) {
                     List<Facility> facilityList = emptyList;
                     if (selectedValue != null) {
-                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity((Community) selectedValue, false);
-                    } else if (binding.personFacilityDistrict.getValue() != null) {
-                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) binding.personFacilityDistrict.getValue(), false);
+                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity((Community) selectedValue, true);
+                    } else if (binding.personOccupationDistrict.getValue() != null) {
+                        facilityList = DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) binding.personOccupationDistrict.getValue(), true);
                     } else {
                         spinnerField.setValue(null);
                     }
@@ -357,17 +353,31 @@ public class PersonEditForm extends FormTab {
             }
         });
 
-        List facilityList = new ArrayList<>();
-        if (facility != null) {
-            binding.personFacilityCommunity.setValue(facility.getCommunity());
-            facilityList = DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(facility.getCommunity(), false));
-        }
+        FieldHelper.initSpinnerField(binding.personOccupationFacility, facilities);
 
-        FieldHelper.initSpinnerField(binding.personOccupationFacility, facilityList);
+        binding.personOccupationFacility.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                TextField facilityDetailsField = binding.personOccupationFacilityDetails;
 
-        if (facility != null) {
-            binding.personOccupationFacility.setValue(facility);
-        }
+                Facility selectedFacility = (Facility) field.getValue();
+                if (selectedFacility != null) {
+                    boolean otherHealthFacility = selectedFacility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+                    boolean noneHealthFacility = selectedFacility.getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+                    if (otherHealthFacility) {
+                        facilityDetailsField.setVisibility(View.VISIBLE);
+                        facilityDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+                    } else if (noneHealthFacility) {
+                        facilityDetailsField.setVisibility(View.VISIBLE);
+                        facilityDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, NONE_HEALTH_FACILITY_DETAILS));
+                    } else {
+                        facilityDetailsField.setVisibility(View.GONE);
+                    }
+                } else {
+                    facilityDetailsField.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     private void updateDeathAndBurialFields(Disease disease) {

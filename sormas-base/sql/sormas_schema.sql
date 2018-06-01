@@ -2369,4 +2369,27 @@ UPDATE visit SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
 UPDATE visit_history SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
 UPDATE weeklyreportentry SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
 
-INSERT INTO schema_version (version_number, comment) VALUES (105, 'Case data changes for automatic case classification #628');
+INSERT INTO schema_version (version_number, comment) VALUES (105, 'Case data changes for automatic case classification #628');-- 2018-05-31 Add description field for other health facility to previous hospitalizations and person occupations #549
+
+-- 2018-06-01 Add description field for other health facility to previous hospitalizations and person occupations #549
+
+ALTER TABLE previoushospitalization ADD COLUMN healthfacilitydetails varchar(512);
+ALTER TABLE previoushospitalization_history ADD COLUMN healthfacilitydetails varchar(512);
+ALTER TABLE person ADD COLUMN occupationfacilitydetails varchar(512);
+ALTER TABLE person_history ADD COLUMN occupationfacilitydetails varchar(512);
+ALTER TABLE person ADD COLUMN occupationregion_id bigint;
+ALTER TABLE person ADD COLUMN occupationdistrict_id bigint;
+ALTER TABLE person ADD COLUMN occupationcommunity_id bigint;
+ALTER TABLE person_history ADD COLUMN occupationregion_id bigint;
+ALTER TABLE person_history ADD COLUMN occupationdistrict_id bigint;
+ALTER TABLE person_history ADD COLUMN occupationcommunity_id bigint;
+
+ALTER TABLE person ADD CONSTRAINT fk_person_occupationregion_id FOREIGN KEY (occupationregion_id) REFERENCES region (id);
+ALTER TABLE person ADD CONSTRAINT fk_person_occupationdistrict_id FOREIGN KEY (occupationdistrict_id) REFERENCES district (id);
+ALTER TABLE person ADD CONSTRAINT fk_person_occupationcommunity_id FOREIGN KEY (occupationcommunity_id) REFERENCES community (id);
+
+UPDATE person SET occupationregion_id = (SELECT region_id FROM facility WHERE facility.id = person.occupationfacility_id) WHERE occupationfacility_id IS NOT NULL;
+UPDATE person SET occupationdistrict_id = (SELECT district_id FROM facility WHERE facility.id = person.occupationfacility_id) WHERE occupationfacility_id IS NOT NULL;
+UPDATE person SET occupationcommunity_id = (SELECT community_id FROM facility WHERE facility.id = person.occupationfacility_id) WHERE occupationfacility_id IS NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (106, 'Add description field for other health facility to previous hospitalizations and person occupations #549');

@@ -21,6 +21,7 @@ public class PreviousHospitalizationDto extends EntityDto {
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILITY = "healthFacility";
+	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String ISOLATED = "isolated";
 	public static final String DESCRIPTION = "description";
 	
@@ -30,6 +31,7 @@ public class PreviousHospitalizationDto extends EntityDto {
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
 	private FacilityReferenceDto healthFacility;
+	private String healthFacilityDetails;
 	private YesNoUnknown isolated;
 	private String description;
 	
@@ -87,6 +89,13 @@ public class PreviousHospitalizationDto extends EntityDto {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	public String getHealthFacilityDetails() {
+		return healthFacilityDetails;
+	}
+	public void setHealthFacilityDetails(String healthFacilityDetails) {
+		this.healthFacilityDetails = healthFacilityDetails;
 	}
 
 }

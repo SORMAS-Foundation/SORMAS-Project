@@ -30,6 +30,9 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 
 @Entity(name=Person.TABLE_NAME)
 @DatabaseTable(tableName = Person.TABLE_NAME)
@@ -106,7 +109,16 @@ public class Person extends AbstractDomainObject {
 	@Column
 	private String occupationDetails;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+	private Region occupationRegion;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+	private District occupationDistrict;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+	private Community occupationCommunity;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility occupationFacility;
+	@Column(length=512)
+	private String occupationFacilityDetails;
+
 
 	@Bindable
 	public String getFirstName() {
@@ -272,12 +284,40 @@ public class Person extends AbstractDomainObject {
 	public void setOccupationDetails(String occupationDetails) {
 		this.occupationDetails = occupationDetails;
 	}
-	
+
+	public Region getOccupationRegion() {
+		return occupationRegion;
+	}
+	public void setOccupationRegion(Region occupationRegion) {
+		this.occupationRegion = occupationRegion;
+	}
+
+	public District getOccupationDistrict() {
+		return occupationDistrict;
+	}
+	public void setOccupationDistrict(District occupationDistrict) {
+		this.occupationDistrict = occupationDistrict;
+	}
+
+	public Community getOccupationCommunity() {
+		return occupationCommunity;
+	}
+	public void setOccupationCommunity(Community occupationCommunity) {
+		this.occupationCommunity = occupationCommunity;
+	}
+
 	public Facility getOccupationFacility() {
 		return occupationFacility;
 	}
 	public void setOccupationFacility(Facility occupationFacility) {
 		this.occupationFacility = occupationFacility;
+	}
+
+	public String getOccupationFacilityDetails() {
+		return occupationFacilityDetails;
+	}
+	public void setOccupationFacilityDetails(String occupationFacilityDetails) {
+		this.occupationFacilityDetails = occupationFacilityDetails;
 	}
 
 	public CauseOfDeath getCauseOfDeath() {

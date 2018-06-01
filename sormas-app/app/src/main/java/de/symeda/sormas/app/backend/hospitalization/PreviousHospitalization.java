@@ -53,6 +53,9 @@ public class PreviousHospitalization extends AbstractDomainObject {
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
     private Facility healthFacility;
 
+    @Column(length=512)
+    private String healthFacilityDetails;
+
     @Enumerated(EnumType.STRING)
     private YesNoUnknown isolated;
 
@@ -108,6 +111,13 @@ public class PreviousHospitalization extends AbstractDomainObject {
 
     public void setHealthFacility(Facility healthFacility) {
         this.healthFacility = healthFacility;
+    }
+
+    public String getHealthFacilityDetails() {
+        return healthFacilityDetails;
+    }
+    public void setHealthFacilityDetails(String healthFacilityDetails) {
+        this.healthFacilityDetails = healthFacilityDetails;
     }
 
     public YesNoUnknown getIsolated() {

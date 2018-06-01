@@ -368,28 +368,28 @@
                 android:layout_height="wrap_content">
 
                 <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/person_facilityRegion"
+                    android:id="@+id/person_occupationRegion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="@dimen/field_padding"
-                    android:nextFocusForward="@+id/person_facilityDistrict"
-                    android:paddingBottom="@dimen/field_padding"/>
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={person.occupationRegion}"/>
 
                 <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/person_facilityDistrict"
+                    android:id="@+id/person_occupationDistrict"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="@dimen/field_padding"
-                    android:nextFocusForward="@+id/person_facilityCommunity"
-                    android:paddingBottom="@dimen/field_padding"/>
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={person.occupationDistrict}"/>
 
                 <de.symeda.sormas.app.component.SpinnerField
-                    android:id="@+id/person_facilityCommunity"
+                    android:id="@+id/person_occupationCommunity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="@dimen/field_padding"
-                    android:nextFocusForward="@+id/person_occupationFacility"
-                    android:paddingBottom="@dimen/field_padding"/>
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={person.occupationCommunity}"/>
 
                 <de.symeda.sormas.app.component.SpinnerField
                     android:id="@+id/person_occupationFacility"
@@ -398,6 +398,14 @@
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
                     android:value="@={person.occupationFacility}"/>
+
+                <de.symeda.sormas.app.component.TextField
+                    android:id="@+id/person_occupationFacilityDetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/field_padding"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:value="@={person.occupationFacilityDetails}"/>
 
             </LinearLayout>
 

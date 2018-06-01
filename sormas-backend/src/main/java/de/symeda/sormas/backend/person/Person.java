@@ -25,6 +25,9 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 
 @Entity
 @Audited
@@ -54,6 +57,11 @@ public class Person extends AbstractDomainObject {
 	public static final String CAZE = "caze";
 	public static final String DEATH_DATE = "deathDate";
 	public static final String PRESENT_CONDITION = "presentCondition";
+	public static final String OCCUPATION_REGION = "occupationRegion";
+	public static final String OCCUPATION_DISTRICT = "occupationDistrict";
+	public static final String OCCUPATION_COMMUNITY = "occupationCommunity";
+	public static final String OCCUPATION_FACILITY = "occupationFacility";
+	public static final String OCCUPATION_FACILITY_DETAILS = "occupationFacilityDetails";
 
 	private String firstName;
 	private String lastName;
@@ -88,7 +96,11 @@ public class Person extends AbstractDomainObject {
 
 	private OccupationType occupationType;
 	private String occupationDetails;
+	private Region occupationRegion;
+	private District occupationDistrict;
+	private Community occupationCommunity;
 	private Facility occupationFacility;
+	private String occupationFacilityDetails;
 	
 	@Column(nullable = false)
 	public String getFirstName() {
@@ -294,6 +306,37 @@ public class Person extends AbstractDomainObject {
 	}
 	public void setCauseOfDeathDisease(Disease causeOfDeathDisease) {
 		this.causeOfDeathDisease = causeOfDeathDisease;
+	}
+
+	@ManyToOne(cascade = {})
+	public Region getOccupationRegion() {
+		return occupationRegion;
+	}
+	public void setOccupationRegion(Region occupationRegion) {
+		this.occupationRegion = occupationRegion;
+	}
+
+	@ManyToOne(cascade = {})
+	public District getOccupationDistrict() {
+		return occupationDistrict;
+	}
+	public void setOccupationDistrict(District occupationDistrict) {
+		this.occupationDistrict = occupationDistrict;
+	}
+
+	@ManyToOne(cascade = {})
+	public Community getOccupationCommunity() {
+		return occupationCommunity;
+	}
+	public void setOccupationCommunity(Community occupationCommunity) {
+		this.occupationCommunity = occupationCommunity;
+	}
+	
+	public String getOccupationFacilityDetails() {
+		return occupationFacilityDetails;
+	}
+	public void setOccupationFacilityDetails(String occupationFacilityDetails) {
+		this.occupationFacilityDetails = occupationFacilityDetails;
 	}
 	
 	@Override

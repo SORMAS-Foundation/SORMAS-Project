@@ -74,6 +74,7 @@ public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospi
             a.setHealthFacility(null);
         }
 
+        a.setHealthFacilityDetails(b.getHealthFacilityDetails());
         a.setIsolated(b.getIsolated());
         a.setAdmissionDate(b.getAdmissionDate());
         a.setDischargeDate(b.getDischargeDate());
@@ -111,6 +112,7 @@ public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospi
             a.setHealthFacility(null);
         }
 
+        a.setHealthFacilityDetails(b.getHealthFacilityDetails());
         a.setIsolated(b.getIsolated());
         a.setAdmissionDate(b.getAdmissionDate());
         a.setDischargeDate(b.getDischargeDate());

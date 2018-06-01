@@ -33,6 +33,7 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILIY = "healthFacility";
+	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String ISOLATED = "isolated";
 	public static final String DESCRIPTION = "description";
 	public static final String HOSPITALIZATION = "hospitalization";
@@ -43,6 +44,7 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	private District district;
 	private Community community;
 	private Facility healthFacility;
+	private String healthFacilityDetails;
 	private YesNoUnknown isolated;
 	private String description;
 	private Hospitalization hospitalization;
@@ -118,6 +120,14 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	}
 	public void setHospitalization(Hospitalization hospitalization) {
 		this.hospitalization = hospitalization;
+	}
+
+	@Column(length = 512)
+	public String getHealthFacilityDetails() {
+		return healthFacilityDetails;
+	}
+	public void setHealthFacilityDetails(String healthFacilityDetails) {
+		this.healthFacilityDetails = healthFacilityDetails;
 	}
 	
 }

@@ -78,7 +78,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 124;
+	private static final int DATABASE_VERSION = 125;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -460,6 +460,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Person.class).executeRaw("UPDATE person SET causeofdeathdisease = 'NEW_INFLUENCA' where causeofdeathdisease = 'AVIAN_INFLUENCA';");
 					getDao(Visit.class).executeRaw("UPDATE visits SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';");
 					getDao(WeeklyReportEntry.class).executeRaw("UPDATE weeklyreportentry SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';");
+				case 124:
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN occupationFacilityDetails varchar(512);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN occupationRegion_id bigint REFERENCES region(id);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN occupationDistrict_id bigint REFERENCES district(id);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN occupationCommunity_id bigint REFERENCES community(id);");
+					getDao(Person.class).executeRaw("UPDATE person SET occupationRegion_id = (SELECT region_id FROM facility WHERE facility.id = person.occupationFacility_id) WHERE occupationFacility_id IS NOT NULL;");
+					getDao(Person.class).executeRaw("UPDATE person SET occupationDistrict_id = (SELECT district_id FROM facility WHERE facility.id = person.occupationFacility_id) WHERE occupationFacility_id IS NOT NULL;");
+					getDao(Person.class).executeRaw("UPDATE person SET occupationCommunity_id = (SELECT community_id FROM facility WHERE facility.id = person.occupationFacility_id) WHERE occupationFacility_id IS NOT NULL;");
 
 					// ATTENTION: break should only be done after last version
 					break;

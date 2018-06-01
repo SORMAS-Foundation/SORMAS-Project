@@ -39,8 +39,12 @@ import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb;
+import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -61,6 +65,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private CommunityService communityService;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
@@ -294,7 +300,11 @@ public class PersonFacadeEjb implements PersonFacade {
 		
 		target.setOccupationType(source.getOccupationType());
 		target.setOccupationDetails(source.getOccupationDetails());
+		target.setOccupationRegion(regionService.getByReferenceDto(source.getOccupationRegion()));
+		target.setOccupationDistrict(districtService.getByReferenceDto(source.getOccupationDistrict()));
+		target.setOccupationCommunity(communityService.getByReferenceDto(source.getOccupationCommunity()));
 		target.setOccupationFacility(facilityService.getByReferenceDto(source.getOccupationFacility()));
+		target.setOccupationFacilityDetails(source.getOccupationFacilityDetails());
 		return target;
 	}
 	
@@ -367,7 +377,11 @@ public class PersonFacadeEjb implements PersonFacade {
 		
 		target.setOccupationType(source.getOccupationType());
 		target.setOccupationDetails(source.getOccupationDetails());
+		target.setOccupationRegion(RegionFacadeEjb.toReferenceDto(source.getOccupationRegion()));
+		target.setOccupationDistrict(DistrictFacadeEjb.toReferenceDto(source.getOccupationDistrict()));
+		target.setOccupationCommunity(CommunityFacadeEjb.toReferenceDto(source.getOccupationCommunity()));
 		target.setOccupationFacility(FacilityFacadeEjb.toReferenceDto(source.getOccupationFacility()));
+		target.setOccupationFacilityDetails(source.getOccupationFacilityDetails());
 		return target;
 	}
 	
