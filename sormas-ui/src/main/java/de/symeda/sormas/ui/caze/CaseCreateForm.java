@@ -20,7 +20,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.LayoutUtil.FluidColumn;
 
 @SuppressWarnings("serial")
 public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {

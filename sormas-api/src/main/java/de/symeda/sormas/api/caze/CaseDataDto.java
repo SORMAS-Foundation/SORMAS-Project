@@ -25,6 +25,8 @@ public class CaseDataDto extends EntityDto {
 	public static final String I18N_PREFIX = "CaseData";
 	
 	public static final String CASE_CLASSIFICATION = "caseClassification";
+	public static final String CLASSIFICATION_USER = "classificationUser";
+	public static final String CLASSIFICATION_DATE = "classificationDate";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";

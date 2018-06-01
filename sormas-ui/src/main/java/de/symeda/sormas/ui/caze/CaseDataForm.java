@@ -57,17 +57,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.h3("Case data")+
-			LayoutUtil.fluidRowLocs(CaseDataDto.UUID, CaseDataDto.EPID_NUMBER) +
-			LayoutUtil.fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER, CaseDataDto.RECEPTION_DATE) +
-			LayoutUtil.fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION) +
-			LayoutUtil.fluidRow(
-					LayoutUtil.threeOfFourCol(CaseDataDto.INVESTIGATION_STATUS),
-					LayoutUtil.oneOfFourCol(CaseDataDto.INVESTIGATED_DATE)
-			) +
-			LayoutUtil.fluidRow(
-					LayoutUtil.threeOfFourCol(CaseDataDto.OUTCOME),
-					LayoutUtil.oneOfFourCol(CaseDataDto.OUTCOME_DATE)
-			) +
+			LayoutUtil.fluidRowLocs(7, CaseDataDto.UUID, 2, CaseDataDto.REPORT_DATE, 3, CaseDataDto.REPORTING_USER) +
+			LayoutUtil.fluidRowLocs(5, CaseDataDto.EPID_NUMBER, 2, null, 2, CaseDataDto.RECEPTION_DATE) +
+			LayoutUtil.fluidRowLocs(7, CaseDataDto.CASE_CLASSIFICATION, 2, CaseDataDto.CLASSIFICATION_DATE, 3, CaseDataDto.CLASSIFICATION_USER) +
+			LayoutUtil.fluidRowLocs(7, CaseDataDto.INVESTIGATION_STATUS, 2, CaseDataDto.INVESTIGATED_DATE) +
+			LayoutUtil.fluidRowLocs(7, CaseDataDto.OUTCOME, 2, CaseDataDto.OUTCOME_DATE) +
 			LayoutUtil.fluidRow(
 					new FluidColumn(null, 4, 0, CaseDataDto.DISEASE, null),
 					new FluidColumn(null, 8, 0, null, LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE))
@@ -104,7 +98,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		// Add fields
 		
-		addFields(CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER);
+		addFields(CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER,
+				CaseDataDto.CLASSIFICATION_DATE, CaseDataDto.CLASSIFICATION_USER);
 		DateField receptionDate = addField(CaseDataDto.RECEPTION_DATE, DateField.class);
 		receptionDate.setDateFormat(DateHelper.getDateFormat().toPattern());
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
@@ -148,8 +143,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		
 		setRequired(true, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.OUTCOME, CaseDataDto.DISEASE, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
 		FieldHelper.addSoftRequiredStyle(investigatedDate, outcomeDate, plagueType, community, surveillanceOfficerField);
-		setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER, CaseDataDto.REGION,
-				CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
+		setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER, 
+				CaseDataDto.CLASSIFICATION_USER, CaseDataDto.CLASSIFICATION_DATE,
+				CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 		setReadOnly(!LoginHelper.hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
 		setReadOnly(!LoginHelper.hasUserRight(UserRight.CASE_INVESTIGATE), CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.INVESTIGATED_DATE);
 		setReadOnly(!LoginHelper.hasUserRight(UserRight.CASE_CLASSIFY), CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.OUTCOME, CaseDataDto.OUTCOME_DATE);
