@@ -58,6 +58,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState bloodUrine;
 	private SymptomState otherHemorrhagicSymptoms;
 	private String otherHemorrhagicSymptomsText;
+	private SymptomState meningealSigns;
 	private SymptomState skinRash;
 	private SymptomState neckStiffness;
 	private SymptomState soreThroat;
@@ -988,6 +989,7 @@ public class Symptoms extends AbstractDomainObject {
 		appendYesSymptom(string, lymphadenopathyInguinal, SymptomsDto.LYMPHADENOPATHY_INGUINAL);
 		appendYesSymptom(string, lymphadenopathyAxillary, SymptomsDto.LYMPHADENOPATHY_AXILLARY);
 		appendYesSymptom(string, lymphadenopathyCervical, SymptomsDto.LYMPHADENOPATHY_CERVICAL);
+		appendYesSymptom(string, meningealSigns, SymptomsDto.MENINGEAL_SIGNS);
 		appendYesSymptom(string, chillsSweats, SymptomsDto.CHILLS_SWEATS);
 		appendYesSymptom(string, bedridden, SymptomsDto.BEDRIDDEN);
 		appendYesSymptom(string, oralUlcers, SymptomsDto.ORAL_ULCERS);
@@ -1034,5 +1036,14 @@ public class Symptoms extends AbstractDomainObject {
 			}
 			stringBuilder.append(I18nProperties.getPrefixFieldCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null));
 		}
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getMeningealSigns() {
+		return meningealSigns;
+	}
+
+	public void setMeningealSigns(SymptomState meningealSigns) {
+		this.meningealSigns = meningealSigns;
 	}
 }

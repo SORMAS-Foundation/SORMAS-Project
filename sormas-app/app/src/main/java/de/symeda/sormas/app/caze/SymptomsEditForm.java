@@ -108,7 +108,8 @@ public class SymptomsEditForm extends FormTab {
                 binding.symptomsHiccups, binding.symptomsBackache, binding.symptomsJaundice, binding.symptomsBulgingFontanelle,
                 binding.symptomsDarkUrine, binding.symptomsRapidBreathing, binding.symptomsSwollenGlands,
                 binding.symptomsOtherNonHemorrhagicSymptoms, binding.symptomsLesions, binding.symptomsLymphadenopathyAxillary,
-                binding.symptomsLymphadenopathyCervical, binding.symptomsLymphadenopathyInguinal, binding.symptomsChillsSweats, binding.symptomsBedridden,
+                binding.symptomsLymphadenopathyCervical, binding.symptomsLymphadenopathyInguinal, binding.symptomsMeningealSigns,
+                binding.symptomsChillsSweats, binding.symptomsBedridden,
                 binding.symptomsOralUlcers, binding.symptomsBlackeningDeathOfTissue, binding.symptomsBuboesGroinArmpitNeck, binding.symptomsPainfulLymphadenitis);
 
         conditionalBleedingSymptoms = Arrays.asList(binding.symptomsGumsBleeding, binding.symptomsInjectionSiteBleeding,

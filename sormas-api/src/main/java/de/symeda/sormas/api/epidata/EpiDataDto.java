@@ -56,6 +56,17 @@ public class EpiDataDto extends EntityDto {
 	private YesNoUnknown gatheringAttended;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private YesNoUnknown traveled;
+	
+	private List<EpiDataBurialDto> burials = new ArrayList<>();
+	private List<EpiDataGatheringDto> gatherings = new ArrayList<>();
+	private List<EpiDataTravelDto> travels = new ArrayList<>();
+
+//	private YesNoUnknown caseNeighborhood;
+//	private YesNoUnknown labProcessingUnsafe;
+//	private YesNoUnknown caseBlood;
+//	private YesNoUnknown directContactDeadUnsafe;
+//	private YesNoUnknown animalsInfectedArea;
+
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private YesNoUnknown rodents;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
@@ -112,10 +123,7 @@ public class EpiDataDto extends EntityDto {
 	private String placeOfLastExposure;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private AnimalCondition animalCondition;
-
-	private List<EpiDataBurialDto> burials = new ArrayList<>();
-	private List<EpiDataGatheringDto> gatherings = new ArrayList<>();
-	private List<EpiDataTravelDto> travels = new ArrayList<>();
+	
 	
 	public YesNoUnknown getBurialAttended() {
 		return burialAttended;

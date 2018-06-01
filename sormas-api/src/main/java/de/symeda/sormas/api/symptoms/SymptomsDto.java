@@ -67,6 +67,7 @@ public class SymptomsDto extends EntityDto {
 	public static final String LYMPHADENOPATHY_AXILLARY = "lymphadenopathyAxillary";
 	public static final String LYMPHADENOPATHY_CERVICAL = "lymphadenopathyCervical";
 	public static final String LYMPHADENOPATHY_INGUINAL = "lymphadenopathyInguinal";
+	public static final String MENINGEAL_SIGNS = "meningealSigns";
 	public static final String MUSCLE_PAIN = "musclePain";
 	public static final String NAUSEA = "nausea";
 	public static final String NECK_STIFFNESS = "neckStiffness";
@@ -180,7 +181,11 @@ public class SymptomsDto extends EntityDto {
 	private String otherHemorrhagicSymptomsText;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.DENGUE,Disease.OTHER})
 	@Outbreaks
+	/** Maculopapular rash */
 	private SymptomState skinRash;
+	@Diseases({Disease.CSM,Disease.OTHER})
+	@Outbreaks
+	private SymptomState meningealSigns;
 	@Diseases({Disease.CSM,Disease.OTHER})
 	@Outbreaks
 	private SymptomState neckStiffness;
@@ -244,6 +249,7 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.DENGUE,Disease.OTHER})
 	private SymptomState swollenGlands;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	/** Vesiculopustular rash */
 	private SymptomState lesions;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState lesionsSameState;
@@ -833,6 +839,12 @@ public class SymptomsDto extends EntityDto {
 	}
 	public void setSymptomsComments(String symptomsComments) {
 		this.symptomsComments = symptomsComments;
+	}
+	public SymptomState getMeningealSigns() {
+		return meningealSigns;
+	}
+	public void setMeningealSigns(SymptomState meningealSigns) {
+		this.meningealSigns = meningealSigns;
 	}
 	
 }

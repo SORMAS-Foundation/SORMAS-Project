@@ -130,6 +130,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setBuboesGroinArmpitNeck(b.getBuboesGroinArmpitNeck());
         a.setPainfulLymphadenitis(b.getPainfulLymphadenitis());
         a.setBulgingFontanelle(b.getBulgingFontanelle());
+        a.setMeningealSigns(b.getMeningealSigns());
     }
 
     @Override
@@ -222,5 +223,6 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         a.setBuboesGroinArmpitNeck(b.getBuboesGroinArmpitNeck());
         a.setPainfulLymphadenitis(b.getPainfulLymphadenitis());
         a.setBulgingFontanelle(b.getBulgingFontanelle());
+        a.setMeningealSigns(b.getMeningealSigns());
     }
 }

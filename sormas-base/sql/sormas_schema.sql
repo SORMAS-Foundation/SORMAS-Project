@@ -2393,3 +2393,11 @@ UPDATE person SET occupationdistrict_id = (SELECT district_id FROM facility WHER
 UPDATE person SET occupationcommunity_id = (SELECT community_id FROM facility WHERE facility.id = person.occupationfacility_id) WHERE occupationfacility_id IS NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (106, 'Add description field for other health facility to previous hospitalizations and person occupations #549');
+
+-- 2018-06-01 Case symptoms changes for automatic case classification #631
+
+ALTER TABLE symptoms ADD COLUMN meningealsigns varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN meningealsigns varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (107, 'Case symptoms changes for automatic case classification #631');
+

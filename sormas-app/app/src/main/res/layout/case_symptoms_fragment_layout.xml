@@ -291,6 +291,12 @@
                 android:value="@={symptoms.otitisMedia}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_meningealSigns"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.meningealSigns}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_musclePain"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
