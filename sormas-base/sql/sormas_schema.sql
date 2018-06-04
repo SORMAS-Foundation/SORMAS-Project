@@ -2392,12 +2392,25 @@ UPDATE person SET occupationregion_id = (SELECT region_id FROM facility WHERE fa
 UPDATE person SET occupationdistrict_id = (SELECT district_id FROM facility WHERE facility.id = person.occupationfacility_id) WHERE occupationfacility_id IS NOT NULL;
 UPDATE person SET occupationcommunity_id = (SELECT community_id FROM facility WHERE facility.id = person.occupationfacility_id) WHERE occupationfacility_id IS NOT NULL;
 
-INSERT INTO schema_version (version_number, comment) VALUES (106, 'Add description field for other health facility to previous hospitalizations and person occupations #549');
-
 -- 2018-06-01 Case symptoms changes for automatic case classification #631
 
 ALTER TABLE symptoms ADD COLUMN meningealsigns varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN meningealsigns varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (107, 'Case symptoms changes for automatic case classification #631');
+-- 2018-06-04 Add "Other laboratory" option for sample and sample test #440
 
+ALTER TABLE samples ADD COLUMN labdetails varchar(512);
+ALTER TABLE samples_history ADD COLUMN labdetails varchar(512);
+ALTER TABLE sampletest ADD COLUMN labdetails varchar(512);
+ALTER TABLE sampletest_history ADD COLUMN labdetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (108, 'Add "Other laboratory" option for sample and sample test #440');
+
+-- 2018-06-05 Sample and sample test data model changes #627
+
+UPDATE sampletest SET testtype = 'IGM_SERUM_ANTIBODY' WHERE testtype = 'SERUM_ANTIBODY_TITER';
+UPDATE sampletest SET testtype = 'IGM_SERUM_ANTIBODY' WHERE testtype = 'ELISA';
+UPDATE sampletest SET testtype = 'PCR_RT_PCR' WHERE testtype = 'PCR' OR testtype = 'RT_PCR';
+
+INSERT INTO schema_version (version_number, comment) VALUES (109, 'Sample and sample test data model changes #627');

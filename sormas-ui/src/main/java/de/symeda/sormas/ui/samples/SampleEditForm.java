@@ -16,6 +16,8 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -42,7 +44,8 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_CODE),
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
-					LayoutUtil.fluidRowLocs(SampleDto.SUGGESTED_TYPE_OF_TEST, SampleDto.LAB)
+					LayoutUtil.fluidRowLocs(SampleDto.SUGGESTED_TYPE_OF_TEST, ""),
+					LayoutUtil.fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS)
 			) +
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.SHIPPED) +
 			LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS) +
@@ -71,7 +74,8 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		DateField receivedDate = addField(SampleDto.RECEIVED_DATE, DateField.class);
 		receivedDate.setDateFormat(DateHelper.getShortDateFormat().toPattern());
 		ComboBox lab = addField(SampleDto.LAB, ComboBox.class);
-		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
+		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
+		TextField labDetails = addField(SampleDto.LAB_DETAILS, TextField.class);
 		addField(SampleDto.SPECIMEN_CONDITION, ComboBox.class);
 		addField(SampleDto.NO_TEST_POSSIBLE_REASON, TextField.class);
 		addField(SampleDto.COMMENT, TextArea.class).setRows(2);
@@ -142,6 +146,17 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				referredButton.addClickListener(s -> ControllerProvider.getSampleController().navigateToData(referredFrom.getUuid()));
 				reportInfoLayout.addComponent(referredButton);
 			}
+			
+			lab.addValueChangeListener(event -> {
+				if (event.getProperty().getValue() != null && ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+					labDetails.setVisible(true);
+					labDetails.setRequired(true);
+				} else {
+					labDetails.setVisible(false);
+					labDetails.setRequired(false);
+					labDetails.clear();
+				}
+			});
 			
 			getContent().addComponent(reportInfoLayout, REPORT_INFORMATION_LOC);
 		});

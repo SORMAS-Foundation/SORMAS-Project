@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.facility;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class FacilityHelper {
@@ -16,6 +17,23 @@ public class FacilityHelper {
 			result.append(facilityDetails);
 		}		
 		return result.toString();
+	}
+	
+	public static String buildToString(String facilityUuid, String facilityName) {
+		if (facilityUuid.equals(FacilityDto.OTHER_FACILITY_UUID)) {
+			return I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.OTHER_FACILITY);
+		}
+		if (facilityUuid.equals(FacilityDto.NONE_FACILITY_UUID)) {
+			return I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.NO_FACILITY);
+		}
+		if (facilityUuid.equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+			return I18nProperties.getPrefixFieldCaption(FacilityDto.I18N_PREFIX, FacilityDto.OTHER_LABORATORY);
+		}
+		
+		StringBuilder caption = new StringBuilder();
+		caption.append(facilityName);
+
+		return caption.toString();
 	}
 	
 	public static boolean isOtherOrNoneHealthFacility(String facilityUuid) {

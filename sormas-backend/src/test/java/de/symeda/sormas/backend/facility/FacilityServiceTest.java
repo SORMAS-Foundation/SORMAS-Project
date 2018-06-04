@@ -75,7 +75,7 @@ public class FacilityServiceTest {
 	public void testImportLaboratories() {
 		FacilityService facilityService = getBean(FacilityService.class);
 
-		List<Facility> allLaboratories = facilityService.getAllLaboratories();
+		List<Facility> allLaboratories = facilityService.getAllLaboratories(true);
 		// List should have some entries
 		assertThat(allLaboratories.size(), greaterThan(1));
 	}

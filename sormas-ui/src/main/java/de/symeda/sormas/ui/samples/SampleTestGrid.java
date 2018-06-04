@@ -28,8 +28,9 @@ public class SampleTestGrid extends Grid implements ItemClickListener {
 
 	private static final String EDIT_BTN_ID = "edit";
 	private SampleReferenceDto sampleRef;
+	private int caseSampleCount;
 
-	public SampleTestGrid(SampleReferenceDto sampleRef) {
+	public SampleTestGrid(SampleReferenceDto sampleRef, int caseSampleCount) {
 		setSizeFull();
 
 		BeanItemContainer<SampleTestDto> container = new BeanItemContainer<SampleTestDto>(SampleTestDto.class);
@@ -60,6 +61,7 @@ public class SampleTestGrid extends Grid implements ItemClickListener {
 		addItemClickListener(this);
 
 		this.sampleRef = sampleRef;
+		this.caseSampleCount = caseSampleCount;
 		reload();
 	}
 
@@ -99,7 +101,7 @@ public class SampleTestGrid extends Grid implements ItemClickListener {
 	public void itemClick(ItemClickEvent event) {
 		SampleTestDto sampleTest = (SampleTestDto)event.getItemId();
 		if(event.getPropertyId() != null && (EDIT_BTN_ID.equals(event.getPropertyId()) || event.isDoubleClick())) {
-			ControllerProvider.getSampleTestController().edit(sampleTest, this);
+			ControllerProvider.getSampleTestController().edit(sampleTest, this, caseSampleCount);
 		}
 	}
 

@@ -56,6 +56,7 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         target.setReportDateTime(source.getReportDateTime());
 
         target.setLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getLab()));
+        target.setLabDetails(source.getLabDetails());
 
         target.setSampleCode(source.getSampleCode());
         target.setLabSampleID(source.getLabSampleID());
@@ -109,6 +110,7 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
             target.setReferredTo(null);
         }
 
+        target.setLabDetails(source.getLabDetails());
         target.setSampleCode(source.getSampleCode());
         target.setLabSampleID(source.getLabSampleID());
         target.setSampleDateTime(source.getSampleDateTime());

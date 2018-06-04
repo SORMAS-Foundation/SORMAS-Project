@@ -17,7 +17,7 @@ public interface FacilityFacade {
     List<FacilityReferenceDto> getHealthFacilitiesByCommunity(CommunityReferenceDto community, boolean includeStaticFacilities);
     List<FacilityReferenceDto> getHealthFacilitiesByDistrict(DistrictReferenceDto district, boolean includeStaticFacilities);
     List<FacilityReferenceDto> getHealthFacilitiesByRegion(RegionReferenceDto region, boolean includeStaticFacilities);
-    List<FacilityReferenceDto> getAllLaboratories();
+    List<FacilityReferenceDto> getAllLaboratories(boolean includeOtherFacility);
 
 	List<FacilityDto> getAllByRegionAfter(String regionUuid, Date date);
 	List<FacilityDto> getAllWithoutRegionAfter(Date date);

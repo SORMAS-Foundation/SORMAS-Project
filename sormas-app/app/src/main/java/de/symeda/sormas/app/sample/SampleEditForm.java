@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SampleTestType;
@@ -26,10 +27,13 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.component.FieldHelper;
+import de.symeda.sormas.app.component.PropertyField;
+import de.symeda.sormas.app.component.TextField;
 import de.symeda.sormas.app.databinding.SampleDataFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
@@ -105,6 +109,20 @@ public class SampleEditForm extends FormTab {
             }
         });
 
+        binding.sampleLab.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                TextField labDetailsField = binding.sampleLabDetails;
+                Facility selectedLab = (Facility) field.getValue();
+
+                if (selectedLab != null && selectedLab.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+                    labDetailsField.setVisibility(View.VISIBLE);
+                } else {
+                    labDetailsField.setVisibility(View.GONE);
+                }
+            }
+        });
+
         binding.sampleDateTime.initialize(this);
         FieldHelper.initSpinnerField(binding.sampleMaterial, SampleMaterial.class);
         FieldHelper.initSpinnerField(binding.sampleSampleSource, SampleSource.class);
@@ -114,7 +132,7 @@ public class SampleEditForm extends FormTab {
 
         FieldHelper.initSpinnerField(binding.sampleSuggestedTypeOfTest, SampleTestType.class);
 
-        final List laboratories = DataUtils.toItems(DatabaseHelper.getFacilityDao().getLaboratories());
+        final List laboratories = DataUtils.toItems(DatabaseHelper.getFacilityDao().getLaboratories(true));
         FieldHelper.initSpinnerField(binding.sampleLab, laboratories);
 
         // only show received fields when sample has been received
@@ -176,6 +194,8 @@ public class SampleEditForm extends FormTab {
                 binding.sampleShipped.setEnabled(false);
                 binding.sampleShipmentDate.setEnabled(false);
                 binding.sampleShipmentDetails.setEnabled(false);
+                binding.sampleSampleSource.setEnabled(false);
+                binding.sampleLabDetails.setEnabled(false);
             }
         }
 

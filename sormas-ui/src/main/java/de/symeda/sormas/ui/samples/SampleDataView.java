@@ -6,6 +6,7 @@ import com.vaadin.ui.HorizontalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
@@ -27,6 +28,7 @@ public class SampleDataView extends AbstractSampleView {
 		
 		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(getSampleRef().getUuid());
 		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(sampleDto.getAssociatedCase().getUuid());
+		int caseSampleCount = FacadeProvider.getSampleFacade().getReceivedSampleCountByCase(new CaseReferenceDto(caseDto.getUuid()));
 		
 		HorizontalLayout layout = new HorizontalLayout();
     	layout.setSpacing(true);
@@ -36,11 +38,9 @@ public class SampleDataView extends AbstractSampleView {
     	layout.addComponent(caseInfoLayout);
     	addComponent(layout);
     	
-		if (sampleDto.isReceived()) {
-			SampleTestsComponent sampleTestsComponent = new SampleTestsComponent(getSampleRef());
-			sampleTestsComponent.setMargin(true);
-			addComponent(sampleTestsComponent);
-		}
+		SampleTestsComponent sampleTestsComponent = new SampleTestsComponent(getSampleRef(), sampleDto.isReceived(), caseSampleCount);
+		sampleTestsComponent.setMargin(true);
+		addComponent(sampleTestsComponent);
 	}
 
 }

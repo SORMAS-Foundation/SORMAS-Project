@@ -17,6 +17,7 @@ public class SampleTestDto extends EntityDto {
 	public static final String TEST_TYPE_TEXT = "testTypeText";
 	public static final String TEST_DATE_TIME = "testDateTime";
 	public static final String LAB = "lab";
+	public static final String LAB_DETAILS = "labDetails";
 	public static final String LAB_USER = "labUser";
 	public static final String TEST_RESULT = "testResult";
 	public static final String TEST_RESULT_TEXT = "testResultText";
@@ -28,6 +29,7 @@ public class SampleTestDto extends EntityDto {
 	private String testTypeText;
 	private Date testDateTime;
 	private FacilityReferenceDto lab;
+	private String labDetails;
 	private UserReferenceDto labUser;
 	private SampleTestResultType testResult;
 	private String testResultText;
@@ -63,6 +65,12 @@ public class SampleTestDto extends EntityDto {
 	}
 	public void setLab(FacilityReferenceDto lab) {
 		this.lab = lab;
+	}
+	public String getLabDetails() {
+		return labDetails;
+	}
+	public void setLabDetails(String labDetails) {
+		this.labDetails = labDetails;
 	}
 	public UserReferenceDto getLabUser() {
 		return labUser;

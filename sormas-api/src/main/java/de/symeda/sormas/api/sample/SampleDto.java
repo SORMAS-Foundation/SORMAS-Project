@@ -23,6 +23,7 @@ public class SampleDto extends EntityDto {
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
 	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
 	public static final String LAB = "lab";
+	public static final String LAB_DETAILS = "labDetails";
 	public static final String SHIPMENT_DATE = "shipmentDate";
 	public static final String SHIPMENT_DETAILS = "shipmentDetails";
 	public static final String RECEIVED_DATE = "receivedDate";
@@ -49,6 +50,7 @@ public class SampleDto extends EntityDto {
 	private SampleMaterial sampleMaterial;
 	private String sampleMaterialText;
 	private FacilityReferenceDto lab;
+	private String labDetails;
 	private Date shipmentDate;
 	private String shipmentDetails;
 	private Date receivedDate;
@@ -114,6 +116,12 @@ public class SampleDto extends EntityDto {
 	}
 	public void setLab(FacilityReferenceDto lab) {
 		this.lab = lab;
+	}
+	public String getLabDetails() {
+		return labDetails;
+	}
+	public void setLabDetails(String labDetails) {
+		this.labDetails = labDetails;
 	}
 	public Date getShipmentDate() {
 		return shipmentDate;

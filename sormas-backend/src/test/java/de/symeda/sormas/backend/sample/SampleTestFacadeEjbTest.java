@@ -94,12 +94,12 @@ public class SampleTestFacadeEjbTest extends AbstractBeanTest {
 		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(user.getUuid(), sampleCriteria);
 		assertEquals(0, sampleIndexDtos.size());
 		
-		creator.createSampleTest(sample.toReference(), SampleTestType.PCR, new Date(), rdcf.facility, user.toReference(), SampleTestResultType.POSITIVE, "", false);
+		creator.createSampleTest(sample.toReference(), SampleTestType.PCR_RT_PCR, new Date(), rdcf.facility, user.toReference(), SampleTestResultType.POSITIVE, "", false);
 		// now we should have one entry
 		sampleIndexDtos = getSampleFacade().getIndexList(user.getUuid(), sampleCriteria);
 		assertEquals(1, sampleIndexDtos.size());
 
-		creator.createSampleTest(sample.toReference(), SampleTestType.PCR, new Date(), rdcf.facility, user.toReference(), SampleTestResultType.NEGATIVE, "", false);
+		creator.createSampleTest(sample.toReference(), SampleTestType.PCR_RT_PCR, new Date(), rdcf.facility, user.toReference(), SampleTestResultType.NEGATIVE, "", false);
 		// now 0, because the negative test is the new (latest) main test
 		sampleIndexDtos = getSampleFacade().getIndexList(user.getUuid(), sampleCriteria);
 		assertEquals(0, sampleIndexDtos.size());
@@ -108,7 +108,7 @@ public class SampleTestFacadeEjbTest extends AbstractBeanTest {
 		sampleIndexDtos = getSampleFacade().getIndexList(user.getUuid(), sampleCriteria);
 		assertEquals(1, sampleIndexDtos.size());
 		
-		creator.createSampleTest(sample.toReference(), SampleTestType.PCR, DateHelper.addDays(new Date(), -1), rdcf.facility, user.toReference(), SampleTestResultType.POSITIVE, "", false);
+		creator.createSampleTest(sample.toReference(), SampleTestType.PCR_RT_PCR, DateHelper.addDays(new Date(), -1), rdcf.facility, user.toReference(), SampleTestResultType.POSITIVE, "", false);
 		// should still be negative
 		sampleIndexDtos = getSampleFacade().getIndexList(user.getUuid(), sampleCriteria);
 		assertEquals(SampleTestResultType.NEGATIVE, sampleIndexDtos.get(0).getSampleTestResult());

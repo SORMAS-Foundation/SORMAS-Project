@@ -31,16 +31,19 @@ public class SampleTest extends AbstractDomainObject {
 	public static final String TEST_TYPE_TEXT = "testTypeText";
 	public static final String TEST_DATE_TIME = "testDateTime";
 	public static final String LAB = "lab";
+	public static final String LAB_DETAILS = "labDetails";
 	public static final String LAB_USER = "labUser";
 	public static final String TEST_RESULT = "testResult";
 	public static final String TEST_RESULT_TEXT = "testResultText";
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
+	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
 	
 	private Sample sample;
 	private SampleTestType testType;
 	private String testTypeText;
 	private Date testDateTime;
 	private Facility lab;
+	private String labDetails;
 	private User labUser;
 	private SampleTestResultType testResult;
 	private String testResultText;
@@ -89,6 +92,14 @@ public class SampleTest extends AbstractDomainObject {
 	}
 	public void setLab(Facility lab) {
 		this.lab = lab;
+	}
+
+	@Column(length=512)
+	public String getLabDetails() {
+		return labDetails;
+	}
+	public void setLabDetails(String labDetails) {
+		this.labDetails = labDetails;
 	}
 	
 	@ManyToOne(cascade = {})
