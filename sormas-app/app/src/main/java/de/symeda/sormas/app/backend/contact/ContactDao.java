@@ -45,7 +45,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 
         try {
             QueryBuilder qb = queryBuilder();
-            qb.where().eq(Contact.CAZE, caze)
+            qb.where().eq(Contact.CASE_UUID, caze.getUuid())
                     .and().eq(AbstractDomainObject.SNAPSHOT, false);
             qb.orderBy(Contact.LAST_CONTACT_DATE, false);
             return qb.query();

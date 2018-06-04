@@ -341,6 +341,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
+		target.setCaseDisease(source.getCaze().getDisease());
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
 
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));

@@ -17,6 +17,7 @@ public class ContactDto extends EntityDto {
 	
 	public static final String PERSON = "person";
 	public static final String CAZE = "caze";
+	public static final String CASE_DISEASE = "caseDisease";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
@@ -32,11 +33,17 @@ public class ContactDto extends EntityDto {
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	public static final String RESULTING_CASE = "resultingCase";
+	public static final String RESULTING_CASE_USER = "resultingCaseUser";
 	
-	private PersonReferenceDto person;
-	private CaseReferenceDto caze;
 	private Date reportDateTime;
 	private UserReferenceDto reportingUser;
+	private Double reportLat;
+	private Double reportLon;
+	private Float reportLatLonAccuracy;
+
+	private PersonReferenceDto person;
+	private CaseReferenceDto caze;
+	private Disease caseDisease;
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
@@ -51,10 +58,9 @@ public class ContactDto extends EntityDto {
 	private UserReferenceDto contactOfficer;
 	private String description;
 	private ContactRelation relationToCase;
-	private CaseReferenceDto resultingCase; // read-only
-	private Double reportLat;
-	private Double reportLon;
-	private Float reportLatLonAccuracy;
+	
+	private CaseReferenceDto resultingCase; // read-only now, but editable long-term
+	private UserReferenceDto resultingCaseUser;
 
 	public PersonReferenceDto getPerson() {
 		return person;
@@ -170,6 +176,21 @@ public class ContactDto extends EntityDto {
 	
 	public ContactReferenceDto toReference() {
 		return new ContactReferenceDto(getUuid());
+	}
+	public UserReferenceDto getResultingCaseUser() {
+		return resultingCaseUser;
+	}
+	public void setResultingCaseUser(UserReferenceDto resultingCaseUser) {
+		this.resultingCaseUser = resultingCaseUser;
+	}
+	public Disease getCaseDisease() {
+		return caseDisease;
+	}
+	/**
+	 * Read-only
+	 */
+	public void setCaseDisease(Disease caseDisease) {
+		this.caseDisease = caseDisease;
 	}
 	
 }

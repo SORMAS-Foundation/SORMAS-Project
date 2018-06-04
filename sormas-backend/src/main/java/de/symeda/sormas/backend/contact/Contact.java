@@ -54,11 +54,15 @@ public class Contact extends AbstractDomainObject {
 	public static final String REPORT_LON = "reportLon";
 	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
 	
+	private Date reportDateTime;
+	private User reportingUser;
+	private Double reportLat;
+	private Double reportLon;
+	private Float reportLatLonAccuracy;
+
 	private Person person;
 	private Case caze;
 	private ContactRelation relationToCase;
-	private Date reportDateTime;
-	private User reportingUser;
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
@@ -68,11 +72,9 @@ public class Contact extends AbstractDomainObject {
 	private Date followUpUntil;
 	private User contactOfficer;
 	private String description;
-	private Case resultingCase;
 	
-	private Double reportLat;
-	private Double reportLon;
-	private Float reportLatLonAccuracy;
+	private Case resultingCase;
+	private User resultingCaseUser;
 	
 	private List<Task> tasks;
 	
@@ -255,5 +257,15 @@ public class Contact extends AbstractDomainObject {
 
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
+
+	@ManyToOne(cascade = {})
+	@JoinColumn(nullable=false)
+	public User getResultingCaseUser() {
+		return resultingCaseUser;
+	}
+
+	public void setResultingCaseUser(User resultingCaseUser) {
+		this.resultingCaseUser = resultingCaseUser;
 	}	
 }

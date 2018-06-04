@@ -49,7 +49,7 @@ public class VisitDao extends AbstractAdoDao<Visit> {
             where.and(
                     where.eq(AbstractDomainObject.SNAPSHOT, false),
                     where.eq(Visit.PERSON + "_id", contact.getPerson()),
-                    where.eq(Visit.DISEASE, contact.getCaze().getDisease())
+                    where.eq(Visit.DISEASE, contact.getCaseDisease())
             );
             // see sormas-backend/VisitService.getAllByContact()
             Date contactReferenceDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
@@ -106,7 +106,7 @@ public class VisitDao extends AbstractAdoDao<Visit> {
         Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
         Visit visit = super.build();
         visit.setPerson(contact.getPerson());
-        visit.setDisease(contact.getCaze().getDisease());
+        visit.setDisease(contact.getCaseDisease());
         visit.setVisitDateTime(new Date());
         return visit;
     }

@@ -35,8 +35,8 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 			LayoutUtil.fluidRowLoc(6, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
 			LayoutUtil.fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE) +
 			LayoutUtil.fluidRowLocs(HospitalizationDto.ISOLATED, HospitalizationDto.ISOLATION_DATE) +
-			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_TOP_3, HospitalizationDto.HOSPITALIZED_PREVIOUSLY) +
-			LayoutUtil.fluidRowLoc(6, HospitalizationDto.PREVIOUS_HOSPITALIZATIONS)
+			LayoutUtil.fluidRow(LayoutUtil.fluidColumnLocCss(CssStyles.VSPACE_TOP_3, 6, 0, HospitalizationDto.HOSPITALIZED_PREVIOUSLY)) +
+			LayoutUtil.fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS)
 	;		
 	
 	public CaseHospitalizationForm(CaseDataDto caze, UserRight editOrCreateUserRight, ViewMode viewMode) {

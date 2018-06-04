@@ -2466,3 +2466,10 @@ ALTER TABLE epidata_history DROP COLUMN wildbirdslocation;
 
 INSERT INTO schema_version (version_number, comment) VALUES (110, 'Case epi data changes for automatic case classification #632');
 
+-- 2018-06-04 Add "contact with source case" to epi data #629
+
+ALTER TABLE contact ADD COLUMN resultingcaseuser_id bigint;
+ALTER TABLE contact_history ADD COLUMN resultingcaseuser_id bigint;
+ALTER TABLE contact ADD CONSTRAINT fk_contact_resultingcaseuser_id FOREIGN KEY (resultingcaseuser_id) REFERENCES public.users (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (111, 'Add "contact with source case" to epi data #629');

@@ -67,7 +67,7 @@ public class TasksListArrayAdapter extends ArrayAdapter<Task> {
         if (task.getCaze() != null) {
             disease.setText(task.getCaze().getDisease().toShortString());
         } else if (task.getContact() != null) {
-            disease.setText(task.getContact().getCaze().getDisease().toShortString());
+            disease.setText(task.getContact().getCaseDisease().toShortString());
         } else if (task.getEvent() != null && task.getEvent().getDisease() != null){
             disease.setText(task.getEvent().getDisease().toShortString());
         } else {

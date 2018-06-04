@@ -27,6 +27,7 @@ import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -135,7 +136,10 @@ public class ContactNewActivity extends AppCompatActivity {
                 contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
                 contact.setReportingUser(ConfigProvider.getUser());
                 contact.setReportDateTime(new Date());
-                contact.setCaze(DatabaseHelper.getCaseDao().queryUuidReference(caseUuid));
+                // not null, because contact can only be created when the user has access to the case
+                Case contactCase = DatabaseHelper.getCaseDao().queryUuidBasic(caseUuid);
+                contact.setCaseUuid(caseUuid);
+                contact.setCaseDisease(contactCase.getDisease());
 
                 // Validation
                 ContactNewFragmentLayoutBinding binding = contactNewForm.getBinding();
@@ -199,9 +203,12 @@ public class ContactNewActivity extends AppCompatActivity {
         Person person = contact.getPerson();
 
         if(contact.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && person.getAddress().isEmptyLocation()) {
-            person.getAddress().setRegion(contact.getCaze().getRegion());
-            person.getAddress().setDistrict(contact.getCaze().getDistrict());
-            person.getAddress().setCommunity(contact.getCaze().getCommunity());
+            Case contactCase = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
+            if (contactCase != null) {
+                person.getAddress().setRegion(contactCase.getRegion());
+                person.getAddress().setDistrict(contactCase.getDistrict());
+                person.getAddress().setCommunity(contactCase.getCommunity());
+            }
         }
 
         // save

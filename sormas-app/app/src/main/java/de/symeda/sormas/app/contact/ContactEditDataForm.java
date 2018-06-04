@@ -50,7 +50,9 @@ public class ContactEditDataForm extends FormTab {
 
         final String contactUuid = getArguments().getString(Contact.UUID);
         Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
+        Case contactCase = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
         binding.setContact(contact);
+        binding.setContactCase(contactCase);
 
         binding.contactLastContactDate.initialize(this);
         binding.contactContactProximity.initialize(ContactProximity.class);
@@ -84,7 +86,7 @@ public class ContactEditDataForm extends FormTab {
             binding.contactCreateCase.setVisibility(View.GONE);
         }
 
-        setVisibilityByDisease(ContactDto.class, contact.getCaze().getDisease(), (ViewGroup)binding.getRoot());
+        setVisibilityByDisease(ContactDto.class, contact.getCaseDisease(), (ViewGroup)binding.getRoot());
 
         binding.contactLastContactDate.makeFieldSoftRequired();
         binding.contactContactProximity.makeFieldSoftRequired();
@@ -99,10 +101,11 @@ public class ContactEditDataForm extends FormTab {
         binding.contactCazeUuid.makeLink(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (binding.getContact().getCaze() != null) {
-                    final CaseDao caseDao = DatabaseHelper.getCaseDao();
-                    final Case caze = caseDao.queryUuidReference(binding.getContact().getCaze().getUuid());
-                    showCaseEditView(caze);
+                if (binding.getContact().getCaseUuid() != null) {
+                    Case caze = DatabaseHelper.getCaseDao().queryUuidReference(binding.getContact().getCaseUuid());
+                    if (caze != null) {
+                        showCaseEditView(caze);
+                    }
                 }
             }
         });

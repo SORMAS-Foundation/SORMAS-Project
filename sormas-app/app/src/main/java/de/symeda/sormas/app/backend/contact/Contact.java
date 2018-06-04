@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
@@ -32,7 +33,8 @@ public class Contact extends AbstractDomainObject {
 	public static final String I18N_PREFIX = "Contact";
 
 	public static final String PERSON = "person_id";
-	public static final String CAZE = "caze_id";
+	public static final String CASE_UUID = "caseUuid";
+	public static final String CASE_DISEASE = "caseDisease";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
@@ -44,75 +46,58 @@ public class Contact extends AbstractDomainObject {
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String DESCRIPTION = "description";
 	public static final String RELATION_TO_CASE = "relationToCase";
-	public static final String RESULTING_CASE = "resultingCase";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
 
-	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
-	private Person person;
-
-	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false)
-	private Case caze;
-
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date reportDateTime;
-
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User reportingUser;
-
-	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
-	private Date lastContactDate;
-
-	@Enumerated(EnumType.STRING)
-	private ContactProximity contactProximity;
-
-	@Enumerated(EnumType.STRING)
-	private ContactClassification contactClassification;
-
-	@Enumerated(EnumType.STRING)
-	private ContactStatus contactStatus;
-
-	@Enumerated(EnumType.STRING)
-	private FollowUpStatus followUpStatus;
-
-	@Column(length=512)
-	private String followUpComment;
-
-	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
-	private Date followUpUntil;
-
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private User contactOfficer;
-
-	@Column(length=512)
-	private String description;
-
-	@Enumerated(EnumType.STRING)
-	private ContactRelation relationToCase;
-
-	@DatabaseField
-	private String resultingCaseUuid;
-
 	@DatabaseField
 	private Double reportLat;
 	@DatabaseField
 	private Double reportLon;
 	@DatabaseField
 	private Float reportLatLonAccuracy;
-	
+
+	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
+	private Person person;
+	@DatabaseField
+	private String caseUuid;
+	@Enumerated(EnumType.STRING)
+	private Disease caseDisease;
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+	private Date lastContactDate;
+	@Enumerated(EnumType.STRING)
+	private ContactProximity contactProximity;
+	@Enumerated(EnumType.STRING)
+	private ContactClassification contactClassification;
+	@Enumerated(EnumType.STRING)
+	private ContactStatus contactStatus;
+	@Enumerated(EnumType.STRING)
+	private FollowUpStatus followUpStatus;
+	@Column(length=512)
+	private String followUpComment;
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+	private Date followUpUntil;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private User contactOfficer;
+	@Column(length=512)
+	private String description;
+	@Enumerated(EnumType.STRING)
+	private ContactRelation relationToCase;
+
+	@DatabaseField
+	private String resultingCaseUuid;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private User resultingCaseUser;
+
 	public Person getPerson() {
 		return person;
 	}
 	public void setPerson(Person person) {
 		this.person = person;
-	}
-	
-	public Case getCaze() {
-		return caze;
-	}
-	public void setCaze(Case caze) {
-		this.caze = caze;
 	}
 	
 	public Date getReportDateTime() {
@@ -253,5 +238,29 @@ public class Contact extends AbstractDomainObject {
 
 	public void setResultingCaseUuid(String resultingCaseUuid) {
 		this.resultingCaseUuid = resultingCaseUuid;
+	}
+
+	public User getResultingCaseUser() {
+		return resultingCaseUser;
+	}
+
+	public void setResultingCaseUser(User resultingCaseUser) {
+		this.resultingCaseUser = resultingCaseUser;
+	}
+
+	public String getCaseUuid() {
+		return caseUuid;
+	}
+
+	public void setCaseUuid(String caseUuid) {
+		this.caseUuid = caseUuid;
+	}
+
+	public Disease getCaseDisease() {
+		return caseDisease;
+	}
+
+	public void setCaseDisease(Disease caseDisease) {
+		this.caseDisease = caseDisease;
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 
@@ -64,7 +65,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			LayoutUtil.loc(ENVIRONMENTAL_LOC) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_BODY) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.WATER_SOURCE_OTHER, EpiDataDto.WATER_BODY_DETAILS) +
-			LayoutUtil.fluidRow(LayoutUtil.locs(EpiDataDto.TICK_BITE, EpiDataDto.FLEA_BITE))			
+			LayoutUtil.fluidRowLocs(EpiDataDto.TICK_BITE, EpiDataDto.FLEA_BITE)			
 	;
 	
 	private final Disease disease;
@@ -106,7 +107,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 				EpiDataDto.OTHER_ANIMALS, EpiDataDto.OTHER_ANIMALS_DETAILS, 
 				EpiDataDto.ANIMAL_CONDITION, EpiDataDto.DATE_OF_LAST_EXPOSURE, EpiDataDto.PLACE_OF_LAST_EXPOSURE);
 		
-		addFields(OptionGroup.class, EpiDataDto.WATER_BODY, EpiDataDto.WATER_BODY_DETAILS, 
+		addFields(EpiDataDto.WATER_BODY, EpiDataDto.WATER_BODY_DETAILS, 
 				EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_SOURCE_OTHER, 
 				EpiDataDto.TICK_BITE, EpiDataDto.FLEA_BITE);
 

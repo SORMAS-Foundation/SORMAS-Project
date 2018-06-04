@@ -78,7 +78,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	private static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 128;
+	private static final int DATABASE_VERSION = 129;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -496,6 +496,35 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN percutaneousCaseBlood varchar(255);");
 					getDao(EpiData.class).executeRaw("UPDATE epidata SET poultryDetails=null, poultry=null," +
 							" wildbirds=null, wildbirdsDetails=null, wildbirdsDate=null, wildbirdsLocation=null;");
+				case 128:
+					currentVersion = 128;
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN resultingCaseUser_id bigint REFERENCES users(id);");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN caseUuid VARCHAR;");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN caseDisease VARCHAR;");
+					getDao(Contact.class).executeRaw("UPDATE contacts SET caseUuid = (SELECT uuid FROM cases WHERE cases.id = contacts.caze_id) WHERE caze_id IS NOT NULL;");
+					getDao(Contact.class).executeRaw("UPDATE contacts SET caseDisease = (SELECT disease FROM cases WHERE cases.id = contacts.caze_id) WHERE caze_id IS NOT NULL;");
+					// Re-creation of the contacts table has to be done to remove not null constraints and the case id column
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts RENAME TO tmp_contacts;");
+					getDao(Contact.class).executeRaw("CREATE TABLE contacts (caseUuid VARCHAR, caseDisease VARCHAR, contactClassification VARCHAR, " +
+							"contactOfficer_id BIGINT REFERENCES users(id), contactProximity VARCHAR, contactStatus VARCHAR, " +
+							"description VARCHAR, followUpComment VARCHAR, followUpStatus VARCHAR, followUpUntil BIGINT, " +
+							"lastContactDate BIGINT, person_id BIGINT REFERENCES person(id), relationToCase VARCHAR, " +
+							"reportDateTime BIGINT, reportLat DOUBLEPRECISION, reportLatLonAccuracy FLOAT, reportLon DOUBLEPRECISION, reportingUser_id BIGINT REFERENCES users(id), " +
+							"resultingCaseUuid VARCHAR, resultingCaseUser_id BIGINT REFERENCES users(id)," +
+							"changeDate BIGINT NOT NULL, creationDate BIGINT NOT NULL, id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+							"lastOpenedDate BIGINT, localChangeDate BIGINT NOT NULL, modified SMALLINT, snapshot SMALLINT, uuid VARCHAR NOT NULL, UNIQUE(snapshot, uuid));");
+					getDao(Contact.class).executeRaw("INSERT INTO contacts(caseUuid, caseDisease, contactClassification, " +
+							"contactOfficer_id, contactProximity, contactStatus, description, followUpComment, followUpStatus, followUpUntil," +
+							"lastContactDate, person_id, relationToCase, reportDateTime, reportLat, reportLatLonAccuracy, reportLon, reportingUser_id," +
+							"resultingCaseUuid, resultingCaseUser_id," +
+							"changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid) " +
+							"SELECT caseUuid, caseDisease, contactClassification, " +
+							"contactOfficer_id, contactProximity, contactStatus, description, followUpComment, followUpStatus, followUpUntil, " +
+							"lastContactDate, person_id, relationToCase, reportDateTime, reportLat, reportLatLonAccuracy, reportLon, reportingUser_id, " +
+							"resultingCaseUuid, resultingCaseUser_id, " +
+							"changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid " +
+							"FROM tmp_contacts;");
+					getDao(Contact.class).executeRaw("DROP TABLE tmp_contacts;");
 
 					// ATTENTION: break should only be done after last version
 					break;

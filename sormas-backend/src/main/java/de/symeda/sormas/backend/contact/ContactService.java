@@ -271,10 +271,12 @@ public class ContactService extends AbstractAdoService<Contact> {
 		case UNCONFIRMED:
 			contact.setContactStatus(ContactStatus.ACTIVE);
 			contact.setResultingCase(null);
+			contact.setResultingCaseUser(null);
 			break;
 		case NO_CONTACT:
 			contact.setContactStatus(ContactStatus.DROPPED);
 			contact.setResultingCase(null);
+			contact.setResultingCaseUser(null);
 			break;
 		case CONFIRMED:
 			
@@ -302,6 +304,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 			if (resultingCase != null) {
 				contact.setContactStatus(ContactStatus.CONVERTED);
 				contact.setResultingCase(resultingCase);
+				contact.setResultingCaseUser(null);
 			} else {
 				FollowUpStatus followUpStatus = contact.getFollowUpStatus();
 				if (followUpStatus != null) { 
@@ -322,6 +325,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 					contact.setContactStatus(ContactStatus.ACTIVE);
 				}
 				contact.setResultingCase(null);
+				contact.setResultingCaseUser(null);
 			}
 			
 			break;
