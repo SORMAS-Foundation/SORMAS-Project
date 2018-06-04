@@ -45,6 +45,55 @@
                 android:id="@+id/epiData_epiDataInfoText"
                 android:paddingBottom="10dp"/>
 
+            <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/epiData_directContactConfirmedCase"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:value="@={epiData.directContactConfirmedCase}" />
+            <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/epiData_closeContactProbableCase"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:value="@={epiData.closeContactProbableCase}" />
+            <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/epiData_directContactProbableCase"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:value="@={epiData.directContactProbableCase}" />
+            <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/epiData_areaConfirmedCases"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:value="@={epiData.areaConfirmedCases}" />
+            <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/epiData_processingConfirmedCaseFluidUnsafe"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:value="@={epiData.processingConfirmedCaseFluidUnsafe}" />
+            <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/epiData_directContactDeadUnsafe"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:value="@={epiData.directContactDeadUnsafe}" />
+            <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/epiData_percutaneousCaseBlood"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:value="@={epiData.percutaneousCaseBlood}" />
+            <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/epiData_processingSuspectedCaseSampleUnsafe"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:value="@={epiData.processingSuspectedCaseSampleUnsafe}" />
+
             <de.symeda.sormas.app.component.YesNoUnknownVerticalField
                 android:id="@+id/epiData_burialAttended"
                 android:layout_width="match_parent"
@@ -110,6 +159,13 @@
                 android:paddingBottom="10dp"/>
 
             <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/epiData_areaInfectedAnimals"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:value="@={epiData.areaInfectedAnimals}" />
+
+            <de.symeda.sormas.app.component.YesNoUnknownField
                 android:id="@+id/epiData_rodents"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -144,69 +200,68 @@
                 android:layout_weight="0.5"
                 android:value="@={epiData.birds}" />
 
-            <de.symeda.sormas.app.component.YesNoUnknownVerticalField
-                android:id="@+id/epiData_poultryEat"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:value="@={epiData.poultryEat}" />
-
-            <de.symeda.sormas.app.component.YesNoUnknownVerticalField
-                android:id="@+id/epiData_poultry"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:value="@={epiData.poultry}" />
-
-            <de.symeda.sormas.app.component.TextField
-                android:id="@+id/epiData_poultryDetails"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:nextFocusForward="@+id/epiData_poultrySick"
-                android:value="@={epiData.poultryDetails}"/>
-
-            <de.symeda.sormas.app.component.YesNoUnknownVerticalField
-                android:id="@+id/epiData_poultrySick"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:value="@={epiData.poultrySick}" />
-
-            <de.symeda.sormas.app.component.TextField
-                android:id="@+id/epiData_poultrySickDetails"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:nextFocusForward="@+id/epiData_poultryDate"
-                android:value="@={epiData.poultrySickDetails}"/>
-
-            <de.symeda.sormas.app.component.DateField
-                android:id="@+id/epiData_poultryDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:paddingBottom="@dimen/field_padding"
-                android:paddingTop="@dimen/field_padding"
-                android:value="@={epiData.poultryDate}" />
-
-            <de.symeda.sormas.app.component.TextField
-                android:id="@+id/epiData_poultryLocation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:nextFocusForward="@+id/epiData_cattle"
-                android:value="@={epiData.poultryLocation}"/>
-
             <de.symeda.sormas.app.component.YesNoUnknownField
                 android:id="@+id/epiData_cattle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
                 android:value="@={epiData.cattle}" />
+
+            <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/epiData_sickDeadAnimals"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:value="@={epiData.sickDeadAnimals}" />
+
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/epiData_sickDeadAnimalsDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/epiData_sickDeadAnimalsDate"
+                android:value="@={epiData.sickDeadAnimalsDetails}"/>
+
+            <de.symeda.sormas.app.component.DateField
+                android:id="@+id/epiData_sickDeadAnimalsDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/field_padding"
+                android:paddingTop="@dimen/field_padding"
+                android:value="@={epiData.sickDeadAnimalsDate}" />
+
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/epiData_sickDeadAnimalsLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/epiData_eatingRawAnimalsInInfectedArea"
+                android:value="@={epiData.sickDeadAnimalsLocation}"/>
+
+            <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/epiData_eatingRawAnimalsInInfectedArea"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:value="@={epiData.eatingRawAnimalsInInfectedArea}" />
+
+            <de.symeda.sormas.app.component.YesNoUnknownField
+                android:id="@+id/epiData_eatingRawAnimals"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:value="@={epiData.eatingRawAnimals}" />
+
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/epiData_eatingRawAnimalsDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/epiData_otherAnimals"
+                android:value="@={epiData.eatingRawAnimalsDetails}"/>
 
             <de.symeda.sormas.app.component.YesNoUnknownField
                 android:id="@+id/epiData_otherAnimals"
@@ -223,40 +278,6 @@
                 android:paddingBottom="@dimen/field_padding"
                 android:nextFocusForward="@+id/epiData_wildbirds"
                 android:value="@={epiData.otherAnimalsDetails}"/>
-
-            <de.symeda.sormas.app.component.YesNoUnknownField
-                android:id="@+id/epiData_wildbirds"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:value="@={epiData.wildbirds}" />
-
-            <de.symeda.sormas.app.component.TextField
-                android:id="@+id/epiData_wildbirdsDetails"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:nextFocusForward="@+id/epiData_wildbirdsDate"
-                android:value="@={epiData.wildbirdsDetails}"/>
-
-            <de.symeda.sormas.app.component.DateField
-                android:id="@+id/epiData_wildbirdsDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:paddingBottom="@dimen/field_padding"
-                android:paddingTop="@dimen/field_padding"
-                android:value="@={epiData.wildbirdsDate}" />
-
-            <de.symeda.sormas.app.component.TextField
-                android:id="@+id/epiData_wildbirdsLocation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding"
-                android:nextFocusForward="@+id/epiData_waterSource"
-                android:value="@={epiData.wildbirdsLocation}"/>
 
             <de.symeda.sormas.app.component.DateField
                 android:id="@+id/epiData_dateOfLastExposure"

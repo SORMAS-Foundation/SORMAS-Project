@@ -53,131 +53,151 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
     }
 
     @Override
-    public void fillInnerFromDto(EpiData a, EpiDataDto b) {
-        a.setBurialAttended(b.getBurialAttended());
-        a.setGatheringAttended(b.getGatheringAttended());
-        a.setTraveled(b.getTraveled());
-        a.setRodents(b.getRodents());
-        a.setBats(b.getBats());
-        a.setPrimates(b.getPrimates());
-        a.setSwine(b.getSwine());
-        a.setBirds(b.getBirds());
-        a.setPoultryEat(b.getPoultryEat());
-        a.setPoultry(b.getPoultry());
-        a.setPoultrySick(b.getPoultrySick());
-        a.setPoultrySickDetails(b.getPoultrySickDetails());
-        a.setPoultryDate(b.getPoultryDate());
-        a.setPoultryLocation(b.getPoultryLocation());
-        a.setCattle(b.getCattle());
-        a.setOtherAnimals(b.getOtherAnimals());
-        a.setOtherAnimalsDetails(b.getOtherAnimalsDetails());
-        a.setWildbirds(b.getWildbirds());
-        a.setWildbirdsDetails(b.getWildbirdsDetails());
-        a.setWildbirdsDate(b.getWildbirdsDate());
-        a.setWildbirdsLocation(b.getWildbirdsLocation());
-        a.setWaterSource(b.getWaterSource());
-        a.setWaterSourceOther(b.getWaterSourceOther());
-        a.setWaterBody(b.getWaterBody());
-        a.setWaterBodyDetails(b.getWaterBodyDetails());
-        a.setTickBite(b.getTickBite());
-        a.setDateOfLastExposure(b.getDateOfLastExposure());
-        a.setPlaceOfLastExposure(b.getPlaceOfLastExposure());
-        a.setAnimalCondition(b.getAnimalCondition());
-        a.setFleaBite(b.getFleaBite());
+    public void fillInnerFromDto(EpiData target, EpiDataDto source) {
+        target.setBurialAttended(source.getBurialAttended());
+        target.setGatheringAttended(source.getGatheringAttended());
+        target.setTraveled(source.getTraveled());
+
+        target.setDirectContactConfirmedCase(source.getDirectContactConfirmedCase());
+        target.setDirectContactProbableCase(source.getDirectContactProbableCase());
+        target.setCloseContactProbableCase(source.getCloseContactProbableCase());
+        target.setAreaConfirmedCases(source.getAreaConfirmedCases());
+
+        target.setProcessingConfirmedCaseFluidUnsafe(source.getProcessingConfirmedCaseFluidUnsafe());
+        target.setPercutaneousCaseBlood(source.getPercutaneousCaseBlood());
+        target.setDirectContactDeadUnsafe(source.getDirectContactDeadUnsafe());
+
+        target.setProcessingSuspectedCaseSampleUnsafe(source.getProcessingSuspectedCaseSampleUnsafe());
+        target.setAreaInfectedAnimals(source.getAreaInfectedAnimals());
+        target.setSickDeadAnimals(source.getSickDeadAnimals());
+        target.setSickDeadAnimalsDetails(source.getSickDeadAnimalsDetails());
+        target.setSickDeadAnimalsDate(source.getSickDeadAnimalsDate());
+        target.setSickDeadAnimalsLocation(source.getSickDeadAnimalsLocation());
+        target.setEatingRawAnimalsInInfectedArea(source.getEatingRawAnimalsInInfectedArea());
+        target.setEatingRawAnimals(source.getEatingRawAnimals());
+        target.setEatingRawAnimalsDetails(source.getEatingRawAnimalsDetails());
+
+        target.setRodents(source.getRodents());
+        target.setBats(source.getBats());
+        target.setPrimates(source.getPrimates());
+        target.setSwine(source.getSwine());
+        target.setBirds(source.getBirds());
+        target.setCattle(source.getCattle());
+        target.setOtherAnimals(source.getOtherAnimals());
+        target.setOtherAnimalsDetails(source.getOtherAnimalsDetails());
+        target.setWaterSource(source.getWaterSource());
+        target.setWaterSourceOther(source.getWaterSourceOther());
+        target.setWaterBody(source.getWaterBody());
+        target.setWaterBodyDetails(source.getWaterBodyDetails());
+        target.setTickBite(source.getTickBite());
+        target.setDateOfLastExposure(source.getDateOfLastExposure());
+        target.setPlaceOfLastExposure(source.getPlaceOfLastExposure());
+        target.setAnimalCondition(source.getAnimalCondition());
+        target.setFleaBite(source.getFleaBite());
 
         // just recreate all of this and throw the old stuff away
         List<EpiDataBurial> burials = new ArrayList<>();
-        if (!b.getBurials().isEmpty()) {
-            for (EpiDataBurialDto burialDto : b.getBurials()) {
+        if (!source.getBurials().isEmpty()) {
+            for (EpiDataBurialDto burialDto : source.getBurials()) {
                 EpiDataBurial burial = burialDtoHelper.fillOrCreateFromDto(null, burialDto);
-                burial.setEpiData(a);
+                burial.setEpiData(target);
                 burials.add(burial);
             }
         }
-        a.setBurials(burials);
+        target.setBurials(burials);
 
         // just recreate all of this and throw the old stuff away
         List<EpiDataGathering> gatherings = new ArrayList<>();
-        if (!b.getGatherings().isEmpty()) {
-            for (EpiDataGatheringDto gatheringDto : b.getGatherings()) {
+        if (!source.getGatherings().isEmpty()) {
+            for (EpiDataGatheringDto gatheringDto : source.getGatherings()) {
                 EpiDataGathering gathering = gatheringDtoHelper.fillOrCreateFromDto(null, gatheringDto);
-                gathering.setEpiData(a);
+                gathering.setEpiData(target);
                 gatherings.add(gathering);
             }
         }
-        a.setGatherings(gatherings);
+        target.setGatherings(gatherings);
 
         // just recreate all of this and throw the old stuff away
         List<EpiDataTravel> travels = new ArrayList<>();
-        if (!b.getTravels().isEmpty()) {
-            for (EpiDataTravelDto travelDto : b.getTravels()) {
+        if (!source.getTravels().isEmpty()) {
+            for (EpiDataTravelDto travelDto : source.getTravels()) {
                 EpiDataTravel travel = travelDtoHelper.fillOrCreateFromDto(null, travelDto);
-                travel.setEpiData(a);
+                travel.setEpiData(target);
                 travels.add(travel);
             }
         }
-        a.setTravels(travels);
+        target.setTravels(travels);
     }
 
     @Override
-    public void fillInnerFromAdo(EpiDataDto a, EpiData b) {
+    public void fillInnerFromAdo(EpiDataDto target, EpiData source) {
 
-        a.setBurialAttended(b.getBurialAttended());
-        a.setGatheringAttended(b.getGatheringAttended());
-        a.setTraveled(b.getTraveled());
-        a.setRodents(b.getRodents());
-        a.setBats(b.getBats());
-        a.setPrimates(b.getPrimates());
-        a.setSwine(b.getSwine());
-        a.setBirds(b.getBirds());
-        a.setPoultryEat(b.getPoultryEat());
-        a.setPoultry(b.getPoultry());
-        a.setPoultrySick(b.getPoultrySick());
-        a.setPoultrySickDetails(b.getPoultrySickDetails());
-        a.setPoultryDate(b.getPoultryDate());
-        a.setPoultryLocation(b.getPoultryLocation());
-        a.setCattle(b.getCattle());
-        a.setOtherAnimals(b.getOtherAnimals());
-        a.setOtherAnimalsDetails(b.getOtherAnimalsDetails());
-        a.setWildbirds(b.getWildbirds());
-        a.setWildbirdsDetails(b.getWildbirdsDetails());
-        a.setWildbirdsDate(b.getWildbirdsDate());
-        a.setWildbirdsLocation(b.getWildbirdsLocation());
-        a.setWaterSource(b.getWaterSource());
-        a.setWaterSourceOther(b.getWaterSourceOther());
-        a.setWaterBody(b.getWaterBody());
-        a.setWaterBodyDetails(b.getWaterBodyDetails());
-        a.setTickBite(b.getTickBite());
-        a.setDateOfLastExposure(b.getDateOfLastExposure());
-        a.setPlaceOfLastExposure(b.getPlaceOfLastExposure());
-        a.setAnimalCondition(b.getAnimalCondition());
-        a.setFleaBite(b.getFleaBite());
+        target.setBurialAttended(source.getBurialAttended());
+        target.setGatheringAttended(source.getGatheringAttended());
+        target.setTraveled(source.getTraveled());
+
+        target.setDirectContactConfirmedCase(source.getDirectContactConfirmedCase());
+        target.setDirectContactProbableCase(source.getDirectContactProbableCase());
+        target.setCloseContactProbableCase(source.getCloseContactProbableCase());
+        target.setAreaConfirmedCases(source.getAreaConfirmedCases());
+
+        target.setProcessingConfirmedCaseFluidUnsafe(source.getProcessingConfirmedCaseFluidUnsafe());
+        target.setPercutaneousCaseBlood(source.getPercutaneousCaseBlood());
+        target.setDirectContactDeadUnsafe(source.getDirectContactDeadUnsafe());
+
+        target.setProcessingSuspectedCaseSampleUnsafe(source.getProcessingSuspectedCaseSampleUnsafe());
+        target.setAreaInfectedAnimals(source.getAreaInfectedAnimals());
+        target.setSickDeadAnimals(source.getSickDeadAnimals());
+        target.setSickDeadAnimalsDetails(source.getSickDeadAnimalsDetails());
+        target.setSickDeadAnimalsDate(source.getSickDeadAnimalsDate());
+        target.setSickDeadAnimalsLocation(source.getSickDeadAnimalsLocation());
+        target.setEatingRawAnimalsInInfectedArea(source.getEatingRawAnimalsInInfectedArea());
+        target.setEatingRawAnimals(source.getEatingRawAnimals());
+        target.setEatingRawAnimalsDetails(source.getEatingRawAnimalsDetails());
+
+        target.setRodents(source.getRodents());
+        target.setBats(source.getBats());
+        target.setPrimates(source.getPrimates());
+        target.setSwine(source.getSwine());
+        target.setBirds(source.getBirds());
+        target.setCattle(source.getCattle());
+        target.setOtherAnimals(source.getOtherAnimals());
+        target.setOtherAnimalsDetails(source.getOtherAnimalsDetails());
+        target.setWaterSource(source.getWaterSource());
+        target.setWaterSourceOther(source.getWaterSourceOther());
+        target.setWaterBody(source.getWaterBody());
+        target.setWaterBodyDetails(source.getWaterBodyDetails());
+        target.setTickBite(source.getTickBite());
+        target.setDateOfLastExposure(source.getDateOfLastExposure());
+        target.setPlaceOfLastExposure(source.getPlaceOfLastExposure());
+        target.setAnimalCondition(source.getAnimalCondition());
+        target.setFleaBite(source.getFleaBite());
 
         List<EpiDataBurialDto> burialDtos = new ArrayList<>();
-        if (!b.getBurials().isEmpty()) {
-            for (EpiDataBurial burial : b.getBurials()) {
+        if (!source.getBurials().isEmpty()) {
+            for (EpiDataBurial burial : source.getBurials()) {
                 EpiDataBurialDto burialDto = burialDtoHelper.adoToDto(burial);
                 burialDtos.add(burialDto);
             }
         }
-        a.setBurials(burialDtos);
+        target.setBurials(burialDtos);
 
         List<EpiDataGatheringDto> gatheringDtos = new ArrayList<>();
-        if (!b.getGatherings().isEmpty()) {
-            for (EpiDataGathering gathering : b.getGatherings()) {
+        if (!source.getGatherings().isEmpty()) {
+            for (EpiDataGathering gathering : source.getGatherings()) {
                 EpiDataGatheringDto gatheringDto = gatheringDtoHelper.adoToDto(gathering);
                 gatheringDtos.add(gatheringDto);
             }
         }
-        a.setGatherings(gatheringDtos);
+        target.setGatherings(gatheringDtos);
 
         List<EpiDataTravelDto> travelDtos = new ArrayList<>();
-        if (!b.getTravels().isEmpty()) {
-            for (EpiDataTravel travel : b.getTravels()) {
+        if (!source.getTravels().isEmpty()) {
+            for (EpiDataTravel travel : source.getTravels()) {
                 EpiDataTravelDto travelDto = travelDtoHelper.adoToDto(travel);
                 travelDtos.add(travelDto);
             }
         }
-        a.setTravels(travelDtos);
+        target.setTravels(travelDtos);
     }
 }

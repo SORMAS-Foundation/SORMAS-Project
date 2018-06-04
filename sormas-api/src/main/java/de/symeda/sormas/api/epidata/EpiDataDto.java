@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -23,17 +23,6 @@ public class EpiDataDto extends EntityDto {
 	public static final String PRIMATES = "primates";
 	public static final String SWINE = "swine";
 	public static final String BIRDS = "birds";
-	public static final String POULTRY_EAT = "poultryEat";
-	public static final String POULTRY = "poultry";
-	public static final String POULTRY_DETAILS = "poultryDetails";
-	public static final String POULTRY_SICK = "poultrySick";
-	public static final String POULTRY_SICK_DETAILS = "poultrySickDetails";
-	public static final String POULTRY_DATE = "poultryDate";
-	public static final String POULTRY_LOCATION = "poultryLocation";
-	public static final String WILDBIRDS = "wildbirds";
-	public static final String WILDBIRDS_DETAILS = "wildbirdsDetails";
-	public static final String WILDBIRDS_DATE = "wildbirdsDate";
-	public static final String WILDBIRDS_LOCATION = "wildbirdsLocation";
 	public static final String CATTLE = "cattle";
 	public static final String OTHER_ANIMALS = "otherAnimals";
 	public static final String OTHER_ANIMALS_DETAILS = "otherAnimalsDetails";
@@ -41,14 +30,30 @@ public class EpiDataDto extends EntityDto {
 	public static final String WATER_SOURCE_OTHER = "waterSourceOther";
 	public static final String WATER_BODY = "waterBody";
 	public static final String WATER_BODY_DETAILS = "waterBodyDetails";
-	public static final String TICKBITE = "tickBite";
-	public static final String FLEABITE = "fleaBite";
+	public static final String TICK_BITE = "tickBite";
+	public static final String FLEA_BITE = "fleaBite";
 	public static final String DATE_OF_LAST_EXPOSURE = "dateOfLastExposure";
 	public static final String PLACE_OF_LAST_EXPOSURE = "placeOfLastExposure";
 	public static final String ANIMAL_CONDITION = "animalCondition";
 	public static final String BURIALS = "burials";
 	public static final String GATHERINGS = "gatherings";
 	public static final String TRAVELS = "travels";
+	public static final String DIRECT_CONTACT_CONFIRMED_CASE = "directContactConfirmedCase";
+	public static final String DIRECT_CONTACT_PROBABLE_CASE = "directContactProbableCase";
+	public static final String CLOSE_CONTACT_PROBABLE_CASE = "closeContactProbableCase";
+	public static final String AREA_CONFIRMED_CASES = "areaConfirmedCases";
+	public static final String PROCESSING_CONFIRMED_CASE_FLUID_UNSAFE = "processingConfirmedCaseFluidUnsafe";
+	public static final String PERCUTANEOUS_CASE_BLOOD = "percutaneousCaseBlood";
+	public static final String DIRECT_CONTACT_DEAD_UNSAFE = "directContactDeadUnsafe";
+	public static final String PROCESSING_SUSPECTED_CASE_SAMPLE_UNSAFE = "processingSuspectedCaseSampleUnsafe";
+	public static final String AREA_INFECTED_ANIMALS = "areaInfectedAnimals";
+	public static final String SICK_DEAD_ANIMALS = "sickDeadAnimals";
+	public static final String SICK_DEAD_ANIMALS_DETAILS = "sickDeadAnimalsDetails";
+	public static final String SICK_DEAD_ANIMALS_DATE = "sickDeadAnimalsDate";
+	public static final String SICK_DEAD_ANIMALS_LOCATION = "sickDeadAnimalsLocation";
+	public static final String EATING_RAW_ANIMALS_IN_INFECTED_AREA = "eatingRawAnimalsInInfectedArea";
+	public static final String EATING_RAW_ANIMALS = "eatingRawAnimals";
+	public static final String EATING_RAW_ANIMALS_DETAILS = "eatingRawAnimalsDetails";
 	
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private YesNoUnknown burialAttended;
@@ -61,12 +66,41 @@ public class EpiDataDto extends EntityDto {
 	private List<EpiDataGatheringDto> gatherings = new ArrayList<>();
 	private List<EpiDataTravelDto> travels = new ArrayList<>();
 
-//	private YesNoUnknown caseNeighborhood;
-//	private YesNoUnknown labProcessingUnsafe;
-//	private YesNoUnknown caseBlood;
-//	private YesNoUnknown directContactDeadUnsafe;
-//	private YesNoUnknown animalsInfectedArea;
+	@Diseases({Disease.EVD,Disease.NEW_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.OTHER})
+	private YesNoUnknown directContactConfirmedCase;
+	@Diseases({Disease.LASSA,Disease.OTHER})
+	private YesNoUnknown directContactProbableCase;
+	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	private YesNoUnknown closeContactProbableCase;
+	@Diseases({Disease.DENGUE, Disease.EVD, Disease.PLAGUE, Disease.YELLOW_FEVER, Disease.OTHER})
+	private YesNoUnknown areaConfirmedCases;
 
+	@Diseases({Disease.EVD, Disease.OTHER})
+	private YesNoUnknown processingConfirmedCaseFluidUnsafe;
+	@Diseases({Disease.EVD, Disease.OTHER})
+	private YesNoUnknown percutaneousCaseBlood;
+	@Diseases({Disease.EVD, Disease.OTHER})
+	private YesNoUnknown directContactDeadUnsafe;
+
+	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	private YesNoUnknown processingSuspectedCaseSampleUnsafe;
+	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	private YesNoUnknown areaInfectedAnimals;
+	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	private YesNoUnknown sickDeadAnimals;
+	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	private String sickDeadAnimalsDetails;
+	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	private Date sickDeadAnimalsDate;
+	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	private String sickDeadAnimalsLocation;
+	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	private YesNoUnknown eatingRawAnimalsInInfectedArea;
+	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	private YesNoUnknown eatingRawAnimals;
+	@Diseases({Disease.NEW_INFLUENCA, Disease.OTHER})
+	private String eatingRawAnimalsDetails;
+		
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private YesNoUnknown rodents;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
@@ -77,33 +111,11 @@ public class EpiDataDto extends EntityDto {
 	private YesNoUnknown swine;
 	@Diseases({Disease.EVD,Disease.LASSA})
 	private YesNoUnknown birds;
-	@Diseases({Disease.NEW_INFLUENCA,Disease.OTHER})
-	private YesNoUnknown poultryEat;
-	@Diseases({Disease.NEW_INFLUENCA,Disease.OTHER})
-	private YesNoUnknown poultry;
-	@Diseases({Disease.NEW_INFLUENCA,Disease.OTHER})
-	private String poultryDetails;
-	@Diseases({Disease.NEW_INFLUENCA,Disease.OTHER})
-	private YesNoUnknown poultrySick;
-	@Diseases({Disease.NEW_INFLUENCA,Disease.OTHER})
-	private String poultrySickDetails;
-	@Diseases({Disease.NEW_INFLUENCA})
-	private Date poultryDate;
-	@Diseases({Disease.NEW_INFLUENCA})
-	private String poultryLocation;
-	@Diseases({Disease.NEW_INFLUENCA,Disease.OTHER})
-	private YesNoUnknown wildbirds;
-	@Diseases({Disease.NEW_INFLUENCA,Disease.OTHER})
-	private String wildbirdsDetails;
-	@Diseases({Disease.NEW_INFLUENCA})
-	private Date wildbirdsDate;
-	@Diseases({Disease.NEW_INFLUENCA})
-	private String wildbirdsLocation;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
 	private YesNoUnknown cattle;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.OTHER})
 	private YesNoUnknown otherAnimals;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.MONKEYPOX,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.OTHER})
 	private String otherAnimalsDetails;
 	@Diseases({Disease.CHOLERA,Disease.OTHER})
 	private WaterSource waterSource;
@@ -180,84 +192,7 @@ public class EpiDataDto extends EntityDto {
 	public void setBirds(YesNoUnknown birds) {
 		this.birds = birds;
 	}
-	
-	public YesNoUnknown getPoultryEat() {
-		return poultryEat;
-	}
-	public void setPoultryEat(YesNoUnknown poultryEat) {
-		this.poultryEat = poultryEat;
-	}
-	
-	public YesNoUnknown getPoultry() {
-		return poultry;
-	}
-	public void setPoultry(YesNoUnknown poultry) {
-		this.poultry = poultry;
-	}
-	
-	public String getPoultryDetails() {
-		return poultryDetails;
-	}
-	public void setPoultryDetails(String poultryDetails) {
-		this.poultryDetails = poultryDetails;
-	}
-	
-	public YesNoUnknown getPoultrySick() {
-		return poultrySick;
-	}
-	public void setPoultrySick(YesNoUnknown poultrySick) {
-		this.poultrySick = poultrySick;
-	}
-	
-	public String getPoultrySickDetails() {
-		return poultrySickDetails;
-	}
-	public void setPoultrySickDetails(String poultrySickDetails) {
-		this.poultrySickDetails = poultrySickDetails;
-	}
-
-	public Date getPoultryDate() {
-		return poultryDate;
-	}
-	public void setPoultryDate(Date poultryDate) {
-		this.poultryDate = poultryDate;
-	}
-	
-	public String getPoultryLocation() {
-		return poultryLocation;
-	}
-	public void setPoultryLocation(String poultryLocation) {
-		this.poultryLocation = poultryLocation;
-	}
-	
-	public YesNoUnknown getWildbirds() {
-		return wildbirds;
-	}
-	public void setWildbirds(YesNoUnknown wildbirds) {
-		this.wildbirds = wildbirds;
-	}
-	
-	public String getWildbirdsDetails() {
-		return wildbirdsDetails;
-	}
-	public void setWildbirdsDetails(String wildbirdsDetails) {
-		this.wildbirdsDetails = wildbirdsDetails;
-	}
-
-	public Date getWildbirdsDate() {
-		return wildbirdsDate;
-	}
-	public void setWildbirdsDate(Date wildbirdsDate) {
-		this.wildbirdsDate = wildbirdsDate;
-	}
-	
-	public String getWildbirdsLocation() {
-		return wildbirdsLocation;
-	}
-	public void setWildbirdsLocation(String wildbirdsLocation) {
-		this.wildbirdsLocation = wildbirdsLocation;
-	}
-	
+		
 	public YesNoUnknown getCattle() {
 		return cattle;
 	}
@@ -361,6 +296,102 @@ public class EpiDataDto extends EntityDto {
 	}
 	public void setTravels(List<EpiDataTravelDto> travels) {
 		this.travels = travels;
+	}
+	public YesNoUnknown getDirectContactConfirmedCase() {
+		return directContactConfirmedCase;
+	}
+	public void setDirectContactConfirmedCase(YesNoUnknown directContactConfirmedCase) {
+		this.directContactConfirmedCase = directContactConfirmedCase;
+	}
+	public YesNoUnknown getProcessingConfirmedCaseFluidUnsafe() {
+		return processingConfirmedCaseFluidUnsafe;
+	}
+	public void setProcessingConfirmedCaseFluidUnsafe(YesNoUnknown processingConfirmedCaseFluidUnsafe) {
+		this.processingConfirmedCaseFluidUnsafe = processingConfirmedCaseFluidUnsafe;
+	}
+	public YesNoUnknown getPercutaneousCaseBlood() {
+		return percutaneousCaseBlood;
+	}
+	public void setPercutaneousCaseBlood(YesNoUnknown percutaneousCaseBlood) {
+		this.percutaneousCaseBlood = percutaneousCaseBlood;
+	}
+	public YesNoUnknown getDirectContactDeadUnsafe() {
+		return directContactDeadUnsafe;
+	}
+	public void setDirectContactDeadUnsafe(YesNoUnknown directContactDeadUnsafe) {
+		this.directContactDeadUnsafe = directContactDeadUnsafe;
+	}
+	public YesNoUnknown getProcessingSuspectedCaseSampleUnsafe() {
+		return processingSuspectedCaseSampleUnsafe;
+	}
+	public void setProcessingSuspectedCaseSampleUnsafe(YesNoUnknown processingSuspectedCaseSampleUnsafe) {
+		this.processingSuspectedCaseSampleUnsafe = processingSuspectedCaseSampleUnsafe;
+	}
+	public YesNoUnknown getAreaInfectedAnimals() {
+		return areaInfectedAnimals;
+	}
+	public void setAreaInfectedAnimals(YesNoUnknown areaInfectedAnimals) {
+		this.areaInfectedAnimals = areaInfectedAnimals;
+	}
+	public YesNoUnknown getSickDeadAnimals() {
+		return sickDeadAnimals;
+	}
+	public void setSickDeadAnimals(YesNoUnknown sickDeadAnimals) {
+		this.sickDeadAnimals = sickDeadAnimals;
+	}
+	public String getSickDeadAnimalsDetails() {
+		return sickDeadAnimalsDetails;
+	}
+	public void setSickDeadAnimalsDetails(String sickDeadAnimalsDetails) {
+		this.sickDeadAnimalsDetails = sickDeadAnimalsDetails;
+	}
+	public Date getSickDeadAnimalsDate() {
+		return sickDeadAnimalsDate;
+	}
+	public void setSickDeadAnimalsDate(Date sickDeadAnimalsDate) {
+		this.sickDeadAnimalsDate = sickDeadAnimalsDate;
+	}
+	public String getSickDeadAnimalsLocation() {
+		return sickDeadAnimalsLocation;
+	}
+	public void setSickDeadAnimalsLocation(String sickDeadAnimalsLocation) {
+		this.sickDeadAnimalsLocation = sickDeadAnimalsLocation;
+	}
+	public YesNoUnknown getEatingRawAnimalsInInfectedArea() {
+		return eatingRawAnimalsInInfectedArea;
+	}
+	public void setEatingRawAnimalsInInfectedArea(YesNoUnknown eatingRawAnimalsInInfectedArea) {
+		this.eatingRawAnimalsInInfectedArea = eatingRawAnimalsInInfectedArea;
+	}
+	public YesNoUnknown getEatingRawAnimals() {
+		return eatingRawAnimals;
+	}
+	public void setEatingRawAnimals(YesNoUnknown eatingRawAnimals) {
+		this.eatingRawAnimals = eatingRawAnimals;
+	}
+	public String getEatingRawAnimalsDetails() {
+		return eatingRawAnimalsDetails;
+	}
+	public void setEatingRawAnimalsDetails(String eatingRawAnimalsDetails) {
+		this.eatingRawAnimalsDetails = eatingRawAnimalsDetails;
+	}
+	public YesNoUnknown getDirectContactProbableCase() {
+		return directContactProbableCase;
+	}
+	public void setDirectContactProbableCase(YesNoUnknown directContactProbableCase) {
+		this.directContactProbableCase = directContactProbableCase;
+	}
+	public YesNoUnknown getCloseContactProbableCase() {
+		return closeContactProbableCase;
+	}
+	public void setCloseContactProbableCase(YesNoUnknown closeContactProbableCase) {
+		this.closeContactProbableCase = closeContactProbableCase;
+	}
+	public YesNoUnknown getAreaConfirmedCases() {
+		return areaConfirmedCases;
+	}
+	public void setAreaConfirmedCases(YesNoUnknown areaConfirmedCases) {
+		this.areaConfirmedCases = areaConfirmedCases;
 	}
 
 }

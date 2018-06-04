@@ -98,8 +98,7 @@ public class EpiDataForm extends FormTab {
                 }
         );
 
-        binding.epiDataPoultryDate.initialize(this);
-        binding.epiDataWildbirdsDate.initialize(this);
+        binding.epiDataSickDeadAnimalsDate.initialize(this);
         FieldHelper.initSpinnerField(binding.epiDataWaterSource, WaterSource.class);
 
         binding.epiDataBurialAttended.addValueChangedListener(new PropertyField.ValueChangeListener() {
@@ -126,23 +125,22 @@ public class EpiDataForm extends FormTab {
             }
         });
 
-        binding.epiDataPoultry.addValueChangedListener(new PropertyField.ValueChangeListener() {
+        binding.epiDataEatingRawAnimals.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
-                binding.epiDataPoultryDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                binding.epiDataPoultrySick.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.epiDataOtherAnimalsDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
             }
         });
 
-        binding.epiDataPoultrySick.addValueChangedListener(new PropertyField.ValueChangeListener() {
+        binding.epiDataSickDeadAnimals.addValueChangedListener(new PropertyField.ValueChangeListener() {
             @Override
             public void onChange(PropertyField field) {
-                binding.epiDataPoultrySickDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                if (Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, EpiDataDto.POULTRY_DATE, disease)) {
-                    binding.epiDataPoultryDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                binding.epiDataSickDeadAnimalsDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                if (Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, EpiDataDto.SICK_DEAD_ANIMALS_DATE, disease)) {
+                    binding.epiDataSickDeadAnimalsDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
                 }
-                if (Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, EpiDataDto.POULTRY_LOCATION, disease)) {
-                    binding.epiDataPoultryLocation.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                if (Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, EpiDataDto.SICK_DEAD_ANIMALS_LOCATION, disease)) {
+                    binding.epiDataSickDeadAnimalsLocation.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
                 }
             }
         });
@@ -151,19 +149,6 @@ public class EpiDataForm extends FormTab {
             @Override
             public void onChange(PropertyField field) {
                 binding.epiDataOtherAnimalsDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-            }
-        });
-
-        binding.epiDataWildbirds.addValueChangedListener(new PropertyField.ValueChangeListener() {
-            @Override
-            public void onChange(PropertyField field) {
-                binding.epiDataWildbirdsDetails.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                if (Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, EpiDataDto.WILDBIRDS_DATE, disease)) {
-                    binding.epiDataWildbirdsDate.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                }
-                if (Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, EpiDataDto.WILDBIRDS_LOCATION, disease)) {
-                    binding.epiDataWildbirdsLocation.setVisibility(field.getValue() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-                }
             }
         });
 
@@ -311,10 +296,11 @@ public class EpiDataForm extends FormTab {
 
         if (!(binding.epiDataRodents.getVisibility() == View.VISIBLE || binding.epiDataBats.getVisibility() == View.VISIBLE ||
                 binding.epiDataPrimates.getVisibility() == View.VISIBLE || binding.epiDataSwine.getVisibility() == View.VISIBLE ||
-                binding.epiDataCattle.getVisibility() == View.VISIBLE || binding.epiDataOtherAnimals.getVisibility() == View.VISIBLE ||
-                binding.epiDataWildbirds.getVisibility() == View.VISIBLE || binding.epiDataBirds.getVisibility() == View.VISIBLE ||
-                binding.epiDataPoultryEat.getVisibility() == View.VISIBLE || binding.epiDataPoultry.getVisibility() == View.VISIBLE ||
-                binding.epiDataPoultrySick.getVisibility() == View.VISIBLE)) {
+                binding.epiDataBirds.getVisibility() == View.VISIBLE || binding.epiDataCattle.getVisibility() == View.VISIBLE ||
+                binding.epiDataOtherAnimals.getVisibility() == View.VISIBLE ||
+                binding.epiDataEatingRawAnimals.getVisibility() == View.VISIBLE || binding.epiDataEatingRawAnimalsInInfectedArea.getVisibility() == View.VISIBLE ||
+                binding.epiDataSickDeadAnimals.getVisibility() == View.VISIBLE
+        )) {
             binding.epiDataAnimalContacts.setVisibility(View.GONE);
             binding.epiDataAnimalContactsInfoText.setVisibility(View.GONE);
         }

@@ -2415,3 +2415,54 @@ UPDATE sampletest SET testtype = 'IGM_SERUM_ANTIBODY' WHERE testtype = 'ELISA';
 UPDATE sampletest SET testtype = 'PCR_RT_PCR' WHERE testtype = 'PCR' OR testtype = 'RT_PCR';
 
 INSERT INTO schema_version (version_number, comment) VALUES (109, 'Sample and sample test data model changes #627');
+
+-- 2018-06-04 Case epi data changes for automatic case classification #632
+
+ALTER TABLE epidata ADD COLUMN directcontactconfirmedcase varchar(255);
+ALTER TABLE epidata ADD COLUMN directcontactprobablecase varchar(255);
+ALTER TABLE epidata ADD COLUMN closecontactprobablecase varchar(255);
+ALTER TABLE epidata ADD COLUMN areaconfirmedcases varchar(255);
+ALTER TABLE epidata ADD COLUMN processingconfirmedcasefluidunsafe varchar(255);
+ALTER TABLE epidata ADD COLUMN percutaneouscaseblood varchar(255);
+ALTER TABLE epidata ADD COLUMN directcontactdeadunsafe varchar(255);
+ALTER TABLE epidata ADD COLUMN processingsuspectedcasesampleunsafe varchar(255);
+ALTER TABLE epidata ADD COLUMN areainfectedanimals varchar(255);
+ALTER TABLE epidata RENAME COLUMN poultrysick TO sickdeadanimals;
+ALTER TABLE epidata RENAME COLUMN poultrysickdetails TO sickdeadanimalsdetails;
+ALTER TABLE epidata RENAME COLUMN poultrydate TO sickdeadanimalsdate;
+ALTER TABLE epidata RENAME COLUMN poultrylocation TO sickdeadanimalslocation;
+ALTER TABLE epidata ADD COLUMN eatingrawanimalsininfectedarea varchar(255);
+ALTER TABLE epidata RENAME COLUMN poultryeat TO eatingrawanimals;
+ALTER TABLE epidata ADD COLUMN eatingrawanimalsdetails varchar(512);
+ALTER TABLE epidata DROP COLUMN poultry;
+ALTER TABLE epidata DROP COLUMN poultrydetails;
+ALTER TABLE epidata DROP COLUMN wildbirds;
+ALTER TABLE epidata DROP COLUMN wildbirdsdetails;
+ALTER TABLE epidata DROP COLUMN wildbirdsdate;
+ALTER TABLE epidata DROP COLUMN wildbirdslocation;
+
+ALTER TABLE epidata_history ADD COLUMN directcontactconfirmedcase varchar(255);
+ALTER TABLE epidata_history ADD COLUMN directcontactprobablecase varchar(255);
+ALTER TABLE epidata_history ADD COLUMN closecontactprobablecase varchar(255);
+ALTER TABLE epidata_history ADD COLUMN areaconfirmedcases varchar(255);
+ALTER TABLE epidata_history ADD COLUMN processingconfirmedcasefluidunsafe varchar(255);
+ALTER TABLE epidata_history ADD COLUMN percutaneouscaseblood varchar(255);
+ALTER TABLE epidata_history ADD COLUMN directcontactdeadunsafe varchar(255);
+ALTER TABLE epidata_history ADD COLUMN processingsuspectedcasesampleunsafe varchar(255);
+ALTER TABLE epidata_history ADD COLUMN areainfectedanimals varchar(255);
+ALTER TABLE epidata_history RENAME COLUMN poultrysick TO sickdeadanimals;
+ALTER TABLE epidata_history RENAME COLUMN poultrysickdetails TO sickdeadanimalsdetails;
+ALTER TABLE epidata_history RENAME COLUMN poultrydate TO sickdeadanimalsdate;
+ALTER TABLE epidata_history RENAME COLUMN poultrylocation TO sickdeadanimalslocation;
+ALTER TABLE epidata_history ADD COLUMN eatingrawanimalsininfectedarea varchar(255);
+ALTER TABLE epidata_history RENAME COLUMN poultryeat TO eatingrawanimals;
+ALTER TABLE epidata_history ADD COLUMN eatingrawanimalsdetails varchar(512);
+ALTER TABLE epidata_history DROP COLUMN poultry;
+ALTER TABLE epidata_history DROP COLUMN poultrydetails;
+ALTER TABLE epidata_history DROP COLUMN wildbirds;
+ALTER TABLE epidata_history DROP COLUMN wildbirdsdetails;
+ALTER TABLE epidata_history DROP COLUMN wildbirdsdate;
+ALTER TABLE epidata_history DROP COLUMN wildbirdslocation;
+
+INSERT INTO schema_version (version_number, comment) VALUES (110, 'Case epi data changes for automatic case classification #632');
+

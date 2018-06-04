@@ -32,11 +32,11 @@ public class CaseHospitalizationForm extends AbstractEditForm<HospitalizationDto
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.h3("Hospitalization data") +
 			LayoutUtil.fluidRowLocs(HEALTH_FACILITY, "") +
-			LayoutUtil.fluidRowLocs(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, "") +
+			LayoutUtil.fluidRowLoc(6, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
 			LayoutUtil.fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE) +
 			LayoutUtil.fluidRowLocs(HospitalizationDto.ISOLATED, HospitalizationDto.ISOLATION_DATE) +
 			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_TOP_3, HospitalizationDto.HOSPITALIZED_PREVIOUSLY) +
-			LayoutUtil.fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS)
+			LayoutUtil.fluidRowLoc(6, HospitalizationDto.PREVIOUS_HOSPITALIZATIONS)
 	;		
 	
 	public CaseHospitalizationForm(CaseDataDto caze, UserRight editOrCreateUserRight, ViewMode viewMode) {

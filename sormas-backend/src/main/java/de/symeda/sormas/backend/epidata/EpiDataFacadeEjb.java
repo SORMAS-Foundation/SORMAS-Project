@@ -59,22 +59,31 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setBurialAttended(source.getBurialAttended());
 		target.setGatheringAttended(source.getGatheringAttended());
 		target.setTraveled(source.getTraveled());
+		
+		target.setDirectContactConfirmedCase(source.getDirectContactConfirmedCase());
+		target.setDirectContactProbableCase(source.getDirectContactProbableCase());
+		target.setCloseContactProbableCase(source.getCloseContactProbableCase());
+		target.setAreaConfirmedCases(source.getAreaConfirmedCases());
+		
+		target.setProcessingConfirmedCaseFluidUnsafe(source.getProcessingConfirmedCaseFluidUnsafe());
+		target.setPercutaneousCaseBlood(source.getPercutaneousCaseBlood());
+		target.setDirectContactDeadUnsafe(source.getDirectContactDeadUnsafe());
+
+		target.setProcessingSuspectedCaseSampleUnsafe(source.getProcessingSuspectedCaseSampleUnsafe());
+		target.setAreaInfectedAnimals(source.getAreaInfectedAnimals());
+		target.setSickDeadAnimals(source.getSickDeadAnimals());
+		target.setSickDeadAnimalsDetails(source.getSickDeadAnimalsDetails());
+		target.setSickDeadAnimalsDate(source.getSickDeadAnimalsDate());
+		target.setSickDeadAnimalsLocation(source.getSickDeadAnimalsLocation());
+		target.setEatingRawAnimalsInInfectedArea(source.getEatingRawAnimalsInInfectedArea());
+		target.setEatingRawAnimals(source.getEatingRawAnimals());
+		target.setEatingRawAnimalsDetails(source.getEatingRawAnimalsDetails());
+		
 		target.setRodents(source.getRodents());
 		target.setBats(source.getBats());
 		target.setPrimates(source.getPrimates());
 		target.setSwine(source.getSwine());
 		target.setBirds(source.getBirds());
-		target.setPoultryEat(source.getPoultryEat());
-		target.setPoultry(source.getPoultry());
-		target.setPoultryDetails(source.getPoultryDetails());
-		target.setPoultrySick(source.getPoultrySick());
-		target.setPoultrySickDetails(source.getPoultrySickDetails());
-		target.setPoultryDate(source.getPoultryDate());
-		target.setPoultryLocation(source.getPoultryLocation());
-		target.setWildbirds(source.getWildbirds());
-		target.setWildbirdsDetails(source.getWildbirdsDetails());
-		target.setWildbirdsDate(source.getWildbirdsDate());
-		target.setWildbirdsLocation(source.getWildbirdsLocation());
 		target.setCattle(source.getCattle());
 		target.setOtherAnimals(source.getOtherAnimals());
 		target.setOtherAnimalsDetails(source.getOtherAnimalsDetails());
@@ -219,22 +228,31 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setBurialAttended(source.getBurialAttended());
 		target.setGatheringAttended(source.getGatheringAttended());
 		target.setTraveled(source.getTraveled());
+		
+		target.setDirectContactConfirmedCase(source.getDirectContactConfirmedCase());
+		target.setDirectContactProbableCase(source.getDirectContactProbableCase());
+		target.setCloseContactProbableCase(source.getCloseContactProbableCase());
+		target.setAreaConfirmedCases(source.getAreaConfirmedCases());
+		
+		target.setProcessingConfirmedCaseFluidUnsafe(source.getProcessingConfirmedCaseFluidUnsafe());
+		target.setPercutaneousCaseBlood(source.getPercutaneousCaseBlood());
+		target.setDirectContactDeadUnsafe(source.getDirectContactDeadUnsafe());
+
+		target.setProcessingSuspectedCaseSampleUnsafe(source.getProcessingSuspectedCaseSampleUnsafe());
+		target.setAreaInfectedAnimals(source.getAreaInfectedAnimals());
+		target.setSickDeadAnimals(source.getSickDeadAnimals());
+		target.setSickDeadAnimalsDetails(source.getSickDeadAnimalsDetails());
+		target.setSickDeadAnimalsDate(source.getSickDeadAnimalsDate());
+		target.setSickDeadAnimalsLocation(source.getSickDeadAnimalsLocation());
+		target.setEatingRawAnimalsInInfectedArea(source.getEatingRawAnimalsInInfectedArea());
+		target.setEatingRawAnimals(source.getEatingRawAnimals());
+		target.setEatingRawAnimalsDetails(source.getEatingRawAnimalsDetails());
+				
 		target.setRodents(source.getRodents());
 		target.setBats(source.getBats());
 		target.setPrimates(source.getPrimates());
 		target.setSwine(source.getSwine());
 		target.setBirds(source.getBirds());
-		target.setPoultryEat(source.getPoultryEat());
-		target.setPoultry(source.getPoultry());
-		target.setPoultryDetails(source.getPoultryDetails());
-		target.setPoultrySick(source.getPoultrySick());
-		target.setPoultrySickDetails(source.getPoultrySickDetails());
-		target.setPoultryDate(source.getPoultryDate());
-		target.setPoultryLocation(source.getPoultryLocation());
-		target.setWildbirds(source.getWildbirds());
-		target.setWildbirdsDetails(source.getWildbirdsDetails());
-		target.setWildbirdsDate(source.getWildbirdsDate());
-		target.setWildbirdsLocation(source.getWildbirdsLocation());
 		target.setCattle(source.getCattle());
 		target.setOtherAnimals(source.getOtherAnimals());
 		target.setOtherAnimalsDetails(source.getOtherAnimalsDetails());

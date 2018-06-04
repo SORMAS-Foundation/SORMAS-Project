@@ -106,15 +106,6 @@ public class YesNoUnknownField extends PropertyField<YesNoUnknown> {
         addCaptionOnClickListener();
     }
 
-//    @Override
-//    public void setEnabled(boolean enabled) {
-//        super.setEnabled(enabled);
-//        caption.setEnabled(enabled);
-//        for (int i = 0; i < radioGroup.getChildCount(); i++) {
-//            radioGroup.getChildAt(i).setEnabled(enabled);
-//        }
-//    }
-
     @Override
     protected void requestFocusForContentView(View nextView) {
         ((YesNoUnknownField) nextView).radioGroup.requestFocus();
