@@ -260,7 +260,7 @@ public class Contact extends AbstractDomainObject {
 	}
 
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn(nullable=true)
 	public User getResultingCaseUser() {
 		return resultingCaseUser;
 	}

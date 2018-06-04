@@ -196,7 +196,7 @@ public class Case extends AbstractDomainObject {
 	}
 
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn(nullable=true)
 	public User getClassificationUser() {
 		return classificationUser;
 	}
