@@ -2398,6 +2398,7 @@ ALTER TABLE symptoms ADD COLUMN meningealsigns varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN meningealsigns varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (107, 'Case symptoms changes for automatic case classification #631');
+
 -- 2018-06-04 Add "Other laboratory" option for sample and sample test #440
 
 ALTER TABLE samples ADD COLUMN labdetails varchar(512);

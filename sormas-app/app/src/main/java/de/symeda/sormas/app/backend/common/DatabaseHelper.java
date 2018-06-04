@@ -366,13 +366,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN dateOfLastExposure timestamp;");
 					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN placeOfLastExposure varchar(512);");
 					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN animalCondition varchar(255);");
-                case 110:
-                    currentVersion = 110;
-                    getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN painfulLymphadenitis varchar(255);");
-                    getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN buboesGroinArmpitNeck varchar(255);");
-                    getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN blackeningDeathOfTissue varchar(255);");
-                    getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN plagueType varchar(255);");
-                    getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN fleaBite varchar(255);");
+				case 110:
+					currentVersion = 110;
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN painfulLymphadenitis varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN buboesGroinArmpitNeck varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN blackeningDeathOfTissue varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN plagueType varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN fleaBite varchar(255);");
 				case 111:
 					currentVersion = 111;
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN smallpoxVaccinationReceived varchar(255);");
@@ -470,11 +470,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Person.class).executeRaw("UPDATE person SET occupationCommunity_id = (SELECT community_id FROM facility WHERE facility.id = person.occupationFacility_id) WHERE occupationFacility_id IS NOT NULL;");
 					getDao(PreviousHospitalization.class).executeRaw("ALTER TABLE previoushospitalizations ADD COLUMN healthFacilityDetails varchar(512);");
 				case 125:
-					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN meningealSigns varchar(255);");				case 126:
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN meningealSigns varchar(255);");
+				case 126:
 					getDao(SampleTest.class).executeRaw("UPDATE sampleTests SET testType = 'IGM_SERUM_ANTIBODY' WHERE testType = 'SERUM_ANTIBODY_TITER';");
 					getDao(SampleTest.class).executeRaw("UPDATE sampleTests SET testType = 'IGM_SERUM_ANTIBODY' WHERE testType = 'ELISA';");
 					getDao(SampleTest.class).executeRaw("UPDATE sampleTests SET testType = 'PCR_RT_PCR' WHERE testType = 'PCR' OR testType = 'RT_PCR';");
 					getDao(SampleTest.class).executeRaw("ALTER TABLE samples ADD COLUMN labDetails varchar(512);");
+
 					// ATTENTION: break should only be done after last version
 					break;
 				default:
@@ -488,43 +490,43 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	private void upgradeFromUnupgradableVersion(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion) {
 		try {
-            Log.i(DatabaseHelper.class.getName(), "onUpgrade");
-            TableUtils.dropTable(connectionSource, Case.class, true);
-            TableUtils.dropTable(connectionSource, Person.class, true);
-            TableUtils.dropTable(connectionSource, Location.class, true);
-            TableUtils.dropTable(connectionSource, Region.class, true);
-            TableUtils.dropTable(connectionSource, District.class, true);
-            TableUtils.dropTable(connectionSource, Community.class, true);
-            TableUtils.dropTable(connectionSource, Facility.class, true);
-            TableUtils.dropTable(connectionSource, User.class, true);
-            TableUtils.dropTable(connectionSource, Symptoms.class, true);
-            TableUtils.dropTable(connectionSource, Task.class, true);
-            TableUtils.dropTable(connectionSource, Contact.class, true);
-            TableUtils.dropTable(connectionSource, Visit.class, true);
-            TableUtils.dropTable(connectionSource, Event.class, true);
-            TableUtils.dropTable(connectionSource, Sample.class, true);
-            TableUtils.dropTable(connectionSource, SampleTest.class, true);
-            TableUtils.dropTable(connectionSource, EventParticipant.class, true);
-            TableUtils.dropTable(connectionSource, Hospitalization.class, true);
-            TableUtils.dropTable(connectionSource, PreviousHospitalization.class, true);
-            TableUtils.dropTable(connectionSource, EpiData.class, true);
-            TableUtils.dropTable(connectionSource, EpiDataBurial.class, true);
-            TableUtils.dropTable(connectionSource, EpiDataGathering.class, true);
-            TableUtils.dropTable(connectionSource, EpiDataTravel.class, true);
-            TableUtils.dropTable(connectionSource, SyncLog.class, true);
+			Log.i(DatabaseHelper.class.getName(), "onUpgrade");
+			TableUtils.dropTable(connectionSource, Case.class, true);
+			TableUtils.dropTable(connectionSource, Person.class, true);
+			TableUtils.dropTable(connectionSource, Location.class, true);
+			TableUtils.dropTable(connectionSource, Region.class, true);
+			TableUtils.dropTable(connectionSource, District.class, true);
+			TableUtils.dropTable(connectionSource, Community.class, true);
+			TableUtils.dropTable(connectionSource, Facility.class, true);
+			TableUtils.dropTable(connectionSource, User.class, true);
+			TableUtils.dropTable(connectionSource, Symptoms.class, true);
+			TableUtils.dropTable(connectionSource, Task.class, true);
+			TableUtils.dropTable(connectionSource, Contact.class, true);
+			TableUtils.dropTable(connectionSource, Visit.class, true);
+			TableUtils.dropTable(connectionSource, Event.class, true);
+			TableUtils.dropTable(connectionSource, Sample.class, true);
+			TableUtils.dropTable(connectionSource, SampleTest.class, true);
+			TableUtils.dropTable(connectionSource, EventParticipant.class, true);
+			TableUtils.dropTable(connectionSource, Hospitalization.class, true);
+			TableUtils.dropTable(connectionSource, PreviousHospitalization.class, true);
+			TableUtils.dropTable(connectionSource, EpiData.class, true);
+			TableUtils.dropTable(connectionSource, EpiDataBurial.class, true);
+			TableUtils.dropTable(connectionSource, EpiDataGathering.class, true);
+			TableUtils.dropTable(connectionSource, EpiDataTravel.class, true);
+			TableUtils.dropTable(connectionSource, SyncLog.class, true);
 			TableUtils.dropTable(connectionSource, WeeklyReport.class, true);
 			TableUtils.dropTable(connectionSource, WeeklyReportEntry.class, true);
 			TableUtils.dropTable(connectionSource, Outbreak.class, true);
 
-            if (oldVersion < 30) {
-                TableUtils.dropTable(connectionSource, Config.class, true);
-            }
-            // after we drop the old databases, we build the new ones
-            onCreate(db, connectionSource);
-        } catch (SQLException e) {
-            Log.e(DatabaseHelper.class.getName(), "Can't drop databases", e);
-            throw new RuntimeException(e);
-        }
+			if (oldVersion < 30) {
+				TableUtils.dropTable(connectionSource, Config.class, true);
+			}
+			// after we drop the old databases, we build the new ones
+			onCreate(db, connectionSource);
+		} catch (SQLException e) {
+			Log.e(DatabaseHelper.class.getName(), "Can't drop databases", e);
+			throw new RuntimeException(e);
+		}
 	}
 
 	public <ADO extends AbstractDomainObject> AbstractAdoDao<ADO> getAdoDaoInner(Class<ADO> type) {
