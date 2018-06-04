@@ -46,7 +46,7 @@ public class StatisticsCaseGrid extends Grid {
 
 		setSelectionMode(SelectionMode.NONE);
 		setHeightMode(HeightMode.UNDEFINED);
-		setSizeUndefined();
+		setWidth(100, Unit.PERCENTAGE);
 		setCellStyleGenerator(new StatisticsCaseGridCellStyleGenerator());
 
 		if (content.isEmpty()) {
@@ -62,9 +62,10 @@ public class StatisticsCaseGrid extends Grid {
 		}
 
 		// Extract columns from content and add them to the grid
-		addColumn(COLUMN_CAPTION);
-		getColumn(COLUMN_CAPTION).setHeaderCaption("");
-		getColumn(COLUMN_CAPTION).setSortable(false);
+		Column captionColumn = addColumn(COLUMN_CAPTION);
+		captionColumn.setHeaderCaption("");
+		captionColumn.setSortable(false);
+		captionColumn.setMaximumWidth(150);
 
 		TreeMap<StatisticsGroupingKey, String> columns = new TreeMap<>(new StatisticsKeyComparator());
 		if (columnsAttribute == null && columnsSubAttribute == null) {
@@ -96,23 +97,25 @@ public class StatisticsCaseGrid extends Grid {
 			}
 
 			// Add all collected columns to the grid
-			for (StatisticsGroupingKey column : columns.keySet()) {
-				addColumn(column);
-				getColumn(column).setHeaderCaption(columns.get(column));
-				getColumn(column).setSortable(false);
+			for (StatisticsGroupingKey columnId : columns.keySet()) {
+				Column column = addColumn(columnId);
+				column.setHeaderCaption(columns.get(columnId));
+				column.setSortable(false);
+				column.setMaximumWidth(120);
 			}
 
 			// Add the column to display unknown numbers if required
 			if (addColumnUnknown) {
-				addColumn(CAPTION_UNKNOWN);
-				getColumn(CAPTION_UNKNOWN).setHeaderCaption("Unknown");
-				getColumn(CAPTION_UNKNOWN).setSortable(false);
+				Column column = addColumn(CAPTION_UNKNOWN);
+				column.setHeaderCaption("Unknown");
+				column.setSortable(false);
+				column.setMaximumWidth(120);
 			}
 
 			// Add total column
-			addColumn(CAPTION_TOTAL);
-			getColumn(CAPTION_TOTAL).setHeaderCaption("Total");
-			getColumn(CAPTION_TOTAL).setSortable(false);
+			Column totalColumn = addColumn(CAPTION_TOTAL);
+			totalColumn.setHeaderCaption("Total");
+			totalColumn.setSortable(false);
 		}
 
 		// Extract rows from content and add them to the grid
