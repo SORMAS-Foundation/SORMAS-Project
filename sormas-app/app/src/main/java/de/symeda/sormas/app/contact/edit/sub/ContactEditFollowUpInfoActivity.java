@@ -292,7 +292,7 @@ public class ContactEditFollowUpInfoActivity extends BaseEditActivity<Visit> {
                     }
 
                     if (RetroProvider.isConnected()) {
-                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, ContactEditFollowUpInfoActivity.this, new SyncCallback() {
+                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, ContactEditFollowUpInfoActivity.this, new SyncCallback() {
                             @Override
                             public void call(boolean syncFailed, String syncFailedMessage) {
                                 if (syncFailed) {

@@ -284,7 +284,7 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getBaseEditActivity().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, false, refreshLayout, null);
+                getBaseEditActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, refreshLayout, null);
             }
         });*/
 

@@ -82,7 +82,7 @@ public class CaseReadActivity  extends BaseReadActivity<Case> {
 
     @Override
     protected Case getActivityRootData(String recordUuid) {
-        return DatabaseHelper.getCaseDao().queryUuid(recordUuid);
+        return DatabaseHelper.getCaseDao().queryUuidWithEmbedded(recordUuid);
     }
 
     @Override

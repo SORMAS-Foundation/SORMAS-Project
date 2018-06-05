@@ -40,7 +40,8 @@ public final class SampleValidator {
             success = false;
         } else {
             if (sample.getLab().getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID) && sample.getLabDetails().trim().isEmpty()) {
-                binding.sampleLabDetails.setError(resources.getString(R.string.validation_sample_lab_details));
+                // TODO #558
+                //binding.sampleLabDetails.setError(resources.getString(R.string.validation_sample_lab_details));
                 success = false;
             }
         }
@@ -81,15 +82,10 @@ public final class SampleValidator {
     }
 
     private static final List<? extends EditTeboPropertyField<?>> getSampleDataFields(FragmentSampleEditLayoutBinding binding) {
+        // TODO #558 sampleDetails
         return Arrays.asList(binding.dtpDateAndTimeOfSampling, binding.spnSampleMaterial, binding.txtOtherSample,
                 binding.dtpShipmentDate, binding.spnLaboratory);
-    private static final List<PropertyField<?>> getSampleDataFields(SampleDataFragmentLayoutBinding binding) {
-        return Arrays.asList(binding.sampleDateTime, binding.sampleMaterial, binding.sampleMaterialText,
-                binding.sampleShipmentDate, binding.sampleLab, binding.sampleLabDetails);
     }
-
-
-
 
     public static boolean validateSampleData(INotificationContext activityContext, Sample sample, FragmentSampleNewLayoutBinding binding) {
         Resources resources = DatabaseHelper.getContext().getResources();

@@ -22,7 +22,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.databinding.PersonSelectOrCreateFragmentLayoutBinding;
 import de.symeda.sormas.app.person.PersonSelectVO;
-import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.util.Consumer;
 
 

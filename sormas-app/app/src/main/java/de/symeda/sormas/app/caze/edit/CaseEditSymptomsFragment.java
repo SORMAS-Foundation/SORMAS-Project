@@ -285,7 +285,8 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
                     Symptoms symptom = null;
 
                     if (recordUuid != null && !recordUuid.isEmpty()) {
-                        caze = DatabaseHelper.getCaseDao().queryUuid(recordUuid);
+                        // TODO #558 necessary?
+                        caze = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(recordUuid);
                         if (caze != null) {
                             symptom = DatabaseHelper.getSymptomsDao().queryUuid(caze.getSymptoms().getUuid());
                             //symptom = caze.getSymptoms();

@@ -59,15 +59,7 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
 
     @Override
     protected Sample getActivityRootData(String recordUuid) {
-        Sample sample;
-        if (caseUuid != null && !caseUuid.isEmpty()) {
-            Case associatedCase = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
-            sample = DatabaseHelper.getSampleDao().build(associatedCase);
-        } else {
-            sample = DatabaseHelper.getSampleDao().queryUuid(recordUuid);
-        }
-
-        return sample;
+        return DatabaseHelper.getSampleDao().queryUuid(recordUuid);
     }
 
     @Override

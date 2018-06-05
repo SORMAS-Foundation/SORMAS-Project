@@ -114,11 +114,6 @@ public class Person extends AbstractDomainObject {
 	private String occupationFacilityDetails;
 
 
-	//Orson added, talk to Martin
-	private Region occupationRegion;
-	private District occupationDistrict;
-	private Community occupationCommunity;
-
 	@Bindable
 	public String getFirstName() {
 		return firstName;
@@ -311,29 +306,6 @@ public class Person extends AbstractDomainObject {
 
 	public void setOccupationFacility(Facility occupationFacility) {
 		this.occupationFacility = occupationFacility;
-	}
-	public Region getOccupationRegion() {
-		return occupationRegion;
-	}
-
-	public void setOccupationRegion(Region occupationRegion) {
-		this.occupationRegion = occupationRegion;
-	}
-
-	public District getOccupationDistrict() {
-		return occupationDistrict;
-	}
-
-	public void setOccupationDistrict(District occupationDistrict) {
-		this.occupationDistrict = occupationDistrict;
-	}
-
-	public Community getOccupationCommunity() {
-		return occupationCommunity;
-	}
-
-	public void setOccupationCommunity(Community occupationCommunity) {
-		this.occupationCommunity = occupationCommunity;
 	}
 
 	public String getOccupationFacilityDetails() {

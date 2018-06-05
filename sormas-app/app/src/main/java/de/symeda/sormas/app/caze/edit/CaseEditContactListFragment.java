@@ -138,7 +138,7 @@ public class CaseEditContactListFragment extends BaseEditActivityFragment<Fragme
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, false, true, true, swiperefresh, null);
+                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, false, true, true, swiperefresh, null);
                 }
             });
         }

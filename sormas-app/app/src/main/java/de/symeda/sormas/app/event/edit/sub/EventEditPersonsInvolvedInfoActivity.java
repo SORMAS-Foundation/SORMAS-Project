@@ -252,7 +252,7 @@ public class EventEditPersonsInvolvedInfoActivity extends BaseEditActivity<Event
                     }
 
                     if (RetroProvider.isConnected()) {
-                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, EventEditPersonsInvolvedInfoActivity.this, new SyncCallback() {
+                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, EventEditPersonsInvolvedInfoActivity.this, new SyncCallback() {
                             @Override
                             public void call(boolean syncFailed, String syncFailedMessage) {
                                 if (syncFailed) {

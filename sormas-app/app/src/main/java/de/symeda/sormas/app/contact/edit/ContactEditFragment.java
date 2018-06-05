@@ -111,7 +111,7 @@ public class ContactEditFragment extends BaseEditActivityFragment<FragmentContac
                 if (contact.isUnreadOrChildUnread())
                     DatabaseHelper.getContactDao().markAsRead(contact);
 
-                _associatedCase = findAssociatedCase(contact.getPerson(), contact.getCaze().getDisease());
+                _associatedCase = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getResultingCaseUuid());
             }
 
             resultHolder.forItem().add(contact);
@@ -150,7 +150,7 @@ public class ContactEditFragment extends BaseEditActivityFragment<FragmentContac
         updateBottonPanel();
 
 
-        setVisibilityByDisease(ContactDto.class, record.getCaze().getDisease(), contentBinding.mainContent);
+        setVisibilityByDisease(ContactDto.class, record.getCaseDisease(), contentBinding.mainContent);
 
         //contentBinding.contactLastContactDate.makeFieldSoftRequired();
         //contentBinding.contactContactProximity.makeFieldSoftRequired();
@@ -214,7 +214,7 @@ public class ContactEditFragment extends BaseEditActivityFragment<FragmentContac
                         if (contact.isUnreadOrChildUnread())
                             DatabaseHelper.getContactDao().markAsRead(contact);
 
-                        _associatedCase = findAssociatedCase(contact.getPerson(), contact.getCaze().getDisease());
+                        _associatedCase = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getResultingCaseUuid());
                     }
 
                     resultHolder.forItem().add(contact);
@@ -271,19 +271,6 @@ public class ContactEditFragment extends BaseEditActivityFragment<FragmentContac
     @Override
     public boolean showAddAction() {
         return false;
-    }
-
-    private Case findAssociatedCase(Person person, Disease disease) {
-        if(person == null || disease == null) {
-            return null;
-        }
-
-        Case caze = DatabaseHelper.getCaseDao().getByPersonAndDisease(person, disease);
-        if (caze != null) {
-            return caze;
-        } else {
-            return null;
-        }
     }
 
     private void setupCallback() {
@@ -371,9 +358,12 @@ public class ContactEditFragment extends BaseEditActivityFragment<FragmentContac
                     saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_contact));
 
                     if (contactToSave.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && personToSave.getAddress().isEmptyLocation()) {
-                        personToSave.getAddress().setRegion(contactToSave.getCaze().getRegion());
-                        personToSave.getAddress().setDistrict(contactToSave.getCaze().getDistrict());
-                        personToSave.getAddress().setCommunity(contactToSave.getCaze().getCommunity());
+                        Case contactCase = DatabaseHelper.getCaseDao().queryUuidBasic(contactToSave.getCaseUuid());
+                        if (contactCase != null) {
+                            personToSave.getAddress().setRegion(contactCase.getRegion());
+                            personToSave.getAddress().setDistrict(contactCase.getDistrict());
+                            personToSave.getAddress().setCommunity(contactCase.getCommunity());
+                        }
                     }
                 }
 

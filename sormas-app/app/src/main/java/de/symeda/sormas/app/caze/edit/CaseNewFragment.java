@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Random;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;

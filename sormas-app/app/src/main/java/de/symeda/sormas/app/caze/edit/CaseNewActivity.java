@@ -17,6 +17,8 @@ import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.BaseEditActivity;
@@ -94,7 +96,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     @Override
     protected Case getActivityRootData(String recordUuid) {
-        return DatabaseHelper.getCaseDao().queryUuid(recordUuid);
+        return DatabaseHelper.getCaseDao().queryUuidWithEmbedded(recordUuid);
     }
 
     @Override
@@ -175,8 +177,16 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
                 @Override
                 public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(person.getFirstName(), person.getLastName());
-                    resultHolder.forList().add(existingPersons);
+                    List<PersonNameDto> existingPersons = DatabaseHelper.getPersonDao().getPersonNameDtos();
+                    List<Person> similarPersons = new ArrayList<>();
+                    for (PersonNameDto existingPerson : existingPersons) {
+                        if (PersonHelper.areNamesSimilar(person.getFirstName() + " " + person.getLastName(),
+                                existingPerson.getFirstName() + " " + existingPerson.getLastName())) {
+                            Person person = DatabaseHelper.getPersonDao().queryForId(existingPerson.getId());
+                            similarPersons.add(person);
+                        }
+                    }
+                    resultHolder.forList().add(similarPersons);
                 }
             });
             saveTask = executor.execute(new ITaskResultCallback() {

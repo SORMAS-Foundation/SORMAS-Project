@@ -72,7 +72,7 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
     protected Sample getActivityRootDataIfRecordUuidNull() {
         Sample sample = null;
         if (caseUuid != null && !caseUuid.isEmpty()) {
-            Case associatedCase = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
+            Case associatedCase = DatabaseHelper.getCaseDao().queryUuidReference(caseUuid);
             sample = DatabaseHelper.getSampleDao().build(associatedCase);
         }
 

@@ -11,8 +11,8 @@ import android.view.View;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -122,7 +122,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
     @Override
     protected Case getActivityRootData(String recordUuid) {
-        return DatabaseHelper.getCaseDao().queryUuid(recordUuid);
+        return DatabaseHelper.getCaseDao().queryUuidWithEmbedded(recordUuid);
     }
 
     @Override
@@ -248,7 +248,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
                 @Override
                 public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    final Case caseBeforeSaving = DatabaseHelper.getCaseDao().queryUuid(cazeToSave.getUuid());
+                    final Case caseBeforeSaving = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(cazeToSave.getUuid());
                     boolean showPlagueTypeChangeAlert = false;
                     if (cazeToSave.getDisease() == Disease.PLAGUE) {
                         showPlagueTypeChangeAlert = updatePlagueType(cazeToSave);
@@ -289,48 +289,44 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     }
 
     private void finalizeSaveProcess(final Case caze, final Case caseBeforeSaving, final Callback.IAction<BoolResult> callback) {
-        try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-                @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //showPreloader();
-                    //hideFragmentView();
+
+        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            @Override
+            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //showPreloader();
+                //hideFragmentView();
+            }
+
+            @Override
+            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                Case savedCase = DatabaseHelper.getCaseDao().queryUuidBasic(caze.getUuid());
+                resultHolder.forItem().add(savedCase);
+            }
+        });
+        finalizeSaveTask = executor.execute(new ITaskResultCallback() {
+            @Override
+            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //hidePreloader();
+                //showFragmentView();
+
+                if (resultHolder == null) {
+                    return;
                 }
 
-                @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    Case savedCase = DatabaseHelper.getCaseDao().queryUuid(caze.getUuid());
-                    resultHolder.forItem().add(savedCase);
-                }
-            });
-            finalizeSaveTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //hidePreloader();
-                    //showFragmentView();
+                Case savedCase = null;
+                ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    Case savedCase = null;
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                    if (itemIterator.hasNext())
-                        savedCase = itemIterator.next();
+                if (itemIterator.hasNext())
+                    savedCase = itemIterator.next();
 
                     /*if (savedCase.getDisease() == Disease.PLAGUE && caseBeforeSaving.getPlagueType() != savedCase.getPlagueType() &&
                             (caseBeforeSaving.getPlagueType() == PlagueType.PNEUMONIC || savedCase.getPlagueType() == PlagueType.PNEUMONIC)) {
                         setAdapter(savedCase);
                     }*/
 
-                    callback.call(resultStatus);
-                }
-            });
-        } catch (Exception ex) {
-            //hidePreloader();
-            //showFragmentView();
-        }
+                callback.call(resultStatus);
+            }
+        });
     }
 
     private void finalizeSaveProcessHelper(BoolResult result) {
@@ -487,63 +483,56 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         }
 
 
+        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            private CaseDao caseDao = DatabaseHelper.getCaseDao();
+            private PersonDao personDao = DatabaseHelper.getPersonDao();
 
+            @Override
+            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                caseDao = DatabaseHelper.getCaseDao();
+                personDao = DatabaseHelper.getPersonDao();
+            }
 
-        try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-                private CaseDao caseDao = DatabaseHelper.getCaseDao();
-                private PersonDao personDao = DatabaseHelper.getPersonDao();
+            @Override
+            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                try {
+                    if (cazeToSave.getPerson() != null)
+                        personDao.saveAndSnapshot(cazeToSave.getPerson());
 
-                @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    caseDao = DatabaseHelper.getCaseDao();
-                    personDao = DatabaseHelper.getPersonDao();
+                    if (cazeToSave != null)
+                        caseDao.saveAndSnapshot(cazeToSave);
+                } catch (DaoException e) {
+                    Log.e(getClass().getName(), "Error while trying to save case", e);
+                    Log.e(getClass().getName(), "- root cause: ", ErrorReportingHelper.getRootCause(e));
+                    resultHolder.setResultStatus(new BoolResult(false, saveUnsuccessful));
+                    ErrorReportingHelper.sendCaughtException(tracker, e, cazeToSave, true);
+                }
+            }
+        });
+        saveTask = executor.execute(new ITaskResultCallback() {
+            @Override
+            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().hidePreloader();
+                //getActivityCommunicator().showFragmentView();
+
+                if (resultHolder == null){
+                    return;
                 }
 
-                @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    try {
-                        if (cazeToSave.getPerson() != null)
-                            personDao.saveAndSnapshot(cazeToSave.getPerson());
-
-                        if (cazeToSave != null)
-                            caseDao.saveAndSnapshot(cazeToSave);
-                    } catch (DaoException e) {
-                        Log.e(getClass().getName(), "Error while trying to save case", e);
-                        Log.e(getClass().getName(), "- root cause: ", ErrorReportingHelper.getRootCause(e));
-                        resultHolder.setResultStatus(new BoolResult(false, saveUnsuccessful));
-                        ErrorReportingHelper.sendCaughtException(tracker, e, cazeToSave, true);
-                    }
+                if (!resultStatus.isSuccess()) {
+                    NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.ERROR, resultStatus.getMessage());
+                    //return;
+                } else {
+                    NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.SUCCESS, "Case " + DataHelper.getShortUuid(cazeToSave.getUuid()) + " saved");
                 }
-            });
-            saveTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
 
-                    if (resultHolder == null){
-                        return;
-                    }
+                if (callback != null)
+                    callback.call(resultStatus);
+                if (!goToNextMenu())
+                    NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.INFO, R.string.notification_reach_last_menu);
 
-                    if (!resultStatus.isSuccess()) {
-                        NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.ERROR, resultStatus.getMessage());
-                        //return;
-                    } else {
-                        NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.SUCCESS, "Case " + DataHelper.getShortUuid(cazeToSave.getUuid()) + " saved");
-                    }
-
-                    if (callback != null)
-                        callback.call(resultStatus);
-                    if (!goToNextMenu())
-                        NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.INFO, R.string.notification_reach_last_menu);
-
-                }
-            });
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
+            }
+        });
     }
 
     public static <TActivity extends AbstractSormasActivity> void

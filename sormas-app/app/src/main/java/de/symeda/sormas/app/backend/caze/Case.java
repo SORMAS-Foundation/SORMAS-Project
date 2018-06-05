@@ -129,13 +129,6 @@ public class Case extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private VaccinationInfoSource vaccinationInfoSource;
 
-	//@Deprecated
-	//private Vaccination measlesVaccination;
-	//private String measlesDoses;
-	//private VaccinationInfoSource measlesVaccinationInfoSource;
-	//private Vaccination yellowFeverVaccination;
-	//private VaccinationInfoSource yellowFeverVaccinationInfoSource;
-
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown smallpoxVaccinationScar;
 

@@ -283,7 +283,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getBaseReadActivity().synchronizeData(SynchronizeDataAsync.SyncMode.ChangesOnly, true, false, refreshLayout, null);
+                getBaseReadActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, refreshLayout, null);
             }
         });*/
 

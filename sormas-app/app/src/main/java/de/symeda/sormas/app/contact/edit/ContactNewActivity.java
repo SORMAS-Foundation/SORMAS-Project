@@ -17,6 +17,8 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
@@ -99,26 +101,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
     @Override
     protected Contact getActivityRootData(String recordUuid) {
-        Contact _contact = DatabaseHelper.getContactDao().queryUuid(recordUuid);
-        Case _associatedCase;
-
-        if (_contact == null)
-            return null;
-
-        if (caseUuid != null && !caseUuid.isEmpty()) {
-            _associatedCase = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
-        } else {
-            _associatedCase = DatabaseHelper.getCaseDao().build();
-        }
-
-        _contact.setCaze(_associatedCase);
-        _contact.setReportDateTime(new Date());
-        _contact.setContactClassification(ContactClassification.UNCONFIRMED);
-        _contact.setContactStatus(ContactStatus.ACTIVE);
-        _contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
-        _contact.setReportingUser(ConfigProvider.getUser());
-
-        return _contact;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -127,13 +110,11 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
         Person _person = DatabaseHelper.getPersonDao().build();
         Contact _contact = DatabaseHelper.getContactDao().build();
 
-        if (caseUuid != null && !caseUuid.isEmpty()) {
-            _associatedCase = DatabaseHelper.getCaseDao().queryUuid(caseUuid);
-        } else {
-            return null;
-        }
+        // not null, because contact can only be created when the user has access to the case
+        Case contactCase = DatabaseHelper.getCaseDao().queryUuidBasic(caseUuid);
+        _contact.setCaseUuid(caseUuid);
+        _contact.setCaseDisease(contactCase.getDisease());
 
-        _contact.setCaze(_associatedCase);
         _contact.setPerson(_person);
         _contact.setReportDateTime(new Date());
         _contact.setContactClassification(ContactClassification.UNCONFIRMED);
@@ -230,8 +211,16 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
                 @Override
                 public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(contactToSave.getPerson().getFirstName(), contactToSave.getPerson().getLastName());
-                    resultHolder.forList().add(existingPersons);
+                    List<PersonNameDto> existingPersons = DatabaseHelper.getPersonDao().getPersonNameDtos();
+                    List<Person> similarPersons = new ArrayList<>();
+                    for (PersonNameDto existingPerson : existingPersons) {
+                        if (PersonHelper.areNamesSimilar(contactToSave.getPerson().getFirstName() + " " + contactToSave.getPerson().getLastName(),
+                                existingPerson.getFirstName() + " " + existingPerson.getLastName())) {
+                            Person person = DatabaseHelper.getPersonDao().queryForId(existingPerson.getId());
+                            similarPersons.add(person);
+                        }
+                    }
+                    resultHolder.forList().add(similarPersons);
                 }
             });
             saveTask = executor.execute(new ITaskResultCallback() {
@@ -314,9 +303,12 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
                     saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_contact));
 
                     if(contactToSave.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && contactToSave.getPerson().getAddress().isEmptyLocation()) {
-                        contactToSave.getPerson().getAddress().setRegion(contactToSave.getCaze().getRegion());
-                        contactToSave.getPerson().getAddress().setDistrict(contactToSave.getCaze().getDistrict());
-                        contactToSave.getPerson().getAddress().setCommunity(contactToSave.getCaze().getCommunity());
+                        Case contactCase = DatabaseHelper.getCaseDao().queryUuidBasic(contactToSave.getCaseUuid());
+                        if (contactCase != null) {
+                            contactToSave.getPerson().getAddress().setRegion(contactCase.getRegion());
+                            contactToSave.getPerson().getAddress().setDistrict(contactCase.getDistrict());
+                            contactToSave.getPerson().getAddress().setCommunity(contactCase.getCommunity());
+                        }
                     }
                 }
 
@@ -345,7 +337,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
                     }
 
                     if (RetroProvider.isConnected()) {
-                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.ChangesOnly, ContactNewActivity.this, new SyncCallback() {
+                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, ContactNewActivity.this, new SyncCallback() {
                             @Override
                             public void call(boolean syncFailed, String syncFailedMessage) {
                                 if (syncFailed) {

@@ -30,8 +30,7 @@ public class SampleSearchByCaseStrategy implements ISearchStrategy<Sample> {
         if (recordId == null || recordId.isEmpty())
             return result;
 
-        CaseDao caseDao = DatabaseHelper.getCaseDao();
-        Case caze = caseDao.queryUuid(recordId);
+        Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordId);
 
         if (caze != null) {
             result = DatabaseHelper.getSampleDao().queryByCase(caze);

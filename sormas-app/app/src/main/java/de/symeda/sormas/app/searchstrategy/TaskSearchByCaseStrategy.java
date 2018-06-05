@@ -30,9 +30,7 @@ public class TaskSearchByCaseStrategy implements ISearchStrategy<Task> {
         if (recordId == null || recordId.isEmpty())
             return result;
 
-        CaseDao caseDao = DatabaseHelper.getCaseDao();
-        Case caze = caseDao.queryUuid(recordId);
-
+        Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordId);
         if (caze != null) {
             result = DatabaseHelper.getTaskDao().queryByCase(caze);
         }
