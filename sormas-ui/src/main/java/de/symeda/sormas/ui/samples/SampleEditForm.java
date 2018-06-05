@@ -76,6 +76,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		ComboBox lab = addField(SampleDto.LAB, ComboBox.class);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
 		TextField labDetails = addField(SampleDto.LAB_DETAILS, TextField.class);
+		labDetails.setVisible(false);
 		addField(SampleDto.SPECIMEN_CONDITION, ComboBox.class);
 		addField(SampleDto.NO_TEST_POSSIBLE_REASON, TextField.class);
 		addField(SampleDto.COMMENT, TextArea.class).setRows(2);
@@ -147,18 +148,18 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				reportInfoLayout.addComponent(referredButton);
 			}
 			
-			lab.addValueChangeListener(event -> {
-				if (event.getProperty().getValue() != null && ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
-					labDetails.setVisible(true);
-					labDetails.setRequired(true);
-				} else {
-					labDetails.setVisible(false);
-					labDetails.setRequired(false);
-					labDetails.clear();
-				}
-			});
-			
 			getContent().addComponent(reportInfoLayout, REPORT_INFORMATION_LOC);
+		});
+
+		lab.addValueChangeListener(event -> {
+			if (event.getProperty().getValue() != null && ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+				labDetails.setVisible(true);
+				labDetails.setRequired(true);
+			} else {
+				labDetails.setVisible(false);
+				labDetails.setRequired(false);
+				labDetails.clear();
+			}
 		});
 	}
 
