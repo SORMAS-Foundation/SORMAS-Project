@@ -160,7 +160,7 @@ public class EventService extends AbstractAdoService<Event> {
 			case SURVEILLANCE_SUPERVISOR:
 			case CONTACT_SUPERVISOR:
 			case CASE_SUPERVISOR:
-			case RUMOR_MANAGER:
+			case EVENT_OFFICER:
 			case STATE_OBSERVER:
 				// supervisors see all events of their region
 				if (user.getRegion() != null) {

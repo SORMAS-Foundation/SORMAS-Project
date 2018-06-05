@@ -414,7 +414,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			case SURVEILLANCE_SUPERVISOR:
 			case CONTACT_SUPERVISOR:
 			case CASE_SUPERVISOR:
-			case RUMOR_MANAGER:
+			case EVENT_OFFICER:
 			case STATE_OBSERVER:
 				// supervisors see all cases of their region
 				if (user.getRegion() != null) {
