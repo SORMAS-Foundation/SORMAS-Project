@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.backend.region;
 
+import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import javax.persistence.CascadeType;
@@ -25,6 +26,7 @@ public class Community extends AbstractDomainObject {
 	@Column
 	private String name;
 
+	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
 	@JoinColumn(nullable = false)
 	private District district;

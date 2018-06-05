@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/rowListItemBurial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+        android:paddingTop="@dimen/parentLayoutVerticalPadding"
+        android:paddingBottom="@dimen/parentLayoutVerticalPadding"
+        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+        android:paddingRight="@dimen/rowListItemHorizontalMargin"
+        android:orientation="vertical"
+        android:background="@drawable/selector_list_section_row_background"
+        android:elevation="2dp"
+        >
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            <de.symeda.sormas.app.component.TeboTextRead
+                android:id="@+id/txtAdmissionAndDischargeDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:description="@string/desc_case_hos_prev_admission_and_discharge_date"
+                app:labelCaption="@string/label_case_hos_prev_admission_and_discharge_date"
+                app:labelColor="@color/controlReadLabelSecodaryColor"
+                app:dateRangeValue="@{data.admissionDate}"
+                app:appendValue="@{data.dischargeDate}"
+                app:valueFormat='@{@string/date_range_format}'
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <de.symeda.sormas.app.component.TeboTextRead
+                android:id="@+id/txtIsolation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/formLayoutGutterSize"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                android:textAlignment="viewEnd"
+                app:description="@string/desc_case_hos_prev_isolation"
+                app:labelCaption="@string/label_case_hos_prev_isolation"
+                app:labelColor="@color/controlReadLabelSecodaryColor"
+                app:value="@{data.isolated}"
+                app:defaultValue='@{@string/not_available}'
+                />
+        </LinearLayout>
+
+        <de.symeda.sormas.app.component.TeboTextRead
+            android:id="@+id/txtHospitalName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+            app:description="@string/desc_case_hos_prev_hospital_name"
+            app:labelCaption="@string/label_case_hos_prev_hospital_name"
+            app:labelColor="@color/controlReadLabelSecodaryColor"
+            app:facilityValue="@{data.healthFacility}"
+            app:defaultValue='@{@string/not_available}'
+            />
+
+
+        <de.symeda.sormas.app.component.TeboTextRead
+            android:id="@+id/txtStatAndLga"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+            app:description="@string/desc_case_hos_prev_state_and_lga"
+            app:labelCaption="@string/label_case_hos_prev_state_and_lga"
+            app:labelColor="@color/controlReadLabelSecodaryColor"
+            app:stateAndLgaValue="@{data}"
+            app:defaultValue='@{@string/not_available}'
+            />
+
+        <de.symeda.sormas.app.component.TeboTextRead
+            android:id="@+id/txtWard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+            app:description="@string/desc_case_hos_prev_ward"
+            app:labelCaption="@string/label_case_hos_prev_ward"
+            app:labelColor="@color/controlReadLabelSecodaryColor"
+            app:wardValue="@{data.community}"
+            app:defaultValue='@{@string/not_available}'
+            />
+
+        <de.symeda.sormas.app.component.TeboTextRead
+            android:id="@+id/txtDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:singleLine="false"
+            app:maxLines="2"
+            app:description="@string/desc_case_hos_prev_desc"
+            app:labelCaption="@string/label_case_hos_prev_desc"
+            app:labelColor="@color/controlReadLabelSecodaryColor"
+            app:value="@{data.description}"
+            app:defaultValue='@{@string/not_available}'
+            />
+
+
+    </LinearLayout>
+</layout>

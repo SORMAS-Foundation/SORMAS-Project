@@ -1,20 +1,13 @@
 package de.symeda.sormas.app.component;
 
 import android.widget.AdapterView;
-import android.widget.Toast;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.facility.FacilityDao;
-import de.symeda.sormas.app.backend.person.PersonDao;
-import de.symeda.sormas.app.backend.region.CommunityDao;
-import de.symeda.sormas.app.backend.region.DistrictDao;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDao;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.Item;
 
 /**
  * Created by Mate Strysewske on 13.12.2016.

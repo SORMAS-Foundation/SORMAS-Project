@@ -8,15 +8,10 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -26,7 +21,6 @@ import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
@@ -119,6 +113,11 @@ public class Person extends AbstractDomainObject {
 	@Column(length=512)
 	private String occupationFacilityDetails;
 
+
+	//Orson added, talk to Martin
+	private Region occupationRegion;
+	private District occupationDistrict;
+	private Community occupationCommunity;
 
 	@Bindable
 	public String getFirstName() {
@@ -309,8 +308,32 @@ public class Person extends AbstractDomainObject {
 	public Facility getOccupationFacility() {
 		return occupationFacility;
 	}
+
 	public void setOccupationFacility(Facility occupationFacility) {
 		this.occupationFacility = occupationFacility;
+	}
+	public Region getOccupationRegion() {
+		return occupationRegion;
+	}
+
+	public void setOccupationRegion(Region occupationRegion) {
+		this.occupationRegion = occupationRegion;
+	}
+
+	public District getOccupationDistrict() {
+		return occupationDistrict;
+	}
+
+	public void setOccupationDistrict(District occupationDistrict) {
+		this.occupationDistrict = occupationDistrict;
+	}
+
+	public Community getOccupationCommunity() {
+		return occupationCommunity;
+	}
+
+	public void setOccupationCommunity(Community occupationCommunity) {
+		this.occupationCommunity = occupationCommunity;
 	}
 
 	public String getOccupationFacilityDetails() {
@@ -344,7 +367,7 @@ public class Person extends AbstractDomainObject {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append(getFirstName()).append(" ").append(getLastName().toUpperCase());
+		builder.append(getFirstName() != null? getFirstName() : "").append(" ").append((getLastName() != null? getLastName() : "").toUpperCase());
 		return builder.toString();
 	}
 

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:state_pressed="true" >
+        <shape android:shape="rectangle">
+            <!--<stroke android:width="0dp" android:color="@color/warningInverseButtonPressed" />-->
+            <solid android:color="@color/dangerInverseButtonPressed"/>
+            <corners android:radius="@dimen/defaultButtonRadius" />
+        </shape>
+    </item>
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <!--<stroke android:width="0dp" android:color="@color/warningInverseButtonFocused" />-->
+            <solid android:color="@color/dangerInverseButtonFocused"/>
+            <corners android:radius="@dimen/defaultButtonRadius" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <!--<stroke android:width="0dp" android:color="@color/warningInverseButton" />-->
+            <solid android:color="@color/dangerInverseButton"/>
+            <corners android:radius="@dimen/defaultButtonRadius" />
+        </shape>
+    </item>
+</selector>

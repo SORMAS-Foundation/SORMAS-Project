@@ -6,16 +6,12 @@ import android.view.View;
 import java.util.Arrays;
 import java.util.List;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.symptoms.SymptomState;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.component.CheckBoxField;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SymptomStateField;
 import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
@@ -249,45 +245,9 @@ public final class SymptomsValidator {
         }
     }
 
-    private static List<SymptomStateField> getNonConditionalSymptoms(CaseSymptomsFragmentLayoutBinding binding) {
-        // These should be in reverse order of how they're displayed on the screen
-        return Arrays.asList(binding.symptomsOtherNonHemorrhagicSymptoms, binding.symptomsVomiting, binding.symptomsUnexplainedBleeding, binding.symptomsThrobocytopenia, binding.symptomsSwollenGlands,
-                binding.symptomsSoreThroat, binding.symptomsSkinRash, binding.symptomsShock, binding.symptomsOralUlcers, binding.symptomsRunnyNose,
-                binding.symptomsRefusalFeedorDrink, binding.symptomsRapidBreathing, binding.symptomsPainfulLymphadenitis, binding.symptomsNeckStiffness,
-                binding.symptomsNausea, binding.symptomsMusclePain, binding.symptomsOtitisMedia, binding.symptomsLymphadenopathyInguinal, binding.symptomsLymphadenopathyCervical,
-                binding.symptomsLymphadenopathyAxillary, binding.symptomsLesions, binding.symptomsKopliksSpots, binding.symptomsJointPain, binding.symptomsJaundice,
-                binding.symptomsBedridden, binding.symptomsHiccups, binding.symptomsHeadache, binding.symptomsFever, binding.symptomsFatigueWeakness,
-                binding.symptomsEyePainLightSensitive, binding.symptomsDifficultyBreathing, binding.symptomsDiarrhea, binding.symptomsDehydration,
-                binding.symptomsDarkUrine, binding.symptomsCough, binding.symptomsSeizures, binding.symptomsConjunctivitis,
-                binding.symptomsConfusedDisoriented, binding.symptomsChillsSweats, binding.symptomsChestPain, binding.symptomsBuboesGroinArmpitNeck,
-                binding.symptomsBloodInStool, binding.symptomsBlackeningDeathOfTissue, binding.symptomsBackache, binding.symptomsAnorexiaAppetiteLoss,
-                binding.symptomsAlteredConsciousness, binding.symptomsHearingloss, binding.symptomsAbdominalPain, binding.symptomsBulgingFontanelle);
-    }
-
-    private static List<SymptomStateField> getConditionalBleedingSymptoms(CaseSymptomsFragmentLayoutBinding binding) {
-        // These should be in reverse order of how they're displayed on the screen
-        return Arrays.asList(binding.symptomsOtherHemorrhagicSymptoms, binding.symptomsRedBloodVomit, binding.symptomsDigestedBloodVomit, binding.symptomsCoughingBlood,
-                binding.symptomsSkinBruising, binding.symptomsNoseBleeding, binding.symptomsBloodyBlackStool, binding.symptomsBloodUrine, binding.symptomsGumsBleeding,
-                binding.symptomsBleedingVagina, binding.symptomsInjectionSiteBleeding, binding.symptomsStomachBleeding, binding.symptomsEyesBleeding);
-    }
-
-    private static List<SymptomStateField> getLesionsFields(CaseSymptomsFragmentLayoutBinding binding) {
-        return Arrays.asList(binding.symptomsLesionsDeepProfound, binding.symptomsLesionsSameSize, binding.symptomsLesionsSameState, binding.symptomsLesionsThatItch);
-    }
-
-    private static List<SymptomStateField> getMonkeypoxFields(CaseSymptomsFragmentLayoutBinding binding) {
-        return Arrays.asList(binding.symptomsLesionsResembleImg4, binding.symptomsLesionsResembleImg3, binding.symptomsLesionsResembleImg2, binding.symptomsLesionsResembleImg1);
-    }
-
     public static boolean isSymptomatic(CaseSymptomsFragmentLayoutBinding binding) {
         return isAnySymptomSetTo(SymptomState.YES, getNonConditionalSymptoms(binding)) ||
                 (binding.symptomsTemperature.getValue() != null && (Float) binding.symptomsTemperature.getValue() >= 38.0f);
-    }
-
-    private static List<PropertyField<?>> getOtherSymptomsFields(CaseSymptomsFragmentLayoutBinding binding) {
-        return Arrays.asList(binding.symptomsOnsetDate, binding.symptomsOnsetSymptom,
-                binding.symptomsOther1HemorrhagicSymptomsText, binding.symptomsOther1NonHemorrhagicSymptomsText,
-                binding.symptomsTemperature, binding.symptomsTemperatureSource, binding.symptomsPatientIllLocation);
     }
 
     /**
@@ -319,5 +279,49 @@ public final class SymptomsValidator {
 
         return fieldMarked;
     }
+
+
+
+
+
+
+    private static List<SymptomStateField> getNonConditionalSymptoms(CaseSymptomsFragmentLayoutBinding binding) {
+        // These should be in reverse order of how they're displayed on the screen
+        return Arrays.asList(binding.symptomsOtherNonHemorrhagicSymptoms, binding.symptomsVomiting, binding.symptomsUnexplainedBleeding, binding.symptomsThrobocytopenia, binding.symptomsSwollenGlands,
+                binding.symptomsSoreThroat, binding.symptomsSkinRash, binding.symptomsShock, binding.symptomsOralUlcers, binding.symptomsRunnyNose,
+                binding.symptomsRefusalFeedorDrink, binding.symptomsRapidBreathing, binding.symptomsPainfulLymphadenitis, binding.symptomsNeckStiffness,
+                binding.symptomsNausea, binding.symptomsMusclePain, binding.symptomsOtitisMedia, binding.symptomsLymphadenopathyInguinal, binding.symptomsLymphadenopathyCervical,
+                binding.symptomsLymphadenopathyAxillary, binding.symptomsLesions, binding.symptomsKopliksSpots, binding.symptomsJointPain, binding.symptomsJaundice,
+                binding.symptomsBedridden, binding.symptomsHiccups, binding.symptomsHeadache, binding.symptomsFever, binding.symptomsFatigueWeakness,
+                binding.symptomsEyePainLightSensitive, binding.symptomsDifficultyBreathing, binding.symptomsDiarrhea, binding.symptomsDehydration,
+                binding.symptomsDarkUrine, binding.symptomsCough, binding.symptomsSeizures, binding.symptomsConjunctivitis,
+                binding.symptomsConfusedDisoriented, binding.symptomsChillsSweats, binding.symptomsChestPain, binding.symptomsBuboesGroinArmpitNeck,
+                binding.symptomsBloodInStool, binding.symptomsBlackeningDeathOfTissue, binding.symptomsBackache, binding.symptomsAnorexiaAppetiteLoss,
+                binding.symptomsAlteredConsciousness, binding.symptomsHearingloss, binding.symptomsAbdominalPain, binding.symptomsBulgingFontanelle);
+    }
+
+    private static List<SymptomStateField> getConditionalBleedingSymptoms(CaseSymptomsFragmentLayoutBinding binding) {
+        // These should be in reverse order of how they're displayed on the screen
+        return Arrays.asList(binding.symptomsOtherHemorrhagicSymptoms, binding.symptomsRedBloodVomit, binding.symptomsDigestedBloodVomit, binding.symptomsCoughingBlood,
+                binding.symptomsSkinBruising, binding.symptomsNoseBleeding, binding.symptomsBloodyBlackStool, binding.symptomsBloodUrine, binding.symptomsGumsBleeding,
+                binding.symptomsBleedingVagina, binding.symptomsInjectionSiteBleeding, binding.symptomsStomachBleeding, binding.symptomsEyesBleeding);
+    }
+
+    private static List<SymptomStateField> getLesionsFields(CaseSymptomsFragmentLayoutBinding binding) {
+        return Arrays.asList(binding.symptomsLesionsDeepProfound, binding.symptomsLesionsSameSize, binding.symptomsLesionsSameState, binding.symptomsLesionsThatItch);
+    }
+
+    private static List<SymptomStateField> getMonkeypoxFields(CaseSymptomsFragmentLayoutBinding binding) {
+        return Arrays.asList(binding.symptomsLesionsResembleImg4, binding.symptomsLesionsResembleImg3, binding.symptomsLesionsResembleImg2, binding.symptomsLesionsResembleImg1);
+    }
+
+    private static List<PropertyField<?>> getOtherSymptomsFields(CaseSymptomsFragmentLayoutBinding binding) {
+        return Arrays.asList(binding.symptomsOnsetDate, binding.symptomsOnsetSymptom,
+                binding.symptomsOther1HemorrhagicSymptomsText, binding.symptomsOther1NonHemorrhagicSymptomsText,
+                binding.symptomsTemperature, binding.symptomsTemperatureSource, binding.symptomsPatientIllLocation);
+    }
+
+
+
 
 }

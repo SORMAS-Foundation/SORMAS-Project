@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:state_enabled="false" >
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/defaultControlBackground" />
+                    <corners android:radius="@dimen/defaultControlRadius" />
+                    <stroke android:color="@color/controlTextViewDisabledStroke"
+                        android:width="@dimen/defaultControlStrokeWidth" />
+                </shape>
+
+            </item>
+            <item android:gravity="right|center_vertical"
+                android:drawable="@drawable/ic_spinner_arrow_down_disabled_24dp"
+                android:width="@dimen/spinnerIconWidth" android:height="@dimen/spinnerIconHeight"
+                android:right="@dimen/contentHorizontalSpacing"
+                />
+        </layer-list>
+    </item>
+    <item android:state_activated="true" >
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/defaultControlBackground" />
+                    <corners android:radius="@dimen/defaultControlRadius" />
+                    <stroke android:color="@color/controlStrokeActivated"
+                        android:width="@dimen/defaultControlStrokeWidth" />
+                </shape>
+
+            </item>
+            <item android:gravity="right|center_vertical"
+                android:drawable="@drawable/ic_spinner_arrow_down_activated_24dp"
+                android:width="@dimen/spinnerIconWidth" android:height="@dimen/spinnerIconHeight"
+                android:right="@dimen/contentHorizontalSpacing"
+                />
+        </layer-list>
+    </item>
+    <item android:state_selected="true" >
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/defaultControlBackground" />
+                    <corners android:radius="@dimen/defaultControlRadius" />
+                    <stroke android:color="@color/controlStrokeActivated"
+                        android:width="@dimen/defaultControlStrokeWidth" />
+                </shape>
+
+            </item>
+            <item android:gravity="right|center_vertical"
+                android:drawable="@drawable/ic_spinner_arrow_down_activated_24dp"
+                android:width="@dimen/spinnerIconWidth" android:height="@dimen/spinnerIconHeight"
+                android:right="@dimen/contentHorizontalSpacing"
+                />
+        </layer-list>
+    </item>
+    <item android:state_pressed="true" >
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/defaultControlBackground" />
+                    <corners android:radius="@dimen/defaultControlRadius" />
+                    <stroke android:color="@color/controlStrokeActivated"
+                        android:width="@dimen/defaultControlStrokeWidth" />
+                </shape>
+
+            </item>
+            <item android:gravity="right|center_vertical"
+                android:drawable="@drawable/ic_spinner_arrow_down_activated_24dp"
+                android:width="@dimen/spinnerIconWidth" android:height="@dimen/spinnerIconHeight"
+                android:right="@dimen/contentHorizontalSpacing"
+                />
+        </layer-list>
+    </item>
+    <item android:state_focused="true">
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/defaultControlBackground" />
+                    <corners android:radius="@dimen/defaultControlRadius" />
+                    <stroke android:color="@color/controlStrokeActivated"
+                        android:width="@dimen/defaultControlStrokeWidth" />
+                </shape>
+
+            </item>
+            <item android:gravity="right|center_vertical"
+                android:drawable="@drawable/ic_spinner_arrow_down_activated_24dp"
+                android:width="@dimen/spinnerIconWidth" android:height="@dimen/spinnerIconHeight"
+                android:right="@dimen/contentHorizontalSpacing"
+                />
+        </layer-list>
+    </item>
+    <item>
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/defaultControlBackground" />
+                    <corners android:radius="@dimen/defaultControlRadius" />
+                    <stroke android:color="@color/controlStrokeNormal"
+                        android:width="@dimen/defaultControlStrokeWidth" />
+                </shape>
+
+            </item>
+            <item android:gravity="right|center_vertical"
+                android:drawable="@drawable/ic_spinner_arrow_down_normal_24dp"
+                android:width="@dimen/spinnerIconWidth" android:height="@dimen/spinnerIconHeight"
+                android:right="@dimen/contentHorizontalSpacing"
+                />
+        </layer-list>
+    </item>
+</selector>

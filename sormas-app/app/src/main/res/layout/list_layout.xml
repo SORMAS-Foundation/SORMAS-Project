@@ -28,10 +28,10 @@
             android:id="@+id/empty_list_hint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/empty_list_hint"
+            android:text="@string/addToEmptyListHint"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textAlignment="center"
-            android:padding="15dp"
+            style="@style/EmptyListHintStyle"
             android:visibility="gone"/>
 
     </FrameLayout>

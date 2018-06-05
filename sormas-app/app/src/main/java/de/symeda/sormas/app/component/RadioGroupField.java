@@ -17,7 +17,6 @@ import java.util.List;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.Item;
 
 /**
  * Created by Mate Strysewske on 07.12.2016.

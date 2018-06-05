@@ -1,0 +1,216 @@
+<?xml version="1.0"?>
+<!DOCTYPE project>
+<project name="sormas-base" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant" default="install">
+
+	<property file="build.properties" />
+	<property name="deploy.path" value="${glassfish.domain.root}/autodeploy" />
+	<property name="deploy.bundles.path" value="${deploy.path}/bundles" />
+	<property name="deploy.serverlibs.path" value="${glassfish.domain.root}/lib" />
+	<property name="config.path" value="glassfish-config" />
+	<property name="collect.root.path" value="../deploy" />
+	<property name="collect.serverlibs.path" value="${collect.root.path}/serverlibs" />
+	<property name="collect.gf-modules.path" value="${collect.root.path}/gf-modules" />
+	<property name="collect.bundles.path" value="${collect.root.path}/bundles" />
+	<property name="collect.sql.path" value="${collect.root.path}/sql" />
+
+	<property environment="env" />
+
+	<target name="clean" unless="clean.skip" description="Clean application">
+		<artifact:mvn fork="true" mavenhome="${env.M2_HOME}" failonerror="true">
+			<sysproperty key="maven.multiModuleProjectDirectory" value="${basedir}" />
+			<arg value="clean" />
+		</artifact:mvn>
+	</target>
+
+	<target name="install" description="Compile main source tree java files and install" unless="shared.installed">
+		<artifact:mvn dir="${basedir}" fork="true" mavenhome="${env.M2_HOME}" failonerror="true">
+			<sysproperty key="maven.multiModuleProjectDirectory" value="${basedir}" />
+			<arg value="install" />
+			<arg value="-Dmaven.test.skip=true" />
+		</artifact:mvn>
+		<property name="shared.installed" value="true" />
+	</target>
+
+	<target name="install-with-app" description="Compile main source tree java files and install, include android app" unless="shared.installed">
+		<artifact:mvn dir="${basedir}" fork="true" mavenhome="${env.M2_HOME}" failonerror="true">
+			<sysproperty key="maven.multiModuleProjectDirectory" value="${basedir}" />
+			<arg value="install" />
+			<arg value="-Pwith-app" />
+			<arg value="-Dmaven.test.skip=true" />
+		</artifact:mvn>
+		<property name="shared.installed" value="true" />
+	</target>
+
+	<target name="deploy-bundles" description="Deploy osgi bundles to development server">
+
+		<artifact:pom id="bundlesPom" file="dependencies/bundles.pom">
+		</artifact:pom>
+
+		<artifact:dependencies filesetId="bundlesid" pomRefId="bundlesPom" useScope="compile" versionsId="dependency.versions" />
+
+		<delete failonerror="false">
+			<fileset dir="${deploy.bundles.path}">
+				<include name="*.jar" />
+			</fileset>
+		</delete>
+
+		<copy todir="${deploy.bundles.path}" preservelastmodified="true" verbose="true">
+			<fileset refid="bundlesid" />
+			<mapper type="flatten" />
+		</copy>
+	</target>
+
+	<target name="-deploy-bundles-prod" description="Gather osgi bundles for production server">
+
+		<artifact:pom id="bundlesPom" file="dependencies/bundles.pom">
+		</artifact:pom>
+
+		<artifact:dependencies filesetId="bundlesid" pomRefId="bundlesPom" useScope="compile" versionsId="dependency.versions" />
+		<!-- <echo>${dependency.versions}</echo> -->
+		<copy todir="${deploy.bundles.path}" preservelastmodified="true" verbose="true">
+			<fileset refid="bundlesid" />
+			<mapper type="flatten" />
+		</copy>
+	</target>
+
+	<target name="deploy-serverlibs" description="Gather server jars">
+
+		<artifact:pom id="serverlibsPom" file="dependencies/serverlibs.pom">
+		</artifact:pom>
+
+		<echo>Die folgende invalid-POM-Warning kann ignoriert werden</echo>
+		<artifact:dependencies filesetId="serverlibsid" pomRefId="serverlibsPom" useScope="compile" versionsId="dependency.versions" />
+
+		<delete failonerror="false">
+			<fileset dir="${deploy.serverlibs.path}">
+				<include name="*.jar" />
+			</fileset>
+		</delete>
+
+		<copy todir="${deploy.serverlibs.path}" preservelastmodified="true" verbose="true">
+			<fileset refid="serverlibsid" />
+			<mapper type="flatten" />
+		</copy>
+	</target>
+
+	<target name="collect-bundles" description="bundles für glassfish-config bereitstellen">
+
+		<artifact:pom id="bundlesPom" file="dependencies/bundles.pom">
+		</artifact:pom>
+
+		<artifact:dependencies filesetId="bundlesid" pomRefId="bundlesPom" useScope="compile" versionsId="dependency.versions" />
+
+		<delete failonerror="false">
+			<fileset dir="${collect.bundles.path}">
+				<include name="*.jar" />
+			</fileset>
+		</delete>
+
+		<copy todir="${collect.bundles.path}" preservelastmodified="true" verbose="true">
+			<fileset refid="bundlesid" />
+			<mapper type="flatten" />
+		</copy>
+	</target>
+
+	<target name="collect-gf-modules" description="modules als Patches für glassfish bereitstellen">
+
+		<artifact:pom id="gf-modulesPom" file="dependencies/gf-modules.pom">
+		</artifact:pom>
+
+		<artifact:dependencies filesetId="gf-modulesid" pomRefId="gf-modulesPom" useScope="compile" versionsId="dependency.versions" />
+
+		<delete failonerror="false">
+			<fileset dir="${collect.gf-modules.path}">
+				<include name="*.*ar" />
+			</fileset>
+		</delete>
+
+		<copy todir="${collect.gf-modules.path}" preservelastmodified="true" verbose="true">
+			<fileset refid="gf-modulesid" />
+			<mapper type="flatten" />
+		</copy>
+	</target>
+
+	<target name="collect-config" description="Collects setup scripts and config files">
+
+		<delete failonerror="false" includeemptydirs="true">
+			<fileset dir="${collect.root.path}" casesensitive="false">
+				<exclude name="*.md" />
+				<include name="*.*" />
+			</fileset>
+		</delete>
+
+		<copy todir="${collect.root.path}">
+			<fileset dir="glassfish-config">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="collect-serverlibs" description="serverlibs für glassfish-config bereitstellen">
+
+		<artifact:pom id="serverlibsPom" file="dependencies/serverlibs.pom">
+		</artifact:pom>
+
+		<echo>Die folgende invalid-POM-Warning kann ignoriert werden</echo>
+		<artifact:dependencies filesetId="serverlibsid" pomRefId="serverlibsPom" useScope="compile" versionsId="dependency.versions" />
+
+		<delete failonerror="false">
+			<fileset dir="${collect.serverlibs.path}">
+				<include name="*.jar" />
+			</fileset>
+		</delete>
+
+		<copy todir="${collect.serverlibs.path}" preservelastmodified="true" verbose="true">
+			<fileset refid="serverlibsid" />
+			<mapper type="flatten" />
+		</copy>
+	</target>
+
+	<target name="collect-sql" description="SQL für glassfish-config bereitstellen">
+
+		<delete failonerror="false" includeemptydirs="true">
+			<fileset dir="${collect.sql.path}" casesensitive="false">
+				<include name="**" />
+				<include name="**/*" />
+			</fileset>
+		</delete>
+
+		<copy todir="${collect.sql.path}">
+			<fileset dir="sql" />
+		</copy>
+	</target>
+
+	<target name="collect-artifacts" description="Collects artifacts">
+		<ant dir="../sormas-ear" target="3-collect" />
+		<ant dir="../sormas-ui" target="3-collect" />
+		<ant dir="../sormas-rest" target="3-collect" />
+		<ant dir="../sormas-app" target="3-collect" />
+	</target>
+
+	<target name="collect-all" description="collects all serverlibs, bundles and so on for the setup-script.">
+
+		<echo>Collecting serverlibs</echo>
+		<antcall target="collect-serverlibs" />
+
+		<echo>Collecting bundles</echo>
+		<antcall target="collect-bundles" />
+
+		<echo>Collecting SQL</echo>
+		<antcall target="collect-sql" />
+
+		<echo>Collecting config und scripts</echo>
+		<antcall target="collect-config" />
+
+		<echo>Collecting gf-modules</echo>
+		<antcall target="collect-gf-modules" />
+
+		<echo>Collecting SORMAS artifacts</echo>
+		<antcall target="collect-artifacts" />
+
+	</target>
+
+
+	<path id="maven-ant-tasks.classpath" path="${basedir}/../sormas-base/antlib/maven-ant-tasks-2.1.4-SNAPSHOT_PATCHED.jar" />
+	<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant" classpathref="maven-ant-tasks.classpath" />
+</project>

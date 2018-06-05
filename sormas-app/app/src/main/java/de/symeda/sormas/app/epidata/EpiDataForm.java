@@ -14,11 +14,10 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.epidata.AnimalCondition;
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -50,7 +49,8 @@ public class EpiDataForm extends FormTab {
         binding = DataBindingUtil.inflate(inflater, R.layout.case_epidata_fragment_layout, container, false);
 
         View view = binding.getRoot();
-        editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
+        //TODO: Orson check back
+        //editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
 
         final Disease disease = (Disease) getArguments().getSerializable(Case.DISEASE);
         final String epiDataUuid = getArguments().getString(EpiData.UUID);
@@ -166,7 +166,8 @@ public class EpiDataForm extends FormTab {
             }
         });
 
-        setVisibilityByDisease(EpiDataDto.class, disease, (ViewGroup)binding.getRoot());
+        //TODO: Orson check back
+        //setVisibilityByDisease(EpiDataDto.class, disease, (ViewGroup)binding.getRoot());
         showOrHideHeadlines();
 
         FieldHelper.initSpinnerField(binding.epiDataAnimalCondition, AnimalCondition.class);

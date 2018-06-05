@@ -77,7 +77,7 @@ public class AppUpdateController {
      *                 in case the result returned is not RESULT_OK or RESULT_CANCELED
      * @param allowDismiss True if the user should be able to dismiss the dialog, e.g. by clicking a "Download later" button; otherwise, the button will
      *                     either be hidden or replaced by a button that closes the app
-     * @param negativeCallback Callback that will be called after the logic added in this class has been executed when the user has
+     * @param negativeCallback ICallback that will be called after the logic added in this class has been executed when the user has
      *                         clicked the negative button
      */
     public void updateApp(final Activity activity, final String appUrl, final String version, boolean allowDismiss, final Callback negativeCallback) {

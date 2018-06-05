@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="sample" type="de.symeda.sormas.app.backend.sample.Sample"/>
+        <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
+        <variable name="lab" type="de.symeda.sormas.app.backend.facility.Facility"/>
+        <variable name="results" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.sample.SampleTest&gt;" />
+
+        <variable
+            name="recentTestItemClickCallback"
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingBottom="@dimen/parentLayoutVerticalMargin"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                >
+
+
+                <de.symeda.sormas.app.component.TeboTextRead
+                    android:id="@+id/txtDiseaseName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_sample_disease"
+                    app:labelCaption="@string/label_sample_disease"
+                    app:value="@{caze.disease}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+
+                    <de.symeda.sormas.app.component.TeboTextRead
+                        android:id="@+id/txtSampleCode"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        app:description="@string/desc_sample_code"
+                        app:labelCaption="@string/label_sample_code"
+                        app:value="@{sample.sampleCode}"
+                        app:defaultValue='@{@string/not_available}'
+                        />
+
+                    <de.symeda.sormas.app.component.TeboTextRead
+                        android:id="@+id/txtSampleMaterial"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingLeft="@dimen/controlReadTextMarginBottom"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        app:description="@string/desc_sample_material"
+                        app:labelCaption="@string/label_sample_material"
+                        app:value="@{sample.sampleMaterial}"
+                        app:defaultValue='@{@string/not_available}'
+                        />
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.TeboTextRead
+                    android:id="@+id/txtOtherSample"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:singleLine="false"
+                    app:maxLines="2"
+                    app:description="@string/desc_sample_other_material"
+                    app:labelCaption="@string/label_sample_other_material"
+                    app:value="@{sample.sampleMaterialText}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <de.symeda.sormas.app.component.TeboTextRead
+                    android:id="@+id/txtSampleSource"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_sample_source"
+                    app:labelCaption="@string/label_sample_source"
+                    app:value="@{sample.sampleSource}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+
+                    <de.symeda.sormas.app.component.TeboTextRead
+                        android:id="@+id/txtDateTimeOfSampling"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        app:description="@string/desc_sample_date_time_sampling"
+                        app:labelCaption="@string/label_sample_date_time_sampling"
+                        app:value="@{sample.sampleDateTime}"
+                        app:defaultValue='@{@string/not_available}'
+                        />
+
+                    <de.symeda.sormas.app.component.TeboTextRead
+                        android:id="@+id/txtTestType"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingLeft="@dimen/formLayoutGutterSize"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        app:description="@string/desc_sample_test_type"
+                        app:labelCaption="@string/label_sample_test_type"
+                        app:value="@{sample.suggestedTypeOfTest}"
+                        app:defaultValue='@{@string/not_available}'
+                        />
+
+
+                </LinearLayout>
+
+
+                <de.symeda.sormas.app.component.TeboTextRead
+                    android:id="@+id/txtLaboratoryName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_sample_laboratory"
+                    app:labelCaption="@string/label_sample_laboratory"
+                    app:value="@{lab.name}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginRight="@dimen/formLayoutGutterSize">
+
+
+
+                        <de.symeda.sormas.app.component.TeboTextImageRead
+                            android:id="@+id/txtShippingStatus"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                            app:description="@string/desc_sample_shipping_status"
+                            app:labelCaption="@string/label_sample_shipping_status"
+                            app:shipmentStatus="@{sample}"
+                            app:defaultValue='@{@string/not_available}'
+                            />
+
+                        <!--android:layout_alignParentRight="true"-->
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+
+
+                        <de.symeda.sormas.app.component.TeboTextImageRead
+                            android:id="@+id/txtReceivedStatus"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                            app:description="@string/desc_sample_received_status"
+                            app:labelCaption="@string/label_sample_received_status"
+                            app:receivedStatus="@{sample}"
+                            app:defaultValue='@{@string/not_available}'
+                            />
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+
+
+
+                <de.symeda.sormas.app.component.TeboTextRead
+                    android:id="@+id/txtShipmentDetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_sample_shipment_details"
+                    app:labelCaption="@string/label_sample_shipment_details"
+                    app:value="@{sample.shipmentDetails}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+
+
+                <de.symeda.sormas.app.component.TeboTextRead
+                    android:id="@+id/txtComment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:description="@string/desc_sample_comment"
+                    app:labelCaption="@string/label_sample_comment"
+                    app:value="@{sample.comment}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <de.symeda.sormas.app.component.TeboTextRead
+                    android:id="@+id/txtReferredTo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:singleLine="false"
+                    app:maxLines="2"
+                    app:description="@string/desc_sample_referred_to"
+                    app:labelCaption="@string/label_sample_referred_to"
+                    app:value="@{sample.comment}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <LinearLayout
+                    android:id="@+id/sampleReceivedLayout"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/heading_sub_sample_received"
+                        style="@style/ReadActivitySubHeadingStyle"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <de.symeda.sormas.app.component.TeboTextRead
+                            android:id="@+id/txtLabSampleId"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                            app:description="@string/desc_sample_lab_id"
+                            app:labelCaption="@string/label_sample_lab_id"
+                            app:value="@{sample.labSampleID}"
+                            app:defaultValue='@{@string/not_available}'
+                            />
+
+                        <de.symeda.sormas.app.component.TeboTextRead
+                            android:id="@+id/txtReceivedDate"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:paddingLeft="@dimen/controlReadTextMarginBottom"
+                            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                            app:description="@string/desc_sample_received_date"
+                            app:labelCaption="@string/label_sample_received_date"
+                            app:value="@{sample.receivedDate}"
+                            app:defaultValue='@{@string/not_available}'
+                            />
+
+                    </LinearLayout>
+
+                    <de.symeda.sormas.app.component.TeboTextRead
+                        android:id="@+id/txtSpecimenCondition"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        app:description="@string/desc_sample_specimen_condition"
+                        app:labelCaption="@string/label_sample_specimen_condition"
+                        app:value="@{sample.specimenCondition}"
+                        app:defaultValue='@{@string/not_available}'
+                        />
+
+                    <de.symeda.sormas.app.component.TeboTextRead
+                        android:id="@+id/txtTestPossibleReason"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        app:description="@string/desc_sample_test_possible_reason"
+                        app:labelCaption="@string/label_sample_test_possible_reason"
+                        app:singleLine="false"
+                        app:maxLines="2"
+                        app:value="@{sample.noTestPossibleReason}"
+                        app:defaultValue='@{@string/not_available}'
+                        />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/recent_test_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/formListSectionBackground"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingBottom="@dimen/parentLayoutVerticalMargin"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/heading_sub_recent_tests"
+                    style="@style/ReadActivitySubHeadingStyle"
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:clipToPadding="false"
+                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
+                    android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
+                    app:entries="@{results}"
+                    app:layout="@{@layout/row_samples_recent_test_layout}"
+                    app:callback="@{recentTestItemClickCallback}"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_recent_test"
+                    android:id="@+id/sample_no_recent_test_text"
+                    android:textColor="@android:color/tab_indicator_text"
+                    android:textSize="@dimen/field_caption_size"
+                    android:paddingBottom="10dp"
+                    android:visibility="gone" />
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+</layout>
+

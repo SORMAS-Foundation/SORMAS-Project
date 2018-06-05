@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/backgroundLayer">
+        <shape android:shape="rectangle" >
+            <!--<solid android:color="@color/errorBackground" />-->
+            <!--<corners android:radius="@dimen/defaultControlRadius" />-->
+            <!--<size android:width="@dimen/indicatorWidth" android:height="@dimen/indicatorHeight"/>-->
+            <!--<stroke android:width="1dp" android:color="@color/errorBackground" />
+            <padding android:left="0dp" android:top="0dp" android:right="0dp" android:bottom="0dp" />-->
+        </shape>
+    </item>
+    <item android:right="-1dp" android:left="-1dp" android:id="@+id/borderLayer">
+        <shape>
+            <stroke
+                android:width="1dp"
+                android:color="@color/normalText30" />
+        </shape>
+    </item>
+</layer-list>

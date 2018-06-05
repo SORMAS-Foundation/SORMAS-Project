@@ -2,145 +2,111 @@ package de.symeda.sormas.app.settings;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
+import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.app.AbstractEditTabActivity;
-import de.symeda.sormas.app.EnterPinActivity;
-import de.symeda.sormas.app.LoginActivity;
+import de.symeda.sormas.app.BaseLandingActivity;
+import de.symeda.sormas.app.BaseLandingActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.component.SyncLogDialog;
-import de.symeda.sormas.app.component.UserReportDialog;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.component.dialog.UserReportDialog;
+import de.symeda.sormas.app.core.Callback;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationPosition;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.AppUpdateController;
 
+/**
+ * Created by Orson on 03/11/2017.
+ */
 
-public class SettingsActivity extends AbstractEditTabActivity {
+public class SettingsActivity extends BaseLandingActivity {
 
-    private SettingsForm settingsForm;
+    //TODO: Create an interface to enforce Form Instantiation
+    //TODO: Create an abstract method to set root layout
+    //TODO: Create an interface to set Activity Title
+    //TODO: Method to access the Form
+
+    //TODO: Fix issues when you change address to api (works but behave strangely)
+
+    private SettingsFragment settingsFragment;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.sormas_default_activity_layout);
-
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(getResources().getString(R.string.main_menu_settings));
-
-        // setting the fragment_frame
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        settingsForm = new SettingsForm();
-        ft.add(R.id.fragment_frame, settingsForm).commit();
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void initializeActivity(Bundle arguments) {
 
-        settingsForm.onResume();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.edit_action_bar, menu);
+        inflater.inflate(R.menu.settings_action_menu, menu);
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_options).getSubMenu().setGroupVisible(R.id.group_action_help,false);
-        menu.setGroupVisible(R.id.group_action_add,false);
-        menu.setGroupVisible(R.id.group_action_save,true);
-
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-
             // Settings don't have a parent -> go back instead of up
             case android.R.id.home:
-                onBackPressed();
-                return true;
+                if (ConfigProvider.getUser() == null) {
+                    onBackPressed();
+                    return true;
+                }
+
+                return super.onOptionsItemSelected(item);
 
             // Report problem button
             case R.id.action_report:
                 UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
-                AlertDialog dialog = userReportDialog.create();
-                dialog.show();
+                userReportDialog.show(new Callback.IAction<AlertDialog>() {
+                    @Override
+                    public void call(AlertDialog result) {
+
+                    }
+                });
                 return true;
 
             case R.id.action_save:
-                String serverUrl = settingsForm.getServerUrl();
+                String serverUrl = settingsFragment.getServerUrl();
                 ConfigProvider.setServerRestUrl(serverUrl);
                 onResume();
+
+                NotificationHelper.showNotification(this, NotificationPosition.BOTTOM, NotificationType.SUCCESS, R.string.notification_saved_settings);
+
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void openSyncLog(View view) {
-        SyncLogDialog syncLogDialog = new SyncLogDialog(this);
-        syncLogDialog.show(this);
+    @Override
+    public BaseLandingActivityFragment getActiveLandingFragment() {
+        if (settingsFragment == null)
+            settingsFragment = new SettingsFragment();
+
+        return settingsFragment;
     }
 
-    public void logout(View view) {
-
-        if (SynchronizeDataAsync.hasAnyUnsynchronizedData()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
-            builder.setCancelable(true);
-            builder.setMessage(R.string.alert_unsynchronized_changes);
-            builder.setTitle(R.string.alert_title_unsynchronized_changes);
-            builder.setIcon(R.drawable.ic_perm_device_information_black_24dp);
-            AlertDialog dialog = builder.create();
-
-            dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_cancel),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }
-            );
-            dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.action_logout_anyway),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            processLogout();
-                        }
-                    }
-            );
-
-            dialog.show();
-        } else {
-            processLogout();
-        }
+    @Override
+    protected boolean setHomeAsUpIndicator() {
+        return ConfigProvider.getUser() != null;
     }
 
-    public void changePIN(View view) {
-        Intent intent = new Intent(this, EnterPinActivity.class);
-        intent.putExtra(EnterPinActivity.CALLED_FROM_SETTINGS, true);
-        startActivity(intent);
-    }
-
-    private void processLogout() {
-        ConfigProvider.clearUsernameAndPassword();
-        ConfigProvider.clearPin();
-        ConfigProvider.setAccessGranted(false);
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+    protected int getActivityTitle() {
+        return R.string.main_menu_settings;
     }
 
     private interface LogoutCallback {
@@ -163,5 +129,4 @@ public class SettingsActivity extends AbstractEditTabActivity {
             }
         }
     }
-
 }

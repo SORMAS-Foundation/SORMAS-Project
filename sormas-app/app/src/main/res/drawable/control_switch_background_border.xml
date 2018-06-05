@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="@dimen/defaultControlRadius" />
+    <solid android:color="@color/switchUnheckedBackground" />
+    <stroke
+        android:width="@dimen/defaultControlStrokeWidth"
+        android:color="@color/switchCheckedBackground" />
+</shape>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge  xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/captionFrame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <TextView
+            android:id="@+id/lblControlLabel"
+            android:labelFor="@+id/txtControlInput"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/ControlLabelStyle" />
+        <TextView
+            android:id="@+id/lblRequired"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_gravity="top"
+            android:paddingLeft="@dimen/contentHorizontalSpacing"
+            android:text="*"
+            android:textColor="@color/watchOut"
+            android:textSize="@dimen/controlLabelSize"
+            android:fontFamily="sans-serif-medium"/>
+        <TextView
+            android:id="@+id/lblSoftRequired"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_gravity="top"
+            android:paddingLeft="@dimen/contentHorizontalSpacing"
+            android:text="*"
+            android:textColor="@color/warning"
+            android:textSize="@dimen/controlLabelSize"
+            android:fontFamily="sans-serif-medium"/>
+    </LinearLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/txtControlInput"
+            android:layout_width="match_parent"
+            android:inputType="text"
+            style="@style/EditTextViewSingleRowStyle" />
+
+
+
+    </FrameLayout>
+
+</LinearLayout>
+</merge>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable
+            name="showNotificationCallback"
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/formListSectionBackground"
+        android:paddingTop="@dimen/parentLayoutVerticalMargin"
+        android:paddingBottom="@dimen/parentLayoutVerticalMargin"
+        android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+        android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/heading_sub_case_addition_med_info"
+            style="@style/ReadActivitySubHeadingStyle"
+            />
+
+
+        <de.symeda.sormas.app.component.TeboSpinner
+            android:id="@+id/spnVaccination"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/textControlMarginBottom"
+            app:hint="@string/hint_case_vaccination_received"
+            app:labelCaption="@string/label_case_vaccination_received"
+            app:description="@string/desc_case_vaccination_received"
+            app:required="true"
+            app:spinnerMode="dialog"
+            app:value="@={data.vaccination}"
+            />
+
+        <de.symeda.sormas.app.component.TeboTextInputEditText
+            android:id="@+id/txtVaccinationDoses"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/textControlMarginBottom"
+            app:hint="@string/hint_case_number_valid_doses"
+            app:labelCaption="@string/label_case_number_valid_doses"
+            app:description="@string/desc_case_number_valid_doses"
+            app:required="true"
+            app:value="@={data.vaccinationDoses}"
+            app:nextFocusDown="@+id/txtControl1"
+            app:imeOptions="actionNext"
+            app:onShowInputErrorListener="@{showNotificationCallback}"
+            app:onHideInputErrorListener="@{hideNotificationCallback}"
+            />
+
+        <de.symeda.sormas.app.component.TeboSpinner
+            android:id="@+id/spnVaccinationInfoSource"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/textControlMarginBottom"
+            app:hint="@string/hint_case_vaccination_info_source"
+            app:labelCaption="@string/label_case_vaccination_info_source"
+            app:description="@string/desc_case_vaccination_info_source"
+            app:required="true"
+            app:spinnerMode="dialog"
+            app:value="@={data.vaccinationInfoSource}"
+            />
+
+        <de.symeda.sormas.app.component.TeboDatePicker
+            android:id="@+id/dtpLastVaccinationDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/textControlMarginBottom"
+            android:paddingLeft="@dimen/formLayoutGutterSize"
+            android:visibility="gone"
+            app:hint="@string/hint_case_last_vaccination_date"
+            app:labelCaption="@string/label_case_last_vaccination_date"
+            app:description="@string/desc_case_last_vaccination_date"
+            app:required="true"
+            app:value="@={data.vaccinationDate}"
+            />
+
+    </LinearLayout>
+
+</layout>
+

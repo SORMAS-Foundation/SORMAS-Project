@@ -1,17 +1,13 @@
 package de.symeda.sormas.app.backend.region;
 
+import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-
-import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
@@ -34,6 +30,7 @@ public class District extends AbstractDomainObject {
 	@Column
 	private String epidCode;
 
+	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
 	@JoinColumn(nullable = false)
 	private Region region;

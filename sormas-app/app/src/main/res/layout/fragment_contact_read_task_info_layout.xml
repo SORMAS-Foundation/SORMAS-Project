@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.task.Task"/>
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/parentLayoutVerticalMargin"
+            android:paddingBottom="@dimen/parentLayoutVerticalMargin"
+            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+            >
+
+            <de.symeda.sormas.app.component.TeboTextRead
+                android:id="@+id/txtTaskType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:description="@string/desc_task_type"
+                app:labelCaption="@string/label_task_type"
+                app:value="@{data.taskType}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <de.symeda.sormas.app.component.TeboTextLinkRead
+                android:id="@+id/txtAssocCaze"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:singleLine="false"
+                app:maxLines="2"
+                app:description="@string/desc_task_assoc_caze"
+                app:labelCaption="@string/label_task_assoc_caze"
+                app:cazeAndLocation="@{data.caze}"
+                app:defaultValue='@{@string/not_available}'
+                app:goneIfNull='@{data.caze}'
+                />
+
+            <de.symeda.sormas.app.component.TeboTextLinkRead
+                android:id="@+id/txtAssocContact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:singleLine="false"
+                app:maxLines="2"
+                app:description="@string/desc_task_assoc_contact"
+                app:labelCaption="@string/label_task_assoc_contact"
+                app:contactAndLocation="@{data.contact}"
+                app:defaultValue='@{@string/not_available}'
+                app:goneIfNull='@{data.contact}'
+                />
+
+            <de.symeda.sormas.app.component.TeboTextLinkRead
+                android:id="@+id/txtAssocEvent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:singleLine="false"
+                app:maxLines="2"
+                app:description="@string/desc_task_assoc_event"
+                app:labelCaption="@string/label_task_assoc_event"
+                app:eventAndLocation="@{data.event}"
+                app:defaultValue='@{@string/not_available}'
+                app:goneIfNull='@{data.event}'
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <de.symeda.sormas.app.component.TeboTextImageRead
+                    android:id="@+id/txtTaskPriority"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_task_priority"
+                    app:labelCaption="@string/label_task_priority"
+                    app:imageColor="@color/green"
+                    app:image="@drawable/indicator_status_circle"
+                    app:imageWidth="@dimen/readControlSmallIconWidth"
+                    app:imageHeight="@dimen/readControlSmallIconHeight"
+                    app:setValueAndIndicator="@{data.priority}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <de.symeda.sormas.app.component.TeboTextImageRead
+                    android:id="@+id/txtTaskStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_task_status"
+                    app:labelCaption="@string/label_task_status"
+                    app:image="@drawable/indicator_status_circle"
+                    app:imageWidth="@dimen/readControlSmallIconWidth"
+                    app:imageHeight="@dimen/readControlSmallIconHeight"
+                    app:setValueAndIndicator="@{data.taskStatus}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <de.symeda.sormas.app.component.TeboTextRead
+                    android:id="@+id/txtSuggestedStart"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_task_suggested_start"
+                    app:labelCaption="@string/label_task_suggested_start"
+                    app:value="@{data.suggestedStart}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <de.symeda.sormas.app.component.TeboTextRead
+                    android:id="@+id/txtDueDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_task_due_date_time"
+                    app:labelCaption="@string/label_task_due_date_time"
+                    app:value="@{data.dueDate}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+            </LinearLayout>
+
+
+            <de.symeda.sormas.app.component.TeboTextRead
+                android:id="@+id/txtCommentOnExec"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:description="@string/desc_task_comment_on_exc"
+                app:labelCaption="@string/label_task_comment_on_exc"
+                app:value="@{data.creatorComment}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+        </LinearLayout>
+
+    </ScrollView>
+</layout>
+

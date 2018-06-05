@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>availablePersons
+        <variable name="data" type="de.symeda.sormas.app.backend.person.Person"/>
+        <!--<variable name="availablePersons" type="java.util.List&lt;de.symeda.sormas.app.component.Item&gt;" />-->
+        <variable name="availablePersons"
+            type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.person.Person&gt;" />
+        <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
+        <variable
+            name="showNotificationCallback"
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
+
+        <variable
+            name="updateSearchCallback"
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+        <variable
+            name="availablePersonItemClickCallback"
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+                android:paddingRight="@dimen/rowListItemHorizontalMargin"
+                >
+
+                <!--<TextView
+                    android:id="@+id/txtDialogHint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@={config.subHeading}"
+                    android:textColor="@color/pageHintText"
+                    android:textSize="@dimen/defaultPageHintTextSize"/>-->
+
+
+                <de.symeda.sormas.app.component.TeboTextInputEditText
+                    android:id="@+id/txtLastName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:hint="@string/hint_case_patient_last_name"
+                    app:labelCaption="@string/label_case_patient_last_name"
+                    app:description="@string/desc_case_patient_last_name"
+                    app:required="true"
+                    app:value="@={data.lastName}"
+                    app:nextFocusDown="@+id/txtControl1"
+                    app:imeOptions="actionNext"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+                <de.symeda.sormas.app.component.TeboTextInputEditText
+                    android:id="@+id/txtFirstName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:hint="@string/hint_case_patient_first_name"
+                    app:labelCaption="@string/label_case_patient_first_name"
+                    app:description="@string/desc_case_patient_first_name"
+                    app:required="true"
+                    app:value="@={data.firstName}"
+                    app:nextFocusDown="@+id/txtControl1"
+                    app:imeOptions="actionNext"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+                <de.symeda.sormas.app.component.TeboButton
+                    android:id="@+id/btnUpdateSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:text="@string/action_search"
+                    app:buttonType="line_secondary"
+                    app:rounded="true"
+                    app:slim="true"
+                    app:onButtonOnClick="@{(view) -> updateSearchCallback.onClick(view, data)}"
+                    />
+
+
+
+                <!--<de.symeda.sormas.app.component.TeboRadioGroup
+                    android:id="@+id/chkAvailablePersons"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:hint="@string/hint_case_patient_possible_duplicate"
+                    app:labelCaption="@string/label_case_patient_possible_duplicate"
+                    app:description="@string/desc_case_patient_possible_duplicate"
+                    app:required="false"
+                    app:horizontalFlow="false"
+                    app:scaleX="1"
+                    app:scaleY="1"
+                    app:radioButtonMarginStart="@dimen/radioButtonMarginStart"
+                    app:includeMarginStart="true"
+                    app:radioButtonLabelMarginStart="@dimen/radioButtonLabelMarginStart"
+                    app:items="@{availablePersons}"
+                    app:value="@={data.selectedPerson}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />-->
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/formListSectionBackground"
+                android:layout_marginTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/parentLayoutVerticalMargin"
+                    android:orientation="vertical"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/heading_sub_case_existing_persons"
+                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        />
+
+                    <de.symeda.sormas.app.component.TeboHint
+                        android:id="@+id/txtSelectOrCreatePersonTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        app:showCaption="false"
+                        app:singleLine="false"
+                        app:maxLines="5"
+                        app:inputType="textMultiLine"
+                        app:labelCaption="@string/heading_sub_case_existing_persons"
+                        app:description="@string/heading_sub_case_existing_persons"
+                        app:value="@{@string/select_or_create_person_infoText}"
+                        />
+
+                    <de.symeda.sormas.app.component.TeboHint
+                        android:id="@+id/txtNoRecordsTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        app:showCaption="false"
+                        app:singleLine="false"
+                        app:maxLines="5"
+                        app:inputType="textMultiLine"
+                        app:labelCaption="@string/heading_sub_case_existing_persons"
+                        app:description="@string/heading_sub_case_existing_persons"
+                        app:value="@{@string/select_or_create_person_no_records_infoText}"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/listExistingPersons"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:clipToPadding="false"
+                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
+                    android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
+                    app:entries="@{availablePersons}"
+                    app:layout="@{@layout/row_select_or_create_person_layout}"
+                    app:callback="@{availablePersonItemClickCallback}"
+                    />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</layout>
+

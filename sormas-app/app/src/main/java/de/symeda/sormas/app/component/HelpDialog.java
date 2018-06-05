@@ -7,6 +7,13 @@ import android.widget.LinearLayout;
 
 import de.symeda.sormas.app.R;
 
+/**
+ * Created by Orson on 15/11/2017.
+ *
+ * www.technologyboard.org
+ * sampson.orson@gmail.com
+ * sampson.orson@technologyboard.org
+ */
 
 public class HelpDialog  {
 
@@ -52,11 +59,11 @@ public class HelpDialog  {
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < form.getChildCount(); i++) {
-            if (form.getChildAt(i) instanceof PropertyField) {
-                PropertyField propertyField = (PropertyField)form.getChildAt(i);
+            if (form.getChildAt(i) instanceof TeboPropertyField) {
+                TeboPropertyField teboPropertyField = (TeboPropertyField)form.getChildAt(i);
                 sb
-                        .append("<b>"+propertyField.getCaption()+"</b>").append("<br>")
-                        .append(propertyField.getDescription()).append("<br>").append("<br>");
+                        .append("<b>"+ teboPropertyField.getCaption()+"</b>").append("<br>")
+                        .append(teboPropertyField.getDescription()).append("<br>").append("<br>");
             }
         }
 
@@ -65,3 +72,4 @@ public class HelpDialog  {
 
 
 }
+

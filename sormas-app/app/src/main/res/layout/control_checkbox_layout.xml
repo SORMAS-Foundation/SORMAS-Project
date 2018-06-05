@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:id="@+id/controlFrame"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <CheckBox
+            android:id="@+id/chkControlInput"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:layout_gravity="center_vertical"
+            android:textSize="@dimen/defaultControlTextSize"
+            android:scaleX="1.2"
+            android:scaleY="1.2"
+            android:button="@null"
+            android:background="?android:attr/listChoiceIndicatorMultiple"
+            />
+
+        <LinearLayout
+            android:id="@+id/captionFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginLeft="@dimen/contentHorizontalSpacing"
+            android:gravity="center_vertical"
+            android:layout_gravity="center_vertical"
+            >
+            <TextView
+                android:id="@+id/lblControlLabel"
+                android:labelFor="@+id/chkControlInput"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/CheckboxLabelStyle" />
+            <TextView
+                android:id="@+id/lblRequired"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_gravity="top"
+                android:paddingLeft="@dimen/contentHorizontalSpacing"
+                android:text="*"
+                android:textColor="@color/watchOut"
+                android:textSize="@dimen/controlLabelSize"
+                android:fontFamily="sans-serif-medium"/>
+            <TextView
+                android:id="@+id/lblSoftRequired"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_gravity="top"
+                android:paddingLeft="@dimen/contentHorizontalSpacing"
+                android:text="*"
+                android:textColor="@color/warning"
+                android:textSize="@dimen/controlLabelSize"
+                android:fontFamily="sans-serif-medium"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</merge>

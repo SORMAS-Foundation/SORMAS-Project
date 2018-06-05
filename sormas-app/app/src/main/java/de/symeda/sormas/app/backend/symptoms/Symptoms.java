@@ -15,17 +15,20 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
-import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.symptom.Symptom;
 
 @Entity(name= Symptoms.TABLE_NAME)
 @DatabaseTable(tableName = Symptoms.TABLE_NAME)
 @EmbeddedAdo
 public class Symptoms extends AbstractDomainObject {
-	
+
 	private static final long serialVersionUID = 392886645668778670L;
 
 	public static final String TABLE_NAME = "symptoms";
 	public static final String I18N_PREFIX = "Symptoms";
+
+	//Orson Added
+	private Symptom firstSymptom;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date onsetDate;
@@ -201,12 +204,12 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState bedridden;
 	@Enumerated(EnumType.STRING)
 	private SymptomState oralUlcers;
-    @Enumerated(EnumType.STRING)
-    private SymptomState painfulLymphadenitis;
-    @Enumerated(EnumType.STRING)
-    private SymptomState buboesGroinArmpitNeck;
-    @Enumerated(EnumType.STRING)
-    private SymptomState blackeningDeathOfTissue;
+	@Enumerated(EnumType.STRING)
+	private SymptomState painfulLymphadenitis;
+	@Enumerated(EnumType.STRING)
+	private SymptomState buboesGroinArmpitNeck;
+	@Enumerated(EnumType.STRING)
+	private SymptomState blackeningDeathOfTissue;
 	@Enumerated(EnumType.STRING)
 	private SymptomState bulgingFontanelle;
 	@Enumerated(EnumType.STRING)
@@ -219,6 +222,16 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState otherNonHemorrhagicSymptoms;
 	@Column(length = 255)
 	private String otherNonHemorrhagicSymptomsText;
+
+	//Orson Added
+	public Symptom getFirstSymptom() {
+		return firstSymptom;
+	}
+
+	public void setFirstSymptom(Symptom firstSymptom) {
+		this.firstSymptom = firstSymptom;
+	}
+
 
 	public Date getOnsetDate() {
 		return onsetDate;
@@ -844,29 +857,29 @@ public class Symptoms extends AbstractDomainObject {
 		this.oralUlcers = oralUlcers;
 	}
 
-    public SymptomState getPainfulLymphadenitis() {
-        return painfulLymphadenitis;
-    }
+	public SymptomState getPainfulLymphadenitis() {
+		return painfulLymphadenitis;
+	}
 
-    public void setPainfulLymphadenitis(SymptomState painfulLymphadenitis) {
-        this.painfulLymphadenitis = painfulLymphadenitis;
-    }
+	public void setPainfulLymphadenitis(SymptomState painfulLymphadenitis) {
+		this.painfulLymphadenitis = painfulLymphadenitis;
+	}
 
-    public SymptomState getBuboesGroinArmpitNeck() {
-        return buboesGroinArmpitNeck;
-    }
+	public SymptomState getBuboesGroinArmpitNeck() {
+		return buboesGroinArmpitNeck;
+	}
 
-    public void setBuboesGroinArmpitNeck(SymptomState buboesGroinArmpitNeck) {
-        this.buboesGroinArmpitNeck = buboesGroinArmpitNeck;
-    }
+	public void setBuboesGroinArmpitNeck(SymptomState buboesGroinArmpitNeck) {
+		this.buboesGroinArmpitNeck = buboesGroinArmpitNeck;
+	}
 
-    public SymptomState getBlackeningDeathOfTissue() {
-        return blackeningDeathOfTissue;
-    }
+	public SymptomState getBlackeningDeathOfTissue() {
+		return blackeningDeathOfTissue;
+	}
 
-    public void setBlackeningDeathOfTissue(SymptomState blackeningDeathOfTissue) {
-        this.blackeningDeathOfTissue = blackeningDeathOfTissue;
-    }
+	public void setBlackeningDeathOfTissue(SymptomState blackeningDeathOfTissue) {
+		this.blackeningDeathOfTissue = blackeningDeathOfTissue;
+	}
 
 	public SymptomState getBulgingFontanelle() {
 		return bulgingFontanelle;

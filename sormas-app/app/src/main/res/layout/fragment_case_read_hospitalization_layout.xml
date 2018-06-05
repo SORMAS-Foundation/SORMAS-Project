@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.hospitalization.Hospitalization"/>
+        <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
+        <variable name="hospitalizations"
+        type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization&gt;" />
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingBottom="@dimen/parentLayoutVerticalMargin"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/heading_sub_case_hos_most_recent_hospitalization"
+                    style="@style/ReadActivitySubHeadingStyle"
+                    />
+
+
+                <de.symeda.sormas.app.component.TeboTextRead
+                    android:id="@+id/txtHospitalName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:singleLine="false"
+                    app:maxLines="2"
+                    app:description="@string/desc_case_hos_hospital_name"
+                    app:labelCaption="@string/label_case_hos_hospital_name"
+                    app:facilityValue="@{caze.healthFacility}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+                    <de.symeda.sormas.app.component.TeboTextRead
+                        android:id="@+id/txtAdmissionDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        app:description="@string/desc_case_hos_admission_date"
+                        app:labelCaption="@string/label_case_hos_admission_date"
+                        app:dateValue="@{data.admissionDate}"
+                        app:defaultValue='@{@string/not_available}'
+                        />
+
+                    <de.symeda.sormas.app.component.TeboTextRead
+                        android:id="@+id/txtDischargeDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingLeft="@dimen/formLayoutGutterSize"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        app:description="@string/desc_case_hos_discharge_date"
+                        app:labelCaption="@string/label_case_hos_discharge_date"
+                        app:dateValue="@{data.dischargeDate}"
+                        app:defaultValue='@{@string/not_available}'
+                        />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+                    <de.symeda.sormas.app.component.TeboTextRead
+                        android:id="@+id/txtIsolation"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        app:description="@string/desc_case_hos_isolation"
+                        app:labelCaption="@string/label_case_hos_isolation"
+                        app:value="@{data.isolated}"
+                        app:defaultValue='@{@string/not_available}'
+                        />
+
+                    <de.symeda.sormas.app.component.TeboTextRead
+                        android:id="@+id/txtIsolationDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingLeft="@dimen/formLayoutGutterSize"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        app:description="@string/desc_case_hos_isolation_date"
+                        app:labelCaption="@string/label_case_hos_isolation_date"
+                        app:dateValue="@{data.isolationDate}"
+                        app:defaultValue='@{@string/not_available}'
+                        />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/formListSectionBackground"
+                android:layout_marginTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                >
+
+                <!--android:layout_marginBottom="@dimen/parentLayoutVerticalMargin"
+                    app:removeBottomMarginIfEmpty="@{hospitalizations}"
+                    app:bottomMargin="@{@dimen/parentLayoutVerticalMargin}"-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/parentLayoutVerticalMargin"
+                    >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/heading_sub_case_hos_prev_hospitalization_history"
+                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:hasValue="@{hospitalizations}"
+                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/listPrevHospitalizations"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:clipToPadding="false"
+                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
+                    android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
+                    android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
+                    app:entries="@{hospitalizations}"
+                    app:layout="@{@layout/row_hospitalization_read_previous_layout}"
+                    app:callback="@{null}"
+                    />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+</layout>
+

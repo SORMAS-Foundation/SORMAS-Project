@@ -34,7 +34,10 @@ import de.symeda.sormas.app.backend.sample.SampleTestDtoHelper;
 import de.symeda.sormas.app.backend.task.TaskDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.backend.visit.VisitDtoHelper;
-import de.symeda.sormas.app.task.TaskNotificationService;
+import de.symeda.sormas.app.component.dialog.CommunityLoader;
+import de.symeda.sormas.app.component.dialog.DistrictLoader;
+import de.symeda.sormas.app.component.dialog.RegionLoader;
+import de.symeda.sormas.app.core.TaskNotificationService;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import retrofit2.Call;
@@ -129,6 +132,21 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 RetroProvider.disconnect();
             }
         }
+
+
+        try {
+            //Store in memory
+            //TODO: Orson is this the best place to put this?
+            RegionLoader.getInstance();
+            DistrictLoader.getInstance();
+            CommunityLoader.getInstance();
+
+            //Very expensive
+            //FacilityLoader.getInstance();
+        } catch (Exception ex) {
+
+        }
+
         return null;
     }
 
@@ -238,6 +256,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new CommunityDtoHelper().pullEntities(false);
         new FacilityDtoHelper().pullEntities(false);
         new UserDtoHelper().pullEntities(false);
+
+
     }
 
     private void pullMissingAndDeleteInvalidData() throws ServerConnectionException {

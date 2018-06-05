@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.task.Task"/>
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="fill"
+        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+        android:paddingRight="@dimen/rowListItemHorizontalMargin"
+        android:background="@drawable/selector_list_activity_row_background"
+        >
+
+        <!---->
+        <LinearLayout
+            android:id="@+id/rowListItem"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="fill"
+            android:layout_gravity="fill"
+            android:paddingTop="@dimen/rowListItemVerticalPadding"
+            android:paddingBottom="@dimen/rowListItemVerticalPadding"
+            android:background="@drawable/background_list_activity_row"
+            >
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txtDisease"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    android:textColor="@color/listActivityRowTertiaryText"
+                    android:fontFamily="sans-serif-medium"
+                    app:diseaseValue="@{data}"
+                    app:defaultValue='@{@string/disease_unknown}'
+                    />
+
+                <ImageView
+                    android:layout_width="@dimen/separatorThickness"
+                    android:layout_height="match_parent"
+                    android:background="@color/listActivityRowTopCaptionSeparator"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="@dimen/contentHorizontalSpacing"
+                    android:layout_marginRight="@dimen/contentHorizontalSpacing" />
+
+                <TextView
+                    android:id="@+id/txtCaseUuid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:fontFamily="sans-serif-medium"
+                    app:value="@{data.caze.uuid}"
+                    app:shortUuid="@{true}"
+                    app:defaultValue='@{@string/case_uuid_unknown}'
+                    />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="right"
+                    android:layout_marginRight="36dp"
+                    >
+                    <ImageView
+                        android:id="@+id/imgPriorityStatusIcon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        />
+
+                    <TextView
+                        android:id="@+id/txtTaskPriority"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/contentHorizontalSpacing"
+                        android:gravity="center_vertical"
+                        android:textSize="@dimen/listActivityRowStatusTextSize"
+                        android:textAllCaps="true"
+                        android:textColor="@color/listActivityRowStatusText"
+                        android:fontFamily="sans-serif-medium"
+                        app:value="@{data.priority}"
+                        app:defaultValue='@{@string/task_priority_unknown}'
+                        />
+
+
+
+                    <ImageView
+                        android:id="@+id/imgTaskStatusIcon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="@dimen/contentHorizontalSpacing"
+                        />
+
+                    <TextView
+                        android:id="@+id/txtTaskStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/contentHorizontalSpacing"
+                        android:gravity="center_vertical"
+                        android:textSize="@dimen/listActivityRowStatusTextSize"
+                        android:textAllCaps="true"
+                        android:textColor="@color/listActivityRowStatusText"
+                        android:fontFamily="sans-serif-medium"
+                        app:value="@{data.taskStatus}"
+                        app:defaultValue='@{@string/task_status_unknown}'/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="fill"
+                android:layout_gravity="fill">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtTaskType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/listActivityRowPrimaryTextSize"
+                        android:textColor="@color/listActivityRowPrimaryText"
+                        android:fontFamily="sans-serif-medium"
+                        android:scrollHorizontally="true"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        app:value="@{data.taskType}"
+                        app:defaultValue='@{@string/task_type_unknown}'
+                        />
+
+                    <TextView
+                        android:id="@+id/txtPatientInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="top"
+                        android:layout_marginBottom="@dimen/listActivityRowSecondaryTextMarginBottom"
+                        android:textSize="@dimen/listActivityRowSecondaryTextSize"
+                        android:textColor="@color/listActivityRowSecondaryText"
+                        android:scrollHorizontally="true"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        app:patientValue="@{data}"
+                        app:defaultValue='@{@string/person_unknown}'
+                        />
+
+                    <!--<LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+
+
+                    </LinearLayout>-->
+
+                </LinearLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="24dp"
+                    >
+
+                    <ImageView
+                        android:id="@+id/imgSyncIcon"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:tint="@color/syncIconListActivityRowItem"
+                        android:scaleType="fitEnd"
+                        android:layout_alignParentTop="false"
+                        android:layout_alignParentBottom="false"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentRight="true"
+                        />
+
+                </RelativeLayout>
+
+
+                <ImageView
+                    android:id="@+id/imgGoToReadView"
+                    android:layout_width="@dimen/listGoToIconWidth"
+                    android:layout_height="@dimen/listGoToIconHeight"
+                    android:layout_gravity="center_vertical"
+                    android:scaleType="fitEnd"
+                    android:src="@drawable/ic_go_to_read_view_24dp"
+                    />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/listItemBottomConentMarginTop"
+                android:layout_marginRight="@dimen/listItemConentIndentRight"
+                >
+
+                <TextView
+                    android:id="@+id/txtCreatorComment"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="top|left"
+                    android:layout_marginRight="@dimen/formLayoutGutterSize"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:fontFamily="sans-serif-medium"
+                    android:scrollHorizontally="true"
+                    app:singleLine="false"
+                    app:maxLines="2"
+                    android:ellipsize="end"
+                    app:value="@{data.creatorComment}"
+                    app:defaultValue='@{@string/task_comment_unknown}'
+                    />
+
+                <TextView
+                    android:id="@+id/txtTaskDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="top|right"
+                    android:textSize="@dimen/listActivityRowDateTextSize"
+                    android:textColor="@color/listActivityRowDateText"
+                    android:fontFamily="sans-serif"
+                    app:dueTimeAgoValue="@{data}"
+                    app:textColor="@{@color/listActivityRowDateText}"
+                    app:valueFormat="@{@string/due_timeago_format}"
+                    app:defaultValue='@{@string/task_date_unknown}'
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</layout>

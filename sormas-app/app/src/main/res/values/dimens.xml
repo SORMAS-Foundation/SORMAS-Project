@@ -1,5 +1,6 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" >
     <!-- Default screen margins, per the Android Design guidelines. -->
+    <!-- Martin -->
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="activity_vertical_margin_inv">-16dp</dimen>
 
@@ -14,7 +15,484 @@
     <dimen name="field_padding_6">6dp</dimen>
     <dimen name="field_padding_8">8dp</dimen>
     <dimen name="field_yes_no_caption_margin_top">5dp</dimen>
-
-
     <dimen name="list_item_margin_bottom">15dp</dimen>
+
+    <!-- ***************************************************** -->
+
+
+    <dimen name="h0">24sp</dimen>
+    <dimen name="h1">20sp</dimen>
+    <dimen name="h2">18sp</dimen>
+    <dimen name="h3">16sp</dimen>
+    <dimen name="h4">14sp</dimen>
+    <dimen name="h5">12sp</dimen>
+    <dimen name="h6">10sp</dimen>
+    <dimen name="h7">9sp</dimen>
+
+
+
+    <dimen name="margin_default">16dp</dimen>
+
+
+    <dimen name="fabTotalHeightOffset">-87dp</dimen>
+    <dimen name="fab_margin">@dimen/margin_default</dimen>
+    <dimen name="fabNonOverlapPaddingBottom">80dp</dimen>
+    <dimen name="drawerWidth">324dp</dimen>
+
+
+    <!-- Layout Dimensions -->
+    <dimen name="layoutRootViewHorizontalPadding">24dp</dimen>
+    <dimen name="parentLayoutHorizontalMargin">24dp</dimen>
+    <dimen name="parentLayoutVerticalMargin">24dp</dimen>
+    <dimen name="parentLayoutHorizontalPadding">24dp</dimen>
+    <dimen name="parentLayoutVerticalPadding">24dp</dimen>
+    <dimen name="contentHorizontalSpacing">8dp</dimen>
+    <dimen name="contentVerticalSpacing">8dp</dimen>
+    <dimen name="contentHorizontalSpacingDouble">16dp</dimen>
+    <dimen name="contentVerticalSpacingDouble">16dp</dimen>
+    <dimen name="buttonPanelVerticalMargin">16dp</dimen>
+    <dimen name="spinnerHorizontalSpacing">16dp</dimen>
+    <dimen name="spinnerVerticalSpacing">16dp</dimen>
+    <dimen name="dialogVerticalContentSpacing">48dp</dimen>
+
+
+
+
+
+
+    <dimen name="defaultControlVerticalPadding">16dp</dimen>
+    <dimen name="defaultControlHorizontalPadding">16dp</dimen>
+    <dimen name="defaultControlRadius">5dp</dimen>
+    <dimen name="defaultControlStrokeWidth">3dp</dimen>
+    <dimen name="defaultControlTextSize">16sp</dimen>
+    <dimen name="defaultPageHintTextSize">14sp</dimen>
+    <dimen name="defaultHintControlTextSize">14sp</dimen>
+    <dimen name="defaultButtonStroke">@dimen/defaultControlStrokeWidth</dimen>
+    <dimen name="defaultButtonRadius">@dimen/defaultControlRadius</dimen>
+    <dimen name="defaultButtonHeight">48dp</dimen>
+
+
+    <dimen name="dialogSubHeadingTextSize">16sp</dimen>
+
+
+    <dimen name="teboSwitchMinWidth">180dp</dimen>
+
+
+
+
+    <dimen name="serviceSeparatorWidth">5dp</dimen>
+    <dimen name="serviceSeparatorHeight">5dp</dimen>
+    <dimen name="serviceSeparatorMarginLeft">8dp</dimen>
+    <dimen name="serviceSeparatorMarginRight">8dp</dimen>
+    <dimen name="signInTextSize">34dp</dimen>
+    <dimen name="formLayoutGutterSize">24dp</dimen>
+
+    <!-- Logo -->
+    <dimen name="logoWidth">100dp</dimen>
+    <dimen name="logoHeight">100dp</dimen>
+    <dimen name="logoMarginTop">20dp</dimen>
+    <dimen name="logoMarginBottom">10dp</dimen>
+
+
+    <!-- Login Heading 1 -->
+    <dimen name="loginHeadingTextSize">16sp</dimen>
+    <dimen name="signinFormWidth">400dp</dimen>
+    <dimen name="serviceMarginBottom">40dp</dimen>
+    <dimen name="loginServiceTextSize">10sp</dimen>
+    <dimen name="signInTagLineMarginBottom">32dp</dimen>
+
+    <!-- Login Heading 2 -->
+    <dimen name="loginHeading2LayoutMarginBottom">8dp</dimen>
+
+    <!-- PIN -->
+    <dimen name="pinLayoutMarginTop">56dp</dimen>
+    <dimen name="pinHeading1MarginTop">20dp</dimen>
+    <dimen name="pinHeading1MarginBottom">10dp</dimen>
+    <dimen name="pinSubHeadingHeight">33dp</dimen>
+    <dimen name="pinButtonWidth">80dp</dimen>
+    <dimen name="pinButtonHeight">80dp</dimen>
+    <dimen name="pinButtonTextSize">32sp</dimen>
+    <dimen name="pinButtonElevation">16dp</dimen>
+
+
+    <dimen name="pinInputStrokeWidth">3dp</dimen>
+    <dimen name="pinInputStrokeWidthOffset">-3dp</dimen>
+    <dimen name="pinInputLastStrokeWidthOffset">-4dp</dimen>
+
+
+    <!-- Controls -->
+    <dimen name="switchControlTextSize">14sp</dimen>
+    <dimen name="slimControlTextSize">14sp</dimen>
+    <dimen name="firstControlTopMargin">16dp</dimen>
+    <dimen name="loginActivityFirstControlTopMargin">16dp</dimen>
+
+
+
+    <dimen name="roundButtonRadius">24dp</dimen>
+    <dimen name="buttonHorizontalPadding">16dp</dimen>
+    <dimen name="buttonVerticalPadding">9dp</dimen>
+    <dimen name="slimButtonVerticalPadding">8dp</dimen>
+    <dimen name="slimButtonHorizontalPadding">16dp</dimen>
+    <dimen name="iconOnlyButtonHorizontalPadding">14dp</dimen>
+    <dimen name="buttonTextSize">14sp</dimen>
+
+    <dimen name="slimControlHeight">40dp</dimen>
+    <dimen name="slimButtonHeight">@dimen/slimControlHeight</dimen>
+    <dimen name="primaryButtonElevation">2dp</dimen>
+    <dimen name="primaryButtonWidth">100dp</dimen>
+    <dimen name="minPrimaryButtonWidth">48dp</dimen>
+    <dimen name="primaryButtonHeight">48dp</dimen>
+    <dimen name="primaryButtonMarginBottom">24dp</dimen>
+    <dimen name="primaryButtonMarginTop">24dp</dimen>
+    <dimen name="buttonControlMarginBottom">32dp</dimen>
+    <dimen name="loginButtonMarginTop">8dp</dimen>
+
+    <dimen name="inverseButtonElevation">0dp</dimen>
+
+    <dimen name="secondaryButtonHeight">48dp</dimen>
+    <dimen name="secondaryButtonMarginBottom">24dp</dimen>
+    <dimen name="secondaryButtonElevation">2dp</dimen>
+
+
+    <!-- Spinner -->
+    <dimen name="spinnerIconWidth">32dp</dimen>
+    <dimen name="spinnerIconHeight">32dp</dimen>
+
+    <!-- Link Button -->
+    <dimen name="linkButtonHeight">48dp</dimen>
+    <dimen name="linkButtonTextSize">12sp</dimen>
+    <dimen name="iconOnlyHorizontalTopPadding">14dp</dimen>
+    <dimen name="iconOnlyVerticalTopPadding">8dp</dimen>
+
+    <dimen name="formActivityLinkButtonTextSize">16sp</dimen>
+
+    <!-- Label -->
+    <dimen name="controlLabelSize">14dp</dimen>
+    <dimen name="controlLabelMarginBottom">8dp</dimen>
+    <dimen name="controlLabelMarginTop">0dp</dimen>
+
+    <!-- Read Text Control -->
+    <dimen name="controlReadTextSize">16sp</dimen>
+
+    <!-- ReadLabel -->
+    <dimen name="controlReadLabelSize">14dp</dimen>
+    <dimen name="controlReadLabelPaddingBottom">8dp</dimen>
+    <dimen name="controlReadLabelPaddingTop">0dp</dimen>
+
+
+
+    <!-- Text View Dimensions -->
+    <!-- Ractify -->
+    <dimen name="maxSwitchButtonHeight">42dp</dimen>
+    <dimen name="maxSpinnerHeight">48dp</dimen>
+    <dimen name="maxControlHeight">48dp</dimen>
+    <dimen name="textViewHeight">48dp</dimen>
+    <dimen name="textViewRadius">@dimen/defaultControlRadius</dimen>
+    <dimen name="textViewLeftPadding">@dimen/defaultControlHorizontalPadding</dimen>
+    <dimen name="textViewRightPadding">@dimen/defaultControlHorizontalPadding</dimen>
+    <dimen name="textViewTopPadding">@dimen/defaultControlVerticalPadding</dimen>
+    <dimen name="textViewBottomPadding">@dimen/defaultControlVerticalPadding</dimen>
+    <dimen name="teboTextReadVerticalPadding">14dp</dimen>
+    <dimen name="slimTextViewTopPadding">8dp</dimen>
+    <dimen name="slimTextViewBottomPadding">8dp</dimen>
+    <dimen name="textViewBorder">@dimen/defaultControlStrokeWidth</dimen>
+    <dimen name="textControlMarginBottom">32dp</dimen>
+    <dimen name="closelyRelatedControlMarginBottom">16dp</dimen>
+    <dimen name="slimTextControlMarginBottom">24dp</dimen>
+    <dimen name="controlReadTextMarginBottom">24dp</dimen>
+    <dimen name="pageBottomControlPanel">70dp</dimen>
+
+    <!-- Tooltip -->
+    <dimen name="tooltipDefaultPadding">20dip</dimen>
+    <dimen name="tooltipDefaultCornerRadius">0dip</dimen>
+    <dimen name="tooltipDefaultStrokeWeight">0dip</dimen>
+    <dimen name="tooltipDefaultElevation">2dp</dimen>
+
+
+    <!-- Drawer -->
+    <dimen name="design_navigation_icon_padding" tools:override="true">16dp</dimen>
+    <dimen name="design_navigation_icon_size" tools:override="true">32dp</dimen>
+    <dimen name="design_navigation_separator_vertical_padding" tools:override="true">16dp</dimen>
+    <dimen name="drawerNotificationCounterHeight">20dp</dimen>
+    <dimen name="drawerNotificationCounterRadius">10dp</dimen>
+
+
+
+
+
+    <dimen name="activitySubHeadingHeight">48dp</dimen>
+    <dimen name="activitySubHeadingHorizontalPadding">24dp</dimen>
+    <dimen name="activitySubHeadingVerticalPadding">0dp</dimen>
+    <dimen name="activitySubHeadingTextSize">14sp</dimen>
+    <dimen name="activitySubHeadingElevation">3dp</dimen>
+
+
+    <dimen name="actionBarSize">60dp</dimen>
+
+
+    <dimen name="sormasToolBarHeight">64dp</dimen>
+    <dimen name="toolBarTitleTextSize">20sp</dimen>
+    <dimen name="toolBarElevation">6dp</dimen>
+    <dimen name="toolBarMinHeight">34dp</dimen>
+    <dimen name="toolBarPopupMinHeight">24dp</dimen>
+    <dimen name="toolBarListPreferredItemHeightSmall">48dp</dimen>
+    <dimen name="toolBarPopupDividerHeight">1dp</dimen>
+
+    <dimen name="toolBarActionButtonDrawablePadding">8dp</dimen>
+    <dimen name="toolBarActionButtonPaddingStart">12dip</dimen>
+    <dimen name="toolBarActionButtonPaddingEnd">12dip</dimen>
+
+    <dimen name="overflowMenuVerticalOffset">2.0dp</dimen>
+    <dimen name="overflowMenuElevation">4dp</dimen>
+
+
+
+    <!-- List Layoutrs -->
+    <dimen name="rowListItemHorizontalMargin">24dp</dimen>
+    <dimen name="rowListItemHorizontalPadding">24dp</dimen>
+    <dimen name="rowListItemVerticalPadding">24dp</dimen>
+    <dimen name="rowListItemParentElevationVerticalPadding">4dp</dimen>
+    <dimen name="rowListItemParentElevationHorizontalPadding">4dp</dimen>
+    <!-- ************************************************* -->
+    <dimen name="listActivityRowItemBorderWidth">1dp</dimen>
+    <dimen name="listActivityRowItemBorderTop">-1dp</dimen>
+    <dimen name="listActivityRowItemBorderRight">-1dp</dimen>
+    <dimen name="listActivityRowItemBorderLeft">-1dp</dimen>
+    <!-- ************************************************* -->
+
+
+    <dimen name="symptomRowListItemHorizontalPadding">8dp</dimen>
+    <dimen name="symptomRowListItemVerticalPadding">8dp</dimen>
+
+
+    <!-- List Layout Indicators -->
+    <dimen name="indicatorRadius">10dp</dimen>
+    <dimen name="indicatorWidth">10dp</dimen>
+    <dimen name="indicatorHeight">10dp</dimen>
+    <dimen name="smallIndicatorRadius">5dp</dimen>
+    <dimen name="smallIndicatorWidth">5dp</dimen>
+    <dimen name="smallIndicatorHeight">5dp</dimen>
+    <dimen name="unreadListItemIndicatorWidth">15dp</dimen>
+    <dimen name="unreadListItemIndicatorHeight">15dp</dimen>
+    <dimen name="unreadListItemIndicatorTop">10dp</dimen>
+    <dimen name="unreadListItemIndicatorRight">10dp</dimen>
+
+
+    <!-- Enter Pin Layout -->
+    <dimen name="headingEnterPinTextSize">34sp</dimen>
+    <dimen name="headingSubEnterPinTextSize">14sp</dimen>
+    <dimen name="headingSubEnterPinMarginBottom">40dp</dimen>
+    <dimen name="enterPinInputDisplayMarginBottom">12dp</dimen>
+    <dimen name="enterPinInputDisplayWidth">80dp</dimen>
+    <dimen name="enterPinInputDisplayHeight">80dp</dimen>
+    <dimen name="enterPinInputDisplayTextSize">56sp</dimen>
+
+
+    <!-- Page Menu -->
+    <dimen name="pageMenuPositionTextSize">34sp</dimen>
+
+
+
+    <!-- Landing Page Menu -->
+    <dimen name="landingPageMenuRootPaddingTop">1dp</dimen>
+    <dimen name="landingPageMenuRootPaddingBottom">1dp</dimen>
+    <dimen name="landingPageMenuHeaderHeight">48dp</dimen>
+    <dimen name="landingPageMenuHorizontalSpacing">1dp</dimen>
+    <dimen name="landingPageMenuVerticalSpacing">1dp</dimen>
+    <integer name="landingPageMenuNumColumns">3</integer>
+    <dimen name="landingPageMenuCellHeight">145dp</dimen>
+    <dimen name="landingPageMenuIconWidth">48dp</dimen>
+    <dimen name="landingPageMenuIconHeight">48dp</dimen>
+    <dimen name="landingPageMenuHeaderTextSize">16sp</dimen>
+    <dimen name="landingPageMenuTitleTextSize">12sp</dimen>
+    <dimen name="landingPageMenuNotificationCounterMarginBottom">8dp</dimen>
+    <dimen name="landingPageMenuNotificationCounterMarginRight">16dp</dimen>
+    <dimen name="landingPageMenuNotificationCounterTextSize">12sp</dimen>
+
+
+    <dimen name="landingPageMenuCounterHeight">20dp</dimen>
+    <dimen name="landingPageMenuCounterRadius">10dp</dimen>
+    <dimen name="landingPageMenuCounterPaddingLeft">8dp</dimen>
+    <dimen name="landingPageMenuCounterPaddingRight">8dp</dimen>
+
+
+
+
+
+
+    <!-- Landing Summary -->
+    <dimen name="landingSummaryCellHeight">146dp</dimen>
+    <dimen name="landingSummaryCellTitleSize">12sp</dimen>
+    <dimen name="landingSummaryCellPercentageSize">12sp</dimen>
+    <dimen name="landingSummaryCellTotalSize">32sp</dimen>
+    <dimen name="landingSummaryCellTotalMarginBottom">16dp</dimen>
+    <dimen name="landingSummaryVisualizationDefaultWidth">90dp</dimen>
+    <dimen name="landingSummaryVisualizationDefaultHeight">90dp</dimen>
+    <dimen name="landingSummaryVisualizationBottomMargin">16dp</dimen>
+
+
+
+
+
+    <dimen name="pageMenuNavPositionMarginTop">8dp</dimen>
+    <dimen name="pageMenuNavPositionMarginBottom">8dp</dimen>
+    <dimen name="pageMenuNavPositionMarginRight">16dp</dimen>
+
+    <dimen name="pageMenuItemPaddingBottom">16dp</dimen>
+    <dimen name="pageMenuItemPaddingLeft">16dp</dimen>
+    <dimen name="pageMenuItemPaddingRight">16dp</dimen>
+
+
+
+    <!-- Landing Summary: Donut Progress -->
+    <dimen name="donutFinishedStrokeWidth">5dp</dimen>
+    <dimen name="donutUnfinishedStrokeWidth">5dp</dimen>
+    <integer name="donutMax">100</integer>
+    <dimen name="donutTextSize">12sp</dimen>
+    <dimen name="donutProgressValueSize">24sp</dimen>
+    <dimen name="donutProgressDefaultWidth">@dimen/landingSummaryVisualizationDefaultWidth</dimen>
+    <dimen name="donutProgressDefaultHeight">@dimen/landingSummaryVisualizationDefaultHeight</dimen>
+
+
+    <!-- Landing Summary: Task Priority -->
+    <dimen name="pieChartDefaultWidth">@dimen/landingSummaryVisualizationDefaultWidth</dimen>
+    <dimen name="pieChartDefaultHeight">@dimen/landingSummaryVisualizationDefaultHeight</dimen>
+
+
+    <!-- Landing Summary: Task Priority -->
+    <dimen name="legendValuePercentageSpacerRadius">5dp</dimen>
+    <dimen name="legendValuePercentageSpacerWidth">5dp</dimen>
+    <dimen name="legendValuePercentageSpacerHeight">5dp</dimen>
+    <dimen name="legendDefaultShapeRadius">5dp</dimen>
+    <dimen name="legendDefaultShapeWidth">5dp</dimen>
+    <dimen name="legendDefaultShapeHeight">5dp</dimen>
+
+
+
+
+
+    <dimen name="listActivityRowPrimaryTextSize">16sp</dimen>
+    <dimen name="listActivityRowSecondaryTextSize">14sp</dimen>
+    <dimen name="listActivityRowSecondaryTextMarginBottom">8dp</dimen>
+    <dimen name="listActivityRowTertiaryTextSize">12sp</dimen>
+    <dimen name="listActivityRowStatusTextSize">12sp</dimen>
+    <dimen name="listActivityRowDateTextSize">12sp</dimen>
+
+
+    <dimen name="sectionListRowStrokeWidth">1dp</dimen>
+    <dimen name="sectionListRowRadius">@dimen/defaultControlRadius</dimen>
+    <dimen name="sectionListRowSelectedStrokeSize">1.5dp</dimen>
+
+
+
+    <dimen name="verySmallTextSize">10sp</dimen>
+    <dimen name="smallTextSize">12sp</dimen>
+
+
+
+
+
+    <dimen name="readActivitySubHeadingTextSize">18sp</dimen>
+    <dimen name="readActivitySubListHeadingTextSize">@dimen/h4</dimen>
+
+
+
+
+
+
+
+    <dimen name="listGoToIconWidth">36dp</dimen>
+    <dimen name="listGoToIconHeight">36dp</dimen>
+
+
+    <dimen name="separatorThickness">1.2dp</dimen>
+    <dimen name="miniHorizontalSeparatorWidth">144dp</dimen>
+
+
+
+    <dimen name="readControlSmallIconWidth">10dp</dimen>
+    <dimen name="readControlSmallIconHeight">10dp</dimen>
+    <dimen name="listItemConentIndentRight">36dp</dimen>
+    <dimen name="listItemBottomConentMarginTop">8dp</dimen>
+
+
+
+    <dimen name="symptomReadItemHeight">48dp</dimen>
+    <dimen name="symptomListRowRadius">24dp</dimen>
+
+
+
+    <!-- Tag View -->
+    <dimen name="tagViewTextSize">16sp</dimen>
+    <dimen name="tagViewLineMargin">16dp</dimen>
+    <dimen name="tagViewTagMargin">24dp</dimen>
+    <dimen name="tagViewTextPaddingLeft">16dp</dimen>
+    <dimen name="tagViewTextPaddingRight">16dp</dimen>
+    <dimen name="tagViewTextPaddingTop">12dp</dimen>
+    <dimen name="tagViewTextPaddingBottom">12dp</dimen>
+    <dimen name="tagViewLayoutBorderSize">1dp</dimen>
+    <dimen name="deleteIndicatorSize">9sp</dimen>
+    <dimen name="tagViewRadius">100dp</dimen>
+    <dimen name="tagViewVerticalSeparator">8dp</dimen>
+
+
+
+
+    <dimen name="readInlineListTertiaryTextSize">12sp</dimen>
+    <dimen name="readInlineListSecondaryTextSize">14sp</dimen>
+    <dimen name="readInlineListPrimaryTextSize">16sp</dimen>
+
+
+
+    <!-- Tooltip -->
+    <dimen name="ttlm_default_padding">20dip</dimen>
+    <dimen name="ttlm_default_corner_radius">4dip</dimen>
+    <dimen name="ttlm_default_stroke_weight">0dip</dimen>
+    <dimen name="ttlm_default_elevation">2dp</dimen>
+
+
+    <dimen name="checkBoxWidth">48dp</dimen>
+    <dimen name="checkBoxHeight">48dp</dimen>
+    <dimen name="radioGroupWidth">48dp</dimen>
+    <dimen name="radioGroupHeight">48dp</dimen>
+    <dimen name="dropdownListPreferredItemHeight">56dp</dimen>
+    <dimen name="dropdownListSlimItemHeight">@dimen/slimControlHeight</dimen>
+    <dimen name="radioButtonMarginStart">2dp</dimen>
+    <dimen name="radioButtonLabelMarginStart">8dp</dimen>
+
+
+
+
+
+
+
+    <!-- Date Picker -->
+    <!-- Specifies date picker mode to be 'calendar' -->
+    <integer name="date_picker_mode_material">2</integer>
+
+
+
+
+    <!-- Dialog -->
+    <dimen name="progressDialogWidth">150dp</dimen>
+    <dimen name="notificationDialogWidth">350dp</dimen>
+    <dimen name="notificationDialogIconVerticalMargin">32dp</dimen>
+    <dimen name="notificationDialogIconWidth">88dp</dimen>
+    <dimen name="notificationDialogIconHeight">88dp</dimen>
+    <dimen name="dialogHeadingTextSize">20sp</dimen>
+
+
+    <dimen name="preloaderWidthPercent">100%</dimen>
+    <dimen name="preloaderHeightPercent">100%</dimen>
+    <dimen name="preloaderScaleY">2</dimen>
+    <dimen name="preloaderMinHeight">150dp</dimen>
+
+    <dimen name="dashboardPreloaderWidth">50dp</dimen>
+    <dimen name="dashboardPreloaderHeight">50dp</dimen>
+
+
+
+
+    <dimen name="summaryFragmentMinHeight">@dimen/landingSummaryCellHeight</dimen>
+
 </resources>

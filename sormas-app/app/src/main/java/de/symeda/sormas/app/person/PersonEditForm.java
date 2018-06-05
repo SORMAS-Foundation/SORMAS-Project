@@ -29,7 +29,6 @@ import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases;
@@ -45,6 +44,7 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.FieldHelper;
+import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.LocationDialogBuilder;
 import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SpinnerField;
@@ -53,7 +53,6 @@ import de.symeda.sormas.app.databinding.PersonEditFragmentLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FormTab;
-import de.symeda.sormas.app.util.Item;
 import de.symeda.sormas.app.validation.PersonValidator;
 
 import static de.symeda.sormas.app.component.FacilityChangeDialogBuilder.NONE_HEALTH_FACILITY_DETAILS;
@@ -71,7 +70,8 @@ public class PersonEditForm extends FormTab {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.person_edit_fragment_layout, container, false);
-        editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
+        //TODO: Orson check back
+        //editOrCreateUserRight = (UserRight) getArguments().get(EDIT_OR_CREATE_USER_RIGHT);
 
         final String personUuid = getArguments().getString(Person.UUID);
         PersonDao personDao = DatabaseHelper.getPersonDao();
@@ -453,8 +453,9 @@ public class PersonEditForm extends FormTab {
                 }
             }
         } else {
-            approximateAgeTextField.setEnabled(true, editOrCreateUserRight);
-            approximateAgeTypeField.setEnabled(true, editOrCreateUserRight);
+            //TODO: Orson check back
+            //approximateAgeTextField.setEnabled(true, editOrCreateUserRight);
+            //approximateAgeTypeField.setEnabled(true, editOrCreateUserRight);
         }
     }
 

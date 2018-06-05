@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:drawable="@drawable/ic_back_arrow_blue_48dp" android:state_pressed="true" >
+        <shape android:shape="rectangle">
+            <stroke android:width="0dp" android:color="@color/red" />
+            <solid android:color="@color/red"/>
+            <corners android:radius="0dp" />
+        </shape>
+    </item>
+    <item android:drawable="@drawable/ic_back_arrow_blue_48dp" android:state_focused="true">
+        <shape android:shape="rectangle">
+            <stroke android:width="0dp" android:color="@color/toolbarActionButtonFocused" />
+            <solid android:color="@color/toolbarActionButtonFocused"/>
+            <corners android:radius="0dp" />
+        </shape>
+    </item>
+    <item android:drawable="@drawable/ic_back_arrow_blue_36dp">
+        <shape android:shape="rectangle">
+            <stroke android:width="0dp" android:color="@color/toolbarActionButton" />
+            <solid android:color="@color/red"/>
+            <corners android:radius="0dp" />
+        </shape>
+    </item>
+</selector>

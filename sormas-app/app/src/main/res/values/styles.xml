@@ -1,7 +1,516 @@
 <resources>
-
+<!-- Martin
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />-->
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <!-- Toolbar styles -->
+    <style name="AppToolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="android:textColorPrimary">@color/toolbarTextColor</item>
+        <!-- color of the menu overflow icon -->
+        <item name="android:textColorSecondary">@color/toolbarTextColor</item>
+        <!---->
+
+        <!-- navigation icon color -->
+        <item name="colorControlNormal">@color/blue</item>
+        <item name="colorControlHighlight">@color/toolbarActionButtonPressed</item>
+        <item name="subtitleTextAppearance">@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle</item>
+        <!--<item name="titleTextAppearance">@style/SormasActionBarTitleTextStyle</item>-->
+        <item name="android:minHeight">@dimen/toolBarMinHeight</item>
+    </style>
+
+    <style name="AppToolbarPopup" parent="Base.ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:textColorPrimary">@color/popupMenuListText</item>
+        <item name="android:minHeight">@dimen/toolBarPopupMinHeight</item>
+        <item name="android:listPreferredItemHeightSmall">@dimen/toolBarListPreferredItemHeightSmall</item>
+        <item name="android:dropDownListViewStyle">@style/PopupMenuListView</item>
+    </style>
+
+    <!-- Change Overflow Menu ListView Divider Property -->
+    <style name="PopupMenuListView" parent="Widget.AppCompat.ListView.DropDown">
+        <item name="android:divider">@color/popupMenuListDivider</item>
+        <item name="android:dividerHeight">@dimen/toolBarPopupDividerHeight</item>
+    </style>
+
+    <style name="SormasActionBarMenuTextAppearance" parent="TextAppearance.AppCompat.Widget.ActionBar.Menu">
+        <item name="textAllCaps">false</item>
+    </style>
+
+    <style name="OverflowMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
+        <!-- Required for pre-Lollipop. -->
+        <item name="overlapAnchor">false</item>
+        <!-- Required for Lollipop. -->
+        <item name="android:overlapAnchor">false</item>
+        <item name="android:dropDownVerticalOffset">@dimen/overflowMenuVerticalOffset</item>
+        <!--<item name="android:dropDownHorizontalOffset">50dp</item>-->
+        <item name="android:popupBackground">@drawable/background_options_menu</item>
+        <item name="android:popupElevation">@dimen/overflowMenuElevation</item>
+        <item name="android:dropDownWidth">wrap_content</item>
+    </style>
+
+    <style name="ToolBarStyle.Base" parent="">
+        <item name="popupTheme">@style/AppToolbarPopup</item>
+        <item name="theme">@style/AppToolbar</item>
+    </style>
+
+    <style name="ToolBarStyle" parent="ToolBarStyle.Base">
+        <item name="android:background">@drawable/background_toolbar</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:elevation">@dimen/toolBarElevation</item>
+        <item name="titleTextAppearance">@style/TextAppearance.Widget.Event.Toolbar.Title</item>
+        <!--<item name="android:drawablePadding">10dp</item>-->
+        <!--<item name="android:background"></item>-->
+    </style>
+
+    <style name="TextAppearance.Widget.Event.Toolbar.Title" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">@dimen/toolBarTitleTextSize</item>
+    </style>
+
+    <style name="ActionButton" parent="@android:style/Widget.ActionButton">
+        <!--<item name="android:background">@drawabackground_action_buttonound</item>-->
+        <item name="android:drawablePadding">@dimen/toolBarActionButtonDrawablePadding</item>
+        <item name="android:paddingStart">@dimen/toolBarActionButtonPaddingStart</item>
+        <item name="android:paddingEnd">@dimen/toolBarActionButtonPaddingEnd</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <!-- /Toolbar styles -->
+
+
+
+    <style name="CheckboxLabelStyle">
+        <item name="android:textColor">@color/controlLabelColor</item>
+        <item name="android:textSize">@dimen/controlLabelSize</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+
+    <style name="SpinnerStyle" parent="Widget.AppCompat.Spinner.Underlined">
+        <!--<item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>-->
+        <item name="android:background">@drawable/selector_spinner</item>
+        <!--<item name="android:layout_margin">10dp</item>-->
+        <!--<item name="android:paddingLeft">@dimen/spinnerHorizontalSpacing</item>
+        <item name="android:paddingRight">@dimen/spinnerIconWidth</item>-->
+        <!--<item name="android:paddingTop">@dimen/contentVerticalSpacing</item>
+        <item name="android:paddingBottom">@dimen/contentVerticalSpacing</item>-->
+        <!--<item name="android:popupBackground">#DFFFFFFF</item>-->
+    </style>
+
+    <!--<style name="App.Style.Spinner" parent="android:style/Widget.ListView.DropDown">
+        <item name="android:dividerHeight">1dp</item>
+        <item name="android:divider">@color/lighterBlue</item>
+    </style>-->
+
+    <style name="DatePickerEditTextViewSingleRowStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/textViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
+        <item name="android:background">@drawable/selector_text_control_edit</item>
+        <item name="android:cursorVisible">false</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">@color/controlTextColor</item>
+        <item name="android:textColorHint">@color/controlTextViewHint</item>
+        <item name="android:textCursorDrawable">@drawable/cursor</item>
+        <item name="android:textIsSelectable">false</item>
+        <item name="android:textSize">@dimen/defaultControlTextSize</item>
+    </style>
+
+    <style name="EmptyListHintStyle">
+        <item name="android:paddingTop">@dimen/parentLayoutVerticalPadding</item>
+        <item name="android:paddingBottom">@dimen/parentLayoutVerticalPadding</item>
+        <item name="android:paddingLeft">@dimen/parentLayoutHorizontalPadding</item>
+        <item name="android:paddingRight">@dimen/parentLayoutHorizontalPadding</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/controlTextColor</item>
+        <item name="android:textSize">@dimen/defaultControlTextSize</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+
+
+
+    <style name="EditTextViewSingleRowStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/textViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
+        <item name="android:background">@drawable/selector_text_control_edit</item>
+        <item name="android:cursorVisible">true</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">@color/controlTextColor</item>
+        <item name="android:textColorHint">@color/controlTextViewHint</item>
+        <item name="android:textCursorDrawable">@drawable/cursor</item>
+        <item name="android:textIsSelectable">true</item>
+        <item name="android:textSize">@dimen/defaultControlTextSize</item>
+    </style>
+
+    <style name="ControlReadLabelStyle">
+        <item name="android:textColor">@color/controlReadLabelColor</item>
+        <item name="android:textSize">@dimen/controlReadLabelSize</item>
+        <item name="android:paddingTop">@dimen/controlReadLabelPaddingTop</item>
+        <item name="android:paddingBottom">@dimen/controlReadLabelPaddingBottom</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:focusable">false</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+
+    <style name="ControlLabelStyle">
+        <item name="android:textColor">@color/controlLabelColor</item>
+        <item name="android:textSize">@dimen/controlLabelSize</item>
+        <item name="android:paddingTop">@dimen/controlLabelMarginTop</item>
+        <item name="android:paddingBottom">@dimen/controlLabelMarginBottom</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+
+    <style name="ReadTextFieldViewSingleRowStyle">
+        <item name="android:background">@color/controlReadTextViewBackground</item>
+        <item name="android:cursorVisible">true</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:focusable">false</item>
+        <item name="android:textColor">@color/controlReadTextColor</item>
+        <item name="android:textColorHint">@color/controlReadTextViewHint</item>
+        <item name="android:textSize">@dimen/controlReadTextSize</item>
+    </style>
+
+    <style name="FormActivityLinkButtonStyle">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:height">@dimen/linkButtonHeight</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">@dimen/formActivityLinkButtonTextSize</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
+        <item name="android:textColor">@color/selector_color_form_activity_link_button</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="PrimaryButtonStyle">
+        <item name="android:layout_height">@dimen/primaryButtonHeight</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingLeft">@dimen/buttonHorizontalPadding</item>
+        <item name="android:paddingRight">@dimen/buttonHorizontalPadding</item>
+        <item name="android:textColor">@color/primaryButtonText</item>
+        <item name="android:background">@drawable/selector_button_primary</item>
+        <item name="android:elevation">@dimen/primaryButtonElevation</item>
+    </style>
+    <style name="SecondaryButtonStyle">
+        <item name="android:layout_height">@dimen/secondaryButtonHeight</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingLeft">@dimen/buttonHorizontalPadding</item>
+        <item name="android:paddingRight">@dimen/buttonHorizontalPadding</item>
+        <item name="android:textColor">@color/secondaryButtonText</item>
+        <item name="android:background">@drawable/selector_button_secondary</item>
+        <item name="android:elevation">@dimen/secondaryButtonElevation</item>
+    </style>
+    <style name="SuccessButtonStyle">
+        <item name="android:layout_height">@dimen/primaryButtonHeight</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingLeft">@dimen/buttonHorizontalPadding</item>
+        <item name="android:paddingRight">@dimen/buttonHorizontalPadding</item>
+        <item name="android:textColor">@color/successButtonText</item>
+        <item name="android:background">@drawable/selector_button_success</item>
+        <item name="android:elevation">@dimen/primaryButtonElevation</item>
+    </style>
+    <style name="DangerButtonStyle">
+        <item name="android:layout_height">@dimen/primaryButtonHeight</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingLeft">@dimen/buttonHorizontalPadding</item>
+        <item name="android:paddingRight">@dimen/buttonHorizontalPadding</item>
+        <item name="android:textColor">@color/dangerButtonText</item>
+        <item name="android:background">@drawable/selector_button_danger</item>
+        <item name="android:elevation">@dimen/primaryButtonElevation</item>
+    </style>
+    <style name="WarningButtonStyle">
+        <item name="android:layout_height">@dimen/primaryButtonHeight</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingLeft">@dimen/buttonHorizontalPadding</item>
+        <item name="android:paddingRight">@dimen/buttonHorizontalPadding</item>
+        <item name="android:textColor">@color/warningButtonText</item>
+        <item name="android:background">@drawable/selector_button_warning</item>
+        <item name="android:elevation">@dimen/primaryButtonElevation</item>
+    </style>
+
+    <style name="PrimaryInverseButtonStyle">
+        <item name="android:layout_height">@dimen/primaryButtonHeight</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingLeft">@dimen/buttonHorizontalPadding</item>
+        <item name="android:paddingRight">@dimen/buttonHorizontalPadding</item>
+        <item name="android:textColor">@color/primaryInverseButtonText</item>
+        <item name="android:background">@drawable/selector_button_inverse_primary</item>
+        <!--<item name="android:elevation">@dimen/inverseButtonElevation</item>-->
+    </style>
+    <style name="WarningInverseButtonStyle">
+        <item name="android:layout_height">@dimen/primaryButtonHeight</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingLeft">@dimen/buttonHorizontalPadding</item>
+        <item name="android:paddingRight">@dimen/buttonHorizontalPadding</item>
+        <item name="android:textColor">@color/warningInverseButtonText</item>
+        <item name="android:background">@drawable/selector_button_inverse_warning</item>
+        <item name="android:elevation">@dimen/inverseButtonElevation</item>
+    </style>
+    <style name="DangerInverseButtonStyle">
+        <item name="android:layout_height">@dimen/primaryButtonHeight</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingLeft">@dimen/buttonHorizontalPadding</item>
+        <item name="android:paddingRight">@dimen/buttonHorizontalPadding</item>
+        <item name="android:textColor">@color/dangerInverseButtonText</item>
+        <item name="android:background">@drawable/selector_button_inverse_danger</item>
+        <item name="android:elevation">@dimen/inverseButtonElevation</item>
+    </style>
+    <style name="LoginHeading1">
+        <item name="android:textColor">@color/normalText</item>
+        <item name="android:textSize">@dimen/loginHeadingTextSize</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="LoginHeading2" parent="LoginHeading1">
+        <item name="android:layout_marginBottom">@dimen/loginHeading2LayoutMarginBottom</item>
+    </style>
+
+    <style name="LoginServiceText">
+        <item name="android:textColor">@color/text_70</item>
+        <item name="android:textSize">@dimen/loginServiceTextSize</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="LoginSignInText">
+        <item name="android:textColor">@color/lightBlue</item>
+        <item name="android:textSize">@dimen/signInTextSize</item>
+        <item name="android:fontFamily">sans-serif-black</item>
+    </style>
+
+    <style name="LoginServiceSeparator">
+        <item name="android:layout_width">@dimen/serviceSeparatorWidth</item>
+        <item name="android:layout_height">@dimen/serviceSeparatorHeight</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_marginLeft">@dimen/serviceSeparatorMarginLeft</item>
+        <item name="android:layout_marginRight">@dimen/serviceSeparatorMarginRight</item>
+        <item name="android:background">@drawable/service_separator</item>
+    </style>
+
+    <style name="ChangeSettingStyle">
+        <item name="android:gravity">center</item>
+        <item name="android:height">@dimen/primaryButtonHeight</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/selector_color_settings_button</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="LinkButtonStyle">
+        <item name="android:gravity">center</item>
+        <item name="android:height">@dimen/linkButtonHeight</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">@dimen/linkButtonTextSize</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
+        <item name="android:textColor">@color/selector_color_link_button</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="PinButtonStyle">
+        <item name="android:layout_width">@dimen/pinButtonWidth</item>
+        <item name="android:layout_height">@dimen/pinButtonHeight</item>
+        <item name="android:background">@drawable/selector_pin_button</item>
+        <item name="android:textSize">@dimen/pinButtonTextSize</item>
+        <item name="android:textColor">@color/selector_color_text_pin_button</item>
+        <item name="android:elevation">@dimen/pinButtonElevation</item>
+    </style>
+
+    <style name="ToolTipStyleOverride">
+        <item name="ttlm_padding">@dimen/tooltipDefaultPadding</item>
+        <item name="ttlm_strokeColor">@android:color/transparent</item>
+        <item name="ttlm_backgroundColor">@color/lighterBlue</item>
+        <item name="ttlm_strokeWeight">@dimen/tooltipDefaultStrokeWeight</item>
+        <item name="ttlm_cornerRadius">@dimen/tooltipDefaultCornerRadius</item>
+        <item name="ttlm_arrowRatio">1.4</item>
+        <item name="android:textAppearance">@style/ToolTipTextAppearanceStyle</item>
+        <item name="ttlm_overlayStyle">@style/ToolTipOverlayStyleOverride</item>
+        <item name="ttlm_elevation">@dimen/tooltipDefaultElevation</item>
+    </style>
+
+    <style name="ToolTipOverlayStyleOverride">
+        <item name="android:color">@color/tooltip_overlay_background_default</item>
+        <item name="ttlm_repeatCount">99</item>
+        <item name="ttlm_duration">600</item>
+        <item name="android:alpha">0.5</item>
+        <item name="android:layout_margin">24dp</item>
+    </style>
+    <!-- Text color, typeface, size, and style for "small" text. Defaults to secondary text color. -->
+    <style name="ToolTipTextAppearanceStyle">
+        <item name="android:textSize">12sp</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textColor">@color/normalText</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="NavigationDrawerStyle">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="LandingSummaryCellTitleStyle">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/landingSummaryCellTitleSize</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="LandingSummaryCellPercentageStyle">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/landingSummaryCellPercentageSize</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="DonutProgressDefaultStyle">
+        <item name="android:layout_gravity">center</item>
+        <item name="donut_unfinished_color">@color/circularProgressUnfinishedDefault</item>
+        <item name="donut_finished_color">@color/circularProgressFinishedDefault</item>
+        <item name="donut_finished_stroke_width">@dimen/donutFinishedStrokeWidth</item>
+        <item name="donut_unfinished_stroke_width">@dimen/donutUnfinishedStrokeWidth</item>
+        <item name="donut_max">@integer/donutMax</item>
+        <item name="donut_text_size">@dimen/donutTextSize</item>
+    </style>
+
+
+    <style name="EnterPinInputDisplayStyle">
+        <item name="android:ellipsize">start</item>
+        <item name="android:enabled">false</item>
+        <item name="android:gravity">center</item>
+        <item name="android:inputType">numberPassword</item>
+        <item name="android:maxLength">1</item>
+        <item name="android:textColor">@color/pinMask</item>
+        <item name="android:textSize">@dimen/enterPinInputDisplayTextSize</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+
+
+    <style name="ReadActivitySubHeadingStyle">
+        <item name="android:textColor">@color/normalText</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">@dimen/readActivitySubHeadingTextSize</item>
+        <item name="android:layout_marginBottom">@dimen/parentLayoutVerticalMargin</item>
+    </style>
+
+
+
+    <style name="ReadActivitySubHeadingNoBMarginStyle">
+        <item name="android:textColor">@color/normalText</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">@dimen/readActivitySubHeadingTextSize</item>
+    </style>
+
+    <style name="ReadActivitySubListHeadingNoBMarginStyle">
+        <item name="android:textColor">@color/normalText</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">@dimen/readActivitySubListHeadingTextSize</item>
+    </style>
+
+
+    <style name="FullHorizontalDividerStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/separatorThickness</item>
+        <item name="android:background">@color/viewSeparator</item>
+        <item name="android:layout_marginBottom">@dimen/controlReadTextMarginBottom</item>
+    </style>
+
+    <style name="FullHorizontalDividerStyleNoDefaultMargin">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/separatorThickness</item>
+        <item name="android:background">@color/viewSeparator</item>
+    </style>
+
+    <style name="FluidHorizontalDividerStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">@dimen/separatorThickness</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_marginLeft">@dimen/contentHorizontalSpacing</item>
+        <item name="android:layout_marginRight">@dimen/contentHorizontalSpacing</item>
+        <item name="android:background">@color/viewSeparator</item>
+        <item name="android:layout_marginBottom">@dimen/controlReadTextMarginBottom</item>
+    </style>
+
+    <style name="FormButtonDividerStyle">
+        <item name="android:layout_width">@dimen/separatorThickness</item>
+        <item name="android:layout_height">20dp</item>
+        <item name="android:background">@color/formEditBottomBorder</item>
+        <item name="android:layout_marginTop">@dimen/contentVerticalSpacing</item>
+        <item name="android:layout_marginBottom">@dimen/contentVerticalSpacing</item>
+        <item name="android:layout_marginLeft">@dimen/formLayoutGutterSize</item>
+        <item name="android:layout_marginRight">@dimen/formLayoutGutterSize</item>
+    </style>
+
+
+
+    <style name="MiniHorizontalDividerStyle">
+        <item name="android:layout_width">@dimen/miniHorizontalSeparatorWidth</item>
+        <item name="android:layout_height">@dimen/separatorThickness</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:background">@color/viewSeparator</item>
+        <item name="android:layout_marginBottom">@dimen/controlReadTextMarginBottom</item>
+    </style>
+
+    <style name="MiniHorizontalDividerStyleNoDefaultMargin">
+        <item name="android:layout_width">@dimen/miniHorizontalSeparatorWidth</item>
+        <item name="android:layout_height">@dimen/separatorThickness</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:background">@color/viewSeparator</item>
+    </style>
+
+
+
+    <!-- Tooltip -->
+    <style name="ToolTipLayoutDefaultStyle">
+        <item name="ttlm_padding">@dimen/ttlm_default_padding</item>
+        <item name="ttlm_strokeColor">@android:color/transparent</item>
+        <item name="ttlm_backgroundColor">?attr/colorAccent</item>
+        <item name="ttlm_strokeWeight">@dimen/ttlm_default_stroke_weight</item>
+        <item name="ttlm_cornerRadius">@dimen/ttlm_default_corner_radius</item>
+        <item name="ttlm_arrowRatio">1.4</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="ttlm_overlayStyle">@style/ToolTipOverlayDefaultStyle</item>
+        <item name="ttlm_elevation">@dimen/ttlm_default_elevation</item>
+    </style>
+
+    <style name="ToolTipOverlayDefaultStyle">
+        <item name="android:color">?attr/colorAccent</item>
+        <item name="ttlm_repeatCount">99</item>
+        <item name="ttlm_duration">600</item>
+        <item name="android:alpha">0.5</item>
+        <item name="android:layout_margin">8dp</item>
+    </style>
+
+    <style name="SummarySectionTitleStyle">
+        <item name="android:paddingTop">@dimen/contentVerticalSpacingDouble</item>
+        <item name="android:paddingBottom">@dimen/contentVerticalSpacingDouble</item>
+        <item name="android:paddingLeft">@dimen/parentLayoutHorizontalPadding</item>
+        <item name="android:paddingRight">@dimen/parentLayoutHorizontalPadding</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/normalText</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
 
 </resources>
