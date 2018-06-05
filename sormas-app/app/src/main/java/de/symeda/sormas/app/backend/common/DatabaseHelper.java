@@ -485,7 +485,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(SampleTest.class).executeRaw("UPDATE sampleTests SET testType = 'IGM_SERUM_ANTIBODY' WHERE testType = 'SERUM_ANTIBODY_TITER';");
 					getDao(SampleTest.class).executeRaw("UPDATE sampleTests SET testType = 'IGM_SERUM_ANTIBODY' WHERE testType = 'ELISA';");
 					getDao(SampleTest.class).executeRaw("UPDATE sampleTests SET testType = 'PCR_RT_PCR' WHERE testType = 'PCR' OR testType = 'RT_PCR';");
-					getDao(SampleTest.class).executeRaw("ALTER TABLE samples ADD COLUMN labDetails varchar(512);");
+					getDao(Sample.class).executeRaw("UPDATE samples SET suggestedTypeOfTest = 'IGM_SERUM_ANTIBODY' WHERE suggestedTypeOfTest = 'SERUM_ANTIBODY_TITER';");
+					getDao(Sample.class).executeRaw("UPDATE samples SET suggestedTypeOfTest = 'IGM_SERUM_ANTIBODY' WHERE suggestedTypeOfTest = 'ELISA';");
+					getDao(Sample.class).executeRaw("UPDATE samples SET suggestedTypeOfTest = 'PCR_RT_PCR' WHERE suggestedTypeOfTest = 'PCR' OR suggestedTypeOfTest = 'RT_PCR';");
+					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN labDetails varchar(512);");
 				case 127:
 					currentVersion = 127;
 					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN directContactConfirmedCase varchar(255);");

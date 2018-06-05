@@ -2413,6 +2413,15 @@ INSERT INTO schema_version (version_number, comment) VALUES (108, 'Add "Other la
 UPDATE sampletest SET testtype = 'IGM_SERUM_ANTIBODY' WHERE testtype = 'SERUM_ANTIBODY_TITER';
 UPDATE sampletest SET testtype = 'IGM_SERUM_ANTIBODY' WHERE testtype = 'ELISA';
 UPDATE sampletest SET testtype = 'PCR_RT_PCR' WHERE testtype = 'PCR' OR testtype = 'RT_PCR';
+UPDATE sampletest_history SET testtype = 'IGM_SERUM_ANTIBODY' WHERE testtype = 'SERUM_ANTIBODY_TITER';
+UPDATE sampletest_history SET testtype = 'IGM_SERUM_ANTIBODY' WHERE testtype = 'ELISA';
+UPDATE sampletest_history SET testtype = 'PCR_RT_PCR' WHERE testtype = 'PCR' OR testtype = 'RT_PCR';
+UPDATE samples SET suggestedtypeoftest = 'IGM_SERUM_ANTIBODY' WHERE suggestedtypeoftest = 'SERUM_ANTIBODY_TITER';
+UPDATE samples SET suggestedtypeoftest = 'IGM_SERUM_ANTIBODY' WHERE suggestedtypeoftest = 'ELISA';
+UPDATE samples SET suggestedtypeoftest = 'PCR_RT_PCR' WHERE suggestedtypeoftest = 'PCR' OR suggestedtypeoftest = 'RT_PCR';
+UPDATE samples_history SET suggestedtypeoftest = 'IGM_SERUM_ANTIBODY' WHERE suggestedtypeoftest = 'SERUM_ANTIBODY_TITER';
+UPDATE samples_history SET suggestedtypeoftest = 'IGM_SERUM_ANTIBODY' WHERE suggestedtypeoftest = 'ELISA';
+UPDATE samples_history SET suggestedtypeoftest = 'PCR_RT_PCR' WHERE suggestedtypeoftest = 'PCR' OR suggestedtypeoftest = 'RT_PCR';
 
 INSERT INTO schema_version (version_number, comment) VALUES (109, 'Sample and sample test data model changes #627');
 
