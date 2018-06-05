@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -31,6 +32,14 @@ public class DistrictResource {
 		return FacadeProvider.getDistrictFacade().getAllAfter(new Date(since));
 	}	
 	
+	@POST
+	@Path("/query")
+	public List<DistrictDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+
+		List<DistrictDto> result = FacadeProvider.getDistrictFacade().getByUuids(uuids); 
+		return result;
+	}
+
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids(@Context SecurityContext sc) {

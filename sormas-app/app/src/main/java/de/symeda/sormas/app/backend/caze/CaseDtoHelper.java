@@ -74,9 +74,16 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
     public void fillInnerFromDto(Case target, CaseDataDto source) {
 
         target.setCaseClassification(source.getCaseClassification());
+        target.setClassificationUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getClassificationUser()));
+        target.setClassificationDate(source.getClassificationDate());
+        target.setClassificationComment(source.getClassificationComment());
+
         target.setInvestigationStatus(source.getInvestigationStatus());
         target.setDisease(source.getDisease());
         target.setDiseaseDetails(source.getDiseaseDetails());
+        target.setPlagueType(source.getPlagueType());
+        target.setDengueFeverType(source.getDengueFeverType());
+
         target.setHealthFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getHealthFacility()));
         target.setHealthFacilityDetails(source.getHealthFacilityDetails());
         target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
@@ -103,7 +110,6 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
         target.setVaccinationDate(source.getVaccinationDate());
         target.setEpidNumber(source.getEpidNumber());
-        target.setPlagueType(source.getPlagueType());
 
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());
@@ -117,10 +123,21 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
     public void fillInnerFromAdo(CaseDataDto target, Case source) {
 
         target.setCaseClassification(source.getCaseClassification());
+        if (source.getClassificationUser() != null) {
+            User user = DatabaseHelper.getUserDao().queryForId(source.getClassificationUser().getId());
+            target.setClassificationUser(UserDtoHelper.toReferenceDto(user));
+        } else {
+            target.setClassificationUser(null);
+        }
+        target.setClassificationDate(source.getClassificationDate());
+        target.setClassificationComment(source.getClassificationComment());
+
         target.setInvestigationStatus(source.getInvestigationStatus());
 
         target.setDisease(source.getDisease());
         target.setDiseaseDetails(source.getDiseaseDetails());
+        target.setPlagueType(source.getPlagueType());
+        target.setDengueFeverType(source.getDengueFeverType());
 
         if (source.getHealthFacility() != null) {
             Facility facility = DatabaseHelper.getFacilityDao().queryForId(source.getHealthFacility().getId());
@@ -203,7 +220,6 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
         target.setVaccinationDate(source.getVaccinationDate());
         target.setEpidNumber(source.getEpidNumber());
-        target.setPlagueType(source.getPlagueType());
 
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());

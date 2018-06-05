@@ -100,7 +100,7 @@ public class VisitController {
 
         Window window = VaadinUiUtil.showModalPopupWindow(editView, "Create new visit");
         // visit form is too big for typical screens
-		window.setWidth(createForm.getWidth() + 40, Unit.PIXELS); 
+		window.setWidth(createForm.getWidth() + 64 + 24, Unit.PIXELS); 
 		window.setHeight(80, Unit.PERCENTAGE); 
 	}
 	

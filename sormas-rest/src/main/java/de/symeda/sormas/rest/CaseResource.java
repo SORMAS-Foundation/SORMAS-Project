@@ -10,7 +10,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
@@ -34,15 +33,16 @@ public class CaseResource {
 		List<CaseDataDto> cases = FacadeProvider.getCaseFacade().getAllCasesAfter(new Date(since), userDto.getUuid());
 		return cases;
 	}
-	
-	@GET
+
+	@POST
 	@Path("/query")
-	public List<CaseDataDto> getByUuids(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
+	public List<CaseDataDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
 
 		List<CaseDataDto> result = FacadeProvider.getCaseFacade().getByUuids(uuids); 
 		return result;
 	}
 	
+
 	@POST 
 	@Path("/push")
 	public Integer postCases(List<CaseDataDto> dtos) {

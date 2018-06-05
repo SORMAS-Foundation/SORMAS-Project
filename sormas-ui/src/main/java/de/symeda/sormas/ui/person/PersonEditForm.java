@@ -17,6 +17,7 @@ import com.vaadin.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -43,10 +44,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	private static final long serialVersionUID = -1L;
 
-	private static final String FACILITY_REGION = "facilityRegion";
-	private static final String FACILITY_DISTRICT = "facilityDistrict";
-	private static final String FACILITY_COMMUNITY = "facilityCommunity";
-
 	private static final String OCCUPATION_HEADER = "occupationHeader";
 	private static final String ADDRESS_HEADER = "addressHeader";
 
@@ -59,6 +56,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private ComboBox causeOfDeathField;
 	private ComboBox causeOfDeathDiseaseField;
 	private TextField causeOfDeathDetailsField;
+	private ComboBox occupationFacility;
+	private TextField occupationFacilityDetails;
 	private final ViewMode viewMode;
 
 	private static final String HTML_LAYOUT = 
@@ -90,11 +89,14 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			LayoutUtil.divsCss(
 					CssStyles.VSPACE_3, 
 					LayoutUtil.fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS),
-					LayoutUtil.fluidRowLocs(FACILITY_REGION, FACILITY_DISTRICT, FACILITY_COMMUNITY, PersonDto.OCCUPATION_FACILITY)
+					LayoutUtil.fluidRowLocs(PersonDto.OCCUPATION_REGION, PersonDto.OCCUPATION_DISTRICT, PersonDto.OCCUPATION_COMMUNITY, PersonDto.OCCUPATION_FACILITY),
+					LayoutUtil.fluidRowLocs("","", PersonDto.OCCUPATION_FACILITY_DETAILS)
 					) +
 			LayoutUtil.loc(ADDRESS_HEADER) +
 			LayoutUtil.fluidRowLocs(PersonDto.ADDRESS)
 			;
+
+	private boolean initialized = false;
 
 	public PersonEditForm(Disease disease, String diseaseDetails, UserRight editOrCreateUserRight, ViewMode viewMode) {
 		super(PersonDto.class, PersonDto.I18N_PREFIX, editOrCreateUserRight);
@@ -105,16 +107,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
 		getContent().addComponent(addressHeader, ADDRESS_HEADER);
 
+		initialized = true;
 		addFields();
 	}
 
 	@Override
 	protected void addFields() {
-		if (disease == null) {
+
+		if (!initialized) {
+			// vars have to be set first
 			return;
 		}
-
-		// Add fields
 
 		addField(PersonDto.FIRST_NAME, TextField.class);
 		addField(PersonDto.LAST_NAME, TextField.class);
@@ -155,27 +158,19 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		causeOfDeathField = addField(PersonDto.CAUSE_OF_DEATH, ComboBox.class);
 		causeOfDeathDiseaseField = addField(PersonDto.CAUSE_OF_DEATH_DISEASE, ComboBox.class);
 		causeOfDeathDetailsField = addField(PersonDto.CAUSE_OF_DEATH_DETAILS, TextField.class);
-		ComboBox facilityRegion = new ComboBox();
-		facilityRegion.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, FACILITY_REGION));
+		ComboBox facilityRegion = addField(PersonDto.OCCUPATION_REGION, ComboBox.class);
 		facilityRegion.setImmediate(true);
-		facilityRegion.setWidth(100, Unit.PERCENTAGE);
 		facilityRegion.setNullSelectionAllowed(true);
-		getContent().addComponent(facilityRegion, FACILITY_REGION);
-		ComboBox facilityDistrict = new ComboBox();
-		facilityDistrict.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, FACILITY_DISTRICT));
+		ComboBox facilityDistrict = addField(PersonDto.OCCUPATION_DISTRICT, ComboBox.class);
 		facilityDistrict.setImmediate(true);
-		facilityDistrict.setWidth(100, Unit.PERCENTAGE);
 		facilityDistrict.setNullSelectionAllowed(true);
-		getContent().addComponent(facilityDistrict, FACILITY_DISTRICT);
-		ComboBox facilityCommunity = new ComboBox();
-		facilityCommunity.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, FACILITY_COMMUNITY));
+		ComboBox facilityCommunity = addField(PersonDto.OCCUPATION_COMMUNITY, ComboBox.class);
 		facilityCommunity.setImmediate(true);
-		facilityCommunity.setWidth(100, Unit.PERCENTAGE);
 		facilityCommunity.setNullSelectionAllowed(true);
-		getContent().addComponent(facilityCommunity, FACILITY_COMMUNITY);
-		ComboBox occupationFacility = addField(PersonDto.OCCUPATION_FACILITY, ComboBox.class);
+		occupationFacility = addField(PersonDto.OCCUPATION_FACILITY, ComboBox.class);
 		occupationFacility.setImmediate(true);
 		occupationFacility.setNullSelectionAllowed(true);
+		occupationFacilityDetails = addField(PersonDto.OCCUPATION_FACILITY_DETAILS, TextField.class);
 
 		// Set requirements that don't need visibility changes and read only status
 
@@ -185,9 +180,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		setVisible(false, 
 				PersonDto.OCCUPATION_DETAILS,
 				PersonDto.OCCUPATION_FACILITY,
-				FACILITY_REGION,
-				FACILITY_DISTRICT,
-				FACILITY_COMMUNITY,
+				PersonDto.OCCUPATION_FACILITY_DETAILS,
+				PersonDto.OCCUPATION_REGION,
+				PersonDto.OCCUPATION_DISTRICT,
+				PersonDto.OCCUPATION_COMMUNITY,
 				PersonDto.DEATH_DATE,
 				PersonDto.DEATH_PLACE_TYPE,
 				PersonDto.DEATH_PLACE_DESCRIPTION,
@@ -260,8 +256,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		});
 
 		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
-		addFieldListeners(PersonDto.OCCUPATION_FACILITY, e -> fillFacilityFields());
 		addFieldListeners(PersonDto.PRESENT_CONDITION, e -> toogleDeathAndBurialFields());
+
+		occupationFacility.addValueChangeListener(e -> {
+			updateOccupationFacilityDetailsVisibility((FacilityReferenceDto) e.getProperty().getValue());
+		});
 
 		causeOfDeathField.addValueChangeListener(e -> {
 			toggleCauseOfDeathFields(presentCondition.getValue() != PresentCondition.ALIVE &&
@@ -328,36 +327,64 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			case OTHER:
 				setVisible(false, 
 						PersonDto.OCCUPATION_FACILITY,
-						FACILITY_REGION,
-						FACILITY_DISTRICT,
-						FACILITY_COMMUNITY);
+						PersonDto.OCCUPATION_FACILITY_DETAILS,
+						PersonDto.OCCUPATION_REGION,
+						PersonDto.OCCUPATION_DISTRICT,
+						PersonDto.OCCUPATION_COMMUNITY);
 				setVisible(true, 
 						PersonDto.OCCUPATION_DETAILS);
 				break;
 			case HEALTHCARE_WORKER:
 				setVisible(true, 
 						PersonDto.OCCUPATION_DETAILS,
+						PersonDto.OCCUPATION_REGION,
+						PersonDto.OCCUPATION_DISTRICT,
+						PersonDto.OCCUPATION_COMMUNITY,
 						PersonDto.OCCUPATION_FACILITY);
-				getContent().getComponent(FACILITY_REGION).setVisible(true);
-				getContent().getComponent(FACILITY_DISTRICT).setVisible(true);
-				getContent().getComponent(FACILITY_COMMUNITY).setVisible(true);
+				updateOccupationFacilityDetailsVisibility((FacilityReferenceDto) occupationFacility.getValue());
 				break;
 			default:
 				setVisible(false, 
 						PersonDto.OCCUPATION_DETAILS,
 						PersonDto.OCCUPATION_FACILITY,
-						FACILITY_REGION,
-						FACILITY_DISTRICT,
-						FACILITY_COMMUNITY);
+						PersonDto.OCCUPATION_FACILITY_DETAILS,
+						PersonDto.OCCUPATION_REGION,
+						PersonDto.OCCUPATION_DISTRICT,
+						PersonDto.OCCUPATION_COMMUNITY);
 				break;
 			}
 		} else {
 			setVisible(false, 
 					PersonDto.OCCUPATION_DETAILS,
 					PersonDto.OCCUPATION_FACILITY,
-					FACILITY_REGION,
-					FACILITY_DISTRICT,
-					FACILITY_COMMUNITY);
+					PersonDto.OCCUPATION_FACILITY_DETAILS,
+					PersonDto.OCCUPATION_REGION,
+					PersonDto.OCCUPATION_DISTRICT,
+					PersonDto.OCCUPATION_COMMUNITY);
+		}
+	}
+
+	private void updateOccupationFacilityDetailsVisibility(FacilityReferenceDto facility) {
+		if (facility == null) {
+			occupationFacilityDetails.setVisible(false);
+			occupationFacilityDetails.clear();
+			return;
+		}
+
+		boolean otherHealthFacility = facility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+		boolean noneHealthFacility = facility.getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+		boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
+
+		occupationFacilityDetails.setVisible(visibleAndRequired);
+		
+		if (otherHealthFacility) {
+			occupationFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+		}
+		if (noneHealthFacility) {
+			occupationFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+		}
+		if (!visibleAndRequired) {
+			occupationFacilityDetails.clear();
 		}
 	}
 
@@ -463,32 +490,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				}
 			}
 		}
-	}
-
-	private void fillFacilityFields() {
-		if(facilityFieldsInitialized) return;
-		FacilityReferenceDto facilityRef = (FacilityReferenceDto) getFieldGroup().getField(PersonDto.OCCUPATION_FACILITY).getValue();
-		if(facilityRef == null) return;
-		FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(facilityRef.getUuid());
-
-		ComboBox facilityRegion = (ComboBox) getField(FACILITY_REGION);
-		ComboBox facilityDistrict = (ComboBox) getField(FACILITY_DISTRICT);
-		ComboBox facilityCommunity = (ComboBox) getField(FACILITY_COMMUNITY);
-		ComboBox occupationFacility = (ComboBox) getField(PersonDto.OCCUPATION_FACILITY);
-		facilityRegion.select(facility.getRegion());
-		facilityDistrict.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(facility.getRegion().getUuid()));
-		facilityDistrict.select(facility.getDistrict());
-		facilityCommunity.addItems(FacadeProvider.getCommunityFacade().getAllByDistrict(facility.getDistrict().getUuid()));
-		facilityCommunity.select(facility.getCommunity());
-		if (facility.getCommunity() != null) {
-			occupationFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(facility.getCommunity(), false));
-			occupationFacility.select(facility);
-		} else {
-			occupationFacility.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(facility.getDistrict(), false));
-			occupationFacility.select(facility);
-		}
-
-		facilityFieldsInitialized = true;
 	}
 
 	private void updateOccupationFieldCaptions() {

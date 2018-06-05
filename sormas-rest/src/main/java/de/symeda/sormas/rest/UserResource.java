@@ -6,10 +6,10 @@ import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
@@ -34,9 +34,9 @@ public class UserResource {
 		return FacadeProvider.getUserFacade().getAllAfter(new Date(since));
 	}
 	
-	@GET
+	@POST
 	@Path("/query")
-	public List<UserDto> getByUuids(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
+	public List<UserDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
 
 		List<UserDto> result = FacadeProvider.getUserFacade().getByUuids(uuids); 
 		return result;

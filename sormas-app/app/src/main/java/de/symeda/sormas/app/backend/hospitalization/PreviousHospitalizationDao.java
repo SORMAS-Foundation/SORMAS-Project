@@ -65,6 +65,7 @@ public class PreviousHospitalizationDao extends AbstractAdoDao<PreviousHospitali
         previousHospitalization.setDistrict(caze.getDistrict());
         previousHospitalization.setCommunity(caze.getCommunity());
         previousHospitalization.setHealthFacility(caze.getHealthFacility());
+        previousHospitalization.setHealthFacilityDetails(caze.getHealthFacilityDetails());
         previousHospitalization.setHospitalization(caze.getHospitalization());
         previousHospitalization.setIsolated(hospitalization.getIsolated());
 

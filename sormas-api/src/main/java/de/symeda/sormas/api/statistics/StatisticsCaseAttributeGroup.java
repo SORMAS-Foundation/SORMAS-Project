@@ -1,23 +1,29 @@
 package de.symeda.sormas.api.statistics;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.symeda.sormas.api.I18nProperties;
 
 public enum StatisticsCaseAttributeGroup {
 	
-	TIME(StatisticsCaseAttribute.ONSET_TIME,StatisticsCaseAttribute.RECEPTION_TIME,StatisticsCaseAttribute.REPORT_TIME),
-	PLACE(StatisticsCaseAttribute.REGION_DISTRICT),
-	PERSON(StatisticsCaseAttribute.SEX,StatisticsCaseAttribute.AGE_INTERVAL_1_YEAR,StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS,
-			StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_COARSE,StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_FINE,
-			StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_MEDIUM, StatisticsCaseAttribute.AGE_INTERVAL_BASIC),
-	CASE(StatisticsCaseAttribute.DISEASE,StatisticsCaseAttribute.CLASSIFICATION,StatisticsCaseAttribute.OUTCOME);
+	TIME,
+	PLACE,
+	PERSON,
+	CASE;
 	
-	private final StatisticsCaseAttribute[] attributes;
+	private List<StatisticsCaseAttribute> attributes;
+	
+	public List<StatisticsCaseAttribute> getAttributes() {
+		if (attributes == null) {
+			attributes = new ArrayList<>();
+			for (StatisticsCaseAttribute attribute : StatisticsCaseAttribute.values()) {
+				if (attribute.getAttributeGroup() == this) {
+					attributes.add(attribute);
+				}
+			}
+		}
 
-	StatisticsCaseAttributeGroup(StatisticsCaseAttribute ...attributes) {
-		this.attributes = attributes;
-	}
-	
-	public StatisticsCaseAttribute[] getAttributes() {
 		return attributes;
 	}
 	

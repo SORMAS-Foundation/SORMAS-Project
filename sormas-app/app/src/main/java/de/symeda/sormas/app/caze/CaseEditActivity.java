@@ -24,9 +24,9 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -515,7 +515,7 @@ public class CaseEditActivity extends AbstractEditTabActivity {
 
             if (caze.getId() != null) {
                 Case existingCase = DatabaseHelper.getCaseDao().queryForId(caze.getId());
-                updateOutcomeAndPersonCondition(existingCase, caze);
+                onCaseChanged(existingCase, caze);
             }
 
             if (person != null) {
@@ -536,44 +536,51 @@ public class CaseEditActivity extends AbstractEditTabActivity {
         }
     }
 
-    private void updateOutcomeAndPersonCondition(Case existingCase, Case newCase) {
+    private void onCaseChanged(Case existingCase, Case changedCase) {
 
-        if (existingCase != null) {
-            // see CaseFacadeEjb.onCaseChanged
-            if (newCase.getOutcome() != existingCase.getOutcome()) {
-                if (newCase.getOutcome() == CaseOutcome.DECEASED) {
-                    if (newCase.getPerson().getPresentCondition() != PresentCondition.DEAD
-                            && newCase.getPerson().getPresentCondition() != PresentCondition.BURIED) {
-                        newCase.getPerson().setPresentCondition(PresentCondition.DEAD);
-                    }
-                }
-                else if (newCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
-                    if (newCase.getPerson().getPresentCondition() != PresentCondition.ALIVE) {
-                        newCase.getPerson().setPresentCondition(PresentCondition.ALIVE);
-                    }
+        if (existingCase == null) {
+            return;
+        }
+
+        // see CaseController.onCaseChanged (UI)
+        if (changedCase.getCaseClassification() != existingCase.getCaseClassification()) {
+            changedCase.setClassificationDate(new Date());
+            changedCase.setClassificationUser(ConfigProvider.getUser());
+        }
+
+        // see CaseFacadeEjb.onCaseChanged
+        if (changedCase.getOutcome() != existingCase.getOutcome()) {
+            if (changedCase.getOutcome() == CaseOutcome.DECEASED) {
+                if (changedCase.getPerson().getPresentCondition() != PresentCondition.DEAD
+                        && changedCase.getPerson().getPresentCondition() != PresentCondition.BURIED) {
+                    changedCase.getPerson().setPresentCondition(PresentCondition.DEAD);
                 }
             }
+            else if (changedCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
+                if (changedCase.getPerson().getPresentCondition() != PresentCondition.ALIVE) {
+                    changedCase.getPerson().setPresentCondition(PresentCondition.ALIVE);
+                }
+            }
+        }
 
-            // see PersonFacadeEjb.onPersonChanged
-            Person existingPerson = existingCase.getPerson();
-            Person newPerson = newCase.getPerson();
-            if (newPerson.getPresentCondition() != null
-                    && existingPerson.getPresentCondition() != newPerson.getPresentCondition()) {
-                if (newPerson.getPresentCondition().isDeceased()) {
-                    if (newCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
-                        newCase.setOutcome(CaseOutcome.DECEASED);
-                        newCase.setOutcomeDate(new Date());
-                    }
-                } else {
-                    if (newCase.getOutcome() == CaseOutcome.DECEASED) {
-                        newCase.setOutcome(CaseOutcome.NO_OUTCOME);
-                        newCase.setOutcomeDate(null);
-                    }
+        // see PersonFacadeEjb.onPersonChanged
+        Person existingPerson = existingCase.getPerson();
+        Person newPerson = changedCase.getPerson();
+        if (newPerson.getPresentCondition() != null
+                && existingPerson.getPresentCondition() != newPerson.getPresentCondition()) {
+            if (newPerson.getPresentCondition().isDeceased()) {
+                if (changedCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
+                    changedCase.setOutcome(CaseOutcome.DECEASED);
+                    changedCase.setOutcomeDate(new Date());
+                }
+            } else {
+                if (changedCase.getOutcome() == CaseOutcome.DECEASED) {
+                    changedCase.setOutcome(CaseOutcome.NO_OUTCOME);
+                    changedCase.setOutcomeDate(null);
                 }
             }
         }
     }
-
 
     private void finalizeSaveProcess(Case caze, Case caseBeforeSaving) {
         Snackbar.make(findViewById(R.id.base_layout), String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)), Snackbar.LENGTH_LONG).show();

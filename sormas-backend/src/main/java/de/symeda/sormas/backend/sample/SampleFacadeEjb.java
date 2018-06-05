@@ -129,6 +129,17 @@ public class SampleFacadeEjb implements SampleFacade {
 				.map(s -> toDto(s))
 				.collect(Collectors.toList());
 	}
+	
+	@Override
+	public int getReceivedSampleCountByCase(CaseReferenceDto caseRef) {
+		if (caseRef == null) {
+			return 0;
+		}
+		
+		Case caze = caseService.getByUuid(caseRef.getUuid());
+		
+		return sampleService.getReceivedSampleCountByCase(caze);
+	}
 
 	@Override
 	public SampleDto getSampleByUuid(String uuid) {
@@ -240,6 +251,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setSampleMaterial(source.getSampleMaterial());
 		target.setSampleMaterialText(source.getSampleMaterialText());
 		target.setLab(facilityService.getByReferenceDto(source.getLab()));
+		target.setLabDetails(source.getLabDetails());
 		target.setShipmentDate(source.getShipmentDate());
 		target.setShipmentDetails(source.getShipmentDetails());
 		target.setReceivedDate(source.getReceivedDate());
@@ -275,6 +287,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setSampleMaterial(source.getSampleMaterial());
 		target.setSampleMaterialText(source.getSampleMaterialText());
 		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
+		target.setLabDetails(source.getLabDetails());
 		target.setShipmentDate(source.getShipmentDate());
 		target.setShipmentDetails(source.getShipmentDetails());
 		target.setReceivedDate(source.getReceivedDate());

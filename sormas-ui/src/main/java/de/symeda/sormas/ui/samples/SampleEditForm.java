@@ -16,6 +16,8 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -42,7 +44,8 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_CODE),
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
-					LayoutUtil.fluidRowLocs(SampleDto.SUGGESTED_TYPE_OF_TEST, SampleDto.LAB)
+					LayoutUtil.fluidRowLocs(SampleDto.SUGGESTED_TYPE_OF_TEST, ""),
+					LayoutUtil.fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS)
 			) +
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.SHIPPED) +
 			LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS) +
@@ -71,7 +74,9 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		DateField receivedDate = addField(SampleDto.RECEIVED_DATE, DateField.class);
 		receivedDate.setDateFormat(DateHelper.getShortDateFormat().toPattern());
 		ComboBox lab = addField(SampleDto.LAB, ComboBox.class);
-		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
+		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
+		TextField labDetails = addField(SampleDto.LAB_DETAILS, TextField.class);
+		labDetails.setVisible(false);
 		addField(SampleDto.SPECIMEN_CONDITION, ComboBox.class);
 		addField(SampleDto.NO_TEST_POSSIBLE_REASON, TextField.class);
 		addField(SampleDto.COMMENT, TextArea.class).setRows(2);
@@ -89,7 +94,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			FieldHelper.setRequiredWhen(getFieldGroup(), received, Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.SPECIMEN_CONDITION), Arrays.asList(true));
 			FieldHelper.setEnabledWhen(getFieldGroup(), received, Arrays.asList(true), Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID, SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON), true);
 
-			if (caze.getDisease() != Disease.AVIAN_INFLUENCA) {
+			if (caze.getDisease() != Disease.NEW_INFLUENCA) {
 				sampleSource.setVisible(false);
 			}
 			if ((LoginHelper.getCurrentUser().getUuid().equals(getValue().getReportingUser().getUuid()))) {
@@ -144,6 +149,17 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			}
 			
 			getContent().addComponent(reportInfoLayout, REPORT_INFORMATION_LOC);
+		});
+
+		lab.addValueChangeListener(event -> {
+			if (event.getProperty().getValue() != null && ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+				labDetails.setVisible(true);
+				labDetails.setRequired(true);
+			} else {
+				labDetails.setVisible(false);
+				labDetails.setRequired(false);
+				labDetails.clear();
+			}
 		});
 	}
 

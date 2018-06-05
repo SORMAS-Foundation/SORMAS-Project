@@ -5,7 +5,9 @@ import java.util.List;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleTestDto;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -18,8 +20,8 @@ public interface SampleTestFacadeRetro {
     @GET("sampletests/all/{since}")
     Call<List<SampleTestDto>> pullAllSince(@Path("since") long since);
 
-    @GET("sampletests/query")
-    Call<List<SampleTestDto>> pullByUuids(@Query("uuids") List<String> uuids);
+    @POST("sampletests/query")
+    Call<List<SampleTestDto>> pullByUuids(@Body List<String> uuids);
 
     @GET("sampletests/uuids")
     Call<List<String>> pullUuids();

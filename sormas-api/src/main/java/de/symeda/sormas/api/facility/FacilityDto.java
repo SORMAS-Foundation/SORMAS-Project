@@ -1,7 +1,6 @@
 package de.symeda.sormas.api.facility;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -13,8 +12,10 @@ public class FacilityDto extends EntityDto {
 	public static final String I18N_PREFIX = "Facility";
 	public static final String OTHER_FACILITY_UUID = "SORMAS-CONSTID-OTHERS-FACILITY";
 	public static final String NONE_FACILITY_UUID = "SORMAS-CONSTID-ISNONE-FACILITY";
+	public static final String OTHER_LABORATORY_UUID = "SORMAS-CONSTID-OTHERS-LABORATO";
 	public static final String OTHER_FACILITY = "OTHER_FACILITY";
 	public static final String NO_FACILITY = "NO_FACILITY";
+	public static final String OTHER_LABORATORY = "OTHER_LABORATORY";
 	public static final String NAME = "name";
 	
 	private String name;
@@ -96,17 +97,7 @@ public class FacilityDto extends EntityDto {
 	
 	@Override
 	public String toString() {
-		if (getUuid().equals(OTHER_FACILITY_UUID)) {
-			return I18nProperties.getPrefixFieldCaption(I18N_PREFIX, OTHER_FACILITY);
-		}
-		if (getUuid().equals(NONE_FACILITY_UUID)) {
-			return I18nProperties.getPrefixFieldCaption(I18N_PREFIX, NO_FACILITY);
-		}
-		
-		StringBuilder caption = new StringBuilder();
-		caption.append(name);
-
-		return caption.toString();
+		return FacilityHelper.buildToString(getUuid(), name);
 	}
 	
 }

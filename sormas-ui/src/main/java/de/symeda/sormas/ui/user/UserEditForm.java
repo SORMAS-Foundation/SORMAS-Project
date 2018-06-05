@@ -99,7 +99,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	});
 
     	ComboBox laboratory = addField(UserDto.LABORATORY, ComboBox.class);
-    	laboratory.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
+    	laboratory.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(false));
     	
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 

@@ -71,7 +71,9 @@ public abstract class PropertyField<T> extends LinearLayout {
         String captionText = caption.getText().toString();
         String hintText = " <font color='red'>*</font>";
         if (showHint) {
-            caption.setText(Html.fromHtml(captionText + hintText), TextView.BufferType.SPANNABLE);
+            if (captionText.charAt(captionText.length() - 1) != '*') {
+                caption.setText(Html.fromHtml(captionText + hintText), TextView.BufferType.SPANNABLE);
+            }
         } else {
             if (showRequiredHint) {
                 caption.setText(captionText.substring(0, captionText.length() - 2));

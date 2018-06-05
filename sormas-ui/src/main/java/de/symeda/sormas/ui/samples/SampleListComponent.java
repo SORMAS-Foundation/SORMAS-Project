@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.samples;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -169,7 +168,7 @@ public class SampleListComponent extends VerticalLayout {
 		ComboBox labFilter = new ComboBox();
 		labFilter.setWidth(140, Unit.PIXELS);
 		labFilter.setInputPrompt(I18nProperties.getPrefixFieldCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.LAB));
-		labFilter.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories());
+		labFilter.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
 		labFilter.addValueChangeListener(e -> {
 			grid.setLabFilter(((FacilityReferenceDto)e.getProperty().getValue()));
 		});

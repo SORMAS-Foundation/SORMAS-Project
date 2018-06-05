@@ -119,6 +119,15 @@
                 android:paddingBottom="@dimen/field_padding"
                 android:value="@={sample.lab}"/>
 
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/sample_labDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:nextFocusForward="@+id/sample_shipmentDetails"
+                android:value="@={sample.labDetails}"/>
+
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"

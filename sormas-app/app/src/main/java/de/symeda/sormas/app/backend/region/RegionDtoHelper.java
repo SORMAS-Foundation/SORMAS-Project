@@ -30,7 +30,7 @@ public class RegionDtoHelper extends AdoDtoHelper<Region, RegionDto> {
 
     @Override
     protected Call<List<RegionDto>> pullByUuids(List<String> uuids) {
-        throw new UnsupportedOperationException("Entity is infrastructure");
+        return RetroProvider.getRegionFacade().pullByUuids(uuids);
     }
 
     @Override

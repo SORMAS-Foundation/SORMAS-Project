@@ -74,6 +74,19 @@ public class SampleService extends AbstractAdoService<Sample> {
 		return resultList;
 	}
 	
+	public int getReceivedSampleCountByCase(Case caze) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Sample> from = cq.from(getElementClass());
+		
+		cq.select(cb.count(from));
+		cq.where(cb.and(
+				cb.equal(from.get(Sample.ASSOCIATED_CASE), caze),
+				cb.equal(from.get(Sample.RECEIVED), true)));
+		
+		return em.createQuery(cq).getSingleResult().intValue();
+	}
+	
 	/**
 	 * Returns the sample that refers to the sample identified by the sampleUuid.
 	 * 

@@ -175,7 +175,9 @@ public class LabelField extends PropertyField<String> {
                 value = String.valueOf(approximateAge.getElement0()) + " " + String.valueOf(approximateAge.getElement1());
             }
 
-            value += person.getSex()!=null?", "+person.getSex():null;
+            if (person.getSex() != null) {
+                value += person.getSex();
+            }
         }
         labelField.setValue(value);
     }

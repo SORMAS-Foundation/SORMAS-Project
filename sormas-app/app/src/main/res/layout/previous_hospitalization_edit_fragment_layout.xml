@@ -82,6 +82,14 @@
                 android:paddingTop="@dimen/field_padding"
                 android:value="@={prevHosp.healthFacility}" />
 
+            <de.symeda.sormas.app.component.TextField
+                android:id="@+id/prevHosp_healthFacilityDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding"
+                android:value="@={prevHosp.healthFacilityDetails}"/>
+
             <de.symeda.sormas.app.component.YesNoUnknownVerticalField
                 android:id="@+id/prevHosp_isolated"
                 android:layout_width="match_parent"

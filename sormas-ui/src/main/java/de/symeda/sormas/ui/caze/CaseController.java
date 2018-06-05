@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.caze;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import com.vaadin.navigator.Navigator;
@@ -178,7 +179,7 @@ public class CaseController {
 									+ "-" + year + "-");
 					
 					if (contact != null) {
-						// automatically change the contact classification to "converted"
+						// automatically change the contact status to "converted"
 						contact.setContactStatus(ContactStatus.CONVERTED);
 						FacadeProvider.getContactFacade().saveContact(contact);
 					}
@@ -405,13 +406,17 @@ public class CaseController {
 
 	private void saveCase(CaseDataDto cazeDto, String viewName, final ViewMode viewMode) {
 
+		// compare old and new
+		CaseDataDto existingDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(cazeDto.getUuid());
+		onCaseChanged(existingDto, cazeDto);
+		
 		CaseDataDto resultDto = FacadeProvider.getCaseFacade().saveCase(cazeDto);
 
 		if (resultDto.getPlagueType() != cazeDto.getPlagueType()) {
 			// TODO would be much better to have a notication for this triggered in the backend
 			Window window = VaadinUiUtil.showSimplePopupWindow("Save notification", 
 					"The symptoms selected match the clinical criteria for " + resultDto.getPlagueType().toString() + ". "
-							+ "The plague type will be set to " + resultDto.getPlagueType().toString() + " for this case.");
+							+ "The plague type is set to " + resultDto.getPlagueType().toString() + " for this case.");
 			window.addCloseListener(new CloseListener() {
 				private static final long serialVersionUID = 1L;
 				@Override
@@ -423,6 +428,19 @@ public class CaseController {
 		} else {
 			Notification.show("Case saved", Type.WARNING_MESSAGE);
 			navigateToView(viewName, cazeDto.getUuid(), viewMode);
+		}
+	}
+
+	private void onCaseChanged(CaseDataDto existingCase, CaseDataDto changedCase) {
+		
+		if (existingCase == null) {
+			return;
+		}
+		
+		// classification
+		if (changedCase.getCaseClassification() != existingCase.getCaseClassification()) {
+			changedCase.setClassificationDate(new Date());
+			changedCase.setClassificationUser(LoginHelper.getCurrentUserAsReference());
 		}
 	}
 

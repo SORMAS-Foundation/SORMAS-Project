@@ -42,6 +42,7 @@ public class Sample extends AbstractDomainObject {
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
 	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
 	public static final String LAB = "lab";
+	public static final String LAB_DETAILS = "labDetails";
 	public static final String SHIPMENT_DATE = "shipmentDate";
 	public static final String SHIPMENT_DETAILS = "shipmentDetails";
 	public static final String RECEIVED_DATE = "receivedDate";
@@ -69,6 +70,7 @@ public class Sample extends AbstractDomainObject {
 	private SampleMaterial sampleMaterial;
 	private String sampleMaterialText;
 	private Facility lab;
+	private String labDetails;
 	private Date shipmentDate;
 	private String shipmentDetails;
 	private Date receivedDate;
@@ -160,6 +162,14 @@ public class Sample extends AbstractDomainObject {
 	}
 	public void setLab(Facility lab) {
 		this.lab = lab;
+	}
+
+	@Column(length=512)
+	public String getLabDetails() {
+		return labDetails;
+	}
+	public void setLabDetails(String labDetails) {
+		this.labDetails = labDetails;
 	}
 	
 	@Temporal(TemporalType.TIMESTAMP)

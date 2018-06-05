@@ -73,7 +73,8 @@ public class ContactBackendTest {
 
         Contact mergeContact = (Contact) contact.clone();
         mergeContact.setPerson((Person) contact.getPerson().clone());
-        mergeContact.setCaze((Case) contact.getCaze().clone());
+        mergeContact.setCaseUuid(contact.getCaseUuid());
+        mergeContact.setCaseDisease(contact.getCaseDisease());
         mergeContact.setId(null);
         mergeContact.getPerson().getAddress().setId(null);
 

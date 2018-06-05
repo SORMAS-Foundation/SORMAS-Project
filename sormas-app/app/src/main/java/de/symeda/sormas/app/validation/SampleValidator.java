@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import java.util.Arrays;
 import java.util.List;
 
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -35,6 +36,11 @@ public final class SampleValidator {
         if (sample.getLab() == null) {
             binding.sampleLab.setError(resources.getString(R.string.validation_sample_lab));
             success = false;
+        } else {
+            if (sample.getLab().getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID) && sample.getLabDetails().trim().isEmpty()) {
+                binding.sampleLabDetails.setError(resources.getString(R.string.validation_sample_lab_details));
+                success = false;
+            }
         }
 
         // Sample material & details
@@ -73,7 +79,7 @@ public final class SampleValidator {
 
     private static final List<PropertyField<?>> getSampleDataFields(SampleDataFragmentLayoutBinding binding) {
         return Arrays.asList(binding.sampleDateTime, binding.sampleMaterial, binding.sampleMaterialText,
-                binding.sampleShipmentDate, binding.sampleLab);
+                binding.sampleShipmentDate, binding.sampleLab, binding.sampleLabDetails);
     }
 
 }

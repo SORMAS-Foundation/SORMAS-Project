@@ -63,6 +63,14 @@ public class RegionFacadeEjb implements RegionFacade {
 	public RegionDto getRegionByUuid(String uuid) {
 		return toDto(regionService.getByUuid(uuid));
 	}
+
+	@Override
+	public List<RegionDto> getByUuids(List<String> uuids) {
+		return regionService.getByUuids(uuids)
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
 	
 	@Override
 	public RegionReferenceDto getRegionReferenceByUuid(String uuid) {

@@ -60,41 +60,7 @@ public class HospitalizationForm extends FormTab {
                 new Consumer() {
                     @Override
                     public void accept(Object prevHosp) {
-                        if (prevHosp == null) {
-                            prevHosp = DatabaseHelper.getPreviousHospitalizationDao().build();
-                        }
-                        final PreviousHospitalizationForm previousHospitalizationForm = new PreviousHospitalizationForm();
-                        previousHospitalizationForm.initialize(
-                                (PreviousHospitalization) prevHosp,
-                                new Consumer() {
-                                    @Override
-                                    public void accept(Object prevHospDialog) {
-                                        if (PreviousHospitalizationValidator.validatePreviousHospitalizationData(previousHospitalizationForm.getBinding())) {
-                                            binding.hospitalizationPreviousHospitalizations.setValue(
-                                                    ListField.updateList(
-                                                            binding.hospitalizationPreviousHospitalizations.getValue(),
-                                                            (PreviousHospitalization) prevHospDialog
-                                                    )
-                                            );
-                                            previousHospitalizationForm.dismiss();
-                                            updatePrevHospHint();
-                                        }
-                                    }
-                                }, new Consumer() {
-                                    @Override
-                                    public void accept(Object prevHospDialog) {
-                                        binding.hospitalizationPreviousHospitalizations.setValue(
-                                                ListField.removeFromList(
-                                                        binding.hospitalizationPreviousHospitalizations.getValue(),
-                                                        (PreviousHospitalization) prevHospDialog
-                                                )
-                                        );
-                                        updatePrevHospHint();
-                                    }
-                                },
-                                getActivity().getResources().getString(R.string.headline_previousHospitalization)
-                        );
-                        previousHospitalizationForm.show(getFragmentManager(), "previous_hospitalization_edit_fragment");
+                        editPreviousHospitalization((PreviousHospitalization)prevHosp);
                     }
                 }
         );
@@ -127,6 +93,44 @@ public class HospitalizationForm extends FormTab {
         });
 
         return view;
+    }
+
+    private void editPreviousHospitalization(PreviousHospitalization previousHospitalization) {
+        if (previousHospitalization == null) {
+            previousHospitalization = DatabaseHelper.getPreviousHospitalizationDao().build();
+        }
+        final PreviousHospitalizationForm previousHospitalizationDialog = new PreviousHospitalizationForm();
+        previousHospitalizationDialog.initialize(
+                previousHospitalization,
+                new Consumer() {
+                    @Override
+                    public void accept(Object previousHospitalization) {
+                        if (PreviousHospitalizationValidator.validatePreviousHospitalizationData(previousHospitalizationDialog.getBinding())) {
+                            binding.hospitalizationPreviousHospitalizations.setValue(
+                                    ListField.updateList(
+                                            binding.hospitalizationPreviousHospitalizations.getValue(),
+                                            (PreviousHospitalization) previousHospitalization
+                                    )
+                            );
+                            previousHospitalizationDialog.dismiss();
+                            updatePrevHospHint();
+                        }
+                    }
+                }, new Consumer() {
+                    @Override
+                    public void accept(Object previousHospitalization) {
+                        binding.hospitalizationPreviousHospitalizations.setValue(
+                                ListField.removeFromList(
+                                        binding.hospitalizationPreviousHospitalizations.getValue(),
+                                        (PreviousHospitalization) previousHospitalization
+                                )
+                        );
+                        updatePrevHospHint();
+                    }
+                },
+                getActivity().getResources().getString(R.string.headline_previousHospitalization)
+        );
+        previousHospitalizationDialog.show(getFragmentManager(), "previous_hospitalization_edit_fragment");
     }
 
     private void updatePrevHospHint() {

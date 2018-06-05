@@ -13,8 +13,9 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.I18nProperties;
-import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.DengueFeverType;
+import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -64,6 +65,7 @@ public class CaseNewForm extends FormTab {
 
         FieldHelper.initSpinnerField(binding.caseDataDisease, Disease.class);
         FieldHelper.initSpinnerField(binding.caseDataPlagueType, PlagueType.class);
+        FieldHelper.initSpinnerField(binding.caseDataDengueFeverType, DengueFeverType.class);
 
         final List emptyList = new ArrayList<>();
         final List districtsByRegion = DataUtils.toItems(caze.getRegion() != null ? DatabaseHelper.getDistrictDao().getByRegion(caze.getRegion()) : DataUtils.toItems(emptyList), true);
@@ -187,6 +189,12 @@ public class CaseNewForm extends FormTab {
                     binding.caseDataPlagueType.setVisibility(View.VISIBLE);
                 } else {
                     binding.caseDataPlagueType.setVisibility(View.GONE);
+                }
+
+                if (field.getValue() == Disease.DENGUE) {
+                    binding.caseDataDengueFeverType.setVisibility(View.VISIBLE);
+                } else {
+                    binding.caseDataDengueFeverType.setVisibility(View.GONE);
                 }
             }
         });

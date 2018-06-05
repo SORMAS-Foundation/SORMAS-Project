@@ -168,6 +168,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		target.setTestTypeText(source.getTestTypeText());
 		target.setTestDateTime(source.getTestDateTime());
 		target.setLab(facilityService.getByReferenceDto(source.getLab()));
+		target.setLabDetails(source.getLabDetails());
 		target.setLabUser(userService.getByReferenceDto(source.getLabUser()));
 		target.setTestResult(source.getTestResult());
 		target.setTestResultText(source.getTestResultText());
@@ -189,6 +190,7 @@ public class SampleTestFacadeEjb implements SampleTestFacade {
 		target.setTestTypeText(source.getTestTypeText());
 		target.setTestDateTime(source.getTestDateTime());
 		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
+		target.setLabDetails(source.getLabDetails());
 		target.setLabUser(UserFacadeEjb.toReferenceDto(source.getLabUser()));
 		target.setTestResult(source.getTestResult());
 		target.setTestResultText(source.getTestResultText());

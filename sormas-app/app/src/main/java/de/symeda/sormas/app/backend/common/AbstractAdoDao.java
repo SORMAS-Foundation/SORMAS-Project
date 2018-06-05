@@ -262,15 +262,25 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
 
         try {
-            ADO snapshot;
-            boolean snapshotNeeded = ado.getId() != null && !ado.isModified();
-            if (snapshotNeeded) {
-                // we need to build a snapshot of the unmodified version, so we can use it for comparison when merging
-                snapshot = queryForId(ado.getId());
-                snapshot.setId(null);
-                snapshot.setSnapshot(true);
-            } else {
-                snapshot = null;
+            ADO snapshot = null;
+            boolean withSnapshot = ado.getId() != null;
+            if (withSnapshot) {
+                if (ado.isModified()) {
+                    // there should already be a snapshot
+                    snapshot = querySnapshotByUuid(ado.getUuid());
+                    if (snapshot == null) {
+                        Log.w(this.getClass().getSimpleName(), "Snapshot was missing for " + ado);
+                    } else if (!ado.getChangeDate().equals(snapshot.getChangeDate())) {
+                        throw new DaoException("Change date does not match. Looks like sync was done between opening and saving the entity.");
+                    }
+                }
+
+                if (snapshot == null) {
+                    // we need to build a snapshot of the current version, so we can use it for comparison when merging
+                    snapshot = queryForId(ado.getId());
+                    snapshot.setId(null);
+                    snapshot.setSnapshot(true);
+                }
             }
 
             ado.setLastOpenedDate(DateHelper.addSeconds(new Date(), 5));
@@ -291,7 +301,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 if (parentProperty.equals(property.getName())) {
 
                     // ignore parent property
-                    if (!snapshotNeeded)
+                    if (!withSnapshot)
                         continue;
 
                     // set reference to parent in snapshot
@@ -301,7 +311,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                     embeddedAdoSnapshot = DatabaseHelper.getAdoDao(embeddedAdo.getClass()).saveAndSnapshotWithCast(embeddedAdo);
                 }
 
-                if (snapshotNeeded) {
+                if (withSnapshot) {
                     if (embeddedAdoSnapshot == null) {
                         throw new IllegalArgumentException("No snapshot was found or created for " + embeddedAdo);
                     }
@@ -315,28 +325,13 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 ado.setModified(true);
                 create(ado);
             } else {
-                if (ado.isModified()) {
-
-                    snapshot = querySnapshotByUuid(ado.getUuid());
-
-                    if (snapshot != null && !ado.getChangeDate().equals(snapshot.getChangeDate())) {
-                        throw new DaoException("Change date does not match. Looks like sync was done between opening and saving the entity.");
-                    }
-
-                    // just update the existing modified version
-                    update(ado);
-                } else {
-
-                    if (!ado.getChangeDate().equals(snapshot.getChangeDate())) {
-                        throw new DaoException("Change date does not match. Looks like sync was done between opening and saving the entity.");
-                    }
-
-                    // set to modified and update
-                    // note: if doesn't matter whether the entity was really changed or not
+                if (!ado.isModified()) {
                     ado.setModified(true);
-                    update(ado);
+                }
+                update(ado);
 
-                    // now really build the cloneCascading
+                if (snapshot.getId() == null) {
+                    // now really create a db entry for the snapshot
                     create(snapshot);
                 }
             }
@@ -735,7 +730,9 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             throw new DaoException("Can't accept a snapshot");
         }
         if (!ado.isModified()) {
-            throw new DaoException("Can't accept an unmodified entity");
+            // this does not justify throwing an exception
+            //throw new DaoException("Can't accept an unmodified entity");
+            Log.w(this.getClass().getSimpleName(), "Accepting an unmodified entity - maybe data is corrupt due to a previous error");
         }
 
         try {

@@ -1,51 +1,35 @@
 package de.symeda.sormas.ui.statistics;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Grid;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.Month;
-import de.symeda.sormas.api.QuarterOfYear;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
+import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
+import de.symeda.sormas.api.statistics.StatisticsHelper;
+import de.symeda.sormas.api.statistics.StatisticsHelper.StatisticsKeyComparator;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public class StatisticsCaseGrid extends Grid {
 
-	private static final String COLUMN_UNKNOWN = "Column_Unknown";
-	private static final String COLUMN_TOTAL = "Column_Total";
-
-	private final StatisticsCaseAttribute rowsAttribute;
-	private final StatisticsCaseSubAttribute rowsSubAttribute;
-	private final StatisticsCaseAttribute columnsAttribute;
-	private final StatisticsCaseSubAttribute columnsSubAttribute;
+	private static final String COLUMN_CAPTION = "Column_Caption";
+	private static final String CAPTION_NUMBER_OF_CASES = "Caption_NumberOfCases";
+	private static final String CAPTION_UNKNOWN = "Column_Unknown";
+	private static final String CAPTION_TOTAL = "Column_Total";
 
 	private final class StatisticsCaseGridCellStyleGenerator implements CellStyleGenerator {
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public String getStyle(CellReference cell) {
-			if (cell.getPropertyId().equals("")) {
+			if (cell.getPropertyId().equals(COLUMN_CAPTION)) {
 				return CssStyles.GRID_ROW_TITLE;
 			}
 
@@ -53,16 +37,16 @@ public class StatisticsCaseGrid extends Grid {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public StatisticsCaseGrid(StatisticsCaseAttribute rowsAttribute, StatisticsCaseSubAttribute rowsSubAttribute,
-			StatisticsCaseAttribute columnsAttribute, StatisticsCaseSubAttribute columnsSubAttribute, boolean zeroValues, List<Object[]> content) {
+			StatisticsCaseAttribute columnsAttribute, StatisticsCaseSubAttribute columnsSubAttribute, boolean zeroValues, 
+			List<Object[]> content, StatisticsCaseCriteria caseCriteria) {
+
 		super();
 
-		this.rowsAttribute = rowsAttribute;
-		this.rowsSubAttribute = rowsSubAttribute;
-		this.columnsAttribute = columnsAttribute;
-		this.columnsSubAttribute = columnsSubAttribute;
-
 		setSelectionMode(SelectionMode.NONE);
+		setHeightMode(HeightMode.UNDEFINED);
+		setWidth(100, Unit.PERCENTAGE);
 		setCellStyleGenerator(new StatisticsCaseGridCellStyleGenerator());
 
 		if (content.isEmpty()) {
@@ -71,211 +55,209 @@ public class StatisticsCaseGrid extends Grid {
 
 		// If no displayed attributes are selected, simply show the total number of cases
 		if (rowsAttribute == null && columnsAttribute == null) {
-			addColumn("Number of cases");
+			addColumn(CAPTION_NUMBER_OF_CASES);
+			getColumn(CAPTION_NUMBER_OF_CASES).setHeaderCaption("Number of cases");
 			addRow(new Object[]{String.valueOf(content.get(0)[0])});
+			return;
+		}
+
+		// Extract columns from content and add them to the grid
+		Column captionColumn = addColumn(COLUMN_CAPTION);
+		captionColumn.setHeaderCaption("");
+		captionColumn.setSortable(false);
+		captionColumn.setMaximumWidth(150);
+
+		TreeMap<StatisticsGroupingKey, String> columns = new TreeMap<>(new StatisticsKeyComparator());
+		if (columnsAttribute == null && columnsSubAttribute == null) {
+			// When no column grouping has been selected, simply display the number of cases for the respective row
+			addColumn(CAPTION_NUMBER_OF_CASES);
+			getColumn(CAPTION_NUMBER_OF_CASES).setHeaderCaption("Number of cases");
 		} else {
-			// Set columns
-			Map<Object, Integer> columnsMap = null;
-
-			addColumn("");
-
-			if (columnsAttribute != null || columnsSubAttribute != null) {
-				Map<String, String> columns = new TreeMap<>();
-				for (Object[] entry : content) {
-					formatContentEntry(entry, entry.length - 1, columnsAttribute, columnsSubAttribute);
-
-					String rawColumnName = null;
-					String columnName = null;
-
-					if (entry[entry.length - 1] == null) {
-						rawColumnName = COLUMN_UNKNOWN;
-						columnName = "Unknown";
-					} else {
-						rawColumnName = entry[entry.length - 1].toString();
-						columnName = buildHeader(rawColumnName != null ? rawColumnName : null, columnsAttribute, columnsSubAttribute);
-					}
-
-					columns.put(rawColumnName, columnName);
-				}
-
-				// Add missing columns if zero values are ticked
-				if (zeroValues) {
-					List<Object> values = getAllAttributeValues(columnsAttribute, columnsSubAttribute);
-					for (Object value : values) {
-						Object[] valueArray = new Object[]{value};
-						formatContentEntry(valueArray, 0, columnsAttribute, columnsSubAttribute);
-						columns.put(valueArray[0].toString(), buildHeader(valueArray[0].toString() != null ? valueArray[0].toString() : null, columnsAttribute, columnsSubAttribute));
-					}
-				}
-
-				if (columnsAttribute.isSortByCaption()) {
-					for (Map.Entry<String, String> mapEntry : DataHelper.entriesSortedByValues(columns)) {
-						addColumn(mapEntry.getKey());
-						getColumn(mapEntry.getKey()).setHeaderCaption(mapEntry.getValue());
-					}
+			boolean addColumnUnknown = false;
+			// Iterate over content and add new columns to the list
+			for (Object[] entry : content) {
+				if (StatisticsHelper.isNullOrUnknown(entry[entry.length - 1])) {
+					addColumnUnknown = true;
 				} else {
-					for (String column : columns.keySet()) {
-						addColumn(column);
-						getColumn(column).setHeaderCaption(columns.get(column));
-					}
+					columns.putIfAbsent((StatisticsGroupingKey) entry[entry.length - 1], entry[entry.length - 1].toString());
 				}
-
-				addColumn(COLUMN_TOTAL);
-				getColumn(COLUMN_TOTAL).setHeaderCaption("Total");
-
-				// Build map of column properties
-				columnsMap = new HashMap<>();
-				List<Column> gridColumns = getColumns();
-				for (Column column : gridColumns) {
-					columnsMap.put(column.getPropertyId(), gridColumns.indexOf(column));
-				}
-			} else {
-				addColumn("Number of cases");
 			}
 
-			// Add data
-			if (rowsAttribute != null || rowsSubAttribute != null) {
-				Object[] currentRow = null;
-				Object rowHeader = null;
-
-				long[] columnTotals = new long[getColumns().size()];
-				for (Object[] entry : content) {
-					formatContentEntry(entry, 1, rowsAttribute, rowsSubAttribute);
-					if (columnsAttribute != null || columnsSubAttribute != null) {
-
-						if (currentRow != null && rowHeader != null && !rowHeader.equals(entry[1])) {
-							int totalForRow = calculateTotalForRow(currentRow);
-							currentRow[currentRow.length - 1] = String.valueOf(totalForRow);
-							columnTotals[columnTotals.length - 1] += totalForRow;
-							addRow(currentRow);
-							currentRow = null;
-							rowHeader = null;
-						}
-
-						if (currentRow == null && rowHeader == null) {
-							currentRow = new Object[getColumns().size()];
-							currentRow[0] = buildHeader(entry[1] == null ? null : entry[1].toString(), rowsAttribute, rowsSubAttribute);
-							rowHeader = entry[1];
-						}
-
-						int columnIndex;
-						if (entry[entry.length - 1] != null) {
-							columnIndex = columnsMap.get(entry[entry.length - 1].toString());
-						} else {
-							columnIndex = columnsMap.get(COLUMN_UNKNOWN);
-						}
-						currentRow[columnIndex] = entry[0].toString();
-						columnTotals[columnIndex] += (long) entry[0];
-					} else {
-						currentRow = new Object[getColumns().size()];
-						currentRow[0] = buildHeader(entry[1] == null ? null : entry[1].toString(), rowsAttribute, rowsSubAttribute);
-						currentRow[1] = entry[0].toString();
-						addRow(currentRow);
-						columnTotals[columnTotals.length - 1] += (long) entry[0];
+			// If zero values are ticked, add missing columns to the list; this involves every possible value of the chosen column attribute unless a filter has been
+			// set for the same attribute; in this case, only values that are part of the filter are chosen
+			if (zeroValues) {
+				List<Object> values = StatisticsHelper.getAllAttributeValues(columnsAttribute, columnsSubAttribute);
+				List<StatisticsGroupingKey> filterValues = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(columnsAttribute, columnsSubAttribute);
+				for (Object value : values) {
+					Object formattedValue = StatisticsHelper.formatAttributeValue(value, columnsAttribute, columnsSubAttribute);
+					if (formattedValue != null && (CollectionUtils.isEmpty(filterValues) || filterValues.contains(formattedValue))) {
+						columns.putIfAbsent((StatisticsGroupingKey) formattedValue, formattedValue.toString()); 
 					}
 				}
+			}
 
-				if (columnsAttribute != null || columnsSubAttribute != null) {
-					if (currentRow[0] != null) {
+			// Add all collected columns to the grid
+			for (StatisticsGroupingKey columnId : columns.keySet()) {
+				Column column = addColumn(columnId);
+				column.setHeaderCaption(columns.get(columnId));
+				column.setSortable(false);
+				column.setMaximumWidth(120);
+			}
+
+			// Add the column to display unknown numbers if required
+			if (addColumnUnknown) {
+				Column column = addColumn(CAPTION_UNKNOWN);
+				column.setHeaderCaption("Unknown");
+				column.setSortable(false);
+				column.setMaximumWidth(120);
+			}
+
+			// Add total column
+			Column totalColumn = addColumn(CAPTION_TOTAL);
+			totalColumn.setHeaderCaption("Total");
+			totalColumn.setSortable(false);
+		}
+
+		// Extract rows from content and add them to the grid
+		if (rowsAttribute == null && rowsSubAttribute == null) {
+			// When no row grouping has been selected, simply display the number of cases for the respective column
+			Object[] row = new Object[getColumns().size()];
+			row[0] = "Number of cases";
+			long totalAmountOfCases = 0;
+			for (int i = 0; i < content.size(); i++) {
+				Object[] entry = content.get(i);
+				if (StatisticsHelper.isNullOrUnknown(entry[1])) {
+					// Unknown column is always the second-last
+					int columnIndex = getColumns().size() - 2;
+					row[columnIndex] = entry[0].toString();
+				} else {
+					// Retrieve the column index by using the headMap function
+					int columnIndex = columns.headMap((StatisticsGroupingKey) entry[entry.length - 1]).size() + 1;
+					row[columnIndex] = entry[0].toString();
+				}
+				totalAmountOfCases += (long) entry[0];
+			}
+			row[row.length - 1] = String.valueOf(totalAmountOfCases);
+			addRow(row);
+		} else {
+			TreeMap<StatisticsGroupingKey, Object[]> rows = new TreeMap<>(new StatisticsKeyComparator());
+			Object[] currentRow = null;
+			Object[] unknownRow = null;
+			StatisticsGroupingKey currentRowKey = null;
+			long[] columnTotals = new long[getColumns().size()];
+
+			for (Object[] entry : content) {
+				if (columnsAttribute == null && columnsSubAttribute == null) {
+					// Only display the number of cases if there is no column grouping
+					if (!StatisticsHelper.isNullOrUnknown(entry[entry.length - 1])) {
+						currentRow = new Object[getColumns().size()];
+						currentRowKey = (StatisticsGroupingKey) entry[entry.length - 1];
+						currentRow[0] = entry[entry.length - 1].toString();
+						currentRow[1] = entry[0].toString();
+						rows.putIfAbsent((StatisticsGroupingKey) entry[entry.length - 1], currentRow);
+						columnTotals[columnTotals.length - 1] += (long) entry[0];
+					} else {
+						unknownRow = new Object[getColumns().size()];
+						unknownRow[0] = "Unknown";
+						unknownRow[1] = entry[0].toString();
+						columnTotals[columnTotals.length - 1] += (long) entry[0];
+					}
+				} else {
+					// New grouping entry has been reached, add the current row to the rows map
+					if (currentRow != null && currentRowKey != null && !currentRowKey.equals(entry[1])) {
 						int totalForRow = calculateTotalForRow(currentRow);
 						currentRow[currentRow.length - 1] = String.valueOf(totalForRow);
 						columnTotals[columnTotals.length - 1] += totalForRow;
-						addRow(currentRow);
+						rows.putIfAbsent(currentRowKey, currentRow);
+						currentRow = null;
+						currentRowKey = null;
 					}
-				}
 
-				if (rowsAttribute.isSortByCaption()) {
-					sort("");
-				}
+					// New grouping entry has been reached, set up currentRow and currentRowKey
+					if (currentRow == null && currentRowKey == null) {
+						if (StatisticsHelper.isNullOrUnknown(entry[1])) {
+							if (unknownRow == null) {
+								unknownRow = new Object[getColumns().size()];
+								unknownRow[0] = "Unknown";
+							}
+						} else {
+							currentRow = new Object[getColumns().size()];
+							currentRowKey = (StatisticsGroupingKey) entry[1];
+							currentRow[0] = entry[1].toString();
+						}
+					}
 
-				// Total row
-				currentRow = new Object[getColumns().size()];
-				currentRow[0] = "Total";
-				for (int i = 1; i < columnTotals.length; i++) {
-					currentRow[i] = String.valueOf(columnTotals[i]);
-				}
-				addRow(currentRow);
-			} else {
-				Object[] row = new Object[getColumns().size()];
-				row[0] = "Number of cases";
-				long totalAmountOfCases = 0;
-				for (int i = 0; i < content.size(); i++) {
-					Object[] entry = content.get(i);
-					formatContentEntry(entry, 1, rowsAttribute, rowsSubAttribute);
-					if (entry[1] != null) {
-						row[columnsMap.get(entry[entry.length - 1].toString())] = entry[0].toString();
+					// Add value to the row on the respective column index
+					int columnIndex = 0;
+					
+					if (!StatisticsHelper.isNullOrUnknown(entry[entry.length - 1])) {
+						columnIndex = columns.headMap((StatisticsGroupingKey) entry[entry.length - 1]).size() + 1;
 					} else {
-						row[columnsMap.get(COLUMN_UNKNOWN)] = entry[0].toString();
+						columnIndex = getColumns().size() - 2;
 					}
-					totalAmountOfCases += (long) entry[0];
+					
+					if (StatisticsHelper.isNullOrUnknown(entry[1])) {
+						unknownRow[columnIndex] = entry[0].toString();
+					} else {
+						currentRow[columnIndex] = entry[0].toString();
+					}
+					
+					columnTotals[columnIndex] += (long) entry[0];
 				}
-				row[row.length - 1] = String.valueOf(totalAmountOfCases);
-				addRow(row);
 			}
-		}
 
-		setHeightMode(HeightMode.UNDEFINED);
-	}
-
-	private String buildHeader(String rawHeader, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
-		if (rawHeader == null) {
-			return "Unknown";
-		}
-
-		if (subAttribute != null) {
-			switch (subAttribute) {
-			case QUARTER:
-				return "Q" + rawHeader;
-			case MONTH:
-				return Month.values()[Integer.valueOf(rawHeader) - 1].toString();
-			case EPI_WEEK:
-				return "Wk " + rawHeader;
-			case QUARTER_OF_YEAR:
-				return "Q" + rawHeader.charAt(rawHeader.length() - 1) + " " + rawHeader.substring(0, 4);
-			case MONTH_OF_YEAR:
-				int month = Integer.valueOf(rawHeader.substring(4));
-				return Month.values()[month - 1].toString() + " " + rawHeader.substring(0, 4);
-			case EPI_WEEK_OF_YEAR:
-				// see EpiWeek.toString
-				return "Wk " + rawHeader.substring(4) + "-" + rawHeader.substring(0, 4);
-			case REGION:
-				return FacadeProvider.getRegionFacade().getRegionByUuid(rawHeader).toString();
-			case DISTRICT:
-				return FacadeProvider.getDistrictFacade().getDistrictByUuid(rawHeader).toString();
-			default:
-				return rawHeader;
+			// Add the last calculated row to the list (since this was not done in the loop) or calculate
+			// the totals for the unknown row if this was the last row processed
+			if (columnsAttribute != null || columnsSubAttribute != null) {
+				if (currentRow != null && currentRow[0] != null) {
+					int totalForRow = calculateTotalForRow(currentRow);
+					currentRow[currentRow.length - 1] = String.valueOf(totalForRow);
+					columnTotals[columnTotals.length - 1] += totalForRow;
+					rows.putIfAbsent(currentRowKey, currentRow);
+				} else if (unknownRow != null && unknownRow[0] != null) {
+					int totalForRow = calculateTotalForRow(unknownRow);
+					unknownRow[unknownRow.length - 1] = String.valueOf(totalForRow);
+					columnTotals[columnTotals.length - 1] += totalForRow;
+				}
 			}
-		} else {
-			switch (attribute) {
-			//			case DISEASE:
-			//				return Disease.valueOf(rawHeader).toShortString();
-			case CLASSIFICATION:
-				return CaseClassification.valueOf(rawHeader).toString();
-			case OUTCOME:
-				return CaseOutcome.valueOf(rawHeader).toString();
-			case SEX:
-				return Sex.valueOf(rawHeader).toString();
-			default:
-				return rawHeader;
+
+			// If zero values are ticked, add missing rows to the list; this involves every possible value of the chosen row attribute unless a filter has been
+			// set for the same attribute; in this case, only values that are part of the filter are chosen
+			if (zeroValues) {
+				List<Object> values = StatisticsHelper.getAllAttributeValues(rowsAttribute, rowsSubAttribute);
+				List<StatisticsGroupingKey> filterValues = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(rowsAttribute, rowsSubAttribute);
+				for (Object value : values) {
+					Object formattedValue = StatisticsHelper.formatAttributeValue(value, rowsAttribute, rowsSubAttribute);
+					if (formattedValue != null && (CollectionUtils.isEmpty(filterValues) || filterValues.contains(formattedValue))) {
+						Object[] zeroRow = new Object[getColumns().size()];
+						zeroRow[0] = formattedValue.toString();
+						zeroRow[zeroRow.length - 1] = null;
+						rows.putIfAbsent((StatisticsGroupingKey) formattedValue, zeroRow); 
+					}
+				}
 			}
-		}
-	}
 
-	private void formatContentEntry(Object[] entry, int indexToFormat, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
-		if (entry[indexToFormat] == null) {
-			return;
-		}
-
-		if (attribute == StatisticsCaseAttribute.DISEASE) {
-			entry[indexToFormat] = Disease.valueOf(entry[indexToFormat].toString()).toShortString();
-			return;
-		}
-
-		if (subAttribute == StatisticsCaseSubAttribute.MONTH || subAttribute == StatisticsCaseSubAttribute.EPI_WEEK) {
-			if ((int) entry[indexToFormat] < 10) {
-				entry[indexToFormat] = "0" + entry[indexToFormat];
+			// Add rows to the grid
+			for (StatisticsGroupingKey groupingKey : rows.keySet()) {
+				addRow(rows.get(groupingKey));
 			}
-			return;
+
+			// Add unknown row if existing
+			if (unknownRow != null) {
+				addRow(unknownRow);
+			}
+
+			// Add total row
+			Object[] totalRow = new Object[getColumns().size()];
+			totalRow[0] = "Total";
+			for (int i = 1; i < columnTotals.length; i++) {
+				if (columnTotals[i] > 0) {
+					totalRow[i] = String.valueOf(columnTotals[i]);
+				} else {
+					totalRow[i] = null;
+				}
+			}
+			addRow(totalRow);
 		}
 	}
 
@@ -288,107 +270,6 @@ public class StatisticsCaseGrid extends Grid {
 		}
 
 		return total;
-	}
-
-	private List<Object> getAllAttributeValues(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
-		if (subAttribute != null) {
-			switch (subAttribute) {
-			case YEAR:
-			case QUARTER:
-			case MONTH:
-			case EPI_WEEK:
-			case QUARTER_OF_YEAR:
-			case MONTH_OF_YEAR:
-			case EPI_WEEK_OF_YEAR:
-				return getListOfDateValues(attribute, subAttribute);
-			case REGION:
-				return new ArrayList<>(FacadeProvider.getRegionFacade().getAllUuids());
-			case DISTRICT:
-				return new ArrayList<>(FacadeProvider.getDistrictFacade().getAllUuids());
-			default:
-				throw new IllegalArgumentException(this.toString());
-			}
-		} else {
-			switch (attribute) {
-			case DISEASE:
-				return new ArrayList<>(EnumUtils.getEnumList(Disease.class).stream()
-						.map(d -> d.getName())
-						.collect(Collectors.toList()));
-			case OUTCOME:
-				return new ArrayList<>(EnumUtils.getEnumList(CaseOutcome.class).stream()
-						.map(o -> o.getName())
-						.collect(Collectors.toList()));
-			default:
-				return null;
-			}
-		}
-	}
-
-	private List<Object> getListOfDateValues(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
-		Date oldestCaseDate = null;
-		switch (attribute) {
-		case ONSET_TIME:
-			oldestCaseDate = FacadeProvider.getCaseFacade().getOldestCaseOnsetDate();
-			break;
-		case RECEPTION_TIME:
-			oldestCaseDate = FacadeProvider.getCaseFacade().getOldestCaseReceptionDate();
-			break;
-		case REPORT_TIME:
-			oldestCaseDate = FacadeProvider.getCaseFacade().getOldestCaseReportDate();
-			break;
-		default:
-			return new ArrayList<>();
-		}
-
-		LocalDate earliest = oldestCaseDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalDate now = LocalDate.now();
-
-		switch (subAttribute) {
-		case YEAR:
-			return IntStream.rangeClosed(earliest.getYear(), now.getYear()).boxed()
-					.collect(Collectors.toList());
-		case QUARTER:
-			return IntStream.rangeClosed(1, 4).boxed()
-					.collect(Collectors.toList());
-		case MONTH:
-			return IntStream.rangeClosed(1, 12).boxed()
-					.collect(Collectors.toList());
-		case EPI_WEEK:
-			return IntStream.rangeClosed(1, DateHelper.getMaximumEpiWeekNumber()).boxed()
-					.collect(Collectors.toList());
-		case QUARTER_OF_YEAR:
-			List<Object> quarterOfYearList = new ArrayList<>();
-			QuarterOfYear earliestQuarter = new QuarterOfYear(1, earliest.getYear());
-			QuarterOfYear latestQuarter = new QuarterOfYear(4, now.getYear());
-			while (earliestQuarter.getYear() <= latestQuarter.getYear()) {
-				QuarterOfYear newQuarter = new QuarterOfYear(earliestQuarter.getQuarter(), earliestQuarter.getYear());
-				quarterOfYearList.add(newQuarter.getYear() * 10 + newQuarter.getQuarter());
-				earliestQuarter.increaseQuarter();
-			}
-			return quarterOfYearList;
-		case MONTH_OF_YEAR:
-			List<Object> monthOfYearList = new ArrayList<>();
-			for (int year = earliest.getYear(); year <= now.getYear(); year++) {
-				final int thisYear = year;
-				monthOfYearList.addAll(
-						IntStream.rangeClosed(1, 12).boxed()
-						.map(m -> thisYear * 100 + m)
-						.collect(Collectors.toList()));
-			}
-			return monthOfYearList;
-		case EPI_WEEK_OF_YEAR:
-			List<Object> epiWeekOfYearList = new ArrayList<>();
-			for (int year = earliest.getYear(); year <= now.getYear(); year++) {
-				final int thisYear = year;
-				epiWeekOfYearList.addAll(
-						IntStream.rangeClosed(1, DateHelper.createEpiWeekList(year).size()).boxed()
-						.map(w -> thisYear * 100 + w)
-						.collect(Collectors.toList()));
-			}
-			return epiWeekOfYearList;
-		default:
-			return new ArrayList<>();
-		}
 	}
 
 }

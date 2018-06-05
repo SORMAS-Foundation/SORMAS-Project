@@ -21,6 +21,7 @@ import java.util.List;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -285,9 +286,12 @@ public class ContactEditActivity extends AbstractEditTabActivity {
                 try {
 
                     if (contact.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && person.getAddress().isEmptyLocation()) {
-                        person.getAddress().setRegion(contact.getCaze().getRegion());
-                        person.getAddress().setDistrict(contact.getCaze().getDistrict());
-                        person.getAddress().setCommunity(contact.getCaze().getCommunity());
+                        Case contactCase = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
+                        if (contactCase != null) {
+                            person.getAddress().setRegion(contactCase.getRegion());
+                            person.getAddress().setDistrict(contactCase.getDistrict());
+                            person.getAddress().setCommunity(contactCase.getCommunity());
+                        }
                     }
 
                     PersonDao personDao = DatabaseHelper.getPersonDao();

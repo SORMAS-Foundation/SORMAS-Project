@@ -113,6 +113,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setLymphadenopathyInguinal(source.getLymphadenopathyInguinal());
 		target.setLymphadenopathyAxillary(source.getLymphadenopathyAxillary());
 		target.setLymphadenopathyCervical(source.getLymphadenopathyCervical());
+		target.setMeningealSigns(source.getMeningealSigns());
 		target.setChillsSweats(source.getChillsSweats());
 		target.setLesionsThatItch(source.getLesionsThatItch());
 		target.setBedridden(source.getBedridden());
@@ -218,6 +219,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setLymphadenopathyInguinal(source.getLymphadenopathyInguinal());
 		target.setLymphadenopathyAxillary(source.getLymphadenopathyAxillary());
 		target.setLymphadenopathyCervical(source.getLymphadenopathyCervical());
+		target.setMeningealSigns(source.getMeningealSigns());
 		target.setChillsSweats(source.getChillsSweats());
 		target.setLesionsThatItch(source.getLesionsThatItch());
 		target.setBedridden(source.getBedridden());

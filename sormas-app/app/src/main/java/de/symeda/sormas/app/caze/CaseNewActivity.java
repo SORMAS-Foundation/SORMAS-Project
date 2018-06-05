@@ -83,7 +83,7 @@ public class CaseNewActivity extends AppCompatActivity {
         if (params != null && params.containsKey(CONTACT)) {
             Contact contact = DatabaseHelper.getContactDao().queryUuid((String) params.get(CONTACT));
             arguments.putSerializable(PERSON, contact.getPerson());
-            arguments.putSerializable(DISEASE, contact.getCaze().getDisease());
+            arguments.putSerializable(DISEASE, contact.getCaseDisease());
         }
         arguments.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.CASE_CREATE);
         caseNewForm.setArguments(arguments);

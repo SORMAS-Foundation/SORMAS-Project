@@ -210,6 +210,8 @@ public class Symptoms extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private SymptomState bulgingFontanelle;
 	@Enumerated(EnumType.STRING)
+	private SymptomState meningealSigns;
+	@Enumerated(EnumType.STRING)
 	private SymptomState otherHemorrhagicSymptoms;
 	@Column(length = 255)
 	private String otherHemorrhagicSymptomsText;
@@ -887,4 +889,11 @@ public class Symptoms extends AbstractDomainObject {
 		return I18N_PREFIX;
 	}
 
+	public SymptomState getMeningealSigns() {
+		return meningealSigns;
+	}
+
+	public void setMeningealSigns(SymptomState meningealSigns) {
+		this.meningealSigns = meningealSigns;
+	}
 }

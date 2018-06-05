@@ -4,7 +4,6 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -26,11 +25,14 @@ public class CaseDataDto extends EntityDto {
 	public static final String I18N_PREFIX = "CaseData";
 	
 	public static final String CASE_CLASSIFICATION = "caseClassification";
+	public static final String CLASSIFICATION_USER = "classificationUser";
+	public static final String CLASSIFICATION_DATE = "classificationDate";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String PLAGUE_TYPE = "plagueType";
+	public static final String DENGUE_FEVER_TYPE = "dengueFeverType";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -58,21 +60,32 @@ public class CaseDataDto extends EntityDto {
 	public static final String OUTCOME = "outcome";
 	public static final String OUTCOME_DATE = "outcomeDate";
 	
-	private PersonReferenceDto person;
-	@Outbreaks
-	private CaseClassification caseClassification;
-	@Outbreaks
-	private InvestigationStatus investigationStatus;
-	@Outbreaks
-	private Disease disease;
-	@Outbreaks
-	private String diseaseDetails;
-	@Outbreaks
-	private PlagueType plagueType;
 	@Outbreaks
 	private UserReferenceDto reportingUser;
 	@Outbreaks
 	private Date reportDate;
+
+	private PersonReferenceDto person;
+	@Outbreaks
+	private CaseClassification caseClassification;
+	@Outbreaks
+	private UserReferenceDto classificationUser;
+	@Outbreaks
+	private Date classificationDate;
+	@Outbreaks
+	private String classificationComment;
+	@Outbreaks
+	private Disease disease;
+	@Outbreaks
+	private String diseaseDetails;
+	@Diseases({Disease.PLAGUE})
+	@Outbreaks
+	private PlagueType plagueType;
+	@Diseases({Disease.DENGUE})
+	@Outbreaks
+	private DengueFeverType dengueFeverType;
+	@Outbreaks
+	private InvestigationStatus investigationStatus;
 	@Outbreaks
 	private Date investigatedDate;
 	@Outbreaks
@@ -141,6 +154,30 @@ public class CaseDataDto extends EntityDto {
 		return caze;
 	}
 	
+	public UserReferenceDto getReportingUser() {
+		return reportingUser;
+	}
+
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
+	}
+
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+
+	public PersonReferenceDto getPerson() {
+		return person;
+	}
+
+	public void setPerson(PersonReferenceDto personDto) {
+		this.person = personDto;
+	}
+
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
@@ -149,12 +186,28 @@ public class CaseDataDto extends EntityDto {
 		this.caseClassification = caseClassification;
 	}
 	
-	public PersonReferenceDto getPerson() {
-		return person;
+	public UserReferenceDto getClassificationUser() {
+		return classificationUser;
 	}
-	
-	public void setPerson(PersonReferenceDto personDto) {
-		this.person = personDto;
+
+	public void setClassificationUser(UserReferenceDto classificationUser) {
+		this.classificationUser = classificationUser;
+	}
+
+	public Date getClassificationDate() {
+		return classificationDate;
+	}
+
+	public void setClassificationDate(Date classificationDate) {
+		this.classificationDate = classificationDate;
+	}
+
+	public String getClassificationComment() {
+		return classificationComment;
+	}
+
+	public void setClassificationComment(String classificationComment) {
+		this.classificationComment = classificationComment;
 	}
 
 	public Disease getDisease() {
@@ -181,12 +234,12 @@ public class CaseDataDto extends EntityDto {
 		this.plagueType = plagueType;
 	}
 
-	public UserReferenceDto getReportingUser() {
-		return reportingUser;
+	public DengueFeverType getDengueFeverType() {
+		return dengueFeverType;
 	}
 
-	public void setReportingUser(UserReferenceDto reportingUser) {
-		this.reportingUser = reportingUser;
+	public void setDengueFeverType(DengueFeverType dengueFeverType) {
+		this.dengueFeverType = dengueFeverType;
 	}
 
 	public FacilityReferenceDto getHealthFacility() {
@@ -205,14 +258,6 @@ public class CaseDataDto extends EntityDto {
 		this.healthFacilityDetails = healthFacilityDetails;
 	}
 	
-	public Date getReportDate() {
-		return reportDate;
-	}
-
-	public void setReportDate(Date reportDate) {
-		this.reportDate = reportDate;
-	}
-
 	public Date getInvestigatedDate() {
 		return investigatedDate;
 	}

@@ -8,6 +8,7 @@ import android.util.Log;
 import com.google.android.gms.analytics.Tracker;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.app.R;
@@ -297,7 +298,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new WeeklyReportEntryDtoHelper().pullMissing(weeklyReportEntryUuids);
     }
 
-    private void pullMissingAndDeleteInvalidInfrastructure() throws ServerConnectionException {
+    private void pullMissingAndDeleteInvalidInfrastructure() throws ServerConnectionException, DaoException {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
 
         Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalidInfrastructure");
@@ -309,8 +310,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         List<String> facilityUuids = executeUuidCall(RetroProvider.getFacilityFacade().pullUuids());
         DatabaseHelper.getFacilityDao().deleteInvalid(facilityUuids);
         // communities
-        List<String> communityUuid = executeUuidCall(RetroProvider.getCommunityFacade().pullUuids());
-        DatabaseHelper.getCommunityDao().deleteInvalid(communityUuid);
+        List<String> communityUuids = executeUuidCall(RetroProvider.getCommunityFacade().pullUuids());
+        DatabaseHelper.getCommunityDao().deleteInvalid(communityUuids);
         // districts
         List<String> districtUuids = executeUuidCall(RetroProvider.getDistrictFacade().pullUuids());
         DatabaseHelper.getDistrictDao().deleteInvalid(districtUuids);
@@ -320,8 +321,14 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
         // order is important, due to dependencies
 
-        // TODO pull missing regions, etc.
-
+        new RegionDtoHelper().pullMissing(regionUuids);
+        new DistrictDtoHelper().pullMissing(districtUuids);
+        new CommunityDtoHelper().pullMissing(communityUuids);
+        // facilities need special handling
+        FacilityDtoHelper facilityDtoHelper = new FacilityDtoHelper();
+        if (facilityDtoHelper.isAnyMissing(facilityUuids)) {
+            facilityDtoHelper.repullEntities();
+        }
         new UserDtoHelper().pullMissing(userUuids);
     }
 
@@ -345,19 +352,23 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
      * @param context
      * @param callback
      */
-    public static void callWithProgressDialog(SyncMode syncMode, final Context context, final SyncCallback callback) {
+    public static ProgressDialog callWithProgressDialog(SyncMode syncMode, final Context context, final SyncCallback callback) {
         final ProgressDialog progressDialog = ProgressDialog.show(context, context.getString(R.string.headline_synchronization),
                 context.getString(R.string.hint_synchronization), true);
 
         call(syncMode, context, new SyncCallback() {
             @Override
             public void call(boolean syncFailed, String syncFailedMessage) {
-                progressDialog.dismiss();
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
                 if (callback != null) {
                     callback.call(syncFailed, syncFailedMessage);
                 }
             }
         });
+
+        return progressDialog;
     }
 
 
@@ -365,6 +376,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new SynchronizeDataAsync(syncMode, context) {
             @Override
             protected void onPostExecute(Void aVoid) {
+
                 if (callback != null) {
                     callback.call(syncFailed, syncFailedMessage);
                 }

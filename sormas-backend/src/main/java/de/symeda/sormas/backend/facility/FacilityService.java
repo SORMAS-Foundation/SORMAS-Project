@@ -30,124 +30,133 @@ import de.symeda.sormas.backend.util.InfrastructureDataImporter.FacilityConsumer
 @Stateless
 @LocalBean
 public class FacilityService extends AbstractAdoService<Facility> {
-	
+
 	@EJB
 	private RegionService regionService;
-	
+
 	public FacilityService() {
 		super(Facility.class);
 	}
-	
+
 	public List<Facility> getHealthFacilitiesByCommunity(Community community, boolean includeStaticFacilities) {
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
-		Predicate filter = cb.or(cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY), cb.isNull(from.get(Facility.TYPE)));
+		Predicate filter = cb.or(cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY),
+				cb.isNull(from.get(Facility.TYPE)));
 		filter = cb.and(filter, cb.equal(from.get(Facility.COMMUNITY), community));
 		cq.where(filter);
 		cq.distinct(true);
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
 
 		List<Facility> facilities = em.createQuery(cq).getResultList();
-		
-		if (includeStaticFacilities) {			
+
+		if (includeStaticFacilities) {
 			facilities.add(getByUuid(FacilityDto.OTHER_FACILITY_UUID));
 			facilities.add(getByUuid(FacilityDto.NONE_FACILITY_UUID));
 		}
-		
+
 		return facilities;
 	}
-	
+
 	public List<Facility> getHealthFacilitiesByDistrict(District district, boolean includeStaticFacilities) {
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
-		Predicate filter = cb.or(cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY), cb.isNull(from.get(Facility.TYPE)));
+		Predicate filter = cb.or(cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY),
+				cb.isNull(from.get(Facility.TYPE)));
 		filter = cb.and(filter, cb.equal(from.get(Facility.DISTRICT), district));
 		cq.where(filter);
 		cq.distinct(true);
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
 
 		List<Facility> facilities = em.createQuery(cq).getResultList();
-		
+
 		if (includeStaticFacilities) {
 			facilities.add(getByUuid(FacilityDto.OTHER_FACILITY_UUID));
 			facilities.add(getByUuid(FacilityDto.NONE_FACILITY_UUID));
 		}
-		
+
 		return facilities;
 	}
-	
+
 	public List<Facility> getHealthFacilitiesByRegion(Region region, boolean includeStaticFacilities) {
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
-		Predicate filter = cb.or(cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY), cb.isNull(from.get(Facility.TYPE)));
+		Predicate filter = cb.or(cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY),
+				cb.isNull(from.get(Facility.TYPE)));
 		filter = cb.and(filter, cb.equal(from.get(Facility.REGION), region));
 		cq.where(filter);
 		cq.distinct(true);
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
 
 		List<Facility> facilities = em.createQuery(cq).getResultList();
-		
+
 		if (includeStaticFacilities) {
 			facilities.add(getByUuid(FacilityDto.OTHER_FACILITY_UUID));
 			facilities.add(getByUuid(FacilityDto.NONE_FACILITY_UUID));
 		}
-		
+
 		return facilities;
 	}
-	
+
 	public List<Facility> getAllByRegionAfter(Region region, Date date) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
-		
+
 		Predicate filter = cb.equal(from.get(Facility.REGION), region);
 		if (date != null) {
 			filter = cb.and(filter, createDateFilter(cb, cq, from, date));
 		}
 		cq.where(filter);
 		// order by district, community so the app can do caching while reading the data
-		cq.orderBy(cb.asc(from.get(Facility.DISTRICT)), cb.asc(from.get(Facility.COMMUNITY)), cb.asc(from.get(Facility.NAME)));
+		cq.orderBy(cb.asc(from.get(Facility.DISTRICT)), cb.asc(from.get(Facility.COMMUNITY)),
+				cb.asc(from.get(Facility.NAME)));
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public List<Facility> getAllWithoutRegionAfter(Date date) {
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
-		
+
 		Predicate filter = cb.isNull(from.get(Facility.REGION));
 		if (date != null) {
 			filter = cb.and(filter, createDateFilter(cb, cq, from, date));
 		}
 		cq.where(filter);
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
-		
+
 		return em.createQuery(cq).getResultList();
 	}
-	
-	public List<Facility> getAllLaboratories() {
-		
+
+	public List<Facility> getAllLaboratories(boolean includeOtherLaboratory) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
-		
-		cq.where(cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY));
+
+		cq.where(cb.and(cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY),
+				cb.notEqual(from.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID)));
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
 
 		List<Facility> facilities = em.createQuery(cq).getResultList();
-		
+
+		if (includeOtherLaboratory) {
+			facilities.add(getByUuid(FacilityDto.OTHER_LABORATORY_UUID));
+		}
+
 		return facilities;
 	}
 
@@ -155,12 +164,12 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
-		
+
 		Predicate filter = cb.equal(from.get(Facility.NAME), name);
-		// Additional null check is required because notEqual returns true if one of the values is null
-		filter = cb.and(filter, cb.or(
-						cb.isNull(from.get(Facility.TYPE)),
-						cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY)));
+		// Additional null check is required because notEqual returns true if one of the
+		// values is null
+		filter = cb.and(filter, cb.or(cb.isNull(from.get(Facility.TYPE)),
+				cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY)));
 		if (community != null) {
 			filter = cb.and(filter, cb.equal(from.get(Facility.COMMUNITY), community));
 		} else if (district != null) {
@@ -168,7 +177,7 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		}
 
 		cq.where(filter);
-		
+
 		return em.createQuery(cq).getResultList();
 	}
 
@@ -179,86 +188,86 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		return null;
 	}
 
-
 	public void importFacilities(String countryName) {
-		
-		Timestamp latestRegionChangeDate = getLatestChangeDate();
-		if (latestRegionChangeDate != null
+
+		Timestamp latestChangeDate = getLatestChangeDate();
+		if (latestChangeDate == null
 				// update needed due to bugfix
-				// TODO replace with solution that reads the change date from the file or something else
-				&& latestRegionChangeDate.after(DateHelper.getDateZero(2017, 11, 27))) {
-			return;
-		}		
-		
-		List<Facility> facilities = getAll();
-		List<Region> regions = regionService.getAll();
-		
-		for (Region region : regions) {
-			
-			InfrastructureDataImporter.importFacilities(countryName, region, new FacilityConsumer() {
-				
-				private District cachedDistrict = null;
-				private Community cachedCommunity = null;				
+				// TODO replace with solution that reads the change date from the file or
+				// something else
+				|| latestChangeDate.before(DateHelper.getDateZero(2017, 11, 27))) {
 
-				@Override
-				public void consume(String regionName, String districtName, String communityName, String facilityName,
-						String city, String address, Double latitude, Double longitude, FacilityType type,
-						boolean publicOwnership) {
+			List<Facility> facilities = getAll();
+			List<Region> regions = regionService.getAll();
 
-					if (cachedDistrict == null || !cachedDistrict.getName().equals(districtName)) {
-						Optional<District> districtResult = region.getDistricts().stream()
-								.filter(r -> r.getName().equals(districtName))
+			for (Region region : regions) {
+
+				InfrastructureDataImporter.importFacilities(countryName, region, new FacilityConsumer() {
+
+					private District cachedDistrict = null;
+					private Community cachedCommunity = null;
+
+					@Override
+					public void consume(String regionName, String districtName, String communityName,
+							String facilityName, String city, String address, Double latitude, Double longitude,
+							FacilityType type, boolean publicOwnership) {
+
+						if (cachedDistrict == null || !cachedDistrict.getName().equals(districtName)) {
+							Optional<District> districtResult = region.getDistricts().stream()
+									.filter(r -> r.getName().equals(districtName)).findFirst();
+
+							if (districtResult.isPresent()) {
+								cachedDistrict = districtResult.get();
+							} else {
+								logger.warn("Could not find district '" + districtName + "' for facility '"
+										+ facilityName + "'");
+								return;
+							}
+						}
+
+						if (cachedCommunity == null || !cachedCommunity.getName().equals(communityName)) {
+							Optional<Community> communityResult = cachedDistrict.getCommunities().stream()
+									.filter(r -> r.getName().equals(communityName)).findFirst();
+
+							if (communityResult.isPresent()) {
+								cachedCommunity = communityResult.get();
+							} else {
+								logger.warn("Could not find community '" + communityName + "' for facility '"
+										+ facilityName + "'");
+								return;
+							}
+						}
+
+						Optional<Facility> facilityResult = facilities.stream()
+								.filter(r -> r.getName().equals(facilityName) && DataHelper.equal(r.getRegion(), region)
+										&& DataHelper.equal(r.getDistrict(), cachedDistrict)
+										&& DataHelper.equal(r.getCommunity(), cachedCommunity))
 								.findFirst();
 
-						if (districtResult.isPresent()) {
-							cachedDistrict = districtResult.get();
+						Facility facility;
+						if (facilityResult.isPresent()) {
+							facility = facilityResult.get();
 						} else {
-							logger.warn("Could not find district '" + districtName + "' for facility '" + facilityName + "'");
-							return;
+							facility = new Facility();
+							facility.setName(facilityName);
+							facility.setRegion(region);
+							facility.setDistrict(cachedDistrict);
+							facility.setCommunity(cachedCommunity);
 						}
-					}
-					
-					if (cachedCommunity == null || !cachedCommunity.getName().equals(communityName)) {
-						Optional<Community> communityResult = cachedDistrict.getCommunities().stream()
-								.filter(r -> r.getName().equals(communityName))
-								.findFirst();
 
-						if (communityResult.isPresent()) {
-							cachedCommunity = communityResult.get();
-						} else {
-							logger.warn("Could not find community '" + communityName + "' for facility '" + facilityName + "'");
-							return;
-						}
-					}
+						facility.setCity(city);
+						facility.setLatitude(latitude);
+						facility.setLongitude(longitude);
+						facility.setPublicOwnership(publicOwnership);
+						facility.setType(type);
 
-					Optional<Facility> facilityResult = facilities.stream()
-							.filter(r -> r.getName().equals(facilityName)
-									&& DataHelper.equal(r.getRegion(), region)
-									&& DataHelper.equal(r.getDistrict(), cachedDistrict)
-									&& DataHelper.equal(r.getCommunity(), cachedCommunity))
-							.findFirst();
-					
-					Facility facility;
-					if (facilityResult.isPresent()) {
-						facility = facilityResult.get();
-					} else {
-						facility = new Facility();
-						facility.setName(facilityName);
-						facility.setRegion(region);
-						facility.setDistrict(cachedDistrict);
-						facility.setCommunity(cachedCommunity);
+						persist(facility);
 					}
-					
-					facility.setCity(city);
-					facility.setLatitude(latitude);
-					facility.setLongitude(longitude);
-					facility.setPublicOwnership(publicOwnership);
-					facility.setType(type);
-					
-					persist(facility);
-				}
-			});
-		}		
+				});
+			}
+
+			importLaboratories(countryName, regions, facilities);
+		}
 
 		// Add 'Other' health facility with a constant UUID that is not
 		// associated with a specific region
@@ -277,17 +286,24 @@ public class FacilityService extends AbstractAdoService<Facility> {
 			noneFacility.setUuid(FacilityDto.NONE_FACILITY_UUID);
 			persist(noneFacility);
 		}
-		
-		importLaboratories(countryName, regions, facilities);
+
+		// Add 'Other' laboratory with a constant UUID
+		if (getByUuid(FacilityDto.OTHER_LABORATORY_UUID) == null) {
+			Facility otherLaboratory = new Facility();
+			otherLaboratory.setName("OTHER_LABORATORY");
+			otherLaboratory.setUuid(FacilityDto.OTHER_LABORATORY_UUID);
+			otherLaboratory.setType(FacilityType.LABORATORY);
+			persist(otherLaboratory);
+		}
 	}
 
 	private void importLaboratories(String countryName, List<Region> regions, List<Facility> facilities) {
 
 		InfrastructureDataImporter.importLaboratories(countryName, new FacilityConsumer() {
-			
+
 			private Region cachedRegion = null;
 			private District cachedDistrict = null;
-			private Community cachedCommunity = null;				
+			private Community cachedCommunity = null;
 
 			@Override
 			public void consume(String regionName, String districtName, String communityName, String facilityName,
@@ -297,8 +313,7 @@ public class FacilityService extends AbstractAdoService<Facility> {
 				if (DataHelper.isNullOrEmpty(regionName)) {
 					cachedRegion = null; // no region is ok
 				} else if (cachedRegion == null || !cachedRegion.getName().equals(regionName)) {
-					Optional<Region> regionResult = regions.stream()
-							.filter(r -> r.getName().equals(regionName))
+					Optional<Region> regionResult = regions.stream().filter(r -> r.getName().equals(regionName))
 							.findFirst();
 
 					if (regionResult.isPresent()) {
@@ -307,45 +322,44 @@ public class FacilityService extends AbstractAdoService<Facility> {
 						logger.warn("Could not find region '" + regionName + "' for facility '" + facilityName + "'");
 						cachedRegion = null;
 					}
-				}	
-				
+				}
+
 				if (cachedRegion == null || DataHelper.isNullOrEmpty(districtName)) {
 					cachedDistrict = null; // no district is ok
 				} else if (cachedDistrict == null || !cachedDistrict.getName().equals(districtName)) {
 					Optional<District> districtResult = cachedRegion.getDistricts().stream()
-							.filter(r -> r.getName().equals(districtName))
-							.findFirst();
+							.filter(r -> r.getName().equals(districtName)).findFirst();
 
 					if (districtResult.isPresent()) {
 						cachedDistrict = districtResult.get();
 					} else {
-						logger.warn("Could not find district '" + districtName + "' for facility '" + facilityName + "'");
+						logger.warn(
+								"Could not find district '" + districtName + "' for facility '" + facilityName + "'");
 						cachedDistrict = null;
 					}
 				}
-				
+
 				if (cachedDistrict == null || DataHelper.isNullOrEmpty(communityName)) {
 					cachedCommunity = null; // no community is ok
 				} else if (cachedCommunity == null || !cachedCommunity.getName().equals(communityName)) {
 					Optional<Community> communityResult = cachedDistrict.getCommunities().stream()
-							.filter(r -> r.getName().equals(communityName))
-							.findFirst();
+							.filter(r -> r.getName().equals(communityName)).findFirst();
 
 					if (communityResult.isPresent()) {
 						cachedCommunity = communityResult.get();
 					} else {
-						logger.warn("Could not find community '" + communityName + "' for facility '" + facilityName + "'");
+						logger.warn(
+								"Could not find community '" + communityName + "' for facility '" + facilityName + "'");
 						cachedCommunity = null;
 					}
 				}
 
 				Optional<Facility> facilityResult = facilities.stream()
-						.filter(r -> r.getName().equals(facilityName)
-								&& DataHelper.equal(r.getRegion(), cachedRegion)
+						.filter(r -> r.getName().equals(facilityName) && DataHelper.equal(r.getRegion(), cachedRegion)
 								&& DataHelper.equal(r.getDistrict(), cachedDistrict)
 								&& DataHelper.equal(r.getCommunity(), cachedCommunity))
 						.findFirst();
-				
+
 				Facility facility;
 				if (facilityResult.isPresent()) {
 					facility = facilityResult.get();
@@ -356,13 +370,13 @@ public class FacilityService extends AbstractAdoService<Facility> {
 					facility.setDistrict(cachedDistrict);
 					facility.setCommunity(cachedCommunity);
 				}
-				
+
 				facility.setCity(city);
 				facility.setLatitude(latitude);
 				facility.setLongitude(longitude);
 				facility.setPublicOwnership(publicOwnership);
 				facility.setType(type);
-				
+
 				persist(facility);
 			}
 		});

@@ -62,7 +62,7 @@ public class VisitEditPagerAdapter extends FragmentStatePagerAdapter {
                 if(newVisit) {
                     String keyContactUuid = visitEditBundle.getString(VisitEditDataForm.KEY_CONTACT_UUID);
                     final Contact contact = DatabaseHelper.getContactDao().queryUuid(keyContactUuid);
-                    symptomsEditBundle.putSerializable(Visit.DISEASE, contact.getCaze().getDisease());
+                    symptomsEditBundle.putSerializable(Visit.DISEASE, contact.getCaseDisease());
                     symptomsEditBundle.putBoolean(SymptomsEditForm.NEW_SYMPTOMS, true);
                     symptomsEditBundle.putBoolean(SymptomsEditForm.FOR_VISIT, true);
                     symptomsEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.VISIT_CREATE);

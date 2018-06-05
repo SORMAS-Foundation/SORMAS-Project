@@ -39,17 +39,6 @@ public class EpiData extends AbstractDomainObject {
 	public static final String PRIMATES = "primates";
 	public static final String SWINE = "swine";
 	public static final String BIRDS = "birds";
-	public static final String POULTRY_EAT = "poultryEat";
-	public static final String POULTRY = "poultry";
-	public static final String POULTRY_DETAILS = "poultryDetails";
-	public static final String POULTRY_SICK = "poultrySick";
-	public static final String POULTRY_SICK_DETAILS = "poultrySickDetails";
-	public static final String POULTRY_DATE = "poultryDate";
-	public static final String POULTRY_LOCATION = "poultryLocation";
-	public static final String WILDBIRDS = "wildbirds";
-	public static final String WILDBIRDS_DETAILS = "wildbirdsDetails";
-	public static final String WILDBIRDS_DATE = "wildbirdsDate";
-	public static final String WILDBIRDS_LOCATION = "wildbirdsLocation";
 	public static final String CATTLE = "cattle";
 	public static final String OTHER_ANIMALS = "otherAnimals";
 	public static final String OTHER_ANIMALS_DETAILS = "otherAnimalsDetails";
@@ -65,22 +54,36 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown burialAttended;
 	private YesNoUnknown gatheringAttended;
 	private YesNoUnknown traveled;
+
+	private Date changeDateOfEmbeddedLists;
+	private List<EpiDataBurial> burials = new ArrayList<>();
+	private List<EpiDataGathering> gatherings = new ArrayList<>();
+	private List<EpiDataTravel> travels = new ArrayList<>();
+
+	private YesNoUnknown directContactConfirmedCase;
+	private YesNoUnknown directContactProbableCase;
+	private YesNoUnknown closeContactProbableCase;
+	private YesNoUnknown areaConfirmedCases;
+
+	private YesNoUnknown processingConfirmedCaseFluidUnsafe;
+	private YesNoUnknown percutaneousCaseBlood;
+	private YesNoUnknown directContactDeadUnsafe;
+	private YesNoUnknown processingSuspectedCaseSampleUnsafe;
+
+	private YesNoUnknown areaInfectedAnimals;
+	private YesNoUnknown sickDeadAnimals;
+	private String sickDeadAnimalsDetails;
+	private Date sickDeadAnimalsDate;
+	private String sickDeadAnimalsLocation;
+	private YesNoUnknown eatingRawAnimalsInInfectedArea;
+	private YesNoUnknown eatingRawAnimals;
+	private String eatingRawAnimalsDetails;
+	
 	private YesNoUnknown rodents;
 	private YesNoUnknown bats;
 	private YesNoUnknown primates;
 	private YesNoUnknown swine;
 	private YesNoUnknown birds;
-	private YesNoUnknown poultryEat;
-	private YesNoUnknown poultry;
-	private String poultryDetails;
-	private YesNoUnknown poultrySick;
-	private String poultrySickDetails;
-	private Date poultryDate;
-	private String poultryLocation;
-	private YesNoUnknown wildbirds;
-	private String wildbirdsDetails;
-	private Date wildbirdsDate;
-	private String wildbirdsLocation;
 	private YesNoUnknown cattle;
 	private YesNoUnknown otherAnimals;
 	private String otherAnimalsDetails;
@@ -93,11 +96,6 @@ public class EpiData extends AbstractDomainObject {
 	private Date dateOfLastExposure;
 	private String placeOfLastExposure;
 	private AnimalCondition animalCondition;
-
-	private Date changeDateOfEmbeddedLists;
-	private List<EpiDataBurial> burials = new ArrayList<>();
-	private List<EpiDataGathering> gatherings = new ArrayList<>();
-	private List<EpiDataTravel> travels = new ArrayList<>();
 
 	@ImportIgnore
 	@Enumerated(EnumType.STRING)
@@ -164,94 +162,6 @@ public class EpiData extends AbstractDomainObject {
 	}
 	public void setBirds(YesNoUnknown birds) {
 		this.birds = birds;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getPoultryEat() {
-		return poultryEat;
-	}
-	public void setPoultryEat(YesNoUnknown poultryEat) {
-		this.poultryEat = poultryEat;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getPoultry() {
-		return poultry;
-	}
-	public void setPoultry(YesNoUnknown poultry) {
-		this.poultry = poultry;
-	}
-
-	@Column(length=512)
-	public String getPoultryDetails() {
-		return poultryDetails;
-	}
-	public void setPoultryDetails(String poultryDetails) {
-		this.poultryDetails = poultryDetails;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getPoultrySick() {
-		return poultrySick;
-	}
-	public void setPoultrySick(YesNoUnknown poultrySick) {
-		this.poultrySick = poultrySick;
-	}
-
-	@Column(length=512)
-	public String getPoultrySickDetails() {
-		return poultrySickDetails;
-	}
-	public void setPoultrySickDetails(String poultrySickDetails) {
-		this.poultrySickDetails = poultrySickDetails;
-	}
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	public Date getPoultryDate() {
-		return poultryDate;
-	}
-	public void setPoultryDate(Date poultryDate) {
-		this.poultryDate = poultryDate;
-	}
-
-	@Column(length=512)
-	public String getPoultryLocation() {
-		return poultryLocation;
-	}
-	public void setPoultryLocation(String poultryLocation) {
-		this.poultryLocation = poultryLocation;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getWildbirds() {
-		return wildbirds;
-	}
-	public void setWildbirds(YesNoUnknown wildbirds) {
-		this.wildbirds = wildbirds;
-	}
-
-	@Column(length=512)
-	public String getWildbirdsDetails() {
-		return wildbirdsDetails;
-	}
-	public void setWildbirdsDetails(String wildbirdsDetails) {
-		this.wildbirdsDetails = wildbirdsDetails;
-	}
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	public Date getWildbirdsDate() {
-		return wildbirdsDate;
-	}
-	public void setWildbirdsDate(Date wildbirdsDate) {
-		this.wildbirdsDate = wildbirdsDate;
-	}
-
-	@Column(length=512)
-	public String getWildbirdsLocation() {
-		return wildbirdsLocation;
-	}
-	public void setWildbirdsLocation(String wildbirdsLocation) {
-		this.wildbirdsLocation = wildbirdsLocation;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -384,6 +294,119 @@ public class EpiData extends AbstractDomainObject {
 	}
 	public void setChangeDateOfEmbeddedLists(Date changeDateOfEmbeddedLists) {
 		this.changeDateOfEmbeddedLists = changeDateOfEmbeddedLists;
+	}
+
+	@Enumerated(EnumType.STRING)	
+	public YesNoUnknown getDirectContactConfirmedCase() {
+		return directContactConfirmedCase;
+	}
+	public void setDirectContactConfirmedCase(YesNoUnknown directContactConfirmedCase) {
+		this.directContactConfirmedCase = directContactConfirmedCase;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getDirectContactProbableCase() {
+		return directContactProbableCase;
+	}
+	public void setDirectContactProbableCase(YesNoUnknown directContactProbableCase) {
+		this.directContactProbableCase = directContactProbableCase;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getCloseContactProbableCase() {
+		return closeContactProbableCase;
+	}
+	public void setCloseContactProbableCase(YesNoUnknown closeContactProbableCase) {
+		this.closeContactProbableCase = closeContactProbableCase;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getAreaConfirmedCases() {
+		return areaConfirmedCases;
+	}
+	public void setAreaConfirmedCases(YesNoUnknown areaConfirmedCases) {
+		this.areaConfirmedCases = areaConfirmedCases;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getProcessingConfirmedCaseFluidUnsafe() {
+		return processingConfirmedCaseFluidUnsafe;
+	}
+	public void setProcessingConfirmedCaseFluidUnsafe(YesNoUnknown processingConfirmedCaseFluidUnsafe) {
+		this.processingConfirmedCaseFluidUnsafe = processingConfirmedCaseFluidUnsafe;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getPercutaneousCaseBlood() {
+		return percutaneousCaseBlood;
+	}
+	public void setPercutaneousCaseBlood(YesNoUnknown percutaneousCaseBlood) {
+		this.percutaneousCaseBlood = percutaneousCaseBlood;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getDirectContactDeadUnsafe() {
+		return directContactDeadUnsafe;
+	}
+	public void setDirectContactDeadUnsafe(YesNoUnknown directContactDeadUnsafe) {
+		this.directContactDeadUnsafe = directContactDeadUnsafe;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getProcessingSuspectedCaseSampleUnsafe() {
+		return processingSuspectedCaseSampleUnsafe;
+	}
+	public void setProcessingSuspectedCaseSampleUnsafe(YesNoUnknown processingSuspectedCaseSampleUnsafe) {
+		this.processingSuspectedCaseSampleUnsafe = processingSuspectedCaseSampleUnsafe;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getAreaInfectedAnimals() {
+		return areaInfectedAnimals;
+	}
+	public void setAreaInfectedAnimals(YesNoUnknown areaInfectedAnimals) {
+		this.areaInfectedAnimals = areaInfectedAnimals;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getSickDeadAnimals() {
+		return sickDeadAnimals;
+	}
+	public void setSickDeadAnimals(YesNoUnknown sickDeadAnimals) {
+		this.sickDeadAnimals = sickDeadAnimals;
+	}
+	@Column(length=512)
+	public String getSickDeadAnimalsDetails() {
+		return sickDeadAnimalsDetails;
+	}
+	public void setSickDeadAnimalsDetails(String sickDeadAnimalsDetails) {
+		this.sickDeadAnimalsDetails = sickDeadAnimalsDetails;
+	}
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getSickDeadAnimalsDate() {
+		return sickDeadAnimalsDate;
+	}
+	public void setSickDeadAnimalsDate(Date sickDeadAnimalsDate) {
+		this.sickDeadAnimalsDate = sickDeadAnimalsDate;
+	}
+	@Column(length=512)
+	public String getSickDeadAnimalsLocation() {
+		return sickDeadAnimalsLocation;
+	}
+	public void setSickDeadAnimalsLocation(String sickDeadAnimalsLocation) {
+		this.sickDeadAnimalsLocation = sickDeadAnimalsLocation;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getEatingRawAnimalsInInfectedArea() {
+		return eatingRawAnimalsInInfectedArea;
+	}
+	public void setEatingRawAnimalsInInfectedArea(YesNoUnknown eatingRawAnimalsInInfectedArea) {
+		this.eatingRawAnimalsInInfectedArea = eatingRawAnimalsInInfectedArea;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getEatingRawAnimals() {
+		return eatingRawAnimals;
+	}
+	public void setEatingRawAnimals(YesNoUnknown eatingRawAnimals) {
+		this.eatingRawAnimals = eatingRawAnimals;
+	}
+	@Column(length=512)
+	public String getEatingRawAnimalsDetails() {
+		return eatingRawAnimalsDetails;
+	}
+	public void setEatingRawAnimalsDetails(String eatingRawAnimalsDetails) {
+		this.eatingRawAnimalsDetails = eatingRawAnimalsDetails;
 	}
 	
 }

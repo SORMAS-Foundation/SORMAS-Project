@@ -11,6 +11,9 @@ import android.widget.AdapterView;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -21,10 +24,14 @@ import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.AbstractFormDialogFragment;
 import de.symeda.sormas.app.component.FieldHelper;
+import de.symeda.sormas.app.component.PropertyField;
 import de.symeda.sormas.app.component.SpinnerField;
+import de.symeda.sormas.app.component.TextField;
 import de.symeda.sormas.app.databinding.PreviousHospitalizationEditFragmentLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.validation.PreviousHospitalizationValidator;
+
+import static de.symeda.sormas.app.component.FacilityChangeDialogBuilder.NONE_HEALTH_FACILITY_DETAILS;
 
 
 public class PreviousHospitalizationForm extends AbstractFormDialogFragment<PreviousHospitalization> {
@@ -120,6 +127,32 @@ public class PreviousHospitalizationForm extends AbstractFormDialogFragment<Prev
             }
         });
         FieldHelper.initSpinnerField(binding.prevHospHealthFacility, facilities);
+
+        binding.prevHospHealthFacility.addValueChangedListener(new PropertyField.ValueChangeListener() {
+            @Override
+            public void onChange(PropertyField field) {
+                TextField facilityDetailsField = binding.prevHospHealthFacilityDetails;
+
+                Facility selectedFacility = (Facility) field.getValue();
+                if (selectedFacility != null) {
+                    boolean otherHealthFacility = selectedFacility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+                    boolean noneHealthFacility = selectedFacility.getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+                    if (otherHealthFacility) {
+                        facilityDetailsField.setVisibility(View.VISIBLE);
+                        facilityDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+                        PreviousHospitalizationValidator.setRequiredHintsForPreviousHospitalization(binding);
+                    } else if (noneHealthFacility) {
+                        facilityDetailsField.setVisibility(View.VISIBLE);
+                        facilityDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, NONE_HEALTH_FACILITY_DETAILS));
+                        PreviousHospitalizationValidator.setRequiredHintsForPreviousHospitalization(binding);
+                    } else {
+                        facilityDetailsField.setVisibility(View.GONE);
+                    }
+                } else {
+                    facilityDetailsField.setVisibility(View.GONE);
+                }
+            }
+        });
 
         PreviousHospitalizationValidator.setRequiredHintsForPreviousHospitalization(binding);
         binding.prevHospAdmissionDate.makeFieldSoftRequired();

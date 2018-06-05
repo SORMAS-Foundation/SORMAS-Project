@@ -1,16 +1,17 @@
 package de.symeda.sormas.api.statistics;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.Month;
 import de.symeda.sormas.api.MonthOfYear;
+import de.symeda.sormas.api.Quarter;
 import de.symeda.sormas.api.QuarterOfYear;
+import de.symeda.sormas.api.Year;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.person.Sex;
@@ -22,12 +23,12 @@ public class StatisticsCaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = 4997176351789123549L;
 
-	private List<Integer> onsetYears;
-	private List<Integer> receptionYears;
-	private List<Integer> reportYears;
-	private List<Integer> onsetQuarters;
-	private List<Integer> receptionQuarters;
-	private List<Integer> reportQuarters;
+	private List<Year> onsetYears;
+	private List<Year> receptionYears;
+	private List<Year> reportYears;
+	private List<Quarter> onsetQuarters;
+	private List<Quarter> receptionQuarters;
+	private List<Quarter> reportQuarters;
 	private List<Month> onsetMonths;
 	private List<Month> receptionMonths;
 	private List<Month> reportMonths;
@@ -51,34 +52,34 @@ public class StatisticsCaseCriteria implements Serializable {
 	private Date reportDateTo;
 	private List<Sex> sexes;
 	private Boolean sexUnknown;
-	private Set<IntegerRange> ageIntervals = new HashSet<>();
+	private List<IntegerRange> ageIntervals;
 	private List<Disease> diseases;
 	private List<CaseClassification> classifications;
 	private List<CaseOutcome> outcomes;
 	private List<RegionReferenceDto> regions;
 	private List<DistrictReferenceDto> districts;
 
-	public List<Integer> getOnsetYears() {
+	public List<Year> getOnsetYears() {
 		return onsetYears;
 	}
 
-	public List<Integer> getReceptionYears() {
+	public List<Year> getReceptionYears() {
 		return receptionYears;
 	}
 
-	public List<Integer> getReportYears() {
+	public List<Year> getReportYears() {
 		return reportYears;
 	}
 
-	public List<Integer> getOnsetQuarters() {
+	public List<Quarter> getOnsetQuarters() {
 		return onsetQuarters;
 	}
 
-	public List<Integer> getReceptionQuarters() {
+	public List<Quarter> getReceptionQuarters() {
 		return receptionQuarters;
 	}
 
-	public List<Integer> getReportQuarters() {
+	public List<Quarter> getReportQuarters() {
 		return reportQuarters;
 	}
 
@@ -169,12 +170,12 @@ public class StatisticsCaseCriteria implements Serializable {
 	public List<Sex> getSexes() {
 		return sexes;
 	}
-	
+
 	public Boolean isSexUnknown() {
 		return sexUnknown;
 	}
 
-	public Set<IntegerRange> getAgeIntervals() {
+	public List<IntegerRange> getAgeIntervals() {
 		return ageIntervals;
 	}
 
@@ -198,7 +199,7 @@ public class StatisticsCaseCriteria implements Serializable {
 		return districts;
 	}
 
-	public StatisticsCaseCriteria years(List<Integer> years, StatisticsCaseAttribute mainAttribute) {
+	public StatisticsCaseCriteria years(List<Year> years, StatisticsCaseAttribute mainAttribute) {
 		switch (mainAttribute) {
 		case ONSET_TIME:
 			this.onsetYears = years;
@@ -216,7 +217,7 @@ public class StatisticsCaseCriteria implements Serializable {
 		return this;
 	}
 
-	public StatisticsCaseCriteria quarters(List<Integer> quarters, StatisticsCaseAttribute mainAttribute) {
+	public StatisticsCaseCriteria quarters(List<Quarter> quarters, StatisticsCaseAttribute mainAttribute) {
 		switch (mainAttribute) {
 		case ONSET_TIME:
 			this.onsetQuarters = quarters;
@@ -341,7 +342,7 @@ public class StatisticsCaseCriteria implements Serializable {
 		default:
 			throw new IllegalArgumentException(mainAttribute.toString());
 		}
-		
+
 		return this;
 	}
 
@@ -349,13 +350,17 @@ public class StatisticsCaseCriteria implements Serializable {
 		this.sexes = sexes;
 		return this;
 	}
-	
+
 	public StatisticsCaseCriteria sexUnknown(Boolean sexUnknown) {
 		this.sexUnknown = sexUnknown;
 		return this;
 	}
 
 	public StatisticsCaseCriteria addAgeIntervals(List<IntegerRange> ageIntervals) {
+		if (this.ageIntervals == null) {
+			this.ageIntervals = new ArrayList<>();
+		}
+		
 		this.ageIntervals.addAll(ageIntervals);
 		return this;
 	}
@@ -383,6 +388,114 @@ public class StatisticsCaseCriteria implements Serializable {
 	public StatisticsCaseCriteria districts(List<DistrictReferenceDto> districts) {
 		this.districts = districts;
 		return this;
+	}
+
+	public List<? extends StatisticsGroupingKey> getFilterValuesForGrouping(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
+		if (subAttribute != null) {
+			switch (subAttribute) {
+			case REGION:
+				return regions;
+			case DISTRICT:
+				return districts;
+			case YEAR:
+				switch (attribute) {
+				case ONSET_TIME:
+					return onsetYears;
+				case RECEPTION_TIME:
+					return receptionYears;
+				case REPORT_TIME:
+					return reportYears;
+				default:
+					throw new IllegalArgumentException(attribute.toString());
+				}
+			case QUARTER:
+				switch (attribute) {
+				case ONSET_TIME:
+					return onsetQuarters;
+				case RECEPTION_TIME:
+					return receptionQuarters;
+				case REPORT_TIME:
+					return reportQuarters;
+				default:
+					throw new IllegalArgumentException(attribute.toString());
+				}
+			case MONTH:
+				switch (attribute) {
+				case ONSET_TIME:
+					return onsetMonths;
+				case RECEPTION_TIME:
+					return receptionMonths;
+				case REPORT_TIME:
+					return reportMonths;
+				default:
+					throw new IllegalArgumentException(attribute.toString());
+				}
+			case EPI_WEEK:
+				switch (attribute) {
+				case ONSET_TIME:
+					return onsetEpiWeeks;
+				case RECEPTION_TIME:
+					return receptionEpiWeeks;
+				case REPORT_TIME:
+					return reportEpiWeeks;
+				default:
+					throw new IllegalArgumentException(attribute.toString());
+				}
+			case QUARTER_OF_YEAR:
+				switch (attribute) {
+				case ONSET_TIME:
+					return onsetQuartersOfYear;
+				case RECEPTION_TIME:
+					return receptionQuartersOfYear;
+				case REPORT_TIME:
+					return reportQuartersOfYear;
+				default:
+					throw new IllegalArgumentException(attribute.toString());
+				}
+			case MONTH_OF_YEAR:
+				switch (attribute) {
+				case ONSET_TIME:
+					return onsetMonthsOfYear;
+				case RECEPTION_TIME:
+					return receptionMonthsOfYear;
+				case REPORT_TIME:
+					return reportMonthsOfYear;
+				default:
+					throw new IllegalArgumentException(attribute.toString());
+				}
+			case EPI_WEEK_OF_YEAR:
+				switch (attribute) {
+				case ONSET_TIME:
+					return onsetEpiWeeksOfYear;
+				case RECEPTION_TIME:
+					return receptionEpiWeeksOfYear;
+				case REPORT_TIME:
+					return reportEpiWeeksOfYear;
+				default:
+					throw new IllegalArgumentException(attribute.toString());
+				}
+			default: throw new IllegalArgumentException(subAttribute.toString());
+			}
+		} else {
+			switch (attribute) {
+			case DISEASE:
+				return diseases;
+			case SEX:
+				return sexes;
+			case CLASSIFICATION:
+				return classifications;
+			case OUTCOME:
+				return outcomes;
+			case AGE_INTERVAL_1_YEAR:
+			case AGE_INTERVAL_5_YEARS:
+			case AGE_INTERVAL_CHILDREN_COARSE:
+			case AGE_INTERVAL_CHILDREN_FINE:
+			case AGE_INTERVAL_CHILDREN_MEDIUM:
+			case AGE_INTERVAL_BASIC:
+				return ageIntervals;
+			default: throw new IllegalArgumentException(attribute.toString());
+			}
+		}
 	}
 
 }

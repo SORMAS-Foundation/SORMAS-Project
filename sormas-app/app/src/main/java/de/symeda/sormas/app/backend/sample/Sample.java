@@ -75,6 +75,9 @@ public class Sample extends AbstractDomainObject {
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3, canBeNull = false)
     private Facility lab;
 
+    @Column(length = 512)
+    private String labDetails;
+
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date shipmentDate;
 
@@ -184,6 +187,14 @@ public class Sample extends AbstractDomainObject {
 
     public void setLab(Facility lab) {
         this.lab = lab;
+    }
+
+    public String getLabDetails() {
+        return labDetails;
+    }
+
+    public void setLabDetails(String labDetails) {
+        this.labDetails = labDetails;
     }
 
     public Date getShipmentDate() {

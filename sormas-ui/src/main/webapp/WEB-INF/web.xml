@@ -21,7 +21,7 @@
         <role-name>CONTACT_SUPERVISOR</role-name>
     </security-role>
 	<security-role>
-        <role-name>RUMOR_MANAGER</role-name>
+        <role-name>EVENT_OFFICER</role-name>
     </security-role>
 	<security-role>
         <role-name>LAB_USER</role-name>

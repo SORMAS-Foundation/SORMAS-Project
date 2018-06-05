@@ -108,7 +108,8 @@ public class SymptomsEditForm extends FormTab {
                 binding.symptomsHiccups, binding.symptomsBackache, binding.symptomsJaundice, binding.symptomsBulgingFontanelle,
                 binding.symptomsDarkUrine, binding.symptomsRapidBreathing, binding.symptomsSwollenGlands,
                 binding.symptomsOtherNonHemorrhagicSymptoms, binding.symptomsLesions, binding.symptomsLymphadenopathyAxillary,
-                binding.symptomsLymphadenopathyCervical, binding.symptomsLymphadenopathyInguinal, binding.symptomsChillsSweats, binding.symptomsBedridden,
+                binding.symptomsLymphadenopathyCervical, binding.symptomsLymphadenopathyInguinal, binding.symptomsMeningealSigns,
+                binding.symptomsChillsSweats, binding.symptomsBedridden,
                 binding.symptomsOralUlcers, binding.symptomsBlackeningDeathOfTissue, binding.symptomsBuboesGroinArmpitNeck, binding.symptomsPainfulLymphadenitis);
 
         conditionalBleedingSymptoms = Arrays.asList(binding.symptomsGumsBleeding, binding.symptomsInjectionSiteBleeding,
@@ -343,6 +344,7 @@ public class SymptomsEditForm extends FormTab {
     private void visibilityLesionsFields() {
         SymptomState symptomState = binding.symptomsLesions.getValue();
         binding.symptomsLesionsLayout.setVisibility(symptomState == SymptomState.YES ? View.VISIBLE : View.GONE);
+        binding.symptomsLesionsOnsetDate.setVisibility(symptomState == SymptomState.YES ? View.VISIBLE : View.GONE);
         if (symptomState != SymptomState.YES) {
             for (PropertyField field : lesionsFields) {
                 field.setValue(null);
@@ -360,6 +362,8 @@ public class SymptomsEditForm extends FormTab {
                     field.setValue(null);
                 }
             }
+        } else {
+            binding.symptomsMonkeypoxLayout.setVisibility(View.GONE);
         }
     }
 

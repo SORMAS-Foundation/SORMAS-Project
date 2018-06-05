@@ -34,8 +34,8 @@ public class SampleTestController {
 		return stf.getAllBySample(sampleRef);
 	}
 	
-	public void create(SampleReferenceDto sampleRef, SampleTestGrid grid) {
-		SampleTestEditForm createForm = new SampleTestEditForm(true, UserRight.SAMPLETEST_CREATE);
+	public void create(SampleReferenceDto sampleRef, SampleTestGrid grid, int caseSampleCount) {
+		SampleTestEditForm createForm = new SampleTestEditForm(true, UserRight.SAMPLETEST_CREATE, caseSampleCount);
 		createForm.setValue(createNewSampleTest(sampleRef));
 		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(createForm, createForm.getFieldGroup());
 	
@@ -53,11 +53,11 @@ public class SampleTestController {
 		VaadinUiUtil.showModalPopupWindow(editView, "Create new sample test result"); 
 	}
 	
-	public void edit(SampleTestDto dto, SampleTestGrid grid) {
+	public void edit(SampleTestDto dto, SampleTestGrid grid, int caseSampleCount) {
 		// get fresh data
 		SampleTestDto newDto = stf.getByUuid(dto.getUuid());
 		
-		SampleTestEditForm form = new SampleTestEditForm(false, UserRight.SAMPLETEST_EDIT);
+		SampleTestEditForm form = new SampleTestEditForm(false, UserRight.SAMPLETEST_EDIT, caseSampleCount);
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<SampleTestEditForm> editView = new CommitDiscardWrapperComponent<SampleTestEditForm>(form, form.getFieldGroup());
 

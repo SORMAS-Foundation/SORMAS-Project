@@ -26,7 +26,7 @@ public enum UserRole {
 	CASE_OFFICER(false, true),	
 	CONTACT_SUPERVISOR(true, false),	
 	CONTACT_OFFICER(false, true),	
-	RUMOR_MANAGER(true, false),	
+	EVENT_OFFICER(true, false),	
 	LAB_USER(false, false),
 	NATIONAL_OBSERVER(false, false),
 	STATE_OBSERVER(false, false)
@@ -43,7 +43,7 @@ public enum UserRole {
 	public static final String _CASE_OFFICER = CASE_OFFICER.name();
 	public static final String _CONTACT_SUPERVISOR = CONTACT_SUPERVISOR.name();
 	public static final String _CONTACT_OFFICER = CONTACT_OFFICER.name();
-	public static final String _RUMOR_MANAGER = RUMOR_MANAGER.name();
+	public static final String _EVENT_OFFICER = EVENT_OFFICER.name();
 	public static final String _LAB_USER = LAB_USER.name();
 	public static final String _NATIONAL_OBSERVER = NATIONAL_OBSERVER.name();
 	
@@ -118,8 +118,8 @@ public enum UserRole {
 		case CONTACT_SUPERVISOR:
 			collection.add(CONTACT_OFFICER);
 			break;
-		case RUMOR_MANAGER:
-			collection.add(RUMOR_MANAGER);
+		case EVENT_OFFICER:
+			collection.add(EVENT_OFFICER);
 			break;
 		case LAB_USER:
 			collection.add(LAB_USER);
@@ -142,7 +142,7 @@ public enum UserRole {
 		case ADMIN:
 			return Arrays.asList(
 					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
-					RUMOR_MANAGER, LAB_USER,
+					EVENT_OFFICER, LAB_USER,
 					NATIONAL_USER, NATIONAL_OBSERVER
 					);
 		case NATIONAL_USER:
@@ -154,15 +154,15 @@ public enum UserRole {
 		case CASE_SUPERVISOR:
 		case CONTACT_SUPERVISOR:
 		case SURVEILLANCE_SUPERVISOR:
-		case RUMOR_MANAGER:
+		case EVENT_OFFICER:
 			return Arrays.asList(
 					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
-					RUMOR_MANAGER, LAB_USER, ADMIN
+					EVENT_OFFICER, LAB_USER, ADMIN
 					);
 		case LAB_USER:
 			return Arrays.asList(
 					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
-					RUMOR_MANAGER, LAB_USER, NATIONAL_USER, ADMIN
+					EVENT_OFFICER, LAB_USER, NATIONAL_USER, ADMIN
 					);
 		case SURVEILLANCE_OFFICER:
 		case CASE_OFFICER:

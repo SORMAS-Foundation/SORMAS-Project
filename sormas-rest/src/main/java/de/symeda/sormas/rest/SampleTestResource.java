@@ -10,7 +10,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
@@ -35,9 +34,9 @@ public class SampleTestResource {
 		return sampleTests;
 	}
 	
-	@GET
+	@POST
 	@Path("/query")
-	public List<SampleTestDto> getByUuids(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
+	public List<SampleTestDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
 
 		List<SampleTestDto> result = FacadeProvider.getSampleTestFacade().getByUuids(uuids); 
 		return result;

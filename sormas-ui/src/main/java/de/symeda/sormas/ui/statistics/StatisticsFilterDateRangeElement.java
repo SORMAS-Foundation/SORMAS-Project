@@ -22,7 +22,7 @@ public class StatisticsFilterDateRangeElement extends StatisticsFilterElement {
 	}
 	
 	@Override
-	List<TokenizableValue> getSelectedValues() {
+	public List<TokenizableValue> getSelectedValues() {
 		List<TokenizableValue> values = new ArrayList<>();
 		TokenizableValue fromValue = new TokenizableValue(dateFromField.getValue(), 0);
 		TokenizableValue toValue = new TokenizableValue(dateToField.getValue(), 1);

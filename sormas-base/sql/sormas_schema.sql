@@ -2335,3 +2335,157 @@ LANGUAGE plpgsql;
 -- e.g. SELECT epi_week('2015-12-28'), epi_year('2015-12-28'); -- 01-2016
 
 INSERT INTO schema_version (version_number, comment) VALUES (103, 'Epi week functions #541');
+
+-- 2018-05-28 Creating new event in app not working #614
+
+ALTER TABLE events ALTER COLUMN typeofplace DROP NOT NULL;
+ALTER TABLE events ALTER COLUMN srcfirstname DROP NOT NULL;
+ALTER TABLE events ALTER COLUMN srclastname DROP NOT NULL;
+ALTER TABLE events ALTER COLUMN srctelno DROP NOT NULL;
+ALTER TABLE events_history ALTER COLUMN typeofplace DROP NOT NULL;
+ALTER TABLE events_history ALTER COLUMN srcfirstname DROP NOT NULL;
+ALTER TABLE events_history ALTER COLUMN srclastname DROP NOT NULL;
+ALTER TABLE events_history ALTER COLUMN srctelno DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (104, 'Creating new event in app not working #614');
+
+-- 2018-05-31 Case data changes for automatic case classification #628
+
+ALTER TABLE cases ADD COLUMN denguefevertype character varying(255);
+ALTER TABLE cases ADD COLUMN classificationcomment character varying(512);
+ALTER TABLE cases ADD COLUMN classificationdate timestamp without time zone;
+ALTER TABLE cases ADD COLUMN classificationuser_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_classificationuser_id FOREIGN KEY (classificationuser_id) REFERENCES public.users (id);
+
+UPDATE cases SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+UPDATE cases_history SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+UPDATE events SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+UPDATE events_history SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+UPDATE outbreak SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+UPDATE outbreak_history SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+UPDATE person SET causeofdeathdisease = 'NEW_INFLUENCA' where causeofdeathdisease = 'AVIAN_INFLUENCA';
+UPDATE person_history SET causeofdeathdisease = 'NEW_INFLUENCA' where causeofdeathdisease = 'AVIAN_INFLUENCA';
+UPDATE visit SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+UPDATE visit_history SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+UPDATE weeklyreportentry SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
+
+INSERT INTO schema_version (version_number, comment) VALUES (105, 'Case data changes for automatic case classification #628');-- 2018-05-31 Add description field for other health facility to previous hospitalizations and person occupations #549
+
+-- 2018-06-01 Add description field for other health facility to previous hospitalizations and person occupations #549
+
+ALTER TABLE previoushospitalization ADD COLUMN healthfacilitydetails varchar(512);
+ALTER TABLE previoushospitalization_history ADD COLUMN healthfacilitydetails varchar(512);
+ALTER TABLE person ADD COLUMN occupationfacilitydetails varchar(512);
+ALTER TABLE person_history ADD COLUMN occupationfacilitydetails varchar(512);
+ALTER TABLE person ADD COLUMN occupationregion_id bigint;
+ALTER TABLE person ADD COLUMN occupationdistrict_id bigint;
+ALTER TABLE person ADD COLUMN occupationcommunity_id bigint;
+ALTER TABLE person_history ADD COLUMN occupationregion_id bigint;
+ALTER TABLE person_history ADD COLUMN occupationdistrict_id bigint;
+ALTER TABLE person_history ADD COLUMN occupationcommunity_id bigint;
+
+ALTER TABLE person ADD CONSTRAINT fk_person_occupationregion_id FOREIGN KEY (occupationregion_id) REFERENCES region (id);
+ALTER TABLE person ADD CONSTRAINT fk_person_occupationdistrict_id FOREIGN KEY (occupationdistrict_id) REFERENCES district (id);
+ALTER TABLE person ADD CONSTRAINT fk_person_occupationcommunity_id FOREIGN KEY (occupationcommunity_id) REFERENCES community (id);
+
+UPDATE person SET occupationregion_id = (SELECT region_id FROM facility WHERE facility.id = person.occupationfacility_id) WHERE occupationfacility_id IS NOT NULL;
+UPDATE person SET occupationdistrict_id = (SELECT district_id FROM facility WHERE facility.id = person.occupationfacility_id) WHERE occupationfacility_id IS NOT NULL;
+UPDATE person SET occupationcommunity_id = (SELECT community_id FROM facility WHERE facility.id = person.occupationfacility_id) WHERE occupationfacility_id IS NOT NULL;
+
+-- 2018-06-01 Case symptoms changes for automatic case classification #631
+
+ALTER TABLE symptoms ADD COLUMN meningealsigns varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN meningealsigns varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (107, 'Case symptoms changes for automatic case classification #631');
+
+-- 2018-06-04 Add "Other laboratory" option for sample and sample test #440
+
+ALTER TABLE samples ADD COLUMN labdetails varchar(512);
+ALTER TABLE samples_history ADD COLUMN labdetails varchar(512);
+ALTER TABLE sampletest ADD COLUMN labdetails varchar(512);
+ALTER TABLE sampletest_history ADD COLUMN labdetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (108, 'Add "Other laboratory" option for sample and sample test #440');
+
+-- 2018-06-05 Sample and sample test data model changes #627
+
+UPDATE sampletest SET testtype = 'IGM_SERUM_ANTIBODY' WHERE testtype = 'SERUM_ANTIBODY_TITER';
+UPDATE sampletest SET testtype = 'IGM_SERUM_ANTIBODY' WHERE testtype = 'ELISA';
+UPDATE sampletest SET testtype = 'PCR_RT_PCR' WHERE testtype = 'PCR' OR testtype = 'RT_PCR';
+UPDATE sampletest_history SET testtype = 'IGM_SERUM_ANTIBODY' WHERE testtype = 'SERUM_ANTIBODY_TITER';
+UPDATE sampletest_history SET testtype = 'IGM_SERUM_ANTIBODY' WHERE testtype = 'ELISA';
+UPDATE sampletest_history SET testtype = 'PCR_RT_PCR' WHERE testtype = 'PCR' OR testtype = 'RT_PCR';
+UPDATE samples SET suggestedtypeoftest = 'IGM_SERUM_ANTIBODY' WHERE suggestedtypeoftest = 'SERUM_ANTIBODY_TITER';
+UPDATE samples SET suggestedtypeoftest = 'IGM_SERUM_ANTIBODY' WHERE suggestedtypeoftest = 'ELISA';
+UPDATE samples SET suggestedtypeoftest = 'PCR_RT_PCR' WHERE suggestedtypeoftest = 'PCR' OR suggestedtypeoftest = 'RT_PCR';
+UPDATE samples_history SET suggestedtypeoftest = 'IGM_SERUM_ANTIBODY' WHERE suggestedtypeoftest = 'SERUM_ANTIBODY_TITER';
+UPDATE samples_history SET suggestedtypeoftest = 'IGM_SERUM_ANTIBODY' WHERE suggestedtypeoftest = 'ELISA';
+UPDATE samples_history SET suggestedtypeoftest = 'PCR_RT_PCR' WHERE suggestedtypeoftest = 'PCR' OR suggestedtypeoftest = 'RT_PCR';
+
+INSERT INTO schema_version (version_number, comment) VALUES (109, 'Sample and sample test data model changes #627');
+
+-- 2018-06-04 Case epi data changes for automatic case classification #632
+
+ALTER TABLE epidata ADD COLUMN directcontactconfirmedcase varchar(255);
+ALTER TABLE epidata ADD COLUMN directcontactprobablecase varchar(255);
+ALTER TABLE epidata ADD COLUMN closecontactprobablecase varchar(255);
+ALTER TABLE epidata ADD COLUMN areaconfirmedcases varchar(255);
+ALTER TABLE epidata ADD COLUMN processingconfirmedcasefluidunsafe varchar(255);
+ALTER TABLE epidata ADD COLUMN percutaneouscaseblood varchar(255);
+ALTER TABLE epidata ADD COLUMN directcontactdeadunsafe varchar(255);
+ALTER TABLE epidata ADD COLUMN processingsuspectedcasesampleunsafe varchar(255);
+ALTER TABLE epidata ADD COLUMN areainfectedanimals varchar(255);
+ALTER TABLE epidata RENAME COLUMN poultrysick TO sickdeadanimals;
+ALTER TABLE epidata RENAME COLUMN poultrysickdetails TO sickdeadanimalsdetails;
+ALTER TABLE epidata RENAME COLUMN poultrydate TO sickdeadanimalsdate;
+ALTER TABLE epidata RENAME COLUMN poultrylocation TO sickdeadanimalslocation;
+ALTER TABLE epidata ADD COLUMN eatingrawanimalsininfectedarea varchar(255);
+ALTER TABLE epidata RENAME COLUMN poultryeat TO eatingrawanimals;
+ALTER TABLE epidata ADD COLUMN eatingrawanimalsdetails varchar(512);
+ALTER TABLE epidata DROP COLUMN poultry;
+ALTER TABLE epidata DROP COLUMN poultrydetails;
+ALTER TABLE epidata DROP COLUMN wildbirds;
+ALTER TABLE epidata DROP COLUMN wildbirdsdetails;
+ALTER TABLE epidata DROP COLUMN wildbirdsdate;
+ALTER TABLE epidata DROP COLUMN wildbirdslocation;
+
+ALTER TABLE epidata_history ADD COLUMN directcontactconfirmedcase varchar(255);
+ALTER TABLE epidata_history ADD COLUMN directcontactprobablecase varchar(255);
+ALTER TABLE epidata_history ADD COLUMN closecontactprobablecase varchar(255);
+ALTER TABLE epidata_history ADD COLUMN areaconfirmedcases varchar(255);
+ALTER TABLE epidata_history ADD COLUMN processingconfirmedcasefluidunsafe varchar(255);
+ALTER TABLE epidata_history ADD COLUMN percutaneouscaseblood varchar(255);
+ALTER TABLE epidata_history ADD COLUMN directcontactdeadunsafe varchar(255);
+ALTER TABLE epidata_history ADD COLUMN processingsuspectedcasesampleunsafe varchar(255);
+ALTER TABLE epidata_history ADD COLUMN areainfectedanimals varchar(255);
+ALTER TABLE epidata_history RENAME COLUMN poultrysick TO sickdeadanimals;
+ALTER TABLE epidata_history RENAME COLUMN poultrysickdetails TO sickdeadanimalsdetails;
+ALTER TABLE epidata_history RENAME COLUMN poultrydate TO sickdeadanimalsdate;
+ALTER TABLE epidata_history RENAME COLUMN poultrylocation TO sickdeadanimalslocation;
+ALTER TABLE epidata_history ADD COLUMN eatingrawanimalsininfectedarea varchar(255);
+ALTER TABLE epidata_history RENAME COLUMN poultryeat TO eatingrawanimals;
+ALTER TABLE epidata_history ADD COLUMN eatingrawanimalsdetails varchar(512);
+ALTER TABLE epidata_history DROP COLUMN poultry;
+ALTER TABLE epidata_history DROP COLUMN poultrydetails;
+ALTER TABLE epidata_history DROP COLUMN wildbirds;
+ALTER TABLE epidata_history DROP COLUMN wildbirdsdetails;
+ALTER TABLE epidata_history DROP COLUMN wildbirdsdate;
+ALTER TABLE epidata_history DROP COLUMN wildbirdslocation;
+
+INSERT INTO schema_version (version_number, comment) VALUES (110, 'Case epi data changes for automatic case classification #632');
+
+-- 2018-06-04 Add "contact with source case" to epi data #629
+
+ALTER TABLE contact ADD COLUMN resultingcaseuser_id bigint;
+ALTER TABLE contact_history ADD COLUMN resultingcaseuser_id bigint;
+ALTER TABLE contact ADD CONSTRAINT fk_contact_resultingcaseuser_id FOREIGN KEY (resultingcaseuser_id) REFERENCES public.users (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (111, 'Add "contact with source case" to epi data #629');
+
+-- 2018-06-05 Rename Rumor Manager user role to "Event Officer" #633
+
+UPDATE userroles SET userrole = 'EVENT_OFFICER' WHERE userrole = 'RUMOR_MANAGER';
+UPDATE userroles_history SET userrole = 'EVENT_OFFICER' WHERE userrole = 'RUMOR_MANAGER';
+
+INSERT INTO schema_version (version_number, comment) VALUES (112, 'Rename Rumor Manager user role to "Event Officer" #633');

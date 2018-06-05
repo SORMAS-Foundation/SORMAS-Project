@@ -11,7 +11,7 @@
         <group-name>SURVEILLANCE_SUPERVISOR</group-name>
         <group-name>CASE_SUPERVISOR</group-name>
         <group-name>CONTACT_SUPERVISOR</group-name>
-        <group-name>RUMOR_MANAGER</group-name>
+        <group-name>EVENT_OFFICER</group-name>
         <group-name>LAB_USER</group-name>
         <group-name>NATIONAL_USER</group-name>
         <group-name>NATIONAL_OBSERVER</group-name>
@@ -34,8 +34,8 @@
         <group-name>CONTACT_SUPERVISOR</group-name>
     </security-role-mapping>
     <security-role-mapping>
-        <role-name>RUMOR_MANAGER</role-name>
-        <group-name>RUMOR_MANAGER</group-name>
+        <role-name>EVENT_OFFICER</role-name>
+        <group-name>EVENT_OFFICER</group-name>
     </security-role-mapping>
     <security-role-mapping>
         <role-name>LAB_USER</role-name>

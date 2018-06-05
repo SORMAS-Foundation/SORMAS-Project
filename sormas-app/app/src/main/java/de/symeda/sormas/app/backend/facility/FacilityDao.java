@@ -107,9 +107,24 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
         return facilities;
     }
 
-    public List<Facility> getLaboratories() {
-        List<Facility> facilities = queryForEq(Facility.TYPE, FacilityType.LABORATORY, Facility.NAME, true);
-        return facilities;
+    public List<Facility> getLaboratories(boolean includeOtherLaboratory) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.eq(Facility.TYPE, FacilityType.LABORATORY);
+            where.and().eq(AbstractDomainObject.SNAPSHOT, false);
+            where.and().ne(Facility.UUID, FacilityDto.OTHER_LABORATORY_UUID).query();
+            List<Facility> facilities = builder.orderBy(Facility.NAME, true).query();
+
+            if (includeOtherLaboratory) {
+                facilities.add(queryUuid(FacilityDto.OTHER_LABORATORY_UUID));
+            }
+
+            return facilities;
+        } catch (SQLException | IllegalArgumentException e) {
+            Log.e(getTableName(), "Could not perform queryForEq");
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

@@ -19,13 +19,16 @@ import javax.persistence.TemporalType;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.PlagueType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.epidata.EpiData;
@@ -85,7 +88,13 @@ public class Case extends AbstractDomainObject {
 	private Disease disease;
 	private String diseaseDetails;
 	private PlagueType plagueType;
+	private DengueFeverType dengueFeverType;
+	
 	private CaseClassification caseClassification;
+	private User classificationUser;
+	private Date classificationDate;
+	private String classificationComment;
+	
 	private InvestigationStatus investigationStatus;
 	private Hospitalization hospitalization;
 	private EpiData epiData;
@@ -168,6 +177,14 @@ public class Case extends AbstractDomainObject {
 	public void setPlagueType(PlagueType plagueType) {
 		this.plagueType = plagueType;
 	}
+
+	@Enumerated(EnumType.STRING)
+	public DengueFeverType getDengueFeverType() {
+		return dengueFeverType;
+	}
+	public void setDengueFeverType(DengueFeverType dengueFeverType) {
+		this.dengueFeverType = dengueFeverType;
+	}
 	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable=false)
@@ -176,6 +193,31 @@ public class Case extends AbstractDomainObject {
 	}
 	public void setCaseClassification(CaseClassification caseStatus) {
 		this.caseClassification = caseStatus;
+	}
+
+	@ManyToOne(cascade = {})
+	@JoinColumn(nullable=true)
+	public User getClassificationUser() {
+		return classificationUser;
+	}
+	public void setClassificationUser(User classificationUser) {
+		this.classificationUser = classificationUser;
+	}
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getClassificationDate() {
+		return classificationDate;
+	}
+	public void setClassificationDate(Date classificationDate) {
+		this.classificationDate = classificationDate;
+	}
+	
+	@Column(length=512)
+	public String getClassificationComment() {
+		return classificationComment;
+	}
+	public void setClassificationComment(String classificationComment) {
+		this.classificationComment = classificationComment;
 	}
 	
 	@ManyToOne(cascade = {})

@@ -6,6 +6,7 @@ public enum ContactProximity {
 	TOUCHED_FLUID,
 	PHYSICAL_CONTACT,
 	CLOTHES_OR_OTHER,
+	CLOSE_CONTACT,
 	SAME_ROOM
 	;
 	

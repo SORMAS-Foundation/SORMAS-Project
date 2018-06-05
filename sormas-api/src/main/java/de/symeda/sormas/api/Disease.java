@@ -1,7 +1,9 @@
 package de.symeda.sormas.api;
 
-public enum Disease {
-	AVIAN_INFLUENCA,
+import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
+
+public enum Disease implements StatisticsGroupingKey {
+	
 	CHOLERA,
 	CSM,
 	DENGUE,
@@ -9,14 +11,14 @@ public enum Disease {
 	LASSA,
 	MEASLES,
 	MONKEYPOX,
+	NEW_INFLUENCA,
 	PLAGUE,
 	YELLOW_FEVER,
-	OTHER
-	;
+	OTHER;
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	};
+	}
 	
 	public String toShortString() {
 		return I18nProperties.getEnumCaption(this, "Short");
@@ -33,5 +35,17 @@ public enum Disease {
 		default:
 			return false;		
 		}
+	}
+
+	@Override
+	public int keyCompareTo(StatisticsGroupingKey o) {
+		if (o == null) {
+			throw new NullPointerException("Can't compare to null.");
+		}
+		if (o.getClass() != this.getClass()) {
+			throw new UnsupportedOperationException("Can't compare to class " + o.getClass().getName() + " that differs from " + this.getClass().getName());
+		}
+		
+		return this.toString().compareTo(o.toString());
 	}
 }

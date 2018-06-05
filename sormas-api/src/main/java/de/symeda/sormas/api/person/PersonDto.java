@@ -6,6 +6,9 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
@@ -47,7 +50,11 @@ public class PersonDto extends EntityDto {
 	
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
+	public static final String OCCUPATION_REGION = "occupationRegion";
+	public static final String OCCUPATION_DISTRICT = "occupationDistrict";
+	public static final String OCCUPATION_COMMUNITY = "occupationCommunity";
 	public static final String OCCUPATION_FACILITY = "occupationFacility";
+	public static final String OCCUPATION_FACILITY_DETAILS = "occupationFacilityDetails";
 	
 	@Outbreaks
 	private Sex sex;
@@ -92,7 +99,11 @@ public class PersonDto extends EntityDto {
 	
 	private OccupationType occupationType;
 	private String occupationDetails;
+	private RegionReferenceDto occupationRegion;
+	private DistrictReferenceDto occupationDistrict;
+	private CommunityReferenceDto occupationCommunity;
 	private FacilityReferenceDto occupationFacility;
+	private String occupationFacilityDetails;
 
 	public Integer getBirthdateDD() {
 		return birthdateDD;
@@ -297,6 +308,38 @@ public class PersonDto extends EntityDto {
 	
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public RegionReferenceDto getOccupationRegion() {
+		return occupationRegion;
+	}
+
+	public void setOccupationRegion(RegionReferenceDto occupationRegion) {
+		this.occupationRegion = occupationRegion;
+	}
+
+	public DistrictReferenceDto getOccupationDistrict() {
+		return occupationDistrict;
+	}
+
+	public void setOccupationDistrict(DistrictReferenceDto occupationDistrict) {
+		this.occupationDistrict = occupationDistrict;
+	}
+
+	public CommunityReferenceDto getOccupationCommunity() {
+		return occupationCommunity;
+	}
+
+	public void setOccupationCommunity(CommunityReferenceDto occupationCommunity) {
+		this.occupationCommunity = occupationCommunity;
+	}
+
+	public String getOccupationFacilityDetails() {
+		return occupationFacilityDetails;
+	}
+
+	public void setOccupationFacilityDetails(String occupationFacilityDetails) {
+		this.occupationFacilityDetails = occupationFacilityDetails;
 	}
 	
 	@Override

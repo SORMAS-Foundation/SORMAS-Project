@@ -5,6 +5,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -73,7 +74,7 @@ public class SampleIndexDto implements Serializable {
 		this.referred = referredSampleUuid != null;
 		this.shipmentDate = shipmentDate;
 		this.receivedDate = receivedDate;
-		this.lab = new FacilityReferenceDto(labUuid, labName);
+		this.lab = new FacilityReferenceDto(labUuid, FacilityHelper.buildToString(labUuid, labName));
 		this.sampleMaterial = sampleMaterial;
 		this.specimenCondition = specimenCondition;
 		this.sampleTestResult = sampleTestResult;

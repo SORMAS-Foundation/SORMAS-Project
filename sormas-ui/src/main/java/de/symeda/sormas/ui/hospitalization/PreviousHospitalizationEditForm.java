@@ -4,8 +4,13 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -22,7 +27,7 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.ADMISSION_DATE, PreviousHospitalizationDto.DISCHARGE_DATE)+
 			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT)+
 			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.COMMUNITY, PreviousHospitalizationDto.HEALTH_FACILITY)+
-			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.ISOLATED)+
+			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.ISOLATED, PreviousHospitalizationDto.HEALTH_FACILITY_DETAILS)+
 			LayoutUtil.fluidRowLocs(PreviousHospitalizationDto.DESCRIPTION)
 			;
 
@@ -49,6 +54,9 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		ComboBox facilityCommunity = addField(PreviousHospitalizationDto.COMMUNITY, ComboBox.class);
 		facilityCommunity.setNullSelectionAllowed(true);
 		ComboBox healthFacility = addField(PreviousHospitalizationDto.HEALTH_FACILITY, ComboBox.class);
+		TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
+		healthFacilityDetails.setVisible(false);
+		
 		healthFacility.setImmediate(true);
 
 		facilityRegion.addValueChangeListener(e -> {
@@ -71,10 +79,34 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
     			facilityDistrict.getValue() != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) facilityDistrict.getValue(), true) :
     				null);
     	});
-
 		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		
+		healthFacility.addValueChangeListener(e -> {
+			if (e.getProperty().getValue() != null) {
+				boolean otherHealthFacility = ((FacilityReferenceDto) e.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+				boolean noneHealthFacility = ((FacilityReferenceDto) e.getProperty().getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+				boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
+				
+				healthFacilityDetails.setVisible(visibleAndRequired);
+				healthFacilityDetails.setRequired(visibleAndRequired);
+				
+				if (otherHealthFacility) {
+					healthFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+				}
+				if (noneHealthFacility) {
+					healthFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+				}
+				if (!visibleAndRequired) {
+					healthFacilityDetails.clear();
+				}
+			} else {
+				healthFacilityDetails.setVisible(false);
+				healthFacilityDetails.setRequired(false);
+				healthFacilityDetails.clear();
+			}
+		});
 
-		FieldHelper.addSoftRequiredStyle(admissionDate, dischargeDate, facilityCommunity);
+		FieldHelper.addSoftRequiredStyle(admissionDate, dischargeDate, facilityCommunity, healthFacilityDetails);
 		setRequired(true,
 				PreviousHospitalizationDto.REGION,
 				PreviousHospitalizationDto.DISTRICT,

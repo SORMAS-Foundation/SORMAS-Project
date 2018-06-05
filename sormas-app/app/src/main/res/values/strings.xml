@@ -356,6 +356,7 @@
     <string name="validation_sample_date_time">Please enter the date and time when the sample has been taken.</string>
     <string name="validation_sample_material">Please select the sample material.</string>
     <string name="validation_sample_material_details">Please describe the sample material.</string>
+    <string name="validation_sample_lab_details">Please specify the name and description of the laboratory.</string>
     <string name="validation_sample_shipment_status">Please select the shipment status.</string>
     <string name="validation_sample_shipment_date">Please enter the shipment date.</string>
     <string name="validation_sample_lab">Please select the laboratory.</string>

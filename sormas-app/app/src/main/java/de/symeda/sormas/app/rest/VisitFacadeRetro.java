@@ -16,8 +16,8 @@ public interface VisitFacadeRetro {
     @GET("visits/all/{since}")
     Call<List<VisitDto>> pullAllSince(@Path("since") long since);
 
-    @GET("visits/query")
-    Call<List<VisitDto>> pullByUuids(@Query("uuids") List<String> uuids);
+    @POST("visits/query")
+    Call<List<VisitDto>> pullByUuids(@Body List<String> uuids);
 
     @POST("visits/push")
     Call<Integer> pushAll(@Body List<VisitDto> dtos);

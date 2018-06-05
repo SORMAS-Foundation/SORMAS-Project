@@ -32,6 +32,8 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
 
     protected Tracker tracker;
 
+    private ProgressDialog progressDialog = null;
+
     protected boolean isUserNeeded() {
         return true;
     }
@@ -81,6 +83,15 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
         super.onPause();
         if (activeActivity != null && activeActivity.get() == this)
             activeActivity = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+
+        super.onDestroy();
     }
 
     public void synchronizeCompleteData() {
@@ -154,7 +165,6 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
 
         if (RetroProvider.isConnected()) {
 
-            final ProgressDialog progressDialog;
             if (showProgressDialog) {
                 progressDialog = ProgressDialog.show(this, getString(R.string.headline_synchronization),
                         getString(R.string.hint_synchronization), true);
@@ -169,7 +179,7 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
                     if (swipeRefreshLayout != null) {
                         swipeRefreshLayout.setRefreshing(false);
                     }
-                    if (progressDialog != null) {
+                    if (progressDialog != null && progressDialog.isShowing()) {
                         progressDialog.dismiss();
                     }
 

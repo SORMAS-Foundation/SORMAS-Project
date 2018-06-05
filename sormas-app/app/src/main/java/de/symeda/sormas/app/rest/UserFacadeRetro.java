@@ -4,7 +4,9 @@ import java.util.List;
 
 import de.symeda.sormas.api.user.UserDto;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -16,8 +18,8 @@ public interface UserFacadeRetro {
     @GET("users/all/{since}")
     Call<List<UserDto>> pullAllSince(@Path("since") long since);
 
-    @GET("tasks/query")
-    Call<List<UserDto>> pullByUuids(@Query("uuids") List<String> uuids);
+    @POST("users/query")
+    Call<List<UserDto>> pullByUuids(@Body List<String> uuids);
 
     @GET("users/uuids")
     Call<List<String>> pullUuids();

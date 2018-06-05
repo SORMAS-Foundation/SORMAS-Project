@@ -3,24 +3,18 @@ package de.symeda.sormas.app.backend.region;
 import android.util.Log;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.ServerConnectionException;
-import de.symeda.sormas.app.backend.facility.Facility;
-import de.symeda.sormas.app.backend.facility.FacilityDao;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -47,7 +41,7 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
 
     @Override
     protected Call<List<CommunityDto>> pullByUuids(List<String> uuids) {
-        throw new UnsupportedOperationException("Entity is infrastructure");
+        return RetroProvider.getCommunityFacade().pullByUuids(uuids);
     }
 
     @Override

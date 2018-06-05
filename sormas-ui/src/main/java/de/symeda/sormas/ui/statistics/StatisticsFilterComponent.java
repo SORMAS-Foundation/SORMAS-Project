@@ -19,12 +19,10 @@ public class StatisticsFilterComponent extends VerticalLayout {
 
 	private static final String SPECIFY_YOUR_SELECTION = "Specify your selection";
 
+	private HorizontalLayout filterValuesLayout;
 	private StatisticsCaseAttribute selectedAttribute;
 	private StatisticsCaseSubAttribute selectedSubAttribute;
-	
 	private Map<Object, StatisticsFilterElement> filterElements = new HashMap<>();
-
-	private HorizontalLayout filterValuesLayout;
 
 	public StatisticsFilterComponent() {
 		setSpacing(true);
@@ -64,11 +62,13 @@ public class StatisticsFilterComponent extends VerticalLayout {
 					selectedAttribute = attribute;
 					selectedSubAttribute = null;
 					filterAttributeItem.setText(attribute.toString());
+					
 					// Add style to keep chosen item selected and remove it from all other items
 					for (MenuItem menuItem : filterAttributeItem.getChildren()) {
 						menuItem.setStyleName("");
 					}
 					selectedItem.setStyleName("selected-filter");
+					
 					// Reset the sub attribute dropdown
 					filterSubAttributeItem.removeChildren();
 					filterSubAttributeItem.setText(SPECIFY_YOUR_SELECTION);
@@ -81,11 +81,13 @@ public class StatisticsFilterComponent extends VerticalLayout {
 									filterElements.clear();
 									selectedSubAttribute = subAttribute;
 									filterSubAttributeItem.setText(subAttribute.toString());
+									
 									// Add style to keep chosen item selected and remove it from all other items
 									for (MenuItem menuItem : filterSubAttributeItem.getChildren()) {
 										menuItem.setStyleName("");
 									}
 									selectedSubItem.setStyleName("selected-filter");
+									
 									updateFilterValuesElements();
 								};
 
@@ -93,8 +95,7 @@ public class StatisticsFilterComponent extends VerticalLayout {
 							}
 						}
 
-						// Only add the sub attribute dropdown if there are any sub attributes that are relevant
-						// for the filters section
+						// Only add the sub attribute dropdown if there are any sub attributes that are relevant for the filters section
 						if (filterSubAttributeItem.getChildren() != null && filterSubAttributeItem.getChildren().size() > 0) {
 							filterAttributeLayout.addComponent(filterSubAttributeDropdown);
 							filterAttributeLayout.setExpandRatio(filterSubAttributeDropdown, 1);
@@ -123,15 +124,9 @@ public class StatisticsFilterComponent extends VerticalLayout {
 			filterElements.put(StatisticsCaseSubAttribute.DATE_RANGE, element);
 			filterValuesLayout.addComponent(element);
 		} else if (selectedAttribute == StatisticsCaseAttribute.REGION_DISTRICT) {
-			StatisticsFilterValuesElement regionElement = new StatisticsFilterValuesElement("Region", selectedAttribute, StatisticsCaseSubAttribute.REGION);
-			StatisticsFilterValuesElement districtElement = new StatisticsFilterValuesElement("District", selectedAttribute, StatisticsCaseSubAttribute.DISTRICT);
-			regionElement.setRelatedElement(districtElement);
-			districtElement.setRelatedElement(regionElement);
-			regionElement.updateRelatedElementOnValueChange(true);
-			filterElements.put(StatisticsCaseSubAttribute.REGION, regionElement);
-			filterElements.put(StatisticsCaseSubAttribute.DISTRICT, districtElement);
-			filterValuesLayout.addComponent(regionElement);
-			filterValuesLayout.addComponent(districtElement);
+			StatisticsFilterRegionDistrictElement element = new StatisticsFilterRegionDistrictElement();
+			filterElements.put(StatisticsCaseAttribute.REGION_DISTRICT, element);
+			filterValuesLayout.addComponent(element);
 		} else {
 			StatisticsFilterValuesElement element = new StatisticsFilterValuesElement(
 					selectedAttribute.toString() + (selectedSubAttribute != null ? " (" + selectedSubAttribute.toString() + ")" : ""), 

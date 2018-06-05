@@ -20,8 +20,8 @@ public interface TaskFacadeRetro {
     @GET("tasks/all/{since}")
     Call<List<TaskDto>> pullAllSince(@Path("since") long since);
 
-    @GET("tasks/query")
-    Call<List<TaskDto>> pullByUuids(@Query("uuids") List<String> uuids);
+    @POST("tasks/query")
+    Call<List<TaskDto>> pullByUuids(@Body List<String> uuids);
 
     @POST("tasks/push")
     Call<Integer> pushAll(@Body List<TaskDto> dtos);

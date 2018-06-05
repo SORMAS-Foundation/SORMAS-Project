@@ -2,8 +2,10 @@ package de.symeda.sormas.ui.dashboard;
 
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
@@ -15,7 +17,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class DashboardStatisticsSubComponent extends VerticalLayout {
 
 	// Layouts
-	private HorizontalLayout countLayout;
+	private AbstractLayout countLayout;
 	private AbstractOrderedLayout contentLayout;
 	private VerticalLayout leftContentColumnLayout;
 	private VerticalLayout rightContentColumnLayout;
@@ -58,10 +60,8 @@ public class DashboardStatisticsSubComponent extends VerticalLayout {
 	}
 	
 	public void addCountLayout() {
-		countLayout = new HorizontalLayout();
+		countLayout = new CssLayout();
 		countLayout.setWidthUndefined();
-		countLayout.setSpacing(true);
-		CssStyles.style(countLayout, CssStyles.VSPACE_4);
 		
 		addComponent(countLayout);
 		setExpandRatio(countLayout, 0);
@@ -69,6 +69,7 @@ public class DashboardStatisticsSubComponent extends VerticalLayout {
 	
 	public void addComponentToCountLayout(AbstractComponent countElement) {
 		countElement.setWidthUndefined();
+		countElement.addStyleName(CssStyles.HSPACE_RIGHT_3);
 		countLayout.addComponent(countElement);
 	}
 	

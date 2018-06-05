@@ -7,6 +7,7 @@
 
     <data>
         <variable name="contact" type="de.symeda.sormas.app.backend.contact.Contact"/>
+        <variable name="contactCase" type="de.symeda.sormas.app.backend.caze.Case"/>
     </data>
 
     <ScrollView
@@ -198,16 +199,16 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    app:short_uuid="@{contact.caze.uuid}"/>
+                    app:short_uuid="@{contact.caseUuid}"/>
 
                 <de.symeda.sormas.app.component.LabelField
-                    android:id="@+id/contact_caze_caseStatus"
+                    android:id="@+id/contact_caze_caseClassification"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    app:enum="@{contact.caze.caseClassification}"/>
+                    app:enum="@{contactCase.caseClassification}"/>
 
             </LinearLayout>
 
@@ -223,7 +224,7 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    app:personLabel="@{contact.caze.person}"/>
+                    app:personLabel="@{contactCase.person}"/>
 
                 <de.symeda.sormas.app.component.LabelField
                     android:id="@+id/contact_caze_ageSex"
@@ -232,7 +233,7 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    app:personAgeSexLabel="@{contact.caze.person}"/>
+                    app:personAgeSexLabel="@{contactCase.person}"/>
 
             </LinearLayout>
 
@@ -242,13 +243,13 @@
                 android:layout_height="wrap_content">
 
                 <de.symeda.sormas.app.component.LabelField
-                    android:id="@+id/contact_caze_disease"
+                    android:id="@+id/contact_caseDisease"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    app:enum="@{contact.caze.disease}"/>
+                    app:enum="@{contact.caseDisease}"/>
 
                 <de.symeda.sormas.app.component.LabelField
                     android:id="@+id/contact_caze_symptomsOnset"
@@ -257,7 +258,7 @@
                     android:layout_weight="0.5"
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
-                    app:date="@{contact.caze.symptoms.onsetDate}"/>
+                    app:date="@{contactCase.symptoms.onsetDate}"/>
 
             </LinearLayout>
 

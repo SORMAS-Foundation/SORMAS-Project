@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.caze;
 import java.util.Arrays;
 
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -28,10 +29,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 
     private static final String HTML_LAYOUT = 
-			LayoutUtil.fluidRow(
-					LayoutUtil.loc(CaseDataDto.DISEASE), 
-					// one or the other
-					LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE)) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.DISEASE) +
+			LayoutUtil.fluidRow(LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE)) +
 			LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME) +
 			LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
 			LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
@@ -51,7 +50,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     	
     	addField(CaseDataDto.DISEASE, ComboBox.class);
     	addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
-    	ComboBox plagueType = addField(CaseDataDto.PLAGUE_TYPE, ComboBox.class);
+    	OptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
+    	addField(CaseDataDto.DENGUE_FEVER_TYPE, OptionGroup.class);
     	addCustomField(FIRST_NAME, String.class, TextField.class);
     	addCustomField(LAST_NAME, String.class, TextField.class);
     	ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
@@ -90,6 +90,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), CaseDataDto.DISEASE, Arrays.asList(CaseDataDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.PLAGUE_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.PLAGUE), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DENGUE_FEVER_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.DENGUE), true);
 		
     	facility.addValueChangeListener(e -> {
     		if (facility.getValue() != null) {

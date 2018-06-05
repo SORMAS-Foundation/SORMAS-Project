@@ -55,8 +55,11 @@ public class ContactEditPagerAdapter extends FragmentStatePagerAdapter {
                 Bundle personEditBundle = new Bundle();
                 Contact contact = DatabaseHelper.getContactDao().queryUuid(contactEditBundle.getString(Contact.UUID));
                 personEditBundle.putString(Person.UUID, contact.getPerson().getUuid());
-                personEditBundle.putSerializable(Case.DISEASE, contact.getCaze().getDisease());
-                personEditBundle.putSerializable(Case.DISEASE_DETAILS, contact.getCaze().getDiseaseDetails());
+                personEditBundle.putSerializable(Case.DISEASE, contact.getCaseDisease());
+                Case contactCase = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
+                if (contactCase != null) {
+                    personEditBundle.putSerializable(Case.DISEASE_DETAILS, contactCase.getDiseaseDetails());
+                }
                 personEditBundle.putSerializable(FormTab.EDIT_OR_CREATE_USER_RIGHT, UserRight.CONTACT_EDIT);
                 frag.setArguments(personEditBundle);
                 break;

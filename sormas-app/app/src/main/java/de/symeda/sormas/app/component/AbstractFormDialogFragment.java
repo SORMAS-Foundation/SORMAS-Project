@@ -15,7 +15,16 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.FormFragment;
 
-
+/**
+ * ATTENTION: This class is not using DialogFragment in the appropriate way
+ * (see https://developer.android.com/reference/android/app/DialogFragment).
+ *
+ * It keeps state variables and so doesn't support resuming based on savedInstanceState.
+ * Instead initialize needs to be called.
+ *
+ * DialogFragment is deprecated starting in Android P anyway.
+ * Long-term we should replace this using another approach.
+ */
 abstract public class AbstractFormDialogFragment<FormClass> extends DialogFragment implements FormFragment {
 
     private FormClass formItem;
@@ -27,7 +36,21 @@ abstract public class AbstractFormDialogFragment<FormClass> extends DialogFragme
     abstract public View onCreateDialogView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
 
     @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+    }
+
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        if (formItem == null) {
+            // when the fragement is restored it's ok to have formItem == null. Otherwise we have to throw an exception
+            // sadly we can't find out whether it was restored
+            // throw new IllegalStateException("Make sure to call initialize before creating (showing) the dialog. May also be called by a dialog that was send to the background");
+            setShowsDialog(false);
+            dismiss();
+            return null;
+        }
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
 
@@ -60,6 +83,7 @@ abstract public class AbstractFormDialogFragment<FormClass> extends DialogFragme
     @Override
     public void onStart() {
         super.onStart();
+
         AlertDialog dialog = (AlertDialog) getDialog();
         dialog.getButton(Dialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override

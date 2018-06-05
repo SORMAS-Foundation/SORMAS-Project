@@ -1,5 +1,6 @@
 package de.symeda.sormas.api;
 
+import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -30,7 +31,7 @@ public class DiseaseHelper {
 	}
 
 	public static boolean hasContactFollowUp(Disease disease, PlagueType plagueType) {
-		return disease == Disease.EVD || disease == Disease.LASSA || disease == Disease.AVIAN_INFLUENCA 
+		return disease == Disease.EVD || disease == Disease.LASSA || disease == Disease.NEW_INFLUENCA 
 				|| disease == Disease.MONKEYPOX || (disease == Disease.PLAGUE) || disease == Disease.OTHER;
 	}
 
@@ -47,7 +48,7 @@ public class DiseaseHelper {
 		case LASSA:
 		case OTHER:
 			return 21;
-		case AVIAN_INFLUENCA:
+		case NEW_INFLUENCA:
 			return 17;
 		case DENGUE:
 			return 14;
