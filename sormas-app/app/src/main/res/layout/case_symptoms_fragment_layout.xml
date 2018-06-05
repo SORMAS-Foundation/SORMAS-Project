@@ -285,16 +285,22 @@
                 android:value="@={symptoms.lymphadenopathyInguinal}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_otitisMedia"
+                android:id="@+id/symptoms_skinRash"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:value="@={symptoms.otitisMedia}"/>
+                android:value="@={symptoms.skinRash}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_meningealSigns"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:value="@={symptoms.meningealSigns}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_otitisMedia"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.otitisMedia}"/>
 
             <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_musclePain"
@@ -343,6 +349,133 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:value="@={symptoms.oralUlcers}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_shock"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.shock}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_soreThroat"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.soreThroat}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_swollenGlands"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.swollenGlands}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_throbocytopenia"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.throbocytopenia}"/>
+
+            <!-- ============= SYMPTOMS Unexplained bleeding from any side ============= -->
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_unexplainedBleeding"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.unexplainedBleeding}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_eyesBleeding"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.eyesBleeding}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_stomachBleeding"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.stomachBleeding}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_injectionSiteBleeding"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.injectionSiteBleeding}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_bleedingVagina"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.bleedingVagina}"/>
+
+            <!-- Should be called symptoms_gumsBleeding, but this doesn't work with AS < 2.3 because of https://code.google.com/p/android/issues/detail?id=212492 -->
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_gumsBleeding"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.gumsBleeding}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_bloodUrine"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.bloodUrine}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_bloodyBlackStool"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.bloodyBlackStool}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_noseBleeding"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.noseBleeding}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_skinBruising"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.skinBruising}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_coughingBlood"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.coughingBlood}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_digestedBloodVomit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.digestedBloodVomit}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_redBloodVomit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.redBloodVomit}"/>
+
+            <de.symeda.sormas.app.component.SymptomStateField
+                android:id="@+id/symptoms_otherHemorrhagicSymptoms"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:value="@={symptoms.otherHemorrhagicSymptoms}"/>
+
+            <LinearLayout
+                android:id="@+id/symptoms_otherHemorrhagicSymptomsLayout"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/field_padding"
+                android:paddingBottom="@dimen/field_padding">
+
+                <de.symeda.sormas.app.component.TextField
+                    android:id="@+id/symptoms_other1HemorrhagicSymptomsText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:nextFocusForward="@+id/symptoms_skinRash"
+                    android:value="@={symptoms.otherHemorrhagicSymptomsText}"/>
+
+            </LinearLayout>
 
             <de.symeda.sormas.app.component.SymptomStateField
                 android:id="@+id/symptoms_lesions"
@@ -521,139 +654,6 @@
                     android:paddingTop="@dimen/field_padding"
                     android:paddingBottom="@dimen/field_padding"
                     android:value="@={symptoms.lesionsOnsetDate}"/>
-
-            </LinearLayout>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_shock"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.shock}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_skinRash"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.skinRash}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_soreThroat"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.soreThroat}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_swollenGlands"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.swollenGlands}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_throbocytopenia"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.throbocytopenia}"/>
-
-            <!-- ============= SYMPTOMS Unexplained bleeding from any side ============= -->
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_unexplainedBleeding"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.unexplainedBleeding}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_eyesBleeding"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.eyesBleeding}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_stomachBleeding"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.stomachBleeding}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_injectionSiteBleeding"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.injectionSiteBleeding}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_bleedingVagina"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.bleedingVagina}"/>
-
-            <!-- Should be called symptoms_gumsBleeding, but this doesn't work with AS < 2.3 because of https://code.google.com/p/android/issues/detail?id=212492 -->
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_gumsBleeding"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.gumsBleeding}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_bloodUrine"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.bloodUrine}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_bloodyBlackStool"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.bloodyBlackStool}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_noseBleeding"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.noseBleeding}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_skinBruising"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.skinBruising}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_coughingBlood"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.coughingBlood}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_digestedBloodVomit"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.digestedBloodVomit}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_redBloodVomit"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.redBloodVomit}"/>
-
-            <de.symeda.sormas.app.component.SymptomStateField
-                android:id="@+id/symptoms_otherHemorrhagicSymptoms"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:value="@={symptoms.otherHemorrhagicSymptoms}"/>
-
-            <LinearLayout
-                android:id="@+id/symptoms_otherHemorrhagicSymptomsLayout"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/field_padding"
-                android:paddingBottom="@dimen/field_padding">
-
-                <de.symeda.sormas.app.component.TextField
-                    android:id="@+id/symptoms_other1HemorrhagicSymptomsText"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:nextFocusForward="@+id/symptoms_skinRash"
-                    android:value="@={symptoms.otherHemorrhagicSymptomsText}"/>
 
             </LinearLayout>
 

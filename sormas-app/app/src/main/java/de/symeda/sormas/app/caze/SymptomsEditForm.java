@@ -344,6 +344,7 @@ public class SymptomsEditForm extends FormTab {
     private void visibilityLesionsFields() {
         SymptomState symptomState = binding.symptomsLesions.getValue();
         binding.symptomsLesionsLayout.setVisibility(symptomState == SymptomState.YES ? View.VISIBLE : View.GONE);
+        binding.symptomsLesionsOnsetDate.setVisibility(symptomState == SymptomState.YES ? View.VISIBLE : View.GONE);
         if (symptomState != SymptomState.YES) {
             for (PropertyField field : lesionsFields) {
                 field.setValue(null);
@@ -361,6 +362,8 @@ public class SymptomsEditForm extends FormTab {
                     field.setValue(null);
                 }
             }
+        } else {
+            binding.symptomsMonkeypoxLayout.setVisibility(View.GONE);
         }
     }
 
