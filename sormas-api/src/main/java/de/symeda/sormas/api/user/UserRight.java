@@ -10,7 +10,7 @@ import static de.symeda.sormas.api.user.UserRole.LAB_USER;
 import static de.symeda.sormas.api.user.UserRole.NATIONAL_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.NATIONAL_USER;
-import static de.symeda.sormas.api.user.UserRole.RUMOR_MANAGER;
+import static de.symeda.sormas.api.user.UserRole.EVENT_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
 
@@ -32,7 +32,7 @@ public enum UserRight {
 			CONTACT_OFFICER,
 			INFORMANT,
 			LAB_USER,
-			RUMOR_MANAGER
+			EVENT_OFFICER
 	),
 	CASE_VIEW(
 			ADMIN,
@@ -47,7 +47,7 @@ public enum UserRight {
 			CONTACT_OFFICER,
 			INFORMANT,
 			LAB_USER,
-			RUMOR_MANAGER
+			EVENT_OFFICER
 	),
 	CASE_EDIT(
 			ADMIN,
@@ -60,7 +60,7 @@ public enum UserRight {
 			CONTACT_OFFICER,
 			INFORMANT,
 			LAB_USER,
-			RUMOR_MANAGER
+			EVENT_OFFICER
 	),
 	CASE_TRANSFER(
 			ADMIN,
@@ -135,7 +135,7 @@ public enum UserRight {
 			CONTACT_OFFICER,
 			INFORMANT,
 			LAB_USER,
-			RUMOR_MANAGER
+			EVENT_OFFICER
 	),
 	SAMPLE_EDIT(
 			ADMIN,
@@ -199,7 +199,7 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
-			RUMOR_MANAGER
+			EVENT_OFFICER
 	),
 	CONTACT_ASSIGN(
 			ADMIN,
@@ -275,7 +275,7 @@ public enum UserRight {
 			CONTACT_OFFICER,
 			INFORMANT,
 			LAB_USER,
-			RUMOR_MANAGER
+			EVENT_OFFICER
 	),
 	TASK_EDIT(
 			ADMIN,
@@ -288,7 +288,7 @@ public enum UserRight {
 			CONTACT_OFFICER,
 			INFORMANT,
 			LAB_USER,
-			RUMOR_MANAGER
+			EVENT_OFFICER
 	),
 	TASK_ASSIGN(
 			ADMIN,
@@ -303,7 +303,7 @@ public enum UserRight {
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
-			RUMOR_MANAGER
+			EVENT_OFFICER
 	),
 	EVENT_VIEW(
 			ADMIN,
@@ -318,14 +318,14 @@ public enum UserRight {
 			CONTACT_OFFICER,
 			INFORMANT,
 			LAB_USER,
-			RUMOR_MANAGER
+			EVENT_OFFICER
 	),
 	EVENT_EDIT(
 			ADMIN,
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
-			RUMOR_MANAGER
+			EVENT_OFFICER
 	),
 	EVENT_EXPORT(
 			ADMIN,
@@ -342,14 +342,14 @@ public enum UserRight {
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
-			RUMOR_MANAGER
+			EVENT_OFFICER
 	),
 	EVENTPARTICIPANT_EDIT(
 			ADMIN,
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
-			RUMOR_MANAGER
+			EVENT_OFFICER
 	),
 	WEEKLYREPORT_CREATE(
 			INFORMANT
@@ -372,7 +372,7 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
 			LAB_USER,
-			RUMOR_MANAGER
+			EVENT_OFFICER
 	),
 	USER_EDIT(
 			ADMIN,
@@ -381,7 +381,7 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
 			LAB_USER,
-			RUMOR_MANAGER
+			EVENT_OFFICER
 	),
 	USER_VIEW(
 			ADMIN,
@@ -390,7 +390,7 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
 			LAB_USER,
-			RUMOR_MANAGER
+			EVENT_OFFICER
 	),
 	CONFIGURATION_ACCESS(
 			ADMIN,

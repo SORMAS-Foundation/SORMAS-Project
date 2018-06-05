@@ -10,7 +10,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
@@ -34,18 +33,6 @@ public class SampleTestResource {
 		List<SampleTestDto> sampleTests = FacadeProvider.getSampleTestFacade().getAllAfter(new Date(since), userDto.getUuid());
 		return sampleTests;
 	}
-	
-	@GET
-	@Path("/query")
-	@Deprecated
-	/**
-	 * Used by app before version 0.22.2
-	 */
-	public List<SampleTestDto> getByUuidsPre222(@Context SecurityContext sc, @QueryParam("uuids") List<String> uuids) {
-
-		List<SampleTestDto> result = FacadeProvider.getSampleTestFacade().getByUuids(uuids); 
-		return result;
-	}	
 	
 	@POST
 	@Path("/query")

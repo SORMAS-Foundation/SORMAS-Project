@@ -2482,3 +2482,10 @@ ALTER TABLE contact_history ADD COLUMN resultingcaseuser_id bigint;
 ALTER TABLE contact ADD CONSTRAINT fk_contact_resultingcaseuser_id FOREIGN KEY (resultingcaseuser_id) REFERENCES public.users (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (111, 'Add "contact with source case" to epi data #629');
+
+-- 2018-06-05 Rename Rumor Manager user role to "Event Officer" #633
+
+UPDATE userroles SET userrole = 'EVENT_OFFICER' WHERE userrole = 'RUMOR_MANAGER';
+UPDATE userroles_history SET userrole = 'EVENT_OFFICER' WHERE userrole = 'RUMOR_MANAGER';
+
+INSERT INTO schema_version (version_number, comment) VALUES (112, 'Rename Rumor Manager user role to "Event Officer" #633');

@@ -297,7 +297,8 @@ public final class SymptomsValidator {
                 binding.symptomsDarkUrine, binding.symptomsCough, binding.symptomsSeizures, binding.symptomsConjunctivitis,
                 binding.symptomsConfusedDisoriented, binding.symptomsChillsSweats, binding.symptomsChestPain, binding.symptomsBuboesGroinArmpitNeck,
                 binding.symptomsBloodInStool, binding.symptomsBlackeningDeathOfTissue, binding.symptomsBackache, binding.symptomsAnorexiaAppetiteLoss,
-                binding.symptomsAlteredConsciousness, binding.symptomsHearingloss, binding.symptomsAbdominalPain, binding.symptomsBulgingFontanelle);
+                binding.symptomsAlteredConsciousness, binding.symptomsHearingloss, binding.symptomsAbdominalPain, binding.symptomsBulgingFontanelle,
+                binding.symptomsMeningealSigns);
     }
 
     private static List<SymptomStateField> getConditionalBleedingSymptoms(CaseSymptomsFragmentLayoutBinding binding) {
