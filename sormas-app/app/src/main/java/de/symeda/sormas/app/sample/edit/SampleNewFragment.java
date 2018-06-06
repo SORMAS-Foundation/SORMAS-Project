@@ -127,7 +127,7 @@ public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNe
             resultHolder.forOther().add(DataUtils.getEnumItems(SampleTestType.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(SampleSource.class, false));
 
-            resultHolder.forList().add(DatabaseHelper.getFacilityDao().getLaboratories());
+            resultHolder.forList().add(DatabaseHelper.getFacilityDao().getLaboratories(true));
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
             ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();

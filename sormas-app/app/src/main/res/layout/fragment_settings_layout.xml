@@ -11,7 +11,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="24dp"
             android:focusable="true"
@@ -67,19 +67,16 @@
                 app:rounded="true"
                 />
 
-            <!--<ProgressBar
-                android:id="@+id/config_progressBar"
-                android:visibility="gone"
+            <TextView
+                android:id="@+id/sormas_version"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"/>-->
+                android:layout_gravity="bottom"
+                android:text="@string/label_sormas_version"
+                />
+
         </LinearLayout>
 
     </ScrollView>
 
-
-    <!--<TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Settings"/>-->
 </layout>

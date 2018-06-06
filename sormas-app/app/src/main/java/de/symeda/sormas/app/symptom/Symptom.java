@@ -423,7 +423,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.CSM);
                 add(Disease.CHOLERA);
                 add(Disease.MEASLES);
@@ -474,7 +474,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.CSM);
                 add(Disease.CHOLERA);
                 add(Disease.MEASLES);
@@ -526,7 +526,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.CSM);
                 add(Disease.CHOLERA);
                 add(Disease.MEASLES);
@@ -620,7 +620,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.CSM);
                 add(Disease.CHOLERA);
                 add(Disease.YELLOW_FEVER);
@@ -671,7 +671,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.CHOLERA);
                 add(Disease.YELLOW_FEVER);
                 add(Disease.DENGUE);
@@ -720,7 +720,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.CSM);
                 add(Disease.YELLOW_FEVER);
                 add(Disease.DENGUE);
@@ -770,7 +770,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.CSM);
                 add(Disease.CHOLERA);
                 add(Disease.MEASLES);
@@ -822,7 +822,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.CSM);
                 add(Disease.CHOLERA);
                 add(Disease.MEASLES);
@@ -1488,7 +1488,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.CSM);
                 add(Disease.MEASLES);
                 add(Disease.DENGUE);
@@ -1581,7 +1581,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.MEASLES);
                 add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
@@ -1629,7 +1629,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.MEASLES);
                 add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
@@ -1675,7 +1675,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.MEASLES);
                 add(Disease.OTHER);
             }};
@@ -1722,7 +1722,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.MEASLES);
                 add(Disease.OTHER);
             }};
@@ -1769,7 +1769,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.OTHER);
             }};
         }
@@ -1815,7 +1815,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.CSM);
                 add(Disease.CHOLERA);
                 add(Disease.MEASLES);
@@ -1864,7 +1864,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.CSM);
                 add(Disease.CHOLERA);
                 add(Disease.MEASLES);
@@ -1913,7 +1913,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.CSM);
                 add(Disease.CHOLERA);
                 add(Disease.MEASLES);
@@ -1962,7 +1962,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.MEASLES);
                 add(Disease.MONKEYPOX);
                 add(Disease.OTHER);
@@ -2010,7 +2010,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.CSM);
                 add(Disease.MEASLES);
                 add(Disease.DENGUE);
@@ -2147,7 +2147,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         @Override
         public List<Disease> getSupportDisease() {
             return new ArrayList<Disease>() {{
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.MEASLES);
                 add(Disease.OTHER);
             }};
@@ -2380,7 +2380,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.CSM);
                 add(Disease.MEASLES);
                 add(Disease.DENGUE);
@@ -2429,7 +2429,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.CSM);
                 add(Disease.CHOLERA);
                 add(Disease.MEASLES);
@@ -2525,7 +2525,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.CSM);
                 add(Disease.CHOLERA);
                 add(Disease.MEASLES);
@@ -3276,7 +3276,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
             return new ArrayList<Disease>() {{
                 add(Disease.EVD);
                 add(Disease.LASSA);
-                add(Disease.AVIAN_INFLUENCA);
+                add(Disease.NEW_INFLUENCA);
                 add(Disease.OTHER);
             }};
         }

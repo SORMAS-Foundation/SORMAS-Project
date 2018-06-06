@@ -45,30 +45,29 @@ public class AnimalContactFacade {
                 animalContact.getLayout().setLastExposureDate(null);
                 animalContact.getLayout().setLastExposurePlace("");
             } else if (animalContact.equals(AnimalContact.EAT_RAW_UNDERCOOKED_BIRD)) {
-                animalContact.setState(record.getPoultryEat());
+                animalContact.setState(record.getEatingRawAnimals());
                 animalContact.getLayout().setDetailOrSpecify("");
                 animalContact.getLayout().setLastExposureDate(null);
                 animalContact.getLayout().setLastExposurePlace("");
             } else if (animalContact.equals(AnimalContact.EXPOSURE_TO_DOMESTICATED_BIRD)) {
-                animalContact.setState(record.getPoultry());
-                animalContact.getLayout().setDetailOrSpecify(record.getPoultryDetails());
+                animalContact.setState(record.getEatingRawAnimalsInInfectedArea());
+                animalContact.getLayout().setDetailOrSpecify(record.getEatingRawAnimalsDetails());
                 animalContact.getLayout().setLastExposureDate(null);
                 animalContact.getLayout().setLastExposurePlace("");
             } else if (animalContact.equals(AnimalContact.EXPOSURE_TO_SICK_BIRD)) {
-                animalContact.setState(record.getPoultrySick());
-                animalContact.getLayout().setDetailOrSpecify(record.getPoultrySickDetails());
-                animalContact.getLayout().setLastExposureDate(record.getPoultryDate());
-                animalContact.getLayout().setLastExposurePlace(record.getPoultryLocation());
+                animalContact.setState(record.getSickDeadAnimals());
+                animalContact.getLayout().setDetailOrSpecify(record.getSickDeadAnimalsDetails());
+                animalContact.getLayout().setLastExposureDate(record.getSickDeadAnimalsDate());
+                animalContact.getLayout().setLastExposurePlace(record.getSickDeadAnimalsLocation());
             } else if (animalContact.equals(AnimalContact.CATTLE)) {
                 animalContact.setState(record.getCattle());
                 animalContact.getLayout().setDetailOrSpecify("");
                 animalContact.getLayout().setLastExposureDate(null);
                 animalContact.getLayout().setLastExposurePlace("");
             } else if (animalContact.equals(AnimalContact.WILD_ANIMAL)) {
-                animalContact.setState(record.getWildbirds());
-                animalContact.getLayout().setDetailOrSpecify(record.getWildbirdsDetails());
-                animalContact.getLayout().setLastExposureDate(record.getWildbirdsDate());
-                animalContact.getLayout().setLastExposurePlace(record.getWildbirdsLocation());
+                animalContact.setState(record.getAreaInfectedAnimals());
+                animalContact.setState(record.getProcessingSuspectedCaseSampleUnsafe());
+                animalContact.setState(record.getDirectContactDeadUnsafe());
             } else if (animalContact.equals(AnimalContact.OTHER_ANIMAL)) {
                 animalContact.setState(record.getOtherAnimals());
                 animalContact.getLayout().setDetailOrSpecify(record.getOtherAnimalsDetails());

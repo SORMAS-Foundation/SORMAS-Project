@@ -1473,17 +1473,16 @@ class EpiDataGenerator extends BaseDataGenerator {
             data1.setPrimates(getRandomYesNoUnknown());
             data1.setSwine(getRandomYesNoUnknown());
             data1.setBirds(getRandomYesNoUnknown());
-            data1.setPoultryEat(getRandomYesNoUnknown());
-            data1.setPoultry(getRandomYesNoUnknown());
-            data1.setPoultryDetails(getRandomSentence());
-            data1.setPoultrySick(getRandomYesNoUnknown());
-            data1.setPoultrySickDetails(getRandomSentence());
-            data1.setPoultryDate(getRandomDate());
-            data1.setPoultryLocation(getRandomString());
-            data1.setWildbirds(getRandomYesNoUnknown());
-            data1.setWildbirdsDetails(getRandomSentence());
-            data1.setWildbirdsDate(getRandomDate());
-            data1.setWildbirdsLocation(getRandomString());
+            data1.setEatingRawAnimals(getRandomYesNoUnknown());
+            data1.setSickDeadAnimals(getRandomYesNoUnknown());
+            data1.setEatingRawAnimalsDetails(getRandomSentence());
+            data1.setSickDeadAnimals(getRandomYesNoUnknown());
+            data1.setSickDeadAnimalsDetails(getRandomSentence());
+            data1.setSickDeadAnimalsDate(getRandomDate());
+            data1.setSickDeadAnimalsLocation(getRandomString());
+            data1.setAreaInfectedAnimals(getRandomYesNoUnknown());
+            data1.setProcessingSuspectedCaseSampleUnsafe(getRandomYesNoUnknown());
+            data1.setDirectContactDeadUnsafe(getRandomYesNoUnknown());
             data1.setCattle(getRandomYesNoUnknown());
             data1.setOtherAnimals(getRandomYesNoUnknown());
             data1.setOtherAnimalsDetails(getRandomSentence());
@@ -1584,7 +1583,7 @@ class ContactGenerator extends BaseDataGenerator {
             Contact data1 = new Contact();
             data1.setUuid(getRandomUuid());
             data1.setPerson(PersonGenerator.getSingle());
-            data1.setCaze(CaseGenerator.getSingle());
+//            data1.setCaze(CaseGenerator.getSingle());
             data1.setReportDateTime(getRandomDate());
             data1.setReportingUser(UserGenerator.getSingle());
             data1.setLastContactDate(getRandomDate());
@@ -1855,7 +1854,7 @@ class UserRoleGenerator extends BaseDataGenerator {
         pool.add(UserRole.CASE_OFFICER);
         pool.add(UserRole.CONTACT_SUPERVISOR);
         pool.add(UserRole.CONTACT_OFFICER);
-        pool.add(UserRole.RUMOR_MANAGER);
+        pool.add(UserRole.EVENT_OFFICER);
         pool.add(UserRole.LAB_USER);
     }
 
@@ -2296,7 +2295,7 @@ abstract class BaseDataGenerator {
         List<Disease> list = new ArrayList<Disease>() {{
             add(Disease.EVD);
             add(Disease.LASSA);
-            add(Disease.AVIAN_INFLUENCA);
+            add(Disease.NEW_INFLUENCA);
             add(Disease.CSM);
             add(Disease.CHOLERA);
             add(Disease.MEASLES);
@@ -2715,9 +2714,7 @@ abstract class BaseDataGenerator {
 
     public static SampleTestType getRandomSampleTestType() {
         List<SampleTestType> list = new ArrayList<SampleTestType>() {{
-            add(SampleTestType.PCR);
-            add(SampleTestType.RT_PCR);
-            add(SampleTestType.ELISA);
+            add(SampleTestType.PCR_RT_PCR);
             add(SampleTestType.CULTURE);
             add(SampleTestType.MICROSCOPY);
             add(SampleTestType.VIRUS_ISOLATION);
@@ -2758,9 +2755,7 @@ abstract class BaseDataGenerator {
 
     public static List<SampleTestType> getAllSampleTestType() {
         return new ArrayList<SampleTestType>() {{
-            add(SampleTestType.PCR);
-            add(SampleTestType.RT_PCR);
-            add(SampleTestType.ELISA);
+            add(SampleTestType.PCR_RT_PCR);
             add(SampleTestType.CULTURE);
             add(SampleTestType.MICROSCOPY);
             add(SampleTestType.VIRUS_ISOLATION);

@@ -656,11 +656,11 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
                     pDao = DatabaseHelper.getPersonDao();
                     saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_contact));
 
-                    if (contactToSave.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && personToSave.getAddress().isEmptyLocation()) {
-                        personToSave.getAddress().setRegion(contactToSave.getCaze().getRegion());
-                        personToSave.getAddress().setDistrict(contactToSave.getCaze().getDistrict());
-                        personToSave.getAddress().setCommunity(contactToSave.getCaze().getCommunity());
-                    }
+//                    if (contactToSave.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && personToSave.getAddress().isEmptyLocation()) {
+//                        personToSave.getAddress().setRegion(contactToSave.getCaze().getRegion());
+//                        personToSave.getAddress().setDistrict(contactToSave.getCaze().getDistrict());
+//                        personToSave.getAddress().setCommunity(contactToSave.getCaze().getCommunity());
+//                    }
                 }
 
                 @Override

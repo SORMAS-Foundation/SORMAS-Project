@@ -14,6 +14,7 @@
             type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
+        <!--<variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>-->
         <variable name="contactProximityClass" type="Class" />
 
         <variable
@@ -274,37 +275,37 @@
                             android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                             app:description="@string/desc_contact_case_id"
                             app:labelCaption="@string/label_contact_case_id"
-                            app:uuidValue="@{data.caze.uuid}"
+                            app:uuidValue="@{data.caseUuid}"
                             app:shortUuid="@{true}"
                             app:defaultValue='@{@string/not_available}'
                             app:onLinkClick="@{(view) -> openCaseLinkCallback.onClick(view, data)}"
                             />
 
-                        <de.symeda.sormas.app.component.TeboTextRead
-                            android:id="@+id/txtCaseClassification"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:paddingLeft="@dimen/formLayoutGutterSize"
-                            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            app:description="@string/desc_contact_case_classification"
-                            app:labelCaption="@string/label_contact_case_classification"
-                            app:value="@{data.caze.caseClassification}"
-                            app:defaultValue='@{@string/not_available}'
-                            />
+                        <!--<de.symeda.sormas.app.component.TeboTextRead-->
+                            <!--android:id="@+id/txtCaseClassification"-->
+                            <!--android:layout_width="0dp"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_weight="1"-->
+                            <!--android:paddingLeft="@dimen/formLayoutGutterSize"-->
+                            <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
+                            <!--app:description="@string/desc_contact_case_classification"-->
+                            <!--app:labelCaption="@string/label_contact_case_classification"-->
+                            <!--app:value="@{data.caze.caseClassification}"-->
+                            <!--app:defaultValue='@{@string/not_available}'-->
+                            <!--/>-->
 
                     </LinearLayout>
 
-                    <de.symeda.sormas.app.component.TeboTextRead
-                        android:id="@+id/txtCaseName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_contact_case_name"
-                        app:labelCaption="@string/label_contact_case_name"
-                        app:personValue="@{data.caze.person}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                    <!--<de.symeda.sormas.app.component.TeboTextRead-->
+                        <!--android:id="@+id/txtCaseName"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
+                        <!--app:description="@string/desc_contact_case_name"-->
+                        <!--app:labelCaption="@string/label_contact_case_name"-->
+                        <!--app:personValue="@{data.caze.person}"-->
+                        <!--app:defaultValue='@{@string/not_available}'-->
+                        <!--/>-->
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -355,22 +356,22 @@
                             android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                             app:description="@string/desc_contact_case_disease"
                             app:labelCaption="@string/label_contact_case_disease"
-                            app:value="@{data.caze.disease}"
+                            app:value="@{data.caseDisease}"
                             app:defaultValue='@{@string/not_available}'
                             />
 
-                        <de.symeda.sormas.app.component.TeboTextRead
-                            android:id="@+id/txtSymptomsOnset"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            android:paddingLeft="@dimen/formLayoutGutterSize"
-                            app:description="@string/desc_contact_case_symptoms_onset"
-                            app:labelCaption="@string/label_contact_case_symptoms_onset"
-                            app:value="@{data.caze.symptoms.onsetDate}"
-                            app:defaultValue='@{@string/not_available}'
-                            />
+                        <!--<de.symeda.sormas.app.component.TeboTextRead-->
+                            <!--android:id="@+id/txtSymptomsOnset"-->
+                            <!--android:layout_width="0dp"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_weight="1"-->
+                            <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
+                            <!--android:paddingLeft="@dimen/formLayoutGutterSize"-->
+                            <!--app:description="@string/desc_contact_case_symptoms_onset"-->
+                            <!--app:labelCaption="@string/label_contact_case_symptoms_onset"-->
+                            <!--app:value="@{data.caze.symptoms.onsetDate}"-->
+                            <!--app:defaultValue='@{@string/not_available}'-->
+                            <!--/>-->
 
                     </LinearLayout>
 

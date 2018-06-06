@@ -300,10 +300,10 @@ public class EventNewPersonsInvolvedShortFragment extends BaseEditActivityFragme
 
                 @Override
                 public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    List<Person> existingPersons = DatabaseHelper.getPersonDao()
-                            .getAllByName(eventParticipantToSave.getPerson().getFirstName(),
-                            eventParticipantToSave.getPerson().getLastName());
-                    resultHolder.forList().add(existingPersons);
+//                    List<Person> existingPersons = DatabaseHelper.getPersonDao()
+//                            .getAllByName(eventParticipantToSave.getPerson().getFirstName(),
+//                            eventParticipantToSave.getPerson().getLastName());
+//                    resultHolder.forList().add(existingPersons);
                 }
             });
             checkExistingPersonTask = executor.execute(new ITaskResultCallback() {

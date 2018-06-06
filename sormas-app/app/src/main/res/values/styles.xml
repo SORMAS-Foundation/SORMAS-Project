@@ -177,6 +177,15 @@
         <item name="android:focusableInTouchMode">true</item>
     </style>
 
+    <style name="DarkColorStyle">
+        <item name="android:textColor">@color/normalText</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+
     <style name="ReadTextFieldViewSingleRowStyle">
         <item name="android:background">@color/controlReadTextViewBackground</item>
         <item name="android:cursorVisible">true</item>

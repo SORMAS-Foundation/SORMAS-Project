@@ -229,13 +229,13 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
             @Override
             public void onClick(View v, Object item) {
                 // update person name from the fields
-                data.setFirstName(binding.txtFirstName.getValue());
-                data.setLastName(binding.txtLastName.getValue());
-
-                List<Person> foundPersons = DatabaseHelper.getPersonDao().getAllByName(data.getFirstName(), data.getLastName());
-                ObservableArrayList existingPersons = getExisitingPersons(foundPersons);
-                binding.setAvailablePersons(existingPersons);
-                setSelectedPerson(null);
+//                data.setFirstName(binding.txtFirstName.getValue());
+//                data.setLastName(binding.txtLastName.getValue());
+//
+//                List<Person> foundPersons = DatabaseHelper.getPersonDao().getAllByName(data.getFirstName(), data.getLastName());
+//                ObservableArrayList existingPersons = getExisitingPersons(foundPersons);
+//                binding.setAvailablePersons(existingPersons);
+//                setSelectedPerson(null);
             }
         };
 

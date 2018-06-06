@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 
 import java.net.ConnectException;
 
+import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.BaseLandingActivityFragment;
 import de.symeda.sormas.app.EnterPinActivity;
 import de.symeda.sormas.app.R;
@@ -42,9 +43,11 @@ import de.symeda.sormas.app.util.SyncCallback;
 
 public class SettingsFragment extends BaseLandingActivityFragment {
 
+    private final int SHOW_DEV_OPTIONS_CLICK_LIMIT = 5;
 
     private FragmentSettingsLayoutBinding binding;
     private TeboProgressDialog progressDialog;
+    private int versionClickedCount;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -52,8 +55,7 @@ public class SettingsFragment extends BaseLandingActivityFragment {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings_layout, container, false);
 
-        binding.txtSettingsServerUrl.setValue((String) ConfigProvider.getServerRestUrl());
-
+        binding.txtSettingsServerUrl.setValue(ConfigProvider.getServerRestUrl());
         binding.btnSettingsChangePIN.setOnButtonOnClick(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,6 +81,18 @@ public class SettingsFragment extends BaseLandingActivityFragment {
         });
         binding.btnSettingsRepullData.setVisibility(View.GONE);
 
+        binding.sormasVersion.append(" " + InfoProvider.getVersion());
+        binding.sormasVersion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                versionClickedCount++;
+                if (versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT) {
+                    binding.txtSettingsServerUrl.setVisibility(View.VISIBLE);
+                    binding.btnSettingsLogout.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
         return binding.getRoot();
     }
 
@@ -87,10 +101,11 @@ public class SettingsFragment extends BaseLandingActivityFragment {
         super.onResume();
 
         boolean hasUser = ConfigProvider.getUser() != null;
+        binding.txtSettingsServerUrl.setVisibility(versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT ? View.VISIBLE : View.GONE);
         binding.btnSettingsChangePIN.setVisibility(hasUser ? View.VISIBLE : View.GONE);
         binding.btnSettingsRepullData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
         binding.btnSettingsSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
-        binding.btnSettingsLogout.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+        binding.btnSettingsLogout.setVisibility(hasUser && versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -203,10 +218,6 @@ public class SettingsFragment extends BaseLandingActivityFragment {
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         startActivity(intent);
     }
-
-
-
-
 
     @Override
     public EnumMapDataBinderAdapter createLandingAdapter() {

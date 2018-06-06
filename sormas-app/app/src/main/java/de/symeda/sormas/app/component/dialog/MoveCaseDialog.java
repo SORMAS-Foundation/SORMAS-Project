@@ -114,7 +114,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
                 @Override
                 public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
                     try {
-                        DatabaseHelper.getCaseDao().moveCase(data);
+                        DatabaseHelper.getCaseDao().transferCase(data);
                     } catch (NullPointerException | DaoException e) {
                         // TODO Remove the NullPointerException here as soon as bug #381 has been fixed!
                         resultHolder.setResultStatus(new BoolResult(false, this.saveUnsuccessful));
@@ -136,11 +136,11 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
                         return;
                     }
 
-                    if (!resultStatus.isSuccess()) {
-                        NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, R.string.snackbar_case_moved_error);
-                    } else {
-                        NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_case_moved);
-                    }
+//                    if (!resultStatus.isSuccess()) {
+//                        NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, R.string.snackbar_case_moved_error);
+//                    } else {
+//                        NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_case_moved);
+//                    }
 
                     if (callback != null)
                         callback.call(null);

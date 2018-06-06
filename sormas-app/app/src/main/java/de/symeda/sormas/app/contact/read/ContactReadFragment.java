@@ -71,7 +71,7 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
                 if (contact.isUnreadOrChildUnread())
                     DatabaseHelper.getContactDao().markAsRead(contact);
 
-                _associatedCase = findAssociatedCase(contact.getPerson(), contact.getCaze().getDisease());
+                _associatedCase = findAssociatedCase(contact.getPerson(), contact.getCaseDisease());
             }
 
             resultHolder.forItem().add(contact);
@@ -93,7 +93,7 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
 
     @Override
     public void onLayoutBinding(FragmentContactReadLayoutBinding contentBinding) {
-        setVisibilityByDisease(ContactDto.class, record.getCaze().getDisease(), contentBinding.mainContent);
+        setVisibilityByDisease(ContactDto.class, record.getCaseDisease(), contentBinding.mainContent);
 
         //contentBinding.setCreateCaseCallback(createCaseCallback);
         contentBinding.setOpenCaseLinkCallback(openCaseLinkCallback);
@@ -132,7 +132,7 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
                         if (contact.isUnreadOrChildUnread())
                             DatabaseHelper.getContactDao().markAsRead(contact);
 
-                        _associatedCase = findAssociatedCase(contact.getPerson(), contact.getCaze().getDisease());
+                        _associatedCase = findAssociatedCase(contact.getPerson(), contact.getCaseDisease());
                     }
 
                     resultHolder.forItem().add(contact);
@@ -193,16 +193,17 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
     }
 
     private Case findAssociatedCase(Person person, Disease disease) {
-        if(person == null || disease == null) {
-            return null;
-        }
-
-        Case caze = DatabaseHelper.getCaseDao().getByPersonAndDisease(person, disease);
-        if (caze != null) {
-            return caze;
-        } else {
-            return null;
-        }
+        return null;
+//        if(person == null || disease == null) {
+//            return null;
+//        }
+//
+//        Case caze = DatabaseHelper.getCaseDao().getByPersonAndDisease(person, disease);
+//        if (caze != null) {
+//            return caze;
+//        } else {
+//            return null;
+//        }
     }
 
     private void setupCallback() {

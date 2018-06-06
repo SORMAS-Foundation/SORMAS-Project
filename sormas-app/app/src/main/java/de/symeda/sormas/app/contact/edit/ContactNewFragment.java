@@ -107,7 +107,7 @@ public class ContactNewFragment extends BaseEditActivityFragment<FragmentContact
             Contact contact = getActivityRootData();
 
             resultHolder.forItem().add(contact);
-            resultHolder.forItem().add(contact.getCaze());
+//            resultHolder.forItem().add(contact.getCaze());
             resultHolder.forOther().add(DataUtils.getEnumItems(ContactRelation.class, false));
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
@@ -193,7 +193,7 @@ public class ContactNewFragment extends BaseEditActivityFragment<FragmentContact
                     Contact contact = getActivityRootData();
 
                     resultHolder.forItem().add(contact);
-                    resultHolder.forItem().add(contact.getCaze());
+//                    resultHolder.forItem().add(contact.getCaze());
                 }
             });
             onResumeTask = executor.execute(new ITaskResultCallback() {
@@ -302,8 +302,8 @@ public class ContactNewFragment extends BaseEditActivityFragment<FragmentContact
 
                 @Override
                 public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(contactToSave.getPerson().getFirstName(), contactToSave.getPerson().getLastName());
-                    resultHolder.forList().add(existingPersons);
+//                    List<Person> existingPersons = DatabaseHelper.getPersonDao().getAllByName(contactToSave.getPerson().getFirstName(), contactToSave.getPerson().getLastName());
+//                    resultHolder.forList().add(existingPersons);
                 }
             });
             saveContact = executor.execute(new ITaskResultCallback() {
@@ -385,11 +385,11 @@ public class ContactNewFragment extends BaseEditActivityFragment<FragmentContact
 
                     saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_contact));
 
-                    if(contactToSave.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && contactToSave.getPerson().getAddress().isEmptyLocation()) {
-                        contactToSave.getPerson().getAddress().setRegion(contactToSave.getCaze().getRegion());
-                        contactToSave.getPerson().getAddress().setDistrict(contactToSave.getCaze().getDistrict());
-                        contactToSave.getPerson().getAddress().setCommunity(contactToSave.getCaze().getCommunity());
-                    }
+//                    if(contactToSave.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && contactToSave.getPerson().getAddress().isEmptyLocation()) {
+//                        contactToSave.getPerson().getAddress().setRegion(contactToSave.getCaze().getRegion());
+//                        contactToSave.getPerson().getAddress().setDistrict(contactToSave.getCaze().getDistrict());
+//                        contactToSave.getPerson().getAddress().setCommunity(contactToSave.getCaze().getCommunity());
+//                    }
                 }
 
                 @Override

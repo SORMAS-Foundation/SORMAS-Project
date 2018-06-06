@@ -1,8 +1,5 @@
 package de.symeda.sormas.app.backend.caze;
 
-import android.support.annotation.Nullable;
-
-import com.googlecode.openbeans.PropertyDescriptor;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -22,13 +19,12 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
-import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
@@ -52,7 +48,6 @@ public class Case extends AbstractDomainObject {
 	public static final String REPORT_DATE = "reportDate";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String REPORTING_USER = "reportingUser";
-	public static final String HEALTH_FACILITY = "healthFacility_id";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;
@@ -151,8 +146,8 @@ public class Case extends AbstractDomainObject {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private EpiData epiData;
 
-	@Column
 	@Deprecated
+	@Column
 	private Long contactOfficer_id;
 
 	@DatabaseField
@@ -406,28 +401,6 @@ public class Case extends AbstractDomainObject {
 		this.outcomeDate = outcomeDate;
 	}
 
-	@Override
-	public String toString() {
-		return super.toString() + " " + (getPerson() != null ? getPerson().toString() : "") + " (" + DataHelper.getShortUuid(getUuid()) + ")";
-	}
-
-	@Override
-	public boolean isModifiedOrChildModified() {
-		if (person.isModifiedOrChildModified()) return true;
-		return super.isModifiedOrChildModified();
-	}
-
-	@Override
-	public boolean isUnreadOrChildUnread() {
-		if (person.isUnreadOrChildUnread()) return true;
-		return super.isUnreadOrChildUnread();
-	}
-
-	@Override
-	public String getI18nPrefix() {
-		return I18N_PREFIX;
-	}
-
 	public Float getReportLatLonAccuracy() {
 		return reportLatLonAccuracy;
 	}
@@ -467,4 +440,27 @@ public class Case extends AbstractDomainObject {
 	public void setClassificationComment(String classificationComment) {
 		this.classificationComment = classificationComment;
 	}
+
+	@Override
+	public boolean isModifiedOrChildModified() {
+		if (person.isModifiedOrChildModified()) return true;
+		return super.isModifiedOrChildModified();
+	}
+
+	@Override
+	public boolean isUnreadOrChildUnread() {
+		if (person.isUnreadOrChildUnread()) return true;
+		return super.isUnreadOrChildUnread();
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " " + (getPerson() != null ? getPerson().toString() : "") + " (" + DataHelper.getShortUuid(getUuid()) + ")";
+	}
+
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
+	}
+
 }

@@ -105,7 +105,7 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
 
         contentBinding.txtShipmentDetails.setVisibility((record.isShipped())? View.VISIBLE : View.GONE);
         contentBinding.txtOtherSample.setVisibility((record.getSampleMaterial() == SampleMaterial.OTHER)? View.VISIBLE : View.GONE);
-        contentBinding.txtSampleSource.setVisibility((record.getAssociatedCase().getDisease() == Disease.AVIAN_INFLUENCA)? View.VISIBLE : View.GONE);
+        contentBinding.txtSampleSource.setVisibility((record.getAssociatedCase().getDisease() == Disease.NEW_INFLUENCA)? View.VISIBLE : View.GONE);
         contentBinding.sampleReceivedLayout.setVisibility((record.isReceived())? View.VISIBLE : View.GONE);
 
         if (record.getSpecimenCondition() != SpecimenCondition.NOT_ADEQUATE) {

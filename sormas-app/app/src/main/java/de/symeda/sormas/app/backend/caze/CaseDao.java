@@ -206,9 +206,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
      * If there are reports for the given and next epi week, all cases between the report dates of these
      * reports will be collected; if one or both of these dates are missing, the start and end of the given
      * epi week is taken instead, respectively.
-     *
-     * @param epiWeek
-     * @return
      */
     public int getNumberOfCasesForEpiWeek(EpiWeek epiWeek, User informant) {
         return getNumberOfCasesForEpiWeekAndDisease(epiWeek, null, informant);
@@ -216,9 +213,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
     /**
      * Returns the number of cases with the given disease reported by the current user over the course of the given epi week.
-     *
-     * @param epiWeek
-     * @return
      */
     public int getNumberOfCasesForEpiWeekAndDisease(EpiWeek epiWeek, Disease disease, User informant) {
         if (!informant.hasUserRole(UserRole.INFORMANT)) {

@@ -6,6 +6,7 @@
 
     <data>
         <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiData"/>
+        <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
         <variable name="burials"
             type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataBurial&gt;" />
         <variable name="socialEvents"
@@ -350,14 +351,14 @@
                     app:maxLines="2"
                     app:description="@string/desc_case_epid_exposure_to_poultry"
                     app:labelCaption="@string/label_case_epid_exposure_to_poultry"
-                    app:enumValueWithDesc="@{data.poultry}"
-                    app:valueDesc="@{data.poultryDetails}"
+                    app:enumValueWithDesc="@{data.eatingRawAnimalsInInfectedArea}"
+                    app:valueDesc="@{data.eatingRawAnimalsDetails}"
                     app:valueFormat="@{@string/enum_desc_format}"
                     app:defaultValue='@{@string/not_available}'
                     />
 
                 <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtSickPoultry"
+                    android:id="@+id/txtSickDeadAnimals"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
@@ -365,8 +366,8 @@
                     app:maxLines="2"
                     app:description="@string/desc_case_epid_exposure_to_poultry"
                     app:labelCaption="@string/label_case_epid_exposure_to_poultry"
-                    app:enumValueWithDesc="@{data.poultrySick}"
-                    app:valueDesc="@{data.poultrySickDetails}"
+                    app:enumValueWithDesc="@{data.sickDeadAnimals}"
+                    app:valueDesc="@{data.sickDeadAnimalsDetails}"
                     app:valueFormat="@{@string/enum_desc_format}"
                     app:defaultValue='@{@string/not_available}'
                     />
@@ -387,7 +388,7 @@
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                         app:description="@string/desc_case_epid_exposure_to_sick_birds_last_exposure_date"
                         app:labelCaption="@string/label_case_epid_exposure_to_sick_birds_last_exposure_date"
-                        app:dateValue="@{data.poultryDate}"
+                        app:dateValue="@{data.sickDeadAnimalsDate}"
                         app:defaultValue='@{@string/not_available}'
                         />
 
@@ -400,7 +401,7 @@
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                         app:description="@string/desc_case_epid_exposure_to_sick_birds_last_exposure_place"
                         app:labelCaption="@string/label_case_epid_exposure_to_sick_birds_last_exposure_place"
-                        app:value="@{data.poultryLocation}"
+                        app:value="@{data.sickDeadAnimalsLocation}"
                         app:defaultValue='@{@string/not_available}'
                         />
                 </LinearLayout>
@@ -433,52 +434,52 @@
 
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
 
-                <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtWildBirds"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:singleLine="false"
-                    app:maxLines="2"
-                    app:description="@string/desc_case_epid_exposure_to_wild_birds"
-                    app:labelCaption="@string/label_case_epid_exposure_to_wild_birds"
-                    app:enumValueWithDesc="@{data.wildbirds}"
-                    app:valueDesc="@{data.wildbirdsDetails}"
-                    app:valueFormat="@{@string/enum_desc_format}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                <!--<de.symeda.sormas.app.component.TeboTextRead-->
+                    <!--android:id="@+id/txtWildBirds"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
+                    <!--app:singleLine="false"-->
+                    <!--app:maxLines="2"-->
+                    <!--app:description="@string/desc_case_epid_exposure_to_wild_birds"-->
+                    <!--app:labelCaption="@string/label_case_epid_exposure_to_wild_birds"-->
+                    <!--app:enumValueWithDesc="@{data.wildbirds}"-->
+                    <!--app:valueDesc="@{data.wildbirdsDetails}"-->
+                    <!--app:valueFormat="@{@string/enum_desc_format}"-->
+                    <!--app:defaultValue='@{@string/not_available}'-->
+                    <!--/>-->
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
+                <!--<LinearLayout-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:orientation="horizontal"-->
+                    <!--&gt;-->
 
-                    <de.symeda.sormas.app.component.TeboTextRead
-                        android:id="@+id/txtWildBirdsDate"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_case_epid_wild_birds_last_exposure_date"
-                        app:labelCaption="@string/label_case_epid_wild_birds_last_exposure_date"
-                        app:dateValue="@{data.wildbirdsDate}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                    <!--<de.symeda.sormas.app.component.TeboTextRead-->
+                        <!--android:id="@+id/txtWildBirdsDate"-->
+                        <!--android:layout_width="0dp"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_weight="1"-->
+                        <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
+                        <!--app:description="@string/desc_case_epid_wild_birds_last_exposure_date"-->
+                        <!--app:labelCaption="@string/label_case_epid_wild_birds_last_exposure_date"-->
+                        <!--app:dateValue="@{data.wildbirdsDate}"-->
+                        <!--app:defaultValue='@{@string/not_available}'-->
+                        <!--/>-->
 
-                    <de.symeda.sormas.app.component.TeboTextRead
-                        android:id="@+id/txtWildBirdsPlace"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_case_epid_wild_birds_last_exposure_place"
-                        app:labelCaption="@string/label_case_epid_wild_birds_last_exposure_place"
-                        app:value="@{data.wildbirdsLocation}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
-                </LinearLayout>
+                    <!--<de.symeda.sormas.app.component.TeboTextRead-->
+                        <!--android:id="@+id/txtWildBirdsPlace"-->
+                        <!--android:layout_width="0dp"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_weight="1"-->
+                        <!--android:paddingLeft="@dimen/formLayoutGutterSize"-->
+                        <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
+                        <!--app:description="@string/desc_case_epid_wild_birds_last_exposure_place"-->
+                        <!--app:labelCaption="@string/label_case_epid_wild_birds_last_exposure_place"-->
+                        <!--app:value="@{data.wildbirdsLocation}"-->
+                        <!--app:defaultValue='@{@string/not_available}'-->
+                        <!--/>-->
+                <!--</LinearLayout>-->
 
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
 

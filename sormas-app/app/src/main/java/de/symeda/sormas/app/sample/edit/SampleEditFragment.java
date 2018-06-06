@@ -139,7 +139,7 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
             resultHolder.forOther().add(DataUtils.getEnumItems(SampleTestType.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(SampleSource.class, false));
 
-            resultHolder.forList().add(DatabaseHelper.getFacilityDao().getLaboratories());
+            resultHolder.forList().add(DatabaseHelper.getFacilityDao().getLaboratories(true));
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
             ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
@@ -187,7 +187,7 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
             contentBinding.txtOtherSample.setVisibility(View.INVISIBLE);
         }
 
-        if (record.getAssociatedCase().getDisease() != Disease.AVIAN_INFLUENCA) {
+        if (record.getAssociatedCase().getDisease() != Disease.NEW_INFLUENCA) {
             contentBinding.spnSampleSource.setVisibility(View.GONE);
         }
 

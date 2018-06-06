@@ -145,6 +145,7 @@
             app:itemIconTint="@color/drawerIcon"
             app:menu="@menu/drawer_main_menu"
             >
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -156,41 +157,23 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/btnLogout"
-                    android:layout_alignParentRight="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableStart="@drawable/ic_logout_36dp"
-                    android:background="@drawable/selector_drawer_bottom_button"
-                    android:textColor="@color/drawerText"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="36dp"
-                    android:text="Logout"
-                    android:textAllCaps="false"
-                    android:onClick="logout"
-                    >
-                </Button>
-
-                <Button
                     android:id="@+id/btnSettings"
-                    android:layout_alignParentLeft="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableRight="@drawable/ic_app_settings_36dp"
+                    android:drawableStart="@drawable/ic_app_settings_36dp"
+                    android:drawablePadding="12dp"
                     android:background="@drawable/selector_drawer_bottom_button"
                     android:textColor="@color/drawerText"
-                    android:paddingRight="16dp"
-                    android:paddingLeft="36dp"
-                    android:text="Settings"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="36dp"
+                    android:text="@string/main_menu_settings"
                     android:textAllCaps="false"
                     android:onClick="goToSettings"
                     >
                 </Button>
 
-
             </LinearLayout>
+
         </android.support.design.widget.NavigationView>
 
     </android.support.v4.widget.DrawerLayout>

@@ -21,6 +21,7 @@ import de.symeda.sormas.app.component.OnShowInputErrorListener;
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.databinding.ActivityLoginLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
