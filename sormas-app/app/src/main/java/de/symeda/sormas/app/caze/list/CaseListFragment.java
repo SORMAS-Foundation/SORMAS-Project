@@ -158,7 +158,9 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
                 }.init());
             }
         } catch (Exception ex) {
-            getActivityCommunicator().hidePreloader();
+            if (getActivityCommunicator() != null) {
+                getActivityCommunicator().hidePreloader();
+            }
             dataLoaded = false;
         }
 

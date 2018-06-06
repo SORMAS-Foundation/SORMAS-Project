@@ -44,10 +44,6 @@ import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.CommunityLoader;
 import de.symeda.sormas.app.component.dialog.DistrictLoader;
 import de.symeda.sormas.app.component.dialog.FacilityLoader;
-import de.symeda.sormas.app.component.dialog.ICommunityLoader;
-import de.symeda.sormas.app.component.dialog.IDistrictLoader;
-import de.symeda.sormas.app.component.dialog.IFacilityLoader;
-import de.symeda.sormas.app.component.dialog.IRegionLoader;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.RegionLoader;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
@@ -100,11 +96,6 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
     private List<Item> deathPlaceTypeList;
     private List<Item> diseaseList;
     private List<Item> burialConductorList;
-
-    private IRegionLoader regionLoader;
-    private IDistrictLoader districtLoader;
-    private ICommunityLoader communityLoader;
-    private IFacilityLoader facilityLoader;
 
     private int mLastCheckedId = -1;
 
@@ -174,10 +165,6 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
             resultHolder.forOther().add(DataUtils.getEnumItems(Disease.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(BurialConductor.class, false));
 
-            resultHolder.forOther().add(RegionLoader.getInstance());
-            resultHolder.forOther().add(DistrictLoader.getInstance());
-            resultHolder.forOther().add(CommunityLoader.getInstance());
-            resultHolder.forOther().add(FacilityLoader.getInstance());
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
             ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
@@ -221,18 +208,6 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
             if (otherIterator.hasNext())
                 burialConductorList = otherIterator.next();
 
-            if (otherIterator.hasNext())
-                regionLoader =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                districtLoader =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                communityLoader =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                facilityLoader =  otherIterator.next();
-
             setupCallback();
         }
 
@@ -241,7 +216,7 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
 
     @Override
     public void onLayoutBinding(FragmentCaseEditPatientLayoutBinding contentBinding) {
-        occupationTypeLayoutProcessor = new OccupationTypeLayoutProcessor(getContext(), contentBinding, record, regionLoader, districtLoader, communityLoader, facilityLoader);
+        occupationTypeLayoutProcessor = new OccupationTypeLayoutProcessor(getContext(), contentBinding, record);
         occupationTypeLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
             public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {

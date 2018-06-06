@@ -17,46 +17,28 @@ import de.symeda.sormas.app.util.DataUtils;
  * sampson.orson@technologyboard.org
  */
 
-public class FacilityLoader implements IFacilityLoader {
+public class FacilityLoader {
 
-    List<Item> facilityList;
     private static FacilityLoader sSoleInstance;
 
-    private FacilityLoader() {
-        this.facilityList = new ArrayList<>();
-        /*this.facilityList = new ArrayList<>(MemoryDatabaseHelper.FACILITY.getFacilities(5));
-
-        //TODO: Orson Remove
-        for(Facility c: facilityList) {
-            c.setRegion(MemoryDatabaseHelper.REGION.getRegions(1).get(0));
-            c.setDistrict(MemoryDatabaseHelper.DISTRICT.getDistricts(1).get(0));
-            c.setCommunity(MemoryDatabaseHelper.COMMUNITY.getCommunities(1).get(0));
-        }*/
-    }
+    private FacilityLoader() { }
 
     public static FacilityLoader getInstance(){
         if (sSoleInstance == null){ //if there is no instance available... create new one
             sSoleInstance = new FacilityLoader();
         }
-
         return sSoleInstance;
     }
 
-    @Override
     public List<Item> load(Community community, boolean includeStaticFacilities) {
         if (community == null)
             return new ArrayList<>();
-
-        this.facilityList = DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(community, includeStaticFacilities), false);
-        return this.facilityList;
+        return DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(community, includeStaticFacilities), false);
     }
 
-    @Override
     public List<Item> load(District district, boolean includeStaticFacilities) {
         if (district == null)
             return new ArrayList<>();
-
-        this.facilityList = DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(district, includeStaticFacilities), false);
-        return this.facilityList;
+        return DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(district, includeStaticFacilities), false);
     }
 }

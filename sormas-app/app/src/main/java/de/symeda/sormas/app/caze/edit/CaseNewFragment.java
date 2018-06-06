@@ -34,10 +34,6 @@ import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.CommunityLoader;
 import de.symeda.sormas.app.component.dialog.DistrictLoader;
 import de.symeda.sormas.app.component.dialog.FacilityLoader;
-import de.symeda.sormas.app.component.dialog.ICommunityLoader;
-import de.symeda.sormas.app.component.dialog.IDistrictLoader;
-import de.symeda.sormas.app.component.dialog.IFacilityLoader;
-import de.symeda.sormas.app.component.dialog.IRegionLoader;
 import de.symeda.sormas.app.component.dialog.RegionLoader;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
@@ -75,11 +71,6 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
 
     private List<Item> diseaseList;
     private List<Item> plagueTypeList;
-
-    private IRegionLoader regionLoader;
-    private IDistrictLoader districtLoader;
-    private ICommunityLoader communityLoader;
-    private IFacilityLoader facilityLoader;
 
     private HealthFacilityLayoutProcessor healthFacilityLayoutProcessor;
 
@@ -134,10 +125,6 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
             //resultHolder.forItem().add(caze.getPerson());
 
             resultHolder.forOther().add(DataUtils.getEnumItems(Disease.class, false));
-            resultHolder.forOther().add(RegionLoader.getInstance());
-            resultHolder.forOther().add(DistrictLoader.getInstance());
-            resultHolder.forOther().add(CommunityLoader.getInstance());
-            resultHolder.forOther().add(FacilityLoader.getInstance());
             resultHolder.forOther().add(DataUtils.getEnumItems(PlagueType.class, false));
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
@@ -154,18 +141,6 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
 
             if (otherIterator.hasNext())
                 diseaseList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                regionLoader =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                districtLoader =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                communityLoader =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                facilityLoader =  otherIterator.next();
 
             if (otherIterator.hasNext())
                 plagueTypeList =  otherIterator.next();
@@ -276,7 +251,7 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                List<Item> regions = regionLoader.load();
+                List<Item> regions = RegionLoader.getInstance().load();
                 return (regions.size() > 0) ? DataUtils.addEmptyItem(regions) : regions;
             }
 
@@ -294,7 +269,7 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                List<Item> districts = districtLoader.load((Region)parentValue);
+                List<Item> districts = DistrictLoader.getInstance().load((Region)parentValue);
                 return (districts.size() > 0) ? DataUtils.addEmptyItem(districts) : districts;
             }
 
@@ -312,7 +287,7 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                List<Item> communities = communityLoader.load((District)parentValue);
+                List<Item> communities = CommunityLoader.getInstance().load((District)parentValue);
                 return (communities.size() > 0) ? DataUtils.addEmptyItem(communities) : communities;
             }
 
@@ -332,9 +307,9 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
             public List<Item> getDataSource(Object parentValue) {
                 List<Item> facilities;
                 if(parentValue != null) {
-                    facilities = facilityLoader.load((Community)parentValue, true);
+                    facilities = FacilityLoader.getInstance().load((Community)parentValue, true);
                 } else {
-                    facilities = facilityLoader.load((District) record.getDistrict(), true);
+                    facilities = FacilityLoader.getInstance().load((District) record.getDistrict(), true);
                 }
 
                 return (facilities.size() > 0) ? DataUtils.addEmptyItem(facilities) : facilities;

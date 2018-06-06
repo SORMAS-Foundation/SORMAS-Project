@@ -17,20 +17,11 @@ import de.symeda.sormas.app.util.DataUtils;
  * sampson.orson@technologyboard.org
  */
 
-public class DistrictLoader implements IDistrictLoader {
+public class DistrictLoader {
 
-    List<Item> districtList;
     private static DistrictLoader sSoleInstance;
 
-    private DistrictLoader() {
-        this.districtList = DataUtils.toItems(DatabaseHelper.getDistrictDao().queryForAll(), false);
-        /*this.districtList = new ArrayList<>(MemoryDatabaseHelper.DISTRICT.getDistricts(5));
-
-        //TODO: Orson Remove
-        for(District d: districtList) {
-            d.setRegion(MemoryDatabaseHelper.REGION.getRegions(1).get(0));
-        }*/
-    }
+    private DistrictLoader() { }
 
     public static DistrictLoader getInstance(){
         if (sSoleInstance == null){ //if there is no instance available... create new one
@@ -40,21 +31,7 @@ public class DistrictLoader implements IDistrictLoader {
         return sSoleInstance;
     }
 
-    @Override
     public List<Item> load(Region region) {
-        //districtList = DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(region));
-
-        if (region == null)
-            return new ArrayList<>();
-
-        List<Item> child = new ArrayList<>();
-
-        for (Item o : districtList) {
-            if (((District)o.getValue()).getRegion().getUuid().equals(region.getUuid().trim())) {
-                child.add(o);
-            }
-        }
-
-        return child;
+        return DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(region));
     }
 }

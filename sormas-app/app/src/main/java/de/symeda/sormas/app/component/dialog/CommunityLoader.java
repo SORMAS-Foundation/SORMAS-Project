@@ -17,20 +17,11 @@ import de.symeda.sormas.app.util.DataUtils;
  * sampson.orson@technologyboard.org
  */
 
-public class CommunityLoader implements de.symeda.sormas.app.component.dialog.ICommunityLoader {
+public class CommunityLoader {
 
-    List<Item> communityList;
     private static CommunityLoader sSoleInstance;
 
-    private CommunityLoader() {
-        this.communityList = DataUtils.toItems(DatabaseHelper.getCommunityDao().queryForAll(), false);
-
-        /*
-        //TODO: Orson Remove
-        for(Community c: communityList) {
-            c.setDistrict(MemoryDatabaseHelper.DISTRICT.getDistricts(1).get(0));
-        }*/
-    }
+    private CommunityLoader() { }
 
     public static CommunityLoader getInstance(){
         if (sSoleInstance == null){ //if there is no instance available... create new one
@@ -40,21 +31,9 @@ public class CommunityLoader implements de.symeda.sormas.app.component.dialog.IC
         return sSoleInstance;
     }
 
-    @Override
     public List<Item> load(District district) {
         if (district == null)
             return new ArrayList<>();
-
-        //communityList = DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(district));
-
-        List<Item> child = new ArrayList<>();
-
-        for (Item o : communityList) {
-            if (((Community)o.getValue()).getDistrict().getUuid().equals(district.getUuid())) {
-                child.add(o);
-            }
-        }
-
-        return child;
+        return DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(district));
     }
 }

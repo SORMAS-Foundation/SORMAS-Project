@@ -133,20 +133,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             }
         }
 
-
-        try {
-            //Store in memory
-            //TODO: Orson is this the best place to put this?
-            RegionLoader.getInstance();
-            DistrictLoader.getInstance();
-            CommunityLoader.getInstance();
-
-            //Very expensive
-            //FacilityLoader.getInstance();
-        } catch (Exception ex) {
-
-        }
-
         return null;
     }
 

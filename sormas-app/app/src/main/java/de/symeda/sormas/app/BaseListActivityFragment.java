@@ -195,7 +195,7 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
 
     protected void SaveSearchStrategyState(Bundle outState, SearchBy status) {
         if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_FILTER_STATUS, status);
+            outState.putSerializable(ConstantHelper.ARG_SEARCH_STRATEGY, status);
         }
     }
 

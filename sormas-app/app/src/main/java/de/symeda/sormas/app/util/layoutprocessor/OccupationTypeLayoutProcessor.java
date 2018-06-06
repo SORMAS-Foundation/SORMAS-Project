@@ -20,10 +20,10 @@ import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.TeboSpinner;
 import de.symeda.sormas.app.component.VisualState;
-import de.symeda.sormas.app.component.dialog.ICommunityLoader;
-import de.symeda.sormas.app.component.dialog.IDistrictLoader;
-import de.symeda.sormas.app.component.dialog.IFacilityLoader;
-import de.symeda.sormas.app.component.dialog.IRegionLoader;
+import de.symeda.sormas.app.component.dialog.CommunityLoader;
+import de.symeda.sormas.app.component.dialog.DistrictLoader;
+import de.symeda.sormas.app.component.dialog.FacilityLoader;
+import de.symeda.sormas.app.component.dialog.RegionLoader;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.util.DataUtils;
 
@@ -46,10 +46,6 @@ public class OccupationTypeLayoutProcessor {
     private Person record;
     private OccupationType initialOccupationType;
     private String initialOccupationDetail;
-    private IRegionLoader regionLoader;
-    private IDistrictLoader districtLoader;
-    private ICommunityLoader communityLoader;
-    private IFacilityLoader facilityLoader;
 
     private TeboSpinner spnFacilityState;
     private TeboSpinner spnFacilityLga;
@@ -59,17 +55,11 @@ public class OccupationTypeLayoutProcessor {
     private OnSetBindingVariableListener mOnSetBindingVariableListener;
 
 
-    public OccupationTypeLayoutProcessor(Context context, ViewDataBinding contentBinding, Person record,
-                                         IRegionLoader regionLoader, IDistrictLoader districtLoader, ICommunityLoader communityLoader, IFacilityLoader facilityLoader) {
+    public OccupationTypeLayoutProcessor(Context context, ViewDataBinding contentBinding, Person record) {
         this.mLastLayoutResId = -1;
         this.context = context;
         this.contentBinding = contentBinding;
         this.record = record;
-
-        this.regionLoader = regionLoader;
-        this.districtLoader = districtLoader;
-        this.communityLoader = communityLoader;
-        this.facilityLoader = facilityLoader;
 
         this.initialOccupationType = record.getOccupationType();
         this.initialOccupationDetail = record.getOccupationDetails();
@@ -151,7 +141,7 @@ public class OccupationTypeLayoutProcessor {
 
                         @Override
                         public List<Item> getDataSource(Object parentValue) {
-                            List<Item> regionList = regionLoader.load();
+                            List<Item> regionList = RegionLoader.getInstance().load();
 
                             return (regionList.size() > 0) ? DataUtils.addEmptyItem(regionList)
                                     : regionList;
@@ -173,7 +163,7 @@ public class OccupationTypeLayoutProcessor {
 
                         @Override
                         public List<Item> getDataSource(Object parentValue) {
-                            List<Item> districts = districtLoader.load((Region)parentValue);
+                            List<Item> districts = DistrictLoader.getInstance().load((Region)parentValue);
                             return (districts.size() > 0) ? DataUtils.addEmptyItem(districts) : districts;
                         }
 
@@ -193,7 +183,7 @@ public class OccupationTypeLayoutProcessor {
 
                         @Override
                         public List<Item> getDataSource(Object parentValue) {
-                            List<Item> communities = communityLoader.load((District)parentValue);
+                            List<Item> communities = CommunityLoader.getInstance().load((District)parentValue);
 
                             return (communities.size() > 0) ? DataUtils.addEmptyItem(communities) : communities;
                         }
@@ -215,7 +205,7 @@ public class OccupationTypeLayoutProcessor {
 
                         @Override
                         public List<Item> getDataSource(Object parentValue) {
-                            List<Item> facilities = facilityLoader.load((Community)parentValue, false);
+                            List<Item> facilities = FacilityLoader.getInstance().load((Community)parentValue, false);
                             return (facilities.size() > 0) ? DataUtils.addEmptyItem(facilities) : facilities;
                         }
 

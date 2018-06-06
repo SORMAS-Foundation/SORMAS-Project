@@ -59,33 +59,14 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
     private DialogMoveCaseLayoutBinding mContentBinding;
     private final Tracker tracker;
     private AsyncTask moveCaseTask;
-    private IRegionLoader regionLoader;
-    private IDistrictLoader districtLoader;
-    private ICommunityLoader communityLoader;
-    private IFacilityLoader facilityLoader;
 
     public MoveCaseDialog(final FragmentActivity activity, Case caze) {
-        this(activity, R.string.heading_move_case_dialog, -1, null,
-                null, null, null, caze);
+        this(activity, R.string.heading_move_case_dialog, -1, caze);
     }
 
-    public MoveCaseDialog(final FragmentActivity activity, IRegionLoader regionLoader,
-                                         IDistrictLoader districtLoader, ICommunityLoader communityLoader, IFacilityLoader facilityLoader,
-                          Case caze) {
-        this(activity, R.string.heading_move_case_dialog, -1, regionLoader, districtLoader,
-                communityLoader, facilityLoader, caze);
-    }
-
-    public MoveCaseDialog(final FragmentActivity activity, int headingResId, int subHeadingResId,
-                                         IRegionLoader regionLoader, IDistrictLoader districtLoader,
-                                         ICommunityLoader communityLoader, IFacilityLoader facilityLoader, Case caze) {
+    public MoveCaseDialog(final FragmentActivity activity, int headingResId, int subHeadingResId, Case caze) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_move_case_layout,
                 R.layout.dialog_root_two_button_panel_layout, headingResId, subHeadingResId);
-
-        this.regionLoader = regionLoader == null? RegionLoader.getInstance() : regionLoader;
-        this.districtLoader = districtLoader == null? DistrictLoader.getInstance() : districtLoader;
-        this.communityLoader = communityLoader == null? CommunityLoader.getInstance() : communityLoader;
-        this.facilityLoader = facilityLoader == null? FacilityLoader.getInstance() : facilityLoader;
 
         this.data = caze;
         this.tracker = ((SormasApplication) activity.getApplication()).getDefaultTracker();
@@ -204,7 +185,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
 
                 //return DataUtils.toItems(communityList);
 
-                List<Item> regions = regionLoader.load();
+                List<Item> regions = RegionLoader.getInstance().load();
 
                 return (regions.size() > 0) ? DataUtils.addEmptyItem(regions) : regions;
             }
@@ -223,7 +204,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                List<Item> districts = districtLoader.load((Region)parentValue);
+                List<Item> districts = DistrictLoader.getInstance().load((Region)parentValue);
 
                 return (districts.size() > 0) ? DataUtils.addEmptyItem(districts) : districts;
 
@@ -243,7 +224,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                List<Item> communities = communityLoader.load((District)parentValue);
+                List<Item> communities = CommunityLoader.getInstance().load((District)parentValue);
 
                 return (communities.size() > 0) ? DataUtils.addEmptyItem(communities) : communities;
             }
@@ -262,7 +243,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                List<Item> facilities = facilityLoader.load((Community)parentValue, false);
+                List<Item> facilities = FacilityLoader.getInstance().load((Community)parentValue, false);
 
                 return (facilities.size() > 0) ? DataUtils.addEmptyItem(facilities) : facilities;
             }

@@ -24,10 +24,6 @@ import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
 import de.symeda.sormas.app.component.dialog.CommunityLoader;
 import de.symeda.sormas.app.component.dialog.DistrictLoader;
 import de.symeda.sormas.app.component.dialog.FacilityLoader;
-import de.symeda.sormas.app.component.dialog.ICommunityLoader;
-import de.symeda.sormas.app.component.dialog.IDistrictLoader;
-import de.symeda.sormas.app.component.dialog.IFacilityLoader;
-import de.symeda.sormas.app.component.dialog.IRegionLoader;
 import de.symeda.sormas.app.component.dialog.RegionLoader;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
@@ -50,34 +46,14 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
     private DialogPreviousHospitalizationLayoutBinding mContentBinding;
 
 
-    private IRegionLoader regionLoader;
-    private IDistrictLoader districtLoader;
-    private ICommunityLoader communityLoader;
-    private IFacilityLoader facilityLoader;
-
     public PreviousHospitalizationDialog(final FragmentActivity activity, PreviousHospitalization previousHospitalization) {
-        this(activity, R.string.heading_case_hos_prev_hospitalization, -1, null,
-                null, null, null, previousHospitalization);
-    }
-
-
-    public PreviousHospitalizationDialog(final FragmentActivity activity, IRegionLoader regionLoader,
-                          IDistrictLoader districtLoader, ICommunityLoader communityLoader, IFacilityLoader facilityLoader,
-                                         PreviousHospitalization previousHospitalization) {
-        this(activity, R.string.heading_case_hos_prev_hospitalization, -1, regionLoader, districtLoader,
-                communityLoader, facilityLoader, previousHospitalization);
+        this(activity, R.string.heading_case_hos_prev_hospitalization, -1, previousHospitalization);
     }
 
     public PreviousHospitalizationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId,
-                          IRegionLoader regionLoader, IDistrictLoader districtLoader,
-                          ICommunityLoader communityLoader, IFacilityLoader facilityLoader, PreviousHospitalization previousHospitalization) {
+                                         PreviousHospitalization previousHospitalization) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_previous_hospitalization_layout,
                 R.layout.dialog_root_three_button_panel_layout, headingResId, subHeadingResId);
-
-        this.regionLoader = regionLoader == null? RegionLoader.getInstance() : regionLoader;
-        this.districtLoader = districtLoader == null? DistrictLoader.getInstance() : districtLoader;
-        this.communityLoader = communityLoader == null? CommunityLoader.getInstance() : communityLoader;
-        this.facilityLoader = facilityLoader == null? FacilityLoader.getInstance() : facilityLoader;
 
         this.data = previousHospitalization;
     }
@@ -140,7 +116,7 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                List<Item> regions = regionLoader.load();
+                List<Item> regions = RegionLoader.getInstance().load();
                 return (regions.size() > 0) ? DataUtils.addEmptyItem(regions) : regions;
             }
 
@@ -158,7 +134,7 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                List<Item> districts = districtLoader.load((Region)parentValue);
+                List<Item> districts = DistrictLoader.getInstance().load((Region)parentValue);
                 return (districts.size() > 0) ? DataUtils.addEmptyItem(districts) : districts;
 
             }
@@ -177,7 +153,7 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                List<Item> communities = communityLoader.load((District)parentValue);
+                List<Item> communities = CommunityLoader.getInstance().load((District)parentValue);
                 return (communities.size() > 0) ? DataUtils.addEmptyItem(communities) : communities;
             }
 
@@ -195,7 +171,7 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                List<Item> facilities = facilityLoader.load((Community)parentValue, false);
+                List<Item> facilities = FacilityLoader.getInstance().load((Community)parentValue, false);
                 return (facilities.size() > 0) ? DataUtils.addEmptyItem(facilities) : facilities;
             }
 

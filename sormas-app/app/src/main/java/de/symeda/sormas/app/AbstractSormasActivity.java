@@ -249,12 +249,11 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
         menuDrawerToggle.setHomeAsUpIndicator(R.drawable.ic_menu_blue_36dp);
         menuDrawerLayout.addDrawerListener(menuDrawerToggle);
 
-
-        taskNotificationCounter.setText("3");
-        caseNotificationCounter.setText("10");
-        contactNotificationCounter.setText("7");
-        eventNotificationCounter.setText("12");
-        sampleNotificationCounter.setText("50");
+//        taskNotificationCounter.setText("3");
+//        caseNotificationCounter.setText("10");
+//        contactNotificationCounter.setText("7");
+//        eventNotificationCounter.setText("12");
+//        sampleNotificationCounter.setText("50");
     }
 
     @Override

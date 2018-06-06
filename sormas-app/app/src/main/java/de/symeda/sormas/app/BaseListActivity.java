@@ -466,7 +466,7 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
 
     protected void SaveSearchStrategyState(Bundle outState, SearchBy status) {
         if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_FILTER_STATUS, status);
+            outState.putSerializable(ConstantHelper.ARG_SEARCH_STRATEGY, status);
         }
     }
 

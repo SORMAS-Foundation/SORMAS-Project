@@ -42,9 +42,9 @@ public class LocationDialog extends BaseTeboAlertDialog {
     private FragmentActivity activity;
     private DialogLocationLayoutBinding mContentBinding;
 
-    private IRegionLoader regionLoader;
-    private IDistrictLoader districtLoader;
-    private ICommunityLoader communityLoader;
+    private RegionLoader regionLoader;
+    private DistrictLoader districtLoader;
+    private CommunityLoader communityLoader;
 
     private IEntryItemOnClickListener pickGpsCallback;
 
@@ -53,14 +53,14 @@ public class LocationDialog extends BaseTeboAlertDialog {
     }
 
 
-    public LocationDialog(final FragmentActivity activity, IRegionLoader regionLoader,
-                          IDistrictLoader districtLoader, ICommunityLoader communityLoader, Location location) {
+    public LocationDialog(final FragmentActivity activity, RegionLoader regionLoader,
+                          DistrictLoader districtLoader, CommunityLoader communityLoader, Location location) {
         this(activity, R.string.heading_location_dialog, -1, regionLoader, districtLoader, communityLoader, location);
     }
 
     public LocationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId,
-                          IRegionLoader regionLoader, IDistrictLoader districtLoader,
-                          ICommunityLoader communityLoader, Location location) {
+                          RegionLoader regionLoader, DistrictLoader districtLoader,
+                          CommunityLoader communityLoader, Location location) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_location_layout,
                 R.layout.dialog_root_two_button_panel_layout, headingResId, subHeadingResId);
 

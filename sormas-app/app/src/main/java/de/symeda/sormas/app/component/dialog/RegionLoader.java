@@ -14,13 +14,11 @@ import de.symeda.sormas.app.util.DataUtils;
  * sampson.orson@technologyboard.org
  */
 
-public class RegionLoader implements IRegionLoader {
+public class RegionLoader {
 
-    List<Item> regionList;
     private static RegionLoader sSoleInstance;
 
     private RegionLoader() {
-        this.regionList = DataUtils.toItems(DatabaseHelper.getRegionDao().queryForAll(), false);
         //this.regionList = new ArrayList<>(MemoryDatabaseHelper.REGION.getRegions(5));
     }
 
@@ -32,8 +30,7 @@ public class RegionLoader implements IRegionLoader {
         return sSoleInstance;
     }
 
-    @Override
     public List<Item> load() {
-        return regionList;
+        return DataUtils.toItems(DatabaseHelper.getRegionDao().queryForAll(), false);
     }
 }

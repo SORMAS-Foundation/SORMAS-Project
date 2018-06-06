@@ -43,10 +43,6 @@ import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.CommunityLoader;
 import de.symeda.sormas.app.component.dialog.DistrictLoader;
 import de.symeda.sormas.app.component.dialog.FacilityLoader;
-import de.symeda.sormas.app.component.dialog.ICommunityLoader;
-import de.symeda.sormas.app.component.dialog.IDistrictLoader;
-import de.symeda.sormas.app.component.dialog.IFacilityLoader;
-import de.symeda.sormas.app.component.dialog.IRegionLoader;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.RegionLoader;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
@@ -99,11 +95,6 @@ public class EventEditPersonsInvolvedInfoFragment extends BaseEditActivityFragme
     private List<Item> causeOfDeathList;
     private List<Item> deathPlaceTypeList;
     private List<Item> diseaseList;
-
-    private IRegionLoader regionLoader;
-    private IDistrictLoader districtLoader;
-    private ICommunityLoader communityLoader;
-    private IFacilityLoader facilityLoader;
 
     private int mLastCheckedId = -1;
 
@@ -161,10 +152,6 @@ public class EventEditPersonsInvolvedInfoFragment extends BaseEditActivityFragme
             resultHolder.forOther().add(DataUtils.getEnumItems(DeathPlaceType.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(Disease.class, false));
 
-            resultHolder.forOther().add(RegionLoader.getInstance());
-            resultHolder.forOther().add(DistrictLoader.getInstance());
-            resultHolder.forOther().add(CommunityLoader.getInstance());
-            resultHolder.forOther().add(FacilityLoader.getInstance());
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
             ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
@@ -202,18 +189,6 @@ public class EventEditPersonsInvolvedInfoFragment extends BaseEditActivityFragme
             if (otherIterator.hasNext())
                 diseaseList =  otherIterator.next();
 
-            if (otherIterator.hasNext())
-                regionLoader =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                districtLoader =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                communityLoader =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                facilityLoader =  otherIterator.next();
-
             setupCallback();
         }
 
@@ -227,7 +202,7 @@ public class EventEditPersonsInvolvedInfoFragment extends BaseEditActivityFragme
         //TODO: Validation
         //EventParticipantValidator.setRequiredHintsForEventParticipantData(binding);
 
-        occupationTypeLayoutProcessor = new OccupationTypeLayoutProcessor(getContext(), contentBinding, record.getPerson(), regionLoader, districtLoader, communityLoader, facilityLoader);
+        occupationTypeLayoutProcessor = new OccupationTypeLayoutProcessor(getContext(), contentBinding, record.getPerson());
         occupationTypeLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
             public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
