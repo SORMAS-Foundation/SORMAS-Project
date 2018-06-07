@@ -162,36 +162,6 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
         if (activeFragment == null)
             return;
 
-        ISaveableWithCallback fragment = (ISaveableWithCallback)activeFragment;
-
-        if (fragment != null)
-            fragment.save(this, new Callback.IAction() {
-                @Override
-                public void call(Object result) {
-                    goToCaseContacts();
-                }
-            });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        if (activeFragment == null)
-            return;
-
         final Contact contactToSave = getStoredActivityRootData();
 
         if (contactToSave == null)
@@ -251,6 +221,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
                                 if (item instanceof Person) {
                                     contactToSave.setPerson((Person)item);
                                     savePersonAndContact(contactToSave);
+                                    goToCaseContacts();
                                 }
 
                             }
@@ -264,6 +235,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
                                 if (item instanceof Person) {
                                     contactToSave.setPerson((Person)item);
                                     savePersonAndContact(contactToSave);
+                                    goToCaseContacts();
                                 }
                             }
                         });
@@ -279,6 +251,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
                         personDialog.show(null);
                     } else {
                         savePersonAndContact(contactToSave);
+                        goToCaseContacts();
                     }
 
                 }
