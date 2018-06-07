@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SampleTestType;
@@ -231,10 +232,10 @@ public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNe
                 SampleMaterial material = (SampleMaterial)value;
 
                 if (material == SampleMaterial.OTHER) {
-                    contentBinding.txtOtherSample.setVisibility(View.VISIBLE);
+                    contentBinding.txtSampleMaterialText.setVisibility(View.VISIBLE);
                 } else {
-                    contentBinding.txtOtherSample.setVisibility(View.INVISIBLE);
-                    contentBinding.txtOtherSample.setValue("");
+                    contentBinding.txtSampleMaterialText.setVisibility(View.INVISIBLE);
+                    contentBinding.txtSampleMaterialText.setValue("");
                 }
             }
 
@@ -244,7 +245,7 @@ public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNe
             }
         });
 
-        contentBinding.spnLaboratory.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+        contentBinding.spnLaboratory.initialize(new TeboSpinner.ISpinnerInitConfig() {
             @Override
             public Object getSelectedValue() {
                 return null;
@@ -254,6 +255,23 @@ public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNe
             public List<Item> getDataSource(Object parentValue) {
                 return (labList.size() > 0) ? DataUtils.toItems(labList)
                         : DataUtils.toItems(labList, false);
+            }
+
+            @Override
+            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
+                Facility laboratory = (Facility) value;
+
+                if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+                    contentBinding.txtLaboratoryDetails.setVisibility(View.VISIBLE);
+                } else {
+                    contentBinding.txtLaboratoryDetails.setVisibility(View.GONE);
+                    contentBinding.txtLaboratoryDetails.setValue("");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
 
             @Override
@@ -403,10 +421,11 @@ public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNe
             sampleToSave.setReportDateTime(new Date());
         }
 
-        SampleValidator.clearErrorsForSampleData(getContentBinding());
-        if (!SampleValidator.validateSampleData(nContext, sampleToSave, getContentBinding())) {
-            return;
-        }
+        // TODO: re-enable validation
+//        SampleValidator.clearErrorsForSampleData(getContentBinding());
+//        if (!SampleValidator.validateSampleData(nContext, sampleToSave, getContentBinding())) {
+//            return;
+//        }
 
         try {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {

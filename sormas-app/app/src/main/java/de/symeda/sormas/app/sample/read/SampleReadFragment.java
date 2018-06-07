@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.view.View;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.BaseReadActivityFragment;
@@ -104,7 +105,7 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
 
 
         contentBinding.txtShipmentDetails.setVisibility((record.isShipped())? View.VISIBLE : View.GONE);
-        contentBinding.txtOtherSample.setVisibility((record.getSampleMaterial() == SampleMaterial.OTHER)? View.VISIBLE : View.GONE);
+        contentBinding.txtSampleMaterialText.setVisibility((record.getSampleMaterial() == SampleMaterial.OTHER)? View.VISIBLE : View.GONE);
         contentBinding.txtSampleSource.setVisibility((record.getAssociatedCase().getDisease() == Disease.NEW_INFLUENCA)? View.VISIBLE : View.GONE);
         contentBinding.sampleReceivedLayout.setVisibility((record.isReceived())? View.VISIBLE : View.GONE);
 
@@ -130,7 +131,6 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
 
         contentBinding.setSample(record);
         contentBinding.setCaze(record.getAssociatedCase());
-        contentBinding.setLab(record.getLab());
 
         contentBinding.setResults(getTestResults());
         contentBinding.setRecentTestItemClickCallback(onRecentTestItemClickListener);
@@ -138,7 +138,9 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
 
     @Override
     public void onAfterLayoutBinding(FragmentSampleReadLayoutBinding contentBinding) {
-
+        contentBinding.txtLaboratoryName.setValue(record.getLab() +
+                (record.getLab().getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID) ?
+                        (" (" + record.getLabDetails() + ")") : ""));
     }
 
     @Override

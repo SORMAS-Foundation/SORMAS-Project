@@ -83,7 +83,7 @@ public final class SampleValidator {
 
     private static final List<? extends EditTeboPropertyField<?>> getSampleDataFields(FragmentSampleEditLayoutBinding binding) {
         // TODO #558 sampleDetails
-        return Arrays.asList(binding.dtpDateAndTimeOfSampling, binding.spnSampleMaterial, binding.txtOtherSample,
+        return Arrays.asList(binding.dtpDateAndTimeOfSampling, binding.spnSampleMaterial, binding.txtSampleMaterialText,
                 binding.dtpShipmentDate, binding.spnLaboratory);
     }
 
@@ -136,7 +136,7 @@ public final class SampleValidator {
     }
 
     private static final List<? extends EditTeboPropertyField<?>> getSampleDataFields(FragmentSampleNewLayoutBinding binding) {
-        return Arrays.asList(binding.dtpDateAndTimeOfSampling, binding.spnSampleMaterial, binding.txtOtherSample,
+        return Arrays.asList(binding.dtpDateAndTimeOfSampling, binding.spnSampleMaterial, binding.txtSampleMaterialText,
                 binding.dtpShipmentDate, binding.spnLaboratory);
     }
 

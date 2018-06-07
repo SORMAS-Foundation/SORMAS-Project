@@ -7,7 +7,6 @@
     <data>
         <variable name="sample" type="de.symeda.sormas.app.backend.sample.Sample"/>
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
-        <variable name="lab" type="de.symeda.sormas.app.backend.facility.Facility"/>
         <variable name="results" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.sample.SampleTest&gt;" />
 
         <variable
@@ -83,7 +82,7 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.TeboTextRead
-                    android:id="@+id/txtOtherSample"
+                    android:id="@+id/txtSampleMaterialText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
@@ -149,7 +148,7 @@
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     app:description="@string/desc_sample_laboratory"
                     app:labelCaption="@string/label_sample_laboratory"
-                    app:value="@{lab.name}"
+                    app:value=""
                     app:defaultValue='@{@string/not_available}'
                     />
 

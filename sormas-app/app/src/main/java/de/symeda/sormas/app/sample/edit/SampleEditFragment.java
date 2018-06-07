@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SampleTestType;
@@ -184,7 +185,11 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
         }
 
         if (record.getSampleMaterial() == SampleMaterial.OTHER) {
-            contentBinding.txtOtherSample.setVisibility(View.INVISIBLE);
+            contentBinding.txtSampleMaterialText.setVisibility(View.INVISIBLE);
+        }
+
+        if (record.getLab().getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+            contentBinding.txtLaboratoryDetails.setVisibility(View.VISIBLE);
         }
 
         if (record.getAssociatedCase().getDisease() != Disease.NEW_INFLUENCA) {
@@ -288,10 +293,10 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
                 SampleMaterial material = (SampleMaterial)value;
 
                 if (material == SampleMaterial.OTHER) {
-                    contentBinding.txtOtherSample.setVisibility(View.VISIBLE);
+                    contentBinding.txtSampleMaterialText.setVisibility(View.VISIBLE);
                 } else {
-                    contentBinding.txtOtherSample.setVisibility(View.INVISIBLE);
-                    contentBinding.txtOtherSample.setValue("");
+                    contentBinding.txtSampleMaterialText.setVisibility(View.INVISIBLE);
+                    contentBinding.txtSampleMaterialText.setValue("");
                 }
             }
 
@@ -301,7 +306,7 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
             }
         });
 
-        contentBinding.spnLaboratory.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+        contentBinding.spnLaboratory.initialize(new TeboSpinner.ISpinnerInitConfig() {
             @Override
             public Object getSelectedValue() {
                 return null;
@@ -311,6 +316,23 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
             public List<Item> getDataSource(Object parentValue) {
                 return (labList.size() > 0) ? DataUtils.toItems(labList)
                         : DataUtils.toItems(labList, false);
+            }
+
+            @Override
+            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
+                Facility laboratory = (Facility) value;
+
+                if (laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+                    contentBinding.txtLaboratoryDetails.setVisibility(View.VISIBLE);
+                } else {
+                    contentBinding.txtLaboratoryDetails.setVisibility(View.GONE);
+                    contentBinding.txtLaboratoryDetails.setValue("");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
 
             @Override
@@ -328,9 +350,10 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
             contentBinding.dtpDateAndTimeOfSampling.changeVisualState(VisualState.DISABLED);
             contentBinding.dtpDateAndTimeOfSampling.changeVisualState(VisualState.DISABLED);
             contentBinding.spnSampleMaterial.changeVisualState(VisualState.DISABLED);
-            contentBinding.txtOtherSample.changeVisualState(VisualState.DISABLED);
+            contentBinding.txtSampleMaterialText.changeVisualState(VisualState.DISABLED);
             contentBinding.spnTestType.changeVisualState(VisualState.DISABLED);
             contentBinding.spnLaboratory.changeVisualState(VisualState.DISABLED);
+            contentBinding.txtLaboratoryDetails.changeVisualState(VisualState.DISABLED);
             contentBinding.swhShipped.changeVisualState(VisualState.DISABLED);
             contentBinding.dtpShipmentDate.changeVisualState(VisualState.DISABLED);
             contentBinding.txtShipmentDetails.changeVisualState(VisualState.DISABLED);

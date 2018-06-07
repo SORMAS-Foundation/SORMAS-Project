@@ -124,6 +124,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
 
     //NEW
     public static final Symptom<NoViewModel> DIFFICULTY_SWALLOWING = new DifficultySwallowing<>();
+    public static final Symptom<NoViewModel> MENINGEAL_SIGNS = new MeningealSigns<>();
 
     public static final Symptom<NoViewModel> LESIONS_THAT_ITCH = new LesionsThatItch<>();
     public static final Symptom<NoViewModel> LESIONS_SAME_STATE = new LesionsSameState<>();
@@ -3879,6 +3880,52 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
         }*/
     }
 
+
+
+    private static class MeningealSigns<T extends ISymptomViewModel> extends Symptom<T> {
+        public MeningealSigns() {
+            this(null);
+        }
+
+        public MeningealSigns(Class<T> cls) {
+            super(73, "Meningeal Signs", SymptomType.NON_CONDITIONAL);
+
+            if (cls == null)
+                return;
+
+            try {
+                mChildViewModel = cls.newInstance();
+            } catch (InstantiationException e) {
+                Log.e(TAG, e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }
+
+        @Override
+        protected void setChildState(SymptomState state, Callback.IAction<List<Symptom<T>>> callback) {
+            callback.call(null);
+        }
+
+        @Override
+        public List<Disease> getSupportDisease() {
+            return new ArrayList<Disease>() {{
+                add(Disease.CSM);
+                add(Disease.OTHER);
+            }};
+        }
+
+        @Override
+        public ISymptomValidationLogic getValidationLogic() {
+            return null;
+        }
+
+        /*@Override
+        public boolean validate(List<Symptom> list) {
+            return true;
+        }*/
+    }
+
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Public Methods">
@@ -4020,6 +4067,7 @@ public abstract class Symptom<TChildViewModel extends ISymptomViewModel> {
 
             //NEW
             add(Symptom.DIFFICULTY_SWALLOWING);
+            add(Symptom.MENINGEAL_SIGNS);
             add(Symptom.LESIONS);
             add(Symptom.LYMPHADENOPATHY_INGUINAL);
             add(Symptom.LYMPHADENOPATHY_AXILLARY);

@@ -110,7 +110,7 @@
                         />
 
                     <de.symeda.sormas.app.component.TeboTextInputEditText
-                        android:id="@+id/txtOtherSample"
+                        android:id="@+id/txtSampleMaterialText"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -156,7 +156,6 @@
                     app:value="@={data.suggestedTypeOfTest}"
                     />
 
-
                 <de.symeda.sormas.app.component.TeboSpinner
                     android:id="@+id/spnLaboratory"
                     android:layout_width="match_parent"
@@ -170,6 +169,21 @@
                     app:value="@={data.lab}"
                     />
 
+                <de.symeda.sormas.app.component.TeboTextInputEditText
+                    android:id="@+id/txtLaboratoryDetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:hint="@string/hint_sample_laboratory_details"
+                    app:labelCaption="@string/label_sample_laboratory_details"
+                    app:description="@string/desc_sample_laboratory_details"
+                    app:required="true"
+                    app:value="@={data.labDetails}"
+                    app:nextFocusDown="@+id/txtControl1"
+                    app:imeOptions="actionNext"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
 
                 <ImageView android:id="@+id/divShippingStatusTop" style="@style/MiniHorizontalDividerStyle"/>
 

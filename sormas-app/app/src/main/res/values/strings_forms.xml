@@ -47,6 +47,7 @@
     <string name="label_sample_test_type">Suggested Test Type</string>
     <string name="label_sample_source">Sample Source</string>
     <string name="label_sample_laboratory">Laboratory</string>
+    <string name="label_sample_laboratory_details">Laboratory name &amp; description</string>
     <string name="label_sample_shipping_status">Shipping Status</string>
     <string name="label_sample_received_status">Received Status</string>
     <string name="label_sample_shipping_date">Shipment Date</string>
@@ -67,6 +68,7 @@
     <string name="desc_sample_test_type">Suggested Test Type</string>
     <string name="desc_sample_source">Sample Source</string>
     <string name="desc_sample_laboratory">Laboratory Name</string>
+    <string name="desc_sample_laboratory_details">Laboratory name &amp; description</string>
     <string name="desc_sample_shipping_status">Shipping Status</string>
     <string name="desc_sample_received_status">Received Status</string>
     <string name="desc_sample_shipping_date">Shipment Date</string>
@@ -87,6 +89,7 @@
     <string name="hint_sample_test_type">Suggested Test Type</string>
     <string name="hint_sample_source">Sample Source</string>
     <string name="hint_sample_laboratory">Laboratory</string>
+    <string name="hint_sample_laboratory_details">Laboratory name &amp; description</string>
     <string name="hint_sample_shipping_status">Shipping Status</string>
     <string name="hint_sample_received_status">Received Status</string>
     <string name="hint_sample_shipping_date">Shipment Date</string>

@@ -340,12 +340,32 @@ public abstract class VisualState {
 
         @Override
         public int getTextColor(VisualStateControl control) {
-            return -1;
+            if (control == VisualStateControl.EDIT_TEXT) {
+                return R.color.controlTextColor;
+            } else if (control == VisualStateControl.CHECKBOX) {
+                return R.color.controlTextColor;
+            } else if (control == VisualStateControl.SPINNER) {
+                return R.color.controlTextColor;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.color.controlTextColor;
+            }
+
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public int getHintColor(VisualStateControl control) {
-            return -1;
+            if (control == VisualStateControl.EDIT_TEXT) {
+                return R.color.controlTextViewHint;
+            } else if (control == VisualStateControl.CHECKBOX) {
+                return R.color.controlTextViewHint;
+            } else if (control == VisualStateControl.SPINNER) {
+                return R.color.controlTextViewHint;
+            } else if (control == VisualStateControl.SWITCH) {
+                return R.color.controlTextViewHint;
+            }
+
+            throw new UnsupportedOperationException();
         }
     }
 
