@@ -3,6 +3,7 @@ package de.symeda.sormas.app.component.dialog;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.util.DataUtils;
 
@@ -31,6 +32,6 @@ public class RegionLoader {
     }
 
     public List<Item> load() {
-        return DataUtils.toItems(DatabaseHelper.getRegionDao().queryForAll(), false);
+        return DataUtils.toItems(DatabaseHelper.getRegionDao().queryForAll(Region.NAME, true), false);
     }
 }
