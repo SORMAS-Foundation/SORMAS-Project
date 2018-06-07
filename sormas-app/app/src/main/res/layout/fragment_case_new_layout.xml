@@ -107,6 +107,19 @@
                 app:value="@={data.plagueType}"
                 />
 
+            <de.symeda.sormas.app.component.TeboSpinner
+                android:id="@+id/spnDengueFever"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                android:visibility="gone"
+                app:hint="@string/hint_case_dengue_fever_type"
+                app:labelCaption="@string/label_case_dengue_fever_type"
+                app:description="@string/desc_case_dengue_fever_type"
+                app:required="true"
+                app:spinnerMode="dialog"
+                app:value="@={data.dengueFeverType}"
+                />
 
             <de.symeda.sormas.app.component.TeboSpinner
                 android:id="@+id/spnState"

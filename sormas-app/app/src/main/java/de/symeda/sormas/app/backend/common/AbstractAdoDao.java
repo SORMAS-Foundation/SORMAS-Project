@@ -70,9 +70,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
     }
 
     public ADO queryUuidReference(String uuid) {
-
         try {
-
             List<ADO> results = queryBuilder()
                     .selectColumns(AbstractDomainObject.ID,
                             AbstractDomainObject.UUID,
@@ -90,7 +88,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
                 throw new NonUniqueResultException("Found multiple results for UUID: " + uuid);
             }
         } catch (SQLException e) {
-            Log.e(getTableName(), "Could not perform queryUuid");
+            Log.e(getTableName(), "Could not perform queryUuidReference");
             throw new RuntimeException(e);
         }
     }

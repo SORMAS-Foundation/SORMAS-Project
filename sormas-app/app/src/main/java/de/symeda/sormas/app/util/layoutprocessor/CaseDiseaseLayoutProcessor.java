@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -46,6 +47,7 @@ public class CaseDiseaseLayoutProcessor {
     private Case record;
     private Disease initialDisease;
     private PlagueType initialPlagueType;
+    private DengueFeverType initialDengueFeverType;
     private Vaccination initialVaccination;
     private VaccinationInfoSource initialVaccinationInfoSource;
     private Date initialDataOfLastVaccination;
@@ -55,17 +57,19 @@ public class CaseDiseaseLayoutProcessor {
     private List<Item> vaccinationList;
     private List<Item> vaccinationInfoSourceList;
     private List<Item> plagueList;
+    private List<Item> dengueFeverList;
 
     private FragmentManager fragmentManager;
     private TeboSpinner spnVaccination;
     private TeboSpinner spnVaccinationInfoSource;
     private TeboSpinner spnPlague;
+    private TeboSpinner spnDengueFever;
     private TeboDatePicker dtpLastVaccinationDate;
 
     private OnSetBindingVariableListener mOnSetBindingVariableListener;
 
     public CaseDiseaseLayoutProcessor(Context context, FragmentManager fragmentManager, ViewDataBinding contentBinding, Case record,
-                                      List<Item> vaccinationList, List<Item> vaccinationInfoSourceList, List<Item> plagueList) {
+                                      List<Item> vaccinationList, List<Item> vaccinationInfoSourceList, List<Item> plagueList, List<Item> dengueFeverList) {
         this.mLastLayoutResId = -1;
         this.context = context;
         this.contentBinding = contentBinding;
@@ -74,9 +78,11 @@ public class CaseDiseaseLayoutProcessor {
         this.vaccinationList = vaccinationList;
         this.vaccinationInfoSourceList = vaccinationInfoSourceList;
         this.plagueList = plagueList;
+        this.dengueFeverList = dengueFeverList;
 
         this.initialDisease = record.getDisease();
         this.initialPlagueType = record.getPlagueType();
+        this.initialDengueFeverType = record.getDengueFeverType();
         this.initialVaccination = record.getVaccination();
         this.initialVaccinationInfoSource = record.getVaccinationInfoSource();
         this.initialDataOfLastVaccination = record.getVaccinationDate();
@@ -141,6 +147,7 @@ public class CaseDiseaseLayoutProcessor {
         spnVaccination = (TeboSpinner)innerRootLayout.findViewById(R.id.spnVaccination);
         spnVaccinationInfoSource = (TeboSpinner)innerRootLayout.findViewById(R.id.spnVaccinationInfoSource);
         spnPlague = (TeboSpinner)innerRootLayout.findViewById(R.id.spnPlague);
+        spnDengueFever = (TeboSpinner)innerRootLayout.findViewById(R.id.spnDengueFever);
         dtpLastVaccinationDate = (TeboDatePicker) innerRootLayout.findViewById(R.id.dtpLastVaccinationDate);
 
         if (dtpLastVaccinationDate != null)
@@ -162,6 +169,26 @@ public class CaseDiseaseLayoutProcessor {
                         public List<Item> getDataSource(Object parentValue) {
                             return (plagueList.size() > 0) ? DataUtils.addEmptyItem(plagueList)
                                     : plagueList;
+                        }
+
+                        @Override
+                        public VisualState getInitVisualState() {
+                            return null;
+                        }
+                    });
+                }
+
+                if (spnDengueFever != null) {
+                    spnDengueFever.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+                        @Override
+                        public Object getSelectedValue() {
+                            return null;
+                        }
+
+                        @Override
+                        public List<Item> getDataSource(Object parentValue) {
+                            return (dengueFeverList.size() > 0) ? DataUtils.addEmptyItem(dengueFeverList)
+                                    : dengueFeverList;
                         }
 
                         @Override
@@ -228,6 +255,7 @@ public class CaseDiseaseLayoutProcessor {
     private void ensureDataIntegrity(Disease disease) {
         if (initialDisease == disease) {
             record.setPlagueType(initialPlagueType);
+            record.setDengueFeverType(initialDengueFeverType);
             record.setVaccination(initialVaccination);
             record.setVaccinationInfoSource(initialVaccinationInfoSource);
             record.setVaccinationDate(initialDataOfLastVaccination);
@@ -235,6 +263,7 @@ public class CaseDiseaseLayoutProcessor {
             record.setVaccinationDoses(initialNumbValidDoses);
         } else {
             record.setPlagueType(null);
+            record.setDengueFeverType(null);
             record.setVaccination(null);
             record.setVaccinationInfoSource(null);
             record.setVaccinationDate(null);
@@ -254,6 +283,8 @@ public class CaseDiseaseLayoutProcessor {
             return R.layout.fragment_edit_case_info_disease_csm_layout;
         } else if (disease == Disease.PLAGUE) {
             return R.layout.fragment_edit_case_info_disease_plague_layout;
+        } else if (disease == Disease.DENGUE) {
+            return R.layout.fragment_edit_case_info_disease_dengue_fever_layout;
         }
 
         return -1;

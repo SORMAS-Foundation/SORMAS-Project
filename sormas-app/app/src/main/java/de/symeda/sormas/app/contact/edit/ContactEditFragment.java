@@ -110,7 +110,7 @@ public class ContactEditFragment extends BaseEditActivityFragment<FragmentContac
                 if (contact.isUnreadOrChildUnread())
                     DatabaseHelper.getContactDao().markAsRead(contact);
 
-                _associatedCase = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getResultingCaseUuid());
+                _associatedCase = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
             }
 
             resultHolder.forItem().add(contact);
@@ -156,6 +156,7 @@ public class ContactEditFragment extends BaseEditActivityFragment<FragmentContac
         //contentBinding.contactRelationToCase.makeFieldSoftRequired();
 
         contentBinding.setData(record);
+        contentBinding.setCaze(associatedCase);
         contentBinding.setContactProximityClass(ContactProximity.class);
         contentBinding.setCreateCaseCallback(createCaseCallback);
         contentBinding.setOpenCaseLinkCallback(openCaseLinkCallback);
@@ -213,7 +214,7 @@ public class ContactEditFragment extends BaseEditActivityFragment<FragmentContac
                         if (contact.isUnreadOrChildUnread())
                             DatabaseHelper.getContactDao().markAsRead(contact);
 
-                        _associatedCase = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getResultingCaseUuid());
+                        _associatedCase = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
                     }
 
                     resultHolder.forItem().add(contact);

@@ -71,7 +71,7 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
                 if (contact.isUnreadOrChildUnread())
                     DatabaseHelper.getContactDao().markAsRead(contact);
 
-                _associatedCase = findAssociatedCase(contact.getPerson(), contact.getCaseDisease());
+                _associatedCase = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
             }
 
             resultHolder.forItem().add(contact);
@@ -98,6 +98,7 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
         //contentBinding.setCreateCaseCallback(createCaseCallback);
         contentBinding.setOpenCaseLinkCallback(openCaseLinkCallback);
         contentBinding.setData(record);
+        contentBinding.setCaze(associatedCase);
     }
 
     @Override
@@ -132,7 +133,7 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
                         if (contact.isUnreadOrChildUnread())
                             DatabaseHelper.getContactDao().markAsRead(contact);
 
-                        _associatedCase = findAssociatedCase(contact.getPerson(), contact.getCaseDisease());
+                        _associatedCase = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
                     }
 
                     resultHolder.forItem().add(contact);
@@ -190,20 +191,6 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
     @Override
     public int getReadLayout() {
         return R.layout.fragment_contact_read_layout;
-    }
-
-    private Case findAssociatedCase(Person person, Disease disease) {
-        return null;
-//        if(person == null || disease == null) {
-//            return null;
-//        }
-//
-//        Case caze = DatabaseHelper.getCaseDao().getByPersonAndDisease(person, disease);
-//        if (caze != null) {
-//            return caze;
-//        } else {
-//            return null;
-//        }
     }
 
     private void setupCallback() {

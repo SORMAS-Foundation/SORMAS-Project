@@ -17,6 +17,7 @@ import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
@@ -83,6 +84,7 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
     private List<Item> vaccinationList;
     private List<Item> vaccinationInfoSourceList;
     private List<Item> plagueList;
+    private List<Item> dengueFeverList;
 
     private CaseDiseaseLayoutProcessor caseDiseaseLayoutProcessor;
 
@@ -141,6 +143,7 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
             resultHolder.forOther().add(DataUtils.getEnumItems(Vaccination.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(VaccinationInfoSource.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(PlagueType.class, false));
+            resultHolder.forOther().add(DataUtils.getEnumItems(DengueFeverType.class, false));
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
             ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
@@ -166,6 +169,9 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
             if (otherIterator.hasNext())
                 plagueList = otherIterator.next();
 
+            if (otherIterator.hasNext())
+                dengueFeverList = otherIterator.next();
+
             setupCallback();
         }
 
@@ -174,7 +180,7 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
 
     @Override
     public void onLayoutBinding(FragmentCaseEditLayoutBinding contentBinding) {
-        caseDiseaseLayoutProcessor = new CaseDiseaseLayoutProcessor(getContext(), getFragmentManager(), contentBinding, record, vaccinationList, vaccinationInfoSourceList, plagueList);
+        caseDiseaseLayoutProcessor = new CaseDiseaseLayoutProcessor(getContext(), getFragmentManager(), contentBinding, record, vaccinationList, vaccinationInfoSourceList, plagueList, dengueFeverList);
         caseDiseaseLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
             public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
@@ -280,7 +286,6 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
             contentBinding.spnOutcome.changeVisualState(VisualState.DISABLED);
             contentBinding.dtpDateOfOutcome.changeVisualState(VisualState.DISABLED);
         }
-
 
         contentBinding.setData(record);
         contentBinding.setYesNoUnknownClass(YesNoUnknown.class);

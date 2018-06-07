@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Random;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.user.UserRole;
@@ -71,6 +72,7 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
 
     private List<Item> diseaseList;
     private List<Item> plagueTypeList;
+    private List<Item> dengueFeverTypeList;
 
     private HealthFacilityLayoutProcessor healthFacilityLayoutProcessor;
 
@@ -126,6 +128,7 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
 
             resultHolder.forOther().add(DataUtils.getEnumItems(Disease.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(PlagueType.class, false));
+            resultHolder.forOther().add(DataUtils.getEnumItems(DengueFeverType.class, false));
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
             ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
@@ -144,6 +147,9 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
 
             if (otherIterator.hasNext())
                 plagueTypeList =  otherIterator.next();
+
+            if (otherIterator.hasNext())
+                dengueFeverTypeList = otherIterator.next();
 
             setupCallback();
         }
@@ -211,12 +217,19 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
                 if (disease == Disease.OTHER) {
                     getContentBinding().txtDiseaseDetail.setVisibility(View.VISIBLE);
                     getContentBinding().spnPlague.setVisibility(View.GONE);
+                    getContentBinding().spnDengueFever.setVisibility(View.GONE);
                 } else if (disease == Disease.PLAGUE) {
                     getContentBinding().txtDiseaseDetail.setVisibility(View.GONE);
                     getContentBinding().spnPlague.setVisibility(View.VISIBLE);
+                    getContentBinding().spnDengueFever.setVisibility(View.GONE);
+                } else if (disease == Disease.DENGUE) {
+                    getContentBinding().txtDiseaseDetail.setVisibility(View.GONE);
+                    getContentBinding().spnPlague.setVisibility(View.GONE);
+                    getContentBinding().spnDengueFever.setVisibility(View.VISIBLE);
                 } else {
                     getContentBinding().txtDiseaseDetail.setVisibility(View.GONE);
                     getContentBinding().spnPlague.setVisibility(View.GONE);
+                    getContentBinding().spnDengueFever.setVisibility(View.GONE);
                 }
             }
 
@@ -235,6 +248,23 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
             @Override
             public List<Item> getDataSource(Object parentValue) {
                 return (plagueTypeList.size() > 0) ? DataUtils.addEmptyItem(plagueTypeList) : plagueTypeList;
+            }
+
+            @Override
+            public VisualState getInitVisualState() {
+                return null;
+            }
+        });
+
+        contentBinding.spnDengueFever.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+            @Override
+            public Object getSelectedValue() {
+                return null;
+            }
+
+            @Override
+            public List<Item> getDataSource(Object parentValue) {
+                return (dengueFeverTypeList.size() > 0) ? DataUtils.addEmptyItem(dengueFeverTypeList) : dengueFeverTypeList;
             }
 
             @Override

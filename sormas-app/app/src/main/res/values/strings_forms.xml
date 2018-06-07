@@ -591,6 +591,7 @@
     <string name="label_case_yellow_fever_vaccination">Yellow Fever Vaccination</string>
     <string name="label_case_yellow_fever_vaccination_info_source">Yellow Fever Vaccination Info Source</string>
     <string name="label_case_plague_type">Plague Type</string>
+    <string name="label_case_dengue_fever_type">Dengue Fever Type</string>
     <string name="label_case_vaccination_received">Received Vaccination</string>
     <string name="label_case_number_valid_doses">Number of Valid Doses</string>
     <string name="label_case_last_vaccination_date">Last Vaccination Date</string>
@@ -625,6 +626,7 @@
     <string name="desc_case_yellow_fever_vaccination">Yellow Fever Vaccination</string>
     <string name="desc_case_yellow_fever_vaccination_info_source">Yellow Fever Vaccination Info Source</string>
     <string name="desc_case_plague_type">Plague Type</string>
+    <string name="desc_case_dengue_fever_type">Dengue Fever Type</string>
     <string name="desc_case_vaccination_received">Received Vaccination</string>
     <string name="desc_case_number_valid_doses">Number of Valid Doses</string>
     <string name="desc_case_last_vaccination_date">Last Vaccination Date</string>
@@ -658,6 +660,7 @@
     <string name="hint_case_yellow_fever_vaccination">Yellow Fever Vaccination</string>
     <string name="hint_case_yellow_fever_vaccination_info_source">Yellow Fever Vaccination Info Source</string>
     <string name="hint_case_plague_type">Plague Type</string>
+    <string name="hint_case_dengue_fever_type">Dengue Fever Type</string>
 
     <string name="hint_case_vaccination_received">Received Vaccination</string>
     <string name="hint_case_number_valid_doses">Number of Valid Doses</string>
