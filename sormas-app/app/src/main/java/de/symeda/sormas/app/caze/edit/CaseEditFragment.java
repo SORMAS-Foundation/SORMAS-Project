@@ -22,6 +22,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -94,8 +95,8 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -202,15 +203,15 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
             public void onChange(TeboPropertyField field) {
                 Facility selectedFacility = record.getHealthFacility();
                 if (selectedFacility != null) {
-                    boolean otherHealthFacility = selectedFacility.getUuid().equals(ConstantHelper.OTHER_FACILITY_UUID);
-                    boolean noneHealthFacility = selectedFacility.getUuid().equals(ConstantHelper.NONE_FACILITY_UUID);
+                    boolean otherHealthFacility = selectedFacility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+                    boolean noneHealthFacility = selectedFacility.getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
 
                     if (otherHealthFacility) {
                         getContentBinding().txtHealthFacilityDesc.setVisibility(View.VISIBLE);
                         getContentBinding().txtHealthFacilityDesc.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
                     } else if (noneHealthFacility) {
                         getContentBinding().txtHealthFacilityDesc.setVisibility(View.VISIBLE);
-                        getContentBinding().txtHealthFacilityDesc.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, ConstantHelper.NONE_HEALTH_FACILITY_DETAILS));
+                        getContentBinding().txtHealthFacilityDesc.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
                     } else {
                         getContentBinding().txtHealthFacilityDesc.setVisibility(View.GONE);
                     }

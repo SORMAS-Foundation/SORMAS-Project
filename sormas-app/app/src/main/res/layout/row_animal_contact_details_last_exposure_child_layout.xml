@@ -3,15 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <variable name="data" type="de.symeda.sormas.app.epid.AnimalContact"/>
         <variable
             name="showNotificationCallback"
             type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
         <variable
             name="hideNotificationCallback"
             type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
-        <variable name="data" type="de.symeda.sormas.app.epid.AnimalContact"/>
-        <variable name="yesNoUnknownClass" type="Class" />
-
         <variable
             name="checkedCallback"
             type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />

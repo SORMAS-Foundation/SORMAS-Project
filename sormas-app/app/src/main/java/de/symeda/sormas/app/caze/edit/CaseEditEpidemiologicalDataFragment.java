@@ -79,10 +79,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     private IEntryItemOnClickListener onAddTravelEntryClickListener;
     private IEntryItemOnClickListener onAddBurialEntryClickListener;
 
-    /*private ObservableArrayList gatherings = new ObservableArrayList();
-    private ObservableArrayList travels = new ObservableArrayList();
-    private ObservableArrayList burials = new ObservableArrayList();*/
-
     private AnimalContactFormListAdapter animalContactAdapter;
     private AnimalContactFormListAdapter environmentalExposureAdapter;
     private LinearLayoutManager linearLayoutManager;
@@ -95,8 +91,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -106,7 +102,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
-        pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
+        pageStatus = (InvestigationStatus)getPageStatusArg(arguments);
     }
 
     @Override
@@ -140,10 +136,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
 
             resultHolder.forItem().add(caze.getEpiData());
 
-            /*resultHolder.forList().add(epiData.getBurials());
-            resultHolder.forList().add(epiData.getGatherings());
-            resultHolder.forList().add(epiData.getTravels());*/
-
             resultHolder.forOther().add(DataUtils.getEnumItems(WaterSource.class, false));
 
             //TODO: Talk to Martin, we need to categorize the type of Animal Contacts
@@ -156,18 +148,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
 
             if (itemIterator.hasNext())
                 record = itemIterator.next();
-
-            /*if (listIterator.hasNext()) {
-                burials.addAll((List<EpiDataBurial>)listIterator.next());
-            }
-
-            if (listIterator.hasNext()) {
-                gatherings.addAll((List<EpiDataGathering>)listIterator.next());
-            }
-
-            if (listIterator.hasNext()) {
-                travels.addAll((List<EpiDataTravel>)listIterator.next());
-            }*/
 
             if (otherIterator.hasNext())
                 drinkingWaterSourceList = otherIterator.next();
@@ -234,9 +214,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
         contentBinding.setGatheringList(getGatherings());
         contentBinding.setTravelList(getTravels());
         contentBinding.setBurialList(getBurials());
-        /*contentBinding.setGatheringList(gatherings);
-        contentBinding.setTravelList(travels);
-        contentBinding.setBurialList(burials);*/
         contentBinding.setGatheringItemClickCallback(onGatheringItemClickListener);
         contentBinding.setTravelItemClickCallback(onTravelItemClickListener);
         contentBinding.setBurialItemClickCallback(onBurialItemClickListener);
@@ -293,61 +270,55 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
-        try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-                @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
-                }
+        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            @Override
+            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().showPreloader();
+                //getActivityCommunicator().hideFragmentView();
+            }
 
-                @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    Case caze = getActivityRootData();
+            @Override
+            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                Case caze = getActivityRootData();
 
-                    if (caze != null) {
-                        if (caze.isUnreadOrChildUnread())
-                            DatabaseHelper.getCaseDao().markAsRead(caze);
+                if (caze != null) {
+                    if (caze.isUnreadOrChildUnread())
+                        DatabaseHelper.getCaseDao().markAsRead(caze);
 
-                        if (caze.getPerson() == null) {
-                            caze.setPerson(DatabaseHelper.getPersonDao().build());
-                        }
-
-                        //TODO: Do we really need to do this
-                        if (caze.getEpiData() != null)
-                            caze.setEpiData(DatabaseHelper.getEpiDataDao().queryUuid(caze.getEpiData().getUuid()));
+                    if (caze.getPerson() == null) {
+                        caze.setPerson(DatabaseHelper.getPersonDao().build());
                     }
 
-                    resultHolder.forItem().add(caze.getEpiData());
+                    //TODO: Do we really need to do this
+                    if (caze.getEpiData() != null)
+                        caze.setEpiData(DatabaseHelper.getEpiDataDao().queryUuid(caze.getEpiData().getUuid()));
                 }
-            });
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
 
-                    if (resultHolder == null){
-                        return;
-                    }
+                resultHolder.forItem().add(caze.getEpiData());
+            }
+        });
+        onResumeTask = executor.execute(new ITaskResultCallback() {
+            @Override
+            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().hidePreloader();
+                //getActivityCommunicator().showFragmentView();
 
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                    if (itemIterator.hasNext())
-                        record = itemIterator.next();
-
-                    if (record != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
+                if (resultHolder == null){
+                    return;
                 }
-            });
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
 
+                ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+
+                if (itemIterator.hasNext())
+                    record = itemIterator.next();
+
+                if (record != null)
+                    requestLayoutRebind();
+                else {
+                    getActivity().finish();
+                }
+            }
+        });
     }
 
     @Override
@@ -630,9 +601,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
         if (record.getGatherings() == null)
             return;
 
-        //record.getPreviousHospitalizations().remove(item);
-        //record.getPreviousHospitalizations().add(0, (PreviousHospitalization)item);
-
         getContentBinding().setGatheringList(getGatherings());
         verifyGatheringStatus();
     }
@@ -690,9 +658,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
 
         if (record.getBurials() == null)
             return;
-
-        //record.getPreviousHospitalizations().remove(item);
-        //record.getPreviousHospitalizations().add(0, (PreviousHospitalization)item);
 
         getContentBinding().setBurialList(getBurials());
         verifyBurialStatus();
@@ -752,9 +717,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
         if (record.getTravels() == null)
             return;
 
-        //record.getPreviousHospitalizations().remove(item);
-        //record.getPreviousHospitalizations().add(0, (PreviousHospitalization)item);
-
         getContentBinding().setTravelList(getTravels());
         verifyTravelStatus();
     }
@@ -782,7 +744,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     }
 
     // </editor-fold>
-
 
     public static CaseEditEpidemiologicalDataFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
             throws java.lang.InstantiationException, IllegalAccessException {

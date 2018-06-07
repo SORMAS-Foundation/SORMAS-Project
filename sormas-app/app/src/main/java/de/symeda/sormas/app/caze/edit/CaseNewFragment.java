@@ -80,10 +80,10 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
-        SavePersonUuidState(outState, personUuid);
-        SaveContactUuidState(outState, contactUuid);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
+        savePersonUuidState(outState, personUuid);
+        saveContactUuidState(outState, contactUuid);
     }
 
     @Override

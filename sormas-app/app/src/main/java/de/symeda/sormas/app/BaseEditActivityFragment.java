@@ -77,7 +77,7 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveUserRightState(outState, editOrCreateUserRight);
+        saveUserRightState(outState, editOrCreateUserRight);
     }
 
     @Override
@@ -587,113 +587,49 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
         return e;
     }
 
-    protected <E extends AbstractDomainObject> E getPageRecordArg(Bundle arguments) {
-        E e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_PAGE_RECORD)) {
-                e = (E) arguments.getSerializable(ConstantHelper.ARG_PAGE_RECORD);
-            }
-        }
-
-        return e;
-    }
-
-    protected <E extends Enum<E>> E getArgByElaboratorKey(Bundle arguments, String key) {
-        E e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(key)) {
-                e = (E) arguments.getSerializable(key);
-            }
-        }
-
-        return e;
-    }
-
-    protected <E extends Enum<E>> void SaveFilterStatusState(Bundle outState, E status) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_FILTER_STATUS, status);
-        }
-    }
-
-    protected <E extends Enum<E>> void SavePageStatusState(Bundle outState, E status) {
+    protected <E extends Enum<E>> void savePageStatusState(Bundle outState, E status) {
         if (outState != null) {
             outState.putSerializable(ConstantHelper.ARG_PAGE_STATUS, status);
         }
     }
 
-    protected <E extends AbstractDomainObject> void SavePageRecord(Bundle outState, E record) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_PAGE_RECORD, record);
-        }
-    }
-
-    protected void SaveRecordUuidState(Bundle outState, String recordUuid) {
+    protected void saveRecordUuidState(Bundle outState, String recordUuid) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_DATA_UUID, recordUuid);
         }
     }
 
-    protected void SavePersonUuidState(Bundle outState, String recordUuid) {
+    protected void savePersonUuidState(Bundle outState, String recordUuid) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_PERSON_UUID, recordUuid);
         }
     }
 
-    protected void SaveEventUuidState(Bundle outState, String eventUuid) {
+    protected void saveEventUuidState(Bundle outState, String eventUuid) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_EVENT_UUID, eventUuid);
         }
     }
 
-    protected void SaveTaskUuidState(Bundle outState, String taskUuid) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_TASK_UUID, taskUuid);
-        }
-    }
-
-    protected void SaveContactUuidState(Bundle outState, String contactUuid) {
+    protected void saveContactUuidState(Bundle outState, String contactUuid) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_CONTACT_UUID, contactUuid);
         }
     }
 
-    protected void SaveCaseUuidState(Bundle outState, String caseUuid) {
+    protected void saveCaseUuidState(Bundle outState, String caseUuid) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);
         }
     }
 
-    protected void SaveSampleUuidState(Bundle outState, String sampleUuid) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_SAMPLE_UUID, sampleUuid);
-        }
-    }
-
-    protected void SaveDiseaseState(Bundle outState, Disease disease) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_DISEASE, disease);
-        }
-    }
-
-    protected void SaveForVisitState(Bundle outState, boolean isForVisit) {
-        if (outState != null) {
-            outState.putBoolean(ConstantHelper.ARG_FOR_VISIT, isForVisit);
-        }
-    }
-
-    protected void SaveVisitCooperativeState(Bundle outState, boolean isVisitCooperative) {
-        if (outState != null) {
-            outState.putBoolean(ConstantHelper.ARG_VISIT_COOPERATIVE, isVisitCooperative);
-        }
-    }
-
-    protected void SaveUserRightState(Bundle outState, UserRight userRight) {
+    protected void saveUserRightState(Bundle outState, UserRight userRight) {
         if (outState != null) {
             outState.putSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT, userRight);
         }
     }
 
-    protected void SaveSampleMaterialState(Bundle outState, String sampleMaterial) {
+    protected void saveSampleMaterialState(Bundle outState, String sampleMaterial) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
         }

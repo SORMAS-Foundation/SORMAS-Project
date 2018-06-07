@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.view.View;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
@@ -60,8 +61,8 @@ public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<Fr
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -125,8 +126,8 @@ public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<Fr
         contentBinding.txtHealthFacility.setVisibility((caze.getHealthFacility() != null)? View.VISIBLE : View.GONE);
 
         if (caze.getHealthFacility() != null) {
-            boolean otherHealthFacility = caze.getHealthFacility().getUuid().equals(ConstantHelper.OTHER_FACILITY_UUID);
-            boolean noneHealthFacility = caze.getHealthFacility().getUuid().equals(ConstantHelper.NONE_FACILITY_UUID);
+            boolean otherHealthFacility = caze.getHealthFacility().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+            boolean noneHealthFacility = caze.getHealthFacility().getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
 
             if (otherHealthFacility) {
                 contentBinding.txtHealthFacilityDesc.setVisibility(View.VISIBLE);

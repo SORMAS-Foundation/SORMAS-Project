@@ -90,14 +90,14 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveActiveMenuState(outState, activeMenuKey);
+        saveActiveMenuState(outState, activeMenuKey);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        activeMenuKey = RestoreActiveMenuState(savedInstanceState);
+        activeMenuKey = restoreActiveMenuState(savedInstanceState);
         initializeActivity(savedInstanceState);
     }
 
@@ -657,28 +657,6 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         return e;
     }
 
-    protected <E extends AbstractDomainObject> E getPageRecordArg(Bundle arguments) {
-        E e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_PAGE_RECORD)) {
-                e = (E) arguments.getSerializable(ConstantHelper.ARG_PAGE_RECORD);
-            }
-        }
-
-        return e;
-    }
-
-    protected <E extends Enum<E>> E getArgByElaboratorKey(Bundle arguments, String key) {
-        E e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(key)) {
-                e = (E) arguments.getSerializable(key);
-            }
-        }
-
-        return e;
-    }
-
     protected int getActiveMenuArg(Bundle arguments) {
         int result = ConstantHelper.INDEX_FIRST_MENU;
         if (arguments != null && !arguments.isEmpty()) {
@@ -695,17 +673,6 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         if (arguments != null && !arguments.isEmpty()) {
             if(arguments.containsKey(ConstantHelper.KEY_EVENT_UUID)) {
                 result = (String) arguments.getString(ConstantHelper.KEY_EVENT_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected String getTaskUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.KEY_TASK_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_TASK_UUID);
             }
         }
 
@@ -734,199 +701,49 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         return result;
     }
 
-    protected String getSampleUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.KEY_SAMPLE_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_SAMPLE_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected Disease getDiseaseArg(Bundle arguments) {
-        Disease result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_DISEASE)) {
-                result = (Disease) arguments.getSerializable(ConstantHelper.ARG_DISEASE);
-            }
-        }
-
-        return result;
-    }
-
-    protected boolean getForVisitArg(Bundle arguments) {
-        boolean result = false;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_FOR_VISIT)) {
-                result = (boolean) arguments.getBoolean(ConstantHelper.ARG_FOR_VISIT);
-            }
-        }
-
-        return result;
-    }
-
-    protected boolean getVisitCooperativeArg(Bundle arguments) {
-        boolean result = false;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_VISIT_COOPERATIVE)) {
-                result = (boolean) arguments.getBoolean(ConstantHelper.ARG_VISIT_COOPERATIVE);
-            }
-        }
-
-        return result;
-    }
-
-    protected UserRight getUserRightArg(Bundle arguments) {
-        UserRight e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT)) {
-                e = (UserRight) arguments.getSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT);
-            }
-        }
-
-        return e;
-    }
-
-    protected String getSampleMaterialArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.KEY_SAMPLE_MATERIAL)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_SAMPLE_MATERIAL);
-            }
-        }
-
-        return result;
-    }
-
-
-
-    protected <E extends Enum<E>> void SaveFilterStatusState(Bundle outState, E status) {
+    protected <E extends Enum<E>> void saveFilterStatusState(Bundle outState, E status) {
         if (outState != null) {
             outState.putSerializable(ConstantHelper.ARG_FILTER_STATUS, status);
         }
     }
 
-    protected <E extends Enum<E>> void SavePageStatusState(Bundle outState, E status) {
+    protected <E extends Enum<E>> void savePageStatusState(Bundle outState, E status) {
         if (outState != null) {
             outState.putSerializable(ConstantHelper.ARG_PAGE_STATUS, status);
         }
     }
 
-    protected <E extends AbstractDomainObject> void SavePageRecord(Bundle outState, E record) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_PAGE_RECORD, record);
-        }
-    }
-
-    protected void SaveRecordUuidState(Bundle outState, String recordUuid) {
+    protected void saveRecordUuidState(Bundle outState, String recordUuid) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_DATA_UUID, recordUuid);
         }
     }
 
-    protected void SaveActiveMenuState(Bundle outState, int activeMenuKey) {
+    protected void saveActiveMenuState(Bundle outState, int activeMenuKey) {
         if (outState != null) {
             outState.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
         }
     }
 
-    protected void SaveEventUuidState(Bundle outState, String eventUuid) {
+    protected void saveEventUuidState(Bundle outState, String eventUuid) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_EVENT_UUID, eventUuid);
         }
     }
 
-    protected void SaveTaskUuidState(Bundle outState, String taskUuid) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_TASK_UUID, taskUuid);
-        }
-    }
-
-    protected void SaveContactUuidState(Bundle outState, String contactUuid) {
+    protected void saveContactUuidState(Bundle outState, String contactUuid) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_CONTACT_UUID, contactUuid);
         }
     }
 
-    protected void SaveCaseUuidState(Bundle outState, String caseUuid) {
+    protected void saveCaseUuidState(Bundle outState, String caseUuid) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);
         }
     }
 
-    protected void SaveSampleUuidState(Bundle outState, String sampleUuid) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_SAMPLE_UUID, sampleUuid);
-        }
-    }
-
-    protected void SaveDiseaseState(Bundle outState, Disease disease) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_DISEASE, disease);
-        }
-    }
-
-    protected void SaveForVisitState(Bundle outState, boolean isForVisit) {
-        if (outState != null) {
-            outState.putBoolean(ConstantHelper.ARG_FOR_VISIT, isForVisit);
-        }
-    }
-
-    protected void SaveVisitCooperativeState(Bundle outState, boolean isVisitCooperative) {
-        if (outState != null) {
-            outState.putBoolean(ConstantHelper.ARG_VISIT_COOPERATIVE, isVisitCooperative);
-        }
-    }
-
-    protected void SaveUserRightState(Bundle outState, UserRight userRight) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT, userRight);
-        }
-    }
-
-    protected void SaveSampleMaterialState(Bundle outState, String sampleMaterial) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
-        }
-    }
-
-
-
-    private <E extends Enum<E>> E RestoreFilterStatusState(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            return (E)savedInstanceState.getSerializable(ConstantHelper.ARG_FILTER_STATUS);
-        }
-
-        return null;
-    }
-
-    private <E extends Enum<E>> E RestorePageStatusState(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            return (E)savedInstanceState.getSerializable(ConstantHelper.ARG_PAGE_STATUS);
-        }
-
-        return null;
-    }
-
-    private <E extends Enum<E>> E RestorePageRecord(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            return (E)savedInstanceState.getSerializable(ConstantHelper.ARG_PAGE_RECORD);
-        }
-
-        return null;
-    }
-
-    private String RestoreRecordUuidState(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            return savedInstanceState.getString(ConstantHelper.KEY_DATA_UUID);
-        }
-
-        return null;
-    }
-
-    private int RestoreActiveMenuState(Bundle savedInstanceState) {
+    private int restoreActiveMenuState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             return savedInstanceState.getInt(ConstantHelper.KEY_ACTIVE_MENU);
         }

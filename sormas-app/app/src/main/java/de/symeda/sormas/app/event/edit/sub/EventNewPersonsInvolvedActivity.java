@@ -45,9 +45,9 @@ public class EventNewPersonsInvolvedActivity extends BaseEditActivity<EventParti
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
-        SaveEventUuidState(outState, eventUuid);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
+        saveEventUuidState(outState, eventUuid);
     }
 
     @Override

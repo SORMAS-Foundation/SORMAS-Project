@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -180,63 +181,9 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
         radioGroup = (RadioGroup) this.findViewById(R.id.rbTeboSwitch);
         radioGroup.setOrientation(orientation);
 
-        /*radioGroup.setNextFocusLeftId(getNextFocusLeft());
-        radioGroup.setNextFocusRightId(getNextFocusRight());
-        radioGroup.setNextFocusUpId(getNextFocusUp());
-        radioGroup.setNextFocusDownId(getNextFocusDown());
-        radioGroup.setNextFocusForwardId(getNextFocusForward());*/
-
-        /*radioGroup.setTextAlignment(getCaptionAlignment());
-        if (getCaptionAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
-            radioGroup.setGravity(getCaptionGravity());
-        }*/
-
         if (background != null) {
             radioGroup.setBackground(background.mutate());
         }
-
-        /*radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                if (inverseBindingListener != null) {
-                    inverseBindingListener.onChange();
-                }
-
-                onValueChanged();
-
-                if (onCheckedChangeListener != null)
-                    onCheckedChangeListener.onCheckedChanged(TeboSwitch.this, radioGroupElements.get(i), i);
-            }
-
-
-
-
-            *//*if (additionalListener != null) {
-                additionalListener.onCheckedChanged(compoundButton, b);
-            }*//*
-        });*/
-
-
-
-        /*button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            private TeboSwitch teboSwitch;
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (onCheckedChangeListener != null)
-                    onCheckedChangeListener.onCheckedChanged(teboSwitch, buttonView, isChecked);
-            }
-
-            private CompoundButton.OnCheckedChangeListener init(TeboSwitch teboSwitch){
-                this.teboSwitch = teboSwitch;
-                return this;
-            }
-        }.init(this));*/
-
-        //setValue(radioGroupElements.get(checkedButtonIndex));
-
-        //radioGroup.setOnFocusChangeListener(new TeboRadioGroup.OnFocusChangeListenerHandler(this));
-        //radioGroup.setOnClickListener(new TeboRadioGroup.OnRadioGroupClickHandler(getContext(), this));
     }
 
     @Override
@@ -272,16 +219,6 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
                 c.setChecked(false);
             }
         }
-
-        /*RadioButton child = (RadioButton)radioGroup.getChildAt(valueIndex);
-
-        if (child == null)
-            return;
-
-        if(child != null) {
-            child.setChecked(true);
-            //radioGroup.check(child.getId());
-        }*/
     }
 
     @Override

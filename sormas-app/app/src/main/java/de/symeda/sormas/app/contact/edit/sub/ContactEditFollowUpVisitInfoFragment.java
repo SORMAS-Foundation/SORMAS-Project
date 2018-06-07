@@ -42,9 +42,9 @@ public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragme
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
-        SaveContactUuidState(outState, contactUuid);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
+        saveContactUuidState(outState, contactUuid);
     }
 
     @Override

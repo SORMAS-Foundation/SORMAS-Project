@@ -41,11 +41,7 @@ import de.symeda.sormas.app.component.TeboDatePicker;
 import de.symeda.sormas.app.component.TeboSpinner;
 import de.symeda.sormas.app.component.TeboSwitch;
 import de.symeda.sormas.app.component.VisualState;
-import de.symeda.sormas.app.component.dialog.CommunityLoader;
-import de.symeda.sormas.app.component.dialog.DistrictLoader;
-import de.symeda.sormas.app.component.dialog.FacilityLoader;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
-import de.symeda.sormas.app.component.dialog.RegionLoader;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
@@ -107,8 +103,8 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override

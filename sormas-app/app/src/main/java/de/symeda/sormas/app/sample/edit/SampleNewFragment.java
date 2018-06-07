@@ -53,7 +53,6 @@ import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
-import de.symeda.sormas.app.validation.SampleValidator;
 
 /**
  * Created by Orson on 29/03/2018.
@@ -88,10 +87,10 @@ public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNe
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
-        SaveCaseUuidState(outState, caseUuid);
-        SaveSampleMaterialState(outState, sampleMaterial);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
+        saveCaseUuidState(outState, caseUuid);
+        saveSampleMaterialState(outState, sampleMaterial);
     }
 
     @Override

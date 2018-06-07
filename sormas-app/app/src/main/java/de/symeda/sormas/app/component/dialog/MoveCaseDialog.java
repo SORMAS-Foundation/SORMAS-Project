@@ -14,6 +14,7 @@ import com.google.android.gms.analytics.Tracker;
 
 import java.util.List;
 
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -257,8 +258,8 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
             public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
                 Facility facility = (Facility)value;
 
-                boolean otherHealthFacility = facility.getUuid().equals(ConstantHelper.OTHER_FACILITY_UUID);
-                boolean noneHealthFacility = facility.getUuid().equals(ConstantHelper.NONE_FACILITY_UUID);
+                boolean otherHealthFacility = facility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+                boolean noneHealthFacility = facility.getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
 
                 if (otherHealthFacility || noneHealthFacility) {
                     _contentBinding.txtFacilityDetails.setVisibility(View.VISIBLE);

@@ -681,6 +681,24 @@
     <!-- Case Epidemiological Data -->
     <!-- ........................................................................ -->
     <!-- Label -->
+    <string name="label_case_epid_areaConfirmedCases">Exposure to neighborhood where confirmed cases occurred</string>
+    <string name="label_case_epid_areaInfectedAnimals">Exposure (e.g. handling, butchering) to animals (or their remains) in an area where infected animals have been confirmed in the past month</string>
+    <string name="label_case_epid_closeContactProbableCase">Close contact (within 1 meter) with a probable or confirmed case</string>
+    <string name="label_case_epid_directContactConfirmedCase">Direct contact with a confirmed case</string>
+    <string name="label_case_epid_directContactDeadUnsafe">Direct contact with a dead body while not wearing appropriate PPE</string>
+    <string name="label_case_epid_directContactProbableCase">Direct contact with a probable or confirmed case</string>
+    <string name="label_case_epid_eatingRawAnimals">Eating raw or undercooked animal products</string>
+    <string name="label_case_epid_eatingRawAnimalsDetails">Specify eaten animal product</string>
+    <string name="label_case_epid_eatingRawAnimalsInInfectedArea">Eating raw or undercooked animal products in an area where infected animals have been confirmed</string>
+    <string name="label_case_epid_percutaneousCaseBlood">Percutaneous (e.g., needle stick) or mucous membrane exposure to blood from a case</string>
+    <string name="label_case_epid_processingConfirmedCaseFluidUnsafe">Laboratory processing of blood or body fluids from a confirmed case while not wearing appropriate PPE or without using standard biosafety precautions</string>
+    <string name="label_case_epid_processingSuspectedCaseSampleUnsafe">Handling samples (animal or human) suspected of containing the virus without adequate personal protection</string>
+    <string name="label_case_epid_sickDeadAnimals">Exposure to sick/unxeplainedly dead animals</string>
+    <string name="label_case_epid_sickDeadAnimalsDate">Date of dead animal exposure</string>
+    <string name="label_case_epid_sickDeadAnimalsDetails">Specify dead animal exposure</string>
+    <string name="label_case_epid_sickDeadAnimalsLocation">Place of dead animal exposure</string>
+
+
     <string name="label_case_epid_info">Epidemiologial Info</string>
     <string name="label_case_epid_visited_social_event">Visited a Social Event</string>
     <string name="label_case_epid_travel">Travel</string>
@@ -727,6 +745,7 @@
 
 
     <!-- Hint -->
+
     <string name="hint_case_epid_info">Epidemiologial Info</string>
     <string name="hint_case_epid_visited_social_event">Visited a Social Event</string>
     <string name="hint_case_epid_travel">Travel</string>
@@ -738,7 +757,6 @@
     <string name="hint_case_epid_exposure_to_sick_birds_last_exposure_place">Place of Last Exposure</string>
     <string name="hint_case_epid_contact_with_cattle">Contact with Cattle?</string>
     <string name="hint_case_epid_contact_with_other_animals">Contact with Other Animals?</string>
-
     <string name="hint_case_epid_exposure_to_wild_birds">Exposure to Wild Birds</string>
     <string name="hint_case_epid_wild_birds_last_exposure_date">Date of Last Exposure</string>
     <string name="hint_case_epid_wild_birds_last_exposure_place">Place of Last Exposure</string>

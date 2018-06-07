@@ -72,10 +72,10 @@ public class ContactEditFollowUpInfoActivity extends BaseEditActivity<Visit> {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //SaveFilterStatusState(outState, followUpStatus);
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
-        SaveContactUuidState(outState, contactUuid);
+        //saveFilterStatusState(outState, followUpStatus);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
+        saveContactUuidState(outState, contactUuid);
     }
 
     @Override

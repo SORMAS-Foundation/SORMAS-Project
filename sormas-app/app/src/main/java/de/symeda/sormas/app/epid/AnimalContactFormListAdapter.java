@@ -40,10 +40,8 @@ public class AnimalContactFormListAdapter  extends DataBoundAdapter<RowEditAnima
 
     private final Context context;
     private List<AnimalContact> data = new ArrayList<>();
-    private OnAnimalContactStateChangeListener mOnAnimalContactStateChangeListener;
     private OnSetBindingVariableListener mOnSetBindingVariableListener;
     private FragmentManager fragmentManager;
-    //private ViewDataBinding binding;
     private OnTeboSwitchCheckedChangeListener checkedCallback;
 
     public AnimalContactFormListAdapter(Context context, int rowLayout, FragmentManager fragmentManager) {
@@ -85,7 +83,6 @@ public class AnimalContactFormListAdapter  extends DataBoundAdapter<RowEditAnima
         return new OnTeboSwitchCheckedChangeListener() {
             private AnimalContact _animalContactItem;
             private DataBoundViewHolder<RowEditAnimalContactListItemLayoutBinding> _holder;
-            private DataBoundAdapter<RowEditAnimalContactListItemLayoutBinding> _adapter;
 
             @Override
             public void onCheckedChanged(TeboSwitch teboSwitch, Object checkedItem, int checkedId) {
@@ -116,7 +113,6 @@ public class AnimalContactFormListAdapter  extends DataBoundAdapter<RowEditAnima
                 } else {
                     hideRootChildLayout(_holder);
                 }
-                performAnimalContactStateChanged(_animalContactItem, state);
             }
 
 
@@ -186,7 +182,7 @@ public class AnimalContactFormListAdapter  extends DataBoundAdapter<RowEditAnima
         }
 
         if (!binding.setVariable(BR.checkedCallback, checkedCallback)) {
-            Log.e(TAG, "There is no variable 'yesNoUnknownClass' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'checkedCallback' in layout " + layoutName);
         }
     }
 
@@ -199,15 +195,4 @@ public class AnimalContactFormListAdapter  extends DataBoundAdapter<RowEditAnima
     public void setOnSetBindingVariable(OnSetBindingVariableListener listener) {
         this.mOnSetBindingVariableListener = listener;
     }
-
-    public void setOnAnimalContactStateChangeListener(OnAnimalContactStateChangeListener listener) {
-        this.mOnAnimalContactStateChangeListener = listener;
-    }
-
-    private void performAnimalContactStateChanged(AnimalContact animalContact, YesNoUnknown state) {
-        if (this.mOnAnimalContactStateChangeListener != null)
-            this.mOnAnimalContactStateChangeListener.onChange(animalContact, state);
-    }
-
-
 }

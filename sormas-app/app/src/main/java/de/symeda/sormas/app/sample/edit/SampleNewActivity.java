@@ -41,9 +41,9 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
-        SaveCaseUuidState(outState, caseUuid);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
+        saveCaseUuidState(outState, caseUuid);
     }
 
     @Override

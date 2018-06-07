@@ -91,10 +91,10 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
-        SaveCaseUuidState(outState, caseUuid);
-        SaveSampleMaterialState(outState, sampleMaterial);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
+        saveCaseUuidState(outState, caseUuid);
+        saveSampleMaterialState(outState, sampleMaterial);
     }
 
     @Override

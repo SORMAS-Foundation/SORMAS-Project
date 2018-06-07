@@ -200,7 +200,7 @@ public abstract class AnimalContact {
 
     // <editor-fold defaultstate="collapsed" desc="Public Methods">
 
-    public static IAnimalContactValueLoader makeAnimalContacts(AnimalContactCategory category) {
+    public static ValueLoader makeAnimalContacts(AnimalContactCategory category) {
         List<AnimalContact> database = getAnimalContactDatabase();
         List<AnimalContact> newList = new ArrayList<>();
 
@@ -253,7 +253,7 @@ public abstract class AnimalContact {
         }};
     }
 
-    private static class ValueLoader implements IAnimalContactValueLoader {
+    public static class ValueLoader {
 
         private List<AnimalContact> list;
 
@@ -261,12 +261,6 @@ public abstract class AnimalContact {
             this.list = list;
         }
 
-        @Override
-        public List<AnimalContact> unloaded() {
-            return list;
-        }
-
-        @Override
         public List<AnimalContact> loadState(EpiData record) {
             return AnimalContactFacade.loadState(list, record);
         }
