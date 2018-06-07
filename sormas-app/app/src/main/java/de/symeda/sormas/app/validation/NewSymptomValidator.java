@@ -6,7 +6,6 @@ import java.util.List;
 
 import de.symeda.sormas.app.component.EditTeboPropertyField;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.databinding.CaseSymptomsFragmentLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditSymptomsInfoLayoutBinding;
 import de.symeda.sormas.app.symptom.Symptom;
 import de.symeda.sormas.app.symptom.SymptomType;
@@ -25,27 +24,27 @@ public class NewSymptomValidator {
     private static List<Symptom> lesionsSymptomList;
     private static List<Symptom> monkeypoxSymptomList;
 
-    public static void clearErrorsForSymptoms(CaseSymptomsFragmentLayoutBinding binding) {
-        /*for (SymptomStateField field : getNonConditionalSymptoms(binding)) {
-            field.clearError();
-        }
-
-        for (SymptomStateField field : getConditionalBleedingSymptoms(binding)) {
-            field.clearError();
-        }
-
-        for (PropertyField field : getOtherSymptomsFields(binding)) {
-            field.clearError();
-        }
-
-        for (PropertyField field : getLesionsFields(binding)) {
-            field.clearError();
-        }
-
-        for (PropertyField field : getMonkeypoxFields(binding)) {
-            field.clearError();
-        }*/
-    }
+//    public static void clearErrorsForSymptoms(CaseSymptomsFragmentLayoutBinding binding) {
+//        /*for (SymptomStateField field : getNonConditionalSymptoms(binding)) {
+//            field.clearError();
+//        }
+//
+//        for (SymptomStateField field : getConditionalBleedingSymptoms(binding)) {
+//            field.clearError();
+//        }
+//
+//        for (PropertyField field : getOtherSymptomsFields(binding)) {
+//            field.clearError();
+//        }
+//
+//        for (PropertyField field : getLesionsFields(binding)) {
+//            field.clearError();
+//        }
+//
+//        for (PropertyField field : getMonkeypoxFields(binding)) {
+//            field.clearError();
+//        }*/
+//    }
 
     public static boolean validateCaseSymptoms(List<Symptom> list) {
         BoolResult success = BoolResult.TRUE;

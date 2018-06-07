@@ -109,10 +109,6 @@ public class SettingsActivity extends BaseLandingActivity {
         return R.string.main_menu_settings;
     }
 
-    private interface LogoutCallback {
-        void call(boolean hasUnmodifiedEntities);
-    }
-
     @Override
     // Handles the result of the attempt to install a new app version - should be added to every activity that uses the UpdateAppDialog
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
