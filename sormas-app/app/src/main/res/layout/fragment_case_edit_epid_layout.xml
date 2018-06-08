@@ -54,6 +54,7 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/mainContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -87,20 +88,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:paddingTop="@dimen/defaultControlVerticalPadding"
-                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
                     app:background="@drawable/control_switch_background_border"
-                    app:borderSize="@dimen/defaultControlStrokeWidth"
-                    app:textColor="@color/control_switch_color_selector"
-                    app:hint="@string/hint_case_epid_visited_burial"
                     app:labelCaption="@string/label_case_epid_directContactConfirmedCase"
-                    app:required="true"
-                    app:orientation="horizontal"
-                    app:slim="false"
-                    app:includeUnknown="@{false}"
                     app:enumClass="@{yesNoUnknownClass}"
                     app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:abbrevUnknown="@{false}"
                     app:value="@={data.directContactConfirmedCase}"
                     />
 
@@ -109,21 +100,83 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:paddingTop="@dimen/defaultControlVerticalPadding"
-                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
                     app:background="@drawable/control_switch_background_border"
-                    app:borderSize="@dimen/defaultControlStrokeWidth"
-                    app:textColor="@color/control_switch_color_selector"
-                    app:hint="@string/hint_case_epid_visited_burial"
                     app:labelCaption="@string/label_case_epid_directContactProbableCase"
-                    app:required="true"
-                    app:orientation="horizontal"
-                    app:slim="false"
-                    app:includeUnknown="@{false}"
                     app:enumClass="@{yesNoUnknownClass}"
                     app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:abbrevUnknown="@{false}"
                     app:value="@={data.directContactProbableCase}"
+                    />
+
+                <de.symeda.sormas.app.component.TeboSwitch
+                    android:id="@+id/closeContactProbableCase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:background="@drawable/control_switch_background_border"
+                    app:labelCaption="@string/label_case_epid_closeContactProbableCase"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
+                    app:value="@={data.closeContactProbableCase}"
+                    />
+
+                <de.symeda.sormas.app.component.TeboSwitch
+                    android:id="@+id/areaConfirmedCases"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:background="@drawable/control_switch_background_border"
+                    app:labelCaption="@string/label_case_epid_areaConfirmedCases"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
+                    app:value="@={data.areaConfirmedCases}"
+                    />
+
+                <de.symeda.sormas.app.component.TeboSwitch
+                    android:id="@+id/processingConfirmedCaseFluidUnsafe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:background="@drawable/control_switch_background_border"
+                    app:labelCaption="@string/label_case_epid_processingConfirmedCaseFluidUnsafe"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
+                    app:value="@={data.processingConfirmedCaseFluidUnsafe}"
+                    />
+
+                <de.symeda.sormas.app.component.TeboSwitch
+                    android:id="@+id/percutaneousCaseBlood"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:background="@drawable/control_switch_background_border"
+                    app:labelCaption="@string/label_case_epid_percutaneousCaseBlood"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
+                    app:value="@={data.percutaneousCaseBlood}"
+                    />
+
+                <de.symeda.sormas.app.component.TeboSwitch
+                    android:id="@+id/directContactDeadUnsafe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:background="@drawable/control_switch_background_border"
+                    app:labelCaption="@string/label_case_epid_directContactDeadUnsafe"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
+                    app:value="@={data.directContactDeadUnsafe}"
+                    />
+
+                <de.symeda.sormas.app.component.TeboSwitch
+                    android:id="@+id/processingSuspectedCaseSampleUnsafe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    app:background="@drawable/control_switch_background_border"
+                    app:labelCaption="@string/label_case_epid_processingSuspectedCaseSampleUnsafe"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
+                    app:value="@={data.processingSuspectedCaseSampleUnsafe}"
                     />
 
                 <de.symeda.sormas.app.component.TeboSwitch

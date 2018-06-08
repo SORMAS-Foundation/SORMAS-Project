@@ -138,20 +138,20 @@ public class TeboSwitch extends EditTeboPropertyField<Object> {
                 scaleX = a.getFloat(R.styleable.TeboSwitch_scale, DEFAULT_SCALE);
                 scaleY = scaleX;
 
-                borderSize = a.getDimensionPixelSize(R.styleable.TeboSwitch_borderSize, 0);
-                paddingTop = a.getDimensionPixelSize(R.styleable.TeboSwitch_paddingTop, 0);
-                paddingBottom = a.getDimensionPixelSize(R.styleable.TeboSwitch_paddingBottom, 0);
-                paddingLeft = a.getDimensionPixelSize(R.styleable.TeboSwitch_paddingLeft, 0);
-                paddingRight = a.getDimensionPixelSize(R.styleable.TeboSwitch_paddingRight, 0);
+                borderSize = a.getDimensionPixelSize(R.styleable.TeboSwitch_borderSize,
+                        getResources().getDimensionPixelSize(R.dimen.defaultControlStrokeWidth));
+                paddingTop = a.getDimensionPixelSize(R.styleable.TeboSwitch_paddingTop,
+                        isSlim() ? 0 : getResources().getDimensionPixelSize(R.dimen.defaultControlVerticalPadding));
+                paddingBottom = a.getDimensionPixelSize(R.styleable.TeboSwitch_paddingBottom,
+                        isSlim() ? 0 : getResources().getDimensionPixelSize(R.dimen.defaultControlVerticalPadding));
+                paddingLeft = a.getDimensionPixelSize(R.styleable.TeboSwitch_paddingLeft,
+                        isSlim() ? 0 : getResources().getDimensionPixelSize(R.dimen.defaultControlHorizontalPadding));
+                paddingRight = a.getDimensionPixelSize(R.styleable.TeboSwitch_paddingRight,
+                        isSlim() ? 0 : getResources().getDimensionPixelSize(R.dimen.defaultControlHorizontalPadding));
 
-                textSize = a.getDimension(R.styleable.TeboSwitch_textSize, DEFAULT_TEXT_SIZE);
+                textSize = a.getDimension(R.styleable.TeboSwitch_textSize,
+                        getResources().getDimensionPixelSize(R.dimen.defaultControlTextSize));
                 includeUnknown = a.getBoolean(R.styleable.TeboSwitch_includeUnknown, false);
-
-                /*marginTop = a.getDimensionPixelSize(R.styleable.TeboSwitch_marginTop, 0);
-                marginBottom = a.getDimensionPixelSize(R.styleable.TeboSwitch_marginBottom, 0);
-                marginLeft = a.getDimensionPixelSize(R.styleable.TeboSwitch_marginLeft, 0);
-                marginRight = a.getDimensionPixelSize(R.styleable.TeboSwitch_marginRight, 0);
-*/
 
             } finally {
                 a.recycle();

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -102,6 +103,9 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadActivityFragmen
 
     @Override
     public void onLayoutBinding(FragmentCaseReadEpidLayoutBinding contentBinding) {
+
+        Case caze = getActivityRootData();
+
         contentBinding.setData(record);
         contentBinding.setBurials(getBurialVisits());
         contentBinding.setSocialEvents(getGatherings());
@@ -113,6 +117,8 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadActivityFragmen
         contentBinding.setBurialItemClickCallback(onBurialItemClickListener);
         contentBinding.setSocialEventItemClickCallback(onSocialEventItemClickListener);
         contentBinding.setTravelItemClickCallback(onTravelItemClickListener);
+
+        setVisibilityByDisease(EpiDataDto.class, caze.getDisease(), contentBinding.mainContent);
     }
 
     @Override

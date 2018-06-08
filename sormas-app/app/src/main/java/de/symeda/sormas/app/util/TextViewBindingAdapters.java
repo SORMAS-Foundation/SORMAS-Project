@@ -33,7 +33,7 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.core.timeago.TimeAgo;
+import de.symeda.sormas.app.core.TimeAgo;
 
 /**
  * Created by Orson on 27/12/2017.

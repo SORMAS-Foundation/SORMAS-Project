@@ -12,8 +12,12 @@ import android.widget.AdapterView;
 
 import java.util.List;
 
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
@@ -166,6 +170,9 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
 
     @Override
     public void onLayoutBinding(FragmentCaseEditEpidLayoutBinding contentBinding) {
+
+        Case caze = getActivityRootData();
+
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false) {
             @Override
             public boolean canScrollVertically() {
@@ -220,6 +227,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
         contentBinding.setAddGatheringEntryClickCallback(onAddGatheringEntryClickListener);
         contentBinding.setAddTravelEntryClickCallback(onAddTravelEntryClickListener);
         contentBinding.setAddBurialEntryClickCallback(onAddBurialEntryClickListener);
+
+        setVisibilityByDisease(EpiDataDto.class, caze.getDisease(), contentBinding.mainContent);
     }
 
     @Override

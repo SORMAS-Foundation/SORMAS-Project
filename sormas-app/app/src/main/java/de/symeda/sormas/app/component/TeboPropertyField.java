@@ -204,7 +204,7 @@ public abstract class TeboPropertyField<T> extends LinearLayout {
 
     public String getPropertyId() {
         String fieldId = getFieldIdString();
-        int seperatorIndex = fieldId.lastIndexOf("_");
+        int seperatorIndex = fieldId.lastIndexOf("/");
         return fieldId.substring(seperatorIndex + 1);
     }
 

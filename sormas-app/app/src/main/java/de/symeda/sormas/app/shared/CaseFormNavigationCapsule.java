@@ -15,8 +15,6 @@ import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 
 public class CaseFormNavigationCapsule extends BaseFormNavigationCapsule<Case, CaseFormNavigationCapsule>  {
 
-    private IStatusElaborator filterStatus;
-    private SearchBy searchBy;
 
     public CaseFormNavigationCapsule(Context context) {
         super(context, null, null);

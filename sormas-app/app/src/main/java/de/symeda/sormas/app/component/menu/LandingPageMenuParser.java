@@ -8,8 +8,6 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 
-import de.symeda.sormas.app.core.guard.Guard;
-
 /**
  * Created by Orson on 25/11/2017.
  *
@@ -67,7 +65,6 @@ public class LandingPageMenuParser implements IMenuParser {
     }
 
     private LandingPageMenu readMenusTag(XmlResourceParser parser) throws IOException, XmlPullParserException {
-        Guard.That.NotNull.isTrue(parser);
 
         parser.require(XmlResourceParser.START_TAG, NS, TAG_NAME_MENUS);
         String menuName = parser.getAttributeValue(NS, TAG_ATTR_MENUS_NAME);

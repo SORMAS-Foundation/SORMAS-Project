@@ -43,10 +43,91 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/mainContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             >
+
+            <de.symeda.sormas.app.component.TeboTextRead
+                android:id="@+id/directContactConfirmedCase"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:labelCaption="@string/label_case_epid_directContactConfirmedCase"
+                app:value="@{data.directContactConfirmedCase}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <de.symeda.sormas.app.component.TeboTextRead
+                android:id="@+id/directContactProbableCase"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:labelCaption="@string/label_case_epid_directContactProbableCase"
+                app:value="@{data.directContactProbableCase}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <de.symeda.sormas.app.component.TeboTextRead
+                android:id="@+id/closeContactProbableCase"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:labelCaption="@string/label_case_epid_closeContactProbableCase"
+                app:value="@{data.closeContactProbableCase}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <de.symeda.sormas.app.component.TeboTextRead
+                android:id="@+id/areaConfirmedCases"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:labelCaption="@string/label_case_epid_areaConfirmedCases"
+                app:value="@{data.areaConfirmedCases}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <de.symeda.sormas.app.component.TeboTextRead
+                android:id="@+id/processingConfirmedCaseFluidUnsafe"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:labelCaption="@string/label_case_epid_processingConfirmedCaseFluidUnsafe"
+                app:value="@{data.processingConfirmedCaseFluidUnsafe}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <de.symeda.sormas.app.component.TeboTextRead
+                android:id="@+id/percutaneousCaseBlood"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:labelCaption="@string/label_case_epid_percutaneousCaseBlood"
+                app:value="@{data.percutaneousCaseBlood}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <de.symeda.sormas.app.component.TeboTextRead
+                android:id="@+id/directContactDeadUnsafe"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:labelCaption="@string/label_case_epid_directContactDeadUnsafe"
+                app:value="@{data.directContactDeadUnsafe}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <de.symeda.sormas.app.component.TeboTextRead
+                android:id="@+id/processingSuspectedCaseSampleUnsafe"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:labelCaption="@string/label_case_epid_processingSuspectedCaseSampleUnsafe"
+                app:value="@{data.processingSuspectedCaseSampleUnsafe}"
+                app:defaultValue='@{@string/not_available}'
+                />
 
             <!--android:paddingBottom="@dimen/parentLayoutVerticalMargin"-->
             <LinearLayout

@@ -10,6 +10,7 @@ import com.google.android.gms.analytics.Tracker;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.TeboPropertyField;
@@ -93,9 +94,8 @@ public class BaseFragment extends Fragment {
             View child = viewGroup.getChildAt(i);
             if (child instanceof TeboPropertyField) {
                 String propertyId = ((TeboPropertyField)child).getPropertyId();
-                //TODO: Diseases DiseasesConfiguration
-                //boolean definedOrMissing = Diseases.DiseasesConfiguration.isDefinedOrMissing(fieldsDtoClazz, propertyId, disease);
-                //child.setVisibility(definedOrMissing ? View.VISIBLE : View.GONE);
+                boolean definedOrMissing = Diseases.DiseasesConfiguration.isDefinedOrMissing(fieldsDtoClazz, propertyId, disease);
+                child.setVisibility(definedOrMissing ? View.VISIBLE : View.GONE);
             }
             else if (child instanceof ViewGroup) {
                 setVisibilityByDisease(fieldsDtoClazz, disease, (ViewGroup)child);
