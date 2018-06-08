@@ -7,6 +7,8 @@ import android.graphics.Typeface;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
@@ -18,10 +20,12 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
@@ -599,6 +603,24 @@ public class TextViewBindingAdapters {
                 } else {
                     textField.setText(val);
                 }
+            }
+        }
+    }
+
+    @BindingAdapter(value={"resultingCaseStatus", "valueFormat", "defaultValue"}, requireAll=false)
+    public static void setResultingCaseStatus(TextView textField, String resultingCaseUuid, String valueFormat, String defaultValue) {
+        String val = defaultValue;
+
+        if (StringUtils.isEmpty(resultingCaseUuid)) {
+            textField.setText(val);
+        } else {
+            Case caze = DatabaseHelper.getCaseDao().queryUuidBasic(resultingCaseUuid);
+            val = "Resulting Case Status: " + caze.getInvestigationStatus().toString();
+
+            if (valueFormat != null && !valueFormat.trim().equals("")) {
+                textField.setText(String.format(valueFormat, val));
+            } else {
+                textField.setText(val);
             }
         }
     }

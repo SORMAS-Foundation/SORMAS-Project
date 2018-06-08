@@ -444,6 +444,7 @@
     <string name="person_unknown">Person N/A</string>
     <string name="record_desc_unknown">Description N/A</string>
     <string name="report_date_unknown">Report Date N/A</string>
+    <string name="resulting_case_status_unknown">No Resulting Case</string>
     <string name="sample_disease_unknown">Disease N/A</string>
     <string name="sample_lab_unknown">Lab N/A</string>
     <string name="sample_material_unknown">Material N/A</string>

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.databinding.RowReadPersonsInvolvedListItemLayoutBinding;
 
 /**
  * Created by Orson on 26/12/2017.
@@ -23,7 +24,7 @@ import de.symeda.sormas.app.backend.event.EventParticipant;
 
 
 
-public class EventReadPersonsInvolvedAdapter extends DataBoundAdapter<RowReadEventPersonsInvolvedItemLayoutBinding> {
+public class EventReadPersonsInvolvedAdapter extends DataBoundAdapter<RowReadPersonsInvolvedListItemLayoutBinding> {
 
     private static final String TAG = EventReadPersonsInvolvedAdapter.class.getSimpleName();
 
@@ -51,7 +52,7 @@ public class EventReadPersonsInvolvedAdapter extends DataBoundAdapter<RowReadEve
     }
 
     @Override
-    protected void bindItem(DataBoundViewHolder<RowReadEventPersonsInvolvedItemLayoutBinding> holder,
+    protected void bindItem(DataBoundViewHolder<RowReadPersonsInvolvedListItemLayoutBinding> holder,
                             int position, List<Object> payloads) {
 
 
@@ -81,7 +82,7 @@ public class EventReadPersonsInvolvedAdapter extends DataBoundAdapter<RowReadEve
         return data.size();
     }
 
-    public void updateUnreadIndicator(DataBoundViewHolder<RowReadEventPersonsInvolvedItemLayoutBinding> holder, EventParticipant item) {
+    public void updateUnreadIndicator(DataBoundViewHolder<RowReadPersonsInvolvedListItemLayoutBinding> holder, EventParticipant item) {
         backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
         unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
 

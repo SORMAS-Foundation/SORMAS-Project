@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.contact.edit;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -71,6 +72,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
     private BaseEditActivityFragment activeFragment = null;
     private MenuItem saveMenu = null;
     private MenuItem addMenu = null;
+    private ProgressDialog progressDialog = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -309,7 +311,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
                     }
 
                     if (RetroProvider.isConnected()) {
-                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, ContactNewActivity.this, new SyncCallback() {
+                        progressDialog = SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, ContactNewActivity.this, new SyncCallback() {
                             @Override
                             public void call(boolean syncFailed, String syncFailedMessage) {
                                 if (syncFailed) {
@@ -363,6 +365,8 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        progressDialog.dismiss();
 
         if (saveTask != null && !saveTask.isCancelled())
             saveTask.cancel(true);

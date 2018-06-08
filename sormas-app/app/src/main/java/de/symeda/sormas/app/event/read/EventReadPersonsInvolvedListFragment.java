@@ -96,7 +96,7 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadActivityFragme
 
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         adapter = new EventReadPersonsInvolvedAdapter(EventReadPersonsInvolvedListFragment.this.getActivity(),
-                R.layout.row_read_event_persons_involved_item_layout, EventReadPersonsInvolvedListFragment.this, record);
+                R.layout.row_read_persons_involved_list_item_layout, EventReadPersonsInvolvedListFragment.this, record);
 
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
