@@ -16,7 +16,6 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.event.EventsActivity;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;

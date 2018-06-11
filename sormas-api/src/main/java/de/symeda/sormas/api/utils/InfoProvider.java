@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 public final class InfoProvider {
 
-	public static final String MINIMUM_REQUIRED_VERSION = "0.16.0";
+	public static final String MINIMUM_REQUIRED_VERSION = "0.23.0";
 	
 	/**
 	 * Reads the version from the version.txt where it is written by maven.
