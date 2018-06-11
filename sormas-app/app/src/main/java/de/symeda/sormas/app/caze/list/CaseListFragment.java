@@ -116,52 +116,45 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
         //TODO: Orson - reverse this relationship
         getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Case"));
 
-        try {
-            dataLoaded = false;
-            if (!dataLoaded) {
-                ISearchExecutor<Case> executor = SearchStrategyFor.CASE.selector(searchBy, filterStatus, recordUuid);
-                searchTask = executor.search(new ISearchResultCallback<Case>() {
-                    @Override
-                    public void preExecute() {
-                        getActivityCommunicator().showPreloader();
-                        getActivityCommunicator().hideFragmentView();
+        dataLoaded = false;
+        if (!dataLoaded) {
+            ISearchExecutor<Case> executor = SearchStrategyFor.CASE.selector(searchBy, filterStatus, recordUuid);
+            searchTask = executor.search(new ISearchResultCallback<Case>() {
+                @Override
+                public void preExecute() {
+                    getActivityCommunicator().showPreloader();
+                    getActivityCommunicator().hideFragmentView();
+                }
+
+                @Override
+                public void searchResult(List<Case> result, BoolResult resultStatus) {
+                    getActivityCommunicator().hidePreloader();
+
+                    if (!resultStatus.isSuccess()) {
+                        String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Cases");
+                        NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
+
+                        return;
                     }
 
-                    @Override
-                    public void searchResult(List<Case> result, BoolResult resultStatus) {
-                        getActivityCommunicator().hidePreloader();
+                    cases = result;
 
-                        if (!resultStatus.isSuccess()) {
-                            String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Cases");
-                            NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
+                    CaseListFragment.this.getListAdapter().replaceAll(cases);
+                    CaseListFragment.this.getListAdapter().notifyDataSetChanged();
+                    //CaseListFragment.this.getListAdapter().updateUnreadIndicator();
 
-                            return;
-                        }
+                    dataLoaded = true;
 
-                        cases = result;
+                    getActivityCommunicator().hidePreloader();
+                    getActivityCommunicator().showFragmentView();
+                }
 
-                        CaseListFragment.this.getListAdapter().replaceAll(cases);
-                        CaseListFragment.this.getListAdapter().notifyDataSetChanged();
-                        //CaseListFragment.this.getListAdapter().updateUnreadIndicator();
+                private ISearchResultCallback<Case> init() {
+                    getActivityCommunicator().showPreloader();
 
-                        dataLoaded = true;
-
-                        getActivityCommunicator().hidePreloader();
-                        getActivityCommunicator().showFragmentView();
-                    }
-
-                    private ISearchResultCallback<Case> init() {
-                        getActivityCommunicator().showPreloader();
-
-                        return this;
-                    }
-                }.init());
-            }
-        } catch (Exception ex) {
-            if (getActivityCommunicator() != null) {
-                getActivityCommunicator().hidePreloader();
-            }
-            dataLoaded = false;
+                    return this;
+                }
+            }.init());
         }
 
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
@@ -184,14 +177,7 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
         recyclerViewForList.setAdapter(getListAdapter());
     }
 
-    @Override
-    public boolean showNewAction() {
-        User user = ConfigProvider.getUser();
-        return user.hasUserRight(UserRight.CASE_CREATE);
-    }
-
-    public static CaseListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static CaseListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule) {
         return newInstance(communicator, CaseListFragment.class, capsule);
     }
 

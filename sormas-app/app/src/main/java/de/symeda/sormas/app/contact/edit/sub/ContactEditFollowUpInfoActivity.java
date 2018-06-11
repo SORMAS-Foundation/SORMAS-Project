@@ -111,7 +111,7 @@ public class ContactEditFollowUpInfoActivity extends BaseEditActivity<Visit> {
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment(Visit activityRootData) throws IllegalAccessException, InstantiationException {
+    public BaseEditActivityFragment getActiveEditFragment(Visit activityRootData) {
         if (activeFragment == null) {
             ContactFormFollowUpNavigationCapsule dataCapsule = (ContactFormFollowUpNavigationCapsule)new ContactFormFollowUpNavigationCapsule(
                     ContactEditFollowUpInfoActivity.this, recordUuid, pageStatus)

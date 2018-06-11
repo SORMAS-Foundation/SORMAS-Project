@@ -101,7 +101,7 @@ public class EventEditPersonsInvolvedInfoActivity extends BaseEditActivity<Event
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment(EventParticipant activityRootData) throws IllegalAccessException, InstantiationException {
+    public BaseEditActivityFragment getActiveEditFragment(EventParticipant activityRootData) {
         if (activeFragment == null) {
             EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(
                     EventEditPersonsInvolvedInfoActivity.this, recordUuid, pageStatus);

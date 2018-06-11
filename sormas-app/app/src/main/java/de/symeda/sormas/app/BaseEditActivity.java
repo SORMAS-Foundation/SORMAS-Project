@@ -211,15 +211,8 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
             processActivityRootData(new Callback.IAction<TActivityRootData>() {
                 @Override
                 public void call(TActivityRootData result) {
-                    try {
-                        activeFragment = getActiveEditFragment(result);
-                        replaceFragment(activeFragment);
-                        firstTimeReplaceFragment = true;
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (InstantiationException e) {
-                        e.printStackTrace();
-                    }
+                    replaceFragment(getActiveEditFragment(result));
+                    firstTimeReplaceFragment = true;
                 }
             });
 
@@ -439,15 +432,19 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
     }
 
     public void replaceFragment(BaseEditActivityFragment f) {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        BaseFragment previousFragment = activeFragment;
         activeFragment = f;
 
         if (activeFragment != null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             if (activeFragment.getArguments() == null)
                 activeFragment.setArguments(getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA));
 
+            ft.setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout);
             ft.replace(R.id.fragment_frame, activeFragment);
-            ft.addToBackStack(null);
+            if (previousFragment != null) {
+                ft.addToBackStack(null);
+            }
             ft.commit();
 
             processActionbarMenu();
@@ -511,7 +508,7 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         fromActivity.startActivity(intent);
     }
 
-    public abstract BaseEditActivityFragment getActiveEditFragment(TActivityRootData activityRootData) throws IllegalAccessException, InstantiationException;
+    public abstract BaseEditActivityFragment getActiveEditFragment(TActivityRootData activityRootData);
 
     public LandingPageMenuItem getActiveMenuItem() {
         return activeMenu;
@@ -565,8 +562,6 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         replaceFragment(newActiveFragment);
 
         processActionbarMenu();
-        //updateSubHeadingTitle();
-
 
         return true;
     }
@@ -608,20 +603,6 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
 
     protected BaseEditActivityFragment getNextFragment(LandingPageMenuItem menuItem, TActivityRootData activityRootData) {
         return null;
-    }
-
-    protected boolean changeFragment(BaseEditActivityFragment newActiveFragment) {
-        if (newActiveFragment == null)
-            return false;
-
-        replaceFragment(newActiveFragment);
-
-        //this.activeFragment = newActiveFragment;
-
-        processActionbarMenu();
-        //updateSubHeadingTitle();
-
-        return true;
     }
 
     protected String getRecordUuidArg(Bundle arguments) {

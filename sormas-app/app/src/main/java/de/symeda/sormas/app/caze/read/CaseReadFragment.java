@@ -178,8 +178,7 @@ public class CaseReadFragment extends BaseReadActivityFragment<FragmentCaseReadL
         return R.layout.fragment_case_read_layout;
     }
 
-    public static CaseReadFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static CaseReadFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(activityCommunicator, CaseReadFragment.class, capsule, activityRootData);
     }
 

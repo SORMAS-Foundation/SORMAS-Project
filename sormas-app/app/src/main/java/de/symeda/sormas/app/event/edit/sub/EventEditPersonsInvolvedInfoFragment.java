@@ -569,8 +569,7 @@ public class EventEditPersonsInvolvedInfoFragment extends BaseEditActivityFragme
 
     // </editor-fold>
 
-    public static EventEditPersonsInvolvedInfoFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, EventParticipant activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static EventEditPersonsInvolvedInfoFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, EventParticipant activityRootData) {
         return newInstance(activityCommunicator, EventEditPersonsInvolvedInfoFragment.class, capsule, activityRootData);
     }
 

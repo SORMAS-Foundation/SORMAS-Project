@@ -169,8 +169,7 @@ public class EventReadTaskInfoFragment extends BaseReadActivityFragment<Fragment
         return false;
     }
 
-    public static EventReadTaskInfoFragment newInstance(IActivityCommunicator activityCommunicator, TaskFormNavigationCapsule capsule, Task activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static EventReadTaskInfoFragment newInstance(IActivityCommunicator activityCommunicator, TaskFormNavigationCapsule capsule, Task activityRootData) {
         return newInstance(activityCommunicator, EventReadTaskInfoFragment.class, capsule, activityRootData);
     }
 

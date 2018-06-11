@@ -25,16 +25,13 @@ import de.symeda.sormas.app.util.ConstantHelper;
  */
 public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends EnumMapDataBinderAdapter<E>> extends BaseFragment { // implements ISummaryLoadingStatus
 
-
     private RecyclerView.LayoutManager mLayoutManager;
     private TAdapter mAdapter;
     private RecyclerView mRecyclerView;
-    private IActivityCommunicator mActivityCommunicator;
     private TextView mSummarySectionTitle;
     private ProgressBar mPreloader;
     private TextView mEmptySummaryHint;
     private ISummaryLoadingStatusCommunicator mDashboardActivityCommunicator;
-
 
     @Nullable
     @Override
@@ -122,11 +119,6 @@ public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends En
     public abstract String getIdentifier();
 
     //</editor-fold>
-
-
-    protected void setActivityCommunicator(IActivityCommunicator activityCommunicator) {
-        this.mActivityCommunicator = activityCommunicator;
-    }
 
     protected static <TFragment extends BaseSummaryFragment, TCapsule extends IDashboardNavigationCapsule> TFragment newInstance(IActivityCommunicator activityCommunicator, Class<TFragment> f, TCapsule dataCapsule) throws IllegalAccessException, java.lang.InstantiationException {
         TFragment fragment = f.newInstance();

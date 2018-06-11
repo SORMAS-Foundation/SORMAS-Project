@@ -37,9 +37,6 @@ public class CaseListAdapter extends DataBoundAdapter<RowCaseListItemLayoutBindi
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;
 
-    public CaseListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
-        this(context, rowLayout, onListItemClickListener, new ArrayList<Case>());
-    }
 
     public CaseListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Case> data) {
         super(rowLayout);
@@ -62,7 +59,6 @@ public class CaseListAdapter extends DataBoundAdapter<RowCaseListItemLayoutBindi
 
         indicateCaseClassification(holder.binding.imgCaseStatusIcon, record);
 
-
         //Sync Icon
         if (record.isModifiedOrChildModified()) {
             holder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
@@ -72,7 +68,6 @@ public class CaseListAdapter extends DataBoundAdapter<RowCaseListItemLayoutBindi
         }
 
         updateUnreadIndicator(holder, record);
-
     }
 
     @Override

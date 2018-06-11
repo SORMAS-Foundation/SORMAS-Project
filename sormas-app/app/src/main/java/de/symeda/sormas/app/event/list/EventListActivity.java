@@ -13,9 +13,12 @@ import org.joda.time.DateTime;
 import java.util.Random;
 
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.ListNavigationCapsule;
@@ -58,20 +61,6 @@ public class EventListActivity extends BaseListActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /*if (findViewById(R.id.fragment_frame) != null) {
-            // setting the fragment_frame
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            fragment = new EventListFragment();
-
-            Bundle bundle = new Bundle();
-            bundle.putSerializable(ConstantHelper.ARG_FILTER_STATUS, status);
-
-            fragment.setArguments(bundle); //getIntent().getExtras()
-            ft.replace(R.id.fragment_frame, fragment);
-            ft.addToBackStack(null);
-            ft.commit();
-        }*/
     }
 
     @Override
@@ -82,7 +71,7 @@ public class EventListActivity extends BaseListActivity {
     }
 
     @Override
-    public BaseListActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+    public BaseListActivityFragment getActiveReadFragment() {
         if (activeFragment == null) {
             IListNavigationCapsule dataCapsule = new ListNavigationCapsule(EventListActivity.this, filterStatus, searchBy);
             activeFragment = EventListFragment.newInstance(this, dataCapsule);
@@ -112,14 +101,7 @@ public class EventListActivity extends BaseListActivity {
         filterStatus = status;
         IListNavigationCapsule dataCapsule = new ListNavigationCapsule(EventListActivity.this, filterStatus, searchBy);
 
-        try {
-            activeFragment = EventListFragment.newInstance(this, dataCapsule);
-        } catch (InstantiationException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, e.getMessage());
-        }
-
+        activeFragment = EventListFragment.newInstance(this, dataCapsule);
         return activeFragment;
     }
 
@@ -159,6 +141,11 @@ public class EventListActivity extends BaseListActivity {
         return R.string.heading_level2_events_list;
     }
 
+    @Override
+    public boolean isEntryCreateAllowed() {
+        User user = ConfigProvider.getUser();
+        return user.hasUserRight(UserRight.EVENT_CREATE);
+    }
 
 
     public static void goToActivity(Context fromActivity, IListNavigationCapsule dataCapsule) {

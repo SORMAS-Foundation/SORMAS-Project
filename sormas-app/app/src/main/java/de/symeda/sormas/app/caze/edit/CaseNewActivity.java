@@ -108,7 +108,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment(Case activityRootData) throws IllegalAccessException, InstantiationException {
+    public BaseEditActivityFragment getActiveEditFragment(Case activityRootData) {
         if (activeFragment == null) {
             CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(CaseNewActivity.this,
                     recordUuid).setEditPageStatus(pageStatus);

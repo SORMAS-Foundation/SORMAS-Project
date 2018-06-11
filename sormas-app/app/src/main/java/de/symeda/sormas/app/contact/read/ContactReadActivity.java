@@ -98,7 +98,7 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment(Contact activityRootData) throws IllegalAccessException, InstantiationException {
+    public BaseReadActivityFragment getActiveReadFragment(Contact activityRootData) {
         if (activeFragment == null) {
             ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactReadActivity.this, recordUuid, pageStatus);
             activeFragment = ContactReadFragment.newInstance(this, dataCapsule, activityRootData);

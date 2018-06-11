@@ -131,7 +131,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment(Case activityRootData) throws IllegalAccessException, InstantiationException {
+    public BaseEditActivityFragment getActiveEditFragment(Case activityRootData) {
         if (activeFragment == null) {
             CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(CaseEditActivity.this,
                     recordUuid).setEditPageStatus(pageStatus);
@@ -184,7 +184,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 activeFragment = CaseEditEpidemiologicalDataFragment.newInstance(this, dataCapsule, activityRootData);
             } else if (menuItem.getKey() == MENU_INDEX_CONTACTS) {
                 activeFragment = CaseEditContactListFragment.newInstance(this, dataCapsule, activityRootData);
-            }else if (menuItem.getKey() == MENU_INDEX_SAMPLES) {
+            } else if (menuItem.getKey() == MENU_INDEX_SAMPLES) {
                 activeFragment = CaseEditSampleListFragment.newInstance(this, dataCapsule, activityRootData);
             } else if (menuItem.getKey() == MENU_INDEX_TASKS) {
                 activeFragment = CaseEditTaskListFragment.newInstance(this, dataCapsule, activityRootData);
@@ -238,54 +238,45 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     }
 
     private void getCaseBeforeSaveAndPlagueTypeAlert(final Case cazeToSave, final Callback.IAction3<BoolResult, Case, Boolean> callback) {
-        try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-                @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //showPreloader();
-                    //hideFragmentView();
+
+        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            @Override
+            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+            }
+
+            @Override
+            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                final Case caseBeforeSaving = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(cazeToSave.getUuid());
+                boolean showPlagueTypeChangeAlert = false;
+                if (cazeToSave.getDisease() == Disease.PLAGUE) {
+                    showPlagueTypeChangeAlert = updatePlagueType(cazeToSave);
                 }
 
-                @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    final Case caseBeforeSaving = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(cazeToSave.getUuid());
-                    boolean showPlagueTypeChangeAlert = false;
-                    if (cazeToSave.getDisease() == Disease.PLAGUE) {
-                        showPlagueTypeChangeAlert = updatePlagueType(cazeToSave);
-                    }
+                resultHolder.forItem().add(caseBeforeSaving);
+                resultHolder.forOther().add(showPlagueTypeChangeAlert);
+            }
+        });
+        caseBeforeSaveAndPlagueTypeAlertTask = executor.execute(new ITaskResultCallback() {
+            @Override
+            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+            if (resultHolder == null) {
+                return;
+            }
 
-                    resultHolder.forItem().add(caseBeforeSaving);
-                    resultHolder.forOther().add(showPlagueTypeChangeAlert);
-                }
-            });
-            caseBeforeSaveAndPlagueTypeAlertTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //hidePreloader();
-                    //showFragmentView();
+            Case caseBeforeSaving = null;
+            boolean showPlagueTypeChangeAlert = false;
+            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
 
-                    if (resultHolder == null){
-                        return;
-                    }
+            if (itemIterator.hasNext())
+                caseBeforeSaving = itemIterator.next();
 
-                    Case caseBeforeSaving = null;
-                    boolean showPlagueTypeChangeAlert = false;
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-                    ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
+            if (otherIterator.hasNext())
+                showPlagueTypeChangeAlert = otherIterator.next();
 
-                    if (itemIterator.hasNext())
-                        caseBeforeSaving = itemIterator.next();
-
-                    if (otherIterator.hasNext())
-                        showPlagueTypeChangeAlert = otherIterator.next();
-
-                    callback.call(resultStatus, caseBeforeSaving, showPlagueTypeChangeAlert);
-                }
-            });
-        } catch (Exception ex) {
-            //hidePreloader();
-            //showFragmentView();
-        }
+            callback.call(resultStatus, caseBeforeSaving, showPlagueTypeChangeAlert);
+            }
+        });
     }
 
     private void finalizeSaveProcess(final Case caze, final Case caseBeforeSaving, final Callback.IAction<BoolResult> callback) {
@@ -404,7 +395,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     }
 
     @Override
-    public void gotoNewView() {
+    public void goToNewView() {
         int activeMenuKey = getActiveMenuItem().getKey();
 
         if (activeMenuKey == MENU_INDEX_CONTACTS) {
@@ -446,7 +437,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         }
 
         if (activeMenuKey == MENU_INDEX_PATIENT_INFO) {
-            FragmentCaseEditPatientLayoutBinding personBinding = (FragmentCaseEditPatientLayoutBinding)activeFragment.getContentBinding();
+            FragmentCaseEditPatientLayoutBinding personBinding = (FragmentCaseEditPatientLayoutBinding) activeFragment.getContentBinding();
             PersonValidator.clearErrors(personBinding);
             if (!PersonValidator.validatePersonData(this, cazeToSave.getPerson(), personBinding)) {
                 return;
@@ -457,7 +448,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             Symptoms symptoms = cazeToSave.getSymptoms();
             //symptoms = (Symptoms)activeFragment.getPrimaryData();
 
-            CaseEditSymptomsFragment symptomsFragment = (CaseEditSymptomsFragment)activeFragment;
+            CaseEditSymptomsFragment symptomsFragment = (CaseEditSymptomsFragment) activeFragment;
 
             if (symptomsFragment == null)
                 return;
@@ -515,7 +506,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 //getActivityCommunicator().hidePreloader();
                 //getActivityCommunicator().showFragmentView();
 
-                if (resultHolder == null){
+                if (resultHolder == null) {
                     return;
                 }
 

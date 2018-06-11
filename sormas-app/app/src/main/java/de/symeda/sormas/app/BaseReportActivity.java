@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
+import de.symeda.sormas.app.util.ConstantHelper;
 
 /**
  * Created by Orson on 24/04/2018.
@@ -105,7 +106,7 @@ public abstract class BaseReportActivity extends AbstractSormasActivity implemen
 
     protected abstract void initializeActivity(Bundle arguments);
 
-    public abstract BaseReportActivityFragment getActiveFragment() throws IllegalAccessException, InstantiationException;
+    public abstract BaseReportActivityFragment getActiveFragment();
 
 
     protected void initializeBaseActivity(Bundle savedInstanceState) {
@@ -121,14 +122,8 @@ public abstract class BaseReportActivity extends AbstractSormasActivity implemen
 
         fragmentFrame = findViewById(R.id.fragment_frame);
         if (fragmentFrame != null) {
-            try {
-                if (savedInstanceState == null) {
-                    replaceFragment(getActiveFragment());
-                }
-            } catch (IllegalAccessException e) {
-                Log.e(TAG, e.getMessage(), e);
-            } catch (InstantiationException e) {
-                Log.e(TAG, e.getMessage(), e);
+            if (savedInstanceState == null) {
+                replaceFragment(getActiveFragment());
             }
         }
     }
@@ -142,18 +137,20 @@ public abstract class BaseReportActivity extends AbstractSormasActivity implemen
         fromActivity.startActivity(intent);
     }
 
-
-
-
-
     private void replaceFragment(BaseReportActivityFragment f) {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        BaseFragment previousFragment = activeFragment;
         activeFragment = f;
 
         if (activeFragment != null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            if (activeFragment.getArguments() == null)
+                activeFragment.setArguments(getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA));
+
             ft.setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout);
             ft.replace(R.id.fragment_frame, activeFragment);
-            ft.addToBackStack(null);
+            if (previousFragment != null) {
+                ft.addToBackStack(null);
+            }
             ft.commit();
         }
     }

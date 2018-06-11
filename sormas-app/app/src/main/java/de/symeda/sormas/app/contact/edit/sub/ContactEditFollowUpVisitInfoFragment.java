@@ -181,8 +181,7 @@ public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragme
 
     }
 
-    public static ContactEditFollowUpVisitInfoFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormFollowUpNavigationCapsule capsule, Visit activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static ContactEditFollowUpVisitInfoFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormFollowUpNavigationCapsule capsule, Visit activityRootData) {
         return newInstance(activityCommunicator, ContactEditFollowUpVisitInfoFragment.class, capsule, activityRootData);
     }
 

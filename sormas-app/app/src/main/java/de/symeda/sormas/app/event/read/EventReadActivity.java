@@ -104,7 +104,7 @@ public class EventReadActivity extends BaseReadActivity<Event> {
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment(Event activityRootData) throws IllegalAccessException, InstantiationException {
+    public BaseReadActivityFragment getActiveReadFragment(Event activityRootData) {
         if (activeFragment == null) {
             EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventReadActivity.this,
                     recordUuid, pageStatus);

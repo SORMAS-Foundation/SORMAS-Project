@@ -205,8 +205,7 @@ public class EventNewPersonsInvolvedShortFragment extends BaseEditActivityFragme
         this.mOnShortEventParticipantSaved = onShortEventParticipantSaved;
     }
 
-    public static EventNewPersonsInvolvedShortFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, EventParticipant activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static EventNewPersonsInvolvedShortFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, EventParticipant activityRootData) {
         return newInstance(activityCommunicator, EventNewPersonsInvolvedShortFragment.class, capsule, activityRootData);
     }
 

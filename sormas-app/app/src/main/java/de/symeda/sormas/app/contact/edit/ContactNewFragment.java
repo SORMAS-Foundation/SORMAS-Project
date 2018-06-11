@@ -228,8 +228,7 @@ public class ContactNewFragment extends BaseEditActivityFragment<FragmentContact
 
     }
 
-    public static ContactNewFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule, Contact activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static ContactNewFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule, Contact activityRootData) {
         return newInstance(activityCommunicator, ContactNewFragment.class, capsule, activityRootData);
     }
 

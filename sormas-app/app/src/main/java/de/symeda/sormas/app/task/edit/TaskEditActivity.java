@@ -78,7 +78,7 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment(Task activityRootData) throws IllegalAccessException, InstantiationException {
+    public BaseEditActivityFragment getActiveEditFragment(Task activityRootData) {
         if (activeFragment == null) {
             TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(TaskEditActivity.this,
                     recordUuid, pageStatus);

@@ -499,8 +499,7 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
         }
     }
 
-    public static TaskEditFragment newInstance(IActivityCommunicator activityCommunicator, TaskFormNavigationCapsule capsule, Task activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static TaskEditFragment newInstance(IActivityCommunicator activityCommunicator, TaskFormNavigationCapsule capsule, Task activityRootData) {
         return newInstance(activityCommunicator, TaskEditFragment.class, capsule, activityRootData);
     }
 

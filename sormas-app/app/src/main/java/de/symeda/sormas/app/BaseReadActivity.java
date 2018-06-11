@@ -168,14 +168,7 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
             processActivityRootData(new Callback.IAction<TActivityRootData>() {
                 @Override
                 public void call(TActivityRootData result) {
-                    try {
-                        activeFragment = getActiveReadFragment(result);
-                        replaceFragment(activeFragment);
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (InstantiationException e) {
-                        e.printStackTrace();
-                    }
+                    replaceFragment(getActiveReadFragment(result));
                 }
             });
 
@@ -404,17 +397,20 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
     }
 
     public void replaceFragment(BaseReadActivityFragment f) {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        BaseFragment previousFragment = activeFragment;
         activeFragment = f;
 
         if (activeFragment != null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             if (activeFragment.getArguments() == null)
                 activeFragment.setArguments(getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA));
 
+            ft.setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout);
             ft.replace(R.id.fragment_frame, activeFragment);
-            ft.addToBackStack(null);
+            if (previousFragment != null) {
+                ft.addToBackStack(null);
+            }
             ft.commit();
-
             processActionbarMenu();
         }
     }
@@ -487,7 +483,7 @@ public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainO
         fromActivity.startActivity(intent);
     }
 
-    public abstract BaseReadActivityFragment getActiveReadFragment(TActivityRootData activityRootData) throws IllegalAccessException, InstantiationException;
+    public abstract BaseReadActivityFragment getActiveReadFragment(TActivityRootData activityRootData);
 
     public LandingPageMenuItem getActiveMenuItem() {
         return activeMenu;

@@ -236,8 +236,7 @@ public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadL
         };
     }
 
-    public static TaskReadFragment newInstance(IActivityCommunicator activityCommunicator, TaskFormNavigationCapsule capsule, Task activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static TaskReadFragment newInstance(IActivityCommunicator activityCommunicator, TaskFormNavigationCapsule capsule, Task activityRootData) {
         return newInstance(activityCommunicator, TaskReadFragment.class, capsule, activityRootData);
     }
 

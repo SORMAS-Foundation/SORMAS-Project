@@ -61,7 +61,7 @@ public class SampleListActivity extends BaseListActivity {
     }
 
     @Override
-    public BaseListActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+    public BaseListActivityFragment getActiveReadFragment() {
         if (activeFragment == null) {
             IListNavigationCapsule dataCapsule = new ListNavigationCapsule(SampleListActivity.this, filterStatus, searchBy);
             activeFragment = SampleListFragment.newInstance(this, dataCapsule);
@@ -91,14 +91,7 @@ public class SampleListActivity extends BaseListActivity {
         filterStatus = status;
         IListNavigationCapsule dataCapsule = new ListNavigationCapsule(SampleListActivity.this, filterStatus, searchBy);
 
-        try {
-            activeFragment = SampleListFragment.newInstance(this, dataCapsule);
-        } catch (InstantiationException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, e.getMessage());
-        }
-
+        activeFragment = SampleListFragment.newInstance(this, dataCapsule);
         return activeFragment;
     }
 

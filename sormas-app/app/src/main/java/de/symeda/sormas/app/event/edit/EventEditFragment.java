@@ -355,8 +355,7 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
         }
     }
 
-    public static EventEditFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static EventEditFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData) {
         return newInstance(activityCommunicator, EventEditFragment.class, capsule, activityRootData);
     }
 

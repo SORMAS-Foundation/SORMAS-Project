@@ -94,7 +94,7 @@ public class EventEditActivity extends BaseEditActivity<Event> {
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment(Event activityRootData) throws IllegalAccessException, InstantiationException {
+    public BaseEditActivityFragment getActiveEditFragment(Event activityRootData) {
         if (activeFragment == null) {
             EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventEditActivity.this,
                     recordUuid, pageStatus);
@@ -175,7 +175,7 @@ public class EventEditActivity extends BaseEditActivity<Event> {
     }
 
     @Override
-    public void gotoNewView() {
+    public void goToNewView() {
         EventFormNavigationCapsule dataCapsule = (EventFormNavigationCapsule)new EventFormNavigationCapsule(getContext(), pageStatus)
                 .setEventUuid(recordUuid);
         EventNewPersonsInvolvedActivity.goToActivity(EventEditActivity.this, dataCapsule);

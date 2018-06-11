@@ -58,7 +58,6 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.layoutprocessor.CaseDiseaseLayoutProcessor;
 
@@ -380,60 +379,50 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
-        try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-                @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
-                }
+        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            @Override
+            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+            }
 
-                @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    Case caze = getActivityRootData();
+            @Override
+            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                Case caze = getActivityRootData();
 
-                    if (caze != null) {
-                        if (caze.isUnreadOrChildUnread())
-                            DatabaseHelper.getCaseDao().markAsRead(caze);
+                if (caze != null) {
+                    if (caze.isUnreadOrChildUnread())
+                        DatabaseHelper.getCaseDao().markAsRead(caze);
 
-                        if (caze.getPerson() == null) {
-                            caze.setPerson(DatabaseHelper.getPersonDao().build());
-                        }
-                    }
-
-                    resultHolder.forItem().add(caze);
-                    resultHolder.forItem().add(ConfigProvider.getUser());
-                }
-            });
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
-
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                    if (itemIterator.hasNext())
-                        record =  itemIterator.next();
-
-                    if (itemIterator.hasNext())
-                        user = itemIterator.next();
-
-                    if (record != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
+                    if (caze.getPerson() == null) {
+                        caze.setPerson(DatabaseHelper.getPersonDao().build());
                     }
                 }
-            });
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
+
+                resultHolder.forItem().add(caze);
+                resultHolder.forItem().add(ConfigProvider.getUser());
+            }
+        });
+        onResumeTask = executor.execute(new ITaskResultCallback() {
+            @Override
+            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                if (resultHolder == null){
+                    return;
+                }
+
+                ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+
+                if (itemIterator.hasNext())
+                    record =  itemIterator.next();
+
+                if (itemIterator.hasNext())
+                    user = itemIterator.next();
+
+                if (record != null)
+                    requestLayoutRebind();
+                else {
+                    getActivity().finish();
+                }
+            }
+        });
     }
 
     @Override
@@ -518,8 +507,7 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
         }
     }
 
-    public static CaseEditFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static CaseEditFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(activityCommunicator, CaseEditFragment.class, capsule, activityRootData);
     }
 

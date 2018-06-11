@@ -171,8 +171,7 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
         recyclerViewForList.setAdapter(getListAdapter());
     }
 
-    public static SampleListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static SampleListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule) {
         return newInstance(communicator, SampleListFragment.class, capsule);
     }
 

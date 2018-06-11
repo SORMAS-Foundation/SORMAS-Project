@@ -65,7 +65,6 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
     private ViewDataBinding rootBinding;
 
     private View contentViewStubRoot;
-    private IActivityCommunicator activityCommunicator;
     private boolean beforeLayoutBindingAsyncReturn;
 
     private boolean skipAfterLayoutBinding = false;
@@ -300,15 +299,6 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
 
     public abstract void onPageResume(TBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn);
 
-    protected void reloadFragment() {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.detach(this);
-        ft.attach(this);
-        ft.addToBackStack(null);
-        ft.commit();
-    }
-
-
     public int getRootEditLayout() {
         return R.layout.fragment_root_edit_layout;
     }
@@ -362,18 +352,13 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
 
     protected abstract void updateUI(TBinding contentBinding, TData data);
 
-    //public abstract View inflateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
-
-    protected void setActivityCommunicator(IActivityCommunicator activityCommunicator) {
-        this.activityCommunicator = activityCommunicator;
-    }
-
-    public IActivityCommunicator getActivityCommunicator() {
-        return this.activityCommunicator;
-    }
-
-    protected static <TFragment extends BaseEditActivityFragment, TCapsule extends INavigationCapsule> TFragment newInstance(IActivityCommunicator activityCommunicator, Class<TFragment> f, TCapsule dataCapsule, AbstractDomainObject activityRootData) throws IllegalAccessException, java.lang.InstantiationException {
-        TFragment fragment = f.newInstance();
+    protected static <TFragment extends BaseEditActivityFragment, TCapsule extends INavigationCapsule> TFragment newInstance(IActivityCommunicator activityCommunicator, Class<TFragment> f, TCapsule dataCapsule, AbstractDomainObject activityRootData)  {
+        TFragment fragment;
+        try {
+            fragment = f.newInstance();
+        } catch (java.lang.InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         fragment.setActivityCommunicator(activityCommunicator);
 

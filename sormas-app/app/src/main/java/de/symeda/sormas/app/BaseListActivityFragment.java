@@ -30,7 +30,6 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
     private BaseListActivity baseListActivity;
     private IUpdateSubHeadingTitle subHeadingHandler;
     private TListAdapter adapter;
-    private IActivityCommunicator activityCommunicator;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,16 +72,6 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
     @Override
     public void onResume() {
         super.onResume();
-
-
-    }
-
-    protected void reloadFragment() {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.detach(this);
-        ft.attach(this);
-        ft.addToBackStack(null);
-        ft.commit();
     }
 
     public int getRootListLayout() {
@@ -118,14 +107,6 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
 
     public IUpdateSubHeadingTitle getSubHeadingHandler() {
         return this.subHeadingHandler;
-    }
-
-    public IActivityCommunicator getActivityCommunicator() {
-        return this.activityCommunicator;
-    }
-
-    public BaseListActivity getBaseListActivity() {
-        return this.baseListActivity;
     }
 
     public abstract void cancelTaskExec();
@@ -217,14 +198,13 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
         }
     }
 
-    protected void setActivityCommunicator(IActivityCommunicator activityCommunicator) {
-        this.activityCommunicator = activityCommunicator;
-    }
-
-    protected static <TFragment extends BaseListActivityFragment, TCapsule extends IListNavigationCapsule> TFragment newInstance(IActivityCommunicator activityCommunicator, Class<TFragment> f, TCapsule dataCapsule) throws IllegalAccessException, java.lang.InstantiationException {
-        TFragment fragment = f.newInstance();
-
-        fragment.setActivityCommunicator(activityCommunicator);
+    protected static <TFragment extends BaseListActivityFragment, TCapsule extends IListNavigationCapsule> TFragment newInstance(IActivityCommunicator activityCommunicator, Class<TFragment> f, TCapsule dataCapsule) {
+        TFragment fragment;
+        try {
+            fragment = f.newInstance();
+        } catch (java.lang.InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         Bundle bundle = fragment.getArguments();
         if (bundle == null) {
@@ -248,9 +228,5 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
 
         fragment.setArguments(bundle);
         return fragment;
-    }
-
-    public boolean showNewAction() {
-        return false;
     }
 }

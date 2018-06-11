@@ -63,12 +63,6 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
     private TextView eventNotificationCounter;
     private TextView sampleNotificationCounter;
 
-
-
-
-
-
-
     protected Tracker tracker;
     private ProgressBar preloader;
 
@@ -129,11 +123,11 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
 
         setupDrawer(navigationView);
 
-
         // Show the Enter Pin Activity if the user doesn't have access to the app
         if (!ConfigProvider.isAccessGranted()) {
             Intent intent = new Intent(this, EnterPinActivity.class);
             startActivity(intent);
+            finish();
             return;
         }
     }
@@ -460,16 +454,12 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
         snackbar.show();*/
     }
 
-    public void logout(View view) {
-        LoginHelper.processLogout();
-    }
-
     public void goToSettings(View view) {
         Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
         startActivity(intent);
     }
 
-    public void gotoNewView() {
+    public void goToNewView() {
 
     }
 

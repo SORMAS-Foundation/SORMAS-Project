@@ -42,7 +42,6 @@ public abstract class BaseReportActivityFragment<TBinding extends ViewDataBindin
     private AsyncTask jobTask;
     private BaseReportActivity baseReportActivity;
     private IUpdateSubHeadingTitle subHeadingHandler;
-    private IActivityCommunicator activityCommunicator;
     private INotificationContext notificationCommunicator;
     private ViewDataBinding rootBinding;
     private View rootView;
@@ -170,7 +169,6 @@ public abstract class BaseReportActivityFragment<TBinding extends ViewDataBindin
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.detach(this);
         ft.attach(this);
-        ft.addToBackStack(null);
         ft.commit();
     }
 
@@ -183,10 +181,6 @@ public abstract class BaseReportActivityFragment<TBinding extends ViewDataBindin
         return this.subHeadingHandler;
     }
 
-    public IActivityCommunicator getActivityCommunicator() {
-        return this.activityCommunicator;
-    }
-
     public BaseReportActivity getBaseReportActivity() {
         return this.baseReportActivity;
     }
@@ -194,10 +188,6 @@ public abstract class BaseReportActivityFragment<TBinding extends ViewDataBindin
 
     protected String getSubHeadingTitle() {
         return null;
-    }
-
-    protected void setActivityCommunicator(IActivityCommunicator activityCommunicator) {
-        this.activityCommunicator = activityCommunicator;
     }
 
     protected ViewDataBinding getRootBinding() {

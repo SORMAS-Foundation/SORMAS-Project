@@ -13,9 +13,12 @@ import org.joda.time.DateTime;
 import java.util.Random;
 
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.ListNavigationCapsule;
@@ -71,7 +74,7 @@ public class ContactListActivity extends BaseListActivity {
     }
 
     @Override
-    public BaseListActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+    public BaseListActivityFragment getActiveReadFragment() {
         if (activeFragment == null) {
             IListNavigationCapsule dataCapsule = new ListNavigationCapsule(ContactListActivity.this, filterStatus, searchBy);
             activeFragment = ContactListFragment.newInstance(this, dataCapsule);
@@ -101,14 +104,7 @@ public class ContactListActivity extends BaseListActivity {
         filterStatus = status;
         IListNavigationCapsule dataCapsule = new ListNavigationCapsule(ContactListActivity.this, filterStatus, searchBy);
 
-        try {
-            activeFragment = ContactListFragment.newInstance(this, dataCapsule);
-        } catch (InstantiationException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, e.getMessage());
-        }
-
+        activeFragment = ContactListFragment.newInstance(this, dataCapsule);
         return activeFragment;
     }
 

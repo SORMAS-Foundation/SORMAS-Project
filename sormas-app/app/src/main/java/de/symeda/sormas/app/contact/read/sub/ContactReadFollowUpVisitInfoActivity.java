@@ -73,7 +73,7 @@ public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity<Visit
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment(Visit activityRootData) throws IllegalAccessException, InstantiationException {
+    public BaseReadActivityFragment getActiveReadFragment(Visit activityRootData) {
         if (activeFragment == null) {
             ContactFormFollowUpNavigationCapsule dataCapsule = new ContactFormFollowUpNavigationCapsule(
                     ContactReadFollowUpVisitInfoActivity.this, recordUuid, pageStatus);

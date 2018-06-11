@@ -61,7 +61,7 @@ public class ContactReadTaskInfoActivity  extends BaseReadActivity<Task> {
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment(Task activityRootData) throws IllegalAccessException, InstantiationException {
+    public BaseReadActivityFragment getActiveReadFragment(Task activityRootData) {
         if (activeFragment == null) {
             TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(
                     ContactReadTaskInfoActivity.this, recordUuid, pageStatus);

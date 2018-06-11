@@ -14,6 +14,7 @@ import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.TeboPropertyField;
+import de.symeda.sormas.app.core.IActivityCommunicator;
 
 /**
  * Created by Orson on 11/03/2018.
@@ -24,9 +25,17 @@ import de.symeda.sormas.app.component.TeboPropertyField;
  */
 
 public class BaseFragment extends Fragment {
-    public final static String EDIT_OR_CREATE_USER_RIGHT = "editOrCreateUserRight";
+
     protected UserRight editOrCreateUserRight;
     protected Tracker tracker;
+
+    public IActivityCommunicator getActivityCommunicator() {
+        return (IActivityCommunicator)getActivity();
+    }
+
+    protected void setActivityCommunicator(IActivityCommunicator activityCommunicator) {
+        // TODO remove calls
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,6 +45,16 @@ public class BaseFragment extends Fragment {
         tracker = application.getDefaultTracker();
 
         manageActivityWriteRights(editOrCreateUserRight);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
     }
 
     protected void setFieldVisibleOrGone(View v, boolean visible) {

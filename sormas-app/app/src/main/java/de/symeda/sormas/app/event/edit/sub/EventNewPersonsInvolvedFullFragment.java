@@ -559,8 +559,7 @@ public class EventNewPersonsInvolvedFullFragment extends BaseEditActivityFragmen
 
     // </editor-fold>
 
-    public static EventNewPersonsInvolvedFullFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, EventParticipant activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static EventNewPersonsInvolvedFullFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, EventParticipant activityRootData) {
         return newInstance(activityCommunicator, EventNewPersonsInvolvedFullFragment.class, capsule, activityRootData);
     }
 

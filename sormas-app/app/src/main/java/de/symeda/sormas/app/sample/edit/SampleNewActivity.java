@@ -80,7 +80,7 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment(Sample activityRootData) throws IllegalAccessException, InstantiationException {
+    public BaseEditActivityFragment getActiveEditFragment(Sample activityRootData) {
         if (activeFragment == null) {
             SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(
                     SampleNewActivity.this, recordUuid, pageStatus).setCaseUuid(caseUuid);

@@ -247,8 +247,7 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
         return false;
     }
 
-    public static SampleReadFragment newInstance(IActivityCommunicator activityCommunicator, SampleFormNavigationCapsule capsule, Sample activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static SampleReadFragment newInstance(IActivityCommunicator activityCommunicator, SampleFormNavigationCapsule capsule, Sample activityRootData) {
         return newInstance(activityCommunicator, SampleReadFragment.class, capsule, activityRootData);
     }
 

@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.util.ConstantHelper;
 
 /**
  * Created by Orson on 03/12/2017.
@@ -65,33 +66,32 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
 
         fragmentFrame = findViewById(R.id.fragment_frame);
         if (fragmentFrame != null) {
-            try {
-                if (savedInstanceState == null) {
-                    replaceFragment(getActiveLandingFragment());
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
+            if (savedInstanceState == null) {
+                replaceFragment(getActiveLandingFragment());
             }
         }
     }
 
     protected abstract void initializeActivity(Bundle arguments);
 
-    public abstract BaseLandingActivityFragment getActiveLandingFragment() throws IllegalAccessException, InstantiationException;
+    public abstract BaseLandingActivityFragment getActiveLandingFragment();
 
     public void replaceFragment(BaseLandingActivityFragment f) {
+        BaseFragment previousFragment = activeFragment;
         activeFragment = f;
 
         if (activeFragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            activeFragment.setArguments(getIntent().getExtras());
+
+            if (activeFragment.getArguments() == null) {
+                activeFragment.setArguments(getIntent().getExtras());
+            }
+
+            ft.setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout);
             ft.replace(R.id.fragment_frame, activeFragment);
-
-            if (activeFragment.getFragmentMenuIndex() > 0)
+            if (previousFragment != null) {
                 ft.addToBackStack(null);
-
+            }
             ft.commit();
         }
     }

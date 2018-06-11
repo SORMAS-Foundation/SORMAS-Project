@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.Random;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -40,13 +41,8 @@ public class CaseListActivity extends BaseListActivity {
 
     private final int DATA_XML_PAGE_MENU = R.xml.data_landing_page_case_menu;// "xml/data_landing_page_case_menu.xml";
 
-    private static final int MENU_INDEX_CASE_PENDING = 0;
-    private static final int MENU_INDEX_CASE_DONE = 1;
-    private static final int MENU_INDEX_CASE_DISCARDED = 2;
-
     private InvestigationStatus statusFilters[] = new InvestigationStatus[] { InvestigationStatus.PENDING, InvestigationStatus.DONE, InvestigationStatus.DISCARDED };
 
-    private AsyncTask jobTask;
     private InvestigationStatus filterStatus = null;
     private SearchBy searchBy = null;
     private String recordUuid = null;
@@ -69,7 +65,7 @@ public class CaseListActivity extends BaseListActivity {
     }
 
     @Override
-    public BaseListActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException {
+    public BaseListActivityFragment getActiveReadFragment()  {
         if (activeFragment == null) {
             IListNavigationCapsule dataCapsule = new ListNavigationCapsule(CaseListActivity.this, filterStatus, searchBy);
             activeFragment = CaseListFragment.newInstance(this, dataCapsule);
@@ -100,14 +96,7 @@ public class CaseListActivity extends BaseListActivity {
         filterStatus = status;
         IListNavigationCapsule dataCapsule = new ListNavigationCapsule(CaseListActivity.this, filterStatus, searchBy);
 
-        try {
-            activeFragment = CaseListFragment.newInstance(this, dataCapsule);
-        } catch (InstantiationException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, e.getMessage());
-        }
-
+        activeFragment = CaseListFragment.newInstance(this, dataCapsule);
         return activeFragment;
     }
 
@@ -148,7 +137,7 @@ public class CaseListActivity extends BaseListActivity {
     }
 
     @Override
-    public void gotoNewView() {
+    public void goToNewView() {
         EpiWeek lastEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
         User user = ConfigProvider.getUser();
         if (user.hasUserRole(UserRole.INFORMANT)
@@ -166,7 +155,7 @@ public class CaseListActivity extends BaseListActivity {
 
             confirmationDialog.show(null);
         } else {
-            CaseFormNavigationCapsule dataCapsule = (CaseFormNavigationCapsule)new CaseFormNavigationCapsule(CaseListActivity.this,
+            CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(CaseListActivity.this,
                     null).setEditPageStatus(filterStatus).setPersonUuid(null);
             CaseNewActivity.goToActivity(this, dataCapsule);
         }
@@ -174,6 +163,12 @@ public class CaseListActivity extends BaseListActivity {
 
     public static void goToActivity(Context fromActivity, IListNavigationCapsule dataCapsule) {
         BaseListActivity.goToActivity(fromActivity, CaseListActivity.class, dataCapsule);
+    }
+
+    @Override
+    public boolean isEntryCreateAllowed() {
+        User user = ConfigProvider.getUser();
+        return user.hasUserRight(UserRight.CASE_CREATE);
     }
 
     @Override

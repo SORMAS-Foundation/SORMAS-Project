@@ -86,14 +86,7 @@ public abstract class BaseDashboardActivity extends AbstractSormasActivity imple
 
         fragmentFrame = findViewById(R.id.fragment_frame);
         if (fragmentFrame != null && savedInstanceState == null) {
-            regiserSummaryFragments();
-            replaceFragment(mRegisteredFragments);
-        }
-    }
-
-    private void regiserSummaryFragments() {
-        for(BaseSummaryFragment f: getSummaryFragments()) {
-            mRegisteredFragments.put(f.getIdentifier(), new SummaryRegisterItem(f));
+            replaceFragment(getSummaryFragments());
         }
     }
 
@@ -187,25 +180,20 @@ public abstract class BaseDashboardActivity extends AbstractSormasActivity imple
     //</editor-fold>
 
     //<editor-fold desc="Private Methods">
-    private void replaceFragment(Map<String, SummaryRegisterItem> items) {
-        FragmentManager manager = getSupportFragmentManager();
+    private void replaceFragment(List<BaseSummaryFragment> fragments) {
 
-        if (items != null) {
-            this.mRegisteredFragments = items;
+        boolean hadFragments = mRegisteredFragments != null && !mRegisteredFragments.isEmpty();
+        this.mRegisteredFragments.clear();
 
-            for (Map.Entry<String, SummaryRegisterItem> item : items.entrySet()) {
-                if (item == null)
-                    continue;
+        if (fragments != null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
-                BaseSummaryFragment f = item.getValue().getFragment();
-
+            for (BaseSummaryFragment f : fragments) {
                 if (f == null)
                     continue;
 
                 if (f.getArguments() == null)
                     f.setArguments(getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA));
-
-                FragmentTransaction ft = manager.beginTransaction();
 
                 FrameLayout frame = (FrameLayout)findViewById(f.getContainerResId());
 
@@ -213,13 +201,16 @@ public abstract class BaseDashboardActivity extends AbstractSormasActivity imple
                     continue;
 
                 ft.replace(f.getContainerResId(), f);
-                ft.addToBackStack(null);
-                ft.commit();
+                mRegisteredFragments.put(f.getIdentifier(), new SummaryRegisterItem(f));
 
                 //frame.setMinimumHeight(getResources().getDimensionPixelSize(f.getMinHeightResId()));
                 frame.setVisibility(View.VISIBLE);
             }
 
+            if (hadFragments) {
+                ft.addToBackStack(null);
+            }
+            ft.commit();
         }
     }
     //</editor-fold>

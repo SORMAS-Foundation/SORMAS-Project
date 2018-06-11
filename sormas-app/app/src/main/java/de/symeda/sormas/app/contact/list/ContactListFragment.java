@@ -188,8 +188,7 @@ public class ContactListFragment extends BaseListActivityFragment<ContactListAda
         startActivity(intent);*/
     }
 
-    public static ContactListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static ContactListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule) {
         return newInstance(communicator, ContactListFragment.class, capsule);
     }
 

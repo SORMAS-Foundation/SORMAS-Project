@@ -490,8 +490,7 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
     }
 
 
-    public static CaseNewFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static CaseNewFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(activityCommunicator, CaseNewFragment.class, capsule, activityRootData);
     }
 

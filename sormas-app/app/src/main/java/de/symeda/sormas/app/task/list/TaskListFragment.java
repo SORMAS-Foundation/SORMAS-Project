@@ -177,8 +177,7 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
         recyclerViewForList.setAdapter(getListAdapter());
     }
 
-    public static TaskListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static TaskListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule) {
         return newInstance(communicator, TaskListFragment.class, capsule);
     }
 

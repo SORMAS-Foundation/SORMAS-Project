@@ -166,8 +166,7 @@ public class EventReadPersonsInvolvedInfoFragment extends BaseReadActivityFragme
         return false;
     }
 
-    public static EventReadPersonsInvolvedInfoFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, EventParticipant activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static EventReadPersonsInvolvedInfoFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, EventParticipant activityRootData) {
         return newInstance(activityCommunicator, EventReadPersonsInvolvedInfoFragment.class, capsule, activityRootData);
     }
 

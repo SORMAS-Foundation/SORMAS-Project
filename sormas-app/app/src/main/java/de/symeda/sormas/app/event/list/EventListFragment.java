@@ -172,13 +172,7 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
         recyclerViewForList.setAdapter(getListAdapter());
     }
 
-    @Override
-    public boolean showNewAction() {
-        return false;
-    }
-
-    public static EventListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static EventListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule) {
         return newInstance(communicator, EventListFragment.class, capsule);
     }
 

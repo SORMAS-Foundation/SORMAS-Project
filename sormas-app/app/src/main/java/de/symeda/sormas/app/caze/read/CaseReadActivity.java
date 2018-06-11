@@ -91,7 +91,7 @@ public class CaseReadActivity  extends BaseReadActivity<Case> {
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment(Case activityRootData) throws IllegalAccessException, InstantiationException {
+    public BaseReadActivityFragment getActiveReadFragment(Case activityRootData) {
         if (activeFragment == null) {
             CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(
                     CaseReadActivity.this, recordUuid).setReadPageStatus(pageStatus);

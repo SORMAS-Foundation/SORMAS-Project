@@ -127,7 +127,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment(Contact activityRootData) throws IllegalAccessException, InstantiationException {
+    public BaseEditActivityFragment getActiveEditFragment(Contact activityRootData) {
         if (activeFragment == null) {
             ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactNewActivity.this,
                     recordUuid, pageStatus);

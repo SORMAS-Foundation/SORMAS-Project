@@ -42,7 +42,7 @@ public class MenuOptionsHelper {
     public static boolean handleListModuleOptionsItemSelected(BaseListActivity activity, MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_new:
-                activity.gotoNewView();
+                activity.goToNewView();
                 return true;
 
             case R.id.option_menu_action_sync:
@@ -94,7 +94,7 @@ public class MenuOptionsHelper {
                 return true;
 
             case R.id.action_new:
-                activity.gotoNewView();
+                activity.goToNewView();
                 return true;
 
             case R.id.action_save:

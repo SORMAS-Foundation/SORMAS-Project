@@ -82,7 +82,7 @@ public class EventNewPersonsInvolvedActivity extends BaseEditActivity<EventParti
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment(EventParticipant activityRootData) throws IllegalAccessException, InstantiationException {
+    public BaseEditActivityFragment getActiveEditFragment(EventParticipant activityRootData) {
         if (activeFragment == null) {
             EventFormNavigationCapsule dataCapsule = (EventFormNavigationCapsule)new EventFormNavigationCapsule(EventNewPersonsInvolvedActivity.this,
                     recordUuid, pageStatus).setEventUuid(eventUuid);
@@ -139,16 +139,10 @@ public class EventNewPersonsInvolvedActivity extends BaseEditActivity<EventParti
     }
 
     private void goToNewEventParticipantFullView() {
-        try {
-            EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventNewPersonsInvolvedActivity.this,
-                    recordUuid, pageStatus).setEventUuid(eventUuid);
-            activeFragment = EventNewPersonsInvolvedFullFragment.newInstance(this, dataCapsule, getStoredActivityRootData());
-            changeFragment(activeFragment);
-        } catch (InstantiationException ex) {
-            Log.e(TAG, ex.getMessage());
-        } catch (IllegalAccessException ex) {
-            Log.e(TAG, ex.getMessage());
-        }
+        EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventNewPersonsInvolvedActivity.this,
+                recordUuid, pageStatus).setEventUuid(eventUuid);
+        EventNewPersonsInvolvedFullFragment fragment = EventNewPersonsInvolvedFullFragment.newInstance(this, dataCapsule, getStoredActivityRootData());
+        replaceFragment(fragment);
     }
 
     public static <TActivity extends AbstractSormasActivity> void

@@ -173,8 +173,7 @@ public class ContactReadFollowUpVisitInfoFragment extends BaseReadActivityFragme
         return false;
     }
 
-    public static ContactReadFollowUpVisitInfoFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormFollowUpNavigationCapsule capsule, Visit activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static ContactReadFollowUpVisitInfoFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormFollowUpNavigationCapsule capsule, Visit activityRootData) {
         return newInstance(activityCommunicator, ContactReadFollowUpVisitInfoFragment.class, capsule, activityRootData);
     }
 

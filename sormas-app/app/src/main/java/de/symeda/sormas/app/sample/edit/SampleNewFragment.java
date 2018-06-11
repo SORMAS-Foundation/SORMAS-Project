@@ -390,8 +390,7 @@ public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNe
         }
     }
 
-    public static SampleNewFragment newInstance(IActivityCommunicator activityCommunicator, SampleFormNavigationCapsule capsule, Sample activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static SampleNewFragment newInstance(IActivityCommunicator activityCommunicator, SampleFormNavigationCapsule capsule, Sample activityRootData) {
         return newInstance(activityCommunicator, SampleNewFragment.class, capsule, activityRootData);
     }
 

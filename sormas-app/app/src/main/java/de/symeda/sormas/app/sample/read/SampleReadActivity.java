@@ -68,7 +68,7 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment(Sample activityRootData) throws IllegalAccessException, InstantiationException {
+    public BaseReadActivityFragment getActiveReadFragment(Sample activityRootData) {
         if (activeFragment == null) {
             SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(SampleReadActivity.this,
                     recordUuid, pageStatus);

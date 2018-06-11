@@ -52,7 +52,7 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
     private View fragmentFrame = null;
     private View rootView;
     private MenuItem newMenu = null;
-    private BaseListActivityFragment activeFragment = null;
+    private BaseFragment activeFragment = null;
 
     private List<TListItemData> storedListData = null;
     private LandingPageMenuControl pageMenu = null;
@@ -149,36 +149,30 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
 
         fragmentFrame = findViewById(R.id.fragment_frame);
         if (fragmentFrame != null) {
-            try {
-                if (savedInstanceState == null) {
-                    // setting the fragment_frame
-                    BaseListActivityFragment activeFragment = null;
-                    activeFragment = getActiveReadFragment();
-                    replaceFragment(activeFragment);
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
+            if (savedInstanceState == null) {
+                replaceFragment(getActiveReadFragment());
             }
         }
     }
 
     protected abstract void initializeActivity(Bundle arguments);
 
-    public abstract BaseListActivityFragment getActiveReadFragment() throws IllegalAccessException, InstantiationException;
+    public abstract BaseListActivityFragment getActiveReadFragment();
 
-    public void replaceFragment(BaseListActivityFragment f) {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+    public void replaceFragment(BaseFragment f) {
+        BaseFragment previousFragment = activeFragment;
         activeFragment = f;
 
         if (activeFragment != null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             if (activeFragment.getArguments() == null)
                 activeFragment.setArguments(getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA));
 
             ft.setCustomAnimations(R.anim.fadein, R.anim.fadeout, R.anim.fadein, R.anim.fadeout);
             ft.replace(R.id.fragment_frame, activeFragment);
-            ft.addToBackStack(null);
+            if (previousFragment != null) {
+                ft.addToBackStack(null);
+            }
             ft.commit();
         }
     }
@@ -204,12 +198,16 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
         return super.onOptionsItemSelected(item);
     }
 
+    protected boolean isEntryCreateAllowed() {
+        return false;
+    }
+
     private void processActionbarMenu() {
         if (activeFragment == null)
             return;
 
         if (newMenu != null)
-            newMenu.setVisible(activeFragment.showNewAction());
+            newMenu.setVisible(isEntryCreateAllowed());
     }
 
     public MenuItem getNewMenu() {
@@ -363,20 +361,6 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
 
     protected BaseListActivityFragment getNextFragment(LandingPageMenuItem menuItem) { //, List<TListItemData> activityListData
         return null;
-    }
-
-    protected boolean changeFragment(BaseListActivityFragment newActiveFragment) {
-        if (newActiveFragment == null)
-            return false;
-
-        replaceFragment(newActiveFragment);
-
-        //this.activeFragment = newActiveFragment;
-
-        processActionbarMenu();
-        //updateSubHeadingTitle();
-
-        return true;
     }
 
     //</editor-fold>
