@@ -45,9 +45,12 @@ public final class InfoProvider {
 
 			if (Integer.parseInt(appVersionDigits[0]) < Integer.parseInt(minReqVersionDigits[0])) {
 				return CompatibilityCheckResponse.TOO_OLD;
-			} else if (Integer.parseInt(appVersionDigits[1]) < Integer.parseInt(minReqVersionDigits[1])) {
+			} else if (Integer.parseInt(appVersionDigits[0]) == Integer.parseInt(minReqVersionDigits[0]) &&
+					Integer.parseInt(appVersionDigits[1]) < Integer.parseInt(minReqVersionDigits[1])) {
 				return CompatibilityCheckResponse.TOO_OLD;
-			} else if (Integer.parseInt(appVersionDigits[2]) < Integer.parseInt(minReqVersionDigits[2])) {
+			} else if (Integer.parseInt(appVersionDigits[0]) == Integer.parseInt(minReqVersionDigits[0]) &&
+					Integer.parseInt(appVersionDigits[1]) == Integer.parseInt(minReqVersionDigits[1]) &&
+					Integer.parseInt(appVersionDigits[2]) < Integer.parseInt(minReqVersionDigits[2])) {
 				return CompatibilityCheckResponse.TOO_OLD;
 			}
 
