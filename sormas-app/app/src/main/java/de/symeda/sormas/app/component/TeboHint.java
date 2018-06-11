@@ -118,7 +118,7 @@ public class TeboHint extends TeboPropertyField<String> implements ITextControlI
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        txtControlInput = (TextView) this.findViewById(R.id.txtControlInput);
+        txtControlInput = (TextView) this.findViewById(R.id.input);
         txtControlInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }

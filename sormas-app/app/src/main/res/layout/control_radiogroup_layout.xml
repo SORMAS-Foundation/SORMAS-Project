@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge  xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout
-        android:id="@+id/controlFrame"
+        android:id="@+id/control_frame"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
 
         <LinearLayout
-            android:id="@+id/captionFrame"
+            android:id="@+id/caption_frame"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -16,13 +16,13 @@
             android:layout_gravity="center_vertical"
             >
             <TextView
-                android:id="@+id/lblControlLabel"
-                android:labelFor="@+id/txtControlInput"
+                android:id="@+id/label"
+                android:labelFor="@+id/input"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/CheckboxLabelStyle" />
+                style="@style/CheckBoxLabelStyle" />
             <TextView
-                android:id="@+id/lblRequired"
+                android:id="@+id/required_indicator"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -33,7 +33,7 @@
                 android:textSize="@dimen/controlLabelSize"
                 android:fontFamily="sans-serif-medium"/>
             <TextView
-                android:id="@+id/lblSoftRequired"
+                android:id="@+id/soft_required_indicator"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

@@ -90,8 +90,8 @@ public class TeboCheckBox extends EditTeboPropertyField<Boolean> {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        controlFrame = this.findViewById(R.id.controlFrame);
-        checkBox = (CheckBox) this.findViewById(R.id.chkControlInput);
+        controlFrame = this.findViewById(R.id.control_frame);
+        checkBox = (CheckBox) this.findViewById(R.id.checkbox);
 
         checkBox.setNextFocusLeftId(getNextFocusLeft());
         checkBox.setNextFocusRightId(getNextFocusRight());

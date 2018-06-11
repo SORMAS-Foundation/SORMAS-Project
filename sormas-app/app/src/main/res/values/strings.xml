@@ -168,9 +168,9 @@
     <string name="desc_details">Details</string>
     <string name="desc_last_exposure_date">Last Exposure Date</string>
     <string name="desc_last_exposure_place">Last Exposure Place</string>
-    <string name="desc_password">Password</string>
+    <string name="desc_login_password">Password</string>
     <string name="desc_specify">Specify</string>
-    <string name="desc_username">User Name</string>
+    <string name="desc_login_username">Username</string>
     <string name="disease_unknown">Disease N/A</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="drawer_open">Open navigation drawer</string>
@@ -346,6 +346,8 @@
     <string name="hint_last_exposure_date">Last Exposure Date</string>
     <string name="hint_last_exposure_place">Last Exposure Place</string>
     <string name="hint_login">Please log in to your account.</string>
+    <string name="hint_login_username">Username</string>
+    <string name="hint_login_password">Your Password</string>
     <string name="hint_logout">Logging out of SORMAS...</string>
     <string name="hint_new_pin">Please choose a new four-digit PIN to authenticate when opening the SORMAS app in the future.</string>
     <string name="hint_new_pin_again">Please enter the new PIN again.</string>
@@ -353,7 +355,6 @@
     <string name="hint_no_records_found_add_new">There were no %1$s found. To add a new entry, press the "+" symbol at the top right of the toolbar.</string>
     <string name="hint_no_sync_errors">There are no synchronization conflicts to display.</string>
     <string name="hint_no_weekly_report">You have not yet confirmed the report for last week.</string>
-    <string name="hint_password">Your Password</string>
     <string name="hint_report_not_submitted">No <i>report</i> submitted</string>
     <string name="hint_report_not_yet_submitted">Not yet submitted</string>
     <string name="hint_sample_synchronization">Samples are being synchronized...</string>
@@ -367,13 +368,14 @@
     <string name="hint_synchronization">Synchronizing with SORMAS server...</string>
     <string name="hint_task_synchronization">Tasks are being synchronized...</string>
     <string name="hint_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>
-    <string name="hint_username">Your User Name</string>
     <string name="hint_visit_synchronization">Visits are being synchronized...</string>
     <string name="hint_weekly_report_info">In EPID-week %1$s from %2$s to %3$s, you have reported the following disease cases:</string>
     <string name="hint_weekly_report_no_data">No data available for this epi week.</string>
 
     <string name="inadequate_specimen_cond">Specimen condition not adequate</string>
     <string name="indicator_case_unclassified">Unclassified</string>
+    <string name="indicator_required">*</string>
+    <string name="indicator_soft_required">(*)</string>
     <string name="infoText_move_case_discard_changes">Moving the case will discard any unsaved changes. Do you want to continue?</string>
     <string name="infoText_resetPIN">To reset your PIN you will <b>need your SORMAS user password.</b></string>
     <string name="invalid">Invalid</string>
@@ -395,17 +397,23 @@
     <string name="label_lesions_locations">Localisation of the lesions</string>
     <string name="label_list_item_person_ill">Deceased person was ill</string>
     <string name="label_list_item_touched_body">Case touched or carried body</string>
-    <string name="label_password">Password</string>
+    <string name="label_login_username">Username</string>
+    <string name="label_login_password">Password</string>
     <string name="label_person_ill">Person ill / </string>
     <string name="label_present_condition">Present Condition</string>
     <string name="label_sormas_version">SORMAS</string>
     <string name="label_specify">Specify</string>
     <string name="label_today">today</string>
-    <string name="label_username">User Name</string>
 
     <string name="login_change_settings"><u>Change Settings</u></string>
     <string name="login_heading_1">Surveillance Outbreak</string>
     <string name="login_heading_2">Response Management &amp; Analysis System</string>
+    <string name="login_sub_heading_1">Disease Prevention</string>
+    <string name="login_sub_heading_2">Disease Detection</string>
+    <string name="login_sub_heading_3">Outbreak Response</string>
+    <string name="login_sign_in">Sign In</string>
+    <string name="login_sign_in_tag_line">Sign into SORMAS to continue the journey of saving lives.</string>
+
 
     <string name="main_menu_cases">Cases</string>
     <string name="main_menu_contacts">Contacts</string>
@@ -459,12 +467,6 @@
     <string name="select_or_create_person_infoText">Select anyone of the persons below that match by tapping.</string>
     <string name="select_or_create_person_no_records_infoText">No records found matching the first and last name.</string>
     <string name="server_connection_error">Could not connect to SORMAS server. Synchronization canceled. Try again later.</string>
-    <string name="service_1">Disease Prevention</string>
-    <string name="service_2">Disease Detection</string>
-    <string name="service_3">Outbreak Response</string>
-    <string name="sign_in">Sign In</string>
-    <string name="sign_in_tagline">Sign into SORMAS to continue the journey of saving lives.</string>
-
     <string name="snackbar_case_disease">Please specify the case disease.</string>
     <string name="snackbar_case_facility">Please enter the health facility.</string>
     <string name="snackbar_case_facility_details">Please enter the name and description of the health facility.</string>

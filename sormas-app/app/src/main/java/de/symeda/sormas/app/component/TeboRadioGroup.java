@@ -133,8 +133,8 @@ public class TeboRadioGroup extends EditTeboPropertyField<Object> {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        controlFrame = this.findViewById(R.id.controlFrame);
-        captionFrame = this.findViewById(R.id.captionFrame);
+        controlFrame = this.findViewById(R.id.control_frame);
+        captionFrame = this.findViewById(R.id.caption_frame);
         radioGroup = (RadioGroup) this.findViewById(R.id.rbgControlInput);
 
         radioGroup.setNextFocusLeftId(getNextFocusLeft());
@@ -479,7 +479,7 @@ public class TeboRadioGroup extends EditTeboPropertyField<Object> {
 
 
         TextView rbLabel = new TextView (new ContextThemeWrapper(getContext(),
-                R.style.CheckboxLabelStyle), null, 0);
+                R.style.CheckBoxLabelStyle), null, 0);
 
         ViewGroup.LayoutParams tvParams = new LayoutParams(
                 LayoutParams.WRAP_CONTENT,

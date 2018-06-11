@@ -6,14 +6,14 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
-            android:id="@+id/captionFrame"
+            android:id="@+id/caption_frame"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             >
             <TextView
-                android:id="@+id/lblControlLabel"
-                android:labelFor="@+id/txtControlInput"
+                android:id="@+id/label"
+                android:labelFor="@+id/input"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/controlLabelColor"
@@ -25,7 +25,7 @@
                 android:clickable="true"
                 android:focusableInTouchMode="true" />
             <TextView
-                android:id="@+id/lblRequired"
+                android:id="@+id/required_indicator"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -36,7 +36,7 @@
                 android:textSize="@dimen/controlLabelSize"
                 android:fontFamily="sans-serif-medium"/>
             <TextView
-                android:id="@+id/lblSoftRequired"
+                android:id="@+id/soft_required_indicator"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -48,7 +48,7 @@
                 android:fontFamily="sans-serif-medium"/>
         </LinearLayout>
         <TextView
-            android:id="@+id/txtControlInput"
+            android:id="@+id/input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/controlTextViewBackground"

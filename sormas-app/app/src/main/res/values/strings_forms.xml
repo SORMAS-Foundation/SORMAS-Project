@@ -668,6 +668,8 @@
     <string name="hint_case_vaccination_info_source">Vaccination Information Source</string>
     <string name="hint_case_smallpox_vaccination_received">Was a smallpox vaccination received in the past?</string>
 
+    <string name="hint_pick_date">Pick date</string>
+
 
     <!-- Sub Headings -->
     <string name="heading_sub_case_addition_med_info">Additional Medical Information</string>

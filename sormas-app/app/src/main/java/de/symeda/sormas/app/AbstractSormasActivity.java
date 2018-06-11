@@ -38,7 +38,6 @@ import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.login.LoginActivity;
-import de.symeda.sormas.app.login.LoginHelper;
 import de.symeda.sormas.app.menu.MainMenuItemSelectedListener;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;

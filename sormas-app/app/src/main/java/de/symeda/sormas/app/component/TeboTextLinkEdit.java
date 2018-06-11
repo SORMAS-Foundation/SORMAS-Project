@@ -256,7 +256,7 @@ public class TeboTextLinkEdit extends EditTeboPropertyField<String> implements I
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        txtControlInput = (TextView) this.findViewById(R.id.txtControlInput);
+        txtControlInput = (TextView) this.findViewById(R.id.input);
 
     }
 

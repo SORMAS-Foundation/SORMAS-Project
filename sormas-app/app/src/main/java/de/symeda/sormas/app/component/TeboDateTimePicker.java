@@ -223,14 +223,14 @@ public class TeboDateTimePicker extends EditTeboPropertyField<Date> implements I
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        dateInput = (EditText) this.findViewById(R.id.dateInput);
-        timeInput = (EditText) this.findViewById(R.id.timeInput);
+        dateInput = (EditText) this.findViewById(R.id.date_input);
+        timeInput = (EditText) this.findViewById(R.id.time_input);
 
-        dateInput.setNextFocusLeftId(R.id.timeInput);
-        dateInput.setNextFocusRightId(R.id.timeInput);
-        dateInput.setNextFocusUpId(R.id.timeInput);
-        dateInput.setNextFocusDownId(R.id.timeInput);
-        dateInput.setNextFocusForwardId(R.id.timeInput);
+        dateInput.setNextFocusLeftId(R.id.time_input);
+        dateInput.setNextFocusRightId(R.id.time_input);
+        dateInput.setNextFocusUpId(R.id.time_input);
+        dateInput.setNextFocusDownId(R.id.time_input);
+        dateInput.setNextFocusForwardId(R.id.time_input);
 
         timeInput.setNextFocusLeftId(getNextFocusLeft());
         timeInput.setNextFocusRightId(getNextFocusRight());

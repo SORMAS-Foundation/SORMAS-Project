@@ -209,7 +209,7 @@ public class TeboAddress extends EditTeboPropertyField<Location> implements ICon
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        txtControlInput = (TextView) this.findViewById(R.id.txtControlInput);
+        txtControlInput = (TextView) this.findViewById(R.id.input);
 
     }
 

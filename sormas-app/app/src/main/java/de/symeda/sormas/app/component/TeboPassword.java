@@ -262,7 +262,7 @@ public class TeboPassword extends EditTeboPropertyField<String> implements IText
         super.onFinishInflate();
 
         txtControlInputLayout = (TextInputLayout) this.findViewById(R.id.txtControlInputLayout);
-        txtControlInput = (EditText) this.findViewById(R.id.txtControlInput);
+        txtControlInput = (EditText) this.findViewById(R.id.input);
 
         txtControlInput.setNextFocusLeftId(getNextFocusLeft());
         txtControlInput.setNextFocusRightId(getNextFocusRight());

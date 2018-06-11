@@ -195,7 +195,7 @@ public class TeboButton extends LinearLayout implements ButtonControlInterface {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        btnPrimary = (Button) this.findViewById(R.id.btnPrimary);
+        btnPrimary = (Button) this.findViewById(R.id.button);
 
         if (text != null && text != "")
             setText(text);

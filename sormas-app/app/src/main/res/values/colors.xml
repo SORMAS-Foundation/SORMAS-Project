@@ -267,9 +267,8 @@
     <color name="drawerTaskNotificationCounterText">@color/whiteOpaque</color>
 
 
-    <!-- Login Activity -->
-    <color name="text_70">#B3374b5a</color>
-    <color name="text_30">#4D374b5a</color>
+    <color name="gray_70">#B3374b5a</color>
+    <color name="gray_30">#4D374b5a</color>
 
     <color name="pressedState">@color/lighterBlue40</color>
     <color name="activeState">@color/blue</color>
@@ -281,7 +280,7 @@
     <color name="pinButtonFocused">@color/lighterBlue40</color>
     <color name="pinButtonPressed">@color/lighterBlue40</color>
     <color name="textPinButton">@color/normalText</color>
-    <color name="textPinButtonDisabled">@color/text_30</color>
+    <color name="textPinButtonDisabled">@color/gray_30</color>
     <color name="textPinButtonFocused">@color/blue</color>
     <color name="textPinButtonPressed">@color/blue</color>
 
@@ -477,14 +476,14 @@
     <!-- Link Button -->
     <color name="linkButtonFocused">@color/blue</color>
     <color name="linkButtonPressed">@color/blue</color>
-    <color name="linkButtonDisabled">@color/text_30</color>
+    <color name="linkButtonDisabled">@color/gray_30</color>
     <color name="linkButtonNormal">@color/lightBlue</color>
 
 
     <!-- Read Activity Link -->
     <color name="formActivityLinkFocused">@color/lightBlue</color>
     <color name="formActivityLinkPressed">@color/lightBlue</color>
-    <color name="formActivityLinkDisabled">@color/text_30</color>
+    <color name="formActivityLinkDisabled">@color/gray_30</color>
     <color name="formActivityLinkNormal">@color/blue</color>
     <color name="symptomListRowBackground">@color/normalText</color>
 

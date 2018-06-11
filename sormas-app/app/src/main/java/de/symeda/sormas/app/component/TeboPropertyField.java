@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -78,13 +79,7 @@ public abstract class TeboPropertyField<T> extends LinearLayout {
         inflateView(context, null, 0);
     }
 
-    // TODO: Talk to Martin about this
-    /*public String getLblControlLabel() {
-        String captionPropertyId = getFieldCaptionPropertyId();
-        return I18nProperties.getFieldCaption(captionPropertyId);
-    }
-
-    public void setLblControlLabel(String newCaption) {
+    /*public void setLblControlLabel(String newCaption) {
         if (lblControlLabel != null) {
             lblControlLabel.setText(newCaption);
         } else if ((lblControlLabel = (TextView) this.findViewById(R.id.lblControlLabel)) == null) {
@@ -100,14 +95,14 @@ public abstract class TeboPropertyField<T> extends LinearLayout {
 
 
     public void setCaption(String newCaption) {
-        if ((lblControlLabel = (TextView) this.findViewById(R.id.lblControlLabel)) == null)
+        if ((lblControlLabel = (TextView) this.findViewById(R.id.label)) == null)
             throw new NullPointerException("The control label object is null.");
 
         lblControlLabel.setText(newCaption);
     }
 
     public String getCaption() {
-        if ((lblControlLabel = (TextView) this.findViewById(R.id.lblControlLabel)) == null)
+        if ((lblControlLabel = (TextView) this.findViewById(R.id.label)) == null)
             throw new NullPointerException("The control label object is null.");
 
         return lblControlLabel.getText().toString();
@@ -204,21 +199,16 @@ public abstract class TeboPropertyField<T> extends LinearLayout {
 
     public String getPropertyId() {
         String fieldId = getFieldIdString();
-        int seperatorIndex = fieldId.lastIndexOf("/");
-        return fieldId.substring(seperatorIndex + 1);
+        int separatorIndex = fieldId.lastIndexOf("/");
+        return fieldId.substring(separatorIndex + 1);
     }
 
     protected final String getFieldCaptionPropertyId() {
         String fieldId = getFieldIdString();
-        int seperatorIndex = fieldId.lastIndexOf("/");
-        String captionPropertyId = fieldId.substring(seperatorIndex + 1, seperatorIndex+2).toUpperCase() + fieldId.substring(seperatorIndex + 2).replaceAll("_", ".");
+        int separatorIndex = fieldId.lastIndexOf("/");
+        String captionPropertyId = fieldId.substring(separatorIndex + 1, separatorIndex + 2).toUpperCase() + fieldId.substring(separatorIndex + 2).replaceAll("_", ".");
         return captionPropertyId;
     }
-
-
-
-
-
 
     public void setDescription(String value) {
         description = value;
@@ -258,7 +248,8 @@ public abstract class TeboPropertyField<T> extends LinearLayout {
 
             try {
                 description = a.getString(R.styleable.TeboPropertyField_description);
-                caption = a.getString(R.styleable.TeboPropertyField_labelCaption);
+//                caption = a.getString(R.styleable.TeboPropertyField_labelCaption);
+                caption = I18nProperties.getFieldCaption(getFieldCaptionPropertyId());
                 showCaption = a.getBoolean(R.styleable.TeboPropertyField_showCaption, true);
                 captionColor = a.getColor(R.styleable.TeboPropertyField_labelColor,
                         getResources().getColor(R.color.controlReadLabelColor));
@@ -287,8 +278,8 @@ public abstract class TeboPropertyField<T> extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        captionFrame = this.findViewById(R.id.captionFrame);
-        lblControlLabel = (TextView) this.findViewById(R.id.lblControlLabel);
+        captionFrame = this.findViewById(R.id.caption_frame);
+        lblControlLabel = (TextView) this.findViewById(R.id.label);
 
         if (lblControlLabel == null) {
             throw new NullPointerException("Cannot find control label; lblControlLabel");

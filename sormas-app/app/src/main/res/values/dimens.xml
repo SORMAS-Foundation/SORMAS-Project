@@ -99,7 +99,6 @@
     <dimen name="signinFormWidth">400dp</dimen>
     <dimen name="serviceMarginBottom">40dp</dimen>
     <dimen name="loginServiceTextSize">10sp</dimen>
-    <dimen name="signInTagLineMarginBottom">32dp</dimen>
 
     <!-- Login Heading 2 -->
     <dimen name="loginHeading2LayoutMarginBottom">8dp</dimen>
@@ -125,8 +124,6 @@
     <dimen name="slimControlTextSize">14sp</dimen>
     <dimen name="firstControlTopMargin">16dp</dimen>
     <dimen name="loginActivityFirstControlTopMargin">16dp</dimen>
-
-
 
     <dimen name="roundButtonRadius">24dp</dimen>
     <dimen name="buttonHorizontalPadding">16dp</dimen>
@@ -167,7 +164,7 @@
     <dimen name="formActivityLinkButtonTextSize">16sp</dimen>
 
     <!-- Label -->
-    <dimen name="controlLabelSize">14dp</dimen>
+    <dimen name="controlLabelSize">14sp</dimen>
     <dimen name="controlLabelMarginBottom">8dp</dimen>
     <dimen name="controlLabelMarginTop">0dp</dimen>
 
@@ -175,7 +172,7 @@
     <dimen name="controlReadTextSize">16sp</dimen>
 
     <!-- ReadLabel -->
-    <dimen name="controlReadLabelSize">14dp</dimen>
+    <dimen name="controlReadLabelSize">14sp</dimen>
     <dimen name="controlReadLabelPaddingBottom">8dp</dimen>
     <dimen name="controlReadLabelPaddingTop">0dp</dimen>
 

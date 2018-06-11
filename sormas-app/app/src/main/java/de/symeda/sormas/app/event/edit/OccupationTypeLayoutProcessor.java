@@ -233,6 +233,12 @@ public class OccupationTypeLayoutProcessor {
     }
 
 
+
+
+
+
+
+
     private LinearLayout getRootChildLayout() {
         if (rootChildLayout == null)
             rootChildLayout = (LinearLayout)contentBinding.occupationDetailsInclude.getRoot();

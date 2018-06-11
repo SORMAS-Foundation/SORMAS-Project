@@ -217,8 +217,8 @@ public abstract class EditTeboPropertyField<T> extends TeboPropertyField<T> {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        lblRequired = (TextView) this.findViewById(R.id.lblRequired);
-        lblSoftRequired = (TextView) this.findViewById(R.id.lblSoftRequired);
+        lblRequired = (TextView) this.findViewById(R.id.required_indicator);
+        lblSoftRequired = (TextView) this.findViewById(R.id.soft_required_indicator);
         setRequired(required);
 
         setOnInputErrorListener(new OnInputErrorListener() {

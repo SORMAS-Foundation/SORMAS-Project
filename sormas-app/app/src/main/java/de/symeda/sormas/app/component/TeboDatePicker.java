@@ -167,7 +167,7 @@ public class TeboDatePicker extends EditTeboPropertyField<Date> implements ITebo
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        txtControlInput = (EditText) this.findViewById(R.id.txtControlInput);
+        txtControlInput = (EditText) this.findViewById(R.id.input);
 
         txtControlInput.setNextFocusLeftId(getNextFocusLeft());
         txtControlInput.setNextFocusRightId(getNextFocusRight());

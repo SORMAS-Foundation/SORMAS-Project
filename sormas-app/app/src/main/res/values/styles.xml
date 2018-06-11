@@ -78,7 +78,7 @@
 
 
 
-    <style name="CheckboxLabelStyle">
+    <style name="CheckBoxLabelStyle">
         <item name="android:textColor">@color/controlLabelColor</item>
         <item name="android:textSize">@dimen/controlLabelSize</item>
         <item name="android:fontFamily">sans-serif-medium</item>
@@ -153,6 +153,11 @@
         <item name="android:textSize">@dimen/defaultControlTextSize</item>
     </style>
 
+    <style name="ControlDateOrTimePickerInputStyle" parent="@style/EditTextViewSingleRowStyle">
+        <item name="android:cursorVisible">false</item>
+        <item name="android:textIsSelectable">false</item>
+    </style>
+
     <style name="ControlReadLabelStyle">
         <item name="android:textColor">@color/controlReadLabelColor</item>
         <item name="android:textSize">@dimen/controlReadLabelSize</item>
@@ -175,6 +180,24 @@
         <item name="android:focusable">true</item>
         <item name="android:clickable">true</item>
         <item name="android:focusableInTouchMode">true</item>
+    </style>
+
+    <style name="RequiredIndicatorStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_gravity">top</item>
+        <item name="android:paddingStart">@dimen/contentHorizontalSpacing</item>
+        <item name="android:paddingEnd">@dimen/contentHorizontalSpacing</item>
+        <item name="android:text">@string/indicator_required</item>
+        <item name="android:textColor">@color/watchOut</item>
+        <item name="android:textSize">@dimen/controlLabelSize</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="SoftRequiredIndicatorStyle" parent="@style/RequiredIndicatorStyle">
+        <item name="android:text">@string/indicator_soft_required</item>
+        <item name="android:textColor">@color/controlLabelColor</item>
     </style>
 
     <style name="DarkColorStyle">
@@ -290,8 +313,8 @@
         <item name="android:layout_marginBottom">@dimen/loginHeading2LayoutMarginBottom</item>
     </style>
 
-    <style name="LoginServiceText">
-        <item name="android:textColor">@color/text_70</item>
+    <style name="LoginSubHeadingText">
+        <item name="android:textColor">@color/gray_70</item>
         <item name="android:textSize">@dimen/loginServiceTextSize</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textAllCaps">true</item>
@@ -303,7 +326,12 @@
         <item name="android:fontFamily">sans-serif-black</item>
     </style>
 
-    <style name="LoginServiceSeparator">
+    <style name="LoginSignInTagLineText">
+        <item name="android:textColor">@color/gray_70</item>
+        <item name="android:layout_marginBottom">32dp</item>
+    </style>
+
+    <style name="LoginSubHeadingSeparator">
         <item name="android:layout_width">@dimen/serviceSeparatorWidth</item>
         <item name="android:layout_height">@dimen/serviceSeparatorHeight</item>
         <item name="android:layout_gravity">center_vertical</item>
@@ -312,9 +340,10 @@
         <item name="android:background">@drawable/service_separator</item>
     </style>
 
-    <style name="ChangeSettingStyle">
+    <style name="SubtleButtonStyle">
         <item name="android:gravity">center</item>
         <item name="android:height">@dimen/primaryButtonHeight</item>
+        <item name="android:background">@android:color/transparent</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
         <item name="android:textAlignment">center</item>

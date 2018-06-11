@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
-    <LinearLayout
-        android:orientation="vertical"
+
+    <Button
+        android:id="@+id/button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="@dimen/primaryButtonHeight"
+        android:minWidth="@dimen/minPrimaryButtonWidth"
+        android:gravity="center"
+        android:paddingLeft="@dimen/buttonHorizontalPadding"
+        android:paddingRight="@dimen/buttonHorizontalPadding"
+        android:drawablePadding="@dimen/contentHorizontalSpacing" />
 
-        <Button
-            android:id="@+id/btnPrimary"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/primaryButtonHeight"
-            android:minWidth="@dimen/minPrimaryButtonWidth"
-            android:gravity="center"
-            android:paddingLeft="@dimen/buttonHorizontalPadding"
-            android:paddingRight="@dimen/buttonHorizontalPadding"
-            android:drawablePadding="@dimen/contentHorizontalSpacing"
-            />
-
-    </LinearLayout>
 </merge>

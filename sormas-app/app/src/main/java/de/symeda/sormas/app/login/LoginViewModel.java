@@ -9,7 +9,6 @@ import android.databinding.BaseObservable;
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
-
 public class LoginViewModel extends BaseObservable {
 
     private String userName;
@@ -21,7 +20,6 @@ public class LoginViewModel extends BaseObservable {
 
     public void setUserName(String userName) {
         this.userName = userName;
-        //notifyPropertyChanged(BR.userName);
     }
 
     public String getPassword() {
@@ -30,6 +28,5 @@ public class LoginViewModel extends BaseObservable {
 
     public void setPassword(String password) {
         this.password = password;
-        //notifyPropertyChanged(BR.password);
     }
 }
