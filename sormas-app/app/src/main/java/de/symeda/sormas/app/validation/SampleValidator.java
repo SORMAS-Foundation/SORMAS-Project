@@ -10,8 +10,10 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.component.PropertyField;
-import de.symeda.sormas.app.databinding.SampleDataFragmentLayoutBinding;
+import de.symeda.sormas.app.component.EditTeboPropertyField;
+import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.databinding.FragmentSampleEditLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentSampleNewLayoutBinding;
 
 /**
  * Created by Mate Strysewske on 24.07.2017.
@@ -19,7 +21,7 @@ import de.symeda.sormas.app.databinding.SampleDataFragmentLayoutBinding;
 
 public final class SampleValidator {
 
-    public static boolean validateSampleData(Sample sample, SampleDataFragmentLayoutBinding binding) {
+    public static boolean validateSampleData(INotificationContext activityContext, Sample sample, FragmentSampleEditLayoutBinding binding) {
         Resources resources = DatabaseHelper.getContext().getResources();
 
         boolean success = true;
@@ -27,30 +29,31 @@ public final class SampleValidator {
         // Shipped
         if (sample.isShipped()) {
             if (sample.getShipmentDate() == null) {
-                binding.sampleShipmentDate.setError(resources.getString(R.string.validation_sample_shipment_date));
+                binding.dtpShipmentDate.enableErrorState(activityContext, R.string.validation_sample_material);
                 success = false;
             }
         }
 
         // Sample lab
         if (sample.getLab() == null) {
-            binding.sampleLab.setError(resources.getString(R.string.validation_sample_lab));
+            binding.spnLaboratory.enableErrorState(activityContext, R.string.validation_sample_material);
             success = false;
         } else {
             if (sample.getLab().getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID) && sample.getLabDetails().trim().isEmpty()) {
-                binding.sampleLabDetails.setError(resources.getString(R.string.validation_sample_lab_details));
+                // TODO #558
+                //binding.sampleLabDetails.setError(resources.getString(R.string.validation_sample_lab_details));
                 success = false;
             }
         }
 
         // Sample material & details
         if (sample.getSampleMaterial() == null) {
-            binding.sampleMaterial.setError(resources.getString(R.string.validation_sample_material));
+            binding.spnSampleMaterial.enableErrorState(activityContext, R.string.validation_sample_material);
             success = false;
         } else {
             if (sample.getSampleMaterial().equals(SampleMaterial.OTHER)) {
                 if (sample.getSampleMaterialText() == null || sample.getSampleMaterialText().trim().isEmpty()) {
-                    binding.sampleMaterialText.setError(resources.getString(R.string.validation_sample_material_details));
+                    binding.spnSampleMaterial.enableErrorState(activityContext, R.string.validation_sample_material_details);
                     success = false;
                 }
             }
@@ -58,28 +61,83 @@ public final class SampleValidator {
 
         // Sample date & time
         if (sample.getSampleDateTime() == null) {
-            binding.sampleDateTime.setError(resources.getString(R.string.validation_sample_date_time));
+            binding.dtpDateAndTimeOfSampling.enableErrorState(activityContext, R.string.validation_sample_date_time);
+            //binding.sampleDateTime.setError(resources.getString(R.string.validation_sample_date_time));
             success = false;
         }
 
         return success;
     }
 
-    public static void clearErrorsForSampleData(SampleDataFragmentLayoutBinding binding) {
-        for (PropertyField field : getSampleDataFields(binding)) {
-            field.clearError();
+    public static void clearErrorsForSampleData(FragmentSampleEditLayoutBinding binding) {
+        for (EditTeboPropertyField field : getSampleDataFields(binding)) {
+            //field.clearError();
         }
     }
 
-    public static void setRequiredHintsForSampleData(SampleDataFragmentLayoutBinding binding) {
-        for (PropertyField field : getSampleDataFields(binding)) {
-            field.setRequiredHint(true);
+    public static void setRequiredHintsForSampleData(FragmentSampleEditLayoutBinding binding) {
+        for (EditTeboPropertyField field : getSampleDataFields(binding)) {
+            field.setRequired(true);
         }
     }
 
-    private static final List<PropertyField<?>> getSampleDataFields(SampleDataFragmentLayoutBinding binding) {
-        return Arrays.asList(binding.sampleDateTime, binding.sampleMaterial, binding.sampleMaterialText,
-                binding.sampleShipmentDate, binding.sampleLab, binding.sampleLabDetails);
+    private static final List<? extends EditTeboPropertyField<?>> getSampleDataFields(FragmentSampleEditLayoutBinding binding) {
+        // TODO #558 sampleDetails
+        return Arrays.asList(binding.dtpDateAndTimeOfSampling, binding.spnSampleMaterial, binding.txtSampleMaterialText,
+                binding.dtpShipmentDate, binding.spnLaboratory);
+    }
+
+    public static boolean validateSampleData(INotificationContext activityContext, Sample sample, FragmentSampleNewLayoutBinding binding) {
+        Resources resources = DatabaseHelper.getContext().getResources();
+
+        boolean success = true;
+
+        // Shipped
+        if (sample.isShipped()) {
+            if (sample.getShipmentDate() == null) {
+                binding.dtpShipmentDate.enableErrorState(activityContext, R.string.validation_sample_material);
+                success = false;
+            }
+        }
+
+        // Sample lab
+        if (sample.getLab() == null) {
+            binding.spnLaboratory.enableErrorState(activityContext, R.string.validation_sample_material);
+            success = false;
+        }
+
+        // Sample material & details
+        if (sample.getSampleMaterial() == null) {
+            binding.spnSampleMaterial.enableErrorState(activityContext, R.string.validation_sample_material);
+            success = false;
+        } else {
+            if (sample.getSampleMaterial().equals(SampleMaterial.OTHER)) {
+                if (sample.getSampleMaterialText() == null || sample.getSampleMaterialText().trim().isEmpty()) {
+                    binding.spnSampleMaterial.enableErrorState(activityContext, R.string.validation_sample_material_details);
+                    success = false;
+                }
+            }
+        }
+
+        // Sample date & time
+        if (sample.getSampleDateTime() == null) {
+            binding.dtpDateAndTimeOfSampling.enableErrorState(activityContext, R.string.validation_sample_date_time);
+            //binding.sampleDateTime.setError(resources.getString(R.string.validation_sample_date_time));
+            success = false;
+        }
+
+        return success;
+    }
+
+    public static void clearErrorsForSampleData(FragmentSampleNewLayoutBinding binding) {
+        for (EditTeboPropertyField field : getSampleDataFields(binding)) {
+            //field.clearError();
+        }
+    }
+
+    private static final List<? extends EditTeboPropertyField<?>> getSampleDataFields(FragmentSampleNewLayoutBinding binding) {
+        return Arrays.asList(binding.dtpDateAndTimeOfSampling, binding.spnSampleMaterial, binding.txtSampleMaterialText,
+                binding.dtpShipmentDate, binding.spnLaboratory);
     }
 
 }

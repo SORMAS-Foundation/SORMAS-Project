@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <import type="de.symeda.sormas.app.report.viewmodel.ReportFilterOption" />
+
+        <variable
+            name="showNotificationCallback"
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.report.WeeklyReport"/>
+        <variable name="reportFilter" type="de.symeda.sormas.app.report.viewmodel.ReportFilterViewModel" />
+        <variable name="reportFilterOptionClass" type="Class" />
+
+        <variable
+            name="reportFilterChangeCallback"
+            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
+
+
+        <variable name="addMissingCaseCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+        <variable name="confirmReportCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/formListSectionBackground"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingBottom="@dimen/parentLayoutVerticalMargin"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                >
+
+                <de.symeda.sormas.app.component.TeboSwitch
+                    android:id="@+id/swhReportFilter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:paddingTop="@dimen/defaultControlVerticalPadding"
+                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                    app:background="@drawable/control_switch_background_border"
+                    app:borderSize="@dimen/defaultControlStrokeWidth"
+                    app:textColor="@color/control_switch_color_selector"
+                    app:required="true"
+                    app:showCaption="false"
+                    app:orientation="horizontal"
+                    app:slim="true"
+                    app:includeUnknown="@{false}"
+                    app:enumClass="@{reportFilterOptionClass}"
+                    app:defaultValue="@{ReportFilterOption.SPECIFY_WEEK}"
+                    app:value="@={reportFilter.option}"
+                    app:onCheckedChangeListener="@{reportFilterChangeCallback}"
+                    app:onShowInputErrorListener="@{showNotificationCallback}"
+                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+                    />
+
+                <LinearLayout
+                    android:id="@+id/specifyReportFilterFrame"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="@dimen/closelyRelatedControlMarginBottom"
+                    >
+
+                    <de.symeda.sormas.app.component.TeboSpinner
+                        android:id="@+id/spnYear"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:hint="@string/hint_report_year"
+                        app:labelCaption="@string/label_report_year"
+                        app:description="@string/desc_report_year"
+                        app:slim="true"
+                        app:required="false"
+                        app:spinnerMode="dialog"
+                        app:value="@={reportFilter.year}"
+                        />
+
+                    <de.symeda.sormas.app.component.TeboSpinner
+                        android:id="@+id/spnEpiWeek"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingLeft="@dimen/formLayoutGutterSize"
+                        app:hint="@string/hint_report_epi_week"
+                        app:labelCaption="@string/label_report_epi_week"
+                        app:description="@string/desc_report_epi_week"
+                        app:slim="true"
+                        app:required="false"
+                        app:spinnerMode="dialog"
+                        app:value="@={reportFilter.week}"
+                        />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="@dimen/closelyRelatedControlMarginBottom"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                >
+
+                <!---->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/closelyRelatedControlMarginBottom"
+                    >
+
+                    <de.symeda.sormas.app.component.TeboTextRead
+                        android:id="@+id/txtStartPeroid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        app:singleLine="false"
+                        app:maxLines="2"
+                        app:labelCaption="@string/label_report_start_period"
+                        app:description="@string/desc_report_start_period"
+                        app:value="@{reportFilter.startDate}"
+                        app:defaultValue='@{@string/invalid}'
+                        />
+
+                    <ImageView style="@style/FluidHorizontalDividerStyle"/>
+
+                    <de.symeda.sormas.app.component.TeboTextRead
+                        android:id="@+id/txtEndPeroid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        app:singleLine="false"
+                        app:maxLines="2"
+                        app:labelCaption="@string/label_report_end_period"
+                        app:description="@string/desc_report_end_period"
+                        app:value="@{reportFilter.endDate}"
+                        app:defaultValue='@{@string/invalid}'
+                        />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!--android:layout_marginBottom="@dimen/textControlMarginBottom"-->
+            <ImageView style="@style/FullHorizontalDividerStyle" />
+
+            <TextView
+                android:id="@+id/noWeeklyReportHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                android:text="@string/hint_no_weekly_report"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textAlignment="center"
+                style="@style/EmptyListHintStyle"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/noWeeklyReportData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                android:text="@string/hint_weekly_report_no_data"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textAlignment="center"
+                style="@style/EmptyListHintStyle"
+                android:visibility="gone"/>
+
+            <LinearLayout
+                android:id="@+id/reportContentFrame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+
+                <android.support.v4.widget.NestedScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recyclerViewForList"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/listActivityRowBackground"
+                        />
+
+
+                </android.support.v4.widget.NestedScrollView>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                >
+
+                <de.symeda.sormas.app.component.TeboButton
+                    android:id="@+id/btnAddMissingCase"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:visibility="gone"
+                    app:text="@string/action_add_missing_case"
+                    app:buttonType="line_primary"
+                    app:rounded="true"
+                    app:slim="false"
+                    app:onButtonOnClick="@{(view) -> addMissingCaseCallback.onClick(view, data)}"
+                    />
+
+                <de.symeda.sormas.app.component.TeboButton
+                    android:id="@+id/btnConfirmReport"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:visibility="gone"
+                    app:text="@string/action_confirm_report"
+                    app:buttonType="line_primary"
+                    app:rounded="true"
+                    app:slim="false"
+                    app:onButtonOnClick="@{(view) -> confirmReportCallback.onClick(view, data)}"
+                    />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>
+

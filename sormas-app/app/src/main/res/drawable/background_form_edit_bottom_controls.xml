@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--<item>
+        <shape android:shape="rectangle" >
+            <solid android:color="@color/formEditBottomBackground" />
+        </shape>
+    </item>-->
+    <item>
+        <layer-list>
+            <!-- SHADOW LAYER -->
+            <item android:left="-10dp" android:top="-10dp">
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/blue" />
+                    <!--<corners android:radius="5dp"/>-->
+                </shape>
+            </item>
+            <!--<item android:top="-1.5dp" android:left="-1.5dp" android:right="-1.5dp">-->
+            <item android:bottom="-2dp" android:left="-2dp" android:right="-2dp">
+                <!---->
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/formEditBottomBackground"/>
+                    <!--<solid android:color="@android:color/transparent" />-->
+                    <stroke
+                        android:width="2dp"
+                        android:color="@color/formEditBottomBorder" />
+                </shape>
+
+            </item>
+        </layer-list>
+    </item>
+    <!--<layer-list>
+    </layer-list>-->
+    <!--<item>
+        <shape android:shape="rectangle" >
+            <solid android:color="@color/formEditBottomBackground" />
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <solid android:color="@android:color/transparent" />
+            <stroke
+                android:width="2dp"
+                android:color="@color/formEditBottomBorder" />
+        </shape>
+
+
+
+    </item>-->
+</layer-list>
+<!--
+<item>
+<layer-list>
+    &lt;!&ndash; SHADOW LAYER &ndash;&gt;
+    <item android:left="-20dp" android:top="-20dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/blue" />
+            &lt;!&ndash;<corners android:radius="5dp"/>&ndash;&gt;
+        </shape>
+    </item>
+    <item android:bottom="-1.5dp" android:left="-1.5dp" android:right="-1.5dp">
+        &lt;!&ndash;&ndash;&gt;
+        <shape android:shape="rectangle">
+            <solid android:color="@color/pinButton"/>
+            &lt;!&ndash;<solid android:color="@android:color/transparent" />&ndash;&gt;
+            <stroke
+                android:width="1.5dp"
+                android:color="@color/formEditBottomBorder" />
+        </shape>
+
+    </item>
+</layer-list>
+</item>-->

@@ -3,9 +3,9 @@ package de.symeda.sormas.app.util;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
 /**
- * Created by Stefan Szczesny on 28.07.2016.
+ * Created by Orson on 03/11/2017.
  */
-public interface FormFragment {
 
+public interface FormFragment {
     public AbstractDomainObject getData();
 }

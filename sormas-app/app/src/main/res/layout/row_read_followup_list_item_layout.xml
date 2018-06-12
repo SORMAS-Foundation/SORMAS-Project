@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.visit.Visit"/>
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="fill"
+        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+        android:paddingRight="@dimen/rowListItemHorizontalMargin"
+        android:background="@drawable/selector_list_activity_row_background"
+        >
+
+        <!---->
+        <LinearLayout
+            android:id="@+id/rowListItem"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="fill"
+            android:layout_gravity="fill"
+            android:paddingTop="@dimen/rowListItemVerticalPadding"
+            android:paddingBottom="@dimen/rowListItemVerticalPadding"
+            android:background="@drawable/background_list_activity_row"
+            >
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="fill"
+                android:layout_gravity="fill">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtVisitStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/listActivityRowPrimaryTextSize"
+                        android:textColor="@color/listActivityRowPrimaryText"
+                        android:fontFamily="sans-serif-medium"
+                        android:scrollHorizontally="true"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        app:value="@{data.visitStatus}"
+                        app:defaultValue='@{@string/visit_status_unknown}'
+                        />
+
+                    <TextView
+                        android:id="@+id/txtVisitRemarks"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="top"
+                        android:layout_marginBottom="@dimen/listActivityRowSecondaryTextMarginBottom"
+                        android:textSize="@dimen/listActivityRowSecondaryTextSize"
+                        android:textColor="@color/listActivityRowSecondaryText"
+                        app:value="@{data.visitRemarks}"
+                        app:defaultValue='@{@string/visit_remarks_unknown}'
+                        />
+
+
+
+                </LinearLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="24dp"
+                    >
+
+                    <ImageView
+                        android:id="@+id/imgSyncIcon"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:tint="@color/syncIconListActivityRowItem"
+                        android:scaleType="fitEnd"
+                        android:layout_alignParentTop="false"
+                        android:layout_alignParentBottom="false"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentRight="true"
+                        />
+
+                </RelativeLayout>
+
+
+                <ImageView
+                    android:id="@+id/imgGoToReadView"
+                    android:layout_width="@dimen/listGoToIconWidth"
+                    android:layout_height="@dimen/listGoToIconHeight"
+                    android:layout_gravity="center_vertical"
+                    android:scaleType="fitEnd"
+                    android:src="@drawable/ic_go_to_read_view_24dp"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/listItemBottomConentMarginTop"
+                android:layout_marginRight="8dp"
+                >
+
+                <TextView
+                    android:id="@+id/txtVisitDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom|left"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:fontFamily="sans-serif-medium"
+                    app:dateValue="@{data.visitDateTime}"
+                    app:defaultValue='@{@string/visit_date_unknown}'
+                    />
+
+                <TextView
+                    android:id="@+id/txtVisitTime"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="bottom|right"
+                    android:textSize="@dimen/listActivityRowDateTextSize"
+                    android:textColor="@color/listActivityRowDateText"
+                    android:fontFamily="sans-serif"
+                    app:timeAgoValue="@{data.visitDateTime}"
+                    app:defaultValue='@{@string/visit_time_unknown}'
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</layout>

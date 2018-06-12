@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.settings.SettingsViewModel"/>
+    </data>
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/windowBackground"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="@dimen/pinLayoutMarginTop"
+            android:paddingLeft="@dimen/layoutRootViewHorizontalPadding"
+            android:paddingRight="@dimen/layoutRootViewHorizontalPadding">
+
+            <TextView
+                android:id="@+id/pin_headline_createOrEnter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/pinHeading1MarginBottom"
+                android:textSize="@dimen/headingEnterPinTextSize"
+                android:text="@string/headline_create_pin"
+                android:textColor="@color/pinHeading1"
+                android:fontFamily="sans-serif-black"/>
+
+            <TextView
+                android:id="@+id/pin_hint_createOrEnter"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/pinSubHeadingHeight"
+                android:layout_marginBottom="@dimen/headingSubEnterPinMarginBottom"
+                android:textSize="@dimen/headingSubEnterPinTextSize"
+                android:textColor="@color/normalText"
+                android:ellipsize="start"
+                android:gravity="center"
+                android:text="@string/hint_create_pin" />
+
+            <LinearLayout
+                android:id="@+id/pin_fields_layout"
+                android:orientation="horizontal"
+                android:layout_marginBottom="@dimen/enterPinInputDisplayMarginBottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_pin_mask_frame">
+
+                <EditText
+                    android:id="@+id/pin_char1"
+                    android:layout_width="@dimen/enterPinInputDisplayWidth"
+                    android:layout_height="@dimen/enterPinInputDisplayHeight"
+                    android:background="@drawable/background_pin_mask_first"
+                    style="@style/EnterPinInputDisplayStyle" />
+
+                <EditText
+                    android:id="@+id/pin_char2"
+                    android:layout_width="@dimen/enterPinInputDisplayWidth"
+                    android:layout_height="@dimen/enterPinInputDisplayHeight"
+                    android:background="@drawable/background_pin_mask_others"
+                    style="@style/EnterPinInputDisplayStyle"/>
+
+                <EditText
+                    android:id="@+id/pin_char3"
+                    android:layout_width="@dimen/enterPinInputDisplayWidth"
+                    android:layout_height="@dimen/enterPinInputDisplayHeight"
+                    android:background="@drawable/background_pin_mask_others"
+                    style="@style/EnterPinInputDisplayStyle"/>
+
+                <EditText
+                    android:id="@+id/pin_char4"
+                    android:layout_width="@dimen/enterPinInputDisplayWidth"
+                    android:layout_height="@dimen/enterPinInputDisplayHeight"
+                    android:background="@drawable/background_pin_mask_last"
+                    style="@style/EnterPinInputDisplayStyle"/>
+
+            </LinearLayout>
+
+
+            <GridLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:columnCount="3">
+
+                <Button
+                    android:id="@+id/buttonNo1"
+                    style="@style/PinButtonStyle"
+                    android:onClick="enterNumber"
+                    android:text="1"/>
+
+                <Button
+                    android:id="@+id/buttonNo2"
+                    style="@style/PinButtonStyle"
+                    android:onClick="enterNumber"
+                    android:text="2"/>
+
+                <Button
+                    android:id="@+id/buttonNo3"
+                    style="@style/PinButtonStyle"
+                    android:onClick="enterNumber"
+                    android:text="3"/>
+
+                <Button
+                    android:id="@+id/buttonNo4"
+                    style="@style/PinButtonStyle"
+                    android:onClick="enterNumber"
+                    android:text="4"/>
+
+                <Button
+                    android:id="@+id/buttonNo5"
+                    style="@style/PinButtonStyle"
+                    android:onClick="enterNumber"
+                    android:text="5"/>
+
+                <Button
+                    android:id="@+id/buttonNo6"
+                    style="@style/PinButtonStyle"
+                    android:onClick="enterNumber"
+                    android:text="6"/>
+
+                <Button
+                    android:id="@+id/buttonNo7"
+                    style="@style/PinButtonStyle"
+                    android:onClick="enterNumber"
+                    android:text="7"/>
+
+                <Button
+                    android:id="@+id/buttonNo8"
+                    style="@style/PinButtonStyle"
+                    android:onClick="enterNumber"
+                    android:text="8"/>
+
+                <Button
+                    android:id="@+id/buttonNo9"
+                    style="@style/PinButtonStyle"
+                    android:onClick="enterNumber"
+                    android:text="9"/>
+
+                <ImageButton
+                    android:id="@+id/buttonBack"
+                    android:layout_width="@dimen/pinButtonWidth"
+                    android:layout_height="@dimen/pinButtonHeight"
+                    android:textColor="@color/selector_color_text_pin_button"
+                    android:background="@drawable/selector_pin_button"
+                    android:onClick="deleteNumber"
+                    android:src="@drawable/ic_backspace_red_36dp"/>
+
+                <Button
+                    android:id="@+id/buttonNo0"
+                    style="@style/PinButtonStyle"
+                    android:onClick="enterNumber"
+                    android:text="0"/>
+
+                <ImageButton
+                    android:id="@+id/action_submit"
+                    android:layout_width="@dimen/pinButtonWidth"
+                    android:layout_height="@dimen/pinButtonHeight"
+                    android:textColor="@color/selector_color_text_pin_button"
+                    android:background="@drawable/selector_pin_button"
+                    android:onClick="submit"
+                    android:src="@drawable/ic_check_blue_36dp"/>
+            </GridLayout>
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_marginTop="48dp"
+                android:layout_gravity="bottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/action_backToSettings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_back_to_settings"
+                    style="@style/LinkButtonStyle"
+                    android:textAlignment="viewStart"
+                    android:onClick="backToSettings" />
+
+
+                <TextView
+                    android:id="@+id/action_forgotPIN"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_forgot_PIN"
+                    style="@style/LinkButtonStyle"
+                    android:textAlignment="viewEnd"
+                    android:onClick="forgotPIN"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!--<ViewStub android:id="@+id/vsApplicationNotificationView"
+            android:inflatedId="@+id/notificationFrame"
+            android:layout="@layout/activity_root_notification_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />-->
+
+        <include
+            android:id="@+id/notificationFrame"
+            layout="@layout/activity_root_notification_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <!--app:showNotificationCallback="@{showNotificationCallback}"
+        app:hideNotificationCallback="@{hideNotificationCallback}"-->
+
+        <!--<include
+            android:id="@+id/applicationNotificationView"
+            layout="@layout/activity_root_notification_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />-->
+
+        <!--<LinearLayout
+            android:id="@+id/notificationFrame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+
+            android:layout_gravity="top"
+            android:orientation="vertical"
+            android:elevation="8dp"
+            android:background="@color/watchOut"
+            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+            android:paddingRight="@dimen/rowListItemHorizontalMargin"
+            android:paddingTop="@dimen/rowListItemHorizontalMargin"
+            android:paddingBottom="@dimen/rowListItemHorizontalMargin"
+            android:visibility="gone"
+            android:onClick="@{(v) -> hideNotificationCallback.onInputErrorHiding(v, false) }"
+            >
+            <TextView
+                android:id="@+id/tvNotificationMessage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@color/whiteOpaque"
+                android:text=""/>
+
+        </LinearLayout>-->
+
+    </FrameLayout>
+
+</layout>

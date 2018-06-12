@@ -1,7 +1,7 @@
 package de.symeda.sormas.app.util;
 
 /**
- * Created by Mate Strysewske on 10.05.2017.
+ * Created by Orson on 08/11/2017.
  */
 
 public interface SyncCallback {

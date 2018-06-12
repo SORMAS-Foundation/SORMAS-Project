@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menus xmlns:android="http://schemas.android.com/apk/res/android" name="data_landing_page_alert_menu" title="Filter by Alert Status">
+    <menu>
+        <key>0</key>
+        <title>Possible Events</title>
+        <description>Possible Events</description>
+        <icon def-viewType="drawable">ic_lp_possible_alerts_192dp</icon>
+    </menu>
+    <menu>
+        <key>1</key>
+        <title>Confirmed Events</title>
+        <description>Confirmed Events</description>
+        <icon def-viewType="drawable">ic_lp_confirmed_alerts_192dp</icon>
+    </menu>
+    <menu>
+        <key>2</key>
+        <title>Not an Event</title>
+        <description>Not an Event</description>
+        <icon def-viewType="drawable">ic_lp_not_an_alert_192dp</icon>
+    </menu>
+</menus>

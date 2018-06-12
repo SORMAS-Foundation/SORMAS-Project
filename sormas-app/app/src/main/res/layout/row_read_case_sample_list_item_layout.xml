@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.sample.Sample"/>
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="fill"
+        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+        android:paddingRight="@dimen/rowListItemHorizontalMargin"
+        android:background="@drawable/selector_list_activity_row_background"
+        >
+
+        <!---->
+        <LinearLayout
+            android:id="@+id/rowListItem"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="fill"
+            android:layout_gravity="fill"
+            android:paddingTop="@dimen/rowListItemVerticalPadding"
+            android:paddingBottom="@dimen/rowListItemVerticalPadding"
+            android:background="@drawable/background_list_activity_row"
+            >
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:scrollHorizontally="true"
+                android:maxLines="1"
+                android:ellipsize="end">
+
+                <TextView
+                    android:id="@+id/txtSampleName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    android:textColor="@color/listActivityRowTertiaryText"
+                    android:fontFamily="sans-serif-medium"
+                    app:value="@{data.sampleMaterial}"
+                    app:defaultValue='@{@string/sample_material_unknown}'
+                    />
+
+                <TextView
+                    android:id="@+id/txtSampleNameDateSeparator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="-"/>
+
+                <TextView
+                    android:id="@+id/txtSamplingDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/listActivityRowDateTextSize"
+                    android:textColor="@color/listActivityRowDateText"
+                    android:fontFamily="sans-serif"
+                    app:timeAgoValue="@{data.sampleDateTime}"
+                    app:defaultValue='@{@string/sampling_date_unknown}'
+                    />
+
+                <ImageView
+                    android:layout_width="@dimen/separatorThickness"
+                    android:layout_height="match_parent"
+                    android:background="@color/listActivityRowTopCaptionSeparator"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp" />
+
+                <TextView
+                    android:id="@+id/txtDisease"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:fontFamily="sans-serif-medium"
+                    app:diseaseValue="@{data}"
+                    app:defaultValue='@{@string/sample_disease_unknown}' />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="fill"
+                android:layout_gravity="fill">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtCasePerson"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/listActivityRowPrimaryTextSize"
+                        android:textColor="@color/listActivityRowPrimaryText"
+                        android:fontFamily="sans-serif-medium"
+                        android:scrollHorizontally="true"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        app:personValue="@{data}"
+                        app:defaultValue='@{@string/person_unknown}'
+                        />
+
+                    <TextView
+                        android:id="@+id/txtLaboratoryName"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="top"
+                        android:layout_marginBottom="@dimen/listActivityRowSecondaryTextMarginBottom"
+                        android:textSize="@dimen/listActivityRowSecondaryTextSize"
+                        android:textColor="@color/listActivityRowSecondaryText"
+                        app:facilityValue="@{data.lab}"
+                        app:defaultValue='@{@string/sample_lab_unknown}'
+                        />
+
+                    <TextView
+                        android:id="@+id/txtTestResult"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                        android:textColor="@color/listActivityRowLeastText"
+                        android:fontFamily="sans-serif-medium"
+                        app:testResultValue="@{data}"
+                        app:defaultValue='@{@string/sample_result_unknown}'
+                        />
+
+                </LinearLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="24dp"
+                    >
+
+                    <ImageView
+                        android:id="@+id/imgSyncIcon"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:tint="@color/syncIconListActivityRowItem"
+                        android:scaleType="fitEnd"
+                        android:layout_alignParentTop="false"
+                        android:layout_alignParentBottom="false"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentRight="true"
+                        />
+
+                    <!--<TextView
+                        android:id="@+id/txtSamplingDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textSize="@dimen/listActivityRowDateTextSize"
+                        android:textColor="@color/listActivityRowDateText"
+                        android:fontFamily="sans-serif"
+                        android:textAlignment="viewEnd"
+                        android:layout_alignParentTop="false"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentRight="true"
+                        />-->
+
+                </RelativeLayout>
+
+
+                <ImageView
+                    android:id="@+id/imgGoToReadView"
+                    android:layout_width="@dimen/listGoToIconWidth"
+                    android:layout_height="@dimen/listGoToIconHeight"
+                    android:layout_gravity="center_vertical"
+                    android:scaleType="fitEnd"
+                    android:src="@drawable/ic_go_to_read_view_24dp"
+                    />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </LinearLayout>
+</layout>

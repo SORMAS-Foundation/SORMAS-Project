@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/menu_item_dashboard"
+            android:title="@string/main_menu_dashboard"
+            android:icon="@drawable/ic_drawer_user_dashboard_blue_36dp"
+            android:orderInCategory="1"
+            />
+
+        <item
+            android:id="@+id/menu_item_tasks"
+            android:title="@string/main_menu_tasks"
+            android:icon="@drawable/ic_drawer_user_task_blue_36dp"
+            android:orderInCategory="2"
+            app:actionLayout="@layout/drawer_main_menu_notification_counter"
+            />
+
+        <item
+            android:id="@+id/menu_item_cases"
+            android:title="@string/main_menu_cases"
+            android:icon="@drawable/ic_drawer_case_blue_36dp"
+            android:orderInCategory="3"
+            app:actionLayout="@layout/drawer_main_menu_notification_counter"
+            />
+
+        <item
+            android:id="@+id/menu_item_contacts"
+            android:title="@string/main_menu_contacts"
+            android:icon="@drawable/ic_drawer_contact_blue_36dp"
+            android:orderInCategory="4"
+            app:actionLayout="@layout/drawer_main_menu_notification_counter"
+            />
+
+        <item
+            android:id="@+id/menu_item_events"
+            android:title="@string/main_menu_events"
+            android:icon="@drawable/ic_alert_36dp"
+            android:orderInCategory="5"
+            app:actionLayout="@layout/drawer_main_menu_notification_counter"
+            />
+
+        <item
+            android:id="@+id/menu_item_samples"
+            android:title="@string/main_menu_samples"
+            android:textSize="16sp"
+            android:icon="@drawable/ic_drawer_sample_blue_36dp"
+            android:orderInCategory="6"
+            app:actionLayout="@layout/drawer_main_menu_notification_counter"
+            />
+
+        <item
+            android:id="@+id/menu_item_reports"
+            android:title="@string/main_menu_reports"
+            android:icon="@drawable/ic_drawer_assessment_blue_36dp"
+            android:orderInCategory="7"
+            />
+
+    </group>
+</menu>

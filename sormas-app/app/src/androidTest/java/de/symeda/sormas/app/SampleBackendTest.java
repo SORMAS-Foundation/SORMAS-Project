@@ -18,7 +18,6 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
-import de.symeda.sormas.app.sample.SamplesActivity;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;

@@ -1,7 +1,7 @@
 package de.symeda.sormas.app.util;
 
 /**
- * Created by Martin Wahnschaffe on 29.11.2016.
+ * Created by Orson on 08/11/2017.
  */
 
 public interface Callback {

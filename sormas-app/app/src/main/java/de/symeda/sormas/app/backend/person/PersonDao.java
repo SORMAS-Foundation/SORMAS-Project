@@ -16,11 +16,7 @@ import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.common.DaoException;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.location.Location;
-import de.symeda.sormas.app.util.DataUtils;
 
 /**
  * Created by Martin Wahnschaffe on 22.07.2016.

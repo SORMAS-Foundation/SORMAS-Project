@@ -17,7 +17,14 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenLocal()
         jcenter()
+        maven {
+            url "https://maven.repository.redhat.com/ga/"
+        }
+        flatDir {
+            dirs 'libs'
+        }
     }
 }
 

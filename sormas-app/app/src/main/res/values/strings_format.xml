@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <string name="dummy_format">%1$s</string>
+
+    <string name="date_range_format">%1$s - %2$s</string>
+    <string name="fullname_format">%1$s - %2$s</string>
+    <string name="person_name_format">%1$s %2$s</string>
+    <string name="enum_desc_format">%1$s - %2$s</string>
+    <string name="title_detail_format"><b>%1$s:</b> %2$s</string>
+    <string name="title_detail_and_append_format"><b>%1$s:</b> %2$s %3$s</string>
+
+    <string name="two_text_hypenated_format">%1$s - %2$s</string>
+    <string name="two_words_spaced_format">%1$s %2$s</string>
+    <string name="age_with_dob_format">%1$s %2$s (%3$s)</string>
+    <string name="age_with_dob_and_prepend_format"><b>%1$s:</b> %2$s %3$s (%4$s)</string>
+    <string name="date_format">%1$s/%2$s/%3$s</string>
+    <string name="due_timeago_format">due %1$s</string>
+    <string name="text_with_bracket_desc_format">%1$s (%2$s)</string>
+    <string name="question_pregnant_format">Pregnancy? %1$s</string>
+
+    <string name="number_of_cases_format">Cases - %1$s</string>
+</resources>

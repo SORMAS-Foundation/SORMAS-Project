@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -125,6 +126,7 @@ public final class RetroProvider {
                     try {
                         return compatibilityCall.execute();
                     } catch (IOException e) {
+                        Log.w(RetroProvider.class.getSimpleName(), e.getMessage());
                         // wrap the exception message inside a response object
                         return Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
                     }

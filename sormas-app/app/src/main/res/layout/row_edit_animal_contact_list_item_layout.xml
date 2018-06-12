@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
+        <variable
+            name="showNotificationCallback"
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
+        <variable name="data" type="de.symeda.sormas.app.epid.AnimalContact"/>
+        <variable name="yesNoUnknownClass" type="Class" />
+
+        <variable
+            name="checkedCallback"
+            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selector_list_activity_row_background"
+        >
+
+        <LinearLayout
+            android:id="@+id/rowListItem"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/symptomRowListItemVerticalPadding"
+            android:paddingBottom="@dimen/symptomRowListItemVerticalPadding"
+            android:background="@drawable/background_list_activity_row_no_indicator"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                >
+                <TextView
+                    android:id="@+id/txtAnimalContactname"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@{data.name}"
+                    android:textSize="@dimen/listActivityRowSecondaryTextSize"
+                    android:textColor="@color/listActivityRowPrimaryText"
+                    android:fontFamily="sans-serif"
+                    />
+
+                <de.symeda.sormas.app.component.TeboSwitch
+                    android:id="@+id/swhAnimalContactState"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    app:paddingTop="@dimen/defaultControlVerticalPadding"
+                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
+                    app:background="@drawable/control_switch_background_border"
+                    app:borderSize="@dimen/defaultControlStrokeWidth"
+                    app:textColor="@color/control_switch_color_selector"
+                    app:showCaption="false"
+                    app:required="true"
+                    app:orientation="horizontal"
+                    app:slim="true"
+                    app:includeUnknown="@{false}"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
+                    app:abbrevUnknown="@{true}"
+                    app:value="@={data.state}"
+                    app:onCheckedChangeListener="@{checkedCallback}"
+                    />
+            </LinearLayout>
+
+            <include android:id="@+id/animalContactDetailsInclude"
+                layout="@layout/blank_layout"
+                />
+
+        </LinearLayout>
+    </LinearLayout>
+</layout>

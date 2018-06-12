@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/base_layout">
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- The main content view -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/applicationToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/sormasToolBarHeight"
+                style="@style/ToolBarStyle">
+            </android.support.v7.widget.Toolbar>
+
+            <include
+                android:id="@+id/applicationTitleBar"
+                layout="@layout/activity_root_title_bar_layout"
+                android:visibility="gone" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    >
+
+                    <!--<ProgressBar
+                        android:id="@+id/preloader"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:progressDrawable="@drawable/background_progress_bar"
+                        android:layout_gravity="center_horizontal"
+                        android:indeterminateOnly="true"
+                        android:visibility="gone"
+                        app:layout_widthPercent="30%"
+                        app:layou
+                        android:minHeight="32dp"
+                        android:maxHeight="32dp"
+                        android:progressBackgroundTint="@color/red"
+                        android:progressTint="@color/blue"
+                        />-->
+
+                    <android.support.percent.PercentFrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/activityBackground">
+
+                        <FrameLayout
+                            android:id="@+id/fragment_frame"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@color/activityBackground"
+                            />
+                        <!--android:progressDrawable="@drawable/background_progress_bar"-->
+                        <!--<ProgressBar
+                            android:id="@+id/preloader"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_gravity="center_horizontal"
+                            android:indeterminateOnly="true"
+                            android:visibility="gone"
+                            app:layout_widthPercent="@dimen/preloaderWidthPercent"
+                            app:layout_heightPercent="@dimen/preloaderHeightPercent"
+                            android:scaleY="@dimen/preloaderScaleY"
+                            />-->
+                        <!--@dimen/preloaderHeightPercent
+                            android:scaleY="@dimen/preloaderScaleY"
+                            android:scaleY="@dimen/preloaderScaleY"
+                            android:scaleX="@dimen/preloaderScaleY"
+                        -->
+                        <ProgressBar
+                            android:id="@+id/preloader"
+                            android:layout_gravity="center"
+                            android:indeterminateOnly="true"
+                            android:visibility="gone"
+                            app:layout_widthPercent="@dimen/preloaderWidthPercent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="@dimen/preloaderMinHeight"
+                            />
+                    </android.support.percent.PercentFrameLayout>
+
+
+                    <!--<android.support.design.widget.FloatingActionButton
+                        android:id="@+id/fab"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|end"
+                        android:layout_margin="@dimen/fab_margin"
+                        android:scaleType="center"
+                        android:visibility="gone"
+                        app:backgroundTint="@color/fab"
+                        app:elevation="5dp"
+                        />-->
+
+
+                </FrameLayout>
+
+                <include
+                    android:id="@+id/notificationFrame"
+                    layout="@layout/activity_root_notification_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
+
+                <!--app:showNotificationCallback="@{showNotificationCallback}"
+                app:hideNotificationCallback="@{hideNotificationCallback}"-->
+
+                <de.symeda.sormas.app.component.menu.LandingPageMenuControl
+                    android:id="@+id/landingPageMenuControl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:backgroundTint="@android:color/transparent"
+                    android:background="@android:color/transparent"
+                    app:collapsible="true"
+                    app:visibility="false"
+                    app:cellLayout="@layout/control_page_menu_nav_item_cell_layout"
+                    app:counterBackgroundColor="@color/landingPageMenuCounterBackground"
+                    app:counterBackgroundActiveColor="@color/landingPageMenuCounterBackgroundActive"
+                    app:iconColor="@color/landingPageMenuIconColor"
+                    app:iconActiveColor="@color/landingPageMenuIconActiveColor"
+                    app:positionColor="@color/pageMenuPositionColor"
+                    app:positionActiveColor="@color/pageMenuPositionActiveColor"
+                    app:titleColor="@color/pageMenuTitleColor"
+                    app:titleActiveColor="@color/pageMenuTitleActiveColor"
+                    />
+
+            </FrameLayout>
+
+            <!--<FrameLayout
+                android:id="@+id/fabFrame1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+                &lt;!&ndash;android:visibility="gone"&ndash;&gt;
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fab1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="@dimen/fab_margin"
+                    android:scaleType="center"
+                    app:backgroundTint="@color/fab"
+                    app:elevation="5dp"
+                    />
+
+            </FrameLayout>-->
+        </LinearLayout>
+
+        <android.support.design.widget.NavigationView
+            android:id="@+id/main_navigation_view"
+            android:layout_width="@dimen/drawerWidth"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:choiceMode="singleChoice"
+            android:background="@color/drawerBackground"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"
+            android:theme="@style/NavigationDrawerStyle"
+            app:itemBackground="@drawable/selector_drawer_main_menu"
+            app:headerLayout="@layout/drawer_main_menu_header"
+            app:itemTextColor="@color/drawerText"
+            app:itemIconTint="@color/drawerIcon"
+            app:menu="@menu/drawer_main_menu"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:clickable="true"
+                android:background="@drawable/background_drawer_bottom_control"
+                android:paddingTop="1dp"
+                android:paddingBottom="1dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnSettings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_app_settings_36dp"
+                    android:drawablePadding="12dp"
+                    android:background="@drawable/selector_drawer_bottom_button"
+                    android:textColor="@color/drawerText"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="36dp"
+                    android:text="@string/main_menu_settings"
+                    android:textAllCaps="false"
+                    android:onClick="goToSettings"
+                    >
+                </Button>
+
+            </LinearLayout>
+
+        </android.support.design.widget.NavigationView>
+
+    </android.support.v4.widget.DrawerLayout>
+
+</LinearLayout>

@@ -1,0 +1,1267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <string name="label_yes">Yes</string>
+    <string name="label_unknown">Unknown</string>
+    <string name="label_no">No</string>
+
+
+    <string name="desc_yes">Yes</string>
+    <string name="desc_unknown">Unknown</string>
+    <string name="desc_no">No</string>
+
+
+    <string name="heading_location">Location</string>
+    <string name="label_location_address">Address, Landmarks</string>
+    <string name="label_location_contact_person">Community Contact Person</string>
+    <string name="label_location_state">State</string>
+    <string name="label_location_lga">LGA</string>
+    <string name="label_location_ward">Ward</string>
+    <string name="label_location_city">City</string>
+
+    <string name="desc_location_address">Address, Landmarks</string>
+    <string name="desc_location_contact_person">Community Contact Person</string>
+    <string name="desc_location_state">State</string>
+    <string name="desc_location_lga">LGA</string>
+    <string name="desc_location_ward">Ward</string>
+    <string name="desc_location_city">City</string>
+
+
+    <string name="hint_location_address">Address, Landmarks</string>
+    <string name="hint_location_contact_person">Community Contact Person</string>
+    <string name="hint_location_state">State</string>
+    <string name="hint_location_lga">LGA</string>
+    <string name="hint_location_ward">Ward</string>
+    <string name="hint_location_city">City</string>
+
+
+    <!-- Sample -->
+    <!-- ........................................................................ -->
+    <!-- Label -->
+    <string name="label_sample_disease">Disease</string>
+    <string name="label_sample_code">Sample Code</string>
+    <string name="label_sample_material">Sample Material</string>
+    <string name="label_sample_other_material">Specify Other Material</string>
+    <string name="label_sample_date_time_sampling">Date &amp; Time of Sampling</string>
+    <string name="label_sample_test_type">Suggested Test Type</string>
+    <string name="label_sample_source">Sample Source</string>
+    <string name="label_sample_laboratory">Laboratory</string>
+    <string name="label_sample_laboratory_details">Laboratory name &amp; description</string>
+    <string name="label_sample_shipping_status">Shipping Status</string>
+    <string name="label_sample_received_status">Received Status</string>
+    <string name="label_sample_shipping_date">Shipment Date</string>
+    <string name="label_sample_shipment_details">Shipment Details</string>
+    <string name="label_sample_comment">Comment</string>
+    <string name="label_sample_referred_to">Referred To</string>
+    <string name="label_sample_lab_id">Lab Sample ID</string>
+    <string name="label_sample_received_date">Recieved Date</string>
+    <string name="label_sample_specimen_condition">Specimen Condition</string>
+    <string name="label_sample_test_possible_reason">Reason</string>
+
+    <!-- Description -->
+    <string name="desc_sample_disease">Disease Name</string>
+    <string name="desc_sample_code">Sample Code</string>
+    <string name="desc_sample_material">Sample Material</string>
+    <string name="desc_sample_other_material">Specify Other Material</string>
+    <string name="desc_sample_date_time_sampling">Date &amp; Time of Sampling</string>
+    <string name="desc_sample_test_type">Suggested Test Type</string>
+    <string name="desc_sample_source">Sample Source</string>
+    <string name="desc_sample_laboratory">Laboratory Name</string>
+    <string name="desc_sample_laboratory_details">Laboratory name &amp; description</string>
+    <string name="desc_sample_shipping_status">Shipping Status</string>
+    <string name="desc_sample_received_status">Received Status</string>
+    <string name="desc_sample_shipping_date">Shipment Date</string>
+    <string name="desc_sample_shipment_details">Shipment Details</string>
+    <string name="desc_sample_comment">Result Comment</string>
+    <string name="desc_sample_referred_to">Referred To</string>
+    <string name="desc_sample_lab_id">Lab Sample ID</string>
+    <string name="desc_sample_received_date">Recieved Date</string>
+    <string name="desc_sample_specimen_condition">Specimen Condition</string>
+    <string name="desc_sample_test_possible_reason">Reason</string>
+
+    <!-- Hint -->
+    <string name="hint_sample_disease">Disease</string>
+    <string name="hint_sample_code">Sample Code</string>
+    <string name="hint_sample_material">Sample Material</string>
+    <string name="hint_sample_other_material">Specify Other Material</string>
+    <string name="hint_sample_date_time_sampling">Date &amp; Time of Sampling</string>
+    <string name="hint_sample_test_type">Suggested Test Type</string>
+    <string name="hint_sample_source">Sample Source</string>
+    <string name="hint_sample_laboratory">Laboratory</string>
+    <string name="hint_sample_laboratory_details">Laboratory name &amp; description</string>
+    <string name="hint_sample_shipping_status">Shipping Status</string>
+    <string name="hint_sample_received_status">Received Status</string>
+    <string name="hint_sample_shipping_date">Shipment Date</string>
+    <string name="hint_sample_shipment_details">Shipment Details</string>
+    <string name="hint_sample_comment">Comment</string>
+    <string name="hint_sample_referred_to">Referred To</string>
+    <string name="hint_sample_lab_id">Lab Sample ID</string>
+    <string name="hint_sample_received_date">Recieved Date</string>
+    <string name="hint_sample_specimen_condition">Specimen Condition</string>
+    <string name="hint_sample_test_possible_reason">Reason</string>
+
+
+    <string name="no_referral">No Referral</string>
+
+    <!-- Sub Headings -->
+    <string name="heading_sub_sample_received">Received</string>
+    <string name="heading_sub_recent_tests">Recent Tests</string>
+    <!-- ........................................................................ -->
+
+
+
+
+
+    <!-- Event -->
+    <!-- ........................................................................ -->
+    <!-- Label -->
+    <string name="label_alert_id">Alert ID</string>
+    <string name="label_alert_type">Alert Type</string>
+    <string name="label_alert_date">Date of Alert</string>
+    <string name="label_alert_surveillance_officer">Surveillance Officer</string>
+    <string name="label_alert_description">Alert Description</string>
+    <string name="label_alert_report_date">Report Date</string>
+    <string name="label_alert_reporting_user">Reporting User</string>
+    <string name="label_alert_type_of_place">Type of Place</string>
+    <string name="label_alert_other_type_of_place">Specify Other Event Place</string>
+    <string name="label_alert_disease">Disease</string>
+    <string name="label_alert_other_disease">Disease Detail</string>
+    <string name="label_alert_location">Alert Location</string>
+    <string name="label_alert_source_firstname">First Name</string>
+    <string name="label_alert_source_lastname">Last Name</string>
+    <string name="label_alert_source_tel">Telephone Number</string>
+    <string name="label_alert_source_email">Email Address</string>
+
+    <!-- Description -->
+    <string name="desc_alert_id">Alert ID</string>
+    <string name="desc_alert_type">Alert Type</string>
+    <string name="desc_alert_date">Date of Alert</string>
+    <string name="desc_alert_surveillance_officer">Surveillance Officer</string>
+    <string name="desc_alert_description">Alert Description</string>
+    <string name="desc_alert_report_date">Report Date</string>
+    <string name="desc_alert_reporting_user">Reporting User</string>
+    <string name="desc_alert_type_of_place">Type of Place</string>
+    <string name="desc_alert_other_type_of_place">Specify Other Event Place</string>
+    <string name="desc_alert_disease">Disease</string>
+    <string name="desc_alert_other_disease">Disease Detail</string>
+    <string name="desc_alert_location">Alert Location</string>
+    <string name="desc_alert_source_firstname">First Name</string>
+    <string name="desc_alert_source_lastname">Last Name</string>
+    <string name="desc_alert_source_tel">Telephone Number</string>
+    <string name="desc_alert_source_email">Email Address</string>
+
+    <!-- Hint -->
+    <string name="hint_alert_id">Alert ID</string>
+    <string name="hint_alert_type">Alert Type</string>
+    <string name="hint_alert_date">Date of Alert</string>
+    <string name="hint_alert_surveillance_officer">Surveillance Officer</string>
+    <string name="hint_alert_description">Alert Description</string>
+    <string name="hint_alert_report_date">Report Date</string>
+    <string name="hint_alert_reporting_user">Reporting User</string>
+    <string name="hint_alert_type_of_place">Type of Place</string>
+    <string name="hint_alert_other_type_of_place">Specify Other Event Place</string>
+    <string name="hint_alert_disease">Disease</string>
+    <string name="hint_alert_other_disease">Disease Detail</string>
+    <string name="hint_alert_location">Alert Location</string>
+    <string name="hint_alert_source_firstname">First Name</string>
+    <string name="hint_alert_source_lastname">Last Name</string>
+    <string name="hint_alert_source_tel">Telephone Number</string>
+    <string name="hint_alert_source_email">Email Address</string>
+
+    <!-- Sub Headings -->
+    <string name="heading_sub_alert_source_of_information">Source of Information</string>
+    <!-- ........................................................................ -->
+
+
+
+
+
+
+
+    <!-- Person Involved -->
+    <!-- ........................................................................ -->
+    <!-- Label -->
+    <string name="label_event_pinvolv_desc">Involvement Description</string>
+    <string name="label_event_pinvolv_first_name">First Name</string>
+    <string name="label_event_pinvolv_last_name">Last Name</string>
+    <string name="label_event_pinvolv_nickname">Nickname</string>
+    <string name="label_event_pinvolv_gender">Gender</string>
+    <string name="label_event_pinvolv_year">Year</string>
+    <string name="label_event_pinvolv_month">Month</string>
+    <string name="label_event_pinvolv_date">Date</string>
+    <string name="label_event_pinvolv_age">Age</string>
+    <string name="label_event_pinvolv_age_unit">Unit</string>
+    <string name="label_event_pinvolv_mum_maiden_name">Mother\'s Maiden Name</string>
+    <string name="label_event_pinvolv_pnumber">Phone Number</string>
+    <string name="label_event_pinvolv_pnumber_owner">Owner of Phone</string>
+    <string name="label_event_pinvolv_present_condition">Present Condition</string>
+
+    <string name="label_event_pinvolv_death_date">Death Date</string>
+    <string name="label_event_pinvolv_cause_of_death">Cause of Death</string>
+    <string name="label_event_pinvolv_responsible_disease">Responsible Disease</string>
+    <string name="label_event_pinvolv_other_cause_of_death">Other Cause of Death</string>
+
+    <string name="label_event_pinvolv_perm_res_addy">Permanent Residence of Person</string>
+    <string name="label_event_pinvolv_occupation_type">Type of Occupation</string>
+    <string name="label_event_pinvolv_occupation">Specify Occupation</string>
+    <string name="label_event_pinvolv_occupation_biz_type">Type of Business</string>
+    <string name="label_event_pinvolv_occupation_trans_type">Type of Transportation</string>
+    <string name="label_event_pinvolv_occupation_position">Position</string>
+    <string name="label_event_pinvolv_occupation_facility_state">Facility State</string>
+    <string name="label_event_pinvolv_occupation_facility_lga">Facility LGA</string>
+    <string name="label_event_pinvolv_occupation_facility_ward">Facility Ward</string>
+    <string name="label_event_pinvolv_occupation_facility">Healthcare Facility</string>
+
+    <!-- Description -->
+    <string name="desc_event_pinvolv_desc">Involvement Description</string>
+    <string name="desc_event_pinvolv_first_name">First Name</string>
+    <string name="desc_event_pinvolv_last_name">Last Name</string>
+    <string name="desc_event_pinvolv_nickname">Nickname</string>
+    <string name="desc_event_pinvolv_gender">Gender</string>
+    <string name="desc_event_pinvolv_year">Year</string>
+    <string name="desc_event_pinvolv_month">Month</string>
+    <string name="desc_event_pinvolv_date">Date</string>
+    <string name="desc_event_pinvolv_age">Age</string>
+    <string name="desc_event_pinvolv_age_unit">Unit</string>
+    <string name="desc_event_pinvolv_mum_maiden_name">Mother\'s Maiden Name</string>
+    <string name="desc_event_pinvolv_pnumber">Phone Number</string>
+    <string name="desc_event_pinvolv_pnumber_owner">Owner of Phone</string>
+    <string name="desc_event_pinvolv_present_condition">Present Condition</string>
+
+    <string name="desc_event_pinvolv_death_date">Death Date</string>
+    <string name="desc_event_pinvolv_cause_of_death">Cause of Death</string>
+    <string name="desc_event_pinvolv_responsible_disease">Responsible Disease</string>
+    <string name="desc_event_pinvolv_other_cause_of_death">Other Cause of Death</string>
+
+    <string name="desc_event_pinvolv_perm_res_addy">Permanent Residence of Person</string>
+    <string name="desc_event_pinvolv_occupation_type">Type of Occupation</string>
+    <string name="desc_event_pinvolv_occupation">Specify Occupation</string>
+    <string name="desc_event_pinvolv_occupation_biz_type">Type of Business</string>
+    <string name="desc_event_pinvolv_occupation_trans_type">Type of Transportation</string>
+    <string name="desc_event_pinvolv_occupation_position">Position</string>
+    <string name="desc_event_pinvolv_occupation_facility_state">Facility State</string>
+    <string name="desc_event_pinvolv_occupation_facility_lga">Facility LGA</string>
+    <string name="desc_event_pinvolv_occupation_facility_ward">Facility Ward</string>
+    <string name="desc_event_pinvolv_occupation_facility">Healthcare Facility</string>
+
+    <!-- Hint -->
+    <string name="hint_event_pinvolv_desc">Involvement Description</string>
+    <string name="hint_event_pinvolv_first_name">First Name</string>
+    <string name="hint_event_pinvolv_last_name">Last Name</string>
+    <string name="hint_event_pinvolv_nickname">Nickname</string>
+    <string name="hint_event_pinvolv_gender">Gender</string>
+    <string name="hint_event_pinvolv_year">Year</string>
+    <string name="hint_event_pinvolv_month">Month</string>
+    <string name="hint_event_pinvolv_date">Date</string>
+    <string name="hint_event_pinvolv_age">Age</string>
+    <string name="hint_event_pinvolv_age_unit">Unit</string>
+    <string name="hint_event_pinvolv_mum_maiden_name">Mother\'s Maiden Name</string>
+    <string name="hint_event_pinvolv_pnumber">Phone Number</string>
+    <string name="hint_event_pinvolv_pnumber_owner">Owner of Phone</string>
+    <string name="hint_event_pinvolv_present_condition">Present Condition</string>
+
+    <string name="hint_event_pinvolv_death_date">Death Date</string>
+    <string name="hint_event_pinvolv_cause_of_death">Cause of Death</string>
+    <string name="hint_event_pinvolv_responsible_disease">Responsible Disease</string>
+    <string name="hint_event_pinvolv_other_cause_of_death">Other Cause of Death</string>
+
+    <string name="hint_event_pinvolv_perm_res_addy">Permanent Residence of Person</string>
+    <string name="hint_event_pinvolv_occupation_type">Type of Occupation</string>
+    <string name="hint_event_pinvolv_occupation">Specify Occupation</string>
+    <string name="hint_event_pinvolv_occupation_biz_type">Type of Business</string>
+    <string name="hint_event_pinvolv_occupation_trans_type">Type of Transportation</string>
+    <string name="hint_event_pinvolv_occupation_position">Position</string>
+    <string name="hint_event_pinvolv_occupation_facility_state">Facility State</string>
+    <string name="hint_event_pinvolv_occupation_facility_lga">Facility LGA</string>
+    <string name="hint_event_pinvolv_occupation_facility_ward">Facility Ward</string>
+    <string name="hint_event_pinvolv_occupation_facility">Healthcare Facility</string>
+
+    <!-- Sub Headings -->
+    <string name="heading_sub_event_pinvolv_occupation">Occupation</string>
+    <!-- ........................................................................ -->
+
+
+
+
+
+
+
+    <!-- Task Info -->
+    <!-- ........................................................................ -->
+    <!-- Hint -->
+    <string name="hint_task_type">Task Type</string>
+    <string name="hint_task_assoc_caze">Associated Case</string>
+    <string name="hint_task_assoc_contact">Associated Contact</string>
+    <string name="hint_task_assoc_event">Associated Event</string>
+    <string name="hint_task_priority">Task Priority</string>
+    <string name="hint_task_status">Task Status</string>
+    <string name="hint_task_suggested_start">Suggested Start</string>
+    <string name="hint_task_due_date_time">Due Date &amp; Time</string>
+    <string name="hint_task_comment_on_exc">Comment on Execution</string>
+
+    <!-- Label -->
+    <string name="label_task_type">Task Type</string>
+    <string name="label_task_assoc_caze">Associated Case</string>
+    <string name="label_task_assoc_contact">Associated Contact</string>
+    <string name="label_task_assoc_event">Associated Event</string>
+    <string name="label_task_priority">Task Priority</string>
+    <string name="label_task_status">Task Status</string>
+    <string name="label_task_suggested_start">Suggested Start</string>
+    <string name="label_task_due_date_time">Due Date &amp; Time</string>
+    <string name="label_task_comment_on_exc">Comment on Execution</string>
+    <string name="label_task_creator">Creator</string>
+    <string name="label_task_creator_comment">Creator Comment</string>
+
+    <!-- Description -->
+    <!-- Label -->
+    <string name="desc_task_type">Task Type</string>
+    <string name="desc_task_assoc_caze">Associated Case</string>
+    <string name="desc_task_assoc_contact">Associated Contact</string>
+    <string name="desc_task_assoc_event">Associated Event</string>
+    <string name="desc_task_priority">Task Priority</string>
+    <string name="desc_task_status">Task Status</string>
+    <string name="desc_task_suggested_start">Suggested Start</string>
+    <string name="desc_task_due_date_time">Due Date &amp; Time</string>
+    <string name="desc_task_comment_on_exc">Comment on Execution</string>
+    <string name="desc_task_creator">Creator</string>
+    <string name="desc_task_creator_comment">Creator Comment</string>
+    <!-- ........................................................................ -->
+
+
+
+
+
+    <!-- Contact Info -->
+    <!-- ........................................................................ -->
+    <!-- Hint -->
+    <string name="hint_contact_id">Contact ID</string>
+    <string name="hint_contact_followup_status">Follow-Up Status</string>
+    <string name="hint_contact_followup_status_comment">Follow-Up Status Comment</string>
+    <string name="hint_contact_reporting_user">Reporting User</string>
+    <string name="hint_contact_reporting_date">Reporting Date</string>
+    <string name="hint_contact_person">Contact Person</string>
+    <string name="hint_contact_followup_until">Follow-Up Until</string>
+    <string name="hint_contact_last_contact_date">Date of Last Contact</string>
+    <string name="hint_contact_type">Type of Contact</string>
+    <string name="hint_contact_relationship_with_case">Relationship With Case</string>
+    <string name="hint_contact_description">Contact Description</string>
+    <string name="hint_contact_case_id">Case ID</string>
+    <string name="hint_contact_case_classification">Case Classification</string>
+    <string name="hint_contact_case_name">Name</string>
+    <string name="hint_contact_case_age">Age</string>
+    <string name="hint_contact_case_sex">Gender</string>
+    <string name="hint_contact_case_disease">Disease</string>
+    <string name="hint_contact_case_symptoms_onset">Symptoms Onset</string>
+
+
+    <!-- Label -->
+    <string name="label_contact_id">Contact ID</string>
+    <string name="label_contact_followup_status">Follow-Up Status</string>
+    <string name="label_contact_followup_status_comment">Follow-Up Status Comment</string>
+    <string name="label_contact_reporting_user">Reporting User</string>
+    <string name="label_contact_reporting_date">Reporting Date</string>
+    <string name="label_contact_person">Contact Person</string>
+    <string name="label_contact_followup_until">Follow-Up Until</string>
+    <string name="label_contact_last_contact_date">Date of Last Contact</string>
+    <string name="label_contact_type">Type of Contact</string>
+    <string name="label_contact_relationship_with_case">Relationship With Case</string>
+    <string name="label_contact_description">Contact Description</string>
+    <string name="label_contact_case_id">Case ID</string>
+    <string name="label_contact_case_classification">Case Classification</string>
+    <string name="label_contact_case_name">Name</string>
+    <string name="label_contact_case_age">Age</string>
+    <string name="label_contact_case_sex">Gender</string>
+    <string name="label_contact_case_disease">Disease</string>
+    <string name="label_contact_case_symptoms_onset">Symptoms Onset</string>
+
+    <!-- Description -->
+    <string name="desc_contact_id">Contact ID</string>
+    <string name="desc_contact_followup_status">Follow-Up Status</string>
+    <string name="desc_contact_followup_status_comment">Follow-Up Status Comment</string>
+    <string name="desc_contact_reporting_user">Reporting User</string>
+    <string name="desc_contact_reporting_date">Reporting Date</string>
+    <string name="desc_contact_person">Contact Person</string>
+    <string name="desc_contact_followup_until">Follow-Up Until</string>
+    <string name="desc_contact_last_contact_date">Date of Last Contact</string>
+    <string name="desc_contact_type">Type of Contact</string>
+    <string name="desc_contact_relationship_with_case">Relationship With Case</string>
+    <string name="desc_contact_description">Contact Description</string>
+    <string name="desc_contact_case_id">Case ID</string>
+    <string name="desc_contact_case_classification">Case Classification</string>
+    <string name="desc_contact_case_name">Name</string>
+    <string name="desc_contact_case_age">Age</string>
+    <string name="desc_contact_case_sex">Gender</string>
+    <string name="desc_contact_case_disease">Disease</string>
+    <string name="desc_contact_case_symptoms_onset">Symptoms Onset</string>
+
+    <!-- Sub Headings -->
+    <string name="heading_sub_contact_source_case">Source Case</string>
+    <!-- ........................................................................ -->
+
+
+
+
+
+
+    <!-- Contact Person Info -->
+    <!-- ........................................................................ -->
+    <!-- Hint -->
+    <string name="hint_contact_person_last_name">Last Name</string>
+    <string name="hint_contact_person_first_name">First Name</string>
+    <string name="hint_contact_person_nickname">Nickname</string>
+    <string name="hint_contact_person_gender">Gender</string>
+    <string name="hint_contact_person_age">Age</string>
+    <string name="hint_contact_person_mother_maiden_name">Mother\'s Maiden Name</string>
+    <string name="hint_contact_person_pnumber">Phone Number</string>
+    <string name="hint_contact_person_phone_owner">Owner of Phone</string>
+    <string name="hint_contact_person_present_condition">Present Condition</string>
+    <string name="hint_contact_person_death_date">Death of Death</string>
+    <string name="hint_contact_person_death_cause">Cause of Death</string>
+    <string name="hint_contact_person_death_place">Death Place Type</string>
+    <string name="hint_contact_person_death_place_desc">Death Place Description</string>
+    <string name="hint_contact_person_burial_date">Date of Burial</string>
+    <string name="hint_contact_person_burial_conductor">Burial Conductor</string>
+    <string name="hint_contact_person_burial_place_desc">Burial Place Description</string>
+    <string name="hint_contact_person_perm_resident_address">Permanent Residence of Person</string>
+    <string name="hint_contact_person_occupation_type">Type of Occupation</string>
+    <string name="hint_contact_person_occupation_facility">Occupation Facility</string>
+
+
+    <!-- Label -->
+    <string name="label_contact_person_last_name">Last Name</string>
+    <string name="label_contact_person_first_name">First Name</string>
+    <string name="label_contact_person_nickname">Nickname</string>
+    <string name="label_contact_person_gender">Gender</string>
+    <string name="label_contact_person_age">Age</string>
+    <string name="label_contact_person_mother_maiden_name">Mother\'s Maiden Name</string>
+    <string name="label_contact_person_pnumber">Phone Number</string>
+    <string name="label_contact_person_phone_owner">Owner of Phone</string>
+    <string name="label_contact_person_present_condition">Present Condition</string>
+    <string name="label_contact_person_death_date">Death of Death</string>
+    <string name="label_contact_person_death_cause">Cause of Death</string>
+    <string name="label_contact_person_death_place">Death Place Type</string>
+    <string name="label_contact_person_death_place_desc">Death Place Description</string>
+    <string name="label_contact_person_burial_date">Date of Burial</string>
+    <string name="label_contact_person_burial_conductor">Burial Conductor</string>
+    <string name="label_contact_person_burial_place_desc">Burial Place Description</string>
+    <string name="label_contact_person_perm_resident_address">Permanent Residence of Person</string>
+    <string name="label_contact_person_occupation_type">Type of Occupation</string>
+    <string name="label_contact_person_occupation_facility">Occupation Facility</string>
+
+    <!-- Description -->
+    <string name="desc_contact_person_last_name">Last Name</string>
+    <string name="desc_contact_person_first_name">First Name</string>
+    <string name="desc_contact_person_nickname">Nickname</string>
+    <string name="desc_contact_person_gender">Gender</string>
+    <string name="desc_contact_person_age">Age</string>
+    <string name="desc_contact_person_mother_maiden_name">Mother\'s Maiden Name</string>
+    <string name="desc_contact_person_pnumber">Phone Number</string>
+    <string name="desc_contact_person_phone_owner">Owner of Phone</string>
+    <string name="desc_contact_person_present_condition">Present Condition</string>
+    <string name="desc_contact_person_death_date">Death of Death</string>
+    <string name="desc_contact_person_death_cause">Cause of Death</string>
+    <string name="desc_contact_person_death_place">Death Place Type</string>
+    <string name="desc_contact_person_death_place_desc">Death Place Description</string>
+    <string name="desc_contact_person_burial_date">Date of Burial</string>
+    <string name="desc_contact_person_burial_conductor">Burial Conductor</string>
+    <string name="desc_contact_person_burial_place_desc">Burial Place Description</string>
+    <string name="desc_contact_person_perm_resident_address">Permanent Residence of Person</string>
+    <string name="desc_contact_person_occupation_type">Type of Occupation</string>
+    <string name="desc_contact_person_occupation_facility">Occupation Facility</string>
+
+    <!-- Sub Headings -->
+    <string name="heading_sub_contact_person_occupation">Occupation</string>
+    <string name="heading_sub_contact_person_occupation_facility">Occupation Facility</string>
+    <!-- ........................................................................ -->
+
+
+
+
+
+
+    <!-- Contact Person Info -->
+    <!-- ........................................................................ -->
+    <!-- Hint -->
+    <string name="hint_contact_visit_visit_datetime">Date &amp; Time of Visit</string>
+    <string name="hint_contact_visit_visit_date">Date of Visit</string>
+    <string name="hint_contact_visit_visit_time">Time of Visit</string>
+    <string name="hint_contact_visit_person_avail_and_cooperative">Person Available and Cooperative?</string>
+    <string name="hint_contact_visit_remarks">Visit Remarks</string>
+
+    <!-- Label -->
+    <string name="label_contact_visit_visit_datetime">Date &amp; Time of Visit</string>
+    <string name="label_contact_visit_visit_date">Date of Visit</string>
+    <string name="label_contact_visit_visit_time">Time of Visit</string>
+    <string name="label_contact_visit_person_avail_and_cooperative">Person Available and Cooperative?</string>
+    <string name="label_contact_visit_remarks">Visit Remarks</string>
+
+    <!-- Description -->
+    <string name="desc_contact_visit_visit_datetime">Date &amp; Time of Visit</string>
+    <string name="desc_contact_visit_visit_date">Date of Visit</string>
+    <string name="desc_contact_visit_visit_time">Time of Visit</string>
+    <string name="desc_contact_visit_person_avail_and_cooperative">Person Available and Cooperative</string>
+    <string name="desc_contact_visit_remarks">Visit Remarks</string>
+    <!-- ........................................................................ -->
+
+
+
+
+
+
+    <!-- Clinical Signs & Symptoms Info -->
+    <!-- ........................................................................ -->
+    <!-- Hint -->
+    <string name="hint_contact_symptoms_body_temperature">Current Body Temperature (°C)</string>
+    <string name="hint_contact_symptoms_body_temperature_source">Source of Body Temperature</string>
+    <string name="hint_contact_symptoms">Symptoms</string>
+    <string name="hint_contact_symptoms_yes">Symptoms - Yes</string>
+    <string name="hint_contact_symptoms_unknown">Symptoms - Unknown</string>
+    <string name="hint_contact_symptoms_no">Symptoms - No</string>
+    <string name="hint_contact_symptoms_other_clincal">Other Clinical Symptoms</string>
+    <string name="hint_contact_symptoms_comment">Comment</string>
+    <string name="hint_contact_symptoms_first_symptom_date">Date of Symptom Onset</string><!--Date of First Symptom-->
+    <string name="hint_contact_symptoms_first_symptom">First Symptom</string>
+    <string name="hint_contact_open_case">Open case for this contact person via the Case ID link</string>
+
+
+    <!-- Label -->
+    <string name="label_contact_symptoms_body_temperature">Current Body Temperature (°C)</string>
+    <string name="label_contact_symptoms_body_temperature_source">Source of Body Temperature</string>
+    <string name="label_contact_symptoms">Symptoms</string>
+    <string name="label_contact_symptoms_yes">Symptoms - Yes</string>
+    <string name="label_contact_symptoms_unknown">Symptoms - Unknown</string>
+    <string name="label_contact_symptoms_no">Symptoms - No</string>
+    <string name="label_contact_symptoms_other_clincal">Other Clinical Symptoms</string>
+    <string name="label_contact_symptoms_comment">Comment</string>
+    <string name="label_contact_symptoms_first_symptom_date">Date of Symptom Onset</string>
+    <string name="label_contact_symptoms_first_symptom">First Symptom</string>
+    <string name="label_contact_open_case">Open Case</string>
+
+    <!-- Description -->
+    <string name="desc_contact_symptoms_body_temperature">Current Body Temperature (°C)</string>
+    <string name="desc_contact_symptoms_body_temperature_source">Source of Body Temperature</string>
+    <string name="desc_contact_symptoms">Symptoms</string>
+    <string name="desc_contact_symptoms_yes">Symptoms - Yes</string>
+    <string name="desc_contact_symptoms_unknown">Symptoms - Unknown</string>
+    <string name="desc_contact_symptoms_no">Symptoms - No</string>
+    <string name="desc_contact_symptoms_other_clincal">Other Clinical Symptoms</string>
+    <string name="desc_contact_symptoms_comment">Comment</string>
+    <string name="desc_contact_symptoms_first_symptom_date">Date of Symptom Onset</string>
+    <string name="desc_contact_symptoms_first_symptom">First Symptom</string>
+    <string name="desc_contact_open_case">Open Case</string>
+
+
+
+    <!-- ........................................................................ -->
+
+
+
+
+
+
+
+
+    <!-- Case Info -->
+    <!-- ........................................................................ -->
+    <!-- Label -->
+    <string name="label_case_investigation_status">Investigation Status</string>
+    <string name="label_case_case_classification">Case Classification</string>
+    <string name="label_case_outcome">Outcome</string>
+    <string name="label_case_outcome_date">Date of Outcome</string>
+    <string name="label_case_id">Case ID</string>
+    <string name="label_case_epid_number">EPID Number</string>
+    <string name="label_case_disease">Disease</string>
+    <string name="label_case_disease_detail">Disease Detail</string>
+    <string name="label_case_reporting_user">Reporting User</string>
+    <string name="label_case_reporting_date">Report Date</string>
+    <string name="label_case_state_and_lga">State - LGA</string>
+    <string name="label_case_state">State</string>
+    <string name="label_case_lga">LGA</string>
+    <string name="label_case_health_facility_desc">Health Facility Description</string>
+    <string name="label_case_ward">Ward</string>
+    <string name="label_case_move_to_health_facility">Move to another Health Facility</string>
+    <string name="label_case_health_facility">Health Facility</string>
+    <string name="label_case_health_facility_name_and_desc">Health Facility Name &amp; Description</string>
+    <string name="label_case_responsible_officer">Responsible Surveillance Officer</string>
+    <string name="label_case_quest_pregnancy">Pregnancy?</string>
+    <string name="label_case_measles_vaccination">Measles Vaccination</string>
+    <string name="label_case_measles_doses">Measles Dose</string>
+    <string name="label_case_measles_vaccination_info_source">Measles Vaccination Info Source</string>
+    <string name="label_case_yellow_fever_vaccination">Yellow Fever Vaccination</string>
+    <string name="label_case_yellow_fever_vaccination_info_source">Yellow Fever Vaccination Info Source</string>
+    <string name="label_case_plague_type">Plague Type</string>
+    <string name="label_case_dengue_fever_type">Dengue Fever Type</string>
+    <string name="label_case_vaccination_received">Received Vaccination</string>
+    <string name="label_case_number_valid_doses">Number of Valid Doses</string>
+    <string name="label_case_last_vaccination_date">Last Vaccination Date</string>
+    <string name="label_case_vaccination_info_source">Vaccination Information Source</string>
+    <string name="label_case_smallpox_vaccination_received">Was a smallpox vaccination received in the past?</string>
+
+    <!-- Description -->
+    <!-- Label -->
+    <string name="desc_case_investigation_status">Investigation Status</string>
+    <string name="desc_case_case_classification">Case Classification</string>
+    <string name="desc_case_outcome">Outcome</string>
+    <string name="desc_case_outcome_date">Date of Outcome</string>
+    <string name="desc_case_id">Case ID</string>
+    <string name="desc_case_epid_number">EPID Number</string>
+    <string name="desc_case_disease">Disease</string>
+    <string name="desc_case_disease_detail">Disease Detail</string>
+    <string name="desc_case_reporting_user">Reporting User</string>
+    <string name="desc_case_reporting_date">Report Date</string>
+    <string name="desc_case_state_and_lga">State - LGA</string>
+    <string name="desc_case_state">State</string>
+    <string name="desc_case_lga">LGA</string>
+    <string name="desc_case_health_facility_desc">Health Facility Description</string>
+    <string name="desc_case_ward">Ward</string>
+    <string name="desc_case_move_to_health_facility">Move to another Health Facility</string>
+    <string name="desc_case_health_facility">Health Facility</string>
+    <string name="desc_case_health_facility_name_and_desc">Health Facility Name &amp; Description</string>
+    <string name="desc_case_responsible_officer">Responsible Surveillance Officer</string>
+    <string name="desc_case_quest_pregnancy">Pregnancy?</string>
+    <string name="desc_case_measles_vaccination">Measles Vaccination</string>
+    <string name="desc_case_measles_doses">Measles Dose</string>
+    <string name="desc_case_measles_vaccination_info_source">Measles Vaccination Info Source</string>
+    <string name="desc_case_yellow_fever_vaccination">Yellow Fever Vaccination</string>
+    <string name="desc_case_yellow_fever_vaccination_info_source">Yellow Fever Vaccination Info Source</string>
+    <string name="desc_case_plague_type">Plague Type</string>
+    <string name="desc_case_dengue_fever_type">Dengue Fever Type</string>
+    <string name="desc_case_vaccination_received">Received Vaccination</string>
+    <string name="desc_case_number_valid_doses">Number of Valid Doses</string>
+    <string name="desc_case_last_vaccination_date">Last Vaccination Date</string>
+    <string name="desc_case_vaccination_info_source">Vaccination Information Source</string>
+    <string name="desc_case_smallpox_vaccination_received">Was a smallpox vaccination received in the past?</string>
+
+    <!-- Hint -->
+    <string name="hint_case_investigation_status">Investigation Status</string>
+    <string name="hint_case_case_classification">Case Classification</string>
+    <string name="hint_case_outcome">Outcome</string>
+    <string name="hint_case_outcome_date">Date of Outcome</string>
+    <string name="hint_case_id">Case ID</string>
+    <string name="hint_case_epid_number">EPID Number</string>
+    <string name="hint_case_disease">Disease</string>
+    <string name="hint_case_disease_detail">Disease Detail</string>
+    <string name="hint_case_reporting_user">Reporting User</string>
+    <string name="hint_case_reporting_date">Report Date</string>
+    <string name="hint_case_state_and_lga">State - LGA</string>
+    <string name="hint_case_state">State</string>
+    <string name="hint_case_lga">LGA</string>
+    <string name="hint_case_health_facility_desc">Health Facility Description</string>
+    <string name="hint_case_ward">Ward</string>
+    <string name="hint_case_move_to_health_facility">Move to another Health Facility</string>
+    <string name="hint_case_health_facility">Health Facility</string>
+    <string name="hint_case_health_facility_name_and_desc">Health Facility Name &amp; Description</string>
+    <string name="hint_case_responsible_officer">Responsible Surveillance Officer</string>
+    <string name="hint_case_quest_pregnancy">Pregnancy?</string>
+    <string name="hint_case_measles_vaccination">Measles Vaccination</string>
+    <string name="hint_case_measles_doses">Measles Dose</string>
+    <string name="hint_case_measles_vaccination_info_source">Measles Vaccination Info Source</string>
+    <string name="hint_case_yellow_fever_vaccination">Yellow Fever Vaccination</string>
+    <string name="hint_case_yellow_fever_vaccination_info_source">Yellow Fever Vaccination Info Source</string>
+    <string name="hint_case_plague_type">Plague Type</string>
+    <string name="hint_case_dengue_fever_type">Dengue Fever Type</string>
+
+    <string name="hint_case_vaccination_received">Received Vaccination</string>
+    <string name="hint_case_number_valid_doses">Number of Valid Doses</string>
+    <string name="hint_case_last_vaccination_date">Last Vaccination Date</string>
+    <string name="hint_case_vaccination_info_source">Vaccination Information Source</string>
+    <string name="hint_case_smallpox_vaccination_received">Was a smallpox vaccination received in the past?</string>
+
+
+    <!-- Sub Headings -->
+    <string name="heading_sub_case_addition_med_info">Additional Medical Information</string>
+    <!-- ........................................................................ -->
+
+
+
+
+
+
+    <!-- Case Epidemiological Data -->
+    <!-- ........................................................................ -->
+    <!-- Label -->
+    <string name="label_case_epid_areaConfirmedCases">Exposure to neighborhood where confirmed cases occurred</string>
+    <string name="label_case_epid_areaInfectedAnimals">Exposure (e.g. handling, butchering) to animals (or their remains) in an area where infected animals have been confirmed in the past month</string>
+    <string name="label_case_epid_closeContactProbableCase">Close contact (within 1 meter) with a probable or confirmed case</string>
+    <string name="label_case_epid_directContactConfirmedCase">Direct contact with a confirmed case</string>
+    <string name="label_case_epid_directContactDeadUnsafe">Direct contact with a dead body while not wearing appropriate PPE</string>
+    <string name="label_case_epid_directContactProbableCase">Direct contact with a probable or confirmed case</string>
+    <string name="label_case_epid_eatingRawAnimals">Eating raw or undercooked animal products</string>
+    <string name="label_case_epid_eatingRawAnimalsDetails">Specify eaten animal product</string>
+    <string name="label_case_epid_eatingRawAnimalsInInfectedArea">Eating raw or undercooked animal products in an area where infected animals have been confirmed</string>
+    <string name="label_case_epid_percutaneousCaseBlood">Percutaneous (e.g., needle stick) or mucous membrane exposure to blood from a case</string>
+    <string name="label_case_epid_processingConfirmedCaseFluidUnsafe">Laboratory processing of blood or body fluids from a confirmed case while not wearing appropriate PPE or without using standard biosafety precautions</string>
+    <string name="label_case_epid_processingSuspectedCaseSampleUnsafe">Handling samples (animal or human) suspected of containing the virus without adequate personal protection</string>
+    <string name="label_case_epid_sickDeadAnimals">Exposure to sick/unxeplainedly dead animals</string>
+    <string name="label_case_epid_sickDeadAnimalsDate">Date of dead animal exposure</string>
+    <string name="label_case_epid_sickDeadAnimalsDetails">Specify dead animal exposure</string>
+    <string name="label_case_epid_sickDeadAnimalsLocation">Place of dead animal exposure</string>
+
+
+    <string name="label_case_epid_info">Epidemiologial Info</string>
+    <string name="label_case_epid_visited_social_event">Visited a Social Event</string>
+    <string name="label_case_epid_travel">Travel</string>
+    <string name="label_case_epid_visited_burial">Visited a Burial</string>
+    <string name="label_case_epid_eating_raw_poultry">Eating Raw or Undercooked Poultry?</string>
+    <string name="label_case_epid_exposure_to_poultry">Exposure to Poultry or Domesticated Birds?</string>
+    <string name="label_case_epid_exposure_to_sick_birds">Exposure to Sick/Unexplained Dead Poultry/Other Domestic Birds?</string>
+    <string name="label_case_epid_exposure_to_sick_birds_last_exposure_date">Date of Last Exposure</string>
+    <string name="label_case_epid_exposure_to_sick_birds_last_exposure_place">Place of Last Exposure</string>
+    <string name="label_case_epid_contact_with_cattle">Contact with Cattle?</string>
+    <string name="label_case_epid_contact_with_other_animals">Contact with Other Animals?</string>
+
+    <string name="label_case_epid_exposure_to_wild_birds">Exposure to Wild Birds</string>
+    <string name="label_case_epid_wild_birds_last_exposure_date">Date of Last Exposure</string>
+    <string name="label_case_epid_wild_birds_last_exposure_place">Place of Last Exposure</string>
+
+    <string name="label_case_epid_source_of_drinking_water">Source of Drinking Water</string>
+    <string name="label_case_epid_source_of_drinking_water_other">Details</string>
+    <string name="label_case_epid_contact_with_body_of_water">Contact with Body of Water</string>
+    <string name="label_case_epid_tick_bite">Tick Bite</string>
+
+
+    <!-- Description -->
+    <string name="desc_case_epid_info">Epidemiologial Info</string>
+    <string name="desc_case_epid_visited_social_event">Visited a Social Event</string>
+    <string name="desc_case_epid_travel">Travel</string>
+    <string name="desc_case_epid_visited_burial">Visited a Burial</string>
+    <string name="desc_case_epid_eating_raw_poultry">Eating Raw or Undercooked Poultry?</string>
+    <string name="desc_case_epid_exposure_to_poultry">Exposure to Poultry or Domesticated Birds?</string>
+    <string name="desc_case_epid_exposure_to_sick_birds">Exposure to Sick/Unexplained Dead Poultry/Other Domestic Birds?</string>
+    <string name="desc_case_epid_exposure_to_sick_birds_last_exposure_date">Date of Last Exposure</string>
+    <string name="desc_case_epid_exposure_to_sick_birds_last_exposure_place">Place of Last Exposure</string>
+    <string name="desc_case_epid_contact_with_cattle">Contact with Cattle?</string>
+    <string name="desc_case_epid_contact_with_other_animals">Contact with Other Animals?</string>
+
+    <string name="desc_case_epid_exposure_to_wild_birds">Exposure to Wild Birds</string>
+    <string name="desc_case_epid_wild_birds_last_exposure_date">Date of Last Exposure</string>
+    <string name="desc_case_epid_wild_birds_last_exposure_place">Place of Last Exposure</string>
+
+    <string name="desc_case_epid_source_of_drinking_water">Source of Drinking Water</string>
+    <string name="desc_case_epid_source_of_drinking_water_other">Details</string>
+    <string name="desc_case_epid_contact_with_body_of_water">Contact with Body of Water</string>
+    <string name="desc_case_epid_tick_bite">Tick Bite</string>
+
+
+    <!-- Hint -->
+
+    <string name="hint_case_epid_info">Epidemiologial Info</string>
+    <string name="hint_case_epid_visited_social_event">Visited a Social Event</string>
+    <string name="hint_case_epid_travel">Travel</string>
+    <string name="hint_case_epid_visited_burial">Visited a Burial</string>
+    <string name="hint_case_epid_eating_raw_poultry">Eating Raw or Undercooked Poultry?</string>
+    <string name="hint_case_epid_exposure_to_poultry">Exposure to Poultry or Domesticated Birds?</string>
+    <string name="hint_case_epid_exposure_to_sick_birds">Exposure to Sick/Unexplained Dead Poultry/Other Domestic Birds?</string>
+    <string name="hint_case_epid_exposure_to_sick_birds_last_exposure_date">Date of Last Exposure</string>
+    <string name="hint_case_epid_exposure_to_sick_birds_last_exposure_place">Place of Last Exposure</string>
+    <string name="hint_case_epid_contact_with_cattle">Contact with Cattle?</string>
+    <string name="hint_case_epid_contact_with_other_animals">Contact with Other Animals?</string>
+    <string name="hint_case_epid_exposure_to_wild_birds">Exposure to Wild Birds</string>
+    <string name="hint_case_epid_wild_birds_last_exposure_date">Date of Last Exposure</string>
+    <string name="hint_case_epid_wild_birds_last_exposure_place">Place of Last Exposure</string>
+
+    <string name="hint_case_epid_source_of_drinking_water">Source of Drinking Water</string>
+    <string name="hint_case_epid_source_of_drinking_water_other">Details</string>
+    <string name="hint_case_epid_contact_with_body_of_water">Contact with Body of Water</string>
+    <string name="hint_case_epid_tick_bite">Tick Bite</string>
+
+
+    <!-- Dialong - Burial Visit Info -->
+    <string name="hint_case_epid_burial_visit_from_date">Burial From (Date)</string>
+    <string name="hint_case_epid_burial_visit_to_date">Burial To (Date)</string>
+    <string name="hint_case_epid_burial_visit_deceased_person">Deceased Person</string>
+    <string name="hint_case_epid_burial_visit_relation">Relation</string>
+    <string name="hint_case_epid_burial_visit_address">Address, Landmarks</string>
+    <string name="hint_case_epid_burial_visit_deceased_person_ill">Deceased Person Ill</string>
+    <string name="hint_case_epid_burial_visit_touch_carried_body">Touched or Carried Body</string>
+    <string name="hint_case_epid_burial_visit_comm_contact">Community Contact Person</string>
+    <string name="hint_case_epid_burial_visit_state">State</string>
+    <string name="hint_case_epid_burial_visit_lga">LGA</string>
+    <string name="hint_case_epid_burial_visit_ward">Ward</string>
+    <string name="hint_case_epid_burial_visit_city">City</string>
+
+    <string name="label_case_epid_burial_visit_from_date">Burial From (Date)</string>
+    <string name="label_case_epid_burial_visit_to_date">Burial To (Date)</string>
+    <string name="label_case_epid_burial_visit_deceased_person">Deceased Person</string>
+    <string name="label_case_epid_burial_visit_relation">Relation</string>
+    <string name="label_case_epid_burial_visit_address">Address, Landmarks</string>
+    <string name="label_case_epid_burial_visit_deceased_person_ill">Deceased Person Ill</string>
+    <string name="label_case_epid_burial_visit_touch_carried_body">Touched or Carried Body</string>
+    <string name="label_case_epid_burial_visit_comm_contact">Community Contact Person</string>
+    <string name="label_case_epid_burial_visit_state">State</string>
+    <string name="label_case_epid_burial_visit_lga">LGA</string>
+    <string name="label_case_epid_burial_visit_ward">Ward</string>
+    <string name="label_case_epid_burial_visit_city">City</string>
+
+    <string name="desc_case_epid_burial_visit_from_date">Burial From (Date)</string>
+    <string name="desc_case_epid_burial_visit_to_date">Burial To (Date)</string>
+    <string name="desc_case_epid_burial_visit_deceased_person">Deceased Person</string>
+    <string name="desc_case_epid_burial_visit_relation">Relation</string>
+    <string name="desc_case_epid_burial_visit_address">Address, Landmarks</string>
+    <string name="desc_case_epid_burial_visit_deceased_person_ill">Deceased Person Ill</string>
+    <string name="desc_case_epid_burial_visit_touch_carried_body">Touched or Carried Body</string>
+    <string name="desc_case_epid_burial_visit_comm_contact">Community Contact Person</string>
+    <string name="desc_case_epid_burial_visit_state">State</string>
+    <string name="desc_case_epid_burial_visit_lga">LGA</string>
+    <string name="desc_case_epid_burial_visit_ward">Ward</string>
+    <string name="desc_case_epid_burial_visit_city">City</string>
+
+
+
+
+    <!-- Dialong - Social Event Info -->
+    <string name="hint_case_epid_social_event_date">Date of Event</string>
+    <string name="hint_case_epid_social_event_desc">Description of Event</string>
+    <string name="hint_case_epid_social_event_address">Address, Landmarks</string>
+    <string name="hint_case_epid_social_event_comm_contact">Community Contact Person</string>
+    <string name="hint_case_epid_social_event_state">State</string>
+    <string name="hint_case_epid_social_event_lga">LGA</string>
+    <string name="hint_case_epid_social_event_ward">Ward</string>
+    <string name="hint_case_epid_social_event_city">City</string>
+
+    <string name="label_case_epid_social_event_date">Date of Event</string>
+    <string name="label_case_epid_social_event_desc">Description of Event</string>
+    <string name="label_case_epid_social_event_address">Address, Landmarks</string>
+    <string name="label_case_epid_social_event_comm_contact">Community Contact Person</string>
+    <string name="label_case_epid_social_event_state">State</string>
+    <string name="label_case_epid_social_event_lga">LGA</string>
+    <string name="label_case_epid_social_event_ward">Ward</string>
+    <string name="label_case_epid_social_event_city">City</string>
+
+    <string name="desc_case_epid_social_event_date">Date of Event</string>
+    <string name="desc_case_epid_social_event_desc">Description of Event</string>
+    <string name="desc_case_epid_social_event_address">Address, Landmarks</string>
+    <string name="desc_case_epid_social_event_comm_contact">Community Contact Person</string>
+    <string name="desc_case_epid_social_event_state">State</string>
+    <string name="desc_case_epid_social_event_lga">LGA</string>
+    <string name="desc_case_epid_social_event_ward">Ward</string>
+    <string name="desc_case_epid_social_event_city">City</string>
+
+
+
+
+    <!-- Dialog - Travel Info -->
+    <string name="hint_case_epid_travel_from_date">Travel From (Date)</string>
+    <string name="hint_case_epid_travel_to_date">Travel To (Date)</string>
+    <string name="hint_case_epid_travel_type">Type of Travel</string>
+    <string name="hint_case_epid_travel_address">Travel Destination, Address</string>
+    <string name="hint_case_epid_travel_state">State</string>
+    <string name="hint_case_epid_travel_lga">LGA</string>
+    <string name="hint_case_epid_travel_ward">Ward</string>
+    <string name="hint_case_epid_travel_city">City</string>
+
+    <string name="label_case_epid_travel_from_date">Travel From (Date)</string>
+    <string name="label_case_epid_travel_to_date">Travel To (Date)</string>
+    <string name="label_case_epid_travel_type">Type of Travel</string>
+    <string name="label_case_epid_travel_address">Travel Destination, Address</string>
+    <string name="label_case_epid_travel_state">State</string>
+    <string name="label_case_epid_travel_lga">LGA</string>
+    <string name="label_case_epid_travel_ward">Ward</string>
+    <string name="label_case_epid_travel_city">City</string>
+
+    <string name="label_epid_animal_contact_yes">Yes</string>
+    <string name="label_epid_animal_contact_unknown">Unknown</string>
+    <string name="label_epid_animal_contact_no">No</string>
+
+
+
+
+    <string name="desc_case_epid_travel_from_date">Travel From (Date)</string>
+    <string name="desc_case_epid_travel_to_date">Travel To (Date)</string>
+    <string name="desc_case_epid_travel_type">Type of Travel</string>
+    <string name="desc_case_epid_travel_address">Travel Destination, Address</string>
+    <string name="desc_case_epid_travel_state">State</string>
+    <string name="desc_case_epid_travel_lga">LGA</string>
+    <string name="desc_case_epid_travel_ward">Ward</string>
+    <string name="desc_case_epid_travel_city">City</string>
+
+    <string name="desc_epid_animal_contact_yes">Yes</string>
+    <string name="desc_epid_animal_contact_unknown">Unknown</string>
+    <string name="desc_epid_animal_contact_no">No</string>
+
+
+    <!-- Sub Headings -->
+    <string name="heading_sub_case_epid_burial_visited">Burial Visited</string>
+    <string name="heading_sub_case_epid_social_events">Social Events</string>
+    <string name="heading_sub_case_epid_travels">Travels</string>
+
+
+    <string name="heading_sub_case_epid_animal_contact">Animal Contact</string>
+    <string name="heading_sub_case_epid_environmental_exposure">Environmental Exposure</string>
+    <!-- ........................................................................ -->
+
+
+
+
+
+
+
+
+    <!-- Case Info -->
+    <!-- ........................................................................ -->
+    <!-- Label -->
+    <string name="label_case_hos_hospital_name">Hospital Name</string>
+    <string name="label_case_hos_admission_date">Date of Admission</string>
+    <string name="label_case_hos_discharge_date">Date of Discharge</string>
+    <string name="label_case_hos_isolation">Isolation</string>
+    <string name="label_case_hos_isolation_date">Date of Isolation</string>
+    <string name="label_case_hos_admitted_to_health_facility">Admitted to Health Facility</string>
+    <string name="label_case_hos_visited_previously_for_illness">Was the patient hospitalized or did he/she visit a health clinic previously for this illness</string>
+
+    <string name="label_case_hos_prev_admission_and_discharge_date">Admission &amp; Discharge Date</string>
+    <string name="label_case_hos_prev_isolation">Isolation</string>
+    <string name="label_case_hos_prev_hospital_name">Hospital Name</string>
+    <string name="label_case_hos_prev_state_and_lga">State - LGA</string>
+    <string name="label_case_hos_prev_ward">Ward</string>
+    <string name="label_case_hos_prev_desc">Description</string>
+
+
+    <!-- Description -->
+    <string name="desc_case_hos_hospital_name">Hospital Name</string>
+    <string name="desc_case_hos_admission_date">Date of Admission</string>
+    <string name="desc_case_hos_discharge_date">Date of Discharge</string>
+    <string name="desc_case_hos_isolation">Isolation</string>
+    <string name="desc_case_hos_isolation_date">Date of Isolation</string>
+    <string name="desc_case_hos_admitted_to_health_facility">Admitted to Health Facility</string>
+    <string name="desc_case_hos_visited_previously_for_illness">Was the patient hospitalized or did he/she visit a health clinic previously for this illness</string>
+
+    <string name="desc_case_hos_prev_admission_and_discharge_date">Admission &amp; Discharge Date</string>
+    <string name="desc_case_hos_prev_isolation">Isolation</string>
+    <string name="desc_case_hos_prev_hospital_name">Hospital Name</string>
+    <string name="desc_case_hos_prev_state_and_lga">State - LGA</string>
+    <string name="desc_case_hos_prev_ward">Ward</string>
+    <string name="desc_case_hos_prev_desc">Description</string>
+
+
+    <!-- Hint -->
+    <string name="hint_case_hos_hospital_name">Hospital Name</string>
+    <string name="hint_case_hos_admission_date">Date of Admission</string>
+    <string name="hint_case_hos_discharge_date">Date of Discharge</string>
+    <string name="hint_case_hos_isolation">Isolation</string>
+    <string name="hint_case_hos_isolation_date">Date of Isolation</string>
+    <string name="hint_case_hos_admitted_to_health_facility">Admitted to Health Facility</string>
+    <string name="hint_case_hos_visited_previously_for_illness">Was the patient hospitalized or did he/she visit a health clinic previously for this illness</string>
+
+    <string name="hint_case_hos_prev_admission_and_discharge_date">Admission &amp; Discharge Date</string>
+    <string name="hint_case_hos_prev_isolation">Isolation</string>
+    <string name="hint_case_hos_prev_hospital_name">Hospital Name</string>
+    <string name="hint_case_hos_prev_state_and_lga">State - LGA</string>
+    <string name="hint_case_hos_prev_ward">Ward</string>
+    <string name="hint_case_hos_prev_desc">Description</string>
+
+
+    <!-- Sub Headings -->
+    <string name="heading_sub_case_hos_most_recent_hospitalization">Most Recent Hospitalization</string>
+
+    <string name="heading_sub_case_hos_prev_hospitalization_history">Previous Hospitalizations</string>
+    <string name="heading_case_hos_prev_hospitalization">Previous Hospitalization</string>
+    <!-- ........................................................................ -->
+
+
+
+
+
+
+
+
+    <!-- Case Patient Info -->
+    <!-- ........................................................................ -->
+    <!-- Label -->
+    <string name="label_case_patient_last_name">Last Name</string>
+    <string name="label_case_patient_first_name">First Name</string>
+    <string name="label_case_patient_nickname">Nickname</string>
+    <string name="label_case_patient_mother_maiden_name">Mother\'s Maiden Name</string>
+    <string name="label_case_patient_age_and_dob">Age (Birth Date)</string>
+    <string name="label_case_patient_gender">Gender</string>
+    <string name="label_case_patient_present_condition">Gender</string>
+
+    <string name="label_case_patient_death_date">Date of Death</string>
+    <string name="label_case_patient_death_place_type">Death Place Type</string>
+    <string name="label_case_patient_death_desc">Death Description</string>
+
+    <string name="label_case_patient_burial_date">Burial Date</string>
+    <string name="label_case_patient_burial_conductor">Burial Conductor</string>
+    <string name="label_case_patient_burial_place_desc">Burial Place Description</string>
+
+    <string name="label_case_patient_phone_number">Phone Number</string>
+    <string name="label_case_patient_owner_of_phone">Owner of Phone</string>
+    <string name="label_case_patient_perm_residence">Permanent Residence of Person</string>
+
+    <string name="label_case_patient_occupation">Occupation</string>
+    <string name="label_case_patient_facility_state">Facility State</string>
+    <string name="label_case_patient_facility_lga">Facility LGA</string>
+    <string name="label_case_patient_facility_ward">Facility Ward</string>
+    <string name="label_case_patient_facility_name">Occupation Facility</string>
+
+    <string name="label_case_patient_possible_duplicate">Possible Duplicate</string>
+
+
+    <!-- Description -->
+    <string name="desc_case_patient_last_name">Last Name</string>
+    <string name="desc_case_patient_first_name">First Name</string>
+    <string name="desc_case_patient_nickname">Nickname</string>
+    <string name="desc_case_patient_mother_maiden_name">Mother\'s Maiden Name</string>
+    <string name="desc_case_patient_age_and_dob">Age (Birth Date)</string>
+    <string name="desc_case_patient_gender">Gender</string>
+    <string name="desc_case_patient_present_condition">Gender</string>
+
+    <string name="desc_case_patient_death_date">Date of Death</string>
+    <string name="desc_case_patient_death_place_type">Death Place Type</string>
+    <string name="desc_case_patient_death_desc">Death Description</string>
+
+    <string name="desc_case_patient_burial_date">Burial Date</string>
+    <string name="desc_case_patient_burial_conductor">Burial Conductor</string>
+    <string name="desc_case_patient_burial_place_desc">Burial Place Description</string>
+
+    <string name="desc_case_patient_phone_number">Phone Number</string>
+    <string name="desc_case_patient_owner_of_phone">Owner of Phone</string>
+    <string name="desc_case_patient_perm_residence">Permanent Residence of Person</string>
+
+    <string name="desc_case_patient_occupation">Occupation</string>
+    <string name="desc_case_patient_facility_state">Facility State</string>
+    <string name="desc_case_patient_facility_lga">Facility LGA</string>
+    <string name="desc_case_patient_facility_ward">Facility Ward</string>
+    <string name="desc_case_patient_facility_name">Occupation Facility</string>
+
+    <string name="desc_case_patient_possible_duplicate">Possible Duplicate</string>
+
+
+    <!-- Hint -->
+    <string name="hint_case_patient_last_name">Last Name</string>
+    <string name="hint_case_patient_first_name">First Name</string>
+    <string name="hint_case_patient_nickname">Nickname</string>
+    <string name="hint_case_patient_mother_maiden_name">Mother\'s Maiden Name</string>
+    <string name="hint_case_patient_age_and_dob">Age (Birth Date)</string>
+    <string name="hint_case_patient_gender">Gender</string>
+    <string name="hint_case_patient_present_condition">Gender</string>
+
+    <string name="hint_case_patient_death_date">Date of Death</string>
+    <string name="hint_case_patient_death_place_type">Death Place Type</string>
+    <string name="hint_case_patient_death_desc">Death Description</string>
+
+    <string name="hint_case_patient_burial_date">Burial Date</string>
+    <string name="hint_case_patient_burial_conductor">Burial Conductor</string>
+    <string name="hint_case_patient_burial_place_desc">Burial Place Description</string>
+
+    <string name="hint_case_patient_phone_number">Phone Number</string>
+    <string name="hint_case_patient_owner_of_phone">Owner of Phone</string>
+    <string name="hint_case_patient_perm_residence">Permanent Residence of Person</string>
+
+    <string name="hint_case_patient_occupation">Occupation</string>
+    <string name="hint_case_patient_facility_state">Facility State</string>
+    <string name="hint_case_patient_facility_lga">Facility LGA</string>
+    <string name="hint_case_patient_facility_ward">Facility Ward</string>
+    <string name="hint_case_patient_facility_name">Occupation Facility</string>
+
+    <string name="hint_case_patient_possible_duplicate">Possible Duplicate</string>
+
+    <!-- Sub Headings -->
+    <string name="heading_sub_case_patient_occupation">Occupation</string>
+    <string name="heading_sub_case_patient_occupation_facility">Occupation Facility</string>
+    <string name="heading_sub_case_existing_persons">Existing Persons</string>
+    <!-- ........................................................................ -->
+
+
+
+
+
+
+
+
+
+    <!-- Case Info -->
+    <!-- ........................................................................ -->
+    <!-- Label -->
+    <string name="label_case_symptoms_body_temperature">Current Body Temperature (°C)</string>
+    <string name="label_case_symptoms_other_clinical_symptoms">Other Clinical Symptoms</string>
+    <string name="label_case_symptoms_comment">Comment</string>
+
+    <string name="label_case_symptoms_first_symptom_date">Date of First Symptom</string>
+    <string name="label_case_symptoms_first_symptom">First Symptom</string>
+
+    <string name="label_case_symptoms_location_address">Location Address</string>
+    <string name="label_case_symptoms_time_period_of_stay">Time Period of Stay</string>
+    <string name="label_case_symptoms_time_period_of_stay_start">Stay Start</string>
+    <string name="label_case_symptoms_time_period_of_stay_end">Stay End</string>
+
+
+    <!-- Description -->
+    <string name="desc_case_symptoms_body_temperature">Current Body Temperature (°C)</string>
+    <string name="desc_case_symptoms_other_clinical_symptoms">Other Clinical Symptoms</string>
+    <string name="desc_case_symptoms_comment">Comment</string>
+
+    <string name="desc_case_symptoms_first_symptom_date">Date of First Symptom</string>
+    <string name="desc_case_symptoms_first_symptom">First Symptom</string>
+
+    <string name="desc_case_symptoms_location_address">Location Address</string>
+    <string name="desc_case_symptoms_time_period_of_stay">Time Period of Stay</string>
+    <string name="desc_case_symptoms_time_period_of_stay_start">Stay Start</string>
+    <string name="desc_case_symptoms_time_period_of_stay_end">Stay End</string>
+
+
+    <!-- Hint -->
+    <string name="hint_case_symptoms_body_temperature">Current Body Temperature (°C)</string>
+    <string name="hint_case_symptoms_other_clinical_symptoms">Other Clinical Symptoms</string>
+    <string name="hint_case_symptoms_comment">Comment</string>
+    <string name="hint_case_symptoms_first_symptom_date">Date of First Symptom</string>
+    <string name="hint_case_symptoms_first_symptom">First Symptom</string>
+    <string name="hint_case_symptoms_location_address">Location Address</string>
+    <string name="hint_case_symptoms_time_period_of_stay">Time Period of Stay</string>
+    <string name="hint_case_symptoms_time_period_of_stay_start">Stay Start</string>
+    <string name="hint_case_symptoms_time_period_of_stay_end">Stay End</string>
+
+
+    <!-- Sub Headings -->
+    <string name="heading_sub_case_symptoms">Symptoms</string>
+
+    <string name="heading_sub_case_where_symptomatic">Where Person Became Symptomatic</string>
+    <!-- ........................................................................ -->
+
+
+
+
+
+    <!-- Case Info -->
+    <!-- ........................................................................ -->
+    <!-- Label -->
+    <string name="label_dialog_report_message">Message</string>
+
+    <!-- Description -->
+    <string name="desc_dialog_report_message">Your Message</string>
+
+    <!-- Hint -->
+    <string name="hint_dialog_report_message">Your Message</string>
+
+
+    <!-- Sub Headings -->
+    <string name="headline_user_report">Report a problem</string>
+    <!-- ........................................................................ -->
+
+
+    <!-- Success Dialog -->
+    <!-- ........................................................................ -->
+    <string name="heading_success_dialog">Success!</string>
+    <string name="heading_sub_success_notification_dialog">Awesome, we have successfully completed your request.</string>
+    <!-- ........................................................................ -->
+
+
+    <!-- Error Dialog -->
+    <!-- ........................................................................ -->
+    <string name="heading_error_dialog">Error!</string>
+    <string name="heading_sub_error_notification_dialog">Ooops, something went wrong.</string>
+    <!-- ........................................................................ -->
+
+
+    <!-- Confirmation Dialog -->
+    <!-- ........................................................................ -->
+    <string name="heading_confirmation_dialog">Confirmation</string>
+    <string name="heading_sub_confirmation_notification_dialog">Are you sure you want to do this?</string>
+    <string name="heading_sub_confirmation_notification_dialog_delete">Are you sure you want to delete this record?</string>
+    <!-- ........................................................................ -->
+
+
+
+
+    <!-- Missing Weekly Report Dialog -->
+    <!-- ........................................................................ -->
+    <string name="heading_missing_weekly_report_dialog">Missing Weekly Report</string>
+    <!-- ........................................................................ -->
+
+
+    <!-- Location Dialog -->
+    <!-- ........................................................................ -->
+    <string name="heading_location_dialog">Location</string>
+    <!-- ........................................................................ -->
+
+
+    <!-- Move Case Dialog -->
+    <!-- ........................................................................ -->
+    <string name="heading_move_case_dialog">Move Case</string>
+    <!-- ........................................................................ -->
+
+
+    <!-- Select or Create Person -->
+    <!-- ........................................................................ -->
+    <string name="heading_pick_or_create_person_dialog">Pick or create person</string>
+    <!-- ........................................................................ -->
+
+
+
+
+
+    <!-- Location Dialog -->
+    <string name="label_pick_gps">GPS LAT &amp; LON</string>
+    <string name="desc_pick_gps">GPS LAT &amp; LON</string>
+    <string name="hint_pick_gps">No coordinates picked</string>
+
+
+
+
+    <!-- Symptoms -->
+    <!-- ........................................................................ -->
+    <!-- Label -->
+    <string name="label_symptoms_face">Face</string>
+    <string name="label_symptoms_leg">Legs</string>
+    <string name="label_symptoms_soles_of_feet">Soles of the feet</string>
+    <string name="label_symptoms_palm_of_hands">Palm of hands</string>
+    <string name="label_symptoms_thorax">Thorax</string>
+    <string name="label_symptoms_arms">Arms</string>
+    <string name="label_symptoms_genitals">Genitals</string>
+    <string name="label_symptoms_all_over_body">All over body</string>
+    <string name="label_lesions_onset_date">Date of Lesions Onset</string>
+
+
+    <!-- Description -->
+    <string name="desc_symptoms_face">Face</string>
+    <string name="desc_symptoms_leg">Legs</string>
+    <string name="desc_symptoms_soles_of_feet">Soles of the feet</string>
+    <string name="desc_symptoms_palm_of_hands">Palm of hands</string>
+    <string name="desc_symptoms_thorax">Thorax</string>
+    <string name="desc_symptoms_arms">Arms</string>
+    <string name="desc_symptoms_genitals">Genitals</string>
+    <string name="desc_symptoms_all_over_body">All over body</string>
+    <string name="desc_lesions_onset_date">Date of Lesions Onset</string>
+
+
+    <!-- Hint -->
+    <string name="hint_symptoms_face">Face</string>
+    <string name="hint_symptoms_leg">Legs</string>
+    <string name="hint_symptoms_soles_of_feet">Soles of the feet</string>
+    <string name="hint_symptoms_palm_of_hands">Palm of hands</string>
+    <string name="hint_symptoms_thorax">Thorax</string>
+    <string name="hint_symptoms_arms">Arms</string>
+    <string name="hint_symptoms_genitals">Genitals</string>
+    <string name="hint_symptoms_all_over_body">All over body</string>
+    <string name="hint_lesions_onset_date">Date of Lesions Onset</string>
+
+    <string name="tag_symptom_lesions_pic_title">pictureTitle</string>
+    <string name="tag_symptom_lesions_pic_answer">pictureControl</string>
+    <string name="tag_symptom_lesions_pic">piture</string>
+    <!-- ........................................................................ -->
+
+
+
+    <!-- Weekly Report -->
+    <!-- ........................................................................ -->
+    <!-- Label -->
+    <string name="label_report_year">Year</string>
+    <string name="label_report_epi_week">Epi Week</string>
+    <string name="label_report_start_period">Start Period</string>
+    <string name="label_report_end_period">End Period</string>
+
+    <!-- Description -->
+    <string name="desc_report_year">Year</string>
+    <string name="desc_report_epi_week">Epi Week</string>
+    <string name="desc_report_start_period">Start Period</string>
+    <string name="desc_report_end_period">End Period</string>
+
+    <!-- Hint -->
+    <string name="hint_report_year">Year</string>
+    <string name="hint_report_epi_week">Epi Week</string>
+    <string name="hint_report_start_period">Start Period</string>
+    <string name="hint_report_end_period">End Period</string>
+    <!-- ........................................................................ -->
+
+
+</resources>

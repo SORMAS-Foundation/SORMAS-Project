@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:state_pressed="true" >
+        <shape android:shape="rectangle">
+            <stroke android:width="1dp" android:color="@color/dangerButtonPressed" />
+            <!--<solid android:color="@color/dangerButtonPressed"/>-->
+            <corners android:radius="@dimen/defaultButtonRadius" />
+        </shape>
+    </item>
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <stroke android:width="1dp" android:color="@color/dangerButtonFocused" />
+            <!--<solid android:color="@color/dangerButtonFocused"/>-->
+            <corners android:radius="@dimen/defaultButtonRadius" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <stroke android:width="1dp" android:color="@color/dangerButton" />
+            <!--<solid android:color="@color/dangerButton"/>-->
+            <corners android:radius="@dimen/defaultButtonRadius" />
+        </shape>
+    </item>
+</selector>

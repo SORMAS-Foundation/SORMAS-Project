@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable
+            name="showNotificationCallback"
+            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
+        <variable
+            name="hideNotificationCallback"
+            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.person.Person"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <de.symeda.sormas.app.component.TeboTextInputEditText
+            android:id="@+id/txtPosition"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/textControlMarginBottom"
+            app:hint="@string/hint_event_pinvolv_occupation_position"
+            app:labelCaption="@string/label_event_pinvolv_occupation_position"
+            app:description="@string/desc_event_pinvolv_occupation_position"
+            app:required="true"
+            app:nextFocusDown="@+id/txtControl1"
+            app:imeOptions="actionNext"
+            app:onShowInputErrorListener="@{showNotificationCallback}"
+            app:onHideInputErrorListener="@{hideNotificationCallback}"
+            />
+
+        <de.symeda.sormas.app.component.TeboSpinner
+            android:id="@+id/spnFacilityState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/textControlMarginBottom"
+            app:hint="@string/hint_event_pinvolv_occupation_facility_state"
+            app:labelCaption="@string/label_event_pinvolv_occupation_facility_state"
+            app:description="@string/desc_event_pinvolv_occupation_facility_state"
+            app:required="true"
+            app:spinnerMode="dialog"
+            app:value="@={data.occupationRegion}"
+            />
+
+        <de.symeda.sormas.app.component.TeboSpinner
+            android:id="@+id/spnFacilityLga"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/textControlMarginBottom"
+            app:hint="@string/hint_event_pinvolv_occupation_facility_lga"
+            app:labelCaption="@string/label_event_pinvolv_occupation_facility_lga"
+            app:description="@string/desc_event_pinvolv_occupation_facility_lga"
+            app:required="true"
+            app:spinnerMode="dialog"
+            app:value="@={data.occupationDistrict}"
+            />
+
+        <de.symeda.sormas.app.component.TeboSpinner
+            android:id="@+id/spnFacilityWard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/textControlMarginBottom"
+            app:hint="@string/hint_event_pinvolv_occupation_facility_ward"
+            app:labelCaption="@string/label_event_pinvolv_occupation_facility_ward"
+            app:description="@string/desc_event_pinvolv_occupation_facility_ward"
+            app:required="true"
+            app:spinnerMode="dialog"
+            app:value="@={data.occupationCommunity}"
+            />
+
+        <de.symeda.sormas.app.component.TeboSpinner
+            android:id="@+id/spnHealthCareFacility"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/textControlMarginBottom"
+            app:hint="@string/hint_event_pinvolv_occupation_facility"
+            app:labelCaption="@string/label_event_pinvolv_occupation_facility"
+            app:description="@string/desc_event_pinvolv_occupation_facility"
+            app:required="true"
+            app:spinnerMode="dialog"
+            app:value="@={data.occupationFacility}"
+            />
+
+
+    </LinearLayout>
+
+</layout>
+

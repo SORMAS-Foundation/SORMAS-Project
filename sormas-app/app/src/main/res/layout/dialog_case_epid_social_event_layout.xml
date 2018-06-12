@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiDataGathering"/>
+
+        <variable
+            name="callback"
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/parentLayoutVerticalPadding"
+            android:paddingBottom="@dimen/parentLayoutVerticalPadding"
+            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+            android:paddingRight="@dimen/rowListItemHorizontalMargin">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/heading_sub_case_epid_social_events"
+                style="@style/ReadActivitySubHeadingStyle"
+                />
+
+            <de.symeda.sormas.app.component.TeboTextRead
+                android:id="@+id/txtEventDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:description="@string/desc_case_epid_social_event_date"
+                app:labelCaption="@string/label_case_epid_social_event_date"
+                app:value="@{data.gatheringDate}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <de.symeda.sormas.app.component.TeboTextRead
+                android:id="@+id/txtEventDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:singleLine="false"
+                app:maxLines="2"
+                app:description="@string/desc_case_epid_social_event_desc"
+                app:labelCaption="@string/label_case_epid_social_event_desc"
+                app:value="@{data.description}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <de.symeda.sormas.app.component.TeboTextRead
+                android:id="@+id/txtAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                app:singleLine="false"
+                app:maxLines="2"
+                app:description="@string/desc_case_epid_social_event_address"
+                app:labelCaption="@string/label_case_epid_social_event_address"
+                app:locationValue="@{data.gatheringAddress}"
+                app:defaultValue='@{@string/not_available}'
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <de.symeda.sormas.app.component.TeboTextRead
+                    android:id="@+id/txtState"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_case_epid_social_event_state"
+                    app:labelCaption="@string/label_case_epid_social_event_state"
+                    app:stateValue="@{data.gatheringAddress}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <de.symeda.sormas.app.component.TeboTextRead
+                    android:id="@+id/txtLga"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_case_epid_social_event_lga"
+                    app:labelCaption="@string/label_case_epid_social_event_lga"
+                    app:lgaValue="@{data.gatheringAddress}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <de.symeda.sormas.app.component.TeboTextRead
+                    android:id="@+id/txtWard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_case_epid_social_event_ward"
+                    app:labelCaption="@string/label_case_epid_social_event_ward"
+                    app:wardValue="@{data.gatheringAddress}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+                <de.symeda.sormas.app.component.TeboTextRead
+                    android:id="@+id/txtCity"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:description="@string/desc_case_epid_social_event_city"
+                    app:labelCaption="@string/label_case_epid_social_event_city"
+                    app:cityValue="@{data.gatheringAddress}"
+                    app:defaultValue='@{@string/not_available}'
+                    />
+
+            </LinearLayout>
+
+
+
+            <Button
+                android:id="@+id/btnDismiss"
+                android:layout_width="wrap_content"
+                android:layout_gravity="right"
+                android:paddingLeft="@dimen/contentHorizontalSpacing"
+                android:paddingRight="@dimen/contentHorizontalSpacing"
+                android:layout_marginTop="@dimen/primaryButtonMarginTop"
+                android:text="@string/action_dismiss"
+                android:drawableLeft="@drawable/ic_clear_black_24dp"
+                android:drawablePadding="@dimen/contentHorizontalSpacing"
+                android:drawableTint="@color/whiteOpaque"
+                android:onClickListener="@{(view) -> callback.onClick(view, data)}"
+                style="@style/PrimaryButtonStyle"
+                />
+
+
+
+
+        </LinearLayout>
+    </ScrollView>
+</layout>
+

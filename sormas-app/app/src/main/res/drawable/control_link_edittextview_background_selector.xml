@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- disabled -->
+    <item android:state_enabled="false">
+        <shape>
+            <solid android:color="@color/colorControlDisabled" />
+            <corners android:radius="@dimen/textViewRadius" />
+        </shape>
+    </item>
+
+    <!-- pressed -->
+    <item android:state_pressed="true">
+        <shape>
+            <solid android:color="@color/colorControlActivated" />
+            <corners android:radius="@dimen/textViewRadius" />
+        </shape>
+    </item>
+
+    <!-- focused -->
+    <item android:state_focused="true">
+
+        <shape>
+            <solid android:color="@color/colorControlActivated" />
+            <corners android:radius="@dimen/textViewRadius" />
+        </shape>
+    </item>
+
+    <!-- default -->
+    <item>
+        <shape>
+            <solid android:color="@color/lighterBlue" />
+            <corners android:radius="@dimen/textViewRadius" />
+        </shape>
+    </item>
+</selector>

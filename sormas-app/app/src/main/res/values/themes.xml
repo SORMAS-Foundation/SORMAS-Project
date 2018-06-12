@@ -1,12 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
+    Martin
     <style name="AppTheme" parent="AppTheme.Base"/>
-
     <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="android:windowSoftInputMode">stateHidden</item>
+    </style>-->
+
+
+
+
+
+
+    <!-- Base SORMAS application theme. -->
+    <style name="SormasTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/green</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowSoftInputMode">stateHidden</item>
+        <item name="android:statusBarColor">@color/blue</item>
+        <item name="android:navigationBarColor">@color/blue</item>
+        <item name="actionBarSize">@dimen/actionBarSize</item>
+
+        <item name="android:colorControlNormal">@color/colorControlNormal</item>
+        <item name="android:colorControlActivated">@color/colorControlActivated</item>
+        <item name="android:colorControlHighlight">@color/colorControlHighlight</item>
+        <item name="colorControlActivated">@color/textSelectionHandle</item>
+
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+        <item name="android:windowSharedElementEnterTransition">@android:transition/move</item>
+        <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
+
+        <!--<item name="android:textSelectHandle">@android:drawable/edit_text</item>
+        <item name="android:textSelectHandleLeft">@android:drawable/text_select_handle_left</item>
+        <item name="android:textSelectHandleRight">@android:drawable/text_select_handle_right</item>-->
+    </style>
+
+    <style name="ActivityWithOverflowMenuTheme" parent="SormasTheme">
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="actionMenuTextColor">@color/blue</item>
+        <item name="actionMenuTextAppearance">@style/SormasActionBarMenuTextAppearance</item>
+        <item name="actionOverflowMenuStyle">@style/OverflowMenu</item>
+        <item name="android:actionOverflowMenuStyle">@style/OverflowMenu</item>
+        <item name="android:actionButtonStyle">@style/ActionButton</item>
+    </style>
+
+    <!--<style name="MatchSpinnerTheme" parent="SormasTheme">
+        <item name="android:dropDownListViewStyle">@style/App.Style.Spinner</item>
+    </style>-->
+
+    <style name="LoginActivityTheme" parent="SormasTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <!--<style name="SettingActivityTheme" parent="SormasTheme">
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="actionMenuTextColor">@color/blue</item>
+        <item name="actionMenuTextAppearance">@style/SormasActionBarMenuTextAppearance</item>
+        <item name="actionOverflowMenuStyle">@style/OverflowMenu</item>
+        <item name="android:actionOverflowMenuStyle">@style/OverflowMenu</item>
+        <item name="android:actionButtonStyle">@style/ActionButton</item>
+    </style>
+
+    <style name="EnterPinActivityTheme" parent="SormasTheme">
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="actionMenuTextColor">@color/blue</item>
+        <item name="actionMenuTextAppearance">@style/SormasActionBarMenuTextAppearance</item>
+        <item name="actionOverflowMenuStyle">@style/OverflowMenu</item>
+        <item name="android:actionOverflowMenuStyle">@style/OverflowMenu</item>
+        <item name="android:actionButtonStyle">@style/ActionButton</item>
+    </style>
+
+    <style name="DashboardActivityTheme" parent="SormasTheme">
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="actionMenuTextColor">@color/blue</item>
+        <item name="actionMenuTextAppearance">@style/SormasActionBarMenuTextAppearance</item>
+        <item name="actionOverflowMenuStyle">@style/OverflowMenu</item>
+        <item name="android:actionOverflowMenuStyle">@style/OverflowMenu</item>
+        <item name="android:actionButtonStyle">@style/ActionButton</item>
+    </style>-->
+
+
+    <!--parent="Theme.AppCompat.Light.NoActionBar"-->
+    <!--parent="@android:style/Theme.Material.Light.Dialog"-->
+    <style name="Theme" />
+    <style name="Theme.Tebo" />
+    <style name="Theme.Tebo.Dialog" />
+
+
+    <style name="Theme.Tebo.Dialog.DatePicker">
+        <item name="android:windowIsFloating">true</item>
+
+        <item name="android:colorBackground">@color/whiteOpaque</item>
+        <!--<item name="android:windowBackground">@drawable/background_actionbar</item>-->
+        <!--<item name="alertDialogStyle">@style/AlertDialog.Leanback.Light</item>-->
+        <item name="android:datePickerStyle">@style/Theme.Tebo.Dialog.DatePicker.Style</item>
+        <item name="android:colorAccent">@color/blue</item> <!-- DatePicker Button -->
+        <item name="android:textColorPrimaryInverse">@color/whiteOpaque</item> <!-- Selected date text color -->
+        <item name="android:colorControlActivated">@color/blue</item> <!-- Selected date background color -->
+        <item name="android:colorControlHighlight">@color/lightestBlue50</item> <!-- Onclick hightlight background -->
+        <item name="android:headerMonthTextAppearance">@style/Theme.Tebo.Dialog.DatePicker.HeaderMonthTextAppearance</item>
+        <item name="android:colorControlNormal">@color/blue</item> <!-- Scrollbar handler -->
+        <item name="android:disabledAlpha">0.5</item> <!-- Alpha for year selector -->
+        <item name="android:backgroundDimAmount">0.8</item> <!-- Alpha for modal -->
+        <item name="android:textColorSecondary">@color/blue</item> <!-- Week name text color -->
+        <item name="android:textColorPrimary">@color/normalText</item> <!-- Days in month text color -->
+        <!--<item name="android:buttonBarButtonStyle">@style/Theme.Tebo.Dialog.DatePicker.ButtonBar</item> Works-->
+        <item name="android:calendarViewStyle">@style/Theme.Tebo.Dialog.DatePicker.CalendarView</item>
+    </style>
+
+    <style name="Theme.Tebo.Dialog.DatePicker.Style">
+        <item name="android:datePickerMode">spinner</item><!-- @integer/date_picker_mode_material -->
+        <item name="android:calendarViewShown">true</item>
+        <item name="android:headerBackground">@drawable/background_datepicker_header</item>
+    </style>
+
+    <style name="Theme.Tebo.Dialog.DatePicker.CalendarView" parent="@android:style/Widget.Material.CalendarView">
+        <item name="android:weekDayTextAppearance">@style/Theme.Tebo.Dialog.DatePicker.WeekDayTextAppearance</item>
+        <item name="android:dateTextAppearance">@style/Theme.Tebo.Dialog.DatePicker.DateTextAppearance</item>
+        <item name="android:showWeekNumber">true</item>
+        <item name="android:selectedDateVerticalBar">@drawable/background_actionbar</item>
+    </style>
+
+    <style name="Theme.Tebo.Dialog.DatePicker.HeaderMonthTextAppearance">
+        <item name="android:textColor">@color/whiteOpaque</item>
+        <item name="android:textSize">50sp</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+
+    <style name="Theme.Tebo.Dialog.DatePicker.WeekDayTextAppearance">
+        <item name="android:textColor">@color/blue</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="Theme.Tebo.Dialog.DatePicker.DateTextAppearance">
+        <item name="android:textColor">@color/selector_color_datepicker_daytext</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <!--<item name="android:textColorPrimaryInverse">@color/whiteOpaque</item>-->
     </style>
 </resources>

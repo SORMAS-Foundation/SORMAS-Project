@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    android:id="@+id/base_layout">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+
+            <de.symeda.sormas.app.component.TeboTextInputEditText
+                android:id="@+id/txtSettingsServerUrl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                app:hint="Server Address"
+                app:description="This is the URL to the restful API"
+                app:labelCaption="Server Address"/>
+
+            <de.symeda.sormas.app.component.TeboButton
+                android:id="@+id/btnSettingsChangePIN"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/buttonControlMarginBottom"
+                app:text="@string/action_change_PIN"
+                app:buttonType="line_secondary"
+                app:rounded="true"
+                />
+
+
+            <de.symeda.sormas.app.component.TeboButton
+                android:id="@+id/btnSettingsRepullData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/buttonControlMarginBottom"
+                app:buttonType="line_secondary"
+                app:text="@string/action_repull_data"
+                app:rounded="true"
+                />
+
+            <de.symeda.sormas.app.component.TeboButton
+                android:id="@+id/btnSettingsSyncLog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/buttonControlMarginBottom"
+                app:text="@string/action_open_syncLog"
+                app:buttonType="line_secondary"
+                app:rounded="true"
+                />
+
+            <de.symeda.sormas.app.component.TeboButton
+                android:id="@+id/btnSettingsLogout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/buttonControlMarginBottom"
+                app:text="@string/action_logout"
+                app:buttonType="line_secondary"
+                app:rounded="true"
+                />
+
+            <TextView
+                android:id="@+id/sormas_version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                style="@style/DarkColorStyle"
+                />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>

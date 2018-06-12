@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:descendantFocusability="beforeDescendants"
+android:focusableInTouchMode="true"
+android:id="@+id/base_layout">
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <TextView android:id="@+id/test32"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Surveillance Officer Dashboard"/>
+
+
+    </LinearLayout>
+
+</ScrollView>
+
+
+<!--<TextView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:text="Settings"/>-->
+</layout>

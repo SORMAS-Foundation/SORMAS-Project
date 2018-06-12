@@ -16,7 +16,6 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -43,7 +42,8 @@ import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.caze.CaseEditActivity;
+import de.symeda.sormas.app.caze.read.CaseReadActivity;
+import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.LocationService;
 
 public class CaseDao extends AbstractAdoDao<Case> {
@@ -206,9 +206,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
      * If there are reports for the given and next epi week, all cases between the report dates of these
      * reports will be collected; if one or both of these dates are missing, the start and end of the given
      * epi week is taken instead, respectively.
-     *
-     * @param epiWeek
-     * @return
      */
     public int getNumberOfCasesForEpiWeek(EpiWeek epiWeek, User informant) {
         return getNumberOfCasesForEpiWeekAndDisease(epiWeek, null, informant);
@@ -216,9 +213,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
     /**
      * Returns the number of cases with the given disease reported by the current user over the course of the given epi week.
-     *
-     * @param epiWeek
-     * @return
      */
     public int getNumberOfCasesForEpiWeekAndDisease(EpiWeek epiWeek, Disease disease, User informant) {
         if (!informant.hasUserRole(UserRole.INFORMANT)) {
@@ -287,8 +281,15 @@ public class CaseDao extends AbstractAdoDao<Case> {
         if (currentCase != null && mergedCase != null && currentCase.getDisease() != mergedCase.getDisease()) {
             Context context = DatabaseHelper.getContext();
 
-            Intent notificationIntent = new Intent(context, CaseEditActivity.class);
-            notificationIntent.putExtra(CaseEditActivity.KEY_CASE_UUID, mergedCase.getUuid());
+
+
+            //TODO: Talk to Martin about this
+            Intent notificationIntent = new Intent(context, CaseReadActivity.class);
+            notificationIntent.putExtra(ConstantHelper.KEY_DATA_UUID, mergedCase.getUuid());
+            notificationIntent.putExtra(ConstantHelper.ARG_PAGE_STATUS, mergedCase.getCaseClassification());
+
+
+
 
             StringBuilder content = new StringBuilder();
             content.append("<b>").append(mergedCase.toString()).append("</b><br/>");

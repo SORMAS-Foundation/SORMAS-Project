@@ -3,7 +3,7 @@ package de.symeda.sormas.app.util;
 import com.google.android.gms.analytics.ExceptionParser;
 
 /**
- * Created by Mate Strysewske on 15.05.2017.
+ * Created by Orson on 08/11/2017.
  */
 
 public class UncaughtExceptionParser implements ExceptionParser {
@@ -14,3 +14,4 @@ public class UncaughtExceptionParser implements ExceptionParser {
     }
 
 }
+
