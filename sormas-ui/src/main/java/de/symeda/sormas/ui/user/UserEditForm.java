@@ -167,7 +167,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		TextField fnField = (TextField)getFieldGroup().getField(UserDto.FIRST_NAME);
 		TextField lnField = (TextField)getFieldGroup().getField(UserDto.LAST_NAME);
 		TextField unField = (TextField)getFieldGroup().getField(UserDto.USER_NAME);
-		if(!fnField.isEmpty() && !lnField.isEmpty() && unField.isEmpty()) {
+		if(!fnField.isEmpty() && !lnField.isEmpty() 
+				&& unField.isEmpty() && !unField.isReadOnly()) {
 			unField.setValue(UserHelper.getSuggestedUsername(fnField.getValue(), lnField.getValue()));
 		}
 	}
