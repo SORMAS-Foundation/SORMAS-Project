@@ -22,6 +22,7 @@ import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -74,7 +75,7 @@ public class GridExportStreamResource extends StreamResource {
 
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
 					OutputStreamWriter osw = new OutputStreamWriter(baos, StandardCharsets.UTF_8.name());
-					CSVWriter writer = CSVUtils.createCSVWriter(osw);
+					CSVWriter writer = CSVUtils.createCSVWriter(osw, FacadeProvider.getConfigFacade().getCsvSeparator());
 					exportedRows.forEach(r -> {
 						writer.writeNext(r.toArray(new String[r.size()]));
 					});
