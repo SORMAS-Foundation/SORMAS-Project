@@ -89,9 +89,6 @@ PAUSE >nul
 %ASADMIN% create-auth-realm --classname org.wamblee.glassfish.auth.FlexibleJdbcRealm --property "jaas.context=%DOMAIN_NAME%Realm:sql.password=SELECT password FROM users WHERE username\=? AND aktiv\=true:sql.groups=SELECT userrole FROM userroles INNER JOIN users ON userroles.user_id\=users.id WHERE users.username\=?:sql.seed=SELECT seed FROM users WHERE username\=?:datasource.jndi=jdbc/%DOMAIN_NAME%UsersDataPool:assign-groups=AUTHED_USER:password.digest=SHA-256:charset=UTF-8" %DOMAIN_NAME%-realm
 %ASADMIN% set server-config.security-service.default-realm=%DOMAIN_NAME%-realm
 
-%ASADMIN% set server-config.http-service.sso-enabled=true
-%ASADMIN% set server-config.http-service.virtual-server.server.sso-cookie-secure=true
-
 Echo Press [Enter] to continue...
 PAUSE >nul
 
