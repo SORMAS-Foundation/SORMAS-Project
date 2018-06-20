@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +24,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	
 	private static final String TEMP_FILES_PATH = "temp.path";
 	private static final String GENERATED_FILES_PATH = "generated.path";
+	private static final String CSV_SEPARATOR = "csv.separator";
 	
 	private static final String EMAIL_SENDER_ADDRESS = "email.sender.address";
 	private static final String EMAIL_SENDER_NAME = "email.sender.name";
@@ -47,7 +49,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		if (prop == null){
 			return defaultValue;
 		} else {
-			return prop.trim();
+			return prop;
 		}
 	}
 
@@ -94,6 +96,15 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getSmsAuthSecret() {
 		return getProperty(SMS_AUTH_SECRET, "");
+	}
+
+	@Override
+	public char getCsvSeparator() {
+		String seperatorString = getProperty(CSV_SEPARATOR, ",");
+		if (seperatorString.length() != 1) {
+			throw new IllegalArgumentException(CSV_SEPARATOR + " must be a single character instead of '" + seperatorString + "'");
+		}
+		return seperatorString.charAt(0);
 	}
 	
 	private String getProperty(String name, String defaultValue){

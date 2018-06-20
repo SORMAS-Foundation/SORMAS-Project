@@ -51,7 +51,7 @@ public class ImportFacadeEjbTest extends AbstractBeanTest {
 			
 			BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(baos.toByteArray()));
 			InputStreamReader reader = new InputStreamReader(bis);
-			CSVReader csvReader = CSVUtils.createCSVReader(reader);
+			CSVReader csvReader = CSVUtils.createCSVReader(reader, ';');
 			
 			int numberOfLines = 0;
 			while (csvReader.readNext() != null) {

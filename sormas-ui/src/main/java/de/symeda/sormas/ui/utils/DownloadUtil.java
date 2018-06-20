@@ -108,7 +108,7 @@ public class DownloadUtil {
 
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
 					OutputStreamWriter osw = new OutputStreamWriter(baos, StandardCharsets.UTF_8.name());
-					CSVWriter writer = CSVUtils.createCSVWriter(osw);
+					CSVWriter writer = CSVUtils.createCSVWriter(osw, FacadeProvider.getConfigFacade().getCsvSeparator());
 					
 					// fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
 					Method[] readMethods = Arrays.stream(exportRowClass.getDeclaredMethods())
