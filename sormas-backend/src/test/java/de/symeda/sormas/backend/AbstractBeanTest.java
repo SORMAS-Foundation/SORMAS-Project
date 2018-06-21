@@ -2,6 +2,7 @@ package de.symeda.sormas.backend;
 
 import org.junit.Before;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
@@ -25,6 +26,7 @@ import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
@@ -64,6 +66,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		MockProducer.resetMocks();
 	}
 	
+
+	public ConfigFacade getConfigFacade() {
+		return getBean(ConfigFacadeEjbLocal.class);
+	}
 
 	public CaseFacade getCaseFacade() {
 		return getBean(CaseFacadeEjbLocal.class);

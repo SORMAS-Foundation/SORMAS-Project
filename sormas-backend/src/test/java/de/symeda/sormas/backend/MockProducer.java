@@ -15,6 +15,8 @@ import javax.jms.Topic;
 import javax.mail.Session;
 import javax.transaction.UserTransaction;
 
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+
 /**
  * Creates mocks for resources needed in bean test / external services. <br />
  * Use {@link Mailbox#get (String)} to retrieve e-mails sent (receiver address passed).
@@ -28,17 +30,17 @@ public class MockProducer {
 	private static Topic topic = mock(Topic.class);
 	private static ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 	private static TimerService timerService = mock(TimerService.class);
-	private static Properties properties = mock(Properties.class);
+	private static Properties properties = new Properties();
 	private static UserTransaction userTransaction = mock(UserTransaction.class);
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
 	static {
-		Properties props = new Properties();
-		props.setProperty("country.name","nigeria");
+		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME,"nigeria");
+		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ";");
 
 		// Make sure that the default session does not use a local mail server (if mock-javamail is removed)
-		mailSession = Session.getInstance(props);
+		mailSession = Session.getInstance(properties);
 	}
 
 	static {
@@ -47,7 +49,7 @@ public class MockProducer {
 
 	public static void resetMocks() {
 
-		reset(sessionContext, principal, topic, connectionFactory, timerService, properties, userTransaction);
+		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction);
 		wireMocks();
 	}
 

@@ -18,19 +18,19 @@ import de.symeda.sormas.api.ConfigFacade;
 @Stateless(name="ConfigFacade")
 public class ConfigFacadeEjb implements ConfigFacade {
 
-	private static final String COUNTRY_NAME = "country.name";
+	public static final String COUNTRY_NAME = "country.name";
 	
-	private static final String APP_URL = "app.url";
+	public static final String APP_URL = "app.url";
 	
-	private static final String TEMP_FILES_PATH = "temp.path";
-	private static final String GENERATED_FILES_PATH = "generated.path";
-	private static final String CSV_SEPARATOR = "csv.separator";
+	public static final String TEMP_FILES_PATH = "temp.path";
+	public static final String GENERATED_FILES_PATH = "generated.path";
+	public static final String CSV_SEPARATOR = "csv.separator";
 	
-	private static final String EMAIL_SENDER_ADDRESS = "email.sender.address";
-	private static final String EMAIL_SENDER_NAME = "email.sender.name";
-	private static final String SMS_SENDER_NAME = "sms.sender.name";
-	private static final String SMS_AUTH_KEY = "sms.auth.key";
-	private static final String SMS_AUTH_SECRET = "sms.auth.secret";
+	public static final String EMAIL_SENDER_ADDRESS = "email.sender.address";
+	public static final String EMAIL_SENDER_NAME = "email.sender.name";
+	public static final String SMS_SENDER_NAME = "sms.sender.name";
+	public static final String SMS_AUTH_KEY = "sms.auth.key";
+	public static final String SMS_AUTH_SECRET = "sms.auth.secret";
 	
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ConfigFacadeEjb.class);
