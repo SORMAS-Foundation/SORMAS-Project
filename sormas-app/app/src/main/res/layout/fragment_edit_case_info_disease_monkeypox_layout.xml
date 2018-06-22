@@ -7,12 +7,6 @@
 
     <data>
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
         <variable name="yesNoUnknownClass" type="Class" />
@@ -33,10 +27,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/heading_sub_case_addition_med_info"
-            style="@style/ReadActivitySubHeadingStyle"
+            style="@style/SubHeadingStyle"
             />
 
-        <de.symeda.sormas.app.component.TeboSwitch
+        <de.symeda.sormas.app.component.controls.TeboSwitch
             android:id="@+id/swhSmallpoxVaccinationRecieved"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,11 +52,11 @@
             app:abbrevUnknown="@{false}"
             app:value="@={data.smallpoxVaccinationReceived}"
             app:onCheckedChangeListener="@{null}"
-            app:onShowInputErrorListener="@{showNotificationCallback}"
-            app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
             />
 
-        <de.symeda.sormas.app.component.TeboDatePicker
+        <de.symeda.sormas.app.component.controls.TeboDatePicker
             android:id="@+id/dtpLastVaccinationDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

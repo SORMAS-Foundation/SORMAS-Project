@@ -12,12 +12,9 @@ import android.widget.AdapterView;
 
 import java.util.List;
 
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
-import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
@@ -29,14 +26,14 @@ import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
-import de.symeda.sormas.app.component.TeboSpinner;
-import de.symeda.sormas.app.component.TeboSwitch;
+import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.TeboSwitch;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
@@ -191,7 +188,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
         animalContactAdapter.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
             public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
-                setRootNotificationBindingVariable(binding, layoutName);
+//                setRootNotificationBindingVariable(binding, layoutName);
             }
         });
 
@@ -204,7 +201,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
         environmentalExposureAdapter.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
             public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
-                setRootNotificationBindingVariable(binding, layoutName);
+//                setRootNotificationBindingVariable(binding, layoutName);
             }
         });
 
@@ -630,9 +627,9 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     private void verifyGatheringStatus() {
         YesNoUnknown hospitalizedPreviously = record.getGatheringAttended();
         if (hospitalizedPreviously == YesNoUnknown.YES && getGatherings().size() <= 0) {
-            getContentBinding().swhGathering.enableErrorState((INotificationContext)getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().swhGathering.enableErrorState((NotificationContext)getActivity(), R.string.validation_soft_add_list_entry);
         } else {
-            getContentBinding().swhGathering.disableErrorState((INotificationContext)getActivity());
+            getContentBinding().swhGathering.disableErrorState();
         }
     }
 
@@ -688,9 +685,9 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     private void verifyBurialStatus() {
         YesNoUnknown hospitalizedPreviously = record.getBurialAttended();
         if (hospitalizedPreviously == YesNoUnknown.YES && getBurials().size() <= 0) {
-            getContentBinding().swhBurial.enableErrorState((INotificationContext)getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().swhBurial.enableErrorState((NotificationContext)getActivity(), R.string.validation_soft_add_list_entry);
         } else {
-            getContentBinding().swhBurial.disableErrorState((INotificationContext)getActivity());
+            getContentBinding().swhBurial.disableErrorState();
         }
     }
 
@@ -746,9 +743,9 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     private void verifyTravelStatus() {
         YesNoUnknown hospitalizedPreviously = record.getTraveled();
         if (hospitalizedPreviously == YesNoUnknown.YES && getTravels().size() <= 0) {
-            getContentBinding().swhTraveled.enableErrorState((INotificationContext)getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().swhTraveled.enableErrorState((NotificationContext)getActivity(), R.string.validation_soft_add_list_entry);
         } else {
-            getContentBinding().swhTraveled.disableErrorState((INotificationContext)getActivity());
+            getContentBinding().swhTraveled.disableErrorState();
         }
     }
 

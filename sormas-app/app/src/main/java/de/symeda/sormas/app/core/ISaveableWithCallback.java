@@ -9,6 +9,6 @@ package de.symeda.sormas.app.core;
  */
 public interface ISaveableWithCallback {
 
-    void save(INotificationContext nContext, Callback.IAction callback);
+    void save(NotificationContext nContext, Callback.IAction callback);
 
 }

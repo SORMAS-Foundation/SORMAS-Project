@@ -6,12 +6,6 @@
     android:id="@+id/base_layout">
 
     <data>
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.person.Person"/>
     </data>
@@ -32,7 +26,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <de.symeda.sormas.app.component.TeboDatePicker
+            <de.symeda.sormas.app.component.controls.TeboDatePicker
                 android:id="@+id/dtpDateOfDeath"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -46,7 +40,7 @@
                 />
 
 
-            <de.symeda.sormas.app.component.TeboSpinner
+            <de.symeda.sormas.app.component.controls.TeboSpinner
                 android:id="@+id/spnCauseOfDeath"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -67,7 +61,7 @@
             layout="@layout/blank_layout"
             />
 
-        <de.symeda.sormas.app.component.TeboSpinner
+        <de.symeda.sormas.app.component.controls.TeboSpinner
             android:id="@+id/spnDeathPlaceType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -81,7 +75,7 @@
             />
 
         <!--android:layout_marginBottom="@dimen/textControlMarginBottom"-->
-        <de.symeda.sormas.app.component.TeboTextInputEditText
+        <de.symeda.sormas.app.component.controls.ControlTextEditField
             android:id="@+id/txtDeathPlaceDesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -90,10 +84,9 @@
             app:description="@string/desc_contact_person_death_place_desc"
             app:required="true"
             app:value="@={data.deathPlaceDescription}"
-            app:nextFocusDown="@+id/txtControl1"
             app:imeOptions="actionNext"
-            app:onShowInputErrorListener="@{showNotificationCallback}"
-            app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
             />
 
 

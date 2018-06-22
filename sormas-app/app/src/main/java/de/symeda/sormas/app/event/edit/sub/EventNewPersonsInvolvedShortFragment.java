@@ -27,7 +27,7 @@ import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityCommunicator;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.ISaveableWithCallback;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
@@ -227,7 +227,7 @@ public class EventNewPersonsInvolvedShortFragment extends BaseEditActivityFragme
     }
 
     @Override
-    public void save(final INotificationContext nContext, final Callback.IAction callback) {
+    public void save(final NotificationContext nContext, final Callback.IAction callback) {
         final EventParticipant eventParticipantToSave = getActivityRootData();
 
         if (eventParticipantToSave == null)
@@ -289,7 +289,7 @@ public class EventNewPersonsInvolvedShortFragment extends BaseEditActivityFragme
         });
     }
 
-    private void checkExistingPersons(final INotificationContext nContext, final EventParticipant eventParticipantToSave, final Callback.IAction<List<Person>> callback) {
+    private void checkExistingPersons(final NotificationContext nContext, final EventParticipant eventParticipantToSave, final Callback.IAction<List<Person>> callback) {
         try {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
 
@@ -334,7 +334,7 @@ public class EventNewPersonsInvolvedShortFragment extends BaseEditActivityFragme
 
     }
 
-    private void savePersonAndEventParticipant(final INotificationContext nContext, final EventParticipant eventParticipantToSave, final Callback.IAction callback) {
+    private void savePersonAndEventParticipant(final NotificationContext nContext, final EventParticipant eventParticipantToSave, final Callback.IAction callback) {
         try {
             ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
                 private PersonDao personDao;

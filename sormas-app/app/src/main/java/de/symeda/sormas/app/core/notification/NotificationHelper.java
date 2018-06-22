@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 
 /**
  * Created by Orson on 01/03/2018.
@@ -60,17 +60,17 @@ public class NotificationHelper {
 
 
     //Mainly called from outside
-    public static void showNotification(INotificationContext communicator, NotificationType type, String message) {
+    public static void showNotification(NotificationContext communicator, NotificationType type, String message) {
         showNotification(communicator, NotificationPosition.TOP, type, message);
     }
 
     //Mainly called from outside
-    public static void showNotification(INotificationContext communicator, NotificationType type, int messageResId) {
+    public static void showNotification(NotificationContext communicator, NotificationType type, int messageResId) {
         showNotification(communicator, NotificationPosition.TOP, type, messageResId);
     }
 
     //Mainly called from outside
-    public static void hideNotification(INotificationContext communicator) {
+    public static void hideNotification(NotificationContext communicator) {
         View rootView = communicator.getRootView();
 
         if (rootView == null)
@@ -147,7 +147,7 @@ public class NotificationHelper {
         showNotification(notificationFrame, tvNotificationMessage, position, type, message);
     }
 
-    public static void showNotification(INotificationContext communicator, NotificationPosition position, NotificationType type, int messageResId) {
+    public static void showNotification(NotificationContext communicator, NotificationPosition position, NotificationType type, int messageResId) {
         View rootView = communicator.getRootView();
 
         if (rootView == null)
@@ -166,7 +166,7 @@ public class NotificationHelper {
         showNotification(communicator.getRootView(), position, type, resources.getString(messageResId));
     }
 
-    public static void showNotification(INotificationContext communicator, NotificationPosition position, NotificationType type, String message) {
+    public static void showNotification(NotificationContext communicator, NotificationPosition position, NotificationType type, String message) {
         View rootView = communicator.getRootView();
 
         if (rootView == null)
@@ -293,7 +293,7 @@ public class NotificationHelper {
         showDialogNotification(notificationFrame, tvNotificationMessage, position, type, message);
     }
 
-    public static void showDialogNotification(INotificationContext communicator, NotificationPosition position, NotificationType type, int messageResId) {
+    public static void showDialogNotification(NotificationContext communicator, NotificationPosition position, NotificationType type, int messageResId) {
         View rootView = communicator.getRootView();
 
         if (rootView == null)
@@ -312,7 +312,7 @@ public class NotificationHelper {
         showDialogNotification(communicator.getRootView(), position, type, resources.getString(messageResId));
     }
 
-    public static void showDialogNotification(INotificationContext communicator, NotificationPosition position, NotificationType type, String message) {
+    public static void showDialogNotification(NotificationContext communicator, NotificationPosition position, NotificationType type, String message) {
         View rootView = communicator.getRootView();
 
         if (rootView == null)
@@ -409,17 +409,17 @@ public class NotificationHelper {
     }
 
     //Mainly called from outside
-    public static void showDialogNotification(INotificationContext communicator, NotificationType type, String message) {
+    public static void showDialogNotification(NotificationContext communicator, NotificationType type, String message) {
         showDialogNotification(communicator, NotificationPosition.TOP, type, message);
     }
 
     //Mainly called from outside
-    public static void showDialogNotification(INotificationContext communicator, NotificationType type, int messageResId) {
+    public static void showDialogNotification(NotificationContext communicator, NotificationType type, int messageResId) {
         showDialogNotification(communicator, NotificationPosition.TOP, type, messageResId);
     }
 
     //Mainly called from outside
-    public static void hideDialogNotification(INotificationContext communicator) {
+    public static void hideDialogNotification(NotificationContext communicator) {
         View rootView = communicator.getRootView();
 
         if (rootView == null)

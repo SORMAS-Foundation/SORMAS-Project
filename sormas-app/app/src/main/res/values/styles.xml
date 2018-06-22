@@ -134,12 +134,10 @@
         <item name="android:textStyle">italic</item>
     </style>
 
-
-
-    <style name="EditTextViewSingleRowStyle">
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">@dimen/textViewTopPadding</item>
-        <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
+    <style name="ControlTextFieldStyle">
+        <item name="android:layout_height">@dimen/maxControlHeight</item>
+        <item name="android:minHeight">@dimen/maxControlHeight</item>
+        <item name="android:maxHeight">@dimen/maxControlHeight</item>
         <item name="android:background">@drawable/selector_text_control_edit</item>
         <item name="android:cursorVisible">true</item>
         <item name="android:fontFamily">sans-serif</item>
@@ -153,21 +151,36 @@
         <item name="android:textSize">@dimen/defaultControlTextSize</item>
     </style>
 
-    <style name="ControlDateOrTimePickerInputStyle" parent="@style/EditTextViewSingleRowStyle">
-        <item name="android:cursorVisible">false</item>
-        <item name="android:textIsSelectable">false</item>
+    <style name="ControlTextFieldMultiRowStyle" parent="@style/ControlTextFieldStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/textViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
+
     </style>
 
-    <style name="ControlReadLabelStyle">
-        <item name="android:textColor">@color/controlReadLabelColor</item>
-        <item name="android:textSize">@dimen/controlReadLabelSize</item>
-        <item name="android:paddingTop">@dimen/controlReadLabelPaddingTop</item>
-        <item name="android:paddingBottom">@dimen/controlReadLabelPaddingBottom</item>
+    <style name="ControlTextFieldSlimStyle" parent="@style/ControlTextFieldStyle">
+        <item name="android:textSize">@dimen/slimControlTextSize</item>
+        <item name="android:paddingTop">@dimen/slimTextViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/slimTextViewBottomPadding</item>
+        <item name="android:layout_height">@dimen/slimControlHeight</item>
+        <item name="android:minHeight">@dimen/maxControlHeight</item>
+        <item name="android:maxHeight">@dimen/maxControlHeight</item>
+    </style>
+
+    <style name="ControlTextFieldReadSingleRowStyle">
+        <item name="android:background">@color/controlReadTextViewBackground</item>
+        <item name="android:cursorVisible">true</item>
         <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textAllCaps">true</item>
+        <item name="android:gravity">center_vertical</item>
         <item name="android:focusable">false</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:textColor">@color/controlReadTextColor</item>
+        <item name="android:textColorHint">@color/controlReadTextViewHint</item>
+        <item name="android:textSize">@dimen/controlReadTextSize</item>
+    </style>
+
+    <style name="ControlDateOrTimePickerInputStyle" parent="@style/ControlTextFieldStyle">
+        <item name="android:cursorVisible">false</item>
+        <item name="android:textIsSelectable">false</item>
     </style>
 
     <style name="ControlLabelStyle">
@@ -180,6 +193,26 @@
         <item name="android:focusable">true</item>
         <item name="android:clickable">true</item>
         <item name="android:focusableInTouchMode">true</item>
+    </style>
+
+    <style name="ControlLabelReadStyle" parent="ControlLabelStyle">
+        <item name="android:focusable">false</item>
+    </style>
+
+    <style name="RadioGroupLabelStyle" parent="ControlLabelStyle">
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+
+    <style name="ControlPopupTextViewEditStyle">
+        <item name="android:paddingLeft">@dimen/textViewLeftPadding</item>
+        <item name="android:paddingRight">@dimen/textViewRightPadding</item>
+        <item name="android:paddingTop">@dimen/textViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
     </style>
 
     <style name="RequiredIndicatorStyle">
@@ -200,24 +233,17 @@
         <item name="android:textColor">@color/controlLabelColor</item>
     </style>
 
+    <style name="MinorErrorIndicatorStyle" parent="@style/RequiredIndicatorStyle">
+        <item name="android:text">@string/indicator_minor_error</item>
+    </style>
+
     <style name="DarkColorStyle">
         <item name="android:textColor">@color/normalText</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textAllCaps">true</item>
     </style>
 
-    <style name="ReadTextFieldViewSingleRowStyle">
-        <item name="android:background">@color/controlReadTextViewBackground</item>
-        <item name="android:cursorVisible">true</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:focusable">false</item>
-        <item name="android:textColor">@color/controlReadTextColor</item>
-        <item name="android:textColorHint">@color/controlReadTextViewHint</item>
-        <item name="android:textSize">@dimen/controlReadTextSize</item>
-    </style>
-
-    <style name="FormActivityLinkButtonStyle">
+    <style name="ControlLinkStyle">
         <item name="android:gravity">center_vertical</item>
         <item name="android:height">@dimen/linkButtonHeight</item>
         <item name="android:fontFamily">sans-serif-medium</item>
@@ -403,30 +429,34 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="LandingSummaryCellTitleStyle">
+    <style name="SummaryCellTitleStyle">
         <item name="android:gravity">center</item>
-        <item name="android:textSize">@dimen/landingSummaryCellTitleSize</item>
+        <item name="android:textSize">@dimen/summaryCellTitleTextSize</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="LandingSummaryCellPercentageStyle">
+    <style name="SummaryVisualizationValueStyle">
         <item name="android:gravity">center</item>
-        <item name="android:textSize">@dimen/landingSummaryCellPercentageSize</item>
+        <item name="android:textSize">@dimen/summaryVisualizationValueTextSize</item>
+    </style>
+
+    <style name="SummaryVisualizationPercentageStyle">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/summaryVisualizationPercentageTextSize</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="DonutProgressDefaultStyle">
+    <style name="CircularProgressDefaultStyle">
         <item name="android:layout_gravity">center</item>
-        <item name="donut_unfinished_color">@color/circularProgressUnfinishedDefault</item>
         <item name="donut_finished_color">@color/circularProgressFinishedDefault</item>
-        <item name="donut_finished_stroke_width">@dimen/donutFinishedStrokeWidth</item>
-        <item name="donut_unfinished_stroke_width">@dimen/donutUnfinishedStrokeWidth</item>
-        <item name="donut_max">@integer/donutMax</item>
-        <item name="donut_text_size">@dimen/donutTextSize</item>
+        <item name="donut_unfinished_color">@color/circularProgressUnfinishedDefault</item>
+        <item name="donut_finished_stroke_width">@dimen/circularProgressFinishedStrokeWidth</item>
+        <item name="donut_unfinished_stroke_width">@dimen/circularProgressUnfinishedStrokeWidth</item>
+        <item name="donut_max">@integer/circularProgressMaxValue</item>
+        <item name="donut_text_size">@dimen/circularProgressTextSize</item>
     </style>
-
 
     <style name="EnterPinInputDisplayStyle">
         <item name="android:ellipsize">start</item>
@@ -440,20 +470,30 @@
     </style>
 
 
-
-    <style name="ReadActivitySubHeadingStyle">
+    <!-- Sub heading with bottom margin -->
+    <style name="SubHeadingStyle">
         <item name="android:textColor">@color/normalText</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textSize">@dimen/readActivitySubHeadingTextSize</item>
         <item name="android:layout_marginBottom">@dimen/parentLayoutVerticalMargin</item>
     </style>
 
-
-
-    <style name="ReadActivitySubHeadingNoBMarginStyle">
+    <!-- Sub heading without bottom margin -->
+    <style name="SubHeadingCompactStyle">
         <item name="android:textColor">@color/normalText</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textSize">@dimen/readActivitySubHeadingTextSize</item>
+    </style>
+
+    <!-- Description of the area below a sub heading -->
+    <style name="SubHeadingDescriptionStyle">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_marginBottom">@dimen/subHeadlineMarginBottom</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:textColor">@color/controlTextColor</item>
+        <item name="android:textIsSelectable">false</item>
+        <item name="android:textSize">@dimen/defaultSubHeadingDescriptionTextSize</item>
     </style>
 
     <style name="ReadActivitySubListHeadingNoBMarginStyle">

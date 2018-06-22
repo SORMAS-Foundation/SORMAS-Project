@@ -27,7 +27,7 @@ import java.util.List;
 
 import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.TeboPropertyField;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
 
 /**
  * Created by Orson on 03/01/2018.
@@ -41,7 +41,7 @@ import de.symeda.sormas.app.component.TeboPropertyField;
         @BindingMethod(type = TagView.class, attribute = "textSize", method = "setTagTextSize"),
         @BindingMethod(type = TagView.class, attribute = "textColor", method = "setTagTextColor")
 })
-public class TagView extends TeboPropertyField<String> {
+public class TagView extends ControlPropertyField<String> {
 
     public static final String TAG = TagView.class.getSimpleName();
 
@@ -120,7 +120,7 @@ public class TagView extends TeboPropertyField<String> {
     // </editor-fold>
 
     @Override
-    protected void initializeViews(Context context, AttributeSet attrs, int defStyle) {
+    protected void initializeView(Context context, AttributeSet attrs, int defStyle) {
         mViewTreeObserber = getViewTreeObserver();
         mViewTreeObserber.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -177,14 +177,14 @@ public class TagView extends TeboPropertyField<String> {
     @Override
     protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mInflater.inflate(R.layout.control_tagview_read_layout, this);
+        mInflater.inflate(R.layout.control_tagview_layout, this);
 
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        tagsFrame = (RelativeLayout) this.findViewById(R.id.tagsFrame);
+        tagsFrame = (RelativeLayout) this.findViewById(R.id.tags_frame);
 
     }
 

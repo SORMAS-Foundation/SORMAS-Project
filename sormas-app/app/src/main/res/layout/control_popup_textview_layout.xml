@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge  xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/label_frame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/label"
+                android:labelFor="@+id/input"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/ControlLabelStyle" />
+
+            <TextView
+                android:id="@+id/required_indicator"
+                style="@style/RequiredIndicatorStyle" />
+
+            <TextView
+                android:id="@+id/soft_required_indicator"
+                style="@style/SoftRequiredIndicatorStyle" />
+
+            <TextView
+                android:id="@+id/minor_error_indicator"
+                style="@style/MinorErrorIndicatorStyle" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="true"
+            style="@style/ControlPopupTextViewEditStyle" />
+
+    </LinearLayout>
+
+</merge>

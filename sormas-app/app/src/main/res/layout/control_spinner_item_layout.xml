@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/spinnerText"
+    android:id="@+id/text"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:singleLine="true"
@@ -8,21 +8,4 @@
     android:gravity="center_vertical"
     android:textSize="@dimen/defaultControlTextSize"
     android:textColor="@color/controlTextColor"
-    android:textColorHint="@color/controlTextViewHint"
-    />
-<!--
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingLeft="@dimen/spinnerHorizontalSpacing"
-    android:paddingRight="@dimen/spinnerIconWidth"
-    android:paddingTop="@dimen/spinnerVerticalSpacing"
-    android:paddingBottom="@dimen/spinnerVerticalSpacing"
-    android:background="@color/red"
-
-android:singleLine="true"
-    android:ellipsize="marquee"
-
-
-</LinearLayout>-->
+    android:textColorHint="@color/controlTextViewHint" />

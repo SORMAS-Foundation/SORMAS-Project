@@ -30,14 +30,14 @@ import de.symeda.sormas.app.backend.report.WeeklyReportEntry;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
-import de.symeda.sormas.app.component.TeboSpinner;
-import de.symeda.sormas.app.component.TeboSwitch;
+import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.TeboSwitch;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -210,7 +210,7 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
                                 showWeeklyReport(c);
 
                                 if (c.showShowReportNotSubmittedNotification()) {
-                                    NotificationHelper.showNotification((INotificationContext) ReportFragment.this, NotificationType.WARNING, R.string.hint_report_not_submitted);
+                                    NotificationHelper.showNotification((NotificationContext) ReportFragment.this, NotificationType.WARNING, R.string.hint_report_not_submitted);
                                 }
 
                                 getContentBinding().noWeeklyReportHint.setVisibility(c.showNoReportNotification()? View.VISIBLE : View.GONE);
@@ -572,7 +572,7 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
                             }
 
                             if (!resultStatus.isSuccess()) {
-                                NotificationHelper.showNotification((INotificationContext)getActivity(), NotificationType.ERROR, resultStatus.getMessage());
+                                NotificationHelper.showNotification((NotificationContext)getActivity(), NotificationType.ERROR, resultStatus.getMessage());
                                 return;
                             }
 
@@ -581,15 +581,15 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
                                     @Override
                                     public void call(boolean syncFailed, String syncFailedMessage) {
                                         if (syncFailed) {
-                                            NotificationHelper.showNotification((INotificationContext)getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_sync_confirmed);
+                                            NotificationHelper.showNotification((NotificationContext)getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_sync_confirmed);
                                         } else {
-                                            NotificationHelper.showNotification((INotificationContext)getActivity(), NotificationType.WARNING, R.string.snackbar_weekly_report_confirmed);
+                                            NotificationHelper.showNotification((NotificationContext)getActivity(), NotificationType.WARNING, R.string.snackbar_weekly_report_confirmed);
                                         }
                                         reloadFragment();
                                     }
                                 });
                             } else {
-                                NotificationHelper.showNotification((INotificationContext)getActivity(), NotificationType.WARNING, R.string.snackbar_weekly_report_confirmed);
+                                NotificationHelper.showNotification((NotificationContext)getActivity(), NotificationType.WARNING, R.string.snackbar_weekly_report_confirmed);
                                 reloadFragment();
                             }
                         }

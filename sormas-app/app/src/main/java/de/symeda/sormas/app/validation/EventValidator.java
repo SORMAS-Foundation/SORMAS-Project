@@ -10,8 +10,8 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
-import de.symeda.sormas.app.component.EditTeboPropertyField;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.databinding.FragmentEventEditLayoutBinding;
 
 /**
@@ -19,7 +19,7 @@ import de.symeda.sormas.app.databinding.FragmentEventEditLayoutBinding;
  */
 public final class EventValidator {
 
-    public static boolean validateEventData(INotificationContext activityContext, Event event, FragmentEventEditLayoutBinding binding) {
+    public static boolean validateEventData(NotificationContext activityContext, Event event, FragmentEventEditLayoutBinding binding) {
         Resources resources = DatabaseHelper.getContext().getResources();
 
         boolean success = true;
@@ -62,23 +62,23 @@ public final class EventValidator {
     }
 
     public static void setRequiredHintsForEventData(FragmentEventEditLayoutBinding binding) {
-        for (EditTeboPropertyField field : getEventDataFields(binding)) {
+        for (ControlPropertyEditField field : getEventDataFields(binding)) {
             field.setRequired(true);
         }
     }
 
     public static void setSoftRequiredHintsForEventData(FragmentEventEditLayoutBinding binding) {
-        for (EditTeboPropertyField field : getSoftRequiredEventDataFields(binding)) {
+        for (ControlPropertyEditField field : getSoftRequiredEventDataFields(binding)) {
             field.setSoftRequired(true);
             //field.makeFieldSoftRequired();
         }
     }
 
-    private static final List<? extends EditTeboPropertyField<?>> getEventDataFields(FragmentEventEditLayoutBinding binding) {
+    private static final List<? extends ControlPropertyEditField<?>> getEventDataFields(FragmentEventEditLayoutBinding binding) {
         return Arrays.asList(binding.txtAlertDescription, binding.spnTypeOfPlace, binding.txtOtherDisease); //binding.swhAlertType,
     }
 
-    private static final List<? extends EditTeboPropertyField<?>> getSoftRequiredEventDataFields(FragmentEventEditLayoutBinding binding) {
+    private static final List<? extends ControlPropertyEditField<?>> getSoftRequiredEventDataFields(FragmentEventEditLayoutBinding binding) {
         return Arrays.asList(binding.dtpDateOfAlert, binding.txtSourceFirstName, binding.txtSourceLastName, binding.txtSourceTelNumber, binding.spnTypeOfPlace);
         //return Arrays.asList(binding.dtpDateOfAlert, binding.txtSourceFirstName, binding.txtSourceLastName, binding.txtSourceTelNumber, binding.spnTypeOfPlace, binding.txtSurveillanceOfficer);
     }

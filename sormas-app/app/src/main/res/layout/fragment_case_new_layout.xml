@@ -6,12 +6,6 @@
     android:id="@+id/base_layout">
 
     <data>
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
     </data>
@@ -31,7 +25,7 @@
             >
 
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/txtLastName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -41,13 +35,12 @@
                 app:description="@string/desc_event_pinvolv_last_name"
                 app:required="true"
                 app:value="@={data.person.lastName}"
-                app:nextFocusDown="@+id/txtControl1"
                 app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/txtFirstName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -57,13 +50,12 @@
                 app:description="@string/desc_event_pinvolv_first_name"
                 app:required="true"
                 app:value="@={data.person.firstName}"
-                app:nextFocusDown="@+id/txtControl1"
                 app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
-            <de.symeda.sormas.app.component.TeboSpinner
+            <de.symeda.sormas.app.component.controls.TeboSpinner
                 android:id="@+id/spnDisease"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -76,7 +68,7 @@
                 app:value="@={data.disease}"
                 />
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/txtDiseaseDetail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -87,13 +79,12 @@
                 app:description="@string/desc_case_disease_detail"
                 app:required="true"
                 app:value="@={data.diseaseDetails}"
-                app:nextFocusDown="@+id/txtControl1"
                 app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
-            <de.symeda.sormas.app.component.TeboSpinner
+            <de.symeda.sormas.app.component.controls.TeboSpinner
                 android:id="@+id/spnPlague"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -107,7 +98,7 @@
                 app:value="@={data.plagueType}"
                 />
 
-            <de.symeda.sormas.app.component.TeboSpinner
+            <de.symeda.sormas.app.component.controls.TeboSpinner
                 android:id="@+id/spnDengueFever"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -121,7 +112,7 @@
                 app:value="@={data.dengueFeverType}"
                 />
 
-            <de.symeda.sormas.app.component.TeboSpinner
+            <de.symeda.sormas.app.component.controls.TeboSpinner
                 android:id="@+id/spnState"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -131,14 +122,13 @@
                 app:labelCaption="@string/label_case_state"
                 app:required="true"
                 app:spinnerMode="dialog"
-                app:nextFocusDown="@+id/spnLga"
                 app:imeOptions="actionNext"
                 app:value="@={data.region}"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
-            <de.symeda.sormas.app.component.TeboSpinner
+            <de.symeda.sormas.app.component.controls.TeboSpinner
                 android:id="@+id/spnLga"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -148,14 +138,13 @@
                 app:labelCaption="@string/label_case_lga"
                 app:required="true"
                 app:spinnerMode="dialog"
-                app:nextFocusDown="@+id/spnWard"
                 app:imeOptions="actionNext"
                 app:value="@={data.district}"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
-            <de.symeda.sormas.app.component.TeboSpinner
+            <de.symeda.sormas.app.component.controls.TeboSpinner
                 android:id="@+id/spnWard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -165,14 +154,13 @@
                 app:labelCaption="@string/label_case_ward"
                 app:required="true"
                 app:spinnerMode="dialog"
-                app:nextFocusDown="@+id/spnCity"
                 app:imeOptions="actionNext"
                 app:value="@={data.community}"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
-            <de.symeda.sormas.app.component.TeboSpinner
+            <de.symeda.sormas.app.component.controls.TeboSpinner
                 android:id="@+id/spnFacility"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -182,11 +170,10 @@
                 app:labelCaption="@string/label_case_health_facility"
                 app:required="true"
                 app:spinnerMode="dialog"
-                app:nextFocusDown="@+id/spnCity"
                 app:imeOptions="actionNext"
                 app:value="@={data.healthFacility}"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
 

@@ -4,14 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.util.ConstantHelper;
 
@@ -22,7 +21,7 @@ import de.symeda.sormas.app.util.ConstantHelper;
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
-public abstract class BaseReportActivity extends AbstractSormasActivity implements INotificationContext, IUpdateSubHeadingTitle {
+public abstract class BaseReportActivity extends AbstractSormasActivity implements NotificationContext, IUpdateSubHeadingTitle {
 
     private final static String TAG = BaseReportActivity.class.getSimpleName();
 

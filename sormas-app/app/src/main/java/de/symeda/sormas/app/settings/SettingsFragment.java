@@ -24,7 +24,7 @@ import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.component.dialog.TeboProgressDialog;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationPosition;
@@ -56,24 +56,24 @@ public class SettingsFragment extends BaseLandingActivityFragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings_layout, container, false);
 
         binding.txtSettingsServerUrl.setValue(ConfigProvider.getServerRestUrl());
-        binding.btnSettingsChangePIN.setOnButtonOnClick(new View.OnClickListener() {
+        binding.btnSettingsChangePIN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changePIN(v);
             }
         });
-        binding.btnSettingsRepullData.setOnButtonOnClick(new View.OnClickListener() {
+        binding.btnSettingsRepullData.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 repullData(v);
             }
         });
-        binding.btnSettingsSyncLog.setOnButtonOnClick(new View.OnClickListener() {
+        binding.btnSettingsSyncLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openSyncLog(v);
             }
         });
-        binding.btnSettingsLogout.setOnButtonOnClick(new View.OnClickListener() {
+        binding.btnSettingsLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 logout(v);
@@ -135,7 +135,7 @@ public class SettingsFragment extends BaseLandingActivityFragment {
                 RetroProvider.connect(getContext());
             } catch (AuthenticatorException e) {
                 //Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                NotificationHelper.showNotification((INotificationContext)getActivity(), NotificationPosition.BOTTOM, NotificationType.ERROR, e.getMessage());
+                NotificationHelper.showNotification((NotificationContext)getActivity(), NotificationPosition.BOTTOM, NotificationType.ERROR, e.getMessage());
             } catch (RetroProvider.ApiVersionException e) {
                 if (e.getAppUrl() != null) {
                     //TODO: Orson Remove Version Check
@@ -143,11 +143,11 @@ public class SettingsFragment extends BaseLandingActivityFragment {
                     return;
                 } else {
                     //Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                    NotificationHelper.showNotification((INotificationContext)getActivity(), NotificationPosition.BOTTOM, NotificationType.ERROR, e.getMessage());
+                    NotificationHelper.showNotification((NotificationContext)getActivity(), NotificationPosition.BOTTOM, NotificationType.ERROR, e.getMessage());
                 }
             } catch (ConnectException e) {
                 //Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                NotificationHelper.showNotification((INotificationContext)getActivity(), NotificationPosition.BOTTOM, NotificationType.ERROR, e.getMessage());
+                NotificationHelper.showNotification((NotificationContext)getActivity(), NotificationPosition.BOTTOM, NotificationType.ERROR, e.getMessage());
             }
         }
 
@@ -170,7 +170,7 @@ public class SettingsFragment extends BaseLandingActivityFragment {
             });
         } else {
             //Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_no_connection, Snackbar.LENGTH_LONG).show();
-            NotificationHelper.showNotification((INotificationContext)getActivity(), NotificationPosition.BOTTOM, NotificationType.ERROR, R.string.snackbar_no_connection);
+            NotificationHelper.showNotification((NotificationContext)getActivity(), NotificationPosition.BOTTOM, NotificationType.ERROR, R.string.snackbar_no_connection);
         }
     }
 

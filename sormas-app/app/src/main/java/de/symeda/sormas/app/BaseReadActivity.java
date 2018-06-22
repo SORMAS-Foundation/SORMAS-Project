@@ -40,7 +40,7 @@ import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityRootDataRequestor;
 import de.symeda.sormas.app.core.INavigationCapsule;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
@@ -56,7 +56,7 @@ import de.symeda.sormas.app.util.ConstantHelper;
  * Created by Orson on 10/12/2017.
  */
 
-public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainObject> extends AbstractSormasActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, INotificationContext, IActivityRootDataRequestor<TActivityRootData> {
+public abstract class BaseReadActivity<TActivityRootData extends AbstractDomainObject> extends AbstractSormasActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, NotificationContext, IActivityRootDataRequestor<TActivityRootData> {
 
     private AsyncTask processActivityRootDataTask;
     private View rootView;

@@ -33,7 +33,7 @@ import de.symeda.sormas.app.component.menu.OnLandingPageMenuClickListener;
 import de.symeda.sormas.app.component.menu.OnNotificationCountChangingListener;
 import de.symeda.sormas.app.component.menu.OnSelectInitialActiveMenuItemListener;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
@@ -44,7 +44,7 @@ import de.symeda.sormas.app.util.ConstantHelper;
  * Created by Orson on 03/12/2017.
  */
 
-public abstract class BaseListActivity<TListItemData extends AbstractDomainObject> extends AbstractSormasActivity implements IUpdateSubHeadingTitle, INotificationContext, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, OnNotificationCountChangingListener {
+public abstract class BaseListActivity<TListItemData extends AbstractDomainObject> extends AbstractSormasActivity implements IUpdateSubHeadingTitle, NotificationContext, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, OnNotificationCountChangingListener {
 
     private View statusFrame = null;
     private View applicationTitleBar = null;

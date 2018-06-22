@@ -7,7 +7,6 @@ import android.databinding.ViewDataBinding;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,14 +19,12 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.component.OnHideInputErrorListener;
-import de.symeda.sormas.app.component.OnShowInputErrorListener;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IActivityRootDataRequestor;
 import de.symeda.sormas.app.core.INavigationCapsule;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.async.IJobDefinition;
@@ -36,8 +33,6 @@ import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
 
@@ -52,15 +47,14 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
  * sampson.orson@technologyboard.org
  */
 
-public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding, TData, TActivityRootData extends AbstractDomainObject> extends BaseFragment
-        implements OnShowInputErrorListener, OnHideInputErrorListener {
+public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding, TData, TActivityRootData extends AbstractDomainObject> extends BaseFragment {
 
     public static final String TAG = BaseEditActivityFragment.class.getSimpleName();
 
     private AsyncTask jobTask;
     private BaseEditActivity baseEditActivity;
     private IUpdateSubHeadingTitle subHeadingHandler;
-    private INotificationContext notificationCommunicator;
+    private NotificationContext notificationCommunicator;
     private TBinding contentViewStubBinding;
     private ViewDataBinding rootBinding;
 
@@ -102,11 +96,11 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
                     + "implement IUpdateSubHeadingTitle");
         }
 
-        if (getActivity() instanceof INotificationContext) {
-            this.notificationCommunicator = (INotificationContext) this.getActivity();
+        if (getActivity() instanceof NotificationContext) {
+            this.notificationCommunicator = (NotificationContext) this.getActivity();
         } else {
-            throw new NotImplementedException("Activity for fragment does not support showNotification; "
-                    + "implement INotificationContext");
+            throw new NotImplementedException("Activity for fragment does not support showErrorNotification; "
+                    + "implement NotificationContext");
         }
 
         if (getActivity() instanceof IActivityRootDataRequestor) {
@@ -132,7 +126,7 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
 
                     contentViewStubBinding = DataBindingUtil.bind(inflated);
                     String layoutName = getResources().getResourceEntryName(getEditLayout());
-                    setRootNotificationBindingVariable(contentViewStubBinding, layoutName);
+//                    setRootNotificationBindingVariable(contentViewStubBinding, layoutName);
                     onLayoutBinding(contentViewStubBinding);
                     contentViewStubRoot = contentViewStubBinding.getRoot();
 
@@ -253,15 +247,15 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
         onLayoutBinding(contentViewStubBinding);
     }
 
-    protected void setRootNotificationBindingVariable(final ViewDataBinding binding, String layoutName) {
-        if (!binding.setVariable(de.symeda.sormas.app.BR.showNotificationCallback, this)) {
-            Log.e(TAG, "There is no variable 'showNotificationCallback' in layout " + layoutName);
-        }
-
-        if (!binding.setVariable(de.symeda.sormas.app.BR.hideNotificationCallback, this)) {
-            Log.e(TAG, "There is no variable 'hideNotificationCallback' in layout " + layoutName);
-        }
-    }
+//    protected void setRootNotificationBindingVariable(final ViewDataBinding binding, String layoutName) {
+//        if (!binding.setVariable(de.symeda.sormas.app.BR.showNotificationCallback, this)) {
+//            Log.e(TAG, "There is no variable 'showNotificationCallback' in layout " + layoutName);
+//        }
+//
+//        if (!binding.setVariable(de.symeda.sormas.app.BR.hideNotificationCallback, this)) {
+//            Log.e(TAG, "There is no variable 'hideNotificationCallback' in layout " + layoutName);
+//        }
+//    }
 
     @Override
     public final void onResume() {
@@ -620,17 +614,17 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
         }
     }
 
-    @Override
-    public void onShowInputErrorShowing(View v, String message, boolean errorState) {
-        //notificationCommunicator.showNotification(NotificationType.ERROR, message);
-        NotificationHelper.showNotification((INotificationContext)getActivity(), NotificationType.ERROR, message);
-    }
-
-    @Override
-    public void onInputErrorHiding(View v, boolean errorState) {
-        //notificationCommunicator.hideNotification();
-        NotificationHelper.hideNotification((INotificationContext)getActivity());
-    }
+//    @Override
+//    public void onShowInputErrorShowing(View v, String message, boolean errorState) {
+//        //notificationCommunicator.showErrorNotification(NotificationType.ERROR, message);
+//        NotificationHelper.showErrorNotification((NotificationContext)getActivity(), NotificationType.ERROR, message);
+//    }
+//
+//    @Override
+//    public void onInputErrorHiding(View v, boolean errorState) {
+//        //notificationCommunicator.hideErrorNotification();
+//        NotificationHelper.hideErrorNotification((NotificationContext)getActivity());
+//    }
 
     public boolean showSaveAction() {
         return true;

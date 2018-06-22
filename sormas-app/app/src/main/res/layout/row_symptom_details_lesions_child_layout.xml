@@ -5,13 +5,6 @@
     <data>
         <import type="de.symeda.sormas.api.symptoms.SymptomState" />
         <import type="de.symeda.sormas.app.symptom.LesionChildViewModel" />
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
-
 
         <variable name="data" type="de.symeda.sormas.app.symptom.LesionChildViewModel"/>
         <variable name="symptomStateClass" type="Class" />
@@ -55,7 +48,7 @@
                 />
 
             <!---->
-            <de.symeda.sormas.app.component.TeboSwitch
+            <de.symeda.sormas.app.component.controls.TeboSwitch
                 android:id="@+id/swhRashThatItchState"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
@@ -101,7 +94,7 @@
                 android:fontFamily="sans-serif"
                 />
 
-            <de.symeda.sormas.app.component.TeboSwitch
+            <de.symeda.sormas.app.component.controls.TeboSwitch
                 android:id="@+id/swhLesionsState"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
@@ -147,7 +140,7 @@
                 android:fontFamily="sans-serif"
                 />
 
-            <de.symeda.sormas.app.component.TeboSwitch
+            <de.symeda.sormas.app.component.controls.TeboSwitch
                 android:id="@+id/swhLesionsSizeState"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
@@ -194,7 +187,7 @@
                 android:fontFamily="sans-serif"
                 />
 
-            <de.symeda.sormas.app.component.TeboSwitch
+            <de.symeda.sormas.app.component.controls.TeboSwitch
                 android:id="@+id/swhLesionsProfoundState"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
@@ -232,7 +225,7 @@
                 android:orientation="vertical"
                 >
 
-                <de.symeda.sormas.app.component.TeboCheckBox
+                <de.symeda.sormas.app.component.controls.TeboCheckBox
                     android:id="@+id/chkLesionsLocationFace"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -242,11 +235,11 @@
                     app:slim="true"
                     app:required="false"
                     app:value="@={data.locationFace}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
-                <de.symeda.sormas.app.component.TeboCheckBox
+                <de.symeda.sormas.app.component.controls.TeboCheckBox
                     android:id="@+id/chkLesionsLocationLegs"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -256,11 +249,11 @@
                     app:slim="true"
                     app:required="false"
                     app:value="@={data.locationLegs}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
-                <de.symeda.sormas.app.component.TeboCheckBox
+                <de.symeda.sormas.app.component.controls.TeboCheckBox
                     android:id="@+id/chkLesionsLocationSolesOfTheFeet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -270,11 +263,11 @@
                     app:slim="true"
                     app:required="false"
                     app:value="@={data.locationSolesOfFeet}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
-                <de.symeda.sormas.app.component.TeboCheckBox
+                <de.symeda.sormas.app.component.controls.TeboCheckBox
                     android:id="@+id/chkLesionsLocationPalmOfHands"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -284,8 +277,8 @@
                     app:slim="true"
                     app:required="false"
                     app:value="@={data.locationPalmOfHands}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
             </LinearLayout>
@@ -296,7 +289,7 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <de.symeda.sormas.app.component.TeboCheckBox
+                <de.symeda.sormas.app.component.controls.TeboCheckBox
                     android:id="@+id/chkLesionsLocationThorax"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -306,11 +299,11 @@
                     app:slim="true"
                     app:required="false"
                     app:value="@={data.locationThroax}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
-                <de.symeda.sormas.app.component.TeboCheckBox
+                <de.symeda.sormas.app.component.controls.TeboCheckBox
                     android:id="@+id/chkLesionsLocationArms"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -320,11 +313,11 @@
                     app:slim="true"
                     app:required="false"
                     app:value="@={data.locationArms}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
-                <de.symeda.sormas.app.component.TeboCheckBox
+                <de.symeda.sormas.app.component.controls.TeboCheckBox
                     android:id="@+id/chkLesionsLocationGenitals"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -334,11 +327,11 @@
                     app:slim="true"
                     app:required="false"
                     app:value="@={data.locationGenitals}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
-                <de.symeda.sormas.app.component.TeboCheckBox
+                <de.symeda.sormas.app.component.controls.TeboCheckBox
                     android:id="@+id/chkLesionsLocationAllOverBody"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -348,8 +341,8 @@
                     app:slim="true"
                     app:required="false"
                     app:value="@={data.locationAllBody}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
             </LinearLayout>
@@ -405,7 +398,7 @@
                         android:textAlignment="viewEnd"
                         />
 
-                    <de.symeda.sormas.app.component.TeboSwitch
+                    <de.symeda.sormas.app.component.controls.TeboSwitch
                         android:id="@+id/swhLesionsPic1"
                         android:tag="@string/tag_symptom_lesions_pic_answer"
                         android:layout_width="120dp"
@@ -467,7 +460,7 @@
                         android:textAlignment="viewEnd"
                         />
 
-                    <de.symeda.sormas.app.component.TeboSwitch
+                    <de.symeda.sormas.app.component.controls.TeboSwitch
                         android:id="@+id/swhLesionsPic2"
                         android:tag="@string/tag_symptom_lesions_pic_answer"
                         android:layout_width="120dp"
@@ -529,7 +522,7 @@
                         android:textAlignment="viewEnd"
                         />
 
-                    <de.symeda.sormas.app.component.TeboSwitch
+                    <de.symeda.sormas.app.component.controls.TeboSwitch
                         android:id="@+id/swhLesionsPic3"
                         android:tag="@string/tag_symptom_lesions_pic_answer"
                         android:layout_width="120dp"
@@ -591,7 +584,7 @@
                         android:textAlignment="viewEnd"
                         />
 
-                    <de.symeda.sormas.app.component.TeboSwitch
+                    <de.symeda.sormas.app.component.controls.TeboSwitch
                         android:id="@+id/swhLesionsPic4"
                         android:tag="@string/tag_symptom_lesions_pic_answer"
                         android:layout_width="120dp"
@@ -622,7 +615,7 @@
             android:layout_marginBottom="@dimen/contentVerticalSpacingDouble"
             />
 
-        <de.symeda.sormas.app.component.TeboDatePicker
+        <de.symeda.sormas.app.component.controls.TeboDatePicker
             android:id="@+id/dtpLesionsOnsetDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -630,8 +623,8 @@
             app:hint="@string/hint_lesions_onset_date"
             app:labelCaption="@string/label_lesions_onset_date"
             app:description="@string/desc_lesions_onset_date"
-            app:emphasizeCaption="false"
-            app:italicCaption="true"
+            app:captionCapitalized="false"
+            app:captionItalic="true"
             app:required="true"
             app:slim="true"
             app:value="@={data.lesionsOnsetDate}"

@@ -152,7 +152,7 @@ public class LandingPageMenuControl extends LinearLayout {
 
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.control_landing_page_menu_layout, this);
+        inflater.inflate(R.layout.sub_menu_layout, this);
     }
 
     @Override
@@ -404,7 +404,7 @@ public class LandingPageMenuControl extends LinearLayout {
     public void setMenuTitle(String title) {
         if (taskLandingMenuTitle != null) {
             taskLandingMenuTitle.setText(title);
-        } else if ((taskLandingMenuTitle = (TextView) this.findViewById(R.id.taskLandingMenuTitle)) == null) {
+        } else if ((taskLandingMenuTitle = (TextView) this.findViewById(R.id.sub_menu_title)) == null) {
             throw new NullPointerException("The menu control title object is null.");
         }
 
@@ -425,10 +425,10 @@ public class LandingPageMenuControl extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        taskLandingMenuTitle = (TextView)findViewById(R.id.taskLandingMenuTitle);
-        taskLandingMenuGridView = (GridView)findViewById(R.id.taskLandingMenuGridView);
-        fabFrame = (FrameLayout)findViewById(R.id.fabFrame);
-        fab = (FloatingActionButton)findViewById(R.id.fab);
+        taskLandingMenuTitle = (TextView)findViewById(R.id.sub_menu_title);
+        taskLandingMenuGridView = (GridView)findViewById(R.id.sub_menu_grid);
+        fabFrame = (FrameLayout)findViewById(R.id.button_frame);
+        fab = (FloatingActionButton)findViewById(R.id.sub_menu_button);
 
 
         setVisibility(View.VISIBLE);

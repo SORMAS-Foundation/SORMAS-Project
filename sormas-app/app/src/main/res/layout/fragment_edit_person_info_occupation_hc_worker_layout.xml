@@ -6,12 +6,6 @@
     android:id="@+id/base_layout">
 
     <data>
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.person.Person"/>
     </data>
@@ -22,8 +16,8 @@
         android:orientation="vertical"
         >
 
-        <de.symeda.sormas.app.component.TeboTextInputEditText
-            android:id="@+id/txtPosition"
+        <de.symeda.sormas.app.component.controls.ControlTextEditField
+            android:id="@+id/navigation_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
@@ -31,13 +25,12 @@
             app:labelCaption="@string/label_event_pinvolv_occupation_position"
             app:description="@string/desc_event_pinvolv_occupation_position"
             app:required="true"
-            app:nextFocusDown="@+id/txtControl1"
             app:imeOptions="actionNext"
-            app:onShowInputErrorListener="@{showNotificationCallback}"
-            app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
             />
 
-        <de.symeda.sormas.app.component.TeboSpinner
+        <de.symeda.sormas.app.component.controls.TeboSpinner
             android:id="@+id/spnFacilityState"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -50,7 +43,7 @@
             app:value="@={data.occupationRegion}"
             />
 
-        <de.symeda.sormas.app.component.TeboSpinner
+        <de.symeda.sormas.app.component.controls.TeboSpinner
             android:id="@+id/spnFacilityLga"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -63,7 +56,7 @@
             app:value="@={data.occupationDistrict}"
             />
 
-        <de.symeda.sormas.app.component.TeboSpinner
+        <de.symeda.sormas.app.component.controls.TeboSpinner
             android:id="@+id/spnFacilityWard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -76,7 +69,7 @@
             app:value="@={data.occupationCommunity}"
             />
 
-        <de.symeda.sormas.app.component.TeboSpinner
+        <de.symeda.sormas.app.component.controls.TeboSpinner
             android:id="@+id/spnHealthCareFacility"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

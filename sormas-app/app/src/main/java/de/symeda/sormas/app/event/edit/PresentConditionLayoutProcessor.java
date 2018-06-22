@@ -19,10 +19,11 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.TeboDatePicker;
-import de.symeda.sormas.app.component.TeboPropertyField;
-import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.component.controls.TeboDatePicker;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.databinding.FragmentEventEditPersonInfoLayoutBinding;
 import de.symeda.sormas.app.shared.OnDateOfDeathChangeListener;
@@ -154,9 +155,9 @@ public class PresentConditionLayoutProcessor {
 
 
         dtpDateOfDeath.initialize(fragmentManager);
-        dtpDateOfDeath.addValueChangedListener(new TeboPropertyField.ValueChangeListener() {
+        dtpDateOfDeath.addValueChangedListener(new ValueChangeListener() {
             @Override
-            public void onChange(TeboPropertyField field) {
+            public void onChange(ControlPropertyField field) {
                 notifyDateOfDeathChanged(dtpDateOfDeath, dtpDateOfDeath.getValue());
             }
         });

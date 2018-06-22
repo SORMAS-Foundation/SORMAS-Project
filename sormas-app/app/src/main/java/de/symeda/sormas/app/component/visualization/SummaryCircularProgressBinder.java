@@ -39,7 +39,7 @@ public class SummaryCircularProgressBinder extends DataBinder<SummaryCircularPro
     @Override
     public SummaryCircularProgressBinder.ViewHolder createViewHolder(ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext()).inflate(
-                R.layout.control_lps_cell_circular_layout, parent, false);
+                R.layout.summary_circular_progress_layout, parent, false);
         return new SummaryCircularProgressBinder.ViewHolder(view);
     }
 
@@ -85,11 +85,11 @@ public class SummaryCircularProgressBinder extends DataBinder<SummaryCircularPro
 
         public ViewHolder(View view) {
             super(view);
-            layout = (View)itemView.findViewById(R.id.cellRootLayout);
-            circularProgress = (DonutProgress) view.findViewById(R.id.circularProgress);
-            txtTitle = (TextView) view.findViewById(R.id.txtTitle);
-            txtValue = (TextView) view.findViewById(R.id.txtValue);
-            txtPercentage = (TextView) view.findViewById(R.id.txtPercentage);
+            layout = (View)itemView.findViewById(R.id.cell_root_layout);
+            circularProgress = (DonutProgress) view.findViewById(R.id.circular_progress);
+            txtTitle = (TextView) view.findViewById(R.id.title);
+            txtValue = (TextView) view.findViewById(R.id.value);
+            txtPercentage = (TextView) view.findViewById(R.id.percentage);
         }
     }
 

@@ -31,13 +31,13 @@ import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnLinkClickListener;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
-import de.symeda.sormas.app.component.TeboSpinner;
-import de.symeda.sormas.app.component.TeboSwitch;
+import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.TeboSwitch;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.ISaveable;
 import de.symeda.sormas.app.core.YesNo;
 import de.symeda.sormas.app.core.async.IJobDefinition;
@@ -527,7 +527,7 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
     }
 
     @Override
-    public void save(final INotificationContext nContext) {
+    public void save(final NotificationContext nContext) {
         final Sample sampleToSave = getActivityRootData();
 
         if (sampleToSave == null)

@@ -28,7 +28,7 @@
             >
 
 
-            <de.symeda.sormas.app.component.TeboTextRead
+            <de.symeda.sormas.app.component.controls.TeboTextRead
                 android:id="@+id/txtBodyTemperature"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/heading_sub_case_symptoms"
-                style="@style/ReadActivitySubHeadingStyle"
+                style="@style/SubHeadingStyle"
                 />
 
             <de.symeda.sormas.app.component.tagview.TagView
@@ -130,7 +130,7 @@
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
-            <de.symeda.sormas.app.component.TeboTextRead
+            <de.symeda.sormas.app.component.controls.TeboTextRead
                 android:id="@+id/txtOtherClinicalSymptoms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -141,7 +141,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <de.symeda.sormas.app.component.TeboTextRead
+            <de.symeda.sormas.app.component.controls.TeboTextRead
                 android:id="@+id/txtOtherClinicalSymptomsComment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -159,7 +159,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 >
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtFirstSymptomDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -171,7 +171,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtFirstSymptom"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -189,10 +189,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/heading_sub_case_where_symptomatic"
-                style="@style/ReadActivitySubHeadingStyle"
+                style="@style/SubHeadingStyle"
                 />
 
-            <!--<de.symeda.sormas.app.component.TeboTextLinkRead
+            <!--<de.symeda.sormas.app.component.controls.TeboTextLinkRead
                 android:id="@+id/txtSymptomLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -206,7 +206,7 @@
                 app:onLinkClick="@{(view, item) -> locationClickCallback.onClick(view, data)}"
                 />
 
-            <de.symeda.sormas.app.component.TeboTextRead
+            <de.symeda.sormas.app.component.controls.TeboTextRead
                 android:id="@+id/txtStayPeriod"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

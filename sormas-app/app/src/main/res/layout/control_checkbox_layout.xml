@@ -20,7 +20,7 @@
                 android:background="?android:attr/listChoiceIndicatorMultiple" />
 
             <LinearLayout
-                android:id="@+id/caption_frame"
+                android:id="@+id/label_frame"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
@@ -42,6 +42,10 @@
                 <TextView
                     android:id="@+id/soft_required_indicator"
                     style="@style/SoftRequiredIndicatorStyle" />
+
+                <TextView
+                    android:id="@+id/minor_error_indicator"
+                    style="@style/MinorErrorIndicatorStyle" />
 
             </LinearLayout>
 

@@ -23,14 +23,14 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.OnRecyclerViewReadyListener;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
@@ -165,7 +165,7 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
                 return false;
             }
         };
-        symptomAdapter = new SymptomFormListAdapter(this.getActivity(), (INotificationContext)getActivity(), R.layout.row_edit_symptom_list_item_layout, symptomList, getFragmentManager());
+        symptomAdapter = new SymptomFormListAdapter(this.getActivity(), (NotificationContext)getActivity(), R.layout.row_edit_symptom_list_item_layout, symptomList, getFragmentManager());
         symptomAdapter.setOnSymptomStateChangeListener(new OnSymptomStateChangeListener() {
             @Override
             public void onChange(final Symptom symptom, SymptomState state) {

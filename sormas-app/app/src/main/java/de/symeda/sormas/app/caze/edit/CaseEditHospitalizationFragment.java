@@ -17,12 +17,12 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
-import de.symeda.sormas.app.component.TeboSwitch;
+import de.symeda.sormas.app.component.controls.TeboSwitch;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -31,7 +31,6 @@ import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHospitalizationLayoutBinding;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.util.ConstantHelper;
 
 /**
  * Created by Orson on 16/02/2018.
@@ -434,9 +433,9 @@ public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<Fr
     private void verifyPrevHospitalizationStatus() {
         YesNoUnknown hospitalizedPreviously = record.getAdmittedToHealthFacility();
         if (hospitalizedPreviously == YesNoUnknown.YES && getPreviousHospitalizations().size() <= 0) {
-            getContentBinding().swhPreviousHospitalization.enableErrorState((INotificationContext)getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().swhPreviousHospitalization.enableErrorState((NotificationContext)getActivity(), R.string.validation_soft_add_list_entry);
         } else {
-            getContentBinding().swhPreviousHospitalization.disableErrorState((INotificationContext)getActivity());
+            getContentBinding().swhPreviousHospitalization.disableErrorState();
         }
     }
 

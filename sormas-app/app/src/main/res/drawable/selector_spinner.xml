@@ -14,8 +14,7 @@
             <item android:gravity="right|center_vertical"
                 android:drawable="@drawable/ic_spinner_arrow_down_disabled_24dp"
                 android:width="@dimen/spinnerIconWidth" android:height="@dimen/spinnerIconHeight"
-                android:right="@dimen/contentHorizontalSpacing"
-                />
+                android:right="@dimen/contentHorizontalSpacing" />
         </layer-list>
     </item>
     <item android:state_activated="true" >

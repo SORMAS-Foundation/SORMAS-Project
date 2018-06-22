@@ -6,12 +6,6 @@
     android:id="@+id/base_layout">
 
     <data>
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
         <variable name="data" type="de.symeda.sormas.app.backend.event.EventParticipant"/>
     </data>
 
@@ -28,7 +22,7 @@
             android:paddingRight="@dimen/parentLayoutHorizontalPadding"
             >
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/txtInvolvementDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -38,13 +32,12 @@
                 app:description="@string/desc_event_pinvolv_desc"
                 app:required="true"
                 app:value="@={data.involvementDescription}"
-                app:nextFocusDown="@+id/txtControl1"
                 app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/txtLastName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -54,13 +47,12 @@
                 app:description="@string/desc_event_pinvolv_last_name"
                 app:required="true"
                 app:value="@={data.person.lastName}"
-                app:nextFocusDown="@+id/txtControl1"
                 app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/txtFirstName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -70,10 +62,9 @@
                 app:description="@string/desc_event_pinvolv_first_name"
                 app:required="true"
                 app:value="@={data.person.firstName}"
-                app:nextFocusDown="@+id/txtControl1"
                 app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
         </LinearLayout>

@@ -6,12 +6,6 @@
     android:id="@+id/base_layout">
 
     <data>
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
 
         <variable name="data" type="de.symeda.sormas.app.backend.person.Person"/>
@@ -24,7 +18,7 @@
         >
 
 
-        <de.symeda.sormas.app.component.TeboSpinner
+        <de.symeda.sormas.app.component.controls.TeboSpinner
             android:id="@+id/spnDisease"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

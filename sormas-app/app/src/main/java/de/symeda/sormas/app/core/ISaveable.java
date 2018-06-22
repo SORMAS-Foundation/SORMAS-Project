@@ -9,5 +9,5 @@ package de.symeda.sormas.app.core;
  */
 public interface ISaveable {
 
-    void save(INotificationContext nContext);
+    void save(NotificationContext nContext);
 }

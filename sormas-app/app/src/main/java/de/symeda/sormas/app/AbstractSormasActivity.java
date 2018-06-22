@@ -34,7 +34,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.core.IActivityCommunicator;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.login.LoginActivity;
@@ -335,7 +335,7 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
             } catch (AuthenticatorException e) {
                 if (showResultSnackbar) {
                     //Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                    NotificationHelper.showNotification((INotificationContext) this, NotificationType.ERROR, e.getMessage());
+                    NotificationHelper.showNotification((NotificationContext) this, NotificationType.ERROR, e.getMessage());
                     errorMessage = e.getMessage();
                 }
                 // switch to LoginActivity is done below
@@ -355,13 +355,13 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
                     return;
                 } else if (showResultSnackbar) {
                     //Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                    NotificationHelper.showNotification((INotificationContext) this, NotificationType.ERROR, e.getMessage());
+                    NotificationHelper.showNotification((NotificationContext) this, NotificationType.ERROR, e.getMessage());
                     errorMessage = e.getMessage();
                 }
             } catch (ConnectException e) {
                 if (showResultSnackbar) {
                     //Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                    NotificationHelper.showNotification((INotificationContext) this, NotificationType.ERROR, e.getMessage());
+                    NotificationHelper.showNotification((NotificationContext) this, NotificationType.ERROR, e.getMessage());
                     errorMessage = e.getMessage();
                 }
             }
@@ -412,11 +412,11 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
                                 showConflictSnackbar();
                             } else {
                                 //Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
-                                NotificationHelper.showNotification((INotificationContext) AbstractSormasActivity.this, NotificationType.SUCCESS, R.string.snackbar_sync_success);
+                                NotificationHelper.showNotification((NotificationContext) AbstractSormasActivity.this, NotificationType.SUCCESS, R.string.snackbar_sync_success);
                             }
                         } else {
                             //Snackbar.make(findViewById(android.R.id.content), syncFailedMessage, Snackbar.LENGTH_LONG).show();
-                            NotificationHelper.showNotification((INotificationContext) AbstractSormasActivity.this, NotificationType.ERROR, syncFailedMessage);
+                            NotificationHelper.showNotification((NotificationContext) AbstractSormasActivity.this, NotificationType.ERROR, syncFailedMessage);
                         }
                     } else {
                         if (syncLogCountAfter > syncLogCountBefore) {
@@ -437,7 +437,7 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
 
             if (showResultSnackbar) {
                 //Snackbar.make(findViewById(android.R.id.content), errorMessage, Snackbar.LENGTH_LONG).show();
-                NotificationHelper.showNotification((INotificationContext) AbstractSormasActivity.this, NotificationType.ERROR, errorMessage);
+                NotificationHelper.showNotification((NotificationContext) AbstractSormasActivity.this, NotificationType.ERROR, errorMessage);
             }
         }
     }

@@ -100,11 +100,11 @@
                             android:background="@android:color/transparent"
                             app:collapsible="true"
                             app:visibility="false"
-                            app:cellLayout="@layout/control_page_menu_nav_item_cell_layout"
-                            app:positionColor="@color/pageMenuPositionColor"
-                            app:positionActiveColor="@color/pageMenuPositionActiveColor"
-                            app:titleColor="@color/pageMenuTitleColor"
-                            app:titleActiveColor="@color/pageMenuTitleActiveColor"
+                            app:cellLayout="@layout/sub_menu_navigation_item_layout"
+                            app:positionColor="@color/navigationNumber"
+                            app:positionActiveColor="@color/navigationNumberActive"
+                            app:titleColor="@color/navigationTitle"
+                            app:titleActiveColor="@color/navigationTitleActive"
                             />
 
                     </android.support.percent.PercentFrameLayout>

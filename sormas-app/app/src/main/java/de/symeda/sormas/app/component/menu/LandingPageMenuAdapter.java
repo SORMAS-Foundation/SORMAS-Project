@@ -170,9 +170,9 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
         public ViewHolder(View layout) {
             this.layout = layout;
 
-            txtNotificationCounter = (TextView) this.layout.findViewById(R.id.txtNotificationCounter);
-            imgMenuItemIcon = (ImageView) this.layout.findViewById(R.id.imgMenuItemIcon);
-            txtMenuItemTitle = (TextView) this.layout.findViewById(R.id.txtMenuItemTitle);
+            txtNotificationCounter = (TextView) this.layout.findViewById(R.id.counter);
+            imgMenuItemIcon = (ImageView) this.layout.findViewById(R.id.icon);
+            txtMenuItemTitle = (TextView) this.layout.findViewById(R.id.title);
         }
     }
 }

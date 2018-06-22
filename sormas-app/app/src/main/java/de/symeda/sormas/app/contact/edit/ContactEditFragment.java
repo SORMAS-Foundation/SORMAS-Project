@@ -27,12 +27,12 @@ import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnLinkClickListener;
-import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityCommunicator;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.ISaveableWithCallback;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
@@ -333,7 +333,7 @@ public class ContactEditFragment extends BaseEditActivityFragment<FragmentContac
     }
 
     @Override
-    public void save(final INotificationContext nContext, final Callback.IAction callback) {
+    public void save(final NotificationContext nContext, final Callback.IAction callback) {
         final Contact contactToSave = getActivityRootData();
 
         if (contactToSave == null)

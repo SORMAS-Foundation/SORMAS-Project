@@ -7,12 +7,7 @@
 
     <data>
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.hospitalization.Hospitalization"/>
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
@@ -60,10 +55,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/heading_sub_case_hos_most_recent_hospitalization"
-                    style="@style/ReadActivitySubHeadingStyle"
+                    style="@style/SubHeadingStyle"
                     />
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtHealthFacility"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -75,7 +70,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtHealthFacilityDesc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -88,7 +83,7 @@
                     app:goneIfNull="@{caze.healthFacilityDetails}"
                     />
 
-                <de.symeda.sormas.app.component.TeboSwitch
+                <de.symeda.sormas.app.component.controls.TeboSwitch
                     android:id="@+id/swhAdmittedToHealthFacility"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -110,8 +105,8 @@
                     app:abbrevUnknown="@{false}"
                     app:value="@={data.admittedToHealthFacility}"
                     app:onCheckedChangeListener="@{admittedToFacilityCallback}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
                 <LinearLayout
@@ -121,7 +116,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.TeboDatePicker
+                    <de.symeda.sormas.app.component.controls.TeboDatePicker
                         android:id="@+id/dtpDateOfAdmission"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -134,7 +129,7 @@
                         app:value="@={data.admissionDate}"
                         />
 
-                    <de.symeda.sormas.app.component.TeboDatePicker
+                    <de.symeda.sormas.app.component.controls.TeboDatePicker
                         android:id="@+id/dtpDateOfDischarge"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -157,7 +152,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.TeboSwitch
+                    <de.symeda.sormas.app.component.controls.TeboSwitch
                         android:id="@+id/swhIsolation"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -180,12 +175,12 @@
                         app:abbrevUnknown="@{false}"
                         app:value="@={data.isolated}"
                         app:onCheckedChangeListener="@{isolationCallback}"
-                        app:onShowInputErrorListener="@{showNotificationCallback}"
-                        app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                         />
 
 
-                    <de.symeda.sormas.app.component.TeboDatePicker
+                    <de.symeda.sormas.app.component.controls.TeboDatePicker
                         android:id="@+id/dtpIsolationDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -201,7 +196,7 @@
 
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.TeboSwitch
+                <de.symeda.sormas.app.component.controls.TeboSwitch
                     android:id="@+id/swhPreviousHospitalization"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -222,8 +217,8 @@
                     app:defaultValue="@{YesNoUnknown.UNKNOWN}"
                     app:abbrevUnknown="@{false}"
                     app:value="@={data.admittedToHealthFacility}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     app:onCheckedChangeListener="@{previousHospitalizationCallback}"
                     />
 
@@ -256,21 +251,21 @@
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
                         android:text="@string/heading_sub_case_hos_prev_hospitalization_history"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        style="@style/SubHeadingCompactStyle"
                         />
 
                     <!--android:layout_below="@+id/hPrevHospitalization"-->
-                    <de.symeda.sormas.app.component.TeboButton
+                    <de.symeda.sormas.app.component.controls.ControlButton
                         android:id="@+id/btnNewEntry"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
-                        app:text="@string/action_new"
-                        app:buttonType="line_primary"
+                        android:text="@string/action_new"
+                        app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                         app:rounded="true"
                         app:slim="true"
-                        app:drawableLeft="@drawable/ic_add_24dp"
-                        app:onButtonOnClick="@{(view) -> addEntryClickCallback.onClick(view, data)}"
+                        app:iconStart="@drawable/ic_add_24dp"
+                        android:onClick="@{(view) -> addEntryClickCallback.onClick(view, data)}"
                         />
 
                 </RelativeLayout>

@@ -7,7 +7,7 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
-            android:id="@+id/caption_frame"
+            android:id="@+id/label_frame"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -26,6 +26,10 @@
             <TextView
                 android:id="@+id/soft_required_indicator"
                 style="@style/SoftRequiredIndicatorStyle" />
+
+            <TextView
+                android:id="@+id/minor_error_indicator"
+                style="@style/MinorErrorIndicatorStyle" />
 
         </LinearLayout>
 

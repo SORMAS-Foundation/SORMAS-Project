@@ -15,9 +15,9 @@ import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.TeboButtonType;
-import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -216,13 +216,13 @@ public class LocationDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    public TeboButtonType dismissButtonType() {
-        return TeboButtonType.BTN_LINE_DANGER;
+    public ControlButtonType dismissButtonType() {
+        return ControlButtonType.LINE_DANGER;
     }
 
     @Override
-    public TeboButtonType okButtonType() {
-        return TeboButtonType.BTN_LINE_PRIMARY;
+    public ControlButtonType okButtonType() {
+        return ControlButtonType.LINE_PRIMARY;
     }
 
     private void updateGpsTextView() {

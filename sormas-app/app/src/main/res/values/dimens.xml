@@ -35,7 +35,7 @@
 
 
     <dimen name="fabTotalHeightOffset">-87dp</dimen>
-    <dimen name="fab_margin">@dimen/margin_default</dimen>
+    <dimen name="sub_menu_button_margin">@dimen/margin_default</dimen>
     <dimen name="fabNonOverlapPaddingBottom">80dp</dimen>
     <dimen name="drawerWidth">324dp</dimen>
 
@@ -66,7 +66,7 @@
     <dimen name="defaultControlStrokeWidth">3dp</dimen>
     <dimen name="defaultControlTextSize">16sp</dimen>
     <dimen name="defaultPageHintTextSize">14sp</dimen>
-    <dimen name="defaultHintControlTextSize">14sp</dimen>
+    <dimen name="defaultSubHeadingDescriptionTextSize">14sp</dimen>
     <dimen name="defaultButtonStroke">@dimen/defaultControlStrokeWidth</dimen>
     <dimen name="defaultButtonRadius">@dimen/defaultControlRadius</dimen>
     <dimen name="defaultButtonHeight">48dp</dimen>
@@ -131,6 +131,7 @@
     <dimen name="slimButtonVerticalPadding">8dp</dimen>
     <dimen name="slimButtonHorizontalPadding">16dp</dimen>
     <dimen name="iconOnlyButtonHorizontalPadding">14dp</dimen>
+    <dimen name="slimButtonTextSize">14sp</dimen>
     <dimen name="buttonTextSize">14sp</dimen>
 
     <dimen name="slimControlHeight">40dp</dimen>
@@ -198,6 +199,7 @@
     <dimen name="slimTextControlMarginBottom">24dp</dimen>
     <dimen name="controlReadTextMarginBottom">24dp</dimen>
     <dimen name="pageBottomControlPanel">70dp</dimen>
+    <dimen name="subHeadlineMarginBottom">24dp</dimen>
 
     <!-- Tooltip -->
     <dimen name="tooltipDefaultPadding">20dip</dimen>
@@ -286,31 +288,29 @@
 
 
     <!-- Page Menu -->
-    <dimen name="pageMenuPositionTextSize">34sp</dimen>
+    <dimen name="navigationNumberTextSize">34sp</dimen>
 
 
 
     <!-- Landing Page Menu -->
-    <dimen name="landingPageMenuRootPaddingTop">1dp</dimen>
-    <dimen name="landingPageMenuRootPaddingBottom">1dp</dimen>
-    <dimen name="landingPageMenuHeaderHeight">48dp</dimen>
-    <dimen name="landingPageMenuHorizontalSpacing">1dp</dimen>
-    <dimen name="landingPageMenuVerticalSpacing">1dp</dimen>
-    <integer name="landingPageMenuNumColumns">3</integer>
-    <dimen name="landingPageMenuCellHeight">145dp</dimen>
-    <dimen name="landingPageMenuIconWidth">48dp</dimen>
-    <dimen name="landingPageMenuIconHeight">48dp</dimen>
-    <dimen name="landingPageMenuHeaderTextSize">16sp</dimen>
-    <dimen name="landingPageMenuTitleTextSize">12sp</dimen>
-    <dimen name="landingPageMenuNotificationCounterMarginBottom">8dp</dimen>
-    <dimen name="landingPageMenuNotificationCounterMarginRight">16dp</dimen>
-    <dimen name="landingPageMenuNotificationCounterTextSize">12sp</dimen>
+    <dimen name="subMenuPadding">1dp</dimen>
+    <dimen name="subMenuHeaderHeight">48dp</dimen>
+    <dimen name="subMenuSpacing">1dp</dimen>
+    <integer name="sub_menu_columns_number">3</integer>
+    <dimen name="subMenuItemCellHeight">145dp</dimen>
+    <dimen name="subMenuIconWidth">48dp</dimen>
+    <dimen name="subMenuIconHeight">48dp</dimen>
+    <dimen name="subMenuIconMarginBottom">8dp</dimen>
+    <dimen name="subMenuTitleTextSize">16sp</dimen>
+    <dimen name="subMenuItemTitleTextSize">12sp</dimen>
+    <dimen name="subMenuCounterMarginBottom">8dp</dimen>
+    <dimen name="subMenuCounterMarginRight">16dp</dimen>
+    <dimen name="subMenuCounterTextSize">12sp</dimen>
 
 
-    <dimen name="landingPageMenuCounterHeight">20dp</dimen>
-    <dimen name="landingPageMenuCounterRadius">10dp</dimen>
-    <dimen name="landingPageMenuCounterPaddingLeft">8dp</dimen>
-    <dimen name="landingPageMenuCounterPaddingRight">8dp</dimen>
+    <dimen name="subMenuCounterHeight">20dp</dimen>
+    <dimen name="subMenuCounterRadius">10dp</dimen>
+    <dimen name="subMenuCounterPadding">8dp</dimen>
 
 
 
@@ -318,48 +318,45 @@
 
 
     <!-- Landing Summary -->
-    <dimen name="landingSummaryCellHeight">146dp</dimen>
-    <dimen name="landingSummaryCellTitleSize">12sp</dimen>
-    <dimen name="landingSummaryCellPercentageSize">12sp</dimen>
-    <dimen name="landingSummaryCellTotalSize">32sp</dimen>
-    <dimen name="landingSummaryCellTotalMarginBottom">16dp</dimen>
-    <dimen name="landingSummaryVisualizationDefaultWidth">90dp</dimen>
-    <dimen name="landingSummaryVisualizationDefaultHeight">90dp</dimen>
-    <dimen name="landingSummaryVisualizationBottomMargin">16dp</dimen>
+    <dimen name="summaryCellHeight">146dp</dimen>
+    <dimen name="summaryCellTitleTextSize">12sp</dimen>
+    <dimen name="summaryVisualizationPercentageTextSize">12sp</dimen>
+    <dimen name="summaryCellTotalTextSize">32sp</dimen>
+    <dimen name="summaryCellTotalMarginBottom">16dp</dimen>
+    <dimen name="summaryVisualizationDefaultWidth">90dp</dimen>
+    <dimen name="summaryVisualizationDefaultHeight">90dp</dimen>
+    <dimen name="summaryVisualizationMarginBottom">16dp</dimen>
 
 
 
 
 
-    <dimen name="pageMenuNavPositionMarginTop">8dp</dimen>
-    <dimen name="pageMenuNavPositionMarginBottom">8dp</dimen>
-    <dimen name="pageMenuNavPositionMarginRight">16dp</dimen>
-
-    <dimen name="pageMenuItemPaddingBottom">16dp</dimen>
-    <dimen name="pageMenuItemPaddingLeft">16dp</dimen>
-    <dimen name="pageMenuItemPaddingRight">16dp</dimen>
+    <dimen name="navigationNumberMarginTop">8dp</dimen>
+    <dimen name="navigationNumberMarginBottom">8dp</dimen>
+    <dimen name="navigationNumberMarginRight">16dp</dimen>
+    <dimen name="navigationTitlePadding">16dp</dimen>
 
 
 
     <!-- Landing Summary: Donut Progress -->
-    <dimen name="donutFinishedStrokeWidth">5dp</dimen>
-    <dimen name="donutUnfinishedStrokeWidth">5dp</dimen>
-    <integer name="donutMax">100</integer>
-    <dimen name="donutTextSize">12sp</dimen>
-    <dimen name="donutProgressValueSize">24sp</dimen>
-    <dimen name="donutProgressDefaultWidth">@dimen/landingSummaryVisualizationDefaultWidth</dimen>
-    <dimen name="donutProgressDefaultHeight">@dimen/landingSummaryVisualizationDefaultHeight</dimen>
+    <dimen name="circularProgressFinishedStrokeWidth">5dp</dimen>
+    <dimen name="circularProgressUnfinishedStrokeWidth">5dp</dimen>
+    <integer name="circularProgressMaxValue">100</integer>
+    <dimen name="circularProgressTextSize">12sp</dimen>
+    <dimen name="summaryVisualizationValueTextSize">24sp</dimen>
+    <dimen name="circularProgressDefaultWidth">@dimen/summaryVisualizationDefaultWidth</dimen>
+    <dimen name="circularProgressDefaultHeight">@dimen/summaryVisualizationDefaultHeight</dimen>
 
 
     <!-- Landing Summary: Task Priority -->
-    <dimen name="pieChartDefaultWidth">@dimen/landingSummaryVisualizationDefaultWidth</dimen>
-    <dimen name="pieChartDefaultHeight">@dimen/landingSummaryVisualizationDefaultHeight</dimen>
+    <dimen name="pieChartDefaultWidth">@dimen/summaryVisualizationDefaultWidth</dimen>
+    <dimen name="pieChartDefaultHeight">@dimen/summaryVisualizationDefaultHeight</dimen>
 
 
     <!-- Landing Summary: Task Priority -->
-    <dimen name="legendValuePercentageSpacerRadius">5dp</dimen>
-    <dimen name="legendValuePercentageSpacerWidth">5dp</dimen>
-    <dimen name="legendValuePercentageSpacerHeight">5dp</dimen>
+    <dimen name="legendEntrySpacerRadius">5dp</dimen>
+    <dimen name="legendEntrySpacerWidth">5dp</dimen>
+    <dimen name="legendEntrySpacerHeight">5dp</dimen>
     <dimen name="legendDefaultShapeRadius">5dp</dimen>
     <dimen name="legendDefaultShapeWidth">5dp</dimen>
     <dimen name="legendDefaultShapeHeight">5dp</dimen>
@@ -486,10 +483,5 @@
 
     <dimen name="dashboardPreloaderWidth">50dp</dimen>
     <dimen name="dashboardPreloaderHeight">50dp</dimen>
-
-
-
-
-    <dimen name="summaryFragmentMinHeight">@dimen/landingSummaryCellHeight</dimen>
 
 </resources>

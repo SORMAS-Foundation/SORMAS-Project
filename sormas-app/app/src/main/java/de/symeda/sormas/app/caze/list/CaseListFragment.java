@@ -13,17 +13,14 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -132,7 +129,7 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
 
                     if (!resultStatus.isSuccess()) {
                         String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Cases");
-                        NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
+                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, message);
 
                         return;
                     }

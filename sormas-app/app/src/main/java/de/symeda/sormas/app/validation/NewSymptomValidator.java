@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import de.symeda.sormas.app.component.EditTeboPropertyField;
+import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.databinding.FragmentCaseEditSymptomsInfoLayoutBinding;
 import de.symeda.sormas.app.symptom.Symptom;
@@ -169,7 +169,7 @@ public class NewSymptomValidator {
 
 
 
-    private static List<? extends EditTeboPropertyField<?>> getOtherSymptomsFields(FragmentCaseEditSymptomsInfoLayoutBinding binding) {
+    private static List<? extends ControlPropertyEditField<?>> getOtherSymptomsFields(FragmentCaseEditSymptomsInfoLayoutBinding binding) {
         return Arrays.asList(binding.dtpSymptomOnset, binding.spnFirstSymptoms,
                 binding.txtSymptomComment,
                 binding.spnBodyTemperature, binding.spnBodyTemperatureSource, binding.txtSymptomaticLocation);

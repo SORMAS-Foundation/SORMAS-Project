@@ -6,7 +6,7 @@
 
     <data>
         <import type="android.view.View" />
-        <import type="de.symeda.sormas.app.component.TeboButtonType"/>
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
         <import type="java.lang.Object" />
         <variable name="data" type="Object"/>
         <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
@@ -33,25 +33,25 @@
 
 
 
-        <de.symeda.sormas.app.component.TeboButton
+        <de.symeda.sormas.app.component.controls.ControlButton
             android:id="@+id/btnCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_alignParentLeft="true"
             android:visibility="@{dialog.isCancelButtonVisible? View.VISIBLE : View.GONE}"
-            app:text="@{config.cancelButtonText}"
-            app:drawableLeft="@drawable/ic_cancel_create_new_case_black_24dp"
+            android:text="@{config.cancelButtonText}"
+            app:iconStart="@drawable/ic_cancel_create_new_case_black_24dp"
             app:buttonType="@{dialog.cancelButtonType}"
             app:rounded="@{dialog.isRounded}"
             app:slim="true"
             app:iconOnly="true"
-            app:onButtonOnClick="@{(view) -> cancelCallback.onCancelClick(view, data)}"
+            android:onClick="@{(view) -> cancelCallback.onCancelClick(view, data)}"
             />
 
 
 
-        <de.symeda.sormas.app.component.TeboButton
+        <de.symeda.sormas.app.component.controls.ControlButton
             android:id="@+id/btnCreate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -59,15 +59,15 @@
             android:layout_toLeftOf="@+id/btnOk"
             android:layout_alignParentRight="true"
             android:visibility="@{dialog.isCreateButtonVisible? View.VISIBLE : View.GONE}"
-            app:text="@{config.createButtonText}"
-            app:drawableLeft="@drawable/ic_create_new_case_black_24dp"
+            android:text="@{config.createButtonText}"
+            app:iconStart="@drawable/ic_create_new_case_black_24dp"
             app:buttonType="@{dialog.createButtonType}"
             app:rounded="@{dialog.isRounded}"
             app:slim="true"
-            app:onButtonOnClick="@{(view) -> createCallback.onCreateClick(view, data)}"
+            android:onClick="@{(view) -> createCallback.onCreateClick(view, data)}"
             />
 
-        <de.symeda.sormas.app.component.TeboButton
+        <de.symeda.sormas.app.component.controls.ControlButton
             android:id="@+id/btnOk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -75,12 +75,12 @@
             android:layout_marginLeft="@dimen/formLayoutGutterSize"
             android:layout_alignParentRight="true"
             android:visibility="@{dialog.isOkButtonVisible? View.VISIBLE : View.GONE}"
-            app:text="@{config.positiveButtonText}"
-            app:drawableLeft="@drawable/ic_save_new_case_black_24dp"
+            android:text="@{config.positiveButtonText}"
+            app:iconStart="@drawable/ic_save_new_case_black_24dp"
             app:buttonType="@{dialog.okButtonType}"
             app:rounded="@{dialog.isRounded}"
             app:slim="true"
-            app:onButtonOnClick="@{(view) -> okCallback.onOkClick(view, data)}"
+            android:onClick="@{(view) -> okCallback.onOkClick(view, data)}"
             />
     </RelativeLayout>
 

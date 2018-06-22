@@ -36,11 +36,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/heading_sub_case_hos_most_recent_hospitalization"
-                    style="@style/ReadActivitySubHeadingStyle"
+                    style="@style/SubHeadingStyle"
                     />
 
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtHospitalName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     >
-                    <de.symeda.sormas.app.component.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.TeboTextRead
                         android:id="@+id/txtAdmissionDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <de.symeda.sormas.app.component.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.TeboTextRead
                         android:id="@+id/txtDischargeDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     >
-                    <de.symeda.sormas.app.component.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.TeboTextRead
                         android:id="@+id/txtIsolation"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <de.symeda.sormas.app.component.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.TeboTextRead
                         android:id="@+id/txtIsolationDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -144,14 +144,14 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/heading_sub_case_hos_prev_hospitalization_history"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        style="@style/SubHeadingCompactStyle"
                         />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:hasValue="@{hospitalizations}"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        style="@style/SubHeadingCompactStyle"
                         />
 
                 </LinearLayout>

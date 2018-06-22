@@ -13,7 +13,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.component.TeboPropertyField;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 
 /**
@@ -111,8 +111,8 @@ public class BaseFragment extends Fragment {
     protected void setVisibilityByDisease(Class<?> fieldsDtoClazz, Disease disease, ViewGroup viewGroup) {
         for (int i=0; i<viewGroup.getChildCount(); i++){
             View child = viewGroup.getChildAt(i);
-            if (child instanceof TeboPropertyField) {
-                String propertyId = ((TeboPropertyField)child).getPropertyId();
+            if (child instanceof ControlPropertyField) {
+                String propertyId = ((ControlPropertyField)child).getPropertyId();
                 boolean definedOrMissing = Diseases.DiseasesConfiguration.isDefinedOrMissing(fieldsDtoClazz, propertyId, disease);
                 child.setVisibility(definedOrMissing ? View.VISIBLE : View.GONE);
             }

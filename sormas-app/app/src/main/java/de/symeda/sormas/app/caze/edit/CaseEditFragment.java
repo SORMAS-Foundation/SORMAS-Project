@@ -38,15 +38,16 @@ import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.InvalidValueException;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.TeboPropertyField;
-import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.MoveCaseDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityCommunicator;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
@@ -184,7 +185,7 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
         caseDiseaseLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
             public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
-                setRootNotificationBindingVariable(binding, layoutName);
+//                setRootNotificationBindingVariable(binding, layoutName);
                 setLocalBindingVariable(binding, layoutName);
             }
         });
@@ -197,9 +198,9 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
         }
 
 
-        contentBinding.txtHealthFacility.addValueChangedListener(new TeboPropertyField.ValueChangeListener() {
+        contentBinding.txtHealthFacility.addValueChangedListener(new ValueChangeListener() {
             @Override
-            public void onChange(TeboPropertyField field) {
+            public void onChange(ControlPropertyField field) {
                 Facility selectedFacility = record.getHealthFacility();
                 if (selectedFacility != null) {
                     boolean otherHealthFacility = selectedFacility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
@@ -222,17 +223,16 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
 
 
         if (!ConfigProvider.getUser().hasUserRole(UserRole.INFORMANT)) {
-            contentBinding.txtEpidNumber.addValueChangedListener(new TeboPropertyField.ValueChangeListener() {
+            contentBinding.txtEpidNumber.addValueChangedListener(new ValueChangeListener() {
                 @Override
-                public void onChange(TeboPropertyField field) {
+                public void onChange(ControlPropertyField field) {
                     String value = (String) field.getValue();
                     if (value.trim().isEmpty()) {
-                        getContentBinding().txtEpidNumber.enableErrorState((INotificationContext)getActivity(), R.string.validation_soft_case_epid_number_empty);
+                        getContentBinding().txtEpidNumber.enableMinorErrorState((NotificationContext)getActivity(), R.string.validation_soft_case_epid_number_empty);
                     } else if (value.matches(DataHelper.getEpidNumberRegexp())) {
-                        getContentBinding().txtEpidNumber.disableErrorState((INotificationContext)getActivity());
+                        getContentBinding().txtEpidNumber.disableMinorErrorState();
                     } else {
-                        //TODO: Re-enable error notification for EPID
-                        //getContentBinding().txtEpidNumber.enableErrorState((INotificationContext)getActivity(), R.string.validation_soft_case_epid_number);
+                        getContentBinding().txtEpidNumber.enableMinorErrorState((NotificationContext)getActivity(), R.string.validation_soft_case_epid_number);
                     }
                 }
             });
@@ -241,14 +241,14 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
         }
 
         if (ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
-            contentBinding.spnCaseOfficerClassification.addValueChangedListener(new TeboPropertyField.ValueChangeListener() {
+            contentBinding.spnCaseOfficerClassification.addValueChangedListener(new ValueChangeListener() {
                 @Override
-                public void onChange(TeboPropertyField field) {
+                public void onChange(ControlPropertyField field) {
                     CaseClassification caseClassification = (CaseClassification) field.getValue();
                     if (caseClassification == CaseClassification.NOT_CLASSIFIED) {
-                        getContentBinding().spnCaseOfficerClassification.enableErrorState((INotificationContext)getActivity(), R.string.validation_soft_case_classification);
+                        getContentBinding().spnCaseOfficerClassification.enableErrorState((NotificationContext)getActivity(), R.string.validation_soft_case_classification);
                     } else {
-                        getContentBinding().spnCaseOfficerClassification.disableErrorState((INotificationContext)getActivity());
+                        getContentBinding().spnCaseOfficerClassification.disableErrorState();
                     }
                 }
             });
@@ -259,14 +259,14 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
         }
 
         if (user.hasUserRight(UserRight.CASE_CLASSIFY)) {
-            contentBinding.spnOutcome.addValueChangedListener(new TeboPropertyField.ValueChangeListener() {
+            contentBinding.spnOutcome.addValueChangedListener(new ValueChangeListener() {
                 @Override
-                public void onChange(TeboPropertyField field) {
+                public void onChange(ControlPropertyField field) {
                     CaseOutcome outcome = (CaseOutcome) field.getValue();
                     if (outcome == null) {
-                        getContentBinding().spnOutcome.enableErrorState((INotificationContext)getActivity(), R.string.validation_soft_case_outcome);
+                        getContentBinding().spnOutcome.enableErrorState((NotificationContext)getActivity(), R.string.validation_soft_case_outcome);
                     } else {
-                        getContentBinding().spnOutcome.disableErrorState((INotificationContext)getActivity());
+                        getContentBinding().spnOutcome.disableErrorState();
                     }
 
                     if (outcome == null || outcome == CaseOutcome.NO_OUTCOME) {
@@ -287,6 +287,7 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
         }
 
         contentBinding.setData(record);
+        contentBinding.setUserRight(UserRight.CASE_EDIT);
         contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
         contentBinding.setPlagueTypeClass(PlagueType.class);
         contentBinding.setMoveToAnotherHealthFacilityCallback(moveToAnotherHealthFacilityCallback);

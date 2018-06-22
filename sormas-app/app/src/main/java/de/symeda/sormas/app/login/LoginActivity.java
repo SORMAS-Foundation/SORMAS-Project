@@ -17,9 +17,7 @@ import java.net.ConnectException;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.component.OnHideInputErrorListener;
-import de.symeda.sormas.app.component.OnShowInputErrorListener;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.ActivityLoginLayoutBinding;
@@ -33,7 +31,7 @@ import de.symeda.sormas.app.util.NavigationHelper;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
-public class LoginActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, OnShowInputErrorListener, OnHideInputErrorListener, INotificationContext {
+public class LoginActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, NotificationContext {
 
     private ActivityLoginLayoutBinding binding;
     private LoginViewModel loginViewModel;
@@ -52,8 +50,6 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         loginViewModel = new LoginViewModel();
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login_layout);
         binding.setData(loginViewModel);
-        binding.setShowNotificationCallback(this);
-        binding.setHideNotificationCallback(this);
     }
 
     public void showSettingsView(View view) {
@@ -115,18 +111,18 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
 
     public void login(View view) {
         //Hide notification
-        //NotificationHelper.hideNotification(binding);
-        binding.username.disableErrorState(this);
-        binding.password.disableErrorState(this);
+        //NotificationHelper.hideErrorNotification(binding);
+        binding.username.disableErrorState();
+        binding.password.disableErrorState();
 
         String errorMessage = null;
         String userName = binding.username.getValue().trim();
         String password = binding.password.getValue();
 
         if (userName.isEmpty()) {
-            binding.username.enableErrorState((INotificationContext)this, R.string.notification_empty_username);
+            binding.username.enableErrorState((NotificationContext)this, R.string.notification_empty_username);
         } else if (password.isEmpty()) {
-            binding.password.enableErrorState((INotificationContext)this, R.string.notification_empty_password);
+            binding.password.enableErrorState((NotificationContext)this, R.string.notification_empty_password);
         } else {
             ConfigProvider.setUsernameAndPassword(userName, password);
             processLogin(true);
@@ -211,16 +207,6 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
             finishActivity.finish();
             finishActivity = finishActivity.getParent();
         } while (finishActivity != null);
-    }
-
-    @Override
-    public void onShowInputErrorShowing(View v, String message, boolean errorState) {
-        NotificationHelper.showNotification(binding, NotificationType.ERROR, message);
-    }
-
-    @Override
-    public void onInputErrorHiding(View v, boolean errorState) {
-        NotificationHelper.hideNotification(binding);
     }
 
     @Override

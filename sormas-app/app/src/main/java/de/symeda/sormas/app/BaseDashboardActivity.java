@@ -6,7 +6,6 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -19,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.symeda.sormas.app.core.IDashboardNavigationCapsule;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.dashboard.SummaryRegisterItem;
@@ -32,7 +31,7 @@ import de.symeda.sormas.app.util.ConstantHelper;
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
-public abstract class BaseDashboardActivity extends AbstractSormasActivity implements INotificationContext { //, ISummaryLoadingStatusCommunicator
+public abstract class BaseDashboardActivity extends AbstractSormasActivity implements NotificationContext { //, ISummaryLoadingStatusCommunicator
 
     private View rootView;
     private View fragmentFrame = null;

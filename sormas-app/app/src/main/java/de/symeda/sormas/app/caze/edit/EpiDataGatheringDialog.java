@@ -10,7 +10,7 @@ import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.location.Location;
-import de.symeda.sormas.app.component.TeboButtonType;
+import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
@@ -119,18 +119,18 @@ public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    public TeboButtonType dismissButtonType() {
-        return TeboButtonType.BTN_LINE_SECONDARY;
+    public ControlButtonType dismissButtonType() {
+        return ControlButtonType.LINE_SECONDARY;
     }
 
     @Override
-    public TeboButtonType okButtonType() {
-        return TeboButtonType.BTN_LINE_PRIMARY;
+    public ControlButtonType okButtonType() {
+        return ControlButtonType.LINE_PRIMARY;
     }
 
     @Override
-    public TeboButtonType deleteButtonType() {
-        return TeboButtonType.BTN_LINE_DANGER;
+    public ControlButtonType deleteButtonType() {
+        return ControlButtonType.LINE_DANGER;
     }
 
     private void setupCallback() {

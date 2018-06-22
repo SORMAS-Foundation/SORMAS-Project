@@ -49,7 +49,7 @@
             android:orientation="vertical"
             >
 
-            <de.symeda.sormas.app.component.TeboTextRead
+            <de.symeda.sormas.app.component.controls.TeboTextRead
                 android:id="@+id/directContactConfirmedCase"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <de.symeda.sormas.app.component.TeboTextRead
+            <de.symeda.sormas.app.component.controls.TeboTextRead
                 android:id="@+id/directContactProbableCase"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <de.symeda.sormas.app.component.TeboTextRead
+            <de.symeda.sormas.app.component.controls.TeboTextRead
                 android:id="@+id/closeContactProbableCase"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <de.symeda.sormas.app.component.TeboTextRead
+            <de.symeda.sormas.app.component.controls.TeboTextRead
                 android:id="@+id/areaConfirmedCases"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <de.symeda.sormas.app.component.TeboTextRead
+            <de.symeda.sormas.app.component.controls.TeboTextRead
                 android:id="@+id/processingConfirmedCaseFluidUnsafe"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -99,7 +99,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <de.symeda.sormas.app.component.TeboTextRead
+            <de.symeda.sormas.app.component.controls.TeboTextRead
                 android:id="@+id/percutaneousCaseBlood"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -109,7 +109,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <de.symeda.sormas.app.component.TeboTextRead
+            <de.symeda.sormas.app.component.controls.TeboTextRead
                 android:id="@+id/directContactDeadUnsafe"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -119,7 +119,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <de.symeda.sormas.app.component.TeboTextRead
+            <de.symeda.sormas.app.component.controls.TeboTextRead
                 android:id="@+id/processingSuspectedCaseSampleUnsafe"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -156,14 +156,14 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/heading_sub_case_epid_burial_visited"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        style="@style/SubHeadingCompactStyle"
                         />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:hasValue="@{burials}"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        style="@style/SubHeadingCompactStyle"
                         />
 
                 </LinearLayout>
@@ -213,14 +213,14 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/heading_sub_case_epid_social_events"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        style="@style/SubHeadingCompactStyle"
                         />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:hasValue="@{socialEvents}"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        style="@style/SubHeadingCompactStyle"
                         />
 
                 </LinearLayout>
@@ -269,14 +269,14 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/heading_sub_case_epid_travels"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        style="@style/SubHeadingCompactStyle"
                         />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:hasValue="@{travels}"
-                        style="@style/ReadActivitySubHeadingNoBMarginStyle"
+                        style="@style/SubHeadingCompactStyle"
                         />
 
                 </LinearLayout>
@@ -313,7 +313,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/heading_sub_case_epid_animal_contact"
-                    style="@style/ReadActivitySubHeadingStyle"
+                    style="@style/SubHeadingStyle"
                     />
 
                 <!--<de.symeda.sormas.app.component.TeboHint
@@ -412,7 +412,7 @@
 
 
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtUnderCookedPoultry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -423,7 +423,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtExposureToPoultry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -438,7 +438,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtSickDeadAnimals"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -461,7 +461,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.TeboTextRead
                         android:id="@+id/txtLastExposureDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -473,7 +473,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <de.symeda.sormas.app.component.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.TeboTextRead
                         android:id="@+id/txtLastExposurePlace"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -487,7 +487,7 @@
                         />
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtCattleContact"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -498,7 +498,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtContactWithOtherAnimals"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -515,7 +515,7 @@
 
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
 
-                <!--<de.symeda.sormas.app.component.TeboTextRead-->
+                <!--<de.symeda.sormas.app.component.controls.TeboTextRead-->
                     <!--android:id="@+id/txtWildBirds"-->
                     <!--android:layout_width="match_parent"-->
                     <!--android:layout_height="wrap_content"-->
@@ -536,7 +536,7 @@
                     <!--android:orientation="horizontal"-->
                     <!--&gt;-->
 
-                    <!--<de.symeda.sormas.app.component.TeboTextRead-->
+                    <!--<de.symeda.sormas.app.component.controls.TeboTextRead-->
                         <!--android:id="@+id/txtWildBirdsDate"-->
                         <!--android:layout_width="0dp"-->
                         <!--android:layout_height="wrap_content"-->
@@ -548,7 +548,7 @@
                         <!--app:defaultValue='@{@string/not_available}'-->
                         <!--/>-->
 
-                    <!--<de.symeda.sormas.app.component.TeboTextRead-->
+                    <!--<de.symeda.sormas.app.component.controls.TeboTextRead-->
                         <!--android:id="@+id/txtWildBirdsPlace"-->
                         <!--android:layout_width="0dp"-->
                         <!--android:layout_height="wrap_content"-->
@@ -568,11 +568,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/heading_sub_case_epid_environmental_exposure"
-                    style="@style/ReadActivitySubHeadingStyle"
+                    style="@style/SubHeadingStyle"
                     />
 
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtDrinkingWaterSource"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -588,7 +588,7 @@
                     />
 
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtWaterBody"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -603,7 +603,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtTickBite"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

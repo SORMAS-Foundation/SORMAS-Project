@@ -37,9 +37,9 @@ import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
-import de.symeda.sormas.app.component.TeboDatePicker;
-import de.symeda.sormas.app.component.TeboSpinner;
-import de.symeda.sormas.app.component.TeboSwitch;
+import de.symeda.sormas.app.component.controls.TeboDatePicker;
+import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.TeboSwitch;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
@@ -216,7 +216,7 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
         occupationTypeLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
             public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
-                setRootNotificationBindingVariable(binding, layoutName);
+//                setRootNotificationBindingVariable(binding, layoutName);
                 setLocalBindingVariable(binding, layoutName);
             }
         });
@@ -226,7 +226,7 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
         presentConditionLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
             public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
-                setRootNotificationBindingVariable(binding, layoutName);
+//                setRootNotificationBindingVariable(binding, layoutName);
                 setLocalBindingVariable(binding, layoutName);
             }
         });

@@ -6,7 +6,7 @@
 
     <data>
         <import type="android.view.View" />
-        <import type="de.symeda.sormas.app.component.TeboButtonType"/>
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
         <variable name="data" type="Object"/>
         <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
         <variable name="dialog" type="de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog" />
@@ -27,22 +27,22 @@
         android:visibility="@{dialog.isButtonPanelVisible? View.VISIBLE : View.GONE}"
         >
 
-        <de.symeda.sormas.app.component.TeboButton
+        <de.symeda.sormas.app.component.controls.ControlButton
             android:id="@+id/btnDismiss"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_alignParentLeft="true"
             android:visibility="@{dialog.isDismissButtonVisible? View.VISIBLE : View.GONE}"
-            app:text="@{config.negativeButtonText}"
-            app:drawableLeft="@drawable/ic_clear_black_24dp"
+            android:text="@{config.negativeButtonText}"
+            app:iconStart="@drawable/ic_clear_black_24dp"
             app:buttonType="@{dialog.dismissButtonType}"
             app:rounded="@{dialog.isRounded}"
             app:iconOnly="@{dialog.iconOnlyDismissButtons}"
-            app:onButtonOnClick="@{(view) -> dismissCallback.onDismissClick(view, data)}"
+            android:onClick="@{(view) -> dismissCallback.onDismissClick(view, data)}"
             />
 
-        <de.symeda.sormas.app.component.TeboButton
+        <de.symeda.sormas.app.component.controls.ControlButton
             android:id="@+id/btnOk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,12 +50,12 @@
             android:layout_marginLeft="@dimen/formLayoutGutterSize"
             android:layout_alignParentRight="true"
             android:visibility="@{dialog.isOkButtonVisible? View.VISIBLE : View.GONE}"
-            app:text="@{config.positiveButtonText}"
-            app:drawableLeft="@drawable/ic_done_black_24dp"
+            android:text="@{config.positiveButtonText}"
+            app:iconStart="@drawable/ic_done_black_24dp"
             app:buttonType="@{dialog.okButtonType}"
             app:rounded="@{dialog.isRounded}"
             app:iconOnly="@{dialog.iconOnlyOkButtons}"
-            app:onButtonOnClick="@{(view) -> okCallback.onOkClick(view, data)}"
+            android:onClick="@{(view) -> okCallback.onOkClick(view, data)}"
             />
     </RelativeLayout>
 

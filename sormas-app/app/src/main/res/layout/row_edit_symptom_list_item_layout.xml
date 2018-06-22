@@ -4,12 +4,6 @@
 
     <data>
         <import type="de.symeda.sormas.api.symptoms.SymptomState" />
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
         <variable name="data" type="de.symeda.sormas.app.symptom.Symptom"/>
         <variable name="lesionsChildViewModel" type="de.symeda.sormas.app.symptom.LesionChildViewModel" />
         <variable name="detailsChildViewModel" type="de.symeda.sormas.app.symptom.DetailsViewModel"/>
@@ -60,7 +54,7 @@
                     android:fontFamily="sans-serif"
                     />
 
-                <de.symeda.sormas.app.component.TeboSwitch
+                <de.symeda.sormas.app.component.controls.TeboSwitch
                     android:id="@+id/swhSymptomState"
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
@@ -82,7 +76,7 @@
                     />
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/txtSymptomDetail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -93,10 +87,9 @@
                 app:hint="@string/hint_specify_detail"
                 app:required="true"
                 app:value="@={detailsChildViewModel.detail}"
-                app:nextFocusDown="@+id/txtControl1"
                 app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
             <include android:id="@+id/lesionsLayoutInclude"

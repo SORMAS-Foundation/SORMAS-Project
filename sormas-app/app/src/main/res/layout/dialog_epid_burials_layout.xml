@@ -8,12 +8,6 @@
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
         <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiDataBurial"/>
         <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="yesNoUnknownClass" type="Class" />
         <variable
@@ -40,7 +34,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.TeboDatePicker
+                <de.symeda.sormas.app.component.controls.TeboDatePicker
                     android:id="@+id/dtpBurialFromDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -54,7 +48,7 @@
                     app:value="@={data.burialDateFrom}"
                     />
 
-                <de.symeda.sormas.app.component.TeboDatePicker
+                <de.symeda.sormas.app.component.controls.TeboDatePicker
                     android:id="@+id/dtpBurialToDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -77,7 +71,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/txtDeceasedPerson"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -88,14 +82,13 @@
                     app:description="@string/desc_case_epid_burial_visit_deceased_person"
                     app:required="true"
                     app:value="@={data.burialPersonname}"
-                    app:nextFocusDown="@+id/txtControl1"
                     app:imeOptions="actionNext"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
 
-                <de.symeda.sormas.app.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/txtRelationship"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -107,23 +100,22 @@
                     app:description="@string/desc_case_epid_burial_visit_relation"
                     app:required="true"
                     app:value="@={data.burialRelation}"
-                    app:nextFocusDown="@+id/txtAddress"
                     app:imeOptions="actionNext"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.TeboAddress
+            <de.symeda.sormas.app.component.controls.TeboTextLinkEdit
                 android:id="@+id/txtBurialAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
                 app:background="@drawable/control_link_edittextview_background_selector"
-                app:drawablePadding="@dimen/contentHorizontalSpacing"
-                app:drawableLeft="@drawable/ic_edit_location_black_24dp"
-                app:drawableTint="@color/control_link_edittextview_color_selector"
+                app:iconPadding="@dimen/contentHorizontalSpacing"
+                app:iconStart="@drawable/ic_edit_location_black_24dp"
+                app:iconTint="@color/control_link_edittextview_color_selector"
                 app:textColor="@color/control_link_edittextview_color_selector"
                 app:textColorHint="@color/control_link_edittextview_hint_color_selector"
                 app:hint="@string/hint_case_epid_burial_visit_address"
@@ -134,7 +126,7 @@
                 />
             <!---->
 
-            <de.symeda.sormas.app.component.TeboSwitch
+            <de.symeda.sormas.app.component.controls.TeboSwitch
                 android:id="@+id/swhPersonIll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -156,11 +148,11 @@
                 app:abbrevUnknown="@{false}"
                 app:value="@={data.burialIll}"
                 app:onCheckedChangeListener="@{null}"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
-            <de.symeda.sormas.app.component.TeboSwitch
+            <de.symeda.sormas.app.component.controls.TeboSwitch
                 android:id="@+id/swhTouchedOrCarriedBody"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -182,8 +174,8 @@
                 app:abbrevUnknown="@{false}"
                 app:value="@={data.burialTouching}"
                 app:onCheckedChangeListener="@{null}"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
 

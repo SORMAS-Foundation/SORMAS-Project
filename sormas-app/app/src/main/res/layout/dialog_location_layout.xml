@@ -5,14 +5,9 @@
     android:id="@+id/base_layout">
 
     <data>
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
         <variable name="data" type="de.symeda.sormas.app.backend.location.Location"/>
         <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
 
         <variable
@@ -45,7 +40,7 @@
 
 
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/txtAddressLandmark"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -56,13 +51,12 @@
                 app:description="@string/desc_location_address"
                 app:required="true"
                 app:value="@={data.address}"
-                app:nextFocusDown="@+id/txtCommContactPerson"
                 app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/txtCommContactPerson"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -73,10 +67,9 @@
                 app:description="@string/desc_location_contact_person"
                 app:required="true"
                 app:value="@={data.details}"
-                app:nextFocusDown="@+id/spnState"
                 app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
 
@@ -89,7 +82,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.TeboSpinner
+                <de.symeda.sormas.app.component.controls.TeboSpinner
                     android:id="@+id/spnState"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -101,14 +94,13 @@
                     app:labelCaption="@string/label_location_state"
                     app:required="true"
                     app:spinnerMode="dialog"
-                    app:nextFocusDown="@+id/spnLga"
                     app:imeOptions="actionNext"
                     app:value="@={data.region}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
-                <de.symeda.sormas.app.component.TeboSpinner
+                <de.symeda.sormas.app.component.controls.TeboSpinner
                     android:id="@+id/spnLga"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -121,11 +113,10 @@
                     app:labelCaption="@string/label_location_lga"
                     app:required="true"
                     app:spinnerMode="dialog"
-                    app:nextFocusDown="@+id/spnWard"
                     app:imeOptions="actionNext"
                     app:value="@={data.district}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
             </LinearLayout>
@@ -139,7 +130,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.TeboSpinner
+                <de.symeda.sormas.app.component.controls.TeboSpinner
                     android:id="@+id/spnWard"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -151,14 +142,13 @@
                     app:labelCaption="@string/label_location_ward"
                     app:required="true"
                     app:spinnerMode="dialog"
-                    app:nextFocusDown="@+id/spnCity"
                     app:imeOptions="actionNext"
                     app:value="@={data.community}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
-                <de.symeda.sormas.app.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/txtCity"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -171,10 +161,9 @@
                     app:labelCaption="@string/label_location_city"
                     app:required="true"
                     app:value="@={data.city}"
-                    app:nextFocusDown="@+id/checkbox1"
                     app:imeOptions="actionNext"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
             </LinearLayout>
@@ -187,18 +176,17 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.TeboButton
+                <de.symeda.sormas.app.component.controls.ControlButton
                     android:id="@+id/btnPickGpsCoordinates"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:slim="true"
-                    app:drawableLeft="@drawable/ic_gps_fixed_black_24dp"
-                    app:buttonType="secondary"
-                    app:text="@string/action_pick_gps"
-                    app:onButtonOnClick="@{(view) -> pickGpsCallback.onClick(view, data)}"
-                    />
+                    app:iconStart="@drawable/ic_gps_fixed_black_24dp"
+                    app:buttonType="@{ControlButtonType.SECONDARY}"
+                    android:text="@string/action_pick_gps"
+                    android:onClick="@{(view) -> pickGpsCallback.onClick(view, data)}" />
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtGpsLatLon"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

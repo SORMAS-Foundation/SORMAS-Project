@@ -19,9 +19,9 @@ import java.util.List;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
-import de.symeda.sormas.app.component.TeboDatePicker;
-import de.symeda.sormas.app.component.TeboSwitch;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.component.controls.TeboDatePicker;
+import de.symeda.sormas.app.component.controls.TeboSwitch;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.databinding.RowEditSymptomListItemLayoutBinding;
@@ -45,16 +45,16 @@ public class SymptomFormListAdapter extends DataBoundAdapter<RowEditSymptomListI
     private final String layoutName;
     private List<Symptom> data = new ArrayList<>();
 
-    private INotificationContext notificationContext;
+    private NotificationContext notificationContext;
 
     //private OnTeboSwitchCheckedChangeListener mOnSymptomCheckedCallback;
     private OnSymptomStateChangeListener mOnSymptomStateChangeListener;
 
-    public SymptomFormListAdapter(Context context, INotificationContext notificationContext, int rowLayout, FragmentManager fragmentManager) {
+    public SymptomFormListAdapter(Context context, NotificationContext notificationContext, int rowLayout, FragmentManager fragmentManager) {
         this(context, notificationContext, rowLayout, new ArrayList<Symptom>(), fragmentManager);
     }
 
-    public SymptomFormListAdapter(Context context, INotificationContext notificationContext, int rowLayout, List<Symptom> data, FragmentManager fragmentManager) {
+    public SymptomFormListAdapter(Context context, NotificationContext notificationContext, int rowLayout, List<Symptom> data, FragmentManager fragmentManager) {
         super(rowLayout);
         this.context = context;
         this.notificationContext = notificationContext;
@@ -80,7 +80,7 @@ public class SymptomFormListAdapter extends DataBoundAdapter<RowEditSymptomListI
                 if (errorState)
                     holder.binding.swhSymptomState.enableErrorState(notificationContext, errorMessageResId == null? -1 : errorMessageResId);
                 else {
-                    holder.binding.swhSymptomState.disableErrorState(notificationContext);
+                    holder.binding.swhSymptomState.disableErrorState();
                 }
             }
         });
@@ -95,7 +95,7 @@ public class SymptomFormListAdapter extends DataBoundAdapter<RowEditSymptomListI
                         if (errorState)
                             holder.binding.txtSymptomDetail.enableErrorState(notificationContext, errorMessageResId == null? -1 : errorMessageResId);
                         else {
-                            holder.binding.txtSymptomDetail.disableErrorState(notificationContext);
+                            holder.binding.txtSymptomDetail.disableErrorState();
                         }
                     }
                 });
@@ -113,7 +113,7 @@ public class SymptomFormListAdapter extends DataBoundAdapter<RowEditSymptomListI
                         if (errorState)
                             holder.binding.swhSymptomState.enableErrorState(notificationContext, errorMessageResId == null? -1 : errorMessageResId);
                         else {
-                            holder.binding.swhSymptomState.disableErrorState(notificationContext);
+                            holder.binding.swhSymptomState.disableErrorState();
                         }
                     }
                 });
@@ -225,8 +225,8 @@ public class SymptomFormListAdapter extends DataBoundAdapter<RowEditSymptomListI
         if (s.getChildViewModel() instanceof LesionChildViewModel) {
             RowSymptomDetailsLesionsChildLayoutBinding binding = (RowSymptomDetailsLesionsChildLayoutBinding)childLayoutBinding;
 
-            binding.setShowNotificationCallback(holder.binding.getShowNotificationCallback());
-            binding.setHideNotificationCallback(holder.binding.getHideNotificationCallback());
+//            binding.setShowNotificationCallback(holder.binding.getShowNotificationCallback());
+//            binding.setHideNotificationCallback(holder.binding.getHideNotificationCallback());
             binding.setData((LesionChildViewModel)s.getChildViewModel());
             binding.setSymptomStateClass(SymptomState.class);
             binding.setCheckedCallback(createCallback(s, holder));

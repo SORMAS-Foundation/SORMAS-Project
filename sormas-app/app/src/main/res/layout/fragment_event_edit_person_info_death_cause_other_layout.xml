@@ -6,12 +6,6 @@
     android:id="@+id/base_layout">
 
     <data>
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
 
         <variable name="data" type="de.symeda.sormas.app.backend.person.Person"/>
@@ -23,7 +17,7 @@
         android:orientation="vertical"
         >
 
-        <de.symeda.sormas.app.component.TeboTextInputEditText
+        <de.symeda.sormas.app.component.controls.ControlTextEditField
             android:id="@+id/txtCauseOfDeathDisease"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,10 +27,9 @@
             app:description="@string/desc_event_pinvolv_other_cause_of_death"
             app:required="true"
             app:value="@={data.causeOfDeathDetails}"
-            app:nextFocusDown="@+id/txtControl1"
             app:imeOptions="actionNext"
-            app:onShowInputErrorListener="@{showNotificationCallback}"
-            app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
             />
 
     </LinearLayout>

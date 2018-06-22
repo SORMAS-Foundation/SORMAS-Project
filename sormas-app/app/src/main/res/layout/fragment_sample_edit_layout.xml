@@ -15,12 +15,6 @@
         <variable
             name="recentTestItemClickCallback"
             type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
 
         <variable name="yesNoClass" type="Class" />
@@ -62,7 +56,7 @@
                 >
 
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtPersonName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -74,7 +68,7 @@
                     />
 
 
-                <de.symeda.sormas.app.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/txtSampleCode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -84,14 +78,13 @@
                     app:description="@string/desc_sample_code"
                     app:required="true"
                     app:value="@={data.sampleCode}"
-                    app:nextFocusDown="@+id/txtControl1"
                     app:imeOptions="actionNext"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
 
-                <de.symeda.sormas.app.component.TeboDateTimePicker
+                <de.symeda.sormas.app.component.controls.TeboDateTimePicker
                     android:id="@+id/dtpDateAndTimeOfSampling"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -111,7 +104,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.TeboSpinner
+                    <de.symeda.sormas.app.component.controls.TeboSpinner
                         android:id="@+id/spnSampleMaterial"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -125,7 +118,7 @@
                         app:value="@={data.sampleMaterial}"
                         />
 
-                    <de.symeda.sormas.app.component.TeboTextInputEditText
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
                         android:id="@+id/txtSampleMaterialText"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -137,15 +130,14 @@
                         app:description="@string/desc_sample_other_material"
                         app:required="true"
                         app:value="@={data.sampleMaterialText}"
-                        app:nextFocusDown="@+id/txtControl1"
                         app:imeOptions="actionNext"
-                        app:onShowInputErrorListener="@{showNotificationCallback}"
-                        app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                         />
 
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.TeboSpinner
+                <de.symeda.sormas.app.component.controls.TeboSpinner
                     android:id="@+id/spnSampleSource"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -159,7 +151,7 @@
                     />
 
 
-                <de.symeda.sormas.app.component.TeboSpinner
+                <de.symeda.sormas.app.component.controls.TeboSpinner
                     android:id="@+id/spnTestType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -173,7 +165,7 @@
                     />
 
 
-                <de.symeda.sormas.app.component.TeboSpinner
+                <de.symeda.sormas.app.component.controls.TeboSpinner
                     android:id="@+id/spnLaboratory"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -186,7 +178,7 @@
                     app:value="@={data.lab}"
                     />
 
-                <de.symeda.sormas.app.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/txtLaboratoryDetails"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -196,10 +188,9 @@
                     app:description="@string/desc_sample_laboratory_details"
                     app:required="true"
                     app:value="@={data.labDetails}"
-                    app:nextFocusDown="@+id/txtControl1"
                     app:imeOptions="actionNext"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
                 <ImageView android:id="@+id/divShippingStatusTop" style="@style/MiniHorizontalDividerStyle"/>
@@ -210,7 +201,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.TeboSwitch
+                    <de.symeda.sormas.app.component.controls.TeboSwitch
                         android:id="@+id/swhShipped"
                         android:layout_width="@dimen/teboSwitchMinWidth"
                         android:layout_height="wrap_content"
@@ -232,12 +223,12 @@
                         app:abbrevUnknown="@{false}"
                         app:value="@={SampleHelper.isShipped(data.shipped)}"
                         app:onCheckedChangeListener="@{shippedYesCallback}"
-                        app:onShowInputErrorListener="@{showNotificationCallback}"
-                        app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                         />
 
 
-                    <de.symeda.sormas.app.component.TeboDatePicker
+                    <de.symeda.sormas.app.component.controls.TeboDatePicker
                         android:id="@+id/dtpShipmentDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -253,7 +244,7 @@
                         />
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/txtShipmentDetails"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -264,10 +255,9 @@
                     app:description="@string/desc_sample_shipment_details"
                     app:required="true"
                     app:value="@={data.shipmentDetails}"
-                    app:nextFocusDown="@+id/txtControl1"
                     app:imeOptions="actionNext"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
                 <LinearLayout
@@ -281,7 +271,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/heading_sub_sample_received"
-                        style="@style/ReadActivitySubHeadingStyle"
+                        style="@style/SubHeadingStyle"
                         />
 
                     <LinearLayout
@@ -289,7 +279,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <de.symeda.sormas.app.component.TeboTextRead
+                        <de.symeda.sormas.app.component.controls.TeboTextRead
                             android:id="@+id/txtLabSampleId"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -301,7 +291,7 @@
                             app:defaultValue='@{@string/not_available}'
                             />
 
-                        <de.symeda.sormas.app.component.TeboTextRead
+                        <de.symeda.sormas.app.component.controls.TeboTextRead
                             android:id="@+id/txtReceivedDate"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -316,7 +306,7 @@
 
                     </LinearLayout>
 
-                    <de.symeda.sormas.app.component.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.TeboTextRead
                         android:id="@+id/txtSpecimenCondition"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -327,7 +317,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <de.symeda.sormas.app.component.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.TeboTextRead
                         android:id="@+id/txtTestPossibleReason"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -345,7 +335,7 @@
 
                 <ImageView android:id="@+id/divShippingStatusBottom" style="@style/MiniHorizontalDividerStyle"/>
 
-                <de.symeda.sormas.app.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/txtComment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -355,11 +345,11 @@
                     app:description="@string/desc_sample_comment"
                     app:required="true"
                     app:value="@={data.comment}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
-                <de.symeda.sormas.app.component.TeboTextLinkRead
+                <de.symeda.sormas.app.component.controls.TeboTextLinkRead
                     android:id="@+id/txtReferredTo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -393,7 +383,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/heading_sub_recent_tests"
-                    style="@style/ReadActivitySubHeadingStyle"
+                    style="@style/SubHeadingStyle"
                     />
 
                 <LinearLayout

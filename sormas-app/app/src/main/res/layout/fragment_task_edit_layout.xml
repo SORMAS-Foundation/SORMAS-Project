@@ -6,6 +6,7 @@
 
     <data>
         <import type="de.symeda.sormas.app.core.BoxingUtil" />
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
         <variable name="data" type="de.symeda.sormas.app.backend.task.Task"/>
         <variable name="person" type="de.symeda.sormas.app.backend.person.Person"/>
         <variable name="callback" type="android.view.View.OnClickListener"/>
@@ -19,12 +20,6 @@
             name="eventLinkCallback"
             type="de.symeda.sormas.app.component.OnLinkClickListener" />
 
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
         <variable
             name="doneCallback"
             type="android.view.View.OnClickListener" />
@@ -55,7 +50,7 @@
                 >
 
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtTaskType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -68,7 +63,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.TeboTextLinkRead
+                <de.symeda.sormas.app.component.controls.TeboTextLinkRead
                     android:id="@+id/txtAssocCaze"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -83,7 +78,7 @@
                     app:onLinkClick="@{(view) -> caseLinkCallback.onClick(view, data)}"
                     />
 
-                <de.symeda.sormas.app.component.TeboTextLinkRead
+                <de.symeda.sormas.app.component.controls.TeboTextLinkRead
                     android:id="@+id/txtAssocContact"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -98,7 +93,7 @@
                     app:onLinkClick="@{(view) -> contactLinkCallback.onClick(view, data)}"
                     />
 
-                <de.symeda.sormas.app.component.TeboTextLinkRead
+                <de.symeda.sormas.app.component.controls.TeboTextLinkRead
                     android:id="@+id/txtAssocEvent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -113,7 +108,7 @@
                     app:onLinkClick="@{(view) -> eventLinkCallback.onClick(view, data)}"
                     />
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtCreatorUser"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -124,7 +119,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtCreatorComment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -141,7 +136,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.TeboTextImageRead
+                    <de.symeda.sormas.app.component.controls.TeboTextImageRead
                         android:id="@+id/txtTaskPriority"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -157,7 +152,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <de.symeda.sormas.app.component.TeboTextImageRead
+                    <de.symeda.sormas.app.component.controls.TeboTextImageRead
                         android:id="@+id/txtTaskStatus"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -180,7 +175,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.TeboTextRead
                         android:id="@+id/txtSuggestedStart"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -192,7 +187,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <de.symeda.sormas.app.component.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.TeboTextRead
                         android:id="@+id/txtDueDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -206,7 +201,7 @@
                         />
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/txtCommentOnExec"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -217,8 +212,8 @@
                     app:required="true"
                     app:value="@={data.assigneeReply}"
                     app:imeOptions="actionNext"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
             </LinearLayout>
 
@@ -235,16 +230,16 @@
                 android:elevation="16dp"
                 >
 
-                <de.symeda.sormas.app.component.TeboButton
+                <de.symeda.sormas.app.component.controls.ControlButton
                     android:id="@+id/btnNotExecutable"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toLeftOf="@+id/btnDivider"
-                    app:text="@string/action_not_executable"
-                    app:buttonType="line_danger"
+                    android:text="@string/action_not_executable"
+                    app:buttonType="@{ControlButtonType.LINE_DANGER}"
                     app:rounded="true"
-                    app:drawableLeft="@drawable/ic_block_black_24dp"
-                    app:onButtonOnClick="@{notExecCallback}"
+                    app:iconStart="@drawable/ic_block_black_24dp"
+                    android:onClick="@{notExecCallback}"
                     />
 
 
@@ -255,16 +250,16 @@
                     style="@style/FormButtonDividerStyle"
                     />
 
-                <de.symeda.sormas.app.component.TeboButton
+                <de.symeda.sormas.app.component.controls.ControlButton
                     android:id="@+id/btnDone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    app:text="@string/action_done"
-                    app:buttonType="line_primary"
+                    android:text="@string/action_done"
+                    app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                     app:rounded="true"
-                    app:drawableLeft="@drawable/ic_done_black_24dp"
-                    app:onButtonOnClick="@{doneCallback}"
+                    app:iconStart="@drawable/ic_done_black_24dp"
+                    android:onClick="@{doneCallback}"
                     />
 
             </RelativeLayout>

@@ -20,9 +20,9 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.component.TeboTextImageRead;
-import de.symeda.sormas.app.component.TeboTextLinkRead;
-import de.symeda.sormas.app.component.TeboTextRead;
+import de.symeda.sormas.app.component.controls.TeboTextImageRead;
+import de.symeda.sormas.app.component.controls.TeboTextLinkRead;
+import de.symeda.sormas.app.component.controls.TeboTextRead;
 
 /**
  * Created by Orson on 19/12/2017.

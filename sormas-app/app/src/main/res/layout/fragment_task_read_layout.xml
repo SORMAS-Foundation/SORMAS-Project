@@ -32,7 +32,7 @@
             android:paddingRight="@dimen/parentLayoutHorizontalPadding"
             >
 
-            <de.symeda.sormas.app.component.TeboTextRead
+            <de.symeda.sormas.app.component.controls.TeboTextRead
                 android:id="@+id/txtTaskType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <de.symeda.sormas.app.component.TeboTextLinkRead
+            <de.symeda.sormas.app.component.controls.TeboTextLinkRead
                 android:id="@+id/txtAssocCaze"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
                 app:onLinkClick="@{(view) -> caseLinkCallback.onClick(view, data)}"
                 />
 
-            <de.symeda.sormas.app.component.TeboTextLinkRead
+            <de.symeda.sormas.app.component.controls.TeboTextLinkRead
                 android:id="@+id/txtAssocContact"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
                 app:onLinkClick="@{(view) -> contactLinkCallback.onClick(view, data)}"
                 />
 
-            <de.symeda.sormas.app.component.TeboTextLinkRead
+            <de.symeda.sormas.app.component.controls.TeboTextLinkRead
                 android:id="@+id/txtAssocEvent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.TeboTextImageRead
+                <de.symeda.sormas.app.component.controls.TeboTextImageRead
                     android:id="@+id/txtTaskPriority"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -112,7 +112,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.TeboTextImageRead
+                <de.symeda.sormas.app.component.controls.TeboTextImageRead
                     android:id="@+id/txtTaskStatus"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -135,7 +135,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtSuggestedStart"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -147,7 +147,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtDueDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -162,7 +162,7 @@
             </LinearLayout>
 
 
-            <de.symeda.sormas.app.component.TeboTextRead
+            <de.symeda.sormas.app.component.controls.TeboTextRead
                 android:id="@+id/txtCommentOnExec"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

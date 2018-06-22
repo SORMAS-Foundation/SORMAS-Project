@@ -7,12 +7,6 @@
 
     <data>
         <import type="de.symeda.sormas.api.event.EventType" />
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
 
@@ -50,7 +44,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.TeboTextUuidRead
+                <de.symeda.sormas.app.component.controls.TeboTextUuidRead
                     android:id="@+id/txtAlertId"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -63,7 +57,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtReportDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -85,7 +79,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtReportingUser"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -97,7 +91,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtSurveillanceOfficer"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -113,7 +107,7 @@
             </LinearLayout>
 
 
-            <de.symeda.sormas.app.component.TeboSwitch
+            <de.symeda.sormas.app.component.controls.TeboSwitch
                 android:id="@+id/swhAlertType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -134,11 +128,11 @@
                 app:abbrevUnknown="@{false}"
                 app:value="@={data.eventType}"
                 app:onCheckedChangeListener="@{checkedCallback}"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/txtAlertDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -147,14 +141,13 @@
                 app:labelCaption="@string/label_alert_description"
                 app:description="@string/desc_alert_description"
                 app:value="@={data.eventDesc}"
-                app:nextFocusDown="@+id/spnDisease"
                 app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
 
-            <de.symeda.sormas.app.component.TeboSpinner
+            <de.symeda.sormas.app.component.controls.TeboSpinner
                 android:id="@+id/spnDisease"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -164,10 +157,9 @@
                 app:description="@string/desc_alert_disease"
                 app:spinnerMode="dialog"
                 app:value="@={data.disease}"
-                app:nextFocusDown="@+id/txtOtherDisease"
                 />
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/txtOtherDisease"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -176,14 +168,13 @@
                 app:labelCaption="@string/label_alert_other_disease"
                 app:description="@string/desc_alert_other_disease"
                 app:value="@={data.diseaseDetails}"
-                app:nextFocusDown="@+id/dtpDateOfAlert"
                 app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
 
-            <de.symeda.sormas.app.component.TeboDatePicker
+            <de.symeda.sormas.app.component.controls.TeboDatePicker
                 android:id="@+id/dtpDateOfAlert"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -195,7 +186,7 @@
                 />
 
 
-            <de.symeda.sormas.app.component.TeboSpinner
+            <de.symeda.sormas.app.component.controls.TeboSpinner
                 android:id="@+id/spnTypeOfPlace"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -208,7 +199,7 @@
                 />
 
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/txtOtherEventPlace"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -217,23 +208,22 @@
                 app:labelCaption="@string/label_alert_other_type_of_place"
                 app:description="@string/desc_alert_other_type_of_place"
                 app:value="@={data.typeOfPlaceText}"
-                app:nextFocusDown="@+id/txtAlertLocation"
                 app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
 
             <!--app:hint="Eg. No. 32 Hey Street, Maitama, Abuja, FCT"-->
-            <de.symeda.sormas.app.component.TeboTextLinkEdit
+            <de.symeda.sormas.app.component.controls.TeboTextLinkEdit
                 android:id="@+id/txtAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
                 app:background="@drawable/control_link_edittextview_background_selector"
-                app:drawablePadding="@dimen/contentHorizontalSpacing"
-                app:drawableLeft="@drawable/ic_edit_location_black_24dp"
-                app:drawableTint="@color/control_link_edittextview_color_selector"
+                app:iconPadding="@dimen/contentHorizontalSpacing"
+                app:iconStart="@drawable/ic_edit_location_black_24dp"
+                app:iconTint="@color/control_link_edittextview_color_selector"
                 app:textColor="@color/control_link_edittextview_color_selector"
                 app:textColorHint="@color/control_link_edittextview_hint_color_selector"
                 app:hint="@string/hint_alert_location"
@@ -247,7 +237,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/heading_sub_alert_source_of_information"
-                style="@style/ReadActivitySubHeadingStyle"
+                style="@style/SubHeadingStyle"
                 />
 
             <LinearLayout
@@ -257,7 +247,7 @@
                 >
 
 
-                <de.symeda.sormas.app.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/txtSourceLastName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -267,14 +257,13 @@
                     app:labelCaption="@string/label_alert_source_lastname"
                     app:description="@string/desc_alert_source_lastname"
                     app:value="@={data.srcLastName}"
-                    app:nextFocusDown="@+id/txtSourceFirstName"
                     app:imeOptions="actionNext"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
 
-                <de.symeda.sormas.app.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/txtSourceFirstName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -285,15 +274,14 @@
                     app:labelCaption="@string/label_alert_source_firstname"
                     app:description="@string/desc_alert_source_firstname"
                     app:value="@={data.srcFirstName}"
-                    app:nextFocusDown="@+id/txtSourceTelNumber"
                     app:imeOptions="actionNext"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
             </LinearLayout>
 
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/txtSourceTelNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -302,15 +290,14 @@
                 app:labelCaption="@string/label_alert_source_tel"
                 app:description="@string/desc_alert_source_tel"
                 app:value="@={data.srcTelNo}"
-                app:nextFocusDown="@+id/txtSourceEmail"
                 app:inputType="phone"
                 app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/txtSourceEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -321,8 +308,8 @@
                 app:value="@={data.srcEmail}"
                 app:imeOptions="actionNext"
                 app:inputType="textEmailAddress"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
 

@@ -14,9 +14,9 @@ import de.symeda.sormas.api.epidata.TravelType;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.TeboButtonType;
-import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
@@ -145,18 +145,18 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    public TeboButtonType dismissButtonType() {
-        return TeboButtonType.BTN_LINE_SECONDARY;
+    public ControlButtonType dismissButtonType() {
+        return ControlButtonType.LINE_SECONDARY;
     }
 
     @Override
-    public TeboButtonType okButtonType() {
-        return TeboButtonType.BTN_LINE_PRIMARY;
+    public ControlButtonType okButtonType() {
+        return ControlButtonType.LINE_PRIMARY;
     }
 
     @Override
-    public TeboButtonType deleteButtonType() {
-        return TeboButtonType.BTN_LINE_DANGER;
+    public ControlButtonType deleteButtonType() {
+        return ControlButtonType.LINE_DANGER;
     }
 
 }

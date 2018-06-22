@@ -6,12 +6,6 @@
     android:id="@+id/base_layout">
 
     <data>
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
         <variable name="contactProximityClass" type="Class" />
@@ -39,7 +33,7 @@
         android:paddingRight="@dimen/parentLayoutHorizontalPadding"
         >
 
-        <de.symeda.sormas.app.component.TeboDatePicker
+        <de.symeda.sormas.app.component.controls.TeboDatePicker
             android:id="@+id/dtpDateOfLastContact"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,7 +52,7 @@
             android:orientation="horizontal"
             >
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/txtLastName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -69,13 +63,12 @@
                 app:description="@string/desc_contact_person_last_name"
                 app:required="true"
                 app:value="@={data.person.lastName}"
-                app:nextFocusDown="@+id/txtControl1"
                 app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/txtFirstName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -87,16 +80,15 @@
                 app:description="@string/desc_contact_person_first_name"
                 app:required="true"
                 app:value="@={data.person.firstName}"
-                app:nextFocusDown="@+id/txtControl1"
                 app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
 
         </LinearLayout>
 
-        <de.symeda.sormas.app.component.TeboRadioGroup
+        <de.symeda.sormas.app.component.controls.TeboRadioGroup
             android:id="@+id/chkContactProximity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -113,11 +105,11 @@
             app:radioButtonLabelMarginStart="@dimen/radioButtonLabelMarginStart"
             app:enumClass="@{contactProximityClass}"
             app:value="@={data.contactProximity}"
-            app:onShowInputErrorListener="@{showNotificationCallback}"
-            app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
             />
 
-        <de.symeda.sormas.app.component.TeboSpinner
+        <de.symeda.sormas.app.component.controls.TeboSpinner
             android:id="@+id/spnContactRelationship"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -130,7 +122,7 @@
             app:value="@={data.relationToCase}"
             />
 
-        <de.symeda.sormas.app.component.TeboTextInputEditText
+        <de.symeda.sormas.app.component.controls.ControlTextEditField
             android:id="@+id/txtContactDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -140,10 +132,9 @@
             app:description="@string/desc_contact_description"
             app:required="true"
             app:value="@={data.description}"
-            app:nextFocusDown="@+id/txtControl1"
             app:imeOptions="actionNext"
-            app:onShowInputErrorListener="@{showNotificationCallback}"
-            app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
             />
 
     </LinearLayout>

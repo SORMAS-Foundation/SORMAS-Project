@@ -19,7 +19,7 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -124,7 +124,7 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
 
                         if (!resultStatus.isSuccess()) {
                             String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Events");
-                            NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
+                            NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, message);
 
                             return;
                         }

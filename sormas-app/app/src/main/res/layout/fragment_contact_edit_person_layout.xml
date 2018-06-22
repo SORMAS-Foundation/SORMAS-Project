@@ -7,12 +7,6 @@
 
     <data>
         <import type="de.symeda.sormas.api.person.PresentCondition" />
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.person.Person"/>
 
@@ -60,7 +54,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.TeboTextInputEditText
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
                         android:id="@+id/txtLastName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -71,13 +65,12 @@
                         app:description="@string/desc_event_pinvolv_last_name"
                         app:required="true"
                         app:value="@={data.lastName}"
-                        app:nextFocusDown="@+id/txtControl1"
                         app:imeOptions="actionNext"
-                        app:onShowInputErrorListener="@{showNotificationCallback}"
-                        app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                         />
 
-                    <de.symeda.sormas.app.component.TeboTextInputEditText
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
                         android:id="@+id/txtFirstName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -89,10 +82,9 @@
                         app:description="@string/desc_event_pinvolv_first_name"
                         app:required="true"
                         app:value="@={data.firstName}"
-                        app:nextFocusDown="@+id/txtControl1"
                         app:imeOptions="actionNext"
-                        app:onShowInputErrorListener="@{showNotificationCallback}"
-                        app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                         />
 
 
@@ -105,7 +97,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.TeboTextInputEditText
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
                         android:id="@+id/txtNickname"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -116,14 +108,13 @@
                         app:description="@string/desc_event_pinvolv_nickname"
                         app:required="true"
                         app:value="@={data.nickname}"
-                        app:nextFocusDown="@+id/txtControl1"
                         app:imeOptions="actionNext"
-                        app:onShowInputErrorListener="@{showNotificationCallback}"
-                        app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                         />
 
 
-                    <de.symeda.sormas.app.component.TeboTextInputEditText
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
                         android:id="@+id/txtMotherMaidenName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -135,10 +126,9 @@
                         app:description="@string/desc_event_pinvolv_mum_maiden_name"
                         app:required="true"
                         app:value="@={data.mothersMaidenName}"
-                        app:nextFocusDown="@+id/txtControl1"
                         app:imeOptions="actionNext"
-                        app:onShowInputErrorListener="@{showNotificationCallback}"
-                        app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                         />
 
 
@@ -152,7 +142,7 @@
                     >
 
 
-                    <de.symeda.sormas.app.component.TeboSpinner
+                    <de.symeda.sormas.app.component.controls.TeboSpinner
                         android:id="@+id/spnYear"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -167,7 +157,7 @@
                         />
 
 
-                    <de.symeda.sormas.app.component.TeboSpinner
+                    <de.symeda.sormas.app.component.controls.TeboSpinner
                         android:id="@+id/spnMonth"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -183,7 +173,7 @@
                         />
 
 
-                    <de.symeda.sormas.app.component.TeboSpinner
+                    <de.symeda.sormas.app.component.controls.TeboSpinner
                         android:id="@+id/spnDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -208,7 +198,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.TeboTextRead
                         android:id="@+id/txtAge"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -224,7 +214,7 @@
                         />
 
 
-                    <de.symeda.sormas.app.component.TeboSpinner
+                    <de.symeda.sormas.app.component.controls.TeboSpinner
                         android:id="@+id/spnAgeType"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -246,7 +236,7 @@
                 </LinearLayout>
 
 
-                <de.symeda.sormas.app.component.TeboSpinner
+                <de.symeda.sormas.app.component.controls.TeboSpinner
                     android:id="@+id/spnGender"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -266,7 +256,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.TeboTextInputEditText
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
                         android:id="@+id/txtPhoneNumber"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -277,13 +267,12 @@
                         app:description="@string/desc_event_pinvolv_pnumber"
                         app:required="true"
                         app:value="@={data.phone}"
-                        app:nextFocusDown="@+id/txtControl1"
                         app:imeOptions="actionNext"
-                        app:onShowInputErrorListener="@{showNotificationCallback}"
-                        app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                         />
 
-                    <de.symeda.sormas.app.component.TeboTextInputEditText
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
                         android:id="@+id/txtPhoneNumberOwner"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -295,15 +284,14 @@
                         app:description="@string/desc_event_pinvolv_pnumber_owner"
                         app:required="true"
                         app:value="@={data.phoneOwner}"
-                        app:nextFocusDown="@+id/txtControl1"
                         app:imeOptions="actionNext"
-                        app:onShowInputErrorListener="@{showNotificationCallback}"
-                        app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                         />
 
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.TeboSwitch
+                <de.symeda.sormas.app.component.controls.TeboSwitch
                     android:id="@+id/swhPresentCondition"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -325,8 +313,8 @@
                     app:abbrevUnknown="@{false}"
                     app:value="@={data.presentCondition}"
                     app:onCheckedChangeListener="@{checkedCallback}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
             </LinearLayout>
@@ -352,15 +340,15 @@
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
                 >
 
-                <de.symeda.sormas.app.component.TeboTextLinkEdit
+                <de.symeda.sormas.app.component.controls.TeboTextLinkEdit
                     android:id="@+id/txtPermAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
                     app:background="@drawable/control_link_edittextview_background_selector"
-                    app:drawablePadding="@dimen/contentHorizontalSpacing"
-                    app:drawableLeft="@drawable/ic_edit_location_black_24dp"
-                    app:drawableTint="@color/control_link_edittextview_color_selector"
+                    app:iconPadding="@dimen/contentHorizontalSpacing"
+                    app:iconStart="@drawable/ic_edit_location_black_24dp"
+                    app:iconTint="@color/control_link_edittextview_color_selector"
                     app:textColor="@color/control_link_edittextview_color_selector"
                     app:textColorHint="@color/control_link_edittextview_hint_color_selector"
                     app:hint="@string/hint_event_pinvolv_perm_res_addy"
@@ -373,10 +361,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/heading_sub_event_pinvolv_occupation"
-                    style="@style/ReadActivitySubHeadingStyle"
+                    style="@style/SubHeadingStyle"
                     />
 
-                <de.symeda.sormas.app.component.TeboSpinner
+                <de.symeda.sormas.app.component.controls.TeboSpinner
                     android:id="@+id/spnOccupationType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

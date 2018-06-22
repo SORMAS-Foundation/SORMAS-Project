@@ -7,14 +7,10 @@
 
     <data>
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
+        <variable name="userRight" type="de.symeda.sormas.api.user.UserRight"/>
         <variable name="caseOutcomeClass" type="Class" />
         <variable name="yesNoUnknownClass" type="Class" />
         <variable name="plagueTypeClass" type="Class" />
@@ -49,7 +45,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     >
-                    <de.symeda.sormas.app.component.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.TeboTextRead
                         android:id="@+id/txtLastName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -61,7 +57,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <de.symeda.sormas.app.component.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.TeboTextRead
                         android:id="@+id/txtFirstName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -77,23 +73,23 @@
                 </LinearLayout>-->
 
 
-                <de.symeda.sormas.app.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/txtEpidNumber"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    android:nextFocusForward="@+id/spnCaseOfficerClassification"
                     app:hint="@string/hint_case_epid_number"
                     app:labelCaption="@string/label_case_epid_number"
                     app:description="@string/desc_case_epid_number"
-                    app:required="true"
                     app:value="@={data.epidNumber}"
-                    app:nextFocusDown="@+id/txtControl1"
+                    app:userRight="@{userRight}"
                     app:imeOptions="actionNext"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
-                <de.symeda.sormas.app.component.TeboSpinner
+                <de.symeda.sormas.app.component.controls.TeboSpinner
                     android:id="@+id/spnCaseOfficerClassification"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -106,7 +102,7 @@
                     app:value="@={data.caseClassification}"
                     />
 
-                <de.symeda.sormas.app.component.TeboSpinner
+                <de.symeda.sormas.app.component.controls.TeboSpinner
                     android:id="@+id/spnCaseClassification"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -135,7 +131,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.TeboSpinner
+                    <de.symeda.sormas.app.component.controls.TeboSpinner
                         android:id="@+id/spnOutcome"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -149,7 +145,7 @@
                         app:value="@={data.outcome}"
                         />
 
-                    <de.symeda.sormas.app.component.TeboDatePicker
+                    <de.symeda.sormas.app.component.controls.TeboDatePicker
                         android:id="@+id/dtpDateOfOutcome"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -167,7 +163,7 @@
 
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.TeboSwitch
+                <de.symeda.sormas.app.component.controls.TeboSwitch
                     android:id="@+id/swhPregnant"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -189,13 +185,13 @@
                     app:abbrevUnknown="@{false}"
                     app:value="@={data.pregnant}"
                     app:onCheckedChangeListener="@{null}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
                 <ImageView style="@style/MiniHorizontalDividerStyle"/>
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtDisease"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -235,7 +231,7 @@
                     >
 
 
-                    <de.symeda.sormas.app.component.TeboTextUuidRead
+                    <de.symeda.sormas.app.component.controls.TeboTextUuidRead
                         android:id="@+id/txtCaseId"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -248,7 +244,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <de.symeda.sormas.app.component.TeboTextUuidRead
+                    <de.symeda.sormas.app.component.controls.TeboTextUuidRead
                         android:id="@+id/txtInvestigationStatus"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -269,7 +265,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     >
-                    <de.symeda.sormas.app.component.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.TeboTextRead
                         android:id="@+id/txtReportingUser"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -281,7 +277,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <de.symeda.sormas.app.component.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.TeboTextRead
                         android:id="@+id/txtReportDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -296,7 +292,7 @@
 
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtStateAndLga"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -309,7 +305,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtWard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -324,7 +320,7 @@
 
                 <ImageView style="@style/MiniHorizontalDividerStyle"/>
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtHealthFacility"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -336,7 +332,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtHealthFacilityDesc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -349,7 +345,7 @@
                     app:goneIfNull="@{data.healthFacilityDetails}"
                     />
 
-                <!--<de.symeda.sormas.app.component.TeboTextLinkRead
+                <!--<de.symeda.sormas.app.component.controls.TeboTextLinkRead
                     android:id="@+id/txtMoveCase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -363,7 +359,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />-->
 
-                <de.symeda.sormas.app.component.TeboTextRead
+                <de.symeda.sormas.app.component.controls.TeboTextRead
                     android:id="@+id/txtResponsibleOfficer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -393,16 +389,16 @@
                 android:visibility="gone"
                 >
 
-                <de.symeda.sormas.app.component.TeboButton
+                <de.symeda.sormas.app.component.controls.ControlButton
                     android:id="@+id/btnMoveToAnotherHealthFacility"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    app:text="@string/action_move_to_another_health_facility"
-                    app:buttonType="line_primary"
+                    app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
+                    app:iconStart="@drawable/ic_create_case_black_24dp"
+                    android:onClick="@{moveToAnotherHealthFacilityCallback}"
                     app:rounded="true"
-                    app:drawableLeft="@drawable/ic_create_case_black_24dp"
-                    app:onButtonOnClick="@{moveToAnotherHealthFacilityCallback}"
+                    android:text="@string/action_move_to_another_health_facility"
                     />
 
             </RelativeLayout>

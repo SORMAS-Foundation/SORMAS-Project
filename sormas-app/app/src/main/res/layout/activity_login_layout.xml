@@ -7,12 +7,6 @@
 
     <data>
         <variable name="data" type="de.symeda.sormas.app.login.LoginViewModel" />
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
     </data>
 
 
@@ -114,7 +108,7 @@
                     android:text="@string/login_sign_in_tag_line"
                     style="@style/LoginSignInTagLineText" />
 
-                <de.symeda.sormas.app.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -125,9 +119,8 @@
                     app:required="true"
                     app:value="@={data.userName}"
                     app:inputType="text"
-                    app:nextFocusForward="@+id/password"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}" />
+
+                     />
 
                 <!--app:imeOptions="actionNext"-->
                 <!--app:nextFocusUp="@id/txtUserName"-->
@@ -135,7 +128,7 @@
                 <!--app:nextFocusDown="@+id/txtPassword"-->
                 <!--app:nextFocusRight="@+id/txtPassword"-->
 
-                <de.symeda.sormas.app.component.TeboPassword
+                <de.symeda.sormas.app.component.controls.TeboPassword
                     android:id="@+id/password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -147,9 +140,8 @@
                     app:value="@={data.password}"
                     app:passwordToggleEnabled="true"
                     app:inputType="textPassword"
-                    app:nextFocusForward="@+id/btn_login"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}" />
+
+                     />
 
                 <!--app:imeOptions="actionNext"-->
                 <!--app:nextFocusUp="@id/txtUserName"-->

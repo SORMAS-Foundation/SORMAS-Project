@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.TeboPropertyField;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.tooltip.Tooltip;
 
 /**
@@ -15,26 +15,26 @@ import de.symeda.sormas.app.component.tooltip.Tooltip;
  */
 public class ControlLabelOnTouchListener implements View.OnClickListener, Tooltip.Callback {
     private TextView lblControlLabel;
-    private TeboPropertyField teboPropertyField;
+    private ControlPropertyField teboPropertyField;
     private Tooltip.TooltipView tooltip;
 
-    public ControlLabelOnTouchListener(TeboPropertyField teboPropertyField) {
+    public ControlLabelOnTouchListener(ControlPropertyField teboPropertyField) {
         this.teboPropertyField = teboPropertyField;
     }
 
     /*@Override
     public boolean onTouch(View v, MotionEvent event) {
-        lblControlLabel = (TextView)v;
-        if (lblControlLabel != null && event.getAction() == MotionEvent.ACTION_UP) {
-            if (lblControlLabel.getError() != null) {
-                if (lblControlLabel.isFocused()) {
-                    lblControlLabel.clearFocus(); // closes error popup
+        label = (TextView)v;
+        if (label != null && event.getAction() == MotionEvent.ACTION_UP) {
+            if (label.getError() != null) {
+                if (label.isFocused()) {
+                    label.clearFocus(); // closes error popup
                     return true;
                 }
             } else if (teboPropertyField.getDescription() != null && !teboPropertyField.getDescription().isEmpty()) {
                 if (null == tooltip) {
                     int[] lblControlLabelLocation = new int[2];
-                    lblControlLabel.getLocationOnScreen(lblControlLabelLocation);
+                    label.getLocationOnScreen(lblControlLabelLocation);
 
                     int x = lblControlLabelLocation[0];
                     int y = lblControlLabelLocation[1];

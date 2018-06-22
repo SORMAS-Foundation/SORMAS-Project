@@ -4,14 +4,6 @@ import android.content.Context;
 import android.os.Vibrator;
 import android.util.Log;
 
-/**
- * Created by Orson on 17/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class VibrationHelper {
 
 

@@ -27,7 +27,7 @@ import de.symeda.sormas.app.component.OnLinkClickListener;
 import de.symeda.sormas.app.contact.edit.ContactEditActivity;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -288,9 +288,9 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
 
                             if (resultStatus.isSuccess()) {
                                 if (resultStatus.getMessage().isEmpty()) {
-                                    NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.SUCCESS, resultStatus.getMessage());
+                                    NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, resultStatus.getMessage());
                                 } else {
-                                    NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.SUCCESS, R.string.notification_save_task_successful);
+                                    NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.notification_save_task_successful);
                                 }
 
                                 getActivityCommunicator().synchronizeChangedData(new Callback() {
@@ -300,9 +300,9 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                                     }
                                 });
                             } else if (!resultStatus.isSuccess() && !resultStatus.getMessage().isEmpty()) {
-                                NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, resultStatus.getMessage());
+                                NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, resultStatus.getMessage());
                             } else {
-                                NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, R.string.notification_save_task_failed);
+                                NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, R.string.notification_save_task_failed);
                             }
 
                             this.button.setEnabled(true);
@@ -326,7 +326,7 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
             public void onClick(final View v) {
                 try {
                     if(record.getAssigneeReply().isEmpty()) {
-                        NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, R.string.snackbar_task_reply);
+                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, R.string.snackbar_task_reply);
                         return;
                     }
 
@@ -377,9 +377,9 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
 
                             if (resultStatus.isSuccess()) {
                                 if (resultStatus.getMessage().isEmpty()) {
-                                    NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.SUCCESS, resultStatus.getMessage());
+                                    NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, resultStatus.getMessage());
                                 } else {
-                                    NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.SUCCESS, R.string.notification_save_task_successful);
+                                    NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.notification_save_task_successful);
                                 }
 
                                 getActivityCommunicator().synchronizeChangedData(new Callback() {
@@ -389,9 +389,9 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                                     }
                                 });
                             } else if (!resultStatus.isSuccess() && !resultStatus.getMessage().isEmpty()) {
-                                NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, resultStatus.getMessage());
+                                NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, resultStatus.getMessage());
                             } else {
-                                NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, R.string.notification_save_task_failed);
+                                NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, R.string.notification_save_task_failed);
                             }
 
                             this.button.setEnabled(true);

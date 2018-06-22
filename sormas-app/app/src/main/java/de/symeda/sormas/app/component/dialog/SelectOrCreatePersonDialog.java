@@ -18,12 +18,11 @@ import java.util.List;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.component.TeboButton;
+import de.symeda.sormas.app.component.controls.ControlButton;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -80,7 +79,7 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
             if (callback != null)
                 callback.call(getSelectedPerson());
         } else {
-            NotificationHelper.showDialogNotification((INotificationContext)this, NotificationType.ERROR, R.string.snackbar_select_create_person);
+            NotificationHelper.showDialogNotification((NotificationContext)this, NotificationType.ERROR, R.string.snackbar_select_create_person);
             if (callback != null)
                 callback.call(null);
         }
@@ -114,7 +113,7 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
             callback.call(getSelectedPerson());*/
 
         if (binding.txtFirstName.getValue().isEmpty() || binding.txtLastName.getValue().isEmpty()) {
-            NotificationHelper.showDialogNotification((INotificationContext)this, NotificationType.ERROR, R.string.snackbar_person_first_last_name);
+            NotificationHelper.showDialogNotification((NotificationContext)this, NotificationType.ERROR, R.string.snackbar_person_first_last_name);
 
             if (callback != null)
                 callback.call(null);
@@ -169,8 +168,8 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
             @Override
             public void onPropertyChanged(Observable observable, int i) {
 
-                TeboButton btnCreate = getCreateButton();
-                TeboButton btnSelect = getOkButton();
+                ControlButton btnCreate = getCreateButton();
+                ControlButton btnSelect = getOkButton();
 
                 if (getSelectedPerson() == null) {
                     if (btnCreate != null)
@@ -266,7 +265,7 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
 
 
                     } catch (NumberFormatException ex) {
-                        NotificationHelper.showDialogNotification((INotificationContext)SelectOrCreatePersonDialog.this, NotificationType.ERROR, R.string.notification_internal_error);
+                        NotificationHelper.showDialogNotification((NotificationContext)SelectOrCreatePersonDialog.this, NotificationType.ERROR, R.string.notification_internal_error);
                     }
 
 
@@ -279,13 +278,13 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
         ObservableArrayList newList = new ObservableArrayList();
 
         if (persons == null || persons.size() <= 0) {
-            binding.txtSelectOrCreatePersonTitle.setVisibility(View.GONE);
-            binding.txtNoRecordsTitle.setVisibility(View.VISIBLE);
+            binding.pickOrCreatePersonDescription.setVisibility(View.GONE);
+            binding.noRecordsDescription.setVisibility(View.VISIBLE);
 
             newList.addAll(new ArrayList<Person>());
         } else {
-            binding.txtSelectOrCreatePersonTitle.setVisibility(View.VISIBLE);
-            binding.txtNoRecordsTitle.setVisibility(View.GONE);
+            binding.pickOrCreatePersonDescription.setVisibility(View.VISIBLE);
+            binding.noRecordsDescription.setVisibility(View.GONE);
 
             newList.addAll(persons);
         }

@@ -19,7 +19,7 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -130,7 +130,7 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
                     public void searchResult(List<Task> result, BoolResult resultStatus) {
                         if (!resultStatus.isSuccess()) {
                             String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Tasks");
-                            NotificationHelper.showNotification((INotificationContext) getActivity(), NotificationType.ERROR, message);
+                            NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, message);
 
                             return;
                         }

@@ -2,393 +2,65 @@ package de.symeda.sormas.app.component;
 
 import de.symeda.sormas.app.R;
 
-/**
- * Created by Orson on 14/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
+public enum VisualState {
 
-//TODO: Redesign this class
-public abstract class VisualState {
-    private final int value;
-    private final String displayName;
+    NORMAL(R.drawable.selector_text_control_edit, R.drawable.selector_text_control_edit,
+            R.drawable.selector_spinner, R.drawable.control_switch_background_border,
+            R.color.controlLabelColor, R.color.controlTextColor, R.color.controlTextViewHint),
+    FOCUSED(R.drawable.selector_text_control_edit, R.drawable.selector_text_control_edit,
+            R.drawable.selector_spinner, R.drawable.selector_text_control_edit,
+            R.color.colorControlActivated, R.color.controlTextColor, R.color.controlTextViewHint),
+    DISABLED(R.drawable.selector_text_control_edit, R.drawable.selector_text_control_edit,
+            R.drawable.selector_spinner, R.drawable.selector_text_control_edit,
+            R.color.colorControlDisabled, R.color.colorControlDisabled, R.color.colorControlDisabledHint),
+    ERROR(R.drawable.selector_text_control_edit_error, R.drawable.selector_text_control_edit_error,
+            R.drawable.selector_spinner_error, R.drawable.control_switch_background_border_error,
+            R.color.colorControlError, R.color.controlTextColor, R.color.controlTextViewHint);
 
-    public static final VisualState NORMAL = new NormalState();
-    public static final VisualState FOCUSED = new FocusedState();
-    public static final VisualState ENABLED = new EnabledState();
-    public static final VisualState DISABLED = new DisabledState();
-    public static final VisualState ERROR = new ErrorState();
+    private int backgroundTextField;
+    private int backgroundCheckbox;
+    private int backgroundSpinner;
+    private int backgroundSwitch;
+    private int labelColor;
+    private int textColor;
+    private int hintColor;
 
-    protected VisualState(int value, String displayName) {
-        this.value = value;
-        this.displayName = displayName;
+    VisualState(int backgroundTextField, int backgroundCheckbox, int backgroundSpinner,
+                int backgroundSwitch, int labelColor, int textColor, int hintColor) {
+        this.backgroundTextField = backgroundTextField;
+        this.backgroundCheckbox = backgroundCheckbox;
+        this.backgroundSpinner = backgroundSpinner;
+        this.backgroundSwitch = backgroundSwitch;
+        this.labelColor = labelColor;
+        this.textColor = textColor;
+        this.hintColor = hintColor;
     }
 
-    public abstract int getBackground(VisualStateControl control);
-
-    public abstract int getLabelColor(VisualStateControl control);
-
-    public abstract int getTextColor(VisualStateControl control);
-
-    public abstract int getHintColor(VisualStateControl control);
-
-    private static class NormalState extends VisualState
-    {
-        public NormalState() {
-            super(0, "Normal");
-        }
-
-        @Override
-        public int getBackground(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.drawable.selector_text_control_edit;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.drawable.selector_text_control_edit;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.drawable.selector_spinner;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.drawable.control_switch_background_border;
-            }
-
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getLabelColor(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.color.controlLabelColor;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.color.controlLabelColor;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.color.controlLabelColor;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.color.controlLabelColor;
-            }
-
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getTextColor(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.color.controlTextColor;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.color.controlTextColor;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.color.controlTextColor;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.color.controlTextColor;
-            }
-
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getHintColor(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.color.controlTextViewHint;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.color.controlTextViewHint;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.color.controlTextViewHint;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.color.controlTextViewHint;
-            }
-
-            throw new UnsupportedOperationException();
+    public int getBackground(VisualStateControlType controlType) {
+        switch (controlType) {
+            case TEXT_FIELD:
+                return backgroundTextField;
+            case CHECKBOX:
+                return backgroundCheckbox;
+            case SPINNER:
+                return backgroundSpinner;
+            case SWITCH:
+                return backgroundSwitch;
+            default:
+                throw new IllegalArgumentException(controlType.toString());
         }
     }
 
-    private static class FocusedState extends VisualState
-    {
-        public FocusedState() {
-            super(1, "Focused");
-        }
-
-        @Override
-        public int getBackground(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.drawable.selector_text_control_edit;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.drawable.selector_text_control_edit;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.drawable.selector_spinner;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.drawable.selector_text_control_edit;
-            }
-
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getLabelColor(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.color.colorControlActivated;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.color.colorControlActivated;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.color.colorControlActivated;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.color.colorControlActivated;
-            }
-
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getTextColor(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.color.controlTextColor;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.color.controlTextColor;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.color.controlTextColor;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.color.controlTextColor;
-            }
-
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getHintColor(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.color.controlTextViewHint;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.color.controlTextViewHint;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.color.controlTextViewHint;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.color.controlTextViewHint;
-            }
-
-            throw new UnsupportedOperationException();
-        }
+    public int getLabelColor() {
+        return labelColor;
     }
 
-    private static class EnabledState extends VisualState
-    {
-        public EnabledState() {
-            super(2, "Enabled");
-        }
-
-        @Override
-        public int getBackground(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.drawable.selector_text_control_edit;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.drawable.selector_text_control_edit;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.drawable.selector_spinner;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.drawable.selector_text_control_edit;
-            }
-
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getLabelColor(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.color.controlLabelColor;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.color.controlLabelColor;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.color.controlLabelColor;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.color.controlLabelColor;
-            }
-
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getTextColor(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.color.controlTextColor;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.color.controlTextColor;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.color.controlTextColor;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.color.controlTextColor;
-            }
-
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getHintColor(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.color.controlTextViewHint;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.color.controlTextViewHint;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.color.controlTextViewHint;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.color.controlTextViewHint;
-            }
-
-            throw new UnsupportedOperationException();
-        }
+    public int getTextColor() {
+        return textColor;
     }
 
-    private static class DisabledState extends VisualState
-    {
-        public DisabledState() {
-            super(3, "Disabled");
-        }
-
-        @Override
-        public int getBackground(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.drawable.selector_text_control_edit;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.drawable.selector_text_control_edit;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.drawable.selector_spinner;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.drawable.selector_text_control_edit;
-            }
-
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getLabelColor(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.color.colorControlDisabled;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.color.colorControlDisabled;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.color.colorControlDisabled;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.color.colorControlDisabled;
-            }
-
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getTextColor(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.color.colorControlDisabled;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.color.colorControlDisabled;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.color.colorControlDisabled;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.color.colorControlDisabled;
-            }
-
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getHintColor(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.color.colorControlDisabledHint;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.color.colorControlDisabledHint;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.color.colorControlDisabledHint;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.color.colorControlDisabledHint;
-            }
-
-            throw new UnsupportedOperationException();
-        }
+    public int getHintColor() {
+        return hintColor;
     }
 
-    private static class ErrorState extends VisualState
-    {
-        public ErrorState() {
-            super(4, "Error");
-        }
-
-        @Override
-        public int getBackground(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.drawable.selector_text_control_edit_error;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.drawable.selector_text_control_edit_error;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.drawable.selector_spinner_error;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.drawable.control_switch_background_border_error;
-            }
-
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getLabelColor(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.color.colorControlError;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.color.colorControlError;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.color.colorControlError;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.color.colorControlError;
-            }
-
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getTextColor(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.color.controlTextColor;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.color.controlTextColor;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.color.controlTextColor;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.color.controlTextColor;
-            }
-
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getHintColor(VisualStateControl control) {
-            if (control == VisualStateControl.EDIT_TEXT) {
-                return R.color.controlTextViewHint;
-            } else if (control == VisualStateControl.CHECKBOX) {
-                return R.color.controlTextViewHint;
-            } else if (control == VisualStateControl.SPINNER) {
-                return R.color.controlTextViewHint;
-            } else if (control == VisualStateControl.SWITCH) {
-                return R.color.controlTextViewHint;
-            }
-
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="Overrides">
-
-    @Override
-    public int hashCode() {
-        return value + 37 * value;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof VisualState)) {
-            return false;
-        }
-        VisualState other = (VisualState) obj;
-        return value == other.value;
-    }
-
-    @Override
-    public String toString() {
-        return displayName;
-    }
-
-    // </editor-fold>
 }

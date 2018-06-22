@@ -17,9 +17,9 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.TeboButtonType;
-import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
 import de.symeda.sormas.app.component.dialog.CommunityLoader;
 import de.symeda.sormas.app.component.dialog.DistrictLoader;
@@ -203,18 +203,18 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    public TeboButtonType dismissButtonType() {
-        return TeboButtonType.BTN_LINE_SECONDARY;
+    public ControlButtonType dismissButtonType() {
+        return ControlButtonType.LINE_SECONDARY;
     }
 
     @Override
-    public TeboButtonType okButtonType() {
-        return TeboButtonType.BTN_LINE_PRIMARY;
+    public ControlButtonType okButtonType() {
+        return ControlButtonType.LINE_PRIMARY;
     }
 
     @Override
-    public TeboButtonType deleteButtonType() {
-        return TeboButtonType.BTN_LINE_DANGER;
+    public ControlButtonType deleteButtonType() {
+        return ControlButtonType.LINE_DANGER;
     }
 
     /*public PreviousHospitalizationDialog(final FragmentActivity activity, List<Region> regionList,

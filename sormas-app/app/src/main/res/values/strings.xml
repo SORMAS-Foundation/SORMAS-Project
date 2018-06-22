@@ -185,7 +185,7 @@
     <string name="entity_task">Task</string>
     <string name="entity_visit">Visit</string>
     <string name="entity_weekly_report">Weekly report</string>
-    <string name="epiData_infoText">Please indicate if any of the following is relevant for the patient during the incubation period or illness.</string>
+    <string name="description_epidemiological_info">Please indicate if any of the following is relevant for the patient during the incubation period or illness.</string>
     <string name="epid_burial_date_unknown">Date N/A</string>
     <string name="epid_burial_location_unknown">Location N/A</string>
     <string name="epid_burial_person_unknown">Person/Relation N/A</string>
@@ -376,6 +376,7 @@
     <string name="indicator_case_unclassified">Unclassified</string>
     <string name="indicator_required">*</string>
     <string name="indicator_soft_required">(*)</string>
+    <string name="indicator_minor_error">!</string>
     <string name="infoText_move_case_discard_changes">Moving the case will discard any unsaved changes. Do you want to continue?</string>
     <string name="infoText_resetPIN">To reset your PIN you will <b>need your SORMAS user password.</b></string>
     <string name="invalid">Invalid</string>
@@ -464,8 +465,8 @@
     <string name="sample_shipmentStatus">Shipment status</string>
     <string name="sample_shipped">Shipped</string>
     <string name="sampling_date_unknown">Sampling Date N/A</string>
-    <string name="select_or_create_person_infoText">Select anyone of the persons below that match by tapping.</string>
-    <string name="select_or_create_person_no_records_infoText">No records found matching the first and last name.</string>
+    <string name="description_pick_or_create_person">Select a matching person below by tapping on them or click the "+ Create" button if you don't find any matches.</string>
+    <string name="description_pick_or_create_person_no_records">No matching persons found. Click the "+ Create" button below to create a new person.</string>
     <string name="server_connection_error">Could not connect to SORMAS server. Synchronization canceled. Try again later.</string>
     <string name="snackbar_case_disease">Please specify the case disease.</string>
     <string name="snackbar_case_facility">Please enter the health facility.</string>
@@ -534,7 +535,8 @@
 
     <string name="sormas_logo_desc">SORMAS Logo</string>
     <string name="status_unknown">Status N/A</string>
-    <string name="symptoms_infoText">Please tick an answer for ALL symptoms indicating if they occurred during this illness between symptom onset and case detection:</string>
+    <string name="description_symptoms">Please select an answer for ALL symptoms indicating if they occurred during this illness between symptom onset and case detection:</string>
+    <string name="description_symptoms_visit">Please select an answer for ALL symptoms indicating if they occurred during this illness between the last and this visit:</string>
     <string name="sync_error">Synchronization failed. Please try again later.</string>
     <string name="synclog_server">Server: </string>
     <string name="synclog_yours">Yours: </string>

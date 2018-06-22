@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/subMenuItemCellHeight"
+    android:gravity="center"
+    android:background="@drawable/selector_sub_menu_item">
+
+    <TextView
+        android:id="@+id/counter"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/subMenuCounterHeight"
+        android:paddingStart="@dimen/subMenuCounterPadding"
+        android:paddingEnd="@dimen/subMenuCounterPadding"
+        android:gravity="center_vertical"
+        android:background="@drawable/background_sub_menu_counter"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/subMenuCounterText"
+        android:textSize="@dimen/subMenuCounterTextSize"
+        android:layout_gravity="top|end"
+        android:layout_marginBottom="@dimen/subMenuCounterMarginBottom"
+        android:layout_marginEnd="@dimen/subMenuCounterMarginRight" />
+
+    <ImageView
+        tools:ignore="ContentDescription"
+        android:id="@+id/icon"
+        android:layout_width="@dimen/subMenuIconWidth"
+        android:layout_height="@dimen/subMenuIconHeight"
+        android:layout_marginBottom="@dimen/subMenuIconMarginBottom"
+        android:scaleType="fitEnd" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="@dimen/subMenuItemTitleTextSize"
+        android:textAllCaps="true"
+        android:textColor="@color/subMenuItemTitleText"
+        android:textAlignment="center"/>
+
+</LinearLayout>

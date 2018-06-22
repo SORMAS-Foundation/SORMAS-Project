@@ -39,9 +39,9 @@ import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
-import de.symeda.sormas.app.component.TeboDatePicker;
-import de.symeda.sormas.app.component.TeboSpinner;
-import de.symeda.sormas.app.component.TeboSwitch;
+import de.symeda.sormas.app.component.controls.TeboDatePicker;
+import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.TeboSwitch;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
@@ -49,7 +49,7 @@ import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.ISaveableWithCallback;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.core.async.IJobDefinition;
@@ -215,7 +215,7 @@ public class EventNewPersonsInvolvedFullFragment extends BaseEditActivityFragmen
         occupationTypeLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
             public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
-                setRootNotificationBindingVariable(binding, layoutName);
+//                setRootNotificationBindingVariable(binding, layoutName);
                 setLocalBindingVariable(binding, layoutName);
             }
         });
@@ -225,7 +225,7 @@ public class EventNewPersonsInvolvedFullFragment extends BaseEditActivityFragmen
         presentConditionLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
             public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
-                setRootNotificationBindingVariable(binding, layoutName);
+//                setRootNotificationBindingVariable(binding, layoutName);
                 setLocalBindingVariable(binding, layoutName);
             }
         });
@@ -575,7 +575,7 @@ public class EventNewPersonsInvolvedFullFragment extends BaseEditActivityFragmen
     }
 
     @Override
-    public void save(final INotificationContext nContext, final Callback.IAction callback) {
+    public void save(final NotificationContext nContext, final Callback.IAction callback) {
         final EventParticipant eventParticipantToSave = getActivityRootData();
 
         if (eventParticipantToSave == null)

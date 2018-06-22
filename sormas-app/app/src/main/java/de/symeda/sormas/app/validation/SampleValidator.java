@@ -10,8 +10,8 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.component.EditTeboPropertyField;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.databinding.FragmentSampleEditLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentSampleNewLayoutBinding;
 
@@ -21,7 +21,7 @@ import de.symeda.sormas.app.databinding.FragmentSampleNewLayoutBinding;
 
 public final class SampleValidator {
 
-    public static boolean validateSampleData(INotificationContext activityContext, Sample sample, FragmentSampleEditLayoutBinding binding) {
+    public static boolean validateSampleData(NotificationContext activityContext, Sample sample, FragmentSampleEditLayoutBinding binding) {
         Resources resources = DatabaseHelper.getContext().getResources();
 
         boolean success = true;
@@ -70,24 +70,24 @@ public final class SampleValidator {
     }
 
     public static void clearErrorsForSampleData(FragmentSampleEditLayoutBinding binding) {
-        for (EditTeboPropertyField field : getSampleDataFields(binding)) {
+        for (ControlPropertyEditField field : getSampleDataFields(binding)) {
             //field.clearError();
         }
     }
 
     public static void setRequiredHintsForSampleData(FragmentSampleEditLayoutBinding binding) {
-        for (EditTeboPropertyField field : getSampleDataFields(binding)) {
+        for (ControlPropertyEditField field : getSampleDataFields(binding)) {
             field.setRequired(true);
         }
     }
 
-    private static final List<? extends EditTeboPropertyField<?>> getSampleDataFields(FragmentSampleEditLayoutBinding binding) {
+    private static final List<? extends ControlPropertyEditField<?>> getSampleDataFields(FragmentSampleEditLayoutBinding binding) {
         // TODO #558 sampleDetails
         return Arrays.asList(binding.dtpDateAndTimeOfSampling, binding.spnSampleMaterial, binding.txtSampleMaterialText,
                 binding.dtpShipmentDate, binding.spnLaboratory);
     }
 
-    public static boolean validateSampleData(INotificationContext activityContext, Sample sample, FragmentSampleNewLayoutBinding binding) {
+    public static boolean validateSampleData(NotificationContext activityContext, Sample sample, FragmentSampleNewLayoutBinding binding) {
         Resources resources = DatabaseHelper.getContext().getResources();
 
         boolean success = true;
@@ -130,12 +130,12 @@ public final class SampleValidator {
     }
 
     public static void clearErrorsForSampleData(FragmentSampleNewLayoutBinding binding) {
-        for (EditTeboPropertyField field : getSampleDataFields(binding)) {
+        for (ControlPropertyEditField field : getSampleDataFields(binding)) {
             //field.clearError();
         }
     }
 
-    private static final List<? extends EditTeboPropertyField<?>> getSampleDataFields(FragmentSampleNewLayoutBinding binding) {
+    private static final List<? extends ControlPropertyEditField<?>> getSampleDataFields(FragmentSampleNewLayoutBinding binding) {
         return Arrays.asList(binding.dtpDateAndTimeOfSampling, binding.spnSampleMaterial, binding.txtSampleMaterialText,
                 binding.dtpShipmentDate, binding.spnLaboratory);
     }

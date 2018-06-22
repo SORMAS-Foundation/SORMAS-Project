@@ -7,12 +7,6 @@
     <data>
         <variable name="data" type="de.symeda.sormas.app.component.dialog.UserReport"/>
         <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
     </data>
 
     <LinearLayout
@@ -33,7 +27,7 @@
             android:textColor="@color/pageHintText"
             android:textSize="@dimen/defaultPageHintTextSize"/>
 
-        <de.symeda.sormas.app.component.TeboTextInputEditText
+        <de.symeda.sormas.app.component.controls.ControlTextEditField
             android:id="@+id/txtMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -51,8 +45,8 @@
             app:required="true"
             app:value="@={data.message}"
             app:imeOptions="actionNone"
-            app:onShowInputErrorListener="@{showNotificationCallback}"
-            app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
             />
 
     </LinearLayout>

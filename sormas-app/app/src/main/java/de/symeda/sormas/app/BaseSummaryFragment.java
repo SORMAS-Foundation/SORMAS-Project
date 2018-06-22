@@ -65,10 +65,6 @@ public abstract class BaseSummaryFragment<E extends Enum<E>, TAdapter extends En
         return R.layout.fragment_root_summary_layout;
     }
 
-    public int getMinHeightResId() {
-        return R.dimen.summaryFragmentMinHeight;
-    }
-
     public RecyclerView getRecyclerView() {
         return mRecyclerView;
     }

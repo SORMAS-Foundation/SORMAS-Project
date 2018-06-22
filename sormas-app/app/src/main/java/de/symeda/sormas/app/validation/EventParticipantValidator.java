@@ -8,9 +8,9 @@ import java.util.List;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
-import de.symeda.sormas.app.component.EditTeboPropertyField;
-import de.symeda.sormas.app.component.TeboTextInputEditText;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
+import de.symeda.sormas.app.component.controls.ControlTextEditField;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.databinding.FragmentEventNewPersonFullLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentEventNewPersonShortLayoutBinding;
 
@@ -19,7 +19,7 @@ import de.symeda.sormas.app.databinding.FragmentEventNewPersonShortLayoutBinding
  */
 public final class EventParticipantValidator {
 
-    public static boolean validateEventParticipantData(INotificationContext activityContext, EventParticipant eventParticipant, FragmentEventNewPersonFullLayoutBinding binding) {
+    public static boolean validateEventParticipantData(NotificationContext activityContext, EventParticipant eventParticipant, FragmentEventNewPersonFullLayoutBinding binding) {
         Resources resources = DatabaseHelper.getContext().getResources();
 
         boolean success = true;
@@ -48,7 +48,7 @@ public final class EventParticipantValidator {
         return success;
     }
 
-    public static boolean validateNewEvent(INotificationContext activityContext, EventParticipant eventParticipant, FragmentEventNewPersonShortLayoutBinding binding) {
+    public static boolean validateNewEvent(NotificationContext activityContext, EventParticipant eventParticipant, FragmentEventNewPersonShortLayoutBinding binding) {
         Resources resources = DatabaseHelper.getContext().getResources();
 
         boolean success = true;
@@ -93,22 +93,22 @@ public final class EventParticipantValidator {
     }
 
     public static void setRequiredHintsForEventParticipantData(FragmentEventNewPersonShortLayoutBinding binding) {
-        for (EditTeboPropertyField field : getEventParticipantDataFields(binding)) {
+        for (ControlPropertyEditField field : getEventParticipantDataFields(binding)) {
             field.setRequired(true);
         }
     }
 
     public static void setRequiredHintsForNewEventParticipant(FragmentEventNewPersonShortLayoutBinding binding) {
-        for (EditTeboPropertyField field : getNewEventParticipantFields(binding)) {
+        for (ControlPropertyEditField field : getNewEventParticipantFields(binding)) {
             field.setRequired(true);
         }
     }
 
-    private static final List<TeboTextInputEditText> getEventParticipantDataFields(FragmentEventNewPersonShortLayoutBinding binding) {
+    private static final List<ControlTextEditField> getEventParticipantDataFields(FragmentEventNewPersonShortLayoutBinding binding) {
         return Arrays.asList(binding.txtInvolvementDesc);
     }
 
-    private static final List<TeboTextInputEditText> getNewEventParticipantFields(FragmentEventNewPersonShortLayoutBinding binding) {
+    private static final List<ControlTextEditField> getNewEventParticipantFields(FragmentEventNewPersonShortLayoutBinding binding) {
         return Arrays.asList(binding.txtInvolvementDesc, binding.txtFirstName,
                 binding.txtLastName);
     }

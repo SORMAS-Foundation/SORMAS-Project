@@ -7,6 +7,7 @@
 
     <data>
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiData"/>
         <variable name="yesNoUnknownClass" type="Class" />
@@ -14,12 +15,6 @@
         <variable name="travelList" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataTravel&gt;" />
         <variable name="burialList" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataBurial&gt;" />
 
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
         <variable
             name="gatheringCallback"
             type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
@@ -66,24 +61,22 @@
                 android:orientation="vertical"
                 android:paddingTop="@dimen/parentLayoutVerticalMargin"
                 android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                >
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding">
 
-                <de.symeda.sormas.app.component.TeboHint
-                    android:id="@+id/txtEpidTitle"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sub_heading_epidemiological_info"
+                    style="@style/SubHeadingCompactStyle" />
+
+                <TextView
+                    android:id="@+id/epidemiological_info_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:singleLine="false"
-                    app:maxLines="5"
-                    app:inputType="textMultiLine"
-                    app:showCaption="false"
-                    app:labelCaption="@string/label_case_epid_info"
-                    app:description="@string/desc_case_epid_info"
-                    app:value="@{@string/epiData_infoText}"
-                    />
+                    android:text="@string/description_epidemiological_info"
+                    style="@style/SubHeadingDescriptionStyle" />
 
-                <de.symeda.sormas.app.component.TeboSwitch
+                <de.symeda.sormas.app.component.controls.TeboSwitch
                     android:id="@+id/directContactConfirmedCase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -95,7 +88,7 @@
                     app:value="@={data.directContactConfirmedCase}"
                     />
 
-                <de.symeda.sormas.app.component.TeboSwitch
+                <de.symeda.sormas.app.component.controls.TeboSwitch
                     android:id="@+id/directContactProbableCase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -107,7 +100,7 @@
                     app:value="@={data.directContactProbableCase}"
                     />
 
-                <de.symeda.sormas.app.component.TeboSwitch
+                <de.symeda.sormas.app.component.controls.TeboSwitch
                     android:id="@+id/closeContactProbableCase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -119,7 +112,7 @@
                     app:value="@={data.closeContactProbableCase}"
                     />
 
-                <de.symeda.sormas.app.component.TeboSwitch
+                <de.symeda.sormas.app.component.controls.TeboSwitch
                     android:id="@+id/areaConfirmedCases"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -131,7 +124,7 @@
                     app:value="@={data.areaConfirmedCases}"
                     />
 
-                <de.symeda.sormas.app.component.TeboSwitch
+                <de.symeda.sormas.app.component.controls.TeboSwitch
                     android:id="@+id/processingConfirmedCaseFluidUnsafe"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -143,7 +136,7 @@
                     app:value="@={data.processingConfirmedCaseFluidUnsafe}"
                     />
 
-                <de.symeda.sormas.app.component.TeboSwitch
+                <de.symeda.sormas.app.component.controls.TeboSwitch
                     android:id="@+id/percutaneousCaseBlood"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -155,7 +148,7 @@
                     app:value="@={data.percutaneousCaseBlood}"
                     />
 
-                <de.symeda.sormas.app.component.TeboSwitch
+                <de.symeda.sormas.app.component.controls.TeboSwitch
                     android:id="@+id/directContactDeadUnsafe"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -167,7 +160,7 @@
                     app:value="@={data.directContactDeadUnsafe}"
                     />
 
-                <de.symeda.sormas.app.component.TeboSwitch
+                <de.symeda.sormas.app.component.controls.TeboSwitch
                     android:id="@+id/processingSuspectedCaseSampleUnsafe"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -179,7 +172,7 @@
                     app:value="@={data.processingSuspectedCaseSampleUnsafe}"
                     />
 
-                <de.symeda.sormas.app.component.TeboSwitch
+                <de.symeda.sormas.app.component.controls.TeboSwitch
                     android:id="@+id/swhBurial"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -201,8 +194,8 @@
                     app:abbrevUnknown="@{false}"
                     app:value="@={data.burialAttended}"
                     app:onCheckedChangeListener="@{burialCallback}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
             </LinearLayout>
@@ -239,17 +232,17 @@
                         style="@style/ReadActivitySubListHeadingNoBMarginStyle"
                         />
 
-                    <de.symeda.sormas.app.component.TeboButton
+                    <de.symeda.sormas.app.component.controls.ControlButton
                         android:id="@+id/btnNewBurialEntry"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
-                        app:text="@string/action_new"
-                        app:buttonType="line_primary"
+                        android:text="@string/action_new"
+                        app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                         app:rounded="true"
                         app:slim="true"
-                        app:drawableLeft="@drawable/ic_add_24dp"
-                        app:onButtonOnClick="@{(view) -> addBurialEntryClickCallback.onClick(view, data)}"
+                        app:iconStart="@drawable/ic_add_24dp"
+                        android:onClick="@{(view) -> addBurialEntryClickCallback.onClick(view, data)}"
                         />
 
                 </RelativeLayout>
@@ -286,7 +279,7 @@
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
                 >
 
-                <de.symeda.sormas.app.component.TeboSwitch
+                <de.symeda.sormas.app.component.controls.TeboSwitch
                     android:id="@+id/swhGathering"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -308,8 +301,8 @@
                     app:abbrevUnknown="@{false}"
                     app:value="@={data.gatheringAttended}"
                     app:onCheckedChangeListener="@{gatheringCallback}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
             </LinearLayout>
@@ -345,17 +338,17 @@
                         style="@style/ReadActivitySubListHeadingNoBMarginStyle"
                         />
 
-                    <de.symeda.sormas.app.component.TeboButton
+                    <de.symeda.sormas.app.component.controls.ControlButton
                         android:id="@+id/btnNewGatheringEntry"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
-                        app:text="@string/action_new"
-                        app:buttonType="line_primary"
+                        android:text="@string/action_new"
+                        app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                         app:rounded="true"
                         app:slim="true"
-                        app:drawableLeft="@drawable/ic_add_24dp"
-                        app:onButtonOnClick="@{(view) -> addGatheringEntryClickCallback.onClick(view, data)}"
+                        app:iconStart="@drawable/ic_add_24dp"
+                        android:onClick="@{(view) -> addGatheringEntryClickCallback.onClick(view, data)}"
                         />
 
                 </RelativeLayout>
@@ -390,7 +383,7 @@
                 android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
                 >
-                <de.symeda.sormas.app.component.TeboSwitch
+                <de.symeda.sormas.app.component.controls.TeboSwitch
                     android:id="@+id/swhTraveled"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -412,8 +405,8 @@
                     app:abbrevUnknown="@{false}"
                     app:value="@={data.traveled}"
                     app:onCheckedChangeListener="@{travelCallback}"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
             </LinearLayout>
@@ -450,17 +443,17 @@
                         style="@style/ReadActivitySubListHeadingNoBMarginStyle"
                         />
 
-                    <de.symeda.sormas.app.component.TeboButton
+                    <de.symeda.sormas.app.component.controls.ControlButton
                         android:id="@+id/btnNewTravelEntry"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
-                        app:text="@string/action_new"
-                        app:buttonType="line_primary"
+                        android:text="@string/action_new"
+                        app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                         app:rounded="true"
                         app:slim="true"
-                        app:drawableLeft="@drawable/ic_add_24dp"
-                        app:onButtonOnClick="@{(view) -> addTravelEntryClickCallback.onClick(view, data)}"
+                        app:iconStart="@drawable/ic_add_24dp"
+                        android:onClick="@{(view) -> addTravelEntryClickCallback.onClick(view, data)}"
                         />
 
                 </RelativeLayout>
@@ -532,11 +525,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/heading_sub_case_epid_environmental_exposure"
-                    style="@style/ReadActivitySubHeadingStyle"
+                    style="@style/SubHeadingStyle"
                     />
 
 
-                <de.symeda.sormas.app.component.TeboSpinner
+                <de.symeda.sormas.app.component.controls.TeboSpinner
                     android:id="@+id/spnSourceOfDrinkingWater"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -550,7 +543,7 @@
                     />
 
 
-                <de.symeda.sormas.app.component.TeboTextInputEditText
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/txtSourceOfDrinkingWaterOther"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -561,10 +554,9 @@
                     app:description="@string/desc_case_epid_source_of_drinking_water"
                     app:required="true"
                     app:value="@={data.waterSourceOther}"
-                    app:nextFocusDown="@+id/txtControl1"
                     app:imeOptions="actionNext"
-                    app:onShowInputErrorListener="@{showNotificationCallback}"
-                    app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                     />
 
 

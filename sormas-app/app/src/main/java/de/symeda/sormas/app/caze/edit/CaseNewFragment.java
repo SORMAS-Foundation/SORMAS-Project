@@ -18,6 +18,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
@@ -30,7 +31,7 @@ import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.CommunityLoader;
 import de.symeda.sormas.app.component.dialog.DistrictLoader;
@@ -165,7 +166,7 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
         healthFacilityLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
             public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
-                setRootNotificationBindingVariable(binding, layoutName);
+//                setRootNotificationBindingVariable(binding, layoutName);
                 setLocalBindingVariable(binding, layoutName);
             }
         });
@@ -385,8 +386,8 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
             contentBinding.spnWard.changeVisualState(VisualState.DISABLED);
             contentBinding.spnFacility.changeVisualState(VisualState.DISABLED);
         } else {
-            contentBinding.spnWard.changeVisualState(VisualState.NORMAL, editOrCreateUserRight);
-            contentBinding.spnFacility.changeVisualState(VisualState.NORMAL, editOrCreateUserRight);
+            contentBinding.spnWard.changeVisualState(VisualState.NORMAL);
+            contentBinding.spnFacility.changeVisualState(VisualState.NORMAL);
         }
     }
 

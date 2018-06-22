@@ -3,10 +3,10 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_spinner_item"
-    >
+    android:background="@drawable/background_spinner_item">
+
     <CheckedTextView
-        android:id="@+id/spinnerText"
+        android:id="@+id/text"
         style="?android:attr/spinnerDropDownItemStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,7 +17,6 @@
         android:singleLine="true"
         android:ellipsize="marquee"
         android:textSize="@dimen/defaultControlTextSize"
-        android:textColor="@color/controlTextColor"
-        />
+        android:textColor="@color/controlTextColor" />
 
 </LinearLayout>

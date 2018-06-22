@@ -17,9 +17,7 @@ import android.widget.TextView;
 import java.util.regex.Pattern;
 
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.component.OnHideInputErrorListener;
-import de.symeda.sormas.app.component.OnShowInputErrorListener;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.dashboard.DashboardActivity;
 import de.symeda.sormas.app.databinding.ActivityEnterPinLayoutBinding;
@@ -32,7 +30,7 @@ import de.symeda.sormas.app.settings.SettingsActivity;
  * Created by Orson on 15/11/2017.
  */
 
-public class EnterPinActivity extends AppCompatActivity implements OnShowInputErrorListener, OnHideInputErrorListener, INotificationContext {
+public class EnterPinActivity extends AppCompatActivity implements NotificationContext {
 
     public static final String CALLED_FROM_SETTINGS = "calledFromSettings";
 
@@ -368,16 +366,6 @@ public class EnterPinActivity extends AppCompatActivity implements OnShowInputEr
         dialog.setTitle(view.getContext().getResources().getText(R.string.headline_reset_PIN).toString());
         dialog.setMessage(view.getContext().getResources().getText(R.string.infoText_resetPIN).toString());
         dialog.show();
-    }
-
-    @Override
-    public void onShowInputErrorShowing(View v, String message, boolean errorState) {
-        NotificationHelper.showNotification(binding, NotificationType.ERROR, message);
-    }
-
-    @Override
-    public void onInputErrorHiding(View v, boolean errorState) {
-        NotificationHelper.hideNotification(binding);
     }
 
     @Override

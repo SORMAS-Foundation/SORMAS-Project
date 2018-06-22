@@ -6,13 +6,9 @@
         <attr name="show_caption" format="boolean" />
     </declare-styleable>
 
-
-
-
     <attr name="data" format="string" />
     <attr name="dataFile" format="string" />
     <attr name="title" format="string" />
-    <attr name="text" format="string" />
     <attr name="cellLayout" format="reference" />
     <attr name="counterBackgroundColor" format="reference" />
     <attr name="counterBackgroundActiveColor" format="reference" />
@@ -34,13 +30,12 @@
     <attr name="showCaption" format="boolean" />
     <attr name="horizontalFlow" format="boolean" />
 
-    <attr name="drawableStart" format="reference"  />
-    <attr name="drawableEnd" format="reference"  />
-    <attr name="drawableLeft" format="reference"  />
-    <attr name="drawableRight" format="reference"  />
-    <attr name="drawableTop" format="reference"  />
-    <attr name="drawableBottom" format="reference"  />
-
+    <attr name="iconStart" format="reference"  />
+    <attr name="iconEnd" format="reference"  />
+    <attr name="iconLeft" format="reference"  />
+    <attr name="iconRight" format="reference"  />
+    <attr name="iconTop" format="reference"  />
+    <attr name="iconBottom" format="reference"  />
 
     <attr name="background" format="reference" />
     <attr name="buttonBackground" format="reference" />
@@ -49,8 +44,8 @@
 
     <attr name="rounded" format="boolean" />
 
-    <attr name="emphasizeCaption" format="boolean" />
-    <attr name="italicCaption" format="boolean" />
+    <attr name="captionCapitalized" format="boolean" />
+    <attr name="captionItalic" format="boolean" />
     <attr name="slim" format="boolean" />
     <attr name="iconOnly" format="boolean" />
     <attr name="includeUnknown" format="reference|boolean" />
@@ -63,12 +58,11 @@
     <attr name="hint" format="string" />
     <attr name="description" format="string" />
     <attr name="required" format="boolean" />
+    <attr name="soft_required" format="boolean" />
     <attr name="defaultValue" format="string" />
-
 
     <attr name="dateHint" format="string" />
     <attr name="timeHint" format="string" />
-
 
     <attr name="scale" format="float|reference" />
     <attr name="scaleX" format="float|reference" />
@@ -87,8 +81,8 @@
 
 
     <attr name="textColorHint" format="reference|color" />
-    <attr name="drawableTint" format="reference|color" />
-    <attr name="drawablePadding" format="dimension" />
+    <attr name="iconTint" format="reference|color" />
+    <attr name="iconPadding" format="dimension" />
 
     <attr name="formStyle" format="boolean|reference" />
 
@@ -137,23 +131,26 @@
         <enum name="buttonFour" value="3" />
     </attr>
 
-    <attr name="buttonType" format="enum">
-        <enum name="primary" value="0"/>
-        <enum name="secondary" value="1"/>
-        <enum name="success" value="2"/>
-        <enum name="warning" value="3"/>
-        <enum name="danger" value="4"/>
-        <enum name="inverse_primary" value="5"/>
-        <enum name="inverse_secondary" value="6"/>
-        <enum name="inverse_success" value="7"/>
-        <enum name="inverse_warning" value="8"/>
-        <enum name="inverse_danger" value="9"/>
-        <enum name="line_primary" value="10"/>
-        <enum name="line_secondary" value="11"/>
-        <enum name="line_success" value="12"/>
-        <enum name="line_warning" value="13"/>
-        <enum name="line_danger" value="14"/>
-    </attr>
+    <attr name="buttonType" format="string" />
+    <attr name="userRight" format="string" />
+
+    <!--<attr name="buttonType" format="enum">-->
+        <!--<enum name="primary" value="0"/>-->
+        <!--<enum name="secondary" value="1"/>-->
+        <!--<enum name="success" value="2"/>-->
+        <!--<enum name="warning" value="3"/>-->
+        <!--<enum name="danger" value="4"/>-->
+        <!--<enum name="inverse_primary" value="5"/>-->
+        <!--<enum name="inverse_secondary" value="6"/>-->
+        <!--<enum name="inverse_success" value="7"/>-->
+        <!--<enum name="inverse_warning" value="8"/>-->
+        <!--<enum name="inverse_danger" value="9"/>-->
+        <!--<enum name="line_primary" value="10"/>-->
+        <!--<enum name="line_secondary" value="11"/>-->
+        <!--<enum name="line_success" value="12"/>-->
+        <!--<enum name="line_warning" value="13"/>-->
+        <!--<enum name="line_danger" value="14"/>-->
+    <!--</attr>-->
 
     <attr name="spinnerMode" format="enum">
         <enum name="dialog" value="0"/>
@@ -191,34 +188,26 @@
         <attr name="spinnerMode" />
     </declare-styleable>
 
-    <declare-styleable name="TeboPropertyField">
-        <attr name="labelCaption" />
-        <attr name="labelColor" />
+    <declare-styleable name="ControlPropertyField">
+        <attr name="caption" />
+        <attr name="captionColor" />
         <attr name="textAlignment" />
         <attr name="gravity" />
         <attr name="description" />
         <attr name="showCaption" />
-        <attr name="nextFocusLeft" />
-        <attr name="nextFocusRight" />
-        <attr name="nextFocusUp" />
-        <attr name="nextFocusDown" />
-        <attr name="nextFocusForward" />
         <attr name="imeOptions" />
         <attr name="slim" />
-        <attr name="emphasizeCaption" />
-        <attr name="italicCaption" />
+        <attr name="captionCapitalized" />
+        <attr name="captionItalic" />
     </declare-styleable>
 
-    <declare-styleable name="EditTeboPropertyField">
+    <declare-styleable name="ControlPropertyEditField">
         <attr name="required" />
+        <attr name="softRequired" />
         <attr name="hint" />
     </declare-styleable>
 
     <declare-styleable name="TeboDatePicker">
-        <!--<attr name="hint" />-->
-    </declare-styleable>
-
-    <declare-styleable name="TeboTimePicker">
         <!--<attr name="hint" />-->
     </declare-styleable>
 
@@ -227,7 +216,7 @@
         <attr name="timeHint" />
     </declare-styleable>
 
-    <declare-styleable name="TeboTextInputEditText">
+    <declare-styleable name="ControlTextEditField">
         <attr name="labelCaption" />
         <attr name="labelColor" />
         <attr name="textAlignment" />
@@ -238,6 +227,7 @@
         <attr name="singleLine" />
         <attr name="maxLines" />
         <attr name="textArea" />
+        <attr name="userRight" />
         <attr name="inputType" />
     </declare-styleable>
 
@@ -268,31 +258,12 @@
         <attr name="inputType" />
 
         <attr name="textColorHint" />
-        <attr name="drawableTint" />
-        <attr name="drawablePadding" />
-        <attr name="drawableStart" />
-        <attr name="drawableEnd" />
-        <attr name="drawableLeft" />
-        <attr name="drawableRight" />
-    </declare-styleable>
-
-    <declare-styleable name="TeboAddress">
-        <attr name="textSize" />
-        <attr name="textColor" />
-        <attr name="background" />
-
-        <!--<attr name="hint" />-->
-        <attr name="singleLine" />
-        <attr name="maxLines" />
-        <attr name="inputType" />
-
-        <attr name="textColorHint" />
-        <attr name="drawableTint" />
-        <attr name="drawablePadding" />
-        <attr name="drawableStart" />
-        <attr name="drawableEnd" />
-        <attr name="drawableLeft" />
-        <attr name="drawableRight" />
+        <attr name="iconTint" />
+        <attr name="iconPadding" />
+        <attr name="iconStart" />
+        <attr name="iconEnd" />
+        <attr name="iconLeft" />
+        <attr name="iconRight" />
     </declare-styleable>
 
     <declare-styleable name="TeboCheckBox">
@@ -322,11 +293,6 @@
         <attr name="radioButtonLabelMarginStart" format="dimension|reference"/>
     </declare-styleable>
 
-    <declare-styleable name="TeboHint">
-        <attr name="singleLine" />
-        <attr name="maxLines" />
-    </declare-styleable>
-
     <declare-styleable name="TeboTextRead">
         <attr name="labelCaption" />
         <!--<attr name="labelColor" />-->
@@ -350,24 +316,14 @@
         <attr name="imageHeight" />
     </declare-styleable>
 
-
-    <declare-styleable name="PrimaryButtonControl">
-        <attr name="android:text" />
+    <declare-styleable name="ControlButton">
         <attr name="buttonType" />
-    </declare-styleable>
-
-    <declare-styleable name="TeboButton">
-        <attr name="text" />
-        <attr name="buttonType" />
-        <attr name="drawableStart" />
-        <attr name="drawableEnd" />
-        <attr name="drawableLeft" />
-        <attr name="drawableRight" />
-        <attr name="drawableTop" />
-        <attr name="drawableBottom" />
+        <attr name="iconEnd" />
+        <attr name="iconStart" />
+        <attr name="iconOnly" />
         <attr name="rounded" />
         <attr name="slim" />
-        <attr name="iconOnly" />
+        <attr name="text" />
     </declare-styleable>
 
     <declare-styleable name="LandingPageMenuControl">
@@ -447,14 +403,6 @@
         <attr name="textAlignment" />
         <attr name="gravity" />
     </declare-styleable>
-
-
-    <attr name="nextFocusLeft" format="reference"/>
-    <attr name="nextFocusRight" format="reference"/>
-    <attr name="nextFocusUp" format="reference"/>
-    <attr name="nextFocusDown" format="reference"/>
-    <attr name="nextFocusForward" format="reference"/>
-
 
     <attr name="inputType">
         <flag name="none" value="0x00000000" />

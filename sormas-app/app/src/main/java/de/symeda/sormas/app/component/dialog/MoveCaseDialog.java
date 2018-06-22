@@ -25,21 +25,17 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.TeboButtonType;
-import de.symeda.sormas.app.component.TeboSpinner;
+import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.INotificationContext;
 import de.symeda.sormas.app.core.async.IJobDefinition;
 import de.symeda.sormas.app.core.async.ITaskExecutor;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogMoveCaseLayoutBinding;
-import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 
@@ -291,13 +287,13 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    public TeboButtonType dismissButtonType() {
-        return TeboButtonType.BTN_LINE_DANGER;
+    public ControlButtonType dismissButtonType() {
+        return ControlButtonType.LINE_DANGER;
     }
 
     @Override
-    public TeboButtonType okButtonType() {
-        return TeboButtonType.BTN_LINE_PRIMARY;
+    public ControlButtonType okButtonType() {
+        return ControlButtonType.LINE_PRIMARY;
     }
 
     @Override

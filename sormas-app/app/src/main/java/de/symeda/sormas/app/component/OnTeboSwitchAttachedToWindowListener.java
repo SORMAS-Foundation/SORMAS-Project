@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.component;
 
+import de.symeda.sormas.app.component.controls.TeboSwitch;
+
 /**
  * Created by Orson on 10/02/2018.
  * <p>

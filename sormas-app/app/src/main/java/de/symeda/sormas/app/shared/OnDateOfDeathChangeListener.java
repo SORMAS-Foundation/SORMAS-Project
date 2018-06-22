@@ -2,7 +2,7 @@ package de.symeda.sormas.app.shared;
 
 import java.util.Date;
 
-import de.symeda.sormas.app.component.TeboDatePicker;
+import de.symeda.sormas.app.component.controls.TeboDatePicker;
 
 /**
  * Created by Orson on 21/03/2018.

@@ -6,15 +6,9 @@
     android:id="@+id/base_layout">
 
     <data>
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.symptoms.Symptoms"/>
-
 
         <variable
             name="clearAllCallback"
@@ -50,7 +44,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.TeboSpinner
+                <de.symeda.sormas.app.component.controls.TeboSpinner
                     android:id="@+id/spnBodyTemperature"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -64,7 +58,7 @@
                     app:value="@={data.temperature}"
                     />
 
-                <de.symeda.sormas.app.component.TeboSpinner
+                <de.symeda.sormas.app.component.controls.TeboSpinner
                     android:id="@+id/spnBodyTemperatureSource"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -81,18 +75,18 @@
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.TeboHint
-                android:id="@+id/txtSymptomsTitle"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sub_heading_symptoms"
+                style="@style/SubHeadingCompactStyle" />
+
+            <TextView
+                android:id="@+id/symptoms_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="5"
-                app:inputType="textMultiLine"
-                app:labelCaption="@string/label_contact_symptoms"
-                app:description="@string/desc_contact_symptoms"
-                app:value="@{@string/symptoms_infoText}"
-                />
+                android:text="@string/description_symptoms_visit"
+                style="@style/SubHeadingDescriptionStyle" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -100,32 +94,32 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.TeboButton
+                <de.symeda.sormas.app.component.controls.ControlButton
                     android:id="@+id/btnClearAll"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    app:text="@string/action_clear_all"
-                    app:buttonType="line_secondary"
+                    android:text="@string/action_clear_all"
+                    app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
                     app:rounded="false"
                     app:slim="true"
-                    app:onButtonOnClick="@{(view) -> clearAllCallback.onClick(view, data)}"
+                    android:onClick="@{(view) -> clearAllCallback.onClick(view, data)}"
                     />
 
-                <de.symeda.sormas.app.component.TeboButton
+                <de.symeda.sormas.app.component.controls.ControlButton
                     android:id="@+id/btnClearedToNo"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:paddingLeft="@dimen/formLayoutGutterSize"
-                    app:text="@string/action_set_cleared_to_no"
-                    app:buttonType="line_secondary"
+                    android:text="@string/action_set_cleared_to_no"
+                    app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
                     app:rounded="false"
                     app:slim="true"
-                    app:onButtonOnClick="@{(view) -> setAllToNoCallback.onClick(view, data)}"
+                    android:onClick="@{(view) -> setAllToNoCallback.onClick(view, data)}"
                     />
 
-                <!--app:onButtonOnClick="@{}"-->
+                <!--android:onClick="@{}"-->
 
 
             </LinearLayout>
@@ -152,7 +146,7 @@
 
             </android.support.v4.widget.NestedScrollView>
 
-            <de.symeda.sormas.app.component.TeboTextInputEditText
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/txtSymptomComment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -162,14 +156,13 @@
                 app:description="@string/desc_contact_symptoms_comment"
                 app:required="true"
                 app:value="@={data.symptomsComments}"
-                app:nextFocusDown="@+id/txtControl1"
                 app:imeOptions="actionNext"
-                app:onShowInputErrorListener="@{showNotificationCallback}"
-                app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
                 />
 
 
-            <de.symeda.sormas.app.component.TeboDatePicker
+            <de.symeda.sormas.app.component.controls.TeboDatePicker
                 android:id="@+id/dtpSymptomOnset"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -182,7 +175,7 @@
                 />
 
 
-            <de.symeda.sormas.app.component.TeboSpinner
+            <de.symeda.sormas.app.component.controls.TeboSpinner
                 android:id="@+id/spnFirstSymptoms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -195,15 +188,15 @@
                 app:value="@={data.firstSymptom}"
                 />
 
-            <de.symeda.sormas.app.component.TeboTextLinkEdit
+            <de.symeda.sormas.app.component.controls.TeboTextLinkEdit
                 android:id="@+id/txtSymptomaticLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
                 app:background="@drawable/control_link_edittextview_background_selector"
-                app:drawablePadding="@dimen/contentHorizontalSpacing"
-                app:drawableLeft="@drawable/ic_edit_location_black_24dp"
-                app:drawableTint="@color/control_link_edittextview_color_selector"
+                app:iconPadding="@dimen/contentHorizontalSpacing"
+                app:iconStart="@drawable/ic_edit_location_black_24dp"
+                app:iconTint="@color/control_link_edittextview_color_selector"
                 app:textColor="@color/control_link_edittextview_color_selector"
                 app:textColorHint="@color/control_link_edittextview_hint_color_selector"
                 app:hint="@string/hint_case_symptoms_location_address"
@@ -220,7 +213,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.TeboDatePicker
+                <de.symeda.sormas.app.component.controls.TeboDatePicker
                     android:id="@+id/dtpStayStart"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -233,7 +226,7 @@
                     app:value="@={data.illLocationFrom}"
                     />
 
-                <de.symeda.sormas.app.component.TeboDatePicker
+                <de.symeda.sormas.app.component.controls.TeboDatePicker
                     android:id="@+id/dtpStayEnd"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

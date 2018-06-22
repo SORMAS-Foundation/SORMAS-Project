@@ -13,11 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
-import de.symeda.sormas.app.component.OnHideInputErrorListener;
-import de.symeda.sormas.app.component.OnShowInputErrorListener;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.async.IJobDefinition;
@@ -25,8 +23,6 @@ import de.symeda.sormas.app.core.async.ITaskExecutor;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.core.notification.NotificationType;
 
 /**
  * Created by Orson on 24/04/2018.
@@ -35,14 +31,14 @@ import de.symeda.sormas.app.core.notification.NotificationType;
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
-public abstract class BaseReportActivityFragment<TBinding extends ViewDataBinding, TData> extends BaseFragment implements OnShowInputErrorListener, OnHideInputErrorListener {
+public abstract class BaseReportActivityFragment<TBinding extends ViewDataBinding, TData> extends BaseFragment {
 
     private final static String TAG = BaseReportActivityFragment.class.getSimpleName();
 
     private AsyncTask jobTask;
     private BaseReportActivity baseReportActivity;
     private IUpdateSubHeadingTitle subHeadingHandler;
-    private INotificationContext notificationCommunicator;
+    private NotificationContext notificationCommunicator;
     private ViewDataBinding rootBinding;
     private View rootView;
     private TBinding contentViewStubBinding;
@@ -70,11 +66,11 @@ public abstract class BaseReportActivityFragment<TBinding extends ViewDataBindin
                     + "implement IUpdateSubHeadingTitle");
         }
 
-        if (getActivity() instanceof INotificationContext) {
-            this.notificationCommunicator = (INotificationContext) this.getActivity();
+        if (getActivity() instanceof NotificationContext) {
+            this.notificationCommunicator = (NotificationContext) this.getActivity();
         } else {
-            throw new NotImplementedException("Activity for fragment does not support showNotification; "
-                    + "implement INotificationContext");
+            throw new NotImplementedException("Activity for fragment does not support showErrorNotification; "
+                    + "implement NotificationContext");
         }
 
         //Inflate Root
@@ -91,7 +87,7 @@ public abstract class BaseReportActivityFragment<TBinding extends ViewDataBindin
 
                     contentViewStubBinding = DataBindingUtil.bind(inflated);
                     String layoutName = getResources().getResourceEntryName(getLayoutResId());
-                    setRootNotificationBindingVariable(contentViewStubBinding, layoutName);
+//                    setRootNotificationBindingVariable(contentViewStubBinding, layoutName);
                     onLayoutBinding(contentViewStubBinding);
                     contentViewStubRoot = contentViewStubBinding.getRoot();
                 }
@@ -153,17 +149,17 @@ public abstract class BaseReportActivityFragment<TBinding extends ViewDataBindin
         return rootView;
     }
 
-    @Override
-    public void onShowInputErrorShowing(View v, String message, boolean errorState) {
-        //notificationCommunicator.showNotification(NotificationType.ERROR, message);
-        NotificationHelper.showNotification((INotificationContext)getActivity(), NotificationType.ERROR, message);
-    }
-
-    @Override
-    public void onInputErrorHiding(View v, boolean errorState) {
-        //notificationCommunicator.hideNotification();
-        NotificationHelper.hideNotification((INotificationContext)getActivity());
-    }
+//    @Override
+//    public void onShowInputErrorShowing(View v, String message, boolean errorState) {
+//        //notificationCommunicator.showErrorNotification(NotificationType.ERROR, message);
+//        NotificationHelper.showErrorNotification((NotificationContext)getActivity(), NotificationType.ERROR, message);
+//    }
+//
+//    @Override
+//    public void onInputErrorHiding(View v, boolean errorState) {
+//        //notificationCommunicator.hideErrorNotification();
+//        NotificationHelper.hideErrorNotification((NotificationContext)getActivity());
+//    }
 
     protected void reloadFragment() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -249,15 +245,15 @@ public abstract class BaseReportActivityFragment<TBinding extends ViewDataBindin
     }
 
 
-    private void setRootNotificationBindingVariable(final ViewDataBinding binding, String layoutName) {
-        if (!binding.setVariable(de.symeda.sormas.app.BR.showNotificationCallback, this)) {
-            Log.e(TAG, "There is no variable 'showNotificationCallback' in layout " + layoutName);
-        }
-
-        if (!binding.setVariable(de.symeda.sormas.app.BR.hideNotificationCallback, this)) {
-            Log.e(TAG, "There is no variable 'hideNotificationCallback' in layout " + layoutName);
-        }
-    }
+//    private void setRootNotificationBindingVariable(final ViewDataBinding binding, String layoutName) {
+//        if (!binding.setVariable(de.symeda.sormas.app.BR.showNotificationCallback, this)) {
+//            Log.e(TAG, "There is no variable 'showNotificationCallback' in layout " + layoutName);
+//        }
+//
+//        if (!binding.setVariable(de.symeda.sormas.app.BR.hideNotificationCallback, this)) {
+//            Log.e(TAG, "There is no variable 'hideNotificationCallback' in layout " + layoutName);
+//        }
+//    }
 
 
 

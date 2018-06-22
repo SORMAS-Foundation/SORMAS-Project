@@ -6,12 +6,6 @@
     android:id="@+id/base_layout">
 
     <data>
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.visit.Visit"/>
         <variable name="visitStatusClass" type="Class" />
@@ -28,7 +22,7 @@
         android:paddingRight="@dimen/parentLayoutHorizontalPadding"
         >
 
-        <de.symeda.sormas.app.component.TeboDateTimePicker
+        <de.symeda.sormas.app.component.controls.TeboDateTimePicker
             android:id="@+id/dtpDateTimeOfVisit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -42,7 +36,7 @@
             />
 
 
-        <de.symeda.sormas.app.component.TeboRadioGroup
+        <de.symeda.sormas.app.component.controls.TeboRadioGroup
             android:id="@+id/chkVisitStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -59,11 +53,11 @@
             app:radioButtonLabelMarginStart="@dimen/radioButtonLabelMarginStart"
             app:enumClass="@{visitStatusClass}"
             app:value="@={data.visitStatus}"
-            app:onShowInputErrorListener="@{showNotificationCallback}"
-            app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
             />
 
-        <de.symeda.sormas.app.component.TeboTextInputEditText
+        <de.symeda.sormas.app.component.controls.ControlTextEditField
             android:id="@+id/txtVisitRemarks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -73,10 +67,9 @@
             app:description="@string/desc_contact_visit_remarks"
             app:required="true"
             app:value="@={data.visitRemarks}"
-            app:nextFocusDown="@+id/txtControl1"
             app:imeOptions="actionNext"
-            app:onShowInputErrorListener="@{showNotificationCallback}"
-            app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
             />
 
 

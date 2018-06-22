@@ -4,12 +4,6 @@
 
     <data>
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
         <variable name="data" type="de.symeda.sormas.app.epid.AnimalContact"/>
         <variable name="yesNoUnknownClass" type="Class" />
 
@@ -52,7 +46,7 @@
                     android:fontFamily="sans-serif"
                     />
 
-                <de.symeda.sormas.app.component.TeboSwitch
+                <de.symeda.sormas.app.component.controls.TeboSwitch
                     android:id="@+id/swhAnimalContactState"
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"

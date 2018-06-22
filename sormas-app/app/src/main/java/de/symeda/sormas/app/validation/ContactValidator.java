@@ -8,8 +8,8 @@ import java.util.List;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.component.EditTeboPropertyField;
-import de.symeda.sormas.app.core.INotificationContext;
+import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.databinding.FragmentContactNewLayoutBinding;
 
 /**
@@ -17,7 +17,7 @@ import de.symeda.sormas.app.databinding.FragmentContactNewLayoutBinding;
  */
 public final class ContactValidator {
 
-    public static boolean validateNewContact(INotificationContext activityContext, Contact contact, FragmentContactNewLayoutBinding binding) {
+    public static boolean validateNewContact(NotificationContext activityContext, Contact contact, FragmentContactNewLayoutBinding binding) {
         Resources resources = DatabaseHelper.getContext().getResources();
 
         boolean success = true;
@@ -38,18 +38,18 @@ public final class ContactValidator {
     }
 
     public static void clearErrorsForNewContact(FragmentContactNewLayoutBinding binding) {
-        for (EditTeboPropertyField field : getNewContactFields(binding)) {
+        for (ControlPropertyEditField field : getNewContactFields(binding)) {
             //field.clearError();
         }
     }
 
     public static void setRequiredHintsForNewContact(FragmentContactNewLayoutBinding binding) {
-        for (EditTeboPropertyField field : getNewContactFields(binding)) {
+        for (ControlPropertyEditField field : getNewContactFields(binding)) {
             field.setRequired(true);
         }
     }
 
-    private static final List<? extends EditTeboPropertyField<?>> getNewContactFields(FragmentContactNewLayoutBinding binding) {
+    private static final List<? extends ControlPropertyEditField<?>> getNewContactFields(FragmentContactNewLayoutBinding binding) {
         return Arrays.asList(binding.txtFirstName, binding.txtLastName);
     }
 

@@ -3,12 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
         <variable name="data" type="de.symeda.sormas.app.epid.AnimalContact"/>
         <variable name="yesNoUnknownClass" type="Class" />
 
@@ -23,13 +17,13 @@
         android:orientation="vertical"
         >
 
-        <de.symeda.sormas.app.component.TeboTextInputEditText
+        <de.symeda.sormas.app.component.controls.ControlTextEditField
             android:id="@+id/txtAnimalDetail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/symptomRowListItemVerticalPadding"
-            app:emphasizeCaption="false"
-            app:italicCaption="true"
+            app:captionCapitalized="false"
+            app:captionItalic="true"
             app:showCaption="true"
             app:slim="true"
             app:hint="@string/hint_details"
@@ -37,10 +31,9 @@
             app:description="@string/desc_details"
             app:required="true"
             app:value="@={data.layout.detailOrSpecify}"
-            app:nextFocusDown="@+id/txtControl1"
             app:imeOptions="actionNext"
-            app:onShowInputErrorListener="@{showNotificationCallback}"
-            app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
             />
 
     </LinearLayout>

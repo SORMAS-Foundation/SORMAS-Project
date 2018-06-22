@@ -396,7 +396,7 @@
     <string name="desc_contact_case_symptoms_onset">Symptoms Onset</string>
 
     <!-- Sub Headings -->
-    <string name="heading_sub_contact_source_case">Source Case</string>
+    <string name="sub_heading_source_case">Source Case</string>
     <!-- ........................................................................ -->
 
 
@@ -522,7 +522,7 @@
     <string name="hint_contact_symptoms_comment">Comment</string>
     <string name="hint_contact_symptoms_first_symptom_date">Date of Symptom Onset</string><!--Date of First Symptom-->
     <string name="hint_contact_symptoms_first_symptom">First Symptom</string>
-    <string name="hint_contact_open_case">Open case for this contact person via the Case ID link</string>
+    <string name="description_source_case">You can open the source case for this contact person by clicking the case ID.</string>
 
 
     <!-- Label -->
@@ -1061,7 +1061,9 @@
     <!-- Sub Headings -->
     <string name="heading_sub_case_patient_occupation">Occupation</string>
     <string name="heading_sub_case_patient_occupation_facility">Occupation Facility</string>
-    <string name="heading_sub_case_existing_persons">Existing Persons</string>
+    <string name="sub_heading_existing_persons">Existing Persons</string>
+    <string name="sub_heading_epidemiological_info">Epidemiological Info</string>
+    <string name="sub_heading_symptoms">Symptoms</string>
     <!-- ........................................................................ -->
 
 

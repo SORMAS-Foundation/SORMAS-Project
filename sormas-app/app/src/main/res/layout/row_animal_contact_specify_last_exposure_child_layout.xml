@@ -3,12 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable
-            name="showNotificationCallback"
-            type="de.symeda.sormas.app.component.OnShowInputErrorListener" />
-        <variable
-            name="hideNotificationCallback"
-            type="de.symeda.sormas.app.component.OnHideInputErrorListener" />
         <variable name="data" type="de.symeda.sormas.app.epid.AnimalContact"/>
         <variable name="yesNoUnknownClass" type="Class" />
 
@@ -23,13 +17,13 @@
         android:orientation="vertical"
         >
 
-        <de.symeda.sormas.app.component.TeboTextInputEditText
+        <de.symeda.sormas.app.component.controls.ControlTextEditField
             android:id="@+id/txtAnimalDetail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/symptomRowListItemVerticalPadding"
-            app:emphasizeCaption="false"
-            app:italicCaption="true"
+            app:captionCapitalized="false"
+            app:captionItalic="true"
             app:showCaption="true"
             app:slim="true"
             app:hint="@string/hint_specify"
@@ -37,13 +31,12 @@
             app:description="@string/desc_specify"
             app:required="true"
             app:value="@={data.layout.detailOrSpecify}"
-            app:nextFocusDown="@+id/txtControl1"
             app:imeOptions="actionNext"
-            app:onShowInputErrorListener="@{showNotificationCallback}"
-            app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
             />
 
-        <de.symeda.sormas.app.component.TeboDatePicker
+        <de.symeda.sormas.app.component.controls.TeboDatePicker
             android:id="@+id/dtpLastExposureDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -51,20 +44,20 @@
             app:hint="@string/hint_last_exposure_date"
             app:labelCaption="@string/label_last_exposure_date"
             app:description="@string/desc_last_exposure_date"
-            app:emphasizeCaption="false"
-            app:italicCaption="true"
+            app:captionCapitalized="false"
+            app:captionItalic="true"
             app:required="true"
             app:slim="true"
             app:value="@={data.layout.lastExposureDate}"
             />
 
-        <de.symeda.sormas.app.component.TeboTextInputEditText
+        <de.symeda.sormas.app.component.controls.ControlTextEditField
             android:id="@+id/txtLastExposurePlace"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/symptomRowListItemVerticalPadding"
-            app:emphasizeCaption="false"
-            app:italicCaption="true"
+            app:captionCapitalized="false"
+            app:captionItalic="true"
             app:showCaption="true"
             app:slim="true"
             app:hint="@string/hint_last_exposure_place"
@@ -72,10 +65,9 @@
             app:description="@string/desc_last_exposure_place"
             app:required="true"
             app:value="@={data.layout.lastExposurePlace}"
-            app:nextFocusDown="@+id/txtControl1"
             app:imeOptions="actionNext"
-            app:onShowInputErrorListener="@{showNotificationCallback}"
-            app:onHideInputErrorListener="@{hideNotificationCallback}"
+
+
             />
 
     </LinearLayout>

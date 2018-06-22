@@ -7,14 +7,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import de.symeda.sormas.app.core.INotificationContext;
-import de.symeda.sormas.app.util.ConstantHelper;
+import de.symeda.sormas.app.core.NotificationContext;
 
 /**
  * Created by Orson on 03/12/2017.
  */
 
-public abstract class BaseLandingActivity extends AbstractSormasActivity implements INotificationContext {
+public abstract class BaseLandingActivity extends AbstractSormasActivity implements NotificationContext {
 
     public static final String TAG = BaseLandingActivity.class.getSimpleName();
 

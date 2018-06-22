@@ -146,8 +146,8 @@ public class PageMenuNavAdapter extends BaseAdapter implements IPageMenuAdapter 
         public ViewHolder(View layout) {
             this.layout = layout;
 
-            txtPosition = (TextView) this.layout.findViewById(R.id.txtPosition);
-            txtMenuItemTitle = (TextView) this.layout.findViewById(R.id.txtMenuItemTitle);
+            txtPosition = (TextView) this.layout.findViewById(R.id.navigation_number);
+            txtMenuItemTitle = (TextView) this.layout.findViewById(R.id.title);
         }
     }
 }
