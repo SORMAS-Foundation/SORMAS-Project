@@ -101,10 +101,10 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     private void processLogin(boolean checkLoginAndVersion) {
         // try to connect -> validates login and version
         if (checkLoginAndVersion && ConfigProvider.getUsername() != null) {
-            boolean connected = false;
+            boolean versionCompatible = false;
             try {
                 RetroProvider.connect(getApplicationContext());
-                connected = true;
+                versionCompatible = true;
                 RetroProvider.matchAppAndApiVersions();
             } catch (AuthenticatorException e) {
                 // clear login data if authentication failed
@@ -112,7 +112,8 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             } catch (RetroProvider.ApiVersionException e) {
                 if (e.getAppUrl() != null && !e.getAppUrl().isEmpty()) {
-                    AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), connected || ConfigProvider.getUser() != null,
+                    boolean canWorkOffline = ConfigProvider.getUser() != null;
+                    AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), versionCompatible || canWorkOffline,
                             new Callback() {
                                 @Override
                                 public void call() {
