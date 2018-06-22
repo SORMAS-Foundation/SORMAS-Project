@@ -69,8 +69,8 @@ public class EnterPinActivity extends AppCompatActivity implements OnShowInputEr
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
         );
 
-        // sync...
-        progressDialog = SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, EnterPinActivity.this, null);
+        // sync will be done by other activities anyway...
+        //progressDialog = SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, EnterPinActivity.this, null);
     }
 
     @Override
