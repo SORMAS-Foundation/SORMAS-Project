@@ -46,9 +46,8 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     @Override
     protected void onResume() {
         super.onResume();
-
         if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
-            processLogin(false);
+            processLogin(true);
         }
     }
 
@@ -59,6 +58,28 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         }
 
         super.onDestroy();
+    }
+
+    public void showSettingsView(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
+            processLogin(true);
+        }
+    }
+
+    private void openStartActivity() {
+        Intent intent;
+        if (ConfigProvider.getUser().hasUserRole(UserRole.CONTACT_OFFICER)) {
+            intent = new Intent(LoginActivity.this, ContactsActivity.class);
+        } else {
+            intent = new Intent(LoginActivity.this, CasesActivity.class);
+        }
+        startActivity(intent);
     }
 
     public void login(View view) {
@@ -73,98 +94,39 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
             Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_empty_password, Snackbar.LENGTH_LONG).show();
         } else {
             ConfigProvider.setUsernameAndPassword(username, password);
+            processLogin(true);
+        }
+    }
 
+    private void processLogin(boolean checkLoginAndVersion) {
+        // try to connect -> validates login and version
+        if (checkLoginAndVersion && ConfigProvider.getUsername() != null) {
+            boolean connected = false;
             try {
                 RetroProvider.connect(getApplicationContext());
-                RetroProvider.matchAppAndApiVersions();
-            } catch (AuthenticatorException e) {
-                // clearing login data is done below
-                Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-            } catch (RetroProvider.ApiVersionException e) {
-                if (e.getAppUrl() != null && !e.getAppUrl().isEmpty()) {
-                    AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), false,
-                            new Callback() {
-                                @Override
-                                public void call() {
-                                    closeApp();
-                                }
-                            });
-                    return;
-                } else {
-                    Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                }
-            } catch (ConnectException e) {
-                Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-            }
-
-            if (!RetroProvider.isConnected()) {
-                // we HAVE to be connected now. Otherwise reset the authentication data
-                ConfigProvider.clearUsernameAndPassword();
-            } else {
-                progressDialog = SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, LoginActivity.this, new SyncCallback() {
-                    @Override
-                    public void call(boolean syncFailed, String syncFailedMessage) {
-                        // logged in?
-                        if (ConfigProvider.getUser() != null) {
-                            openStartActivity();
-                        }
-                    }
-                });
-            }
-        }
-    }
-
-    public void showSettingsView(View view) {
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
-            processLogin(false);
-        }
-    }
-
-    private void openStartActivity() {
-        Intent intent;
-        if (ConfigProvider.getUser().hasUserRole(UserRole.CONTACT_OFFICER)) {
-            intent = new Intent(LoginActivity.this, ContactsActivity.class);
-        } else {
-            intent = new Intent(LoginActivity.this, CasesActivity.class);
-        }
-        startActivity(intent);
-    }
-
-    private void processLogin(boolean ignoreApiVersionConflict) {
-        // try to connect -> validates login data
-        if (ConfigProvider.getUsername() != null) {
-            try {
-                RetroProvider.connect(getApplicationContext());
+                connected = true;
                 RetroProvider.matchAppAndApiVersions();
             } catch (AuthenticatorException e) {
                 // clear login data if authentication failed
                 ConfigProvider.clearUsernameAndPassword();
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
             } catch (RetroProvider.ApiVersionException e) {
-                if (!ignoreApiVersionConflict) {
-                    if (e.getAppUrl() != null && !e.getAppUrl().isEmpty()) {
-                        AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), ConfigProvider.getUser() != null,
-                                new Callback() {
-                                    @Override
-                                    public void call() {
-                                        if (ConfigProvider.getUser() != null) {
-                                            processLogin(true);
-                                        } else {
-                                            closeApp();
-                                        }
+                if (e.getAppUrl() != null && !e.getAppUrl().isEmpty()) {
+                    AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), connected || ConfigProvider.getUser() != null,
+                            new Callback() {
+                                @Override
+                                public void call() {
+                                    if (ConfigProvider.getUser() != null || RetroProvider.isConnected()) {
+                                        processLogin(false);
+                                    } else {
+                                        closeApp();
                                     }
                                 }
-                        );
-                        return;
-                    } else {
-                        Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                    }
+                            }
+                    );
+                    return;
+                } else {
+                    Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
                 }
             } catch (ConnectException e) {
                 Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
