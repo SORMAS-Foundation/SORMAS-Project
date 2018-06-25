@@ -1,8 +1,5 @@
 package de.symeda.sormas.ui.statistics;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
@@ -19,10 +16,9 @@ public class StatisticsFilterComponent extends VerticalLayout {
 
 	private static final String SPECIFY_YOUR_SELECTION = "Specify your selection";
 
-	private HorizontalLayout filterValuesLayout;
 	private StatisticsCaseAttribute selectedAttribute;
 	private StatisticsCaseSubAttribute selectedSubAttribute;
-	private Map<Object, StatisticsFilterElement> filterElements = new HashMap<>();
+	private StatisticsFilterElement filterElement;
 
 	public StatisticsFilterComponent() {
 		setSpacing(true);
@@ -30,11 +26,6 @@ public class StatisticsFilterComponent extends VerticalLayout {
 		setWidth(100, Unit.PERCENTAGE);
 
 		addComponent(createFilterAttributeElement());
-
-		filterValuesLayout = new HorizontalLayout();
-		filterValuesLayout.setSpacing(true);
-		filterValuesLayout.setWidth(100, Unit.PERCENTAGE);
-		addComponent(filterValuesLayout);
 	}
 
 	private HorizontalLayout createFilterAttributeElement() {
@@ -57,8 +48,6 @@ public class StatisticsFilterComponent extends VerticalLayout {
 			// Add attributes belonging to the current group
 			for (StatisticsCaseAttribute attribute : attributeGroup.getAttributes()) {
 				Command attributeCommand = selectedItem -> {
-					filterValuesLayout.removeAllComponents();
-					filterElements.clear();
 					selectedAttribute = attribute;
 					selectedSubAttribute = null;
 					filterAttributeItem.setText(attribute.toString());
@@ -77,8 +66,6 @@ public class StatisticsFilterComponent extends VerticalLayout {
 						for (StatisticsCaseSubAttribute subAttribute : attribute.getSubAttributes()) {
 							if (subAttribute.isUsedForFilters()) {
 								Command subAttributeCommand = selectedSubItem -> {
-									filterValuesLayout.removeAllComponents();
-									filterElements.clear();
 									selectedSubAttribute = subAttribute;
 									filterSubAttributeItem.setText(subAttribute.toString());
 									
@@ -88,7 +75,7 @@ public class StatisticsFilterComponent extends VerticalLayout {
 									}
 									selectedSubItem.setStyleName("selected-filter");
 									
-									updateFilterValuesElements();
+									updateFilterElement();
 								};
 
 								filterSubAttributeItem.addItem(subAttribute.toString(), subAttributeCommand);
@@ -101,12 +88,11 @@ public class StatisticsFilterComponent extends VerticalLayout {
 							filterAttributeLayout.setExpandRatio(filterSubAttributeDropdown, 1);
 						} else {
 							filterAttributeLayout.removeComponent(filterSubAttributeDropdown);
-							updateFilterValuesElements();
 						}
 					} else {
 						filterAttributeLayout.removeComponent(filterSubAttributeDropdown);
-						updateFilterValuesElements();
 					}
+					updateFilterElement();
 				};
 
 				filterAttributeItem.addItem(attribute.toString(), attributeCommand);
@@ -118,24 +104,27 @@ public class StatisticsFilterComponent extends VerticalLayout {
 		return filterAttributeLayout;
 	}
 
-	private HorizontalLayout updateFilterValuesElements() {		
+	private void updateFilterElement() {
+		
+		if (filterElement != null) {
+			removeComponent(filterElement);
+			filterElement = null;
+		}
+		
 		if (selectedSubAttribute == StatisticsCaseSubAttribute.DATE_RANGE) {
-			StatisticsFilterDateRangeElement element = new StatisticsFilterDateRangeElement();
-			filterElements.put(StatisticsCaseSubAttribute.DATE_RANGE, element);
-			filterValuesLayout.addComponent(element);
+			filterElement = new StatisticsFilterDateRangeElement();
 		} else if (selectedAttribute == StatisticsCaseAttribute.REGION_DISTRICT) {
-			StatisticsFilterRegionDistrictElement element = new StatisticsFilterRegionDistrictElement();
-			filterElements.put(StatisticsCaseAttribute.REGION_DISTRICT, element);
-			filterValuesLayout.addComponent(element);
-		} else {
-			StatisticsFilterValuesElement element = new StatisticsFilterValuesElement(
+			filterElement = new StatisticsFilterRegionDistrictElement();
+		} else if (selectedAttribute.getSubAttributes().length == 0 
+				|| selectedSubAttribute != null) {
+			filterElement = new StatisticsFilterValuesElement(
 					selectedAttribute.toString() + (selectedSubAttribute != null ? " (" + selectedSubAttribute.toString() + ")" : ""), 
 					selectedAttribute, selectedSubAttribute);
-			filterElements.put(selectedSubAttribute != null ? selectedSubAttribute : selectedAttribute, element);
-			filterValuesLayout.addComponent(element);
 		}
 
-		return filterValuesLayout;
+		if (filterElement != null) {
+			addComponent(filterElement);
+		}
 	}
 
 	public StatisticsCaseAttribute getSelectedAttribute() {
@@ -146,8 +135,7 @@ public class StatisticsFilterComponent extends VerticalLayout {
 		return selectedSubAttribute;
 	}
 
-	public Map<Object, StatisticsFilterElement> getFilterElements() {
-		return filterElements;
+	public StatisticsFilterElement getFilterElement() {
+		return filterElement;
 	}
-
 }
