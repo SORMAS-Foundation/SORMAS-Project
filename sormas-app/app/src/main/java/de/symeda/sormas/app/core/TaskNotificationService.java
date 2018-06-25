@@ -59,7 +59,6 @@ public class TaskNotificationService extends Service {
         super.onDestroy();
     }
 
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -184,8 +183,8 @@ public class TaskNotificationService extends Service {
         Date now = new Date();
         alarmMgr.setInexactRepeating(
                 AlarmManager.RTC_WAKEUP,
-                now.getTime(), // TODO start at full XX:X5 minute, not somewhere in between
-                1000 * 60 * 2, // TODO sync every 5 minutes - not 2
+                now.getTime(),
+                1000 * 60 * 10, // sync every 10 minutes
                 alarmIntent);
     }
 }
