@@ -6,7 +6,6 @@ import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
