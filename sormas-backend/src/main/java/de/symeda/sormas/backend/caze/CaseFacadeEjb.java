@@ -1146,7 +1146,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			finalizeFilterBuilderSegment(filterBuilder);
 		}
 
-		if (caseCriteria.getOnsetDateFrom() != null && caseCriteria.getOnsetDateTo() != null) {
+		if (caseCriteria.getOnsetDateFrom() != null || caseCriteria.getOnsetDateTo() != null) {
 			extendFilterBuilderWithDate(filterBuilder, caseCriteria.getOnsetDateFrom(), caseCriteria.getOnsetDateTo(), Symptoms.TABLE_NAME, Symptoms.ONSET_DATE);
 		}
 
@@ -1206,7 +1206,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			finalizeFilterBuilderSegment(filterBuilder);
 		}
 
-		if (caseCriteria.getReceptionDateFrom() != null && caseCriteria.getReceptionDateTo() != null) {
+		if (caseCriteria.getReceptionDateFrom() != null || caseCriteria.getReceptionDateTo() != null) {
 			extendFilterBuilderWithDate(filterBuilder, caseCriteria.getReceptionDateFrom(), caseCriteria.getReceptionDateTo(), Case.TABLE_NAME, Case.RECEPTION_DATE);
 		}
 
@@ -1266,7 +1266,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			finalizeFilterBuilderSegment(filterBuilder);
 		}
 
-		if (caseCriteria.getReportDateFrom() != null && caseCriteria.getReportDateTo() != null) {
+		if (caseCriteria.getReportDateFrom() != null || caseCriteria.getReportDateTo() != null) {
 			extendFilterBuilderWithDate(filterBuilder, caseCriteria.getReportDateFrom(), caseCriteria.getReportDateTo(), Case.TABLE_NAME, Case.REPORT_DATE);
 		}
 
@@ -1446,28 +1446,31 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		} else {
 			List<Object[]> results = (List<Object[]>) em.createNativeQuery(sqlBuilder.toString()).getResultList();
-			prepareResults(results, groupingA, subGroupingA, groupingB, subGroupingB);
+			replaceIdsWithGroupingKeys(results, groupingA, subGroupingA, groupingB, subGroupingB);
 			return results;
 		}
 	}
 
-	private void prepareResults(List<Object[]> results,
+	/**
+	 * Replaces the ids in each row with the appropriate StatisticsGroupingKey based on the grouping.
+	 */
+	private void replaceIdsWithGroupingKeys(List<Object[]> results,
 			StatisticsCaseAttribute groupingA, StatisticsCaseSubAttribute subGroupingA,
 			StatisticsCaseAttribute groupingB, StatisticsCaseSubAttribute subGroupingB) {
 		
 		for (Object[] resultRow : results) {
 			for (int i = 1; i < resultRow.length; i++) {
 				Object resultsEntry = resultRow[i];
-				if (resultsEntry != null && !resultsEntry.toString().equals("Unknown")) {
+				if (resultsEntry != null && !StatisticsHelper.UNKNOWN.equals(resultsEntry)) {
 					StatisticsGroupingKey reformattedEntry = null;
 					if (i == 1) {
 						if (groupingA != null) {
-							reformattedEntry = StatisticsHelper.formatAttributeValue(resultsEntry, groupingA, subGroupingA);
+							reformattedEntry = StatisticsHelper.buildGroupingKey(resultsEntry, groupingA, subGroupingA);
 						} else {
-							reformattedEntry = StatisticsHelper.formatAttributeValue(resultsEntry, groupingB, subGroupingB);
+							reformattedEntry = StatisticsHelper.buildGroupingKey(resultsEntry, groupingB, subGroupingB);
 						}
 					} else {
-						reformattedEntry = StatisticsHelper.formatAttributeValue(resultsEntry, groupingB, subGroupingB);
+						reformattedEntry = StatisticsHelper.buildGroupingKey(resultsEntry, groupingB, subGroupingB);
 					}
 					resultRow[i] = reformattedEntry;
 				}
@@ -1486,11 +1489,20 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	private StringBuilder extendFilterBuilderWithDate(StringBuilder filterBuilder, Date from, Date to, String tableName, String fieldName) {
-		if (filterBuilder.length() > 0) {
-			filterBuilder.append(" AND ");
+		
+		if (from != null || to != null) {
+			if (filterBuilder.length() > 0) {
+				filterBuilder.append(" AND ");
+			}
+	
+			if (from != null && to != null) {
+				filterBuilder.append(tableName).append(".").append(fieldName).append(" BETWEEN '").append(from).append("' AND '").append(to).append("'");
+			} else if (from != null) {
+				filterBuilder.append(tableName).append(".").append(fieldName).append(" >= '").append(from).append("'");
+			} else {
+				filterBuilder.append(tableName).append(".").append(fieldName).append(" <= '").append(to).append("'");
+			}
 		}
-
-		filterBuilder.append(tableName).append(".").append(fieldName).append(" BETWEEN '").append(from).append("' AND '").append(to).append("'");
 
 		return filterBuilder;
 	}

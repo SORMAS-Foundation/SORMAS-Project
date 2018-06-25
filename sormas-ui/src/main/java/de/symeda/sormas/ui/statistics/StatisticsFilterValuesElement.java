@@ -130,7 +130,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			case MONTH_OF_YEAR:
 			case EPI_WEEK_OF_YEAR:
 				List<Object> dateValues = StatisticsHelper.getListOfDateValues(attribute, subAttribute);
-				return createTokens(dateValues.stream().map(v -> StatisticsHelper.formatAttributeValue(v, attribute, subAttribute)).
+				return createTokens(dateValues.stream().map(v -> StatisticsHelper.buildGroupingKey(v, attribute, subAttribute)).
 						collect(Collectors.toList()).toArray());
 			case REGION:
 				return createTokens(FacadeProvider.getRegionFacade().getAllAsReference().toArray());

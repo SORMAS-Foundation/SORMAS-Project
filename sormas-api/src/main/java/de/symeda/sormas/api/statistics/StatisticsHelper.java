@@ -26,8 +26,10 @@ import de.symeda.sormas.api.utils.EpiWeek;
 public class StatisticsHelper {
 
 	public static final String UNKNOWN = "Unknown";
+	public static final String TOTAL = "Total";
+	public static final String CASE_COUNT = "CaseCount";
 	
-	public static StatisticsGroupingKey formatAttributeValue(Object attributeValue, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
+	public static StatisticsGroupingKey buildGroupingKey(Object attributeValue, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
 		if (subAttribute != null) {
 			switch (subAttribute) {
 			case YEAR:
@@ -70,11 +72,11 @@ public class StatisticsHelper {
 			case AGE_INTERVAL_CHILDREN_FINE:
 			case AGE_INTERVAL_CHILDREN_MEDIUM:
 			case AGE_INTERVAL_BASIC:
-				String entryAsString = attributeValue.toString();
-				if (entryAsString.equals(UNKNOWN)) {
+				if (isNullOrUnknown(attributeValue)) {
 					return null;
 				}
 				
+				String entryAsString = attributeValue.toString();
 				if (entryAsString.contains("-")) {
 					return new IntegerRange(Integer.valueOf(entryAsString.substring(0, entryAsString.indexOf("-"))), Integer.valueOf(entryAsString.substring(entryAsString.indexOf("-") + 1)));
 				} else if (entryAsString.contains("+")) {
