@@ -31,6 +31,7 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -97,6 +98,22 @@ public class CaseDao extends AbstractAdoDao<Case> {
         }
 
         return date;
+    }
+
+    public List<Case> queryBaseForEq(String fieldName, Object value, String orderBy, boolean ascending) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.eq(fieldName, value);
+            where.and().eq(AbstractDomainObject.SNAPSHOT, false).query();
+            builder.selectColumns(Case.UUID, Case.LAST_OPENED_DATE, Case.LOCAL_CHANGE_DATE, Case.MODIFIED, Case.REPORT_DATE,
+                    Case.REPORTING_USER, Case.DISEASE, Case.DISEASE_DETAILS, Case.PERSON, Case.INVESTIGATION_STATUS, Case.OUTCOME,
+                    Case.HEALTH_FACILITY);
+            return builder.orderBy(orderBy, ascending).query();
+        } catch (SQLException | IllegalArgumentException e) {
+            Log.e(getTableName(), "Could not perform queryForEq");
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -238,7 +255,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
-                    where.eq(Case.REPORTING_USER + "_id", informant),
+                    where.eq(Case.REPORTING_USER, informant),
                     where.ge(Case.REPORT_DATE, reportStartAndEnd[0]),
                     where.le(Case.REPORT_DATE, reportStartAndEnd[1])
             );

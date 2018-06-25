@@ -41,7 +41,7 @@ public class CasesListFragment extends ListFragment {
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_FILTER_STATUS)) {
             InvestigationStatus filterStatus = (InvestigationStatus)arguments.getSerializable(ARG_FILTER_STATUS);
-            cases = DatabaseHelper.getCaseDao().queryForEq(Case.INVESTIGATION_STATUS, filterStatus, Case.REPORT_DATE, false);
+            cases = DatabaseHelper.getCaseDao().queryBaseForEq(Case.INVESTIGATION_STATUS, filterStatus, Case.REPORT_DATE, false);
         } else {
             cases = DatabaseHelper.getCaseDao().queryForAll(Case.REPORT_DATE, false);
         }

@@ -68,6 +68,7 @@ public abstract class AbstractSormasActivity extends AppCompatActivity {
         if (!ConfigProvider.isAccessGranted()) {
             Intent intent = new Intent(this, EnterPinActivity.class);
             startActivity(intent);
+            finish();
             return;
         }
     }

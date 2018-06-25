@@ -85,7 +85,7 @@ public class CasesListArrayAdapter extends ArrayAdapter<Case> {
         reporter.setText(caze.getReportingUser()!=null?caze.getReportingUser().toString():null);
 
         ImageView synchronizedIcon = (ImageView) convertView.findViewById(R.id.cli_synchronized);
-        if (caze.isModifiedOrChildModified()) {
+        if (caze.isModified()) {
             synchronizedIcon.setVisibility(View.VISIBLE);
             synchronizedIcon.setImageResource(R.drawable.ic_cached_black_18dp);
         } else {
