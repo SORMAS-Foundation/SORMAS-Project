@@ -10,6 +10,7 @@ import javax.ws.rs.core.MediaType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.InfoProvider;
+import de.symeda.sormas.api.utils.VersionHelper;
 
 @Path("/info")
 @Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
@@ -19,18 +20,32 @@ public class InfoResource {
 	@GET
 	@Path("/version")
 	public String getVersion() {	
-		return InfoProvider.getVersion();
+		return InfoProvider.get().getVersion();
 	}
 	
 	@GET
 	@Path("/appurl")
-	public String getAppUrl(@QueryParam("appVersion") String appVersion) {
+	public String getAppUrl(@QueryParam("appVersion") String appVersionString) {
+		
+		int[] appVersion = VersionHelper.extractVersion(appVersionString);
+		if (!VersionHelper.isVersion(appVersion)) {
+			throw new IllegalArgumentException("Parameter does not contain a valid app version: '" + appVersionString + "'");
+		}
+		
+		String appLegacyUrl = FacadeProvider.getConfigFacade().getAppLegacyUrl();
+		int[] appLegacyVersion = VersionHelper.extractVersion(appLegacyUrl);
+		if (VersionHelper.isVersion(appLegacyVersion)
+			&& !VersionHelper.isAfter(appVersion, appLegacyVersion)) {
+			// app legacy URL for versions before or equal to the legacy version
+			return appLegacyUrl;
+		}
+		
 		return FacadeProvider.getConfigFacade().getAppUrl();
 	}
 	
 	@GET
 	@Path("/checkcompatibility")
 	public CompatibilityCheckResponse isCompatibleToApi(@QueryParam("appVersion") String appVersion) {
-		return InfoProvider.isCompatibleToApi(appVersion);
+		return InfoProvider.get().isCompatibleToApi(appVersion);
 	}
 }

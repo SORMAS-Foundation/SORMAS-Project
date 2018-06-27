@@ -17,7 +17,7 @@ android {
         versionCode buildVersionCode()
         versionName "$sormasVersion"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        setProperty("archivesBaseName", "sormas")
+        setProperty("archivesBaseName", "sormas-$versionName")
     }
     signingConfigs {
         release  {
