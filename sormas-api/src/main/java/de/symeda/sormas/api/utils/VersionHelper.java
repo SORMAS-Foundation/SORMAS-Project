@@ -60,4 +60,14 @@ public final class VersionHelper {
 		}
 		return false;
 	}
+	
+	public static boolean isEqual(int[] version, int[] referenceVersion) {
+		
+		for (int i=0; i<3; i++) {
+			if (version[i] != referenceVersion[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

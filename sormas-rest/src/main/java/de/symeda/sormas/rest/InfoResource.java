@@ -31,10 +31,13 @@ public class InfoResource {
 		if (VersionHelper.isVersion(appVersion)) {
 			String appLegacyUrl = FacadeProvider.getConfigFacade().getAppLegacyUrl();
 			int[] appLegacyVersion = VersionHelper.extractVersion(appLegacyUrl);
-			if (VersionHelper.isVersion(appLegacyVersion)
-				&& !VersionHelper.isAfter(appVersion, appLegacyVersion)) {
-				// app legacy URL for versions before or equal to the legacy version
-				return appLegacyUrl;
+			if (VersionHelper.isVersion(appLegacyVersion))
+			{
+				if (VersionHelper.isEqual(appVersion, appLegacyVersion)) {
+					return null; // keep legacy version
+				} else if (VersionHelper.isBefore(appVersion, appLegacyVersion)) {
+					return appLegacyUrl;
+				}
 			}
 		}
 		

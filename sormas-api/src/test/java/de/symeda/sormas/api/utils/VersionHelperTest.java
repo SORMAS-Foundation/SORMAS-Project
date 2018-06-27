@@ -61,4 +61,12 @@ public class VersionHelperTest {
 	}
 
 
+	@Test
+	public void testIsEqual() throws Exception {
+		assertTrue(VersionHelper.isEqual(new int[] { 1, 0, 0 }, new int[] { 1, 0, 0 }));
+		assertTrue(VersionHelper.isEqual(new int[] { 0, 23, 0 }, new int[] { 0, 23, 0 }));
+		
+		assertFalse(VersionHelper.isEqual(new int[] { 0, 23, 0 }, new int[] { 1, 0, 0 }));
+		assertFalse(VersionHelper.isEqual(new int[] { 1, 0, 0 }, new int[] { 0, 0, 5 }));
+	}
 }
