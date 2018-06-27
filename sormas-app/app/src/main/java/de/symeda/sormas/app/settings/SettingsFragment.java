@@ -81,7 +81,7 @@ public class SettingsFragment extends BaseLandingActivityFragment {
         });
         binding.btnSettingsRepullData.setVisibility(View.GONE);
 
-        binding.sormasVersion.setText("SORMAS " + InfoProvider.getVersion());
+        binding.sormasVersion.setText("SORMAS " + InfoProvider.get().getVersion());
         binding.sormasVersion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
