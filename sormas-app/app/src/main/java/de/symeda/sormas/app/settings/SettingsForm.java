@@ -44,7 +44,7 @@ public class SettingsForm extends FormTab {
             }
         });
 
-        binding.sormasVersion.append(" " + InfoProvider.getVersion());
+        binding.sormasVersion.append(" " + InfoProvider.get().getVersion());
         binding.sormasVersion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

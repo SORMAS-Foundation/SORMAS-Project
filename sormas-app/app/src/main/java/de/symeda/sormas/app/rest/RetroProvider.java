@@ -121,7 +121,7 @@ public final class RetroProvider {
 
                 @Override
                 protected Response<CompatibilityCheckResponse> doInBackground(Void... params) {
-                    Call<CompatibilityCheckResponse> compatibilityCall = infoFacadeRetro.isCompatibleToApi(InfoProvider.getVersion());
+                    Call<CompatibilityCheckResponse> compatibilityCall = infoFacadeRetro.isCompatibleToApi(InfoProvider.get().getVersion());
                     try {
                         return compatibilityCall.execute();
                     } catch (IOException e) {
@@ -143,9 +143,7 @@ public final class RetroProvider {
         if (compatibilityResponse.isSuccessful()) {
             // success - now check compatibility
             CompatibilityCheckResponse compatibilityCheckResponse = compatibilityResponse.body();
-            if (compatibilityCheckResponse == CompatibilityCheckResponse.ERROR) {
-                throw new ConnectException("Could not synchronize because there was an error determining the current server version.");
-            } else if (compatibilityCheckResponse == CompatibilityCheckResponse.TOO_NEW) {
+            if (compatibilityCheckResponse == CompatibilityCheckResponse.TOO_NEW) {
                 throw new ConnectException("Could not synchronize because the app version is newer than the server version.");
             } else if (compatibilityCheckResponse == CompatibilityCheckResponse.TOO_OLD) {
                 // get the current server version, throw an exception including the app url that is then processed in the UI
@@ -233,7 +231,7 @@ public final class RetroProvider {
         if (versionResponse.isSuccessful()) {
             // Check if the versions match
             String serverApiVersion = versionResponse.body();
-            String appApiVersion = InfoProvider.getVersion();
+            String appApiVersion = InfoProvider.get().getVersion();
             if (!serverApiVersion.equals(appApiVersion)) {
                 // Retrieve the app URL
                 Response<String> appUrlResponse;
@@ -242,7 +240,7 @@ public final class RetroProvider {
 
                         @Override
                         protected Response<String> doInBackground(Void... params) {
-                            Call<String> versionCall = localInfoFacadeRetro != null ? localInfoFacadeRetro.getAppUrl(InfoProvider.getVersion()) : getInfoFacade().getAppUrl(InfoProvider.getVersion());
+                            Call<String> versionCall = localInfoFacadeRetro != null ? localInfoFacadeRetro.getAppUrl(InfoProvider.get().getVersion()) : getInfoFacade().getAppUrl(InfoProvider.get().getVersion());
                             try {
                                 return versionCall.execute();
                             } catch (IOException e) {

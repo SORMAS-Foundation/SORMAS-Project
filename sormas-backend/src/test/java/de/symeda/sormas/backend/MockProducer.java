@@ -1,9 +1,11 @@
 package de.symeda.sormas.backend;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Field;
 import java.security.Principal;
 import java.util.Properties;
 
@@ -15,6 +17,7 @@ import javax.jms.Topic;
 import javax.mail.Session;
 import javax.transaction.UserTransaction;
 
+import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 /**
@@ -38,6 +41,14 @@ public class MockProducer {
 	static {
 		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME,"nigeria");
 		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ";");
+		
+		try {
+			Field instance = InfoProvider.class.getDeclaredField("instance");
+			instance.setAccessible(true);
+			instance.set(null, spy(InfoProvider.class));
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
 
 		// Make sure that the default session does not use a local mail server (if mock-javamail is removed)
 		mailSession = Session.getInstance(properties);
@@ -92,5 +103,4 @@ public class MockProducer {
 	public static UserTransaction getUserTransaction() {
 		return userTransaction;
 	}
-
 }

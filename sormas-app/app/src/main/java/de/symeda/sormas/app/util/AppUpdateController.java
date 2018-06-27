@@ -112,7 +112,7 @@ public class AppUpdateController {
         this.appUrl = appUrl;
         this.dismissCallback = dismissCallback;
         this.tracker = ((SormasApplication) activity.getApplication()).getDefaultTracker();
-        this.fileName = appUrl.substring(appUrl.lastIndexOf("/"), appUrl.lastIndexOf(".")) + "-" + version + ".apk";
+        this.fileName = appUrl.substring(appUrl.lastIndexOf("/"));
 
         // Check if the required version has already been downloaded
         File file = new File(activity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName);
