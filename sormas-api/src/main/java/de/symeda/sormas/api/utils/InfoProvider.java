@@ -7,13 +7,13 @@ public class InfoProvider {
 
 	private static InfoProvider instance;
 	
-	private String version;
+	private final String version;
 
 	InfoProvider() {
 		try {
 			InputStream stream = InfoProvider.class.getResourceAsStream("/version.txt");
-			version = DataHelper.convertStreamToString(stream);
-			version = version.trim();
+			String version = DataHelper.convertStreamToString(stream);
+			this.version = version.trim();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -36,14 +36,7 @@ public class InfoProvider {
 	 * We are doing it this way, because all other version information (manifest, pom) will be removed in the android app by gradle.
 	 */
 	public String getVersion() {
-		try {
-			InputStream stream = InfoProvider.class.getResourceAsStream("/version.txt");
-			String version = DataHelper.convertStreamToString(stream);
-			version = version.trim();
-			return version;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		return version;
 	}
 
 	/**

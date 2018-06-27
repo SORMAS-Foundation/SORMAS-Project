@@ -28,16 +28,17 @@ public class InfoResource {
 	public String getAppUrl(@QueryParam("appVersion") String appVersionString) {
 		
 		int[] appVersion = VersionHelper.extractVersion(appVersionString);
-		if (VersionHelper.isVersion(appVersion)) {
-			String appLegacyUrl = FacadeProvider.getConfigFacade().getAppLegacyUrl();
-			int[] appLegacyVersion = VersionHelper.extractVersion(appLegacyUrl);
-			if (VersionHelper.isVersion(appLegacyVersion))
-			{
-				if (VersionHelper.isEqual(appVersion, appLegacyVersion)) {
-					return null; // keep legacy version
-				} else if (VersionHelper.isBefore(appVersion, appLegacyVersion)) {
-					return appLegacyUrl;
-				}
+
+		String appLegacyUrl = FacadeProvider.getConfigFacade().getAppLegacyUrl();
+		int[] appLegacyVersion = VersionHelper.extractVersion(appLegacyUrl);
+		if (VersionHelper.isVersion(appLegacyVersion))
+		{
+			if (!VersionHelper.isVersion(appVersion)) {
+				return appLegacyUrl; // no version -> likely old app 0.22.0 or older
+			} else if (VersionHelper.isEqual(appVersion, appLegacyVersion)) {
+				return null; // keep legacy version
+			} else if (VersionHelper.isBefore(appVersion, appLegacyVersion)) {
+				return appLegacyUrl;
 			}
 		}
 		
