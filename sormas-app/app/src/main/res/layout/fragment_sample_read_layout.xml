@@ -35,7 +35,7 @@
                 >
 
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtDiseaseName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
 
 
 
-                    <de.symeda.sormas.app.component.controls.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/txtSampleCode"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <de.symeda.sormas.app.component.controls.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/txtSampleMaterial"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
 
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtSampleMaterialText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -94,7 +94,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtSampleSource"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -112,7 +112,7 @@
 
 
 
-                    <de.symeda.sormas.app.component.controls.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/txtDateTimeOfSampling"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -124,7 +124,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <de.symeda.sormas.app.component.controls.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/txtTestType"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -141,7 +141,7 @@
                 </LinearLayout>
 
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtLaboratoryName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -167,7 +167,7 @@
 
 
 
-                        <de.symeda.sormas.app.component.controls.TeboTextImageRead
+                        <de.symeda.sormas.app.component.controls.ControlTextImageField
                             android:id="@+id/txtShippingStatus"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -189,7 +189,7 @@
 
 
 
-                        <de.symeda.sormas.app.component.controls.TeboTextImageRead
+                        <de.symeda.sormas.app.component.controls.ControlTextImageField
                             android:id="@+id/txtReceivedStatus"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -209,7 +209,7 @@
 
 
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtShipmentDetails"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -222,7 +222,7 @@
 
 
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtComment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -232,7 +232,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtReferredTo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -264,7 +264,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <de.symeda.sormas.app.component.controls.TeboTextRead
+                        <de.symeda.sormas.app.component.controls.ControlTextReadField
                             android:id="@+id/txtLabSampleId"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -276,7 +276,7 @@
                             app:defaultValue='@{@string/not_available}'
                             />
 
-                        <de.symeda.sormas.app.component.controls.TeboTextRead
+                        <de.symeda.sormas.app.component.controls.ControlTextReadField
                             android:id="@+id/txtReceivedDate"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -291,7 +291,7 @@
 
                     </LinearLayout>
 
-                    <de.symeda.sormas.app.component.controls.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/txtSpecimenCondition"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -302,7 +302,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <de.symeda.sormas.app.component.controls.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/txtTestPossibleReason"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

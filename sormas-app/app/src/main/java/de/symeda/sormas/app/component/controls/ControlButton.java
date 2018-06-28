@@ -26,22 +26,22 @@ public class ControlButton extends android.support.v7.widget.AppCompatButton {
 
     public ControlButton(Context context) {
         super(context);
-        initializeViews(context, null);
+        initialize(context, null);
     }
 
     public ControlButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initializeViews(context, attrs);
+        initialize(context, attrs);
     }
 
     public ControlButton(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        initializeViews(context, attrs);
+        initialize(context, attrs);
     }
 
     // Initialization and styling
 
-    private void initializeViews(Context context, AttributeSet attrs) {
+    private void initialize(Context context, AttributeSet attrs) {
         if (attrs != null) {
             TypedArray attributes = context.getTheme()
                     .obtainStyledAttributes(attrs, R.styleable.ControlButton, 0, 0);

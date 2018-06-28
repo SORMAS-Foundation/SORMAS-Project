@@ -21,9 +21,9 @@ import de.symeda.sormas.app.R;
  * sampson.orson@technologyboard.org
  */
 
-public class TeboTimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
+public class ControlTimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
 
-    public static final String KEY_TEBO_TIME_PICKER = "TeboTimePicker";
+    public static final String KEY_LINKED_TIME = "LinkedTime";
     private TimePickerDialog.OnTimeSetListener onTimeSetListener;
     private DialogInterface.OnClickListener onClearListener;
 
@@ -38,7 +38,7 @@ public class TeboTimePickerFragment extends DialogFragment implements TimePicker
         if (outState == null)
             return;
 
-        outState.putSerializable(KEY_TEBO_TIME_PICKER, timeValue);
+        outState.putSerializable(KEY_LINKED_TIME, timeValue);
     }
 
     @Override
@@ -52,10 +52,10 @@ public class TeboTimePickerFragment extends DialogFragment implements TimePicker
         if (arguments == null || arguments.isEmpty())
             return;
 
-        if (!arguments.containsKey(KEY_TEBO_TIME_PICKER))
+        if (!arguments.containsKey(KEY_LINKED_TIME))
             return;
 
-        timeValue = (Date) arguments.get(KEY_TEBO_TIME_PICKER);
+        timeValue = (Date) arguments.get(KEY_LINKED_TIME);
     }
 
 
@@ -65,7 +65,7 @@ public class TeboTimePickerFragment extends DialogFragment implements TimePicker
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        //Date date = (Date) getArguments().get(KEY_TEBO_TIME_PICKER);
+        //Date date = (Date) getArguments().get(KEY_LINKED_TIME);
 
         final Calendar calendar = Calendar.getInstance();
         if(timeValue != null) {

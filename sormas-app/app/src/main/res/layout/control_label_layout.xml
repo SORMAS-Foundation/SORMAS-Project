@@ -3,7 +3,7 @@
 
     <LinearLayout
         android:id="@+id/label_frame"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
@@ -23,8 +23,8 @@
             style="@style/SoftRequiredIndicatorStyle" />
 
         <TextView
-            android:id="@+id/minor_error_indicator"
-            style="@style/MinorErrorIndicatorStyle" />
+            android:id="@+id/warning_indicator"
+            style="@style/WarningIndicatorStyle" />
 
     </LinearLayout>
 

@@ -22,7 +22,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.TeboDatePicker;
+import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
@@ -64,7 +64,7 @@ public class CaseDiseaseLayoutProcessor {
     private TeboSpinner spnVaccinationInfoSource;
     private TeboSpinner spnPlague;
     private TeboSpinner spnDengueFever;
-    private TeboDatePicker dtpLastVaccinationDate;
+    private ControlDateField dtpLastVaccinationDate;
 
     private OnSetBindingVariableListener mOnSetBindingVariableListener;
 
@@ -148,10 +148,10 @@ public class CaseDiseaseLayoutProcessor {
         spnVaccinationInfoSource = (TeboSpinner)innerRootLayout.findViewById(R.id.spnVaccinationInfoSource);
         spnPlague = (TeboSpinner)innerRootLayout.findViewById(R.id.spnPlague);
         spnDengueFever = (TeboSpinner)innerRootLayout.findViewById(R.id.spnDengueFever);
-        dtpLastVaccinationDate = (TeboDatePicker) innerRootLayout.findViewById(R.id.dtpLastVaccinationDate);
+        dtpLastVaccinationDate = (ControlDateField) innerRootLayout.findViewById(R.id.dtpLastVaccinationDate);
 
         if (dtpLastVaccinationDate != null)
-            dtpLastVaccinationDate.initialize(fragmentManager);
+            dtpLastVaccinationDate.setFragmentManager(fragmentManager);
 
         binding.addOnRebindCallback(new OnRebindCallback() {
             @Override

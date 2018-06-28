@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.TeboDatePicker
+                <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/dtpDateOfDeath"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

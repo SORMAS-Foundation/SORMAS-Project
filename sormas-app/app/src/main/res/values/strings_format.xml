@@ -16,6 +16,7 @@
     <string name="age_with_dob_format">%1$s %2$s (%3$s)</string>
     <string name="age_with_dob_and_prepend_format"><b>%1$s:</b> %2$s %3$s (%4$s)</string>
     <string name="date_format">%1$s/%2$s/%3$s</string>
+    <string name="date_without_day_format">%1$s/%2$s</string>
     <string name="due_timeago_format">due %1$s</string>
     <string name="text_with_bracket_desc_format">%1$s (%2$s)</string>
     <string name="question_pregnant_format">Pregnancy? %1$s</string>

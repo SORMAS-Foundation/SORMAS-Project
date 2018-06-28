@@ -157,8 +157,8 @@ public abstract class BaseReportActivityFragment<TBinding extends ViewDataBindin
 //
 //    @Override
 //    public void onInputErrorHiding(View v, boolean errorState) {
-//        //notificationCommunicator.hideErrorNotification();
-//        NotificationHelper.hideErrorNotification((NotificationContext)getActivity());
+//        //notificationCommunicator.hideNotification();
+//        NotificationHelper.hideNotification((NotificationContext)getActivity());
 //    }
 
     protected void reloadFragment() {

@@ -93,7 +93,7 @@ public class TeboRadioGroup extends ControlPropertyEditField<Object> {
     // </editor-fold>
 
     @Override
-    protected void initializeView(Context context, AttributeSet attrs, int defStyle) {
+    protected void initialize(Context context, AttributeSet attrs, int defStyle) {
         uncheckedStateColor = getResources().getColor(R.color.colorControlNormal);
         checkedStateColor = getResources().getColor(R.color.colorControlActivated);
 
@@ -142,9 +142,9 @@ public class TeboRadioGroup extends ControlPropertyEditField<Object> {
 
         //radioGroup.setImeOptions(getImeOptions());
 
-        radioGroup.setTextAlignment(getControlTextAlignment());
-        if(getControlTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
-            radioGroup.setGravity(getControlGravity());
+        radioGroup.setTextAlignment(getTextAlignment());
+        if(getTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
+            radioGroup.setGravity(getGravity());
         }
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -164,13 +164,13 @@ public class TeboRadioGroup extends ControlPropertyEditField<Object> {
         /*controlFrame.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkBox.toggle();
+                input.toggle();
             }
         });*/
 
         if (isShowCaption()) {
             captionFrame.setVisibility(View.VISIBLE);
-            label.setText(getControlCaption());
+            label.setText(getCaption());
         } else {
             captionFrame.setVisibility(View.GONE);
         }
@@ -591,7 +591,7 @@ public class TeboRadioGroup extends ControlPropertyEditField<Object> {
 
                 return;
             } else {
-                hideErrorNotification();
+                hideNotification();
             }
 
             if (hasFocus) {
@@ -622,7 +622,7 @@ public class TeboRadioGroup extends ControlPropertyEditField<Object> {
 
                 return;
             } else {
-                hideErrorNotification();
+                hideNotification();
             }
 
             InputMethodManager imm = (InputMethodManager) this.context.getSystemService(Context.INPUT_METHOD_SERVICE);

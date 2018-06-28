@@ -29,7 +29,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtVisitDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -37,11 +37,11 @@
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     app:description="@string/desc_contact_visit_visit_date"
                     app:labelCaption="@string/label_contact_visit_visit_date"
-                    app:dateValue="@{data.visitDateTime}"
+                    app:value="@{data.visitDateTime}"
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtVisitTime"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
             </LinearLayout>
 
 
-            <de.symeda.sormas.app.component.controls.TeboTextRead
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/txtAvailAndCooperative"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
                 />
 
 
-            <de.symeda.sormas.app.component.controls.TeboTextRead
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/txtVisitRemarks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -210,12 +210,12 @@ public class TeboPassword extends ControlPropertyEditField<String> {
 
         if (this.singleLine) {
             txtControlInput.setMaxLines(1);
-            //input.setLines(1);
+            //textView.setLines(1);
             txtControlInput.setInputType(inputType);
             txtControlInput.setVerticalScrollBarEnabled(false);
         } else {
             txtControlInput.setMaxLines(maxLines);
-            //input.setLines(maxLines);
+            //textView.setLines(maxLines);
             txtControlInput.setInputType(inputType);
             txtControlInput.setVerticalScrollBarEnabled(true);
         }
@@ -233,7 +233,7 @@ public class TeboPassword extends ControlPropertyEditField<String> {
     // </editor-fold>
 
     @Override
-    protected void initializeView(Context context, AttributeSet attrs, int defStyle) {
+    protected void initialize(Context context, AttributeSet attrs, int defStyle) {
         if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(
                     attrs,
@@ -268,9 +268,9 @@ public class TeboPassword extends ControlPropertyEditField<String> {
 
         txtControlInput.setImeOptions(getImeOptions());
 
-        txtControlInput.setTextAlignment(getControlTextAlignment());
-        if(getControlTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
-            txtControlInput.setGravity(getControlGravity());
+        txtControlInput.setTextAlignment(getTextAlignment());
+        if(getTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
+            txtControlInput.setGravity(getGravity());
         }
 
         txtControlInput.addTextChangedListener(new TextWatcher() {
@@ -404,7 +404,7 @@ public class TeboPassword extends ControlPropertyEditField<String> {
             User user = ConfigProvider.getUser();
             label.setTextColor(labelColor);
             setBackground(drawable);
-//            txtControlInput.setEnabled(true && (editOrCreateUserRight != null)? user.hasUserRight(editOrCreateUserRight) : true);
+//            textView.setEnabled(true && (editOrCreateUserRight != null)? user.hasUserRight(editOrCreateUserRight) : true);
             return;
         }
     }
@@ -452,7 +452,7 @@ public class TeboPassword extends ControlPropertyEditField<String> {
 
                 return;
             } else {
-                hideErrorNotification();
+                hideNotification();
             }
 
             //int colorOnFocus = v.getResources().getColor(VisualState.FOCUSED.getLabelColor());
@@ -489,7 +489,7 @@ public class TeboPassword extends ControlPropertyEditField<String> {
 
                 return;
             } else {
-                hideErrorNotification();
+                hideNotification();
             }
 
             InputMethodManager imm = (InputMethodManager) this.context.getSystemService(Context.INPUT_METHOD_SERVICE);

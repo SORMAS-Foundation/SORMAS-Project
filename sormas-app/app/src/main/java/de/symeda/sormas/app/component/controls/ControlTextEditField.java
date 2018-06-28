@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
-import android.databinding.BindingMethod;
-import android.databinding.BindingMethods;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
 import android.graphics.drawable.Drawable;
@@ -26,7 +24,6 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.VisualStateControlType;
 
-@BindingMethods({@BindingMethod(type = ControlTextEditField.class, attribute = "valueFormat", method = "setValueFormat")})
 public class ControlTextEditField extends ControlPropertyEditField<String> {
 
     // Views
@@ -68,7 +65,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
     /**
      * Handles clicks on the buttons to switch to the next view.
      */
-    private void setOnEditorActionListener() {
+    private void setUpOnEditorActionListener() {
         input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -100,7 +97,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         });
     }
 
-    private void setOnFocusChangeListener() {
+    private void setUpOnFocusChangeListener() {
         input.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -108,7 +105,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
                     return;
                 }
 
-                showOrHideErrorNotifications(hasFocus);
+                showOrHideNotifications(hasFocus);
 
                 InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -116,11 +113,17 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
                     if (hasFocus) {
                         changeVisualState(VisualState.FOCUSED);
                         imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
+                        // Prevent the content from being automatically selected
+                        input.setSelection(input.getText().length(), input.getText().length());
                         if (onClickListener != null) {
                             input.setOnClickListener(onClickListener);
                         }
                     } else {
-                        changeVisualState(VisualState.NORMAL);
+                        if (hasError) {
+                            changeVisualState(VisualState.ERROR);
+                        } else {
+                            changeVisualState(VisualState.NORMAL);
+                        }
                         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                         input.setOnClickListener(null);
                     }
@@ -129,7 +132,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         });
     }
 
-    private void setupOnClickListener() {
+    private void initializeOnClickListener() {
         if (onClickListener != null) {
             return;
         }
@@ -141,13 +144,15 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
                     return;
                 }
 
-                showOrHideErrorNotifications(v.hasFocus());
+                showOrHideNotifications(v.hasFocus());
 
                 InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 
                 if (imm != null) {
                     if (v.hasFocus()) {
                         imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
+                        // Prevent the content from being automatically selected
+                        input.setSelection(input.getText().length(), input.getText().length());
                     } else {
                         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                     }
@@ -156,28 +161,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         };
     }
 
-    private void showOrHideErrorNotifications(boolean hasFocus) {
-        if (hasError) {
-            if (hasFocus)
-                showErrorNotification();
-        } else {
-            hideErrorNotification();
-
-            if (hasMinorError) {
-                if (hasFocus)
-                    showMinorErrorNotification();
-            } else {
-                hideMinorErrorNotification();
-            }
-        }
-    }
-
     // Overrides
-
-    @Override
-    public void setValue(String value) {
-        input.setText(value);
-    }
 
     @Override
     public String getValue() {
@@ -189,6 +173,11 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
     }
 
     @Override
+    public void setValue(String value) {
+        input.setText(value);
+    }
+
+    @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         input.setEnabled(enabled);
@@ -196,12 +185,12 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
     }
 
     @Override
-    protected void setHint(String value) {
-        input.setHint(value);
+    protected void setHint(String hint) {
+        input.setHint(hint);
     }
 
     @Override
-    protected void initializeView(Context context, AttributeSet attrs, int defStyle) {
+    protected void initialize(Context context, AttributeSet attrs, int defStyle) {
         if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(
                     attrs,
@@ -211,7 +200,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
             try {
                 singleLine = a.getBoolean(R.styleable.ControlTextEditField_singleLine, true);
                 maxLines = a.getInt(R.styleable.ControlTextEditField_maxLines, 1);
-                textArea = a.getBoolean(R.styleable.ControlTextEditField_textArea, true);
+                textArea = a.getBoolean(R.styleable.ControlTextEditField_textArea, false);
                 inputType = a.getInt(R.styleable.ControlTextEditField_inputType, InputType.TYPE_CLASS_TEXT);
             } finally {
                 a.recycle();
@@ -225,13 +214,18 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         if (inflater != null) {
-            inflater.inflate(R.layout.control_textfield_edit_layout, this);
+            if (textArea) {
+                inflater.inflate(R.layout.control_textfield_edit_multi_row_layout, this);
+            } else if (isSlim()) {
+                inflater.inflate(R.layout.control_textfield_edit_slim_layout, this);
+            } else {
+                inflater.inflate(R.layout.control_textfield_edit_layout, this);
+            }
         } else {
             throw new RuntimeException("Unable to inflate layout in " + getClass().getName());
         }
     }
 
-    @SuppressLint("WrongConstant")
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -239,11 +233,11 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         input = (EditText) this.findViewById(R.id.input);
         input.setImeOptions(getImeOptions());
         input.setImeActionLabel(null, getImeOptions());
-        input.setTextAlignment(getControlTextAlignment());
-        if(getControlTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
-            input.setGravity(getControlGravity());
+        input.setTextAlignment(getTextAlignment());
+        if(getTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
+            input.setGravity(getGravity());
         }
-        setInputType(inputType);
+        input.setInputType(inputType);
         setSingleLine(singleLine);
 
         input.addTextChangedListener(new TextWatcher() {
@@ -260,21 +254,21 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
             }
         });
 
-        setOnEditorActionListener();
-        setOnFocusChangeListener();
-        setupOnClickListener();
+        setUpOnEditorActionListener();
+        setUpOnFocusChangeListener();
+        initializeOnClickListener();
     }
 
     @Override
     protected void requestFocusForContentView(View nextView) {
-        ((ControlTextEditField)nextView).input.requestFocus();
-        ((ControlTextEditField)nextView).setCursorToRight();
+        ((ControlTextEditField) nextView).input.requestFocus();
+        ((ControlTextEditField) nextView).setCursorToRight();
     }
 
     @Override
     public void changeVisualState(final VisualState state) {
-        if (state != VisualState.DISABLED && getUserRight() != null
-                && !ConfigProvider.getUser().hasUserRight(getUserRight())) {
+        if (state != VisualState.DISABLED && getUserEditRight() != null
+                && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
             return;
         }
 
@@ -303,18 +297,17 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
         if (state == VisualState.DISABLED) {
             setEnabled(false);
-            input.setEnabled(false);
         }
     }
 
     @Override
     public void setBackgroundResource(int resId) {
-        input.setBackgroundResource(resId);
+        setBackgroundResourceFor(input, resId);
     }
 
     @Override
     public void setBackground(Drawable background) {
-        input.setBackground(background);
+        setBackgroundFor(input, background);
     }
 
     // Data binding, getters & setters
@@ -339,10 +332,10 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
     }
 
     public boolean isSingleLine() {
-        return this.singleLine;
+        return singleLine;
     }
 
-    private void setSingleLine(boolean singleLine) {
+    public void setSingleLine(boolean singleLine) {
         this.singleLine = singleLine;
 
         if (this.singleLine) {
@@ -361,7 +354,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         return inputType;
     }
 
-    private void setInputType(int inputType) {
+    public void setInputType(int inputType) {
         this.inputType = inputType;
         input.setInputType(inputType);
     }

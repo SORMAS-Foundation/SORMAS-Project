@@ -205,7 +205,7 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
 
     @Override
     public void onAfterLayoutBinding(FragmentCaseEditSymptomsInfoLayoutBinding contentBinding) {
-        contentBinding.dtpSymptomOnset.initialize(getFragmentManager());
+        contentBinding.dtpSymptomOnset.setFragmentManager(getFragmentManager());
 
         contentBinding.spnBodyTemperature.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override

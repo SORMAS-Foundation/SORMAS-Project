@@ -193,7 +193,7 @@
     <color name="colorControlError">@color/watchOut</color>
     <color name="textSelectionHandle">@color/blue</color>
     <color name="controlTextColor">@color/normalText</color>
-    <color name="controlLabelColor">@color/normalText</color>
+    <color name="controlLabelColor">@color/lightBlue</color>
     <color name="controlTextViewStroke">@color/lighterBlue</color>
     <color name="controlTextViewAlternateBackground">#FFFFFFFF</color>
     <color name="controlTextViewBackground">#00FFFFFF</color>

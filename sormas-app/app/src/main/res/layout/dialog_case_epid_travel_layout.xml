@@ -39,7 +39,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtTravelFrom"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtTravelTo"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.TeboTextRead
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/txtTravelType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
-            <de.symeda.sormas.app.component.controls.TeboTextRead
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/txtAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

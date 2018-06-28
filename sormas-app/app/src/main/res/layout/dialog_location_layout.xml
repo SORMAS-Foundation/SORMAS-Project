@@ -186,7 +186,7 @@
                     android:text="@string/action_pick_gps"
                     android:onClick="@{(view) -> pickGpsCallback.onClick(view, data)}" />
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtGpsLatLon"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

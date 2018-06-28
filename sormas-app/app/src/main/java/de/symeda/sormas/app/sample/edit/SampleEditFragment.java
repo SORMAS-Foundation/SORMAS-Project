@@ -341,8 +341,8 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
             }
         });
 
-        contentBinding.dtpDateAndTimeOfSampling.initialize(getFragmentManager());
-        contentBinding.dtpShipmentDate.initialize(getFragmentManager());
+        contentBinding.dtpDateAndTimeOfSampling.setFragmentManager(getFragmentManager());
+        contentBinding.dtpShipmentDate.setFragmentManager(getFragmentManager());
 
         //TODO: Properly disable Tebo controls
         if (!ConfigProvider.getUser().getUuid().equals(record.getReportingUser().getUuid())) {

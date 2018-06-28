@@ -210,7 +210,7 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
 
     @Override
     public void onAfterLayoutBinding(FragmentContactEditSymptomsInfoLayoutBinding contentBinding) {
-        contentBinding.dtpSymptomOnset.initialize(getFragmentManager());
+        contentBinding.dtpSymptomOnset.setFragmentManager(getFragmentManager());
 
         contentBinding.spnBodyTemperature.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
             @Override

@@ -156,9 +156,9 @@ public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<Fr
 
     @Override
     public void onAfterLayoutBinding(FragmentCaseEditHospitalizationLayoutBinding contentBinding) {
-        contentBinding.dtpDateOfAdmission.initialize(getFragmentManager());
-        contentBinding.dtpDateOfDischarge.initialize(getFragmentManager());
-        contentBinding.dtpIsolationDate.initialize(getFragmentManager());
+        contentBinding.dtpDateOfAdmission.setFragmentManager(getFragmentManager());
+        contentBinding.dtpDateOfDischarge.setFragmentManager(getFragmentManager());
+        contentBinding.dtpIsolationDate.setFragmentManager(getFragmentManager());
     }
 
     @Override

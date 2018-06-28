@@ -74,7 +74,7 @@ public class TeboSpinner extends ControlPropertyEditField<Object> implements ISp
     // <editor-fold defaultstate="collapsed" desc="Overriden Control Init">
 
     @Override
-    protected void initializeView(Context context, AttributeSet attrs, int defStyle) {
+    protected void initialize(Context context, AttributeSet attrs, int defStyle) {
         initialized = false;
 
         if (attrs != null) {

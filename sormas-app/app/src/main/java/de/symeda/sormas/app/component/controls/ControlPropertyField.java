@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -30,7 +31,6 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
     private String description;
     private String caption;
     private boolean showCaption;
-    private int captionColor;
     private int textAlignment;
     private int gravity;
     private int imeOptions;
@@ -46,22 +46,22 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
     public ControlPropertyField(Context context) {
         super(context);
-        initializePropertyFieldView(context, null);
-        initializeView(context, null, 0);
+        initializePropertyField(context, null);
+        initialize(context, null, 0);
         inflateView(context, null, 0);
     }
 
     public ControlPropertyField(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initializePropertyFieldView(context, attrs);
-        initializeView(context, attrs, 0);
+        initializePropertyField(context, attrs);
+        initialize(context, attrs, 0);
         inflateView(context, null, 0);
     }
 
     public ControlPropertyField(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        initializePropertyFieldView(context, attrs);
-        initializeView(context, attrs, defStyle);
+        initializePropertyField(context, attrs);
+        initialize(context, attrs, defStyle);
         inflateView(context, null, 0);
     }
 
@@ -71,7 +71,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
     public abstract void setValue(T value) throws InvalidValueException;
 
-    protected abstract void initializeView(Context context, AttributeSet attrs, int defStyle);
+    protected abstract void initialize(Context context, AttributeSet attrs, int defStyle);
 
     protected abstract void inflateView(Context context, AttributeSet attrs, int defStyle);
 
@@ -79,8 +79,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
     // Instance methods
 
-    private void initializePropertyFieldView(Context context, AttributeSet attrs) {
-        label = (TextView) this.findViewById(R.id.label);
+    private void initializePropertyField(Context context, AttributeSet attrs) {
         caption = I18nProperties.getFieldCaption(getFieldCaptionPropertyId());
 
         if (attrs != null) {
@@ -92,7 +91,6 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
             try {
                 description = a.getString(R.styleable.ControlPropertyField_description);
                 showCaption = a.getBoolean(R.styleable.ControlPropertyField_showCaption, true);
-                captionColor = a.getColor(R.styleable.ControlPropertyField_captionColor, getResources().getColor(R.color.controlReadLabelColor));
                 textAlignment = a.getInt(R.styleable.ControlPropertyField_textAlignment, View.TEXT_ALIGNMENT_VIEW_START);
                 gravity = a.getInt(R.styleable.ControlPropertyField_gravity, Gravity.START | Gravity.CENTER_VERTICAL);
                 imeOptions = a.getInt(R.styleable.ControlPropertyField_imeOptions, EditorInfo.IME_NULL);
@@ -137,6 +135,28 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         return fieldId.substring(separatorIndex + 1, separatorIndex + 2).toUpperCase() + fieldId.substring(separatorIndex + 2).replaceAll("_", ".");
     }
 
+    protected void setBackgroundResourceFor(View input, int resId) {
+        int paddingLeft = input.getPaddingLeft();
+        int paddingTop = input.getPaddingTop();
+        int paddingRight = input.getPaddingRight();
+        int paddingBottom = input.getPaddingBottom();
+
+        input.setBackgroundResource(resId);
+
+        input.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+    }
+
+    protected void setBackgroundFor(View input, Drawable background) {
+        int paddingLeft = input.getPaddingLeft();
+        int paddingTop = input.getPaddingTop();
+        int paddingRight = input.getPaddingRight();
+        int paddingBottom = input.getPaddingBottom();
+
+        input.setBackground(background);
+
+        input.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+    }
+
     // Overrides
 
     @SuppressLint("WrongConstant")
@@ -151,15 +171,14 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
             throw new NullPointerException("No label found for property field " + getFieldIdString());
         }
 
-        setCaption(caption);
-        setShowCaption(showCaption);
-        label.setTextColor(captionColor);
+        label.setText(caption);
         label.setTextAlignment(textAlignment);
 
-        if (getControlTextAlignment() == TEXT_ALIGNMENT_GRAVITY) {
-            label.setGravity(getControlGravity());
+        if (getTextAlignment() == TEXT_ALIGNMENT_GRAVITY) {
+            label.setGravity(getGravity());
         }
 
+        // TODO: Refactor this after the tooltips component has been replaced
         label.setOnClickListener(new ControlLabelOnTouchListener(this));
 
         int typeFace = captionItalic ? Typeface.ITALIC : Typeface.NORMAL;
@@ -196,38 +215,30 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
     // Data binding, getters & setters
 
     public String getCaption() {
-        if (label == null) {
-            throw new NullPointerException("No label found for property field " + getFieldIdString());
-        }
-
-        return label.getText().toString();
+        return caption;
     }
 
-    public void setCaption(String newCaption) {
+    public void setCaption(String caption) {
+        this.caption = caption;
+
         if (label == null) {
             throw new NullPointerException("No label found for property field " + getFieldIdString());
         }
 
-        label.setText(newCaption);
+        label.setText(caption);
     }
 
     public String getDescription() {
         return description;
     }
 
-    public String getControlCaption() {
-        return caption;
-    }
-
-    public int getCaptionColor() {
-        return captionColor;
-    }
-
-    public int getControlTextAlignment() {
+    @Override
+    public int getTextAlignment() {
         return textAlignment;
     }
 
-    public int getControlGravity() {
+    @Override
+    public int getGravity() {
         return gravity;
     }
 

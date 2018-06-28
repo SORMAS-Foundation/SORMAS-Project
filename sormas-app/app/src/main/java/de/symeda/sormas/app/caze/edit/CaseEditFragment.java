@@ -228,11 +228,11 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
                 public void onChange(ControlPropertyField field) {
                     String value = (String) field.getValue();
                     if (value.trim().isEmpty()) {
-                        getContentBinding().txtEpidNumber.enableMinorErrorState((NotificationContext)getActivity(), R.string.validation_soft_case_epid_number_empty);
+                        getContentBinding().txtEpidNumber.enableWarningState((NotificationContext)getActivity(), R.string.validation_soft_case_epid_number_empty);
                     } else if (value.matches(DataHelper.getEpidNumberRegexp())) {
-                        getContentBinding().txtEpidNumber.disableMinorErrorState();
+                        getContentBinding().txtEpidNumber.disableWarningState();
                     } else {
-                        getContentBinding().txtEpidNumber.enableMinorErrorState((NotificationContext)getActivity(), R.string.validation_soft_case_epid_number);
+                        getContentBinding().txtEpidNumber.enableWarningState((NotificationContext)getActivity(), R.string.validation_soft_case_epid_number);
                     }
                 }
             });
@@ -270,12 +270,9 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
                     }
 
                     if (outcome == null || outcome == CaseOutcome.NO_OUTCOME) {
-                        try {
                             getContentBinding().dtpDateOfOutcome.setVisibility(View.GONE);
                             getContentBinding().dtpDateOfOutcome.setValue(null);
-                        } catch (InvalidValueException e) {
-                            Log.e(TAG, "There was an error clearing the set value for Date of Outcome.");
-                        }
+
                     } else {
                         getContentBinding().dtpDateOfOutcome.setVisibility(View.VISIBLE);
                     }
@@ -287,7 +284,6 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
         }
 
         contentBinding.setData(record);
-        contentBinding.setUserRight(UserRight.CASE_EDIT);
         contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
         contentBinding.setPlagueTypeClass(PlagueType.class);
         contentBinding.setMoveToAnotherHealthFacilityCallback(moveToAnotherHealthFacilityCallback);
@@ -366,8 +362,8 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
             }
         });
 
-        contentBinding.dtpDateOfOutcome.initialize(getFragmentManager());
-        //contentBinding.dtpDateOfLastVaccination.initialize(getFragmentManager());
+        contentBinding.dtpDateOfOutcome.setFragmentManager(getFragmentManager());
+        //contentBinding.dtpDateOfLastVaccination.setFragmentManager(getFragmentManager());
     }
 
     @Override

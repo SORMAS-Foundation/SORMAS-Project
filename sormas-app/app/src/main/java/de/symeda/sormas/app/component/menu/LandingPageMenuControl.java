@@ -198,7 +198,7 @@ public class LandingPageMenuControl extends LinearLayout {
 
     private void configureControl() {
         if (adapter == null) {
-            Log.e(TAG, "This is no adapter configured for the menu control.");
+            Log.e(TAG, "This is no adapter configured for the menu textView.");
             return;
         }
 
@@ -239,7 +239,7 @@ public class LandingPageMenuControl extends LinearLayout {
         parser = new LandingPageMenuParser(getContext());
 
         if (parser == null)
-            throw new ParserConfigurationException("This is no parser configured for the menu control.");
+            throw new ParserConfigurationException("This is no parser configured for the menu textView.");
 
         LandingPageMenu menu = parser.parse(getResources().getXml(dataResourceId));
 
@@ -405,7 +405,7 @@ public class LandingPageMenuControl extends LinearLayout {
         if (taskLandingMenuTitle != null) {
             taskLandingMenuTitle.setText(title);
         } else if ((taskLandingMenuTitle = (TextView) this.findViewById(R.id.sub_menu_title)) == null) {
-            throw new NullPointerException("The menu control title object is null.");
+            throw new NullPointerException("The menu textView title object is null.");
         }
 
         taskLandingMenuTitle.setText(title);

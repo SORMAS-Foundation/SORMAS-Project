@@ -104,8 +104,8 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
         //DialogPreviousHospitalizationLayoutBinding _contentBinding = (DialogPreviousHospitalizationLayoutBinding)contentBinding;
 
-        mContentBinding.dtpDateOfAdmission.initialize(getFragmentManager());
-        mContentBinding.dtpDateOfDischarge.initialize(getFragmentManager());
+        mContentBinding.dtpDateOfAdmission.setFragmentManager(getFragmentManager());
+        mContentBinding.dtpDateOfDischarge.setFragmentManager(getFragmentManager());
 
 
         mContentBinding.spnState.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {

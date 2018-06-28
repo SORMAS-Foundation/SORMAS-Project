@@ -18,7 +18,7 @@
             style="@style/ControlLabelReadStyle" />
 
         <TextView
-            android:id="@+id/input"
+            android:id="@+id/text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"

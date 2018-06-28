@@ -26,7 +26,7 @@
             android:paddingRight="@dimen/rowListItemHorizontalMargin"
             >
 
-            <de.symeda.sormas.app.component.controls.TeboDatePicker
+            <de.symeda.sormas.app.component.controls.ControlDateField
                 android:id="@+id/dtpDateOfEvent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -54,22 +54,16 @@
 
                 />
 
-            <de.symeda.sormas.app.component.controls.TeboTextLinkEdit
+            <de.symeda.sormas.app.component.controls.ControlTextPopupField
                 android:id="@+id/txtAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:background="@drawable/control_link_edittextview_background_selector"
-                app:iconPadding="@dimen/contentHorizontalSpacing"
                 app:iconStart="@drawable/ic_edit_location_black_24dp"
-                app:iconTint="@color/control_link_edittextview_color_selector"
-                app:textColor="@color/control_link_edittextview_color_selector"
-                app:textColorHint="@color/control_link_edittextview_hint_color_selector"
                 app:hint="@string/hint_case_epid_social_event_address"
                 app:labelCaption="@string/label_case_epid_social_event_address"
                 app:description="@string/desc_case_epid_social_event_address"
                 app:locationValue="@={data.gatheringAddress}"
-                app:onLinkClick="@{(view) -> addressLinkCallback.onClick(view, data)}"
                 />
 
 

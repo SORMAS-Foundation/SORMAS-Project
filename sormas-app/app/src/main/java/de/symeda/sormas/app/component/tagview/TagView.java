@@ -120,7 +120,7 @@ public class TagView extends ControlPropertyField<String> {
     // </editor-fold>
 
     @Override
-    protected void initializeView(Context context, AttributeSet attrs, int defStyle) {
+    protected void initialize(Context context, AttributeSet attrs, int defStyle) {
         mViewTreeObserber = getViewTreeObserver();
         mViewTreeObserber.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -546,7 +546,7 @@ public class TagView extends ControlPropertyField<String> {
 
     @Override
     protected void requestFocusForContentView(View nextView) {
-        //((TextReadControl)nextView).txtControlInput.requestFocus();
+        //((TextReadControl)nextView).input.requestFocus();
         //((TextReadControl) nextView).setCursorToRight();
 
     }

@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
-import de.symeda.sormas.app.component.controls.TeboDatePicker;
+import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.TeboSwitch;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
@@ -137,10 +137,10 @@ public class AnimalContactFormListAdapter  extends DataBoundAdapter<RowEditAnima
 
     private View initializeChildLayout(ViewDataBinding binding) {
         final View innerLayout = binding.getRoot();
-        TeboDatePicker dtpLastExposureDate = (TeboDatePicker)innerLayout.findViewById(R.id.dtpLastExposureDate);
+        ControlDateField dtpLastExposureDate = (ControlDateField)innerLayout.findViewById(R.id.dtpLastExposureDate);
 
         if (dtpLastExposureDate != null)
-            dtpLastExposureDate.initialize(fragmentManager);
+            dtpLastExposureDate.setFragmentManager(fragmentManager);
 
         binding.addOnRebindCallback(new OnRebindCallback() {
             @Override

@@ -20,9 +20,9 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.component.controls.TeboTextImageRead;
-import de.symeda.sormas.app.component.controls.TeboTextLinkRead;
-import de.symeda.sormas.app.component.controls.TeboTextRead;
+import de.symeda.sormas.app.component.controls.ControlTextImageField;
+import de.symeda.sormas.app.component.controls.ControlLinkField;
+import de.symeda.sormas.app.component.controls.ControlTextReadField;
 
 /**
  * Created by Orson on 19/12/2017.
@@ -61,7 +61,7 @@ public class FormBindingAdapters {
     }
 
     @BindingAdapter(value={"shipmentStatus", "defaultValue"}, requireAll=false)
-    public static void setShipmentStatus(TeboTextImageRead control, Sample sample, String defaultValue) {
+    public static void setShipmentStatus(ControlTextImageField control, Sample sample, String defaultValue) {
         String val = defaultValue;
         Context context = control.getContext();
         Resources resources = context.getResources();
@@ -79,7 +79,7 @@ public class FormBindingAdapters {
                     control.setValue(stringValue);
 
                     //Set icon to check & tint
-                    control.setIconBackground(R.drawable.ic_check_circle_24dp, R.color.goodJob);
+                    control.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.goodJob);
 
                     control.updateControl(val);
                 }
@@ -91,7 +91,7 @@ public class FormBindingAdapters {
                     control.setValue(stringValue);
 
                     //Set icon to cancel & tint
-                    control.setIconBackground(R.drawable.ic_cancel_24dp, R.color.watchOut);
+                    control.setImageBackground(R.drawable.ic_cancel_24dp, R.color.watchOut);
 
                     control.updateControl(val);
                 }
@@ -100,7 +100,7 @@ public class FormBindingAdapters {
     }
 
     @BindingAdapter(value={"receivedStatus", "defaultValue"}, requireAll=false)
-    public static void setReceivedStatus(TeboTextImageRead control, Sample sample, String defaultValue) {
+    public static void setReceivedStatus(ControlTextImageField control, Sample sample, String defaultValue) {
         String val = defaultValue;
         Context context = control.getContext();
         Resources resources = context.getResources();
@@ -118,7 +118,7 @@ public class FormBindingAdapters {
                     control.setValue(stringValue);
 
                     //Set icon to check & tint
-                    control.setIconBackground(R.drawable.ic_check_circle_24dp, R.color.goodJob);
+                    control.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.goodJob);
 
                     control.updateControl(val);
                 }
@@ -130,7 +130,7 @@ public class FormBindingAdapters {
                     control.setValue(stringValue);
 
                     //Set icon to cancel & tint
-                    control.setIconBackground(R.drawable.ic_cancel_24dp, R.color.watchOut);
+                    control.setImageBackground(R.drawable.ic_cancel_24dp, R.color.watchOut);
 
                     control.updateControl(val);
                 }
@@ -139,7 +139,7 @@ public class FormBindingAdapters {
     }
 
     @BindingAdapter(value={"cazeAndLocation", "valueFormat", "defaultValue"}, requireAll=false)
-    public static void setCazeAndLocation(TeboTextLinkRead control, Case caze, String valueFormat, String defaultValue) {
+    public static void setCazeAndLocation(ControlLinkField control, Case caze, String valueFormat, String defaultValue) {
         String val = defaultValue;
         control.setValueFormat(valueFormat);
 
@@ -163,7 +163,7 @@ public class FormBindingAdapters {
     }
 
     @BindingAdapter(value={"contactAndLocation", "valueFormat", "defaultValue"}, requireAll=false)
-    public static void setContactAndLocation(TeboTextLinkRead control, Contact contact, String valueFormat, String defaultValue) {
+    public static void setContactAndLocation(ControlLinkField control, Contact contact, String valueFormat, String defaultValue) {
         String val = defaultValue;
         control.setValueFormat(valueFormat);
 
@@ -187,7 +187,7 @@ public class FormBindingAdapters {
     }
 
     @BindingAdapter(value={"eventAndLocation", "valueFormat", "defaultValue"}, requireAll=false)
-    public static void setEventAndLocation(TeboTextLinkRead control, Event event, String valueFormat, String defaultValue) {
+    public static void setEventAndLocation(ControlLinkField control, Event event, String valueFormat, String defaultValue) {
         String val = defaultValue;
         control.setValueFormat(valueFormat);
 
@@ -211,7 +211,7 @@ public class FormBindingAdapters {
     }
 
     @BindingAdapter("goneIfNull")
-    public static void setGoneIfNull(TeboTextRead textView, Object o) {
+    public static void setGoneIfNull(ControlTextReadField textView, Object o) {
         if (o == null) {
             textView.setVisibility(View.GONE);
         }
@@ -244,7 +244,7 @@ public class FormBindingAdapters {
     }
 
     @BindingAdapter(value={"locationValue", "valueFormat", "defaultValue"}, requireAll=false)
-    public static void setLocationValue(TeboTextLinkRead textField, Location location, String valueFormat, String defaultValue) {
+    public static void setLocationValue(ControlLinkField textField, Location location, String valueFormat, String defaultValue) {
         String val = defaultValue;
         textField.setValueFormat(valueFormat);
 

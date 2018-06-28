@@ -28,8 +28,8 @@
                 style="@style/SoftRequiredIndicatorStyle" />
 
             <TextView
-                android:id="@+id/minor_error_indicator"
-                style="@style/MinorErrorIndicatorStyle" />
+                android:id="@+id/warning_indicator"
+                style="@style/WarningIndicatorStyle" />
 
         </LinearLayout>
 

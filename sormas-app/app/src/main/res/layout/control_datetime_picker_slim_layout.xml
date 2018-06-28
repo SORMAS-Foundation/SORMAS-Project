@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge  xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
         android:orientation="vertical"
@@ -28,17 +28,32 @@
                 style="@style/SoftRequiredIndicatorStyle" />
 
             <TextView
-                android:id="@+id/minor_error_indicator"
-                style="@style/MinorErrorIndicatorStyle" />
+                android:id="@+id/warning_indicator"
+                style="@style/WarningIndicatorStyle" />
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/input"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:enabled="true"
-            style="@style/ControlPopupTextViewEditStyle" />
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/date_input"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:inputType="date"
+                style="@style/ControlDateOrTimePickerSlimInputStyle" />
+
+            <EditText
+                android:id="@+id/time_input"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/formLayoutGutterSize"
+                android:inputType="time"
+                style="@style/ControlDateOrTimePickerSlimInputStyle" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

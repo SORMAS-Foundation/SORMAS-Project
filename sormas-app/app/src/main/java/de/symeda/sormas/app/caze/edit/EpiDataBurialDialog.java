@@ -102,8 +102,8 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
         //mContentBinding = (DialogEpidBurialsLayoutBinding)contentBinding;
 
-        mContentBinding.dtpBurialFromDate.initialize(getFragmentManager());
-        mContentBinding.dtpBurialToDate.initialize(getFragmentManager());
+        mContentBinding.dtpBurialFromDate.setFragmentManager(getFragmentManager());
+        mContentBinding.dtpBurialToDate.setFragmentManager(getFragmentManager());
     }
 
     @Override

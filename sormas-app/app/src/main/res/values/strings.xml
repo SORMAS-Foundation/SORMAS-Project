@@ -376,7 +376,7 @@
     <string name="indicator_case_unclassified">Unclassified</string>
     <string name="indicator_required">*</string>
     <string name="indicator_soft_required">(*)</string>
-    <string name="indicator_minor_error">!</string>
+    <string name="indicator_warning">!</string>
     <string name="infoText_move_case_discard_changes">Moving the case will discard any unsaved changes. Do you want to continue?</string>
     <string name="infoText_resetPIN">To reset your PIN you will <b>need your SORMAS user password.</b></string>
     <string name="invalid">Invalid</string>
@@ -587,6 +587,7 @@
     <string name="user_unknown">User Unknown</string>
     <string name="uuid_unknown">ID N/A</string>
 
+    <string name="validation_field_empty">Please specify a value for all fields marked as required.</string>
     <string name="validation_case_disease">Please select the disease for this case.</string>
     <string name="validation_case_disease_details">Please enter the name of the disease.</string>
     <string name="validation_community">Please select a ward.</string>

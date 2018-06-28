@@ -111,7 +111,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
 
     public void login(View view) {
         //Hide notification
-        //NotificationHelper.hideErrorNotification(binding);
+        //NotificationHelper.hideNotification(binding);
         binding.username.disableErrorState();
         binding.password.disableErrorState();
 

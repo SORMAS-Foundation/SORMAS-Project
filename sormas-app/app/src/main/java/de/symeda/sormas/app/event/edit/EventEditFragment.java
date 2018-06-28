@@ -221,7 +221,7 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
 
             }
         });
-        contentBinding.dtpDateOfAlert.initialize(getFragmentManager());
+        contentBinding.dtpDateOfAlert.setFragmentManager(getFragmentManager());
     }
 
     @Override

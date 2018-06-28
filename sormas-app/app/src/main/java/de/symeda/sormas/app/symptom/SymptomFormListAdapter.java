@@ -19,7 +19,7 @@ import java.util.List;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
-import de.symeda.sormas.app.component.controls.TeboDatePicker;
+import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.TeboSwitch;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
@@ -241,7 +241,7 @@ public class SymptomFormListAdapter extends DataBoundAdapter<RowEditSymptomListI
     }
 
     private void initializeChildLayout(ViewDataBinding childLayoutBinding, View childLayoutView) {
-        final TeboDatePicker dtpLesionsOnsetDate = (TeboDatePicker) childLayoutView.findViewById(R.id.dtpLesionsOnsetDate);
+        final ControlDateField dtpLesionsOnsetDate = (ControlDateField) childLayoutView.findViewById(R.id.dtpLesionsOnsetDate);
 
         childLayoutBinding.addOnRebindCallback(new OnRebindCallback() {
             @Override
@@ -251,7 +251,7 @@ public class SymptomFormListAdapter extends DataBoundAdapter<RowEditSymptomListI
                 if (dtpLesionsOnsetDate == null)
                     return;
 
-                dtpLesionsOnsetDate.initialize(fragmentManager);
+                dtpLesionsOnsetDate.setFragmentManager(fragmentManager);
             }
         });
     }

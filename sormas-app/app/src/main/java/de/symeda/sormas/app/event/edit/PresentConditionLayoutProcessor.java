@@ -19,7 +19,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.TeboDatePicker;
+import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.VisualState;
@@ -59,7 +59,7 @@ public class PresentConditionLayoutProcessor {
 
     private FragmentManager fragmentManager;
     private TeboSpinner spnCauseOfDeath;
-    private TeboDatePicker dtpDateOfDeath;
+    private ControlDateField dtpDateOfDeath;
 
 
     public PresentConditionLayoutProcessor(Context context, FragmentManager fragmentManager,
@@ -139,7 +139,7 @@ public class PresentConditionLayoutProcessor {
 
     }
 
-    private void notifyDateOfDeathChanged(TeboDatePicker view, Date value) {
+    private void notifyDateOfDeathChanged(ControlDateField view, Date value) {
         if (this.mOnDateOfDeathChangeListener != null)
             this.mOnDateOfDeathChangeListener.onChange(view, value);
     }
@@ -151,10 +151,10 @@ public class PresentConditionLayoutProcessor {
     private boolean initializeChildLayout(ViewDataBinding binding) {
         View innerRootLayout = binding.getRoot();
         spnCauseOfDeath = (TeboSpinner)innerRootLayout.findViewById(R.id.spnCauseOfDeath);
-        dtpDateOfDeath = (TeboDatePicker)innerRootLayout.findViewById(R.id.dtpDateOfDeath);
+        dtpDateOfDeath = (ControlDateField)innerRootLayout.findViewById(R.id.dtpDateOfDeath);
 
 
-        dtpDateOfDeath.initialize(fragmentManager);
+        dtpDateOfDeath.setFragmentManager(fragmentManager);
         dtpDateOfDeath.addValueChangedListener(new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {

@@ -144,7 +144,7 @@ public class ContactNewFragment extends BaseEditActivityFragment<FragmentContact
         });
 
 
-        contentBinding.dtpDateOfLastContact.initialize(getFragmentManager());
+        contentBinding.dtpDateOfLastContact.setFragmentManager(getFragmentManager());
     }
 
     @Override

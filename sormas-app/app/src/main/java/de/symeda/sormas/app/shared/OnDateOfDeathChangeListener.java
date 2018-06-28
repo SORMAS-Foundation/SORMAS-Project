@@ -2,7 +2,7 @@ package de.symeda.sormas.app.shared;
 
 import java.util.Date;
 
-import de.symeda.sormas.app.component.controls.TeboDatePicker;
+import de.symeda.sormas.app.component.controls.ControlDateField;
 
 /**
  * Created by Orson on 21/03/2018.
@@ -13,5 +13,5 @@ import de.symeda.sormas.app.component.controls.TeboDatePicker;
  */
 
 public interface OnDateOfDeathChangeListener {
-    void onChange(TeboDatePicker view, Date value);
+    void onChange(ControlDateField view, Date value);
 }

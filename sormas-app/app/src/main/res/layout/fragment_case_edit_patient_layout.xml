@@ -195,7 +195,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.controls.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/txtAge"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -203,7 +203,7 @@
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                         app:description="@string/desc_event_pinvolv_age"
                         app:labelCaption="@string/label_event_pinvolv_age"
-                        app:formStyle="true"
+                        app:distinct="true"
                         app:value="@{data.approximateAge}"
                         app:appendValue="@{data.approximateAgeType.toString()}"
                         app:valueFormat="@{@string/two_words_spaced_format}"
@@ -331,21 +331,15 @@
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
                 >
 
-                <de.symeda.sormas.app.component.controls.TeboTextLinkEdit
+                <de.symeda.sormas.app.component.controls.ControlTextPopupField
                     android:id="@+id/txtPermAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:background="@drawable/control_link_edittextview_background_selector"
-                    app:iconPadding="@dimen/contentHorizontalSpacing"
                     app:iconStart="@drawable/ic_edit_location_black_24dp"
-                    app:iconTint="@color/control_link_edittextview_color_selector"
-                    app:textColor="@color/control_link_edittextview_color_selector"
-                    app:textColorHint="@color/control_link_edittextview_hint_color_selector"
                     app:hint="@string/hint_event_pinvolv_perm_res_addy"
                     app:labelCaption="@string/label_event_pinvolv_perm_res_addy"
                     app:description="@string/desc_event_pinvolv_perm_res_addy"
-                    app:onLinkClick="@{(view) -> addressLinkCallback.onClick(view, data)}"
                     />
 
                 <TextView

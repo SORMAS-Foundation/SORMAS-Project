@@ -2,7 +2,10 @@ package de.symeda.sormas.app.component.controls;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import de.symeda.sormas.api.user.UserRight;
@@ -10,7 +13,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.NotificationContext;
-import de.symeda.sormas.app.core.VibrationHelper;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 
@@ -20,39 +22,39 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     private TextView labelRequired;
     private TextView labelSoftRequired;
-    private TextView labelMinorError;
+    private TextView labelWarning;
 
     // Attributes
 
     private String hint;
-    private boolean required;
+    protected boolean required;
     private boolean softRequired;
 
     // Other fields
 
-    private UserRight userRight;
+    private UserRight userEditRight;
     protected VisualState visualState;
     private NotificationContext notificationContext;
     protected boolean hasError;
-    protected boolean hasMinorError;
+    protected boolean hasWarning;
     private String errorMessage;
-    private String minorErrorMessage;
+    private String warningMessage;
 
     // Constructors
 
     public ControlPropertyEditField(Context context) {
         super(context);
-        initializePropertyFieldViews(context, null);
+        initializePropertyEditField(context, null);
     }
 
     public ControlPropertyEditField(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initializePropertyFieldViews(context, attrs);
+        initializePropertyEditField(context, attrs);
     }
 
     public ControlPropertyEditField(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        initializePropertyFieldViews(context, attrs);
+        initializePropertyEditField(context, attrs);
     }
 
     // Abstract methods
@@ -63,7 +65,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     // Instance methods
 
-    private void initializePropertyFieldViews(Context context, AttributeSet attrs) {
+    private void initializePropertyEditField(Context context, AttributeSet attrs) {
         if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(
                     attrs,
@@ -98,16 +100,16 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         this.hasError = false;
         this.errorMessage = null;
 
-        // Re-enable minor error state if a minor error is present
-        if (hasMinorError) {
-            setMinorError(true);
+        // Re-enable warning state if a warning is present
+        if (hasWarning) {
+            setWarning(true);
         }
 
         changeErrorState();
     }
 
-    public void enableMinorErrorState(NotificationContext notificationContext, int messageResourceId) {
-        // Error has priority over minor error
+    public void enableWarningState(NotificationContext notificationContext, int messageResourceId) {
+        // Error has priority over warning
         if (hasError) {
             return;
         }
@@ -119,17 +121,39 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         }
 
         this.notificationContext = notificationContext;
-        this.hasMinorError = true;
-        this.minorErrorMessage = message;
+        this.hasWarning = true;
+        this.warningMessage = message;
 
-        changeMinorErrorState();
+        changeWarningState();
     }
 
-    public void disableMinorErrorState() {
-        this.hasMinorError = false;
-        this.minorErrorMessage = null;
+    public void disableWarningState() {
+        this.hasWarning = false;
+        this.warningMessage = null;
 
-        changeMinorErrorState();
+        changeWarningState();
+    }
+
+    /**
+     * Displays the error notification if the field is focused and has an error. Displays the
+     * warning notification if the field is focused and has a warning, but no error.
+     */
+    protected void showOrHideNotifications(boolean hasFocus) {
+        if (hasError) {
+            if (hasFocus) {
+                showErrorNotification();
+            }
+        } else {
+            hideNotification();
+
+            if (hasWarning) {
+                if (hasFocus) {
+                    showWarningNotification();
+                }
+            } else {
+                hideNotification();
+            }
+        }
     }
 
     protected void showErrorNotification() {
@@ -138,21 +162,15 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         }
     }
 
-    protected void hideErrorNotification() {
+    protected void showWarningNotification() {
+        if (hasWarning && notificationContext != null && warningMessage != null) {
+            NotificationHelper.showNotification(notificationContext, NotificationType.WARNING, warningMessage);
+        }
+    }
+
+    protected void hideNotification() {
         if (notificationContext != null) {
             NotificationHelper.hideNotification(notificationContext);
-        }
-    }
-
-    protected void showMinorErrorNotification() {
-        if (hasMinorError && notificationContext != null && minorErrorMessage != null) {
-            NotificationHelper.showNotification(notificationContext, NotificationType.WARNING, minorErrorMessage);
-        }
-    }
-
-    protected void hideMinorErrorNotification() {
-        if (notificationContext != null) {
-            NotificationHelper.hideDialogNotification(notificationContext);
         }
     }
 
@@ -164,19 +182,15 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
                 if (labelSoftRequired != null) {
                     labelSoftRequired.setVisibility(GONE);
                 }
-
-                if (labelMinorError != null) {
-                    labelMinorError.setVisibility(GONE);
-                }
             } else {
                 labelRequired.setVisibility(GONE);
             }
         }
     }
 
-    public void setSoftRequired(boolean value) {
+    public void setSoftRequired(boolean softRequired) {
         if (labelSoftRequired != null) {
-            if (value && !required && !hasMinorError) {
+            if (softRequired && !required) {
                 labelSoftRequired.setVisibility(VISIBLE);
             } else {
                 labelSoftRequired.setVisibility(GONE);
@@ -185,16 +199,12 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     }
 
-    public void setMinorError(boolean value) {
-        if (labelMinorError != null) {
-            if (value && !required) {
-                labelMinorError.setVisibility(VISIBLE);
-
-                if (labelSoftRequired != null) {
-                    labelSoftRequired.setVisibility(GONE);
-                }
+    public void setWarning(boolean warning) {
+        if (labelWarning != null) {
+            if (warning) {
+                labelWarning.setVisibility(VISIBLE);
             } else {
-                labelMinorError.setVisibility(GONE);
+                labelWarning.setVisibility(GONE);
             }
         }
     }
@@ -208,23 +218,23 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
             changeVisualState(VisualState.ERROR);
         } else if (this.isFocused()) {
             changeVisualState(VisualState.FOCUSED);
-            hideErrorNotification();
+            hideNotification();
         } else {
             changeVisualState(VisualState.NORMAL);
-            hideErrorNotification();
+            hideNotification();
         }
     }
 
-    private void changeMinorErrorState() {
+    private void changeWarningState() {
         if (!this.isEnabled()) {
             return;
         }
 
-        if (hasMinorError) {
-            setMinorError(true);
+        if (hasWarning) {
+            setWarning(true);
         } else {
-            setMinorError(false);
-            hideMinorErrorNotification();
+            setWarning(false);
+            hideNotification();
         }
     }
 
@@ -236,9 +246,28 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
         labelRequired = (TextView) this.findViewById(R.id.required_indicator);
         labelSoftRequired = (TextView) this.findViewById(R.id.soft_required_indicator);
-        labelMinorError = (TextView) this.findViewById(R.id.minor_error_indicator);
+        labelWarning = (TextView) this.findViewById(R.id.warning_indicator);
         setRequired(required);
         setSoftRequired(softRequired);
+        setWarning(hasWarning);
+
+        labelRequired.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (notificationContext != null && errorMessage != null) {
+                    showErrorNotification();
+                }
+            }
+        });
+
+        labelWarning.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (notificationContext != null && warningMessage != null) {
+                    showWarningNotification();
+                }
+            }
+        });
     }
 
     @Override
@@ -249,14 +278,18 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     // Data binding, getters & setters
 
-    public UserRight getUserRight() {
-        return userRight;
+    public String getHint() {
+        return hint;
     }
 
-    public void setUserRight(UserRight userRight) {
-        this.userRight = userRight;
+    public UserRight getUserEditRight() {
+        return userEditRight;
+    }
 
-        if (userRight != null && !ConfigProvider.getUser().hasUserRight(userRight)) {
+    public void setUserEditRight(UserRight userEditRight) {
+        this.userEditRight = userEditRight;
+
+        if (userEditRight != null && !ConfigProvider.getUser().hasUserRight(userEditRight)) {
             changeVisualState(VisualState.DISABLED);
         }
     }

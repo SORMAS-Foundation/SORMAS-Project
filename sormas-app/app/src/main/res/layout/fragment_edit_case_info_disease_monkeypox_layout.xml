@@ -56,7 +56,7 @@
 
             />
 
-        <de.symeda.sormas.app.component.controls.TeboDatePicker
+        <de.symeda.sormas.app.component.controls.ControlDateField
             android:id="@+id/dtpLastVaccinationDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

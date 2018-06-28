@@ -30,7 +30,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.controls.TeboDatePicker
+                <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/dtpDateOfAdmission"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
                     app:value="@={data.admissionDate}"
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboDatePicker
+                <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/dtpDateOfDischarge"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

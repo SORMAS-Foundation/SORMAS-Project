@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             >
-            <de.symeda.sormas.app.component.controls.TeboTextRead
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/txtAdmissionAndDischargeDate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -37,13 +37,13 @@
                 app:description="@string/desc_case_hos_prev_admission_and_discharge_date"
                 app:labelCaption="@string/label_case_hos_prev_admission_and_discharge_date"
                 app:labelColor="@color/controlReadLabelSecodaryColor"
-                app:dateRangeValue="@{data.admissionDate}"
+                app:value="@{data.admissionDate}"
                 app:appendValue="@{data.dischargeDate}"
                 app:valueFormat='@{@string/date_range_format}'
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <de.symeda.sormas.app.component.controls.TeboTextRead
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/txtIsolation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
                 />
         </LinearLayout>
 
-        <de.symeda.sormas.app.component.controls.TeboTextRead
+        <de.symeda.sormas.app.component.controls.ControlTextReadField
             android:id="@+id/txtHospitalName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -66,12 +66,12 @@
             app:description="@string/desc_case_hos_prev_hospital_name"
             app:labelCaption="@string/label_case_hos_prev_hospital_name"
             app:labelColor="@color/controlReadLabelSecodaryColor"
-            app:facilityValue="@{data.healthFacility}"
+            app:value="@{data.healthFacility}"
             app:defaultValue='@{@string/not_available}'
             />
 
-
-        <de.symeda.sormas.app.component.controls.TeboTextRead
+        <!-- TODO: Split this into separate region and district fields -->
+        <de.symeda.sormas.app.component.controls.ControlTextReadField
             android:id="@+id/txtStatAndLga"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -79,11 +79,11 @@
             app:description="@string/desc_case_hos_prev_state_and_lga"
             app:labelCaption="@string/label_case_hos_prev_state_and_lga"
             app:labelColor="@color/controlReadLabelSecodaryColor"
-            app:stateAndLgaValue="@{data}"
+            app:value="@{data.region}"
             app:defaultValue='@{@string/not_available}'
             />
 
-        <de.symeda.sormas.app.component.controls.TeboTextRead
+        <de.symeda.sormas.app.component.controls.ControlTextReadField
             android:id="@+id/txtWard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -91,11 +91,11 @@
             app:description="@string/desc_case_hos_prev_ward"
             app:labelCaption="@string/label_case_hos_prev_ward"
             app:labelColor="@color/controlReadLabelSecodaryColor"
-            app:wardValue="@{data.community}"
+            app:value="@{data.community}"
             app:defaultValue='@{@string/not_available}'
             />
 
-        <de.symeda.sormas.app.component.controls.TeboTextRead
+        <de.symeda.sormas.app.component.controls.ControlTextReadField
             android:id="@+id/txtDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

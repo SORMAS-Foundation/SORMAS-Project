@@ -15,21 +15,22 @@ import java.util.GregorianCalendar;
 
 import de.symeda.sormas.app.R;
 
-/**
- * Created by Orson on 31/01/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
+public class ControlDatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener{
 
-public class TeboDatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener{
+    // Constants
 
-    public static final String KEY_TEBO_DATE_PICKER = "TeboDatePicker";
+    public static final String KEY_LINKED_DATE = "LinkedDate";
+
+    // Attributes
+
+    private Date dateValue = null;
+
+    // Listeners
+
     private DatePickerDialog.OnDateSetListener onDateSetListener;
     private DialogInterface.OnClickListener onClearListener;
 
-    private Date dateValue = null;
+    // Overrides
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -38,7 +39,7 @@ public class TeboDatePickerFragment extends DialogFragment implements DatePicker
         if (outState == null)
             return;
 
-        outState.putSerializable(KEY_TEBO_DATE_PICKER, dateValue);
+        outState.putSerializable(KEY_LINKED_DATE, dateValue);
     }
 
     @Override
@@ -50,20 +51,15 @@ public class TeboDatePickerFragment extends DialogFragment implements DatePicker
         if (arguments == null || arguments.isEmpty())
             return;
 
-        if (!arguments.containsKey(KEY_TEBO_DATE_PICKER))
+        if (!arguments.containsKey(KEY_LINKED_DATE))
             return;
 
-        dateValue = (Date) arguments.get(KEY_TEBO_DATE_PICKER);
+        dateValue = (Date) arguments.get(KEY_LINKED_DATE);
     }
-
-
-    //1. onCreate(Bundle)
-    //2. onCreateDialog(Bundle savedInstanceState)
-    //3. onCreateView(LayoutInflater, ViewGroup, Bundle)
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        //Date date = (Date) getArguments().get(KEY_TEBO_TIME_PICKER);
+        //Date date = (Date) getArguments().get(KEY_LINKED_TIME);
 
         final Calendar calendar = Calendar.getInstance();
         if(dateValue != null) {
@@ -101,6 +97,8 @@ public class TeboDatePickerFragment extends DialogFragment implements DatePicker
             onDateSetListener.onDateSet(view, year, month, dayOfMonth);
     }
 
+    // Getters & setters
+
     public void setOnClearListener(DialogInterface.OnClickListener onClearListener) {
         this.onClearListener = onClearListener;
     }
@@ -108,4 +106,5 @@ public class TeboDatePickerFragment extends DialogFragment implements DatePicker
     public void setOnDateSetListener(DatePickerDialog.OnDateSetListener onDateSetListener) {
         this.onDateSetListener = onDateSetListener;
     }
+
 }

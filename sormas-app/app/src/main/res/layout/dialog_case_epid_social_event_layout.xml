@@ -33,7 +33,7 @@
                 style="@style/SubHeadingStyle"
                 />
 
-            <de.symeda.sormas.app.component.controls.TeboTextRead
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/txtEventDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <de.symeda.sormas.app.component.controls.TeboTextRead
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/txtEventDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
-            <de.symeda.sormas.app.component.controls.TeboTextRead
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/txtAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
                 app:maxLines="2"
                 app:description="@string/desc_case_epid_social_event_address"
                 app:labelCaption="@string/label_case_epid_social_event_address"
-                app:locationValue="@{data.gatheringAddress}"
+                app:value="@{data.gatheringAddress}"
                 app:defaultValue='@{@string/not_available}'
                 />
 
@@ -79,7 +79,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtState"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -87,11 +87,11 @@
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     app:description="@string/desc_case_epid_social_event_state"
                     app:labelCaption="@string/label_case_epid_social_event_state"
-                    app:stateValue="@{data.gatheringAddress}"
+                    app:value="@{data.gatheringAddress.region}"
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtLga"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     app:description="@string/desc_case_epid_social_event_lga"
                     app:labelCaption="@string/label_case_epid_social_event_lga"
-                    app:lgaValue="@{data.gatheringAddress}"
+                    app:value="@{data.gatheringAddress.district}"
                     app:defaultValue='@{@string/not_available}'
                     />
 
@@ -112,7 +112,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtWard"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -120,11 +120,11 @@
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     app:description="@string/desc_case_epid_social_event_ward"
                     app:labelCaption="@string/label_case_epid_social_event_ward"
-                    app:wardValue="@{data.gatheringAddress}"
+                    app:value="@{data.gatheringAddress.community}"
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtCity"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -133,7 +133,7 @@
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     app:description="@string/desc_case_epid_social_event_city"
                     app:labelCaption="@string/label_case_epid_social_event_city"
-                    app:cityValue="@{data.gatheringAddress}"
+                    app:value="@{data.gatheringAddress.city}"
                     app:defaultValue='@{@string/not_available}'
                     />
 

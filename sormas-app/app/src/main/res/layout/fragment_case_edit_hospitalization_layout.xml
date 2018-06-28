@@ -58,26 +58,24 @@
                     style="@style/SubHeadingStyle"
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtHealthFacility"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     app:description="@string/desc_case_health_facility"
                     app:labelCaption="@string/label_case_health_facility"
-                    app:formStyle="false"
-                    app:facilityValue="@{caze.healthFacility}"
+                    app:value="@{caze.healthFacility}"
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtHealthFacilityDesc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     app:description="@string/desc_case_health_facility_desc"
                     app:labelCaption="@string/label_case_health_facility_desc"
-                    app:formStyle="false"
                     app:value="@{caze.healthFacilityDetails}"
                     app:defaultValue='@{@string/not_available}'
                     app:goneIfNull="@{caze.healthFacilityDetails}"
@@ -116,7 +114,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.controls.TeboDatePicker
+                    <de.symeda.sormas.app.component.controls.ControlDateField
                         android:id="@+id/dtpDateOfAdmission"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -129,7 +127,7 @@
                         app:value="@={data.admissionDate}"
                         />
 
-                    <de.symeda.sormas.app.component.controls.TeboDatePicker
+                    <de.symeda.sormas.app.component.controls.ControlDateField
                         android:id="@+id/dtpDateOfDischarge"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -180,7 +178,7 @@
                         />
 
 
-                    <de.symeda.sormas.app.component.controls.TeboDatePicker
+                    <de.symeda.sormas.app.component.controls.ControlDateField
                         android:id="@+id/dtpIsolationDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"

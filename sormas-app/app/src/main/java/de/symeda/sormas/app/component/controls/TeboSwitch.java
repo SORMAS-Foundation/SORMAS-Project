@@ -124,7 +124,7 @@ public class TeboSwitch extends ControlPropertyEditField<Object> {
     // <editor-fold defaultstate="collapsed" desc="Overrides">
 
     @Override
-    protected void initializeView(Context context, AttributeSet attrs, int defStyle) {
+    protected void initialize(Context context, AttributeSet attrs, int defStyle) {
         unknownItem = new Item(getResources().getString(R.string.unknown), null);
 
         if (attrs != null) {

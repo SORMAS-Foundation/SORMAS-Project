@@ -29,7 +29,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.controls.TeboTextUuidRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtAlertId"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -37,12 +37,11 @@
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     app:description="@string/desc_alert_id"
                     app:labelCaption="@string/label_alert_id"
-                    app:uuidValue="@{data.uuid}"
-                    app:shortUuid="@{true}"
+                    app:shortUuidValue="@{data.uuid}"
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtAlertType"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -64,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 >
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtDateOfAlert"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -76,7 +75,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtSurveillanceOfficer"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -91,7 +90,7 @@
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.TeboTextRead
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/txtAlertDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -107,7 +106,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 >
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtReportDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -119,7 +118,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtReportingUser"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -134,20 +133,20 @@
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.TeboTextRead
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/txtPlaceType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                 app:description="@string/desc_alert_type_of_place"
                 app:labelCaption="@string/label_alert_type_of_place"
-                app:enumValueWithDesc="@{data.typeOfPlace}"
-                app:valueDesc="@{data.typeOfPlaceText}"
+                app:value="@{data.typeOfPlace}"
+                app:appendValue="@{data.typeOfPlaceText}"
                 app:valueFormat="@{@string/enum_desc_format}"
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <de.symeda.sormas.app.component.controls.TeboTextRead
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/txtDisease"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -172,7 +171,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtSourceLastName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -184,7 +183,7 @@
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtSourceFirstName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -199,7 +198,7 @@
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.TeboTextRead
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/txtSourceTelNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -210,7 +209,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <de.symeda.sormas.app.component.controls.TeboTextRead
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/txtSourceEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

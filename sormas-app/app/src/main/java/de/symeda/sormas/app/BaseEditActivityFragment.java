@@ -622,8 +622,8 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
 //
 //    @Override
 //    public void onInputErrorHiding(View v, boolean errorState) {
-//        //notificationCommunicator.hideErrorNotification();
-//        NotificationHelper.hideErrorNotification((NotificationContext)getActivity());
+//        //notificationCommunicator.hideNotification();
+//        NotificationHelper.hideNotification((NotificationContext)getActivity());
 //    }
 
     public boolean showSaveAction() {

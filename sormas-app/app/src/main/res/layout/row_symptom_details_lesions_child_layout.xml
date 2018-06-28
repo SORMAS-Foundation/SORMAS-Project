@@ -225,7 +225,7 @@
                 android:orientation="vertical"
                 >
 
-                <de.symeda.sormas.app.component.controls.TeboCheckBox
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                     android:id="@+id/chkLesionsLocationFace"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -239,7 +239,7 @@
 
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboCheckBox
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                     android:id="@+id/chkLesionsLocationLegs"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -253,7 +253,7 @@
 
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboCheckBox
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                     android:id="@+id/chkLesionsLocationSolesOfTheFeet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -267,7 +267,7 @@
 
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboCheckBox
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                     android:id="@+id/chkLesionsLocationPalmOfHands"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -289,7 +289,7 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <de.symeda.sormas.app.component.controls.TeboCheckBox
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                     android:id="@+id/chkLesionsLocationThorax"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -303,7 +303,7 @@
 
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboCheckBox
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                     android:id="@+id/chkLesionsLocationArms"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -317,7 +317,7 @@
 
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboCheckBox
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                     android:id="@+id/chkLesionsLocationGenitals"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -331,7 +331,7 @@
 
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboCheckBox
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                     android:id="@+id/chkLesionsLocationAllOverBody"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -615,7 +615,7 @@
             android:layout_marginBottom="@dimen/contentVerticalSpacingDouble"
             />
 
-        <de.symeda.sormas.app.component.controls.TeboDatePicker
+        <de.symeda.sormas.app.component.controls.ControlDateField
             android:id="@+id/dtpLesionsOnsetDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

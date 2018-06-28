@@ -114,7 +114,7 @@
                         android:scrollHorizontally="true"
                         android:maxLines="1"
                         android:ellipsize="end"
-                        app:personValue="@{data}"
+                        app:personValue="@{data.associatedCase.person}"
                         app:defaultValue='@{@string/person_unknown}'
                         />
 

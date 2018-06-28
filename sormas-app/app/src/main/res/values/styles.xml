@@ -151,23 +151,23 @@
         <item name="android:textSize">@dimen/defaultControlTextSize</item>
     </style>
 
-    <style name="ControlTextFieldMultiRowStyle" parent="@style/ControlTextFieldStyle">
+    <style name="ControlTextFieldMultiRowStyle" parent="ControlTextFieldStyle">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">@dimen/textViewTopPadding</item>
         <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
 
     </style>
 
-    <style name="ControlTextFieldSlimStyle" parent="@style/ControlTextFieldStyle">
+    <style name="ControlTextFieldSlimStyle" parent="ControlTextFieldStyle">
         <item name="android:textSize">@dimen/slimControlTextSize</item>
         <item name="android:paddingTop">@dimen/slimTextViewTopPadding</item>
         <item name="android:paddingBottom">@dimen/slimTextViewBottomPadding</item>
         <item name="android:layout_height">@dimen/slimControlHeight</item>
-        <item name="android:minHeight">@dimen/maxControlHeight</item>
-        <item name="android:maxHeight">@dimen/maxControlHeight</item>
+        <item name="android:minHeight">@dimen/slimControlHeight</item>
+        <item name="android:maxHeight">@dimen/slimControlHeight</item>
     </style>
 
-    <style name="ControlTextFieldReadSingleRowStyle">
+    <style name="ControlTextFieldReadStyle">
         <item name="android:background">@color/controlReadTextViewBackground</item>
         <item name="android:cursorVisible">true</item>
         <item name="android:fontFamily">sans-serif-medium</item>
@@ -178,30 +178,19 @@
         <item name="android:textSize">@dimen/controlReadTextSize</item>
     </style>
 
-    <style name="ControlDateOrTimePickerInputStyle" parent="@style/ControlTextFieldStyle">
-        <item name="android:cursorVisible">false</item>
-        <item name="android:textIsSelectable">false</item>
+    <style name="ControlTextFieldReadDistinctStyle" parent="ControlTextFieldReadStyle">
+        <item name="android:background">@drawable/background_control_text_read_form_style</item>
+        <item name="android:paddingTop">@dimen/teboTextReadVerticalPadding</item>
+        <item name="android:paddingBottom">@dimen/teboTextReadVerticalPadding</item>
+        <item name="android:paddingStart">@dimen/textViewRightPadding</item>
+        <item name="android:paddingEnd">@dimen/textViewRightPadding</item>
+
     </style>
 
-    <style name="ControlLabelStyle">
-        <item name="android:textColor">@color/controlLabelColor</item>
-        <item name="android:textSize">@dimen/controlLabelSize</item>
-        <item name="android:paddingTop">@dimen/controlLabelMarginTop</item>
-        <item name="android:paddingBottom">@dimen/controlLabelMarginBottom</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:focusable">true</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusableInTouchMode">true</item>
-    </style>
-
-    <style name="ControlLabelReadStyle" parent="ControlLabelStyle">
-        <item name="android:focusable">false</item>
-    </style>
-
-    <style name="RadioGroupLabelStyle" parent="ControlLabelStyle">
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingBottom">0dp</item>
+    <style name="ControlTextFieldReadDistinctSlimStyle" parent="ControlTextFieldReadDistinctStyle">
+        <item name="android:layout_height">@dimen/slimControlHeight</item>
+        <item name="android:minHeight">@dimen/slimControlHeight</item>
+        <item name="android:maxHeight">@dimen/slimControlHeight</item>
     </style>
 
     <style name="ControlPopupTextViewEditStyle">
@@ -213,12 +202,56 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:maxLines">1</item>
         <item name="android:singleLine">true</item>
+        <item name="android:background">@drawable/control_link_edittextview_background_selector</item>
+        <item name="android:textColor">@color/control_link_edittextview_color_selector</item>
+        <item name="android:textColorHint">@color/control_link_edittextview_hint_color_selector</item>
+        <item name="android:drawablePadding">@dimen/contentHorizontalSpacing</item>
+    </style>
+
+    <style name="ControlPopupTextViewEditSlimStyle" parent="ControlPopupTextViewEditStyle">
+        <item name="android:textSize">@dimen/slimControlTextSize</item>
+        <item name="android:layout_height">@dimen/slimControlHeight</item>
+        <item name="android:paddingTop">@dimen/slimTextViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/slimTextViewBottomPadding</item>
+    </style>
+
+    <style name="ControlDateOrTimePickerInputStyle" parent="@style/ControlTextFieldStyle">
+        <item name="android:cursorVisible">false</item>
+        <item name="android:textIsSelectable">false</item>
+    </style>
+
+    <style name="ControlDateOrTimePickerSlimInputStyle" parent="@style/ControlTextFieldSlimStyle">
+        <item name="android:cursorVisible">false</item>
+        <item name="android:textIsSelectable">false</item>
+    </style>
+
+    <style name="ControlLabelStyle">
+        <item name="android:textColor">@color/controlLabelColor</item>
+        <item name="android:textSize">@dimen/controlLabelSize</item>
+        <item name="android:paddingTop">@dimen/controlLabelMarginTop</item>
+        <item name="android:paddingBottom">@dimen/controlLabelMarginBottom</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+    </style>
+
+    <style name="ControlLabelReadStyle" parent="ControlLabelStyle">
+        <item name="android:scrollHorizontally">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <!--<item name="android:includeFontPadding">false</item>-->
+    </style>
+
+    <style name="RadioGroupLabelStyle" parent="ControlLabelStyle">
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
     </style>
 
     <style name="RequiredIndicatorStyle">
-        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_weight">1</item>
         <item name="android:layout_gravity">top</item>
         <item name="android:paddingStart">@dimen/contentHorizontalSpacing</item>
         <item name="android:paddingEnd">@dimen/contentHorizontalSpacing</item>
@@ -233,8 +266,8 @@
         <item name="android:textColor">@color/controlLabelColor</item>
     </style>
 
-    <style name="MinorErrorIndicatorStyle" parent="@style/RequiredIndicatorStyle">
-        <item name="android:text">@string/indicator_minor_error</item>
+    <style name="WarningIndicatorStyle" parent="@style/RequiredIndicatorStyle">
+        <item name="android:text">@string/indicator_warning</item>
     </style>
 
     <style name="DarkColorStyle">

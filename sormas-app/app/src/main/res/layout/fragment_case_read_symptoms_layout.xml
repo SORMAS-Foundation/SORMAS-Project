@@ -28,14 +28,15 @@
             >
 
 
-            <de.symeda.sormas.app.component.controls.TeboTextRead
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/txtBodyTemperature"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                 app:description="@string/desc_case_symptoms_body_temperature"
                 app:labelCaption="@string/label_case_symptoms_body_temperature"
-                app:temperatureValue="@{data}"
+                app:value="@{data.temperature}"
+                app:appendValue="@{data.temperatureSource.toString()}"
                 app:valueFormat='@{@string/text_with_bracket_desc_format}'
                 app:defaultValue='@{@string/not_available}'
                 />
@@ -130,7 +131,7 @@
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
-            <de.symeda.sormas.app.component.controls.TeboTextRead
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/txtOtherClinicalSymptoms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -141,7 +142,7 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <de.symeda.sormas.app.component.controls.TeboTextRead
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/txtOtherClinicalSymptomsComment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -159,7 +160,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 >
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtFirstSymptomDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -167,11 +168,11 @@
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     app:description="@string/desc_case_symptoms_first_symptom_date"
                     app:labelCaption="@string/label_case_symptoms_first_symptom_date"
-                    app:dateValue="@{data.onsetDate}"
+                    app:value="@{data.onsetDate}"
                     app:defaultValue='@{@string/not_available}'
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtFirstSymptom"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

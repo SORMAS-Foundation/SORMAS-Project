@@ -279,8 +279,8 @@ public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNe
             }
         });
 
-        contentBinding.dtpDateAndTimeOfSampling.initialize(getFragmentManager());
-        contentBinding.dtpShipmentDate.initialize(getFragmentManager());
+        contentBinding.dtpDateAndTimeOfSampling.setFragmentManager(getFragmentManager());
+        contentBinding.dtpShipmentDate.setFragmentManager(getFragmentManager());
 
     }
 

@@ -37,7 +37,7 @@ import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
-import de.symeda.sormas.app.component.controls.TeboDatePicker;
+import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.controls.TeboSwitch;
 import de.symeda.sormas.app.component.VisualState;
@@ -232,7 +232,7 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
         });
         presentConditionLayoutProcessor.setOnDateOfDeathChange(new OnDateOfDeathChangeListener() {
             @Override
-            public void onChange(TeboDatePicker view, Date value) {
+            public void onChange(ControlDateField view, Date value) {
                 updateApproximateAgeField();
             }
         });

@@ -122,7 +122,7 @@
                     android:layout_marginTop="@dimen/closelyRelatedControlMarginBottom"
                     >
 
-                    <de.symeda.sormas.app.component.controls.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/txtStartPeroid"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -137,7 +137,7 @@
 
                     <ImageView style="@style/FluidHorizontalDividerStyle"/>
 
-                    <de.symeda.sormas.app.component.controls.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/txtEndPeroid"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

@@ -14,6 +14,7 @@ public class I18nProperties {
 	private final Properties enumProperties;
 	private final Properties validationErrorProperties;
 	private final Properties messageProperties;
+	private final Properties textProperties;
 
 	private static I18nProperties getInstance() {
 		if (instance == null)
@@ -159,6 +160,10 @@ public class I18nProperties {
 	public static String getMessage(String property) {
 		return getInstance().messageProperties.getProperty(property);
 	}
+	
+	public static String getText(String property) {
+		return getInstance().textProperties.getProperty(property);
+	}
 
 	private I18nProperties() {
 		fieldCaptionProperties = loadProperties("/fieldCaptions.properties");
@@ -167,6 +172,7 @@ public class I18nProperties {
 		enumProperties = loadProperties("/enum.properties");
 		validationErrorProperties = loadProperties("/validationErrors.properties");
 		messageProperties = loadProperties("/messages.properties");
+		textProperties = loadProperties("/texts.properties");
 	}
 	
 	public static Properties loadProperties(String fileName) {

@@ -40,7 +40,7 @@
                     />
 
 
-                <de.symeda.sormas.app.component.controls.TeboTextRead
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/txtHospitalName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -49,7 +49,7 @@
                     app:maxLines="2"
                     app:description="@string/desc_case_hos_hospital_name"
                     app:labelCaption="@string/label_case_hos_hospital_name"
-                    app:facilityValue="@{caze.healthFacility}"
+                    app:value="@{caze.healthFacility}"
                     app:defaultValue='@{@string/not_available}'
                     />
 
@@ -58,7 +58,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     >
-                    <de.symeda.sormas.app.component.controls.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/txtAdmissionDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -66,11 +66,11 @@
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                         app:description="@string/desc_case_hos_admission_date"
                         app:labelCaption="@string/label_case_hos_admission_date"
-                        app:dateValue="@{data.admissionDate}"
+                        app:value="@{data.admissionDate}"
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <de.symeda.sormas.app.component.controls.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/txtDischargeDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                         app:description="@string/desc_case_hos_discharge_date"
                         app:labelCaption="@string/label_case_hos_discharge_date"
-                        app:dateValue="@{data.dischargeDate}"
+                        app:value="@{data.dischargeDate}"
                         app:defaultValue='@{@string/not_available}'
                         />
                 </LinearLayout>
@@ -89,7 +89,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     >
-                    <de.symeda.sormas.app.component.controls.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/txtIsolation"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
                         app:defaultValue='@{@string/not_available}'
                         />
 
-                    <de.symeda.sormas.app.component.controls.TeboTextRead
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/txtIsolationDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -110,7 +110,7 @@
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                         app:description="@string/desc_case_hos_isolation_date"
                         app:labelCaption="@string/label_case_hos_isolation_date"
-                        app:dateValue="@{data.isolationDate}"
+                        app:value="@{data.isolationDate}"
                         app:defaultValue='@{@string/not_available}'
                         />
                 </LinearLayout>

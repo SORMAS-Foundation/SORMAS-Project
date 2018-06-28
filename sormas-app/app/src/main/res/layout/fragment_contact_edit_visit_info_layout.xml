@@ -22,7 +22,7 @@
         android:paddingRight="@dimen/parentLayoutHorizontalPadding"
         >
 
-        <de.symeda.sormas.app.component.controls.TeboDateTimePicker
+        <de.symeda.sormas.app.component.controls.ControlDateTimeField
             android:id="@+id/dtpDateTimeOfVisit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

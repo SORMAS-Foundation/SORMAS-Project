@@ -21,7 +21,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.TeboDatePicker;
+import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
@@ -69,8 +69,8 @@ public class PresentConditionLayoutProcessor {
     private TeboSpinner spnCauseOfDeath;
     private TeboSpinner spnDeathPlaceType;
     private TeboSpinner spnBurialConductor;
-    private TeboDatePicker dtpDateOfDeath;
-    private TeboDatePicker dtpBurialDate;
+    private ControlDateField dtpDateOfDeath;
+    private ControlDateField dtpBurialDate;
 
     public PresentConditionLayoutProcessor(Context context, FragmentManager fragmentManager,
                                            ViewDataBinding contentBinding, Person record,
@@ -156,7 +156,7 @@ public class PresentConditionLayoutProcessor {
         return binding;
     }
 
-    private void notifyDateOfDeathChanged(TeboDatePicker view, Date value) {
+    private void notifyDateOfDeathChanged(ControlDateField view, Date value) {
         if (this.mOnDateOfDeathChangeListener != null)
             this.mOnDateOfDeathChangeListener.onChange(view, value);
     }
@@ -170,14 +170,14 @@ public class PresentConditionLayoutProcessor {
         spnCauseOfDeath = (TeboSpinner)innerLayout.findViewById(R.id.spnCauseOfDeath);
         spnDeathPlaceType = (TeboSpinner)innerLayout.findViewById(R.id.spnDeathPlaceType);
         spnBurialConductor = (TeboSpinner)innerLayout.findViewById(R.id.spnBurialConductor);
-        dtpDateOfDeath = (TeboDatePicker)innerLayout.findViewById(R.id.dtpDateOfDeath);
-        dtpBurialDate = (TeboDatePicker)innerLayout.findViewById(R.id.dtpBurialDate);
+        dtpDateOfDeath = (ControlDateField)innerLayout.findViewById(R.id.dtpDateOfDeath);
+        dtpBurialDate = (ControlDateField)innerLayout.findViewById(R.id.dtpBurialDate);
 
         if (dtpBurialDate != null)
-            dtpBurialDate.initialize(fragmentManager);
+            dtpBurialDate.setFragmentManager(fragmentManager);
 
         if (dtpBurialDate != null) {
-            dtpDateOfDeath.initialize(fragmentManager);
+            dtpDateOfDeath.setFragmentManager(fragmentManager);
             dtpDateOfDeath.addValueChangedListener(new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
@@ -356,7 +356,7 @@ public class PresentConditionLayoutProcessor {
     }
 
     private void toggleBurialControls(View innerLayout, boolean visibility) {
-        TeboDatePicker dtpBurialDate = (TeboDatePicker)innerLayout.findViewById(R.id.dtpBurialDate);
+        ControlDateField dtpBurialDate = (ControlDateField)innerLayout.findViewById(R.id.dtpBurialDate);
         TeboSpinner spnBurialConductor = (TeboSpinner)innerLayout.findViewById(R.id.spnBurialConductor);
         ControlTextEditField txtBurialPlaceDesc = (ControlTextEditField)innerLayout.findViewById(R.id.txtBurialPlaceDesc);
 

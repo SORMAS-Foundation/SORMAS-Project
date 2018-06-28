@@ -33,7 +33,7 @@
         android:paddingRight="@dimen/parentLayoutHorizontalPadding"
         >
 
-        <de.symeda.sormas.app.component.controls.TeboDatePicker
+        <de.symeda.sormas.app.component.controls.ControlDateField
             android:id="@+id/dtpDateOfLastContact"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

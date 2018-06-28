@@ -47,6 +47,7 @@
     <attr name="captionCapitalized" format="boolean" />
     <attr name="captionItalic" format="boolean" />
     <attr name="slim" format="boolean" />
+    <attr name="distinct" format="boolean" />
     <attr name="iconOnly" format="boolean" />
     <attr name="includeUnknown" format="reference|boolean" />
 
@@ -83,8 +84,6 @@
     <attr name="textColorHint" format="reference|color" />
     <attr name="iconTint" format="reference|color" />
     <attr name="iconPadding" format="dimension" />
-
-    <attr name="formStyle" format="boolean|reference" />
 
     <attr name="textSize" format="dimension" />
 
@@ -132,7 +131,7 @@
     </attr>
 
     <attr name="buttonType" format="string" />
-    <attr name="userRight" format="string" />
+    <attr name="userEditRight" format="string" />
 
     <!--<attr name="buttonType" format="enum">-->
         <!--<enum name="primary" value="0"/>-->
@@ -190,7 +189,6 @@
 
     <declare-styleable name="ControlPropertyField">
         <attr name="caption" />
-        <attr name="captionColor" />
         <attr name="textAlignment" />
         <attr name="gravity" />
         <attr name="description" />
@@ -207,11 +205,11 @@
         <attr name="hint" />
     </declare-styleable>
 
-    <declare-styleable name="TeboDatePicker">
+    <declare-styleable name="ControlDateField">
         <!--<attr name="hint" />-->
     </declare-styleable>
 
-    <declare-styleable name="TeboDateTimePicker">
+    <declare-styleable name="ControlDateTimeField">
         <attr name="dateHint" />
         <attr name="timeHint" />
     </declare-styleable>
@@ -227,8 +225,9 @@
         <attr name="singleLine" />
         <attr name="maxLines" />
         <attr name="textArea" />
-        <attr name="userRight" />
+        <attr name="userEditRight" />
         <attr name="inputType" />
+        <attr name="slim" />
     </declare-styleable>
 
 
@@ -247,7 +246,7 @@
     </declare-styleable>
 
 
-    <declare-styleable name="TeboTextLinkEdit">
+    <declare-styleable name="ControlTextPopupField">
         <attr name="textSize" />
         <attr name="textColor" />
         <attr name="background" />
@@ -266,7 +265,7 @@
         <attr name="iconRight" />
     </declare-styleable>
 
-    <declare-styleable name="TeboCheckBox">
+    <declare-styleable name="ControlCheckBoxField">
         <attr name="labelCaption" />
         <attr name="labelColor" />
         <attr name="textAlignment" />
@@ -293,7 +292,7 @@
         <attr name="radioButtonLabelMarginStart" format="dimension|reference"/>
     </declare-styleable>
 
-    <declare-styleable name="TeboTextRead">
+    <declare-styleable name="ControlTextReadField">
         <attr name="labelCaption" />
         <!--<attr name="labelColor" />-->
         <attr name="textAlignment" />
@@ -301,10 +300,11 @@
         <attr name="description" />
         <attr name="singleLine" />
         <attr name="maxLines" />
-        <attr name="formStyle" />
+        <attr name="distinct" />
+        <attr name="slim" />
     </declare-styleable>
 
-    <declare-styleable name="TeboTextImageRead">
+    <declare-styleable name="ControlTextImageField">
         <attr name="labelCaption" />
         <attr name="labelColor" />
         <attr name="textAlignment" />
