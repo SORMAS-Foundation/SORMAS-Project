@@ -438,8 +438,7 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
         return temperature;
     }
 
-    public static CaseEditSymptomsFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static CaseEditSymptomsFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(activityCommunicator, CaseEditSymptomsFragment.class, capsule, activityRootData);
     }
 

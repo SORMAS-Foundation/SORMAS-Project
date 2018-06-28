@@ -423,60 +423,54 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
-        try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-                @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            @Override
+            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().showPreloader();
+                //getActivityCommunicator().hideFragmentView();
+            }
+
+            @Override
+            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                Person p = DatabaseHelper.getPersonDao().build();
+                Contact contact = getActivityRootData();
+
+                if (contact != null) {
+                    if (contact.isUnreadOrChildUnread())
+                        DatabaseHelper.getContactDao().markAsRead(contact);
+
+                    p = DatabaseHelper.getPersonDao().queryUuid(contact.getPerson().getUuid());
                 }
 
-                @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    Person p = DatabaseHelper.getPersonDao().build();
-                    Contact contact = getActivityRootData();
+                //resultHolder.forItem().add(contact);
+                resultHolder.forItem().add(p);
+            }
+        });
+        onResumeTask = executor.execute(new ITaskResultCallback() {
+            @Override
+            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().hidePreloader();
+                //getActivityCommunicator().showFragmentView();
 
-                    if (contact != null) {
-                        if (contact.isUnreadOrChildUnread())
-                            DatabaseHelper.getContactDao().markAsRead(contact);
-
-                        p = DatabaseHelper.getPersonDao().queryUuid(contact.getPerson().getUuid());
-                    }
-
-                    //resultHolder.forItem().add(contact);
-                    resultHolder.forItem().add(p);
+                if (resultHolder == null){
+                    return;
                 }
-            });
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
 
-                    if (resultHolder == null){
-                        return;
-                    }
+                ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+                if (itemIterator.hasNext())
+                    record = itemIterator.next();
 
-                    if (itemIterator.hasNext())
-                        record = itemIterator.next();
+                /*if (itemIterator.hasNext())
+                    person = itemIterator.next();*/
 
-                    /*if (itemIterator.hasNext())
-                        person = itemIterator.next();*/
-
-                    if (record != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
+                if (record != null)
+                    requestLayoutRebind();
+                else {
+                    getActivity().finish();
                 }
-            });
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
-
+            }
+        });
     }
 
     @Override
@@ -579,8 +573,7 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
 
     // </editor-fold>
 
-    public static ContactEditPersonFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule, Contact activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static ContactEditPersonFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule, Contact activityRootData) {
         return newInstance(activityCommunicator, ContactEditPersonFragment.class, capsule, activityRootData);
     }
 
@@ -613,64 +606,59 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
             return;
         }
 
-        try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-                private ContactDao cDao;
-                private PersonDao pDao;
-                private String saveUnsuccessful;
+        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            private ContactDao cDao;
+            private PersonDao pDao;
+            private String saveUnsuccessful;
 
-                @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    cDao = DatabaseHelper.getContactDao();
-                    pDao = DatabaseHelper.getPersonDao();
-                    saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_contact));
+            @Override
+            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                cDao = DatabaseHelper.getContactDao();
+                pDao = DatabaseHelper.getPersonDao();
+                saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_contact));
 
 //                    if (contactToSave.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && personToSave.getAddress().isEmptyLocation()) {
 //                        personToSave.getAddress().setRegion(contactToSave.getCaze().getRegion());
 //                        personToSave.getAddress().setDistrict(contactToSave.getCaze().getDistrict());
 //                        personToSave.getAddress().setCommunity(contactToSave.getCaze().getCommunity());
 //                    }
+            }
+
+            @Override
+            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                try {
+                    if (personToSave != null)
+                        pDao.saveAndSnapshot(personToSave);
+
+                    if (contactToSave != null)
+                        cDao.saveAndSnapshot(contactToSave);
+                } catch (DaoException e) {
+                    Log.e(getClass().getName(), "Error while trying to save contact", e);
+                    resultHolder.setResultStatus(new BoolResult(false, saveUnsuccessful));
+                    ErrorReportingHelper.sendCaughtException(tracker, e, contactToSave, true);
+                }
+            }
+        });
+        saveContact = executor.execute(new ITaskResultCallback() {
+            @Override
+            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().hidePreloader();
+                //getActivityCommunicator().showFragmentView();
+
+                if (resultHolder == null){
+                    return;
                 }
 
-                @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    try {
-                        if (personToSave != null)
-                            pDao.saveAndSnapshot(personToSave);
-
-                        if (contactToSave != null)
-                            cDao.saveAndSnapshot(contactToSave);
-                    } catch (DaoException e) {
-                        Log.e(getClass().getName(), "Error while trying to save contact", e);
-                        resultHolder.setResultStatus(new BoolResult(false, saveUnsuccessful));
-                        ErrorReportingHelper.sendCaughtException(tracker, e, contactToSave, true);
-                    }
+                if (!resultStatus.isSuccess()) {
+                    NotificationHelper.showNotification(nContext, NotificationType.ERROR, resultStatus.getMessage());
+                    return;
+                } else {
+                    NotificationHelper.showNotification(nContext, NotificationType.SUCCESS, "Contact " + DataHelper.getShortUuid(contactToSave.getUuid()) + " saved");
                 }
-            });
-            saveContact = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
 
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    if (!resultStatus.isSuccess()) {
-                        NotificationHelper.showNotification(nContext, NotificationType.ERROR, resultStatus.getMessage());
-                        return;
-                    } else {
-                        NotificationHelper.showNotification(nContext, NotificationType.SUCCESS, "Contact " + DataHelper.getShortUuid(contactToSave.getUuid()) + " saved");
-                    }
-
-                    if (callback != null)
-                        callback.call(null);
-                }
-            });
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
+                if (callback != null)
+                    callback.call(null);
+            }
+        });
     }
 }

@@ -241,8 +241,7 @@ public class CaseEditContactListFragment extends BaseEditActivityFragment<Fragme
         CaseEditContactInfoActivity.goToActivity(getActivity(), dataCapsule);*/
     }
 
-    public static CaseEditContactListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static CaseEditContactListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(activityCommunicator, CaseEditContactListFragment.class, capsule, activityRootData);
     }
 

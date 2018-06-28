@@ -751,8 +751,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
 
     // </editor-fold>
 
-    public static CaseEditEpidemiologicalDataFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static CaseEditEpidemiologicalDataFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(activityCommunicator, CaseEditEpidemiologicalDataFragment.class, capsule, activityRootData);
     }
 

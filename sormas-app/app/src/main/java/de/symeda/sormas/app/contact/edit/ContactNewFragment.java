@@ -63,7 +63,7 @@ public class ContactNewFragment extends BaseEditActivityFragment<FragmentContact
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
         pageStatus = (ContactClassification) getPageStatusArg(arguments);
@@ -79,6 +79,7 @@ public class ContactNewFragment extends BaseEditActivityFragment<FragmentContact
     public Contact getPrimaryData() {
         return record;
     }
+
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
@@ -101,7 +102,7 @@ public class ContactNewFragment extends BaseEditActivityFragment<FragmentContact
                 associatedCase = itemIterator.next();
 
             if (otherIterator.hasNext())
-                relationshipList =  otherIterator.next();
+                relationshipList = otherIterator.next();
 
             setupCallback();
         }
@@ -157,51 +158,45 @@ public class ContactNewFragment extends BaseEditActivityFragment<FragmentContact
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
-        try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-                @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            @Override
+            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().showPreloader();
+                //getActivityCommunicator().hideFragmentView();
+            }
+
+            @Override
+            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                Contact contact = getActivityRootData();
+
+                resultHolder.forItem().add(contact);
+            }
+        });
+        onResumeTask = executor.execute(new ITaskResultCallback() {
+            @Override
+            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().hidePreloader();
+                //getActivityCommunicator().showFragmentView();
+
+                if (resultHolder == null) {
+                    return;
                 }
 
-                @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    Contact contact = getActivityRootData();
+                ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
-                    resultHolder.forItem().add(contact);
+                if (itemIterator.hasNext())
+                    record = itemIterator.next();
+
+                if (itemIterator.hasNext())
+                    associatedCase = itemIterator.next();
+
+                if (record != null)
+                    requestLayoutRebind();
+                else {
+                    getActivity().finish();
                 }
-            });
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
-
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                    if (itemIterator.hasNext())
-                        record = itemIterator.next();
-
-                    if (itemIterator.hasNext())
-                        associatedCase = itemIterator.next();
-
-                    if (record != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
-
+            }
+        });
     }
 
     @Override

@@ -50,23 +50,15 @@ public abstract class BaseLandingActivityFragment<E extends Enum<E>, TAdapter ex
         this.adapter = createLandingAdapter();
         this.menuControl = createMenuControl(view);
 
-        try {
-            if (this.menuControl != null) {
-                Context menuControlContext = this.menuControl.getContext();
+        if (this.menuControl != null) {
+            Context menuControlContext = this.menuControl.getContext();
 
-                this.menuControl.setOnNotificationCountChangingListener(this);
-                this.menuControl.setOnLandingPageMenuClickListener(this);
+            this.menuControl.setOnNotificationCountChangingListener(this);
+            this.menuControl.setOnLandingPageMenuClickListener(this);
 
-                this.menuControl.setAdapter(new LandingPageMenuAdapter(menuControlContext));
-                this.menuControl.setMenuParser(new LandingPageMenuParser(menuControlContext));
-                this.menuControl.setMenuData(getMenuData());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+            this.menuControl.setAdapter(new LandingPageMenuAdapter(menuControlContext));
+            this.menuControl.setMenuParser(new LandingPageMenuParser(menuControlContext));
+            this.menuControl.setMenuData(getMenuData());
         }
 
         return view;

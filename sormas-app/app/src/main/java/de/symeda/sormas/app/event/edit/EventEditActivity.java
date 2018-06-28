@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
@@ -16,6 +17,12 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.contact.ContactSection;
+import de.symeda.sormas.app.contact.edit.ContactEditFollowUpVisitListFragment;
+import de.symeda.sormas.app.contact.edit.ContactEditFragment;
+import de.symeda.sormas.app.contact.edit.ContactEditPersonFragment;
+import de.symeda.sormas.app.contact.edit.ContactEditTaskListFragment;
+import de.symeda.sormas.app.event.EventSection;
 import de.symeda.sormas.app.event.edit.sub.EventNewPersonsInvolvedActivity;
 import de.symeda.sormas.app.core.ISaveable;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
@@ -37,27 +44,18 @@ public class EventEditActivity extends BaseEditActivity<Event> {
     private AsyncTask saveTask;
     private final int DATA_XML_PAGE_MENU = R.xml.data_form_page_alert_menu; // "xml/data_edit_page_alert_menu.xml";
 
-    private static final int MENU_INDEX_EVENT_INFO = 0;
-    private static final int MENU_INDEX_EVENT__PERSON_INVOLVED = 1;
-    private static final int MENU_INDEX_EVENT_TASK = 2;
-
     private boolean showStatusFrame = false;
     private boolean showTitleBar = true;
     private boolean showPageMenu = false;
 
     private EventStatus pageStatus = null;
     private String recordUuid = null;
-    private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
     private BaseEditActivityFragment activeFragment = null;
-
-    private MenuItem saveMenu = null;
-    private MenuItem addMenu = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //saveFilterStatusState(outState, filterStatus);
         savePageStatusState(outState, pageStatus);
         saveRecordUuidState(outState, recordUuid);
     }
@@ -74,8 +72,7 @@ public class EventEditActivity extends BaseEditActivity<Event> {
 
     @Override
     protected void initializeActivity(Bundle arguments) {
-        //filterStatus = (EventStatus) getFilterStatusArg(arguments);
-        pageStatus = (EventStatus) getPageStatusArg(arguments);
+        pageStatus = (EventStatus)getPageStatusArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
 
         this.showStatusFrame = true;
@@ -130,24 +127,23 @@ public class EventEditActivity extends BaseEditActivity<Event> {
     }
 
     @Override
-    protected BaseEditActivityFragment getNextFragment(LandingPageMenuItem menuItem, Event activityRootData) {
+    protected BaseEditActivityFragment getEditFragment(LandingPageMenuItem menuItem, Event activityRootData) {
         EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventEditActivity.this,
                 recordUuid, pageStatus);
 
-        try {
-            if (menuItem.getKey() == MENU_INDEX_EVENT_INFO) {
+        EventSection section = EventSection.fromMenuKey(menuItem.getKey());
+        switch (section) {
+            case EVENT_INFO:
                 activeFragment = EventEditFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_EVENT__PERSON_INVOLVED) {
+                break;
+            case EVENT_PERSONS:
                 activeFragment = EventEditPersonsInvolvedListFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_EVENT_TASK) {
+                break;
+            case TASKS:
                 activeFragment = EventEditTaskListFragement.newInstance(this, dataCapsule, activityRootData);
-            }
-
-            //processActionbarMenu();
-        } catch (InstantiationException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, e.getMessage());
+                break;
+            default:
+                throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
         }
 
         return activeFragment;

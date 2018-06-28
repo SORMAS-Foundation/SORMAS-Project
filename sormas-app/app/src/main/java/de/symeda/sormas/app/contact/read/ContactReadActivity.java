@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -13,6 +12,7 @@ import java.util.Date;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
@@ -21,6 +21,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.contact.edit.ContactEditActivity;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.async.IJobDefinition;
@@ -39,11 +40,6 @@ import de.symeda.sormas.app.util.MenuOptionsHelper;
 public class ContactReadActivity extends BaseReadActivity<Contact> {
 
     public static final String TAG = ContactReadActivity.class.getSimpleName();
-
-    private static final int MENU_INDEX_CONTACT_INFO = 0;
-    private static final int MENU_INDEX_PERSON_INFO = 1;
-    private static final int MENU_INDEX_FOLLOWUP_VISIT = 2;
-    private static final int MENU_INDEX_TASK = 3;
 
     private final int DATA_XML_PAGE_MENU = R.xml.data_form_page_contact_menu; // "xml/data_read_page_contact_menu.xml";
 
@@ -113,25 +109,26 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
     }
 
     @Override
-    protected BaseReadActivityFragment getNextFragment(LandingPageMenuItem menuItem, Contact activityRootData) {
+    protected BaseReadActivityFragment getReadFragment(LandingPageMenuItem menuItem, Contact activityRootData) {
         ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(
                 ContactReadActivity.this, recordUuid, pageStatus);
 
-        try {
-            if (menuItem.getKey() == MENU_INDEX_CONTACT_INFO) {
+        ContactSection section = ContactSection.fromMenuKey(menuItem.getKey());
+        switch (section) {
+            case CONTACT_INFO:
                 activeFragment = ContactReadFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_PERSON_INFO) {
+                break;
+            case PERSON_INFO:
                 activeFragment = ContactReadPersonFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_FOLLOWUP_VISIT) {
+                break;
+            case VISITS:
                 activeFragment = ContactReadFollowUpVisitListFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_TASK) {
+                break;
+            case TASKS:
                 activeFragment = ContactReadTaskListFragment.newInstance(this, dataCapsule, activityRootData);
-            }
-
-        } catch (InstantiationException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, e.getMessage());
+                break;
+            default:
+                throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
         }
 
         return activeFragment;
@@ -143,15 +140,6 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
         getEditMenu().setTitle(R.string.action_edit_contact);
 
         return true;
-        /*MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.read_action_menu, menu);
-
-        MenuItem readMenu = menu.findItem(R.id.action_edit);
-        //readMenu.setVisible(false);
-        readMenu.setTitle(R.string.action_edit_contact);
-
-
-        return true;*/
     }
 
     @Override

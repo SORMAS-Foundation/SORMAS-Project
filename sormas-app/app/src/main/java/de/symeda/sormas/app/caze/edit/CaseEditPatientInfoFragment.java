@@ -111,7 +111,7 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
         pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
@@ -153,9 +153,9 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
             resultHolder.forOther().add(DataUtils.getEnumItems(OccupationType.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(Sex.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(ApproximateAgeType.class, false));
-            resultHolder.forOther().add(DataUtils.toItems(DateHelper.getDaysInMonth(),true));
+            resultHolder.forOther().add(DataUtils.toItems(DateHelper.getDaysInMonth(), true));
             resultHolder.forOther().add(DataUtils.getMonthItems(true));
-            resultHolder.forOther().add(DataUtils.toItems(DateHelper.getYearsToNow(),true));
+            resultHolder.forOther().add(DataUtils.toItems(DateHelper.getYearsToNow(), true));
             resultHolder.forOther().add(DataUtils.getEnumItems(CauseOfDeath.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(DeathPlaceType.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(Disease.class, false));
@@ -175,31 +175,31 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
                 caze = itemIterator.next();*/
 
             if (otherIterator.hasNext())
-                occupationTypeList =  otherIterator.next();
+                occupationTypeList = otherIterator.next();
 
             if (otherIterator.hasNext())
-                genderList =  otherIterator.next();
+                genderList = otherIterator.next();
 
             if (otherIterator.hasNext())
-                ageTypeList =  otherIterator.next();
+                ageTypeList = otherIterator.next();
 
             if (otherIterator.hasNext())
-                dateList =  otherIterator.next();
+                dateList = otherIterator.next();
 
             if (otherIterator.hasNext())
-                monthList =  otherIterator.next();
+                monthList = otherIterator.next();
 
             if (otherIterator.hasNext())
-                yearList =  otherIterator.next();
+                yearList = otherIterator.next();
 
             if (otherIterator.hasNext())
-                causeOfDeathList =  otherIterator.next();
+                causeOfDeathList = otherIterator.next();
 
             if (otherIterator.hasNext())
-                deathPlaceTypeList =  otherIterator.next();
+                deathPlaceTypeList = otherIterator.next();
 
             if (otherIterator.hasNext())
-                diseaseList =  otherIterator.next();
+                diseaseList = otherIterator.next();
 
             if (otherIterator.hasNext())
                 burialConductorList = otherIterator.next();
@@ -264,7 +264,7 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
 
             @Override
             public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                if (!occupationTypeLayoutProcessor.processLayout((OccupationType)value))
+                if (!occupationTypeLayoutProcessor.processLayout((OccupationType) value))
                     return;
             }
 
@@ -417,64 +417,58 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
-        try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-                @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            @Override
+            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().showPreloader();
+                //getActivityCommunicator().hideFragmentView();
+            }
+
+            @Override
+            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+
+                Case caze = getActivityRootData();
+
+                if (caze != null) {
+                    if (caze.isUnreadOrChildUnread())
+                        DatabaseHelper.getCaseDao().markAsRead(caze);
+
+                    if (caze.getPerson() == null) {
+                        caze.setPerson(DatabaseHelper.getPersonDao().build());
+                    } else {
+                        caze.setPerson(DatabaseHelper.getPersonDao().queryUuid(caze.getPerson().getUuid()));
+                    }
                 }
 
-                @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                resultHolder.forItem().add(caze.getPerson());
+                //resultHolder.forItem().add(caze);
+            }
+        });
+        onResumeTask = executor.execute(new ITaskResultCallback() {
+            @Override
+            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().hidePreloader();
+                //getActivityCommunicator().showFragmentView();
 
-                    Case caze = getActivityRootData();
-
-                    if (caze != null) {
-                        if (caze.isUnreadOrChildUnread())
-                            DatabaseHelper.getCaseDao().markAsRead(caze);
-
-                        if (caze.getPerson() == null) {
-                            caze.setPerson(DatabaseHelper.getPersonDao().build());
-                        } else {
-                            caze.setPerson(DatabaseHelper.getPersonDao().queryUuid(caze.getPerson().getUuid()));
-                        }
-                    }
-
-                    resultHolder.forItem().add(caze.getPerson());
-                    //resultHolder.forItem().add(caze);
+                if (resultHolder == null) {
+                    return;
                 }
-            });
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
 
-                    if (resultHolder == null){
-                        return;
-                    }
+                ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                    if (itemIterator.hasNext())
-                        record = itemIterator.next();
+                if (itemIterator.hasNext())
+                    record = itemIterator.next();
 
                     /*if (itemIterator.hasNext())
                         caze = itemIterator.next();*/
 
-                    if (record != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
+                if (record != null)
+                    requestLayoutRebind();
+                else {
+                    getActivity().finish();
                 }
-            });
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
-
+            }
+        });
     }
 
     @Override
@@ -513,7 +507,7 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
 
                 mLastCheckedId = checkedId;
 
-                if (!presentConditionLayoutProcessor.processLayout((PresentCondition)checkedItem))
+                if (!presentConditionLayoutProcessor.processLayout((PresentCondition) checkedItem))
                     return;
             }
         };
@@ -550,18 +544,18 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
         //TeboTextRead approximateAgeTextField =  getContentBinding().txtAge;
         //TeboSpinner approximateAgeTypeField = getContentBinding().spnAgeType;
 
-        if(birthyear != null) {
+        if (birthyear != null) {
             Integer birthday = record.getBirthdateDD();
             Integer birthmonth = record.getBirthdateMM();
 
             Calendar birthDate = new GregorianCalendar();
-            birthDate.set(birthyear, birthmonth!=null?birthmonth-1:0, birthday!=null?birthday:1);
+            birthDate.set(birthyear, birthmonth != null ? birthmonth - 1 : 0, birthday != null ? birthday : 1);
 
             Date to = new Date();
-            if(record.getDeathDate() != null) {
+            if (record.getDeathDate() != null) {
                 to = record.getDeathDate();
             }
-            DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = ApproximateAgeHelper.getApproximateAge(birthDate.getTime(),to);
+            DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = ApproximateAgeHelper.getApproximateAge(birthDate.getTime(), to);
             ApproximateAgeType ageType = approximateAge.getElement1();
             Integer age = approximateAge.getElement0();
 
@@ -577,8 +571,7 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
 
     // </editor-fold>
 
-    public static CaseEditPatientInfoFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static CaseEditPatientInfoFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(activityCommunicator, CaseEditPatientInfoFragment.class, capsule, activityRootData);
     }
 

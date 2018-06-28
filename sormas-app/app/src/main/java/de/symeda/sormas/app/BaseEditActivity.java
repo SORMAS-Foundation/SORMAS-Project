@@ -75,7 +75,7 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
     private LandingPageMenuControl pageMenu = null;
     private LandingPageMenuItem activeMenu = null;
     private List<LandingPageMenuItem> menuList;
-    private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
+    private int activeMenuKey = -1;
     private View rootView;
     private TActivityRootData storedActivityRootData = null;
     private BaseEditActivityFragment activeFragment = null;
@@ -178,29 +178,19 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
             });
         }
 
+        if(pageMenu != null)
+            pageMenu.hide();
 
-        try {
-            if(pageMenu != null)
-                pageMenu.hide();
+        if (pageMenu != null) {
+            Context menuControlContext = this.pageMenu.getContext();
 
-            if (pageMenu != null) {
-                Context menuControlContext = this.pageMenu.getContext();
+            pageMenu.setOnLandingPageMenuClickListener(this);
+            pageMenu.setOnSelectInitialActiveMenuItem(this);
 
-                pageMenu.setOnLandingPageMenuClickListener(this);
-                pageMenu.setOnSelectInitialActiveMenuItem(this);
-
-                pageMenu.setAdapter(new PageMenuNavAdapter(menuControlContext));
-                pageMenu.setMenuParser(new LandingPageMenuParser(menuControlContext));
-                pageMenu.setMenuData(getPageMenuData());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+            pageMenu.setAdapter(new PageMenuNavAdapter(menuControlContext));
+            pageMenu.setMenuParser(new LandingPageMenuParser(menuControlContext));
+            pageMenu.setMenuData(getPageMenuData());
         }
-
 
         if (showTitleBar()) {
             applicationTitleBar = findViewById(R.id.applicationTitleBar);
@@ -227,41 +217,37 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
     }
 
     private void processActivityRootData(final Callback.IAction<TActivityRootData> callback) {
-        try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-                @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    showPreloader();
-                    hideFragmentView();
+
+        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            @Override
+            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                showPreloader();
+                hideFragmentView();
+            }
+
+            @Override
+            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                resultHolder.forItem().add(getActivityRootDataProxy());
+            }
+        });
+        processActivityRootDataTask = executor.execute(new ITaskResultCallback() {
+            @Override
+            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                hidePreloader();
+                showFragmentView();
+
+                if (resultHolder == null){
+                    return;
                 }
 
-                @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    resultHolder.forItem().add(getActivityRootDataProxy());
-                }
-            });
-            processActivityRootDataTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    hidePreloader();
-                    showFragmentView();
+                ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
-                    if (resultHolder == null){
-                        return;
-                    }
+                if (itemIterator.hasNext())
+                    storedActivityRootData = itemIterator.next();
 
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                    if (itemIterator.hasNext())
-                        storedActivityRootData = itemIterator.next();
-
-                    callback.call(storedActivityRootData);
-                }
-            });
-        } catch (Exception ex) {
-            hidePreloader();
-            showFragmentView();
-        }
+                callback.call(storedActivityRootData);
+            }
+        });
     }
 
     private TActivityRootData getActivityRootDataProxy() {
@@ -553,7 +539,7 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
     }
 
     public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-        BaseEditActivityFragment newActiveFragment = getNextFragment(menuItem, storedActivityRootData);
+        BaseEditActivityFragment newActiveFragment = getEditFragment(menuItem, storedActivityRootData);
 
         if (newActiveFragment == null)
             return false;
@@ -582,7 +568,7 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         LandingPageMenuItem m = menuList.get(newMenukey);
         setActiveMenu(m);
 
-        BaseEditActivityFragment newActiveFragment = getNextFragment(m, storedActivityRootData);
+        BaseEditActivityFragment newActiveFragment = getEditFragment(m, storedActivityRootData);
 
         if (newActiveFragment == null)
             return false;
@@ -601,7 +587,7 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         return true;
     }
 
-    protected BaseEditActivityFragment getNextFragment(LandingPageMenuItem menuItem, TActivityRootData activityRootData) {
+    protected BaseEditActivityFragment getEditFragment(LandingPageMenuItem menuItem, TActivityRootData activityRootData) {
         return null;
     }
 
@@ -639,14 +625,12 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
     }
 
     protected int getActiveMenuArg(Bundle arguments) {
-        int result = ConstantHelper.INDEX_FIRST_MENU;
         if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.KEY_ACTIVE_MENU)) {
-                result = (int) arguments.getInt(ConstantHelper.KEY_ACTIVE_MENU);
+            if (arguments.containsKey(ConstantHelper.KEY_ACTIVE_MENU)) {
+                return arguments.getInt(ConstantHelper.KEY_ACTIVE_MENU);
             }
         }
-
-        return result;
+        return 0;
     }
 
     protected String getEventUuidArg(Bundle arguments) {

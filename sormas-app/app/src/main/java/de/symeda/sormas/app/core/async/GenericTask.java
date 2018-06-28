@@ -33,11 +33,7 @@ public class GenericTask extends AsyncTask<Void, Void, AsyncTaskResult<TaskResul
     protected void onPreExecute() {
         super.onPreExecute();
         resultHolder = new TaskResultHolder();
-        try {
-            jobDefinition.preExecute(mResultStatus, resultHolder);
-        } catch (DaoException e) {
-            e.printStackTrace();
-        }
+        jobDefinition.preExecute(mResultStatus, resultHolder);
     }
 
     @Override

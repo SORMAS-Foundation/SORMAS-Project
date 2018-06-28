@@ -194,8 +194,7 @@ public class CaseReadHospitalizationFragment extends BaseReadActivityFragment<Fr
         return R.layout.fragment_case_read_hospitalization_layout;
     }
 
-    public static CaseReadHospitalizationFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static CaseReadHospitalizationFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(activityCommunicator, CaseReadHospitalizationFragment.class, capsule, activityRootData);
     }
 

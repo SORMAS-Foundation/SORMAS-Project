@@ -222,8 +222,7 @@ public class EventEditTaskListFragement extends BaseEditActivityFragment<Fragmen
         TaskEditActivity.goToActivity(getActivity(), dataCapsule);
     }
 
-    public static EventEditTaskListFragement newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static EventEditTaskListFragement newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData) {
         return newInstance(activityCommunicator, EventEditTaskListFragement.class, capsule, activityRootData);
     }
 

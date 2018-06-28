@@ -51,7 +51,7 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
         pageStatus = (CaseClassification) getPageStatusArg(arguments);
@@ -79,7 +79,7 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
             if (itemIterator.hasNext())
-                record =  itemIterator.next();
+                record = itemIterator.next();
 
             if (record == null)
                 getActivity().finish();
@@ -101,64 +101,57 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
-        try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-                @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            @Override
+            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().showPreloader();
+                //getActivityCommunicator().hideFragmentView();
+            }
+
+            @Override
+            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                Case caze = getActivityRootData();
+
+                if (caze != null) {
+                    if (caze.isUnreadOrChildUnread())
+                        DatabaseHelper.getCaseDao().markAsRead(caze);
+
+                    if (caze.getPerson() == null) {
+                        caze.setPerson(DatabaseHelper.getPersonDao().build());
+                    } else {
+                        caze.setPerson(DatabaseHelper.getPersonDao().queryUuid(caze.getPerson().getUuid()));
+                    }
                 }
 
-                @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    Case caze = getActivityRootData();
+                resultHolder.forItem().add(caze.getPerson());
+                //resultHolder.forItem().add(caze);
+            }
+        });
+        onResumeTask = executor.execute(new ITaskResultCallback() {
+            @Override
+            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().hidePreloader();
+                //getActivityCommunicator().showFragmentView();
 
-                    if (caze != null) {
-                        if (caze.isUnreadOrChildUnread())
-                            DatabaseHelper.getCaseDao().markAsRead(caze);
-
-                        if (caze.getPerson() == null) {
-                            caze.setPerson(DatabaseHelper.getPersonDao().build());
-                        } else {
-                            caze.setPerson(DatabaseHelper.getPersonDao().queryUuid(caze.getPerson().getUuid()));
-                        }
-                    }
-
-                    resultHolder.forItem().add(caze.getPerson());
-                    //resultHolder.forItem().add(caze);
+                if (resultHolder == null) {
+                    return;
                 }
-            });
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
 
-                    if (resultHolder == null){
-                        return;
-                    }
+                ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                    if (itemIterator.hasNext())
-                        record = itemIterator.next();
+                if (itemIterator.hasNext())
+                    record = itemIterator.next();
 
                     /*if (itemIterator.hasNext())
                         caze = itemIterator.next();*/
 
-                    if (record != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
+                if (record != null)
+                    requestLayoutRebind();
+                else {
+                    getActivity().finish();
                 }
-            });
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
-
-
+            }
+        });
     }
 
     @Override
@@ -192,8 +185,7 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
         return false;
     }
 
-    public static CaseReadPatientInfoFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static CaseReadPatientInfoFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(activityCommunicator, CaseReadPatientInfoFragment.class, capsule, activityRootData);
     }
 

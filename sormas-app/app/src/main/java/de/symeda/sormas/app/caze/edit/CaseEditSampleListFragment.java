@@ -145,61 +145,55 @@ public class CaseEditSampleListFragment extends BaseEditActivityFragment<Fragmen
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
-        try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-                @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
-                }
+        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            @Override
+            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().showPreloader();
+                //getActivityCommunicator().hideFragmentView();
+            }
 
-                @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    Case caze = getActivityRootData();
-                    List<Sample> sampleListList = new ArrayList<Sample>();
+            @Override
+            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                Case caze = getActivityRootData();
+                List<Sample> sampleListList = new ArrayList<Sample>();
 
-                    //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
-                    if (caze != null) {
-                        if (caze.isUnreadOrChildUnread())
-                            DatabaseHelper.getCaseDao().markAsRead(caze);
+                //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
+                if (caze != null) {
+                    if (caze.isUnreadOrChildUnread())
+                        DatabaseHelper.getCaseDao().markAsRead(caze);
 
-                        if (caze.getPerson() == null) {
-                            caze.setPerson(DatabaseHelper.getPersonDao().build());
-                        }
-
-                        sampleListList = DatabaseHelper.getSampleDao().queryByCase(caze);
+                    if (caze.getPerson() == null) {
+                        caze.setPerson(DatabaseHelper.getPersonDao().build());
                     }
 
-                    resultHolder.forList().add(sampleListList);
+                    sampleListList = DatabaseHelper.getSampleDao().queryByCase(caze);
                 }
-            });
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
 
-                    if (resultHolder == null){
-                        return;
-                    }
+                resultHolder.forList().add(sampleListList);
+            }
+        });
+        onResumeTask = executor.execute(new ITaskResultCallback() {
+            @Override
+            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().hidePreloader();
+                //getActivityCommunicator().showFragmentView();
 
-                    ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
-
-                    if (listIterator.hasNext())
-                        record = listIterator.next();
-
-                    if (record != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
+                if (resultHolder == null){
+                    return;
                 }
-            });
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
 
+                ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
+
+                if (listIterator.hasNext())
+                    record = listIterator.next();
+
+                if (record != null)
+                    requestLayoutRebind();
+                else {
+                    getActivity().finish();
+                }
+            }
+        });
     }
 
     @Override
@@ -239,8 +233,7 @@ public class CaseEditSampleListFragment extends BaseEditActivityFragment<Fragmen
         return true;
     }
 
-    public static CaseEditSampleListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static CaseEditSampleListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(activityCommunicator, CaseEditSampleListFragment.class, capsule, activityRootData);
     }
 

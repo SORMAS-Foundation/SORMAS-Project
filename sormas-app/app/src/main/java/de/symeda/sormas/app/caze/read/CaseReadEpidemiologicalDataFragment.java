@@ -208,8 +208,7 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadActivityFragmen
         return R.layout.fragment_case_read_epid_layout;
     }
 
-    public static CaseReadEpidemiologicalDataFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static CaseReadEpidemiologicalDataFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(activityCommunicator, CaseReadEpidemiologicalDataFragment.class, capsule, activityRootData);
     }
 

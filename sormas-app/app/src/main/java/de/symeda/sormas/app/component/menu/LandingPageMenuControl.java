@@ -166,7 +166,7 @@ public class LandingPageMenuControl extends LinearLayout {
         }
     }
 
-    public void setMenuData(int dataResId) throws IOException, XmlPullParserException, ParserConfigurationException {
+    public void setMenuData(int dataResId) {
         if (dataResId > 0) {
             dataResourceId = dataResId;
         } else {
@@ -227,7 +227,7 @@ public class LandingPageMenuControl extends LinearLayout {
         mConfigured = true;
     }
 
-    private List<LandingPageMenuItem> extractAndLoadMenuData() throws IOException, XmlPullParserException, ParserConfigurationException {
+    private List<LandingPageMenuItem> extractAndLoadMenuData() {
         if (dataResourceId <= 0)
             throw new IllegalArgumentException("The dataResourceId file argument is empty.");
 
@@ -237,10 +237,6 @@ public class LandingPageMenuControl extends LinearLayout {
         menuList.clear();
 
         parser = new LandingPageMenuParser(getContext());
-
-        if (parser == null)
-            throw new ParserConfigurationException("This is no parser configured for the menu textView.");
-
         LandingPageMenu menu = parser.parse(getResources().getXml(dataResourceId));
 
         //Set Title
@@ -433,22 +429,9 @@ public class LandingPageMenuControl extends LinearLayout {
 
         setVisibility(View.VISIBLE);
 
-        //configureFab();
-
-        try {
-            if (dataResourceId > 0)
-                extractAndLoadMenuData();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+        if (dataResourceId > 0) {
+            extractAndLoadMenuData();
         }
-
-
-        //Set Title
-        //setMenuTitle(title);
     }
 
     @Override

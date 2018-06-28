@@ -89,7 +89,7 @@ public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity<Visit
     }
 
     @Override
-    protected BaseReadActivityFragment getNextFragment(LandingPageMenuItem menuItem, Visit activityRootData) {
+    protected BaseReadActivityFragment getReadFragment(LandingPageMenuItem menuItem, Visit activityRootData) {
         ContactFormFollowUpNavigationCapsule dataCapsule = new ContactFormFollowUpNavigationCapsule(
                 ContactReadFollowUpVisitInfoActivity.this, recordUuid, pageStatus);
 

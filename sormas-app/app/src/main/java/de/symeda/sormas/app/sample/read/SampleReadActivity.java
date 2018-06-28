@@ -109,7 +109,7 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
     }
 
     @Override
-    protected BaseReadActivityFragment getNextFragment(LandingPageMenuItem menuItem, Sample activityRootData) {
+    protected BaseReadActivityFragment getReadFragment(LandingPageMenuItem menuItem, Sample activityRootData) {
         return null;
     }
 

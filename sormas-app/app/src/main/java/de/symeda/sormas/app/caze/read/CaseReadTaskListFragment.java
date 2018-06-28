@@ -245,8 +245,7 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentF
         return false;
     }
 
-    public static CaseReadTaskListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static CaseReadTaskListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(activityCommunicator, CaseReadTaskListFragment.class, capsule, activityRootData);
     }
 

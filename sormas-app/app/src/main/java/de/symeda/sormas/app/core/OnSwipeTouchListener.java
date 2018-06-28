@@ -34,27 +34,23 @@ public abstract class OnSwipeTouchListener implements View.OnTouchListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             boolean result = false;
-            try {
-                float diffY = e2.getY() - e1.getY();
-                float diffX = e2.getX() - e1.getX();
-                if (Math.abs(diffX) > Math.abs(diffY)) {
-                    if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-                        if (diffX > 0) {
-                            result = onSwipeRight();
-                        } else {
-                            result = onSwipeLeft();
-                        }
-                    }
-                }
-                else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
-                    if (diffY > 0) {
-                        result = onSwipeBottom();
+            float diffY = e2.getY() - e1.getY();
+            float diffX = e2.getX() - e1.getX();
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffX > 0) {
+                        result = onSwipeRight();
                     } else {
-                        result = onSwipeTop();
+                        result = onSwipeLeft();
                     }
                 }
-            } catch (Exception exception) {
-                exception.printStackTrace();
+            }
+            else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                if (diffY > 0) {
+                    result = onSwipeBottom();
+                } else {
+                    result = onSwipeTop();
+                }
             }
             return result;
         }

@@ -25,7 +25,6 @@ import de.symeda.sormas.app.util.MenuOptionsHelper;
 public class TaskReadActivity extends BaseReadActivity<Task> {
     private TaskStatus pageStatus = null;
     private String recordUuid = null;
-    private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
     private BaseReadActivityFragment activeFragment = null;
 
     @Override

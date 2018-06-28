@@ -439,8 +439,7 @@ public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<Fr
         }
     }
 
-    public static CaseEditHospitalizationFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static CaseEditHospitalizationFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(activityCommunicator, CaseEditHospitalizationFragment.class, capsule, activityRootData);
     }
 

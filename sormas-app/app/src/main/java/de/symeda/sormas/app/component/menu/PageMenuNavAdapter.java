@@ -69,31 +69,23 @@ public class PageMenuNavAdapter extends BaseAdapter implements IPageMenuAdapter 
 
     @Override
     public int getCount() {
-        checkInitStatus();
-
         if (this.data == null)
             return 0;
-
         return this.data.size();
     }
 
     @Override
     public Object getItem(int position) {
-        checkInitStatus();
-
         return this.data.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        checkInitStatus();
-
         return 0;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        checkInitStatus();
 
         Context appContext = this.context;
         List<LandingPageMenuItem> menuItems = this.data;
@@ -126,16 +118,6 @@ public class PageMenuNavAdapter extends BaseAdapter implements IPageMenuAdapter 
         }
 
         return layout;
-    }
-
-    private void checkInitStatus() {
-        if (!initialized){
-            try {
-                throw new Exception("LandingPageMenuAdapter not initialized.");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     static class ViewHolder {

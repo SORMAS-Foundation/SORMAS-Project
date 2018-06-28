@@ -12,6 +12,6 @@ import de.symeda.sormas.app.core.BoolResult;
  */
 
 public interface IJobDefinition {
-    void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) throws DaoException;
-    void execute(BoolResult resultStatus, TaskResultHolder resultHolder) throws Exception;
+    void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder);
+    void execute(BoolResult resultStatus, TaskResultHolder resultHolder);
 }

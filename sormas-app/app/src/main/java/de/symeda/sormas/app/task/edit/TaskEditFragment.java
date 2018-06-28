@@ -254,7 +254,7 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                         }
 
                         @Override
-                        public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) throws Exception {
+                        public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
                             try {
                                 final TaskDao taskDao = DatabaseHelper.getTaskDao();
                                 taskDao.saveAndSnapshot(record);

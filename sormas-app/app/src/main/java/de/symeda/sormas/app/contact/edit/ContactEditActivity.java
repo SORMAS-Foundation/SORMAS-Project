@@ -1,10 +1,8 @@
 package de.symeda.sormas.app.contact.edit;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -13,6 +11,7 @@ import java.util.Date;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.AbstractSormasActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
@@ -22,6 +21,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.ISaveableWithCallback;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -42,18 +42,6 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
     public static final String TAG = ContactEditActivity.class.getSimpleName();
 
     private final int DATA_XML_PAGE_MENU = R.xml.data_form_page_contact_menu;// "xml/data_edit_page_contact_menu.xml";
-
-    private AsyncTask saveTask;
-    private static final int MENU_INDEX_CONTACT_INFO = 0;
-    private static final int MENU_INDEX_PERSON_INFO = 1;
-    private static final int MENU_INDEX_FOLLOWUP_VISIT = 2;
-    private static final int MENU_INDEX_TASK = 3;
-
-    private boolean showStatusFrame;
-    private boolean showTitleBar;
-    private boolean showPageMenu;
-    private MenuItem saveMenu = null;
-    private MenuItem addMenu = null;
 
     private ContactClassification pageStatus = null;
     private String recordUuid = null;
@@ -81,10 +69,6 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
     protected void initializeActivity(Bundle arguments) {
         pageStatus = (ContactClassification) getPageStatusArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
-
-        this.showStatusFrame = true;
-        this.showTitleBar = true;
-        this.showPageMenu = true;
     }
 
     @Override
@@ -125,27 +109,27 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
     }
 
     @Override
-    protected BaseEditActivityFragment getNextFragment(LandingPageMenuItem menuItem, Contact activityRootData) {
+    protected BaseEditActivityFragment getEditFragment(LandingPageMenuItem menuItem, Contact activityRootData) {
         ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactEditActivity.this,
                 recordUuid, pageStatus);
 
-        try {
-            if (menuItem.getKey() == MENU_INDEX_CONTACT_INFO) {
+        ContactSection section = ContactSection.fromMenuKey(menuItem.getKey());
+        switch (section) {
+            case CONTACT_INFO:
                 activeFragment = ContactEditFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_PERSON_INFO) {
+                break;
+            case PERSON_INFO:
                 activeFragment = ContactEditPersonFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_FOLLOWUP_VISIT) {
+                break;
+            case VISITS:
                 activeFragment = ContactEditFollowUpVisitListFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_TASK) {
+                break;
+            case TASKS:
                 activeFragment = ContactEditTaskListFragment.newInstance(this, dataCapsule, activityRootData);
-            }
-
-        } catch (InstantiationException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, e.getMessage());
+                break;
+            default:
+                throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
         }
-
         return activeFragment;
     }
 
@@ -170,9 +154,9 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
         if (activeFragment == null)
             return;
 
-        int activeMenuKey = getActiveMenuItem().getKey();
+        ContactSection activeSection = ContactSection.fromMenuKey(getActiveMenuItem().getKey());
 
-        if (activeMenuKey == MENU_INDEX_FOLLOWUP_VISIT || activeMenuKey == MENU_INDEX_TASK)
+        if (activeSection == ContactSection.VISITS || activeSection == ContactSection.TASKS)
             return;
 
         ISaveableWithCallback fragment = (ISaveableWithCallback)activeFragment;

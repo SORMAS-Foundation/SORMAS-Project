@@ -61,7 +61,7 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
         pageStatus = (CaseClassification) getPageStatusArg(arguments);
@@ -94,16 +94,16 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
             ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
 
             if (itemIterator.hasNext())
-                record =  itemIterator.next();
+                record = itemIterator.next();
 
             if (otherIterator.hasNext())
-                yesResult =  otherIterator.next();
+                yesResult = otherIterator.next();
 
             if (otherIterator.hasNext())
-                noResult =  otherIterator.next();
+                noResult = otherIterator.next();
 
             if (otherIterator.hasNext())
-                unknownResult =  otherIterator.next();
+                unknownResult = otherIterator.next();
 
             setupCallback();
         }
@@ -135,61 +135,55 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
-        try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-                @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            @Override
+            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().showPreloader();
+                //getActivityCommunicator().hideFragmentView();
+            }
+
+            @Override
+            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                Symptoms _symptom = null;
+                Case caze = getActivityRootData();
+                List<Symptom> sList = new ArrayList<>();
+
+                if (caze != null) {
+                    if (caze.isUnreadOrChildUnread())
+                        DatabaseHelper.getCaseDao().markAsRead(caze);
+
+                    _symptom = caze.getSymptoms();
+                    //_symptom = DatabaseHelper.getSymptomsDao().queryUuid(visit.getSymptoms().getUuid());
+
+                    //sList = Symptom.makeSymptoms(caze.getDisease()).loadState(_symptom);
                 }
 
-                @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    Symptoms _symptom = null;
-                    Case caze = getActivityRootData();
-                    List<Symptom> sList = new ArrayList<>();
+                resultHolder.forItem().add(_symptom);
+            }
+        });
+        onResumeTask = executor.execute(new ITaskResultCallback() {
+            @Override
+            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().hidePreloader();
+                //getActivityCommunicator().showFragmentView();
 
-                    if (caze != null) {
-                        if (caze.isUnreadOrChildUnread())
-                            DatabaseHelper.getCaseDao().markAsRead(caze);
-
-                        _symptom = caze.getSymptoms();
-                        //_symptom = DatabaseHelper.getSymptomsDao().queryUuid(visit.getSymptoms().getUuid());
-
-                        //sList = Symptom.makeSymptoms(caze.getDisease()).loadState(_symptom);
-                    }
-
-                    resultHolder.forItem().add(_symptom);
+                if (resultHolder == null) {
+                    return;
                 }
-            });
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
 
-                    if (resultHolder == null){
-                        return;
-                    }
+                ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+                ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
 
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-                    ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
+                if (itemIterator.hasNext())
+                    record = itemIterator.next();
 
-                    if (itemIterator.hasNext())
-                        record = itemIterator.next();
-
-                    if (record != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
+                if (record != null)
+                    requestLayoutRebind();
+                else {
+                    getActivity().finish();
                 }
-            });
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
-
+            }
+        });
     }
 
     @Override
@@ -208,14 +202,13 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
         return R.layout.fragment_case_read_symptoms_layout;
     }
 
-    public static CaseReadSymptomsFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static CaseReadSymptomsFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(activityCommunicator, CaseReadSymptomsFragment.class, capsule, activityRootData);
     }
 
     private List<Tag> getSymptomsYes(List<Symptom> list) {
         List<Tag> results = new ArrayList();
-        for (Symptom s: list) {
+        for (Symptom s : list) {
             if (s.getState() == SymptomState.YES) {
                 results.add(new Tag(s.getName()));
             }
@@ -226,7 +219,7 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
 
     private List<Tag> getSymptomsUnknown(List<Symptom> list) {
         List<Tag> results = new ArrayList();
-        for (Symptom s: list) {
+        for (Symptom s : list) {
             if (s.getState() == SymptomState.UNKNOWN) {
                 results.add(new Tag(s.getName()));
             }
@@ -237,7 +230,7 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
 
     private List<Tag> getSymptomsNo(List<Symptom> list) {
         List<Tag> results = new ArrayList();
-        for (Symptom s: list) {
+        for (Symptom s : list) {
             if (s.getState() == SymptomState.NO) {
                 results.add(new Tag(s.getName()));
             }

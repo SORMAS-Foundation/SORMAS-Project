@@ -36,7 +36,6 @@ public class EventNewPersonsInvolvedActivity extends BaseEditActivity<EventParti
     private EventStatus pageStatus = null;
     private String recordUuid = null;
     private String eventUuid = null;
-    private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
     private BaseEditActivityFragment activeFragment = null;
     private MenuItem saveMenu = null;
     private MenuItem addMenu = null;

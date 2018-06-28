@@ -221,8 +221,7 @@ public class CaseReadContactListFragment extends BaseReadActivityFragment<Fragme
         ContactReadActivity.goToActivity(getActivity(), dataCapsule);
     }
 
-    public static CaseReadContactListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static CaseReadContactListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(activityCommunicator, CaseReadContactListFragment.class, capsule, activityRootData);
     }
 

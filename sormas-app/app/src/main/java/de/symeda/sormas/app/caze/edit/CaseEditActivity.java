@@ -27,6 +27,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDtoHelper;
+import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
@@ -69,17 +70,8 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     private final int DATA_XML_PAGE_MENU = R.xml.data_form_page_case_menu;// "xml/data_edit_page_case_menu.xml";
 
     private AsyncTask saveTask;
-    private AsyncTask moveCaseTask;
     private AsyncTask finalizeSaveTask;
     private AsyncTask caseBeforeSaveAndPlagueTypeAlertTask;
-    private static final int MENU_INDEX_CASE_INFO = 0;
-    private static final int MENU_INDEX_PATIENT_INFO = 1;
-    private static final int MENU_INDEX_HOSPITALIZATION = 2;
-    private static final int MENU_INDEX_SYMPTOMS = 3;
-    private static final int MENU_INDEX_EPIDEMIOLOGICAL_DATA = 4;
-    private static final int MENU_INDEX_CONTACTS = 5;
-    private static final int MENU_INDEX_SAMPLES = 6;
-    private static final int MENU_INDEX_TASKS = 7;
 
     private boolean showStatusFrame;
     private boolean showTitleBar;
@@ -88,9 +80,6 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     private InvestigationStatus pageStatus = null;
     private String recordUuid = null;
     private BaseEditActivityFragment activeFragment = null;
-
-    private MenuItem saveMenu = null;
-    private MenuItem addMenu = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -167,34 +156,39 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     }
 
     @Override
-    protected BaseEditActivityFragment getNextFragment(LandingPageMenuItem menuItem, Case activityRootData) {
+    protected BaseEditActivityFragment getEditFragment(LandingPageMenuItem menuItem, Case activityRootData) {
         CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(CaseEditActivity.this,
                 recordUuid).setEditPageStatus(pageStatus);
 
-        try {
-            if (menuItem.getKey() == MENU_INDEX_CASE_INFO) {
-                activeFragment = CaseEditFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_PATIENT_INFO) {
-                activeFragment = CaseEditPatientInfoFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_HOSPITALIZATION) {
-                activeFragment = CaseEditHospitalizationFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_SYMPTOMS) {
-                activeFragment = CaseEditSymptomsFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_EPIDEMIOLOGICAL_DATA) {
-                activeFragment = CaseEditEpidemiologicalDataFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_CONTACTS) {
-                activeFragment = CaseEditContactListFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_SAMPLES) {
-                activeFragment = CaseEditSampleListFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_TASKS) {
-                activeFragment = CaseEditTaskListFragment.newInstance(this, dataCapsule, activityRootData);
-            }
+        CaseSection section = CaseSection.fromMenuKey(menuItem.getKey());
+        switch (section) {
 
-            //processActionbarMenu();
-        } catch (InstantiationException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, e.getMessage());
+            case CASE_INFO:
+                activeFragment = CaseEditFragment.newInstance(this, dataCapsule, activityRootData);
+                break;
+            case PERSON_INFO:
+                activeFragment = CaseEditPatientInfoFragment.newInstance(this, dataCapsule, activityRootData);
+                break;
+            case HOSPITALIZATION:
+                activeFragment = CaseEditHospitalizationFragment.newInstance(this, dataCapsule, activityRootData);
+                break;
+            case SYMPTOMS:
+                activeFragment = CaseEditSymptomsFragment.newInstance(this, dataCapsule, activityRootData);
+                break;
+            case EPIDEMIOLOGICAL_DATA:
+                activeFragment = CaseEditEpidemiologicalDataFragment.newInstance(this, dataCapsule, activityRootData);
+                break;
+            case CONTACTS:
+                activeFragment = CaseEditContactListFragment.newInstance(this, dataCapsule, activityRootData);
+                break;
+            case SAMPLES:
+                activeFragment = CaseEditSampleListFragment.newInstance(this, dataCapsule, activityRootData);
+                break;
+            case TASKS:
+                activeFragment = CaseEditTaskListFragment.newInstance(this, dataCapsule, activityRootData);
+                break;
+            default:
+                throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
         }
 
         return activeFragment;
@@ -339,9 +333,9 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         if (activeFragment == null)
             return;
 
-        int activeMenuKey = getActiveMenuItem().getKey();
+        CaseSection activeSection = CaseSection.fromMenuKey(getActiveMenuItem().getKey());
 
-        if (activeMenuKey == MENU_INDEX_CONTACTS || activeMenuKey == MENU_INDEX_SAMPLES || activeMenuKey == MENU_INDEX_TASKS)
+        if (activeSection == CaseSection.CONTACTS || activeSection == CaseSection.SAMPLES || activeSection == CaseSection.TASKS)
             return;
 
         final Case cazeToSave = getStoredActivityRootData();
@@ -396,13 +390,13 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
     @Override
     public void goToNewView() {
-        int activeMenuKey = getActiveMenuItem().getKey();
+        CaseSection activeSection = CaseSection.fromMenuKey(getActiveMenuItem().getKey());
 
-        if (activeMenuKey == MENU_INDEX_CONTACTS) {
+        if (activeSection == CaseSection.CONTACTS) {
             ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(),
                     ContactClassification.UNCONFIRMED).setCaseUuid(recordUuid);
             ContactNewActivity.goToActivity(this, dataCapsule);
-        } else if (activeMenuKey == MENU_INDEX_SAMPLES) {
+        } else if (activeSection == CaseSection.SAMPLES) {
             SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(getContext(),
                     ShipmentStatus.NOT_SHIPPED).setCaseUuid(recordUuid);
             SampleNewActivity.goToActivity(this, dataCapsule);
@@ -417,9 +411,9 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             return;
         }
 
-        int activeMenuKey = getActiveMenuItem().getKey();
+        CaseSection activeSection = CaseSection.fromMenuKey(getActiveMenuItem().getKey());
 
-        if (activeMenuKey == MENU_INDEX_CONTACTS || activeMenuKey == MENU_INDEX_SAMPLES || activeMenuKey == MENU_INDEX_TASKS) {
+        if (activeSection == CaseSection.CONTACTS || activeSection == CaseSection.SAMPLES || activeSection == CaseSection.TASKS) {
             callback.call(new BoolResult(false, saveUnsuccessful));
             return;
         }
@@ -431,12 +425,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             return;
         }
 
-        if (activeMenuKey == MENU_INDEX_CASE_INFO) {
-            //caze = (Case)activeFragment.getPrimaryData();
-            //caseEditBinding =(FragmentCaseEditLayoutBinding)activeFragment.getContentBinding();
-        }
-
-        if (activeMenuKey == MENU_INDEX_PATIENT_INFO) {
+        if (activeSection == CaseSection.PERSON_INFO) {
             FragmentCaseEditPatientLayoutBinding personBinding = (FragmentCaseEditPatientLayoutBinding) activeFragment.getContentBinding();
             PersonValidator.clearErrors(personBinding);
             if (!PersonValidator.validatePersonData(this, cazeToSave.getPerson(), personBinding)) {
@@ -444,7 +433,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             }
         }
 
-        if (activeMenuKey == MENU_INDEX_SYMPTOMS) {
+        if (activeSection == CaseSection.SYMPTOMS) {
             Symptoms symptoms = cazeToSave.getSymptoms();
             //symptoms = (Symptoms)activeFragment.getPrimaryData();
 
@@ -534,9 +523,6 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        if (moveCaseTask != null && !moveCaseTask.isCancelled())
-            moveCaseTask.cancel(true);
 
         if (saveTask != null && !saveTask.isCancelled())
             saveTask.cancel(true);

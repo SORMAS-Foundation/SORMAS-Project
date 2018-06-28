@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
@@ -22,7 +23,11 @@ import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.event.EventSection;
 import de.symeda.sormas.app.event.edit.EventEditActivity;
+import de.symeda.sormas.app.event.edit.EventEditFragment;
+import de.symeda.sormas.app.event.edit.EventEditPersonsInvolvedListFragment;
+import de.symeda.sormas.app.event.edit.EventEditTaskListFragement;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
@@ -37,16 +42,11 @@ public class EventReadActivity extends BaseReadActivity<Event> {
 
     private final int DATA_XML_PAGE_MENU = R.xml.data_form_page_alert_menu; // "xml/data_read_page_alert_menu.xml";
 
-    private static final int MENU_INDEX_EVENT_INFO = 0;
-    private static final int MENU_INDEX_EVENT__PERSON_INVOLVED = 1;
-    private static final int MENU_INDEX_EVENT_TASK = 2;
-
     private AsyncTask jobTask;
     private EventStatus filterStatus = null;
     private EventStatus pageStatus = null;
     private String recordUuid = null;
     private LandingPageMenuItem activeMenuItem = null;
-    private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
     private BaseReadActivityFragment activeFragment = null;
 
     @Override
@@ -61,29 +61,6 @@ public class EventReadActivity extends BaseReadActivity<Event> {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        /*if (savedInstanceState == null) {
-            Bundle b = getIntent().getExtras();
-            if (b != null){
-                //Get Shipment Status
-                filterStatus = getEventStatusArg(b);
-
-                //Get Event Key
-                recordUuid = getEventUuidArg(b);
-            }
-
-            activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
-            filterStatus = (filterStatus == null)? EventStatus.POSSIBLE : filterStatus;
-        } else {
-            filterStatus = (EventStatus) savedInstanceState.get(ConstantHelper.ARG_FILTER_STATUS);
-            recordUuid = savedInstanceState.getString(ConstantHelper.KEY_EVENT_UUID);
-            activeMenuKey = savedInstanceState.getInt(ConstantHelper.KEY_ACTIVE_MENU);
-        }*/
     }
 
     @Override
@@ -145,24 +122,24 @@ public class EventReadActivity extends BaseReadActivity<Event> {
     }
 
     @Override
-    protected BaseReadActivityFragment getNextFragment(LandingPageMenuItem menuItem, Event activityRootData) {
+    protected BaseReadActivityFragment getReadFragment(LandingPageMenuItem menuItem, Event activityRootData) {
         EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventReadActivity.this,
                 recordUuid, pageStatus);
 
-        try {
-            if (menuItem.getKey() == MENU_INDEX_EVENT_INFO) {
-                activeFragment = EventReadFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_EVENT__PERSON_INVOLVED) {
-                activeFragment = EventReadPersonsInvolvedListFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_EVENT_TASK) {
-                activeFragment = EventReadTaskListFragement.newInstance(this, dataCapsule, activityRootData);
-            }
 
-            //processActionbarMenu();
-        } catch (InstantiationException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, e.getMessage());
+        EventSection section = EventSection.fromMenuKey(menuItem.getKey());
+        switch (section) {
+            case EVENT_INFO:
+                activeFragment = EventReadFragment.newInstance(this, dataCapsule, activityRootData);
+                break;
+            case EVENT_PERSONS:
+                activeFragment = EventReadPersonsInvolvedListFragment.newInstance(this, dataCapsule, activityRootData);
+                break;
+            case TASKS:
+                activeFragment = EventReadTaskListFragement.newInstance(this, dataCapsule, activityRootData);
+                break;
+            default:
+                throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
         }
 
         return activeFragment;

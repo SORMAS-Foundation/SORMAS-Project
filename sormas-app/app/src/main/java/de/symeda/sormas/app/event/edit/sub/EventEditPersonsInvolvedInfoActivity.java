@@ -31,7 +31,6 @@ import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
-import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
 import de.symeda.sormas.app.util.SyncCallback;
@@ -55,11 +54,7 @@ public class EventEditPersonsInvolvedInfoActivity extends BaseEditActivity<Event
 
     private EventStatus pageStatus = null;
     private String recordUuid = null;
-    private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
     private BaseEditActivityFragment activeFragment = null;
-
-    private MenuItem saveMenu = null;
-    private MenuItem addMenu = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

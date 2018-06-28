@@ -16,13 +16,6 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 
 public class ErrorReportingHelper {
 
-    public static String getStackTrace(Throwable throwable) {
-        Writer result = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(result);
-        throwable.printStackTrace(printWriter);
-        return result.toString();
-    }
-
     public static Throwable getRootCause(Throwable throwable) {
         Throwable cause = throwable;
         while (cause.getCause() != null) {

@@ -63,7 +63,7 @@ public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragme
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
         pageStatus = (ContactClassification) getPageStatusArg(arguments);
@@ -130,7 +130,7 @@ public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragme
 
     @Override
     public void onPageResume(FragmentFormListLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout) this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
@@ -143,52 +143,46 @@ public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragme
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
-        try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-                @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            @Override
+            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().showPreloader();
+                //getActivityCommunicator().hideFragmentView();
+            }
+
+            @Override
+            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                Contact contact = getActivityRootData();
+                List<Visit> visitList = new ArrayList<Visit>();
+
+                //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
+                if (contact != null) {
+                    if (contact.isUnreadOrChildUnread())
+                        DatabaseHelper.getContactDao().markAsRead(contact);
+
+                    visitList = DatabaseHelper.getVisitDao().getByContact(contact);
                 }
 
-                @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    Contact contact = getActivityRootData();
-                    List<Visit> visitList = new ArrayList<Visit>();
+                resultHolder.forList().add(visitList);
+            }
+        });
+        onResumeTask = executor.execute(new ITaskResultCallback() {
+            @Override
+            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().hidePreloader();
+                //getActivityCommunicator().showFragmentView();
 
-                    //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
-                    if (contact != null) {
-                        if (contact.isUnreadOrChildUnread())
-                            DatabaseHelper.getContactDao().markAsRead(contact);
-
-                        visitList = DatabaseHelper.getVisitDao().getByContact(contact);
-                    }
-
-                    resultHolder.forList().add(visitList);
+                if (resultHolder == null) {
+                    return;
                 }
-            });
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
 
-                    if (resultHolder == null){
-                        return;
-                    }
+                ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
+                if (listIterator.hasNext())
+                    record = listIterator.next();
 
-                    ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
-                    if (listIterator.hasNext())
-                        record = listIterator.next();
-
-                    requestLayoutRebind();
-                }
-            });
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
-
+                requestLayoutRebind();
+            }
+        });
     }
 
     @Override
@@ -218,14 +212,13 @@ public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragme
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        Visit record = (Visit)item;
-        ContactFormFollowUpNavigationCapsule dataCapsule = (ContactFormFollowUpNavigationCapsule)new ContactFormFollowUpNavigationCapsule(getContext(),
+        Visit record = (Visit) item;
+        ContactFormFollowUpNavigationCapsule dataCapsule = (ContactFormFollowUpNavigationCapsule) new ContactFormFollowUpNavigationCapsule(getContext(),
                 record.getUuid(), record.getVisitStatus()).setContactUuid(recordUuid);
         ContactEditFollowUpInfoActivity.goToActivity(getActivity(), dataCapsule);
     }
 
-    public static ContactEditFollowUpVisitListFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule, Contact activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static ContactEditFollowUpVisitListFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule, Contact activityRootData) {
         return newInstance(activityCommunicator, ContactEditFollowUpVisitListFragment.class, capsule, activityRootData);
     }
 

@@ -208,8 +208,7 @@ public class EventReadTaskListFragement extends BaseReadActivityFragment<Fragmen
         return false;
     }
 
-    public static EventReadTaskListFragement newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static EventReadTaskListFragement newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData) {
         return newInstance(activityCommunicator, EventReadTaskListFragement.class, capsule, activityRootData);
     }
 

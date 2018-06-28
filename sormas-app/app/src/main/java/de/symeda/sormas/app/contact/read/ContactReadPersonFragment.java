@@ -188,8 +188,7 @@ public class ContactReadPersonFragment  extends BaseReadActivityFragment<Fragmen
         return false;
     }
 
-    public static ContactReadPersonFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule, Contact activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static ContactReadPersonFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule, Contact activityRootData) {
         return newInstance(activityCommunicator, ContactReadPersonFragment.class, capsule, activityRootData);
     }
 

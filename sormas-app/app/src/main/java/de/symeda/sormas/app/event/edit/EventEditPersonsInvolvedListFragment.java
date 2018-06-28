@@ -221,8 +221,7 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
         EventEditPersonsInvolvedInfoActivity.goToActivity(getActivity(), dataCapsule);
     }
 
-    public static EventEditPersonsInvolvedListFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static EventEditPersonsInvolvedListFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData) {
         return newInstance(activityCommunicator, EventEditPersonsInvolvedListFragment.class, capsule, activityRootData);
     }
 

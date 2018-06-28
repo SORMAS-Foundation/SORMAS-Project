@@ -239,8 +239,7 @@ public class CaseEditTaskListFragment extends BaseEditActivityFragment<FragmentF
         CaseEditTaskInfoActivity.goToActivity(getActivity(), dataCapsule);*/
     }
 
-    public static CaseEditTaskListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
+    public static CaseEditTaskListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(activityCommunicator, CaseEditTaskListFragment.class, capsule, activityRootData);
     }
 

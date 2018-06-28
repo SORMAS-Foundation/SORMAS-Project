@@ -71,7 +71,6 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
 
     @Override
     public int getCount() {
-        checkInitStatus();
 
         if (this.data == null)
             return 0;
@@ -81,21 +80,18 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
 
     @Override
     public Object getItem(int position) {
-        checkInitStatus();
 
         return this.data.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        checkInitStatus();
 
         return 0;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        checkInitStatus();
 
         List<LandingPageMenuItem> menuItems = this.data;
 
@@ -149,16 +145,6 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
         viewHolder.txtMenuItemTitle.setText(landingPageMenuItem.getTitle());
 
         return layout;
-    }
-
-    private void checkInitStatus() {
-        if (!initialized){
-            try {
-                throw new Exception("LandingPageMenuAdapter not initialized.");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     static class ViewHolder {

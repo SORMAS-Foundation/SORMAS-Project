@@ -58,7 +58,7 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
     private LandingPageMenuControl pageMenu = null;
     private List<LandingPageMenuItem> menuList;
     private LandingPageMenuItem activeMenu = null;
-    private int activeMenuKey = ConstantHelper.INDEX_FIRST_MENU;
+    private int activeMenuKey = 0;
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -110,37 +110,28 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
         activeMenuKey = getActiveMenuArg(arguments);
         initializeActivity(arguments);
 
-        try {
-            if(pageMenu != null)
-                pageMenu.hide();
+        if(pageMenu != null)
+            pageMenu.hide();
 
-            if (pageMenu != null) {
-                Context menuControlContext = this.pageMenu.getContext();
+        if (pageMenu != null) {
+            Context menuControlContext = this.pageMenu.getContext();
 
 
-                pageMenu.setOnNotificationCountChangingListener(this);
-                pageMenu.setOnLandingPageMenuClickListener(this);
-                pageMenu.setOnSelectInitialActiveMenuItem(this);
+            pageMenu.setOnNotificationCountChangingListener(this);
+            pageMenu.setOnLandingPageMenuClickListener(this);
+            pageMenu.setOnSelectInitialActiveMenuItem(this);
 
-                //pageMenu.setOnLandingPageMenuClickListener(this);
-                //pageMenu.setOnSelectInitialActiveMenuItem(this);
+            //pageMenu.setOnLandingPageMenuClickListener(this);
+            //pageMenu.setOnSelectInitialActiveMenuItem(this);
 
-                //pageMenu.setAdapter(new PageMenuNavAdapter(menuControlContext));
+            //pageMenu.setAdapter(new PageMenuNavAdapter(menuControlContext));
 
-                pageMenu.setAdapter(new LandingPageMenuAdapter(menuControlContext));
-                pageMenu.setMenuParser(new LandingPageMenuParser(menuControlContext));
-                pageMenu.setMenuData(getPageMenuData());
+            pageMenu.setAdapter(new LandingPageMenuAdapter(menuControlContext));
+            pageMenu.setMenuParser(new LandingPageMenuParser(menuControlContext));
+            pageMenu.setMenuData(getPageMenuData());
 
-                //configureFab(fab, pageMenu);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+            //configureFab(fab, pageMenu);
         }
-
 
         if (showTitleBar()) {
             applicationTitleBar = findViewById(R.id.applicationTitleBar);
@@ -424,14 +415,12 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
     }
 
     protected int getActiveMenuArg(Bundle arguments) {
-        int result = ConstantHelper.INDEX_FIRST_MENU;
         if (arguments != null && !arguments.isEmpty()) {
             if(arguments.containsKey(ConstantHelper.KEY_ACTIVE_MENU)) {
-                result = (int) arguments.getInt(ConstantHelper.KEY_ACTIVE_MENU);
+                return arguments.getInt(ConstantHelper.KEY_ACTIVE_MENU);
             }
         }
-
-        return result;
+        return 0;
     }
 
 

@@ -100,9 +100,9 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
     protected String getSubHeadingTitle() {
         Resources r = getResources();
         String defaultValue = r.getString(R.string.hint_report_not_submitted);
-        String format = !mUser.hasUserRole(UserRole.INFORMANT)? r.getString(R.string.caption_report_date) : r.getString(R.string.caption_confirmation_date);
+        String format = !mUser.hasUserRole(UserRole.INFORMANT) ? r.getString(R.string.caption_report_date) : r.getString(R.string.caption_confirmation_date);
 
-        return CharSequenceHelper.italic(String.format(format, mReportDate == null || mReportDate.isEmpty()? defaultValue : mReportDate)).toString();
+        return CharSequenceHelper.italic(String.format(format, mReportDate == null || mReportDate.isEmpty() ? defaultValue : mReportDate)).toString();
     }
 
     @Override
@@ -116,10 +116,10 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
             ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
 
             if (otherIterator.hasNext())
-                mYearList =  otherIterator.next();
+                mYearList = otherIterator.next();
 
             if (otherIterator.hasNext())
-                mEpiWeeksList =  otherIterator.next();
+                mEpiWeeksList = otherIterator.next();
 
             mLinearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
             mUser = ConfigProvider.getUser();
@@ -193,7 +193,7 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
 
             @Override
             public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                Integer selectedEpiWeek = (Integer)value;
+                Integer selectedEpiWeek = (Integer) value;
 
                 if (selectedEpiWeek != null) {
                     mReportFilter.setYear((int) getContentBinding().spnYear.getValue());
@@ -213,10 +213,10 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
                                     NotificationHelper.showNotification((NotificationContext) ReportFragment.this, NotificationType.WARNING, R.string.hint_report_not_submitted);
                                 }
 
-                                getContentBinding().noWeeklyReportHint.setVisibility(c.showNoReportNotification()? View.VISIBLE : View.GONE);
-                                getContentBinding().noWeeklyReportData.setVisibility(c.showNoDataNotification()? View.VISIBLE : View.GONE);
-                                getContentBinding().btnAddMissingCase.setVisibility(c.showAddMissingButton()? View.VISIBLE : View.GONE);
-                                getContentBinding().btnConfirmReport.setVisibility(c.showConfirmButton()? View.VISIBLE : View.GONE);
+                                getContentBinding().noWeeklyReportHint.setVisibility(c.showNoReportNotification() ? View.VISIBLE : View.GONE);
+                                getContentBinding().noWeeklyReportData.setVisibility(c.showNoDataNotification() ? View.VISIBLE : View.GONE);
+                                getContentBinding().btnAddMissingCase.setVisibility(c.showAddMissingButton() ? View.VISIBLE : View.GONE);
+                                getContentBinding().btnConfirmReport.setVisibility(c.showConfirmButton() ? View.VISIBLE : View.GONE);
 
                                 mReportDate = reportDate;
                                 updateUI();
@@ -245,7 +245,7 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
 
 
     private void showPendingReport(final BaseEpiWeekCategory c) {
-        getContentBinding().reportContentFrame.setVisibility(c.showReportTable()? View.VISIBLE : View.GONE);
+        getContentBinding().reportContentFrame.setVisibility(c.showReportTable() ? View.VISIBLE : View.GONE);
 
         if (!c.showReportTable())
             return;
@@ -257,65 +257,55 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
             return;
 
         if (mUser.hasUserRole(UserRole.INFORMANT)) {
+            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                private String saveUnsuccessful;
 
+                @Override
+                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().showPreloader();
+                    //getActivityCommunicator().hideFragmentView();
+                    changeButtonsEnabledStatus(false);
+                }
 
-
-
-            try {
-                ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-                    private String saveUnsuccessful;
-
-                    @Override
-                    public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                        //getActivityCommunicator().showPreloader();
-                        //getActivityCommunicator().hideFragmentView();
-                        changeButtonsEnabledStatus(false);
+                @Override
+                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    List<PendingReportViewModel> list = new ArrayList<>();
+                    for (WeeklyReportEntry entry : DatabaseHelper.getWeeklyReportEntryDao().getAllByWeeklyReport(c.getReport())) {
+                        list.add(new PendingReportViewModel(entry.getDisease(), entry.getNumberOfCases()));
                     }
 
-                    @Override
-                    public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                        List<PendingReportViewModel> list = new ArrayList<>();
-                        for (WeeklyReportEntry entry : DatabaseHelper.getWeeklyReportEntryDao().getAllByWeeklyReport(c.getReport())) {
-                            list.add(new PendingReportViewModel(entry.getDisease(), entry.getNumberOfCases()));
-                        }
+                    resultHolder.forOther().add(list);
+                }
+            });
+            onPendingReportTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getActivityCommunicator().hidePreloader();
+                    //getActivityCommunicator().showFragmentView();
 
-                        resultHolder.forOther().add(list);
+                    changeButtonsEnabledStatus(true);
+
+                    if (resultHolder == null) {
+                        return;
                     }
-                });
-                onPendingReportTask = executor.execute(new ITaskResultCallback() {
-                    @Override
-                    public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                        //getActivityCommunicator().hidePreloader();
-                        //getActivityCommunicator().showFragmentView();
 
-                        changeButtonsEnabledStatus(true);
+                    List<PendingReportViewModel> list = new ArrayList<>();
+                    ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
 
-                        if (resultHolder == null){
-                            return;
-                        }
+                    if (otherIterator.hasNext())
+                        list = otherIterator.next();
 
-                        List<PendingReportViewModel> list = new ArrayList<>();
-                        ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
-
-                        if (otherIterator.hasNext())
-                            list = otherIterator.next();
-
-                        mPendingReportAdapter = new PendingReportAdapter(ReportFragment.this.getActivity(), R.layout.row_pending_report_list_item_layout, list);
-                        getContentBinding().recyclerViewForList.setLayoutManager(mLinearLayoutManager);
-                        getContentBinding().recyclerViewForList.setAdapter(mPendingReportAdapter);
-                        mPendingReportAdapter.notifyDataSetChanged();
-                    }
-                });
-            } catch (Exception ex) {
-                //getActivityCommunicator().hidePreloader();
-                //getActivityCommunicator().showFragmentView();
-            }
+                    mPendingReportAdapter = new PendingReportAdapter(ReportFragment.this.getActivity(), R.layout.row_pending_report_list_item_layout, list);
+                    getContentBinding().recyclerViewForList.setLayoutManager(mLinearLayoutManager);
+                    getContentBinding().recyclerViewForList.setAdapter(mPendingReportAdapter);
+                    mPendingReportAdapter.notifyDataSetChanged();
+                }
+            });
         }
-
     }
 
     private void showWeeklyReport(final BaseEpiWeekCategory c) {
-        getContentBinding().reportContentFrame.setVisibility(c.showReportTable()? View.VISIBLE : View.GONE);
+        getContentBinding().reportContentFrame.setVisibility(c.showReportTable() ? View.VISIBLE : View.GONE);
 
         if (!c.showReportTable())
             return;
@@ -356,7 +346,7 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
 
                         changeButtonsEnabledStatus(true);
 
-                        if (resultHolder == null){
+                        if (resultHolder == null) {
                             return;
                         }
 
@@ -419,7 +409,7 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
 
                     changeButtonsEnabledStatus(true);
 
-                    if (resultHolder == null){
+                    if (resultHolder == null) {
                         return;
                     }
 
@@ -490,7 +480,7 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
 
                 mReportFilterLastCheckedId = checkedId;
 
-                ReportFilterOption answer = (ReportFilterOption)checkedItem;
+                ReportFilterOption answer = (ReportFilterOption) checkedItem;
 
                 if (answer == ReportFilterOption.SPECIFY_WEEK) {
                     getContentBinding().specifyReportFilterFrame.setVisibility(View.VISIBLE);
@@ -567,12 +557,12 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
 
                             changeButtonsEnabledStatus(true);
 
-                            if (resultHolder == null){
+                            if (resultHolder == null) {
                                 return;
                             }
 
                             if (!resultStatus.isSuccess()) {
-                                NotificationHelper.showNotification((NotificationContext)getActivity(), NotificationType.ERROR, resultStatus.getMessage());
+                                NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, resultStatus.getMessage());
                                 return;
                             }
 
@@ -581,15 +571,15 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
                                     @Override
                                     public void call(boolean syncFailed, String syncFailedMessage) {
                                         if (syncFailed) {
-                                            NotificationHelper.showNotification((NotificationContext)getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_sync_confirmed);
+                                            NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_sync_confirmed);
                                         } else {
-                                            NotificationHelper.showNotification((NotificationContext)getActivity(), NotificationType.WARNING, R.string.snackbar_weekly_report_confirmed);
+                                            NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.WARNING, R.string.snackbar_weekly_report_confirmed);
                                         }
                                         reloadFragment();
                                     }
                                 });
                             } else {
-                                NotificationHelper.showNotification((NotificationContext)getActivity(), NotificationType.WARNING, R.string.snackbar_weekly_report_confirmed);
+                                NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.WARNING, R.string.snackbar_weekly_report_confirmed);
                                 reloadFragment();
                             }
                         }

@@ -28,5 +28,4 @@ public class ConstantHelper {
     public static final String KEY_SAMPLE_MATERIAL = "sampleMaterialInfo";
 
     public static final String KEY_ACTIVE_MENU = "activeMenuKey";
-    public static final int INDEX_FIRST_MENU = 0;
 }

@@ -113,7 +113,7 @@ public class ContactEditFollowUpInfoActivity extends BaseEditActivity<Visit> {
     @Override
     public BaseEditActivityFragment getActiveEditFragment(Visit activityRootData) {
         if (activeFragment == null) {
-            ContactFormFollowUpNavigationCapsule dataCapsule = (ContactFormFollowUpNavigationCapsule)new ContactFormFollowUpNavigationCapsule(
+            ContactFormFollowUpNavigationCapsule dataCapsule = (ContactFormFollowUpNavigationCapsule) new ContactFormFollowUpNavigationCapsule(
                     ContactEditFollowUpInfoActivity.this, recordUuid, pageStatus)
                     .setContactUuid(contactUuid);
             activeFragment = ContactEditFollowUpVisitInfoFragment.newInstance(this, dataCapsule, activityRootData);
@@ -148,7 +148,7 @@ public class ContactEditFollowUpInfoActivity extends BaseEditActivity<Visit> {
     }
 
     @Override
-    protected BaseEditActivityFragment getNextFragment(LandingPageMenuItem menuItem, Visit activityRootData) {
+    protected BaseEditActivityFragment getEditFragment(LandingPageMenuItem menuItem, Visit activityRootData) {
         ContactFormFollowUpNavigationCapsule dataCapsule = new ContactFormFollowUpNavigationCapsule(
                 ContactEditFollowUpInfoActivity.this, recordUuid, pageStatus);
 
@@ -197,13 +197,13 @@ public class ContactEditFollowUpInfoActivity extends BaseEditActivity<Visit> {
         Symptoms symptoms = null;
 
         if (activeMenuKey == MENU_INDEX_VISIT_INFO) {
-            visit = (Visit)activeFragment.getPrimaryData();
-            visitEditBinding =(FragmentContactEditVisitInfoLayoutBinding)activeFragment.getContentBinding();
+            visit = (Visit) activeFragment.getPrimaryData();
+            visitEditBinding = (FragmentContactEditVisitInfoLayoutBinding) activeFragment.getContentBinding();
         }
 
         if (activeMenuKey == MENU_INDEX_SYMPTOMS_INFO) {
-            visit = (Visit)activeFragment.getPrimaryData();
-            visitEditSymptomBinding = (FragmentContactEditSymptomsInfoLayoutBinding)activeFragment.getContentBinding();
+            visit = (Visit) activeFragment.getPrimaryData();
+            visitEditSymptomBinding = (FragmentContactEditSymptomsInfoLayoutBinding) activeFragment.getContentBinding();
         }
 
         if (visit == null)
@@ -237,95 +237,88 @@ public class ContactEditFollowUpInfoActivity extends BaseEditActivity<Visit> {
             return true;
         }*/
 
-        try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-                private Visit v;
-                private String saveUnsuccessful;
+        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            private Visit v;
+            private String saveUnsuccessful;
 
-                @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_visit));
-                }
+            @Override
+            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_visit));
+            }
 
-                @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    try {
+            @Override
+            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                try {
                         /*if (this.s != null)
                             v.setSymptoms(this.s);*/
 
-                        if (this.v != null) {
-                            v.setVisitUser(ConfigProvider.getUser());
-                            VisitDao visitDao = DatabaseHelper.getVisitDao();
-                            visitDao.saveAndSnapshot(this.v);
-                        }
-                    } catch (DaoException e) {
-                        Log.e(getClass().getName(), "Error while trying to save visit", e);
-                        resultHolder.setResultStatus(new BoolResult(false, saveUnsuccessful));
-                        ErrorReportingHelper.sendCaughtException(tracker, e, this.v, true);
+                    if (this.v != null) {
+                        v.setVisitUser(ConfigProvider.getUser());
+                        VisitDao visitDao = DatabaseHelper.getVisitDao();
+                        visitDao.saveAndSnapshot(this.v);
                     }
+                } catch (DaoException e) {
+                    Log.e(getClass().getName(), "Error while trying to save visit", e);
+                    resultHolder.setResultStatus(new BoolResult(false, saveUnsuccessful));
+                    ErrorReportingHelper.sendCaughtException(tracker, e, this.v, true);
+                }
+            }
+
+            private IJobDefinition init(Visit v) {
+                this.v = v;
+
+                return this;
+            }
+
+        }.init(visit));
+        saveTask = executor.execute(new ITaskResultCallback() {
+            private Visit v;
+
+            @Override
+            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                //getActivityCommunicator().hidePreloader();
+                //getActivityCommunicator().showFragmentView();
+
+                if (resultHolder == null) {
+                    return;
                 }
 
-                private IJobDefinition init(Visit v) {
-                    this.v = v;
-
-                    return this;
+                if (!resultStatus.isSuccess()) {
+                    NotificationHelper.showNotification(ContactEditFollowUpInfoActivity.this, NotificationType.ERROR, resultStatus.getMessage());
+                    return;
+                } else {
+                    NotificationHelper.showNotification(ContactEditFollowUpInfoActivity.this, NotificationType.SUCCESS, "Visit " + DataHelper.getShortUuid(this.v.getUuid()) + " saved");
                 }
 
-            }.init(visit));
-            saveTask = executor.execute(new ITaskResultCallback() {
-                private Visit v;
-
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
-
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    if (!resultStatus.isSuccess()) {
-                        NotificationHelper.showNotification(ContactEditFollowUpInfoActivity.this, NotificationType.ERROR, resultStatus.getMessage());
-                        return;
-                    } else {
-                        NotificationHelper.showNotification(ContactEditFollowUpInfoActivity.this, NotificationType.SUCCESS, "Visit " + DataHelper.getShortUuid(this.v.getUuid()) + " saved");
-                    }
-
-                    if (RetroProvider.isConnected()) {
-                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, ContactEditFollowUpInfoActivity.this, new SyncCallback() {
-                            @Override
-                            public void call(boolean syncFailed, String syncFailedMessage) {
-                                if (syncFailed) {
-                                    NotificationHelper.showNotification(ContactEditFollowUpInfoActivity.this, NotificationType.WARNING, String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_contact)));
-                                } else {
-                                    NotificationHelper.showNotification(ContactEditFollowUpInfoActivity.this, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_contact)));
-                                }
-                                //finish();
-
-                                if (!goToNextMenu())
-                                    NotificationHelper.showNotification(ContactEditFollowUpInfoActivity.this, NotificationType.INFO, R.string.notification_reach_last_menu);
+                if (RetroProvider.isConnected()) {
+                    SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, ContactEditFollowUpInfoActivity.this, new SyncCallback() {
+                        @Override
+                        public void call(boolean syncFailed, String syncFailedMessage) {
+                            if (syncFailed) {
+                                NotificationHelper.showNotification(ContactEditFollowUpInfoActivity.this, NotificationType.WARNING, String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_contact)));
+                            } else {
+                                NotificationHelper.showNotification(ContactEditFollowUpInfoActivity.this, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_contact)));
                             }
-                        });
-                    } else {
-                        NotificationHelper.showNotification(ContactEditFollowUpInfoActivity.this, NotificationType.WARNING, String.format(getResources().getString(R.string.snackbar_save_success_couldnot_sync), getResources().getString(R.string.entity_contact)));
-                        //finish();
-                    }
+                            //finish();
 
+                            if (!goToNextMenu())
+                                NotificationHelper.showNotification(ContactEditFollowUpInfoActivity.this, NotificationType.INFO, R.string.notification_reach_last_menu);
+                        }
+                    });
+                } else {
+                    NotificationHelper.showNotification(ContactEditFollowUpInfoActivity.this, NotificationType.WARNING, String.format(getResources().getString(R.string.snackbar_save_success_couldnot_sync), getResources().getString(R.string.entity_contact)));
+                    //finish();
                 }
 
-                private ITaskResultCallback init(Visit v) {
-                    this.v = v;
+            }
 
-                    return this;
-                }
+            private ITaskResultCallback init(Visit v) {
+                this.v = v;
 
-            }.init(visit));
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
+                return this;
+            }
 
-
+        }.init(visit));
     }
 
     @Override
