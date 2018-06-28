@@ -60,7 +60,7 @@ public class CaseListAdapter extends DataBoundAdapter<RowCaseListItemLayoutBindi
         indicateCaseClassification(holder.binding.imgCaseStatusIcon, record);
 
         //Sync Icon
-        if (record.isModifiedOrChildModified()) {
+        if (record.isModified()) {
             holder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
             holder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp);
         } else {

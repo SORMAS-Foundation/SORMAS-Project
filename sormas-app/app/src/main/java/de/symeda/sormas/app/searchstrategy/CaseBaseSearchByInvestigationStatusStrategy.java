@@ -14,16 +14,16 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
  * sampson.orson@technologyboard.org
  */
 
-public class CaseSearchByStatusStrategy implements ISearchStrategy<Case> {
+public class CaseBaseSearchByInvestigationStatusStrategy implements ISearchStrategy<Case> {
 
     private InvestigationStatus status;
 
-    public CaseSearchByStatusStrategy(InvestigationStatus status) {
+    public CaseBaseSearchByInvestigationStatusStrategy(InvestigationStatus status) {
         this.status = status;
     }
 
     @Override
     public List<Case> search() {
-        return DatabaseHelper.getCaseDao().queryForEq(Case.INVESTIGATION_STATUS, status, Case.REPORT_DATE, false);
+        return DatabaseHelper.getCaseDao().queryBaseForEq(Case.INVESTIGATION_STATUS, status, Case.REPORT_DATE, false);
     }
 }
