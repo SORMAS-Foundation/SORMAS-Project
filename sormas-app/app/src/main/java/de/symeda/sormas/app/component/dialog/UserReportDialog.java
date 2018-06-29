@@ -16,10 +16,8 @@ import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -63,15 +61,15 @@ public class UserReportDialog extends BaseTeboAlertDialog {
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, final Callback.IAction callback) {
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                     //getActivityCommunicator().showPreloader();
                     //getActivityCommunicator().hideFragmentView();
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     try {
                         String description = UserReportDialog.this.data.getMessage();
                         Tracker tracker = ((SormasApplication) getActivity().getApplication()).getDefaultTracker();
@@ -86,7 +84,7 @@ public class UserReportDialog extends BaseTeboAlertDialog {
                         resultHolder.setResultStatus(new BoolResult(true, getActivity().getResources().getString(R.string.snackbar_report_not_sent)));
                     }
                 }
-            });
+            };
             dialogTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {

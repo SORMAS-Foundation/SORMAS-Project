@@ -36,11 +36,9 @@ import de.symeda.sormas.app.component.dialog.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -168,9 +166,9 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
         if (contactToSave == null)
             return;
 
-        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+        DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
             @Override
-            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+            public void onPreExecute() {
                 //TODO: Validation
                     /*ContactNewFragmentLayoutBinding binding = contactNewForm.getBinding();
                     ContactValidator.clearErrorsForNewContact(binding);
@@ -180,7 +178,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
             }
 
             @Override
-            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+            public void execute(TaskResultHolder resultHolder) {
                 List<PersonNameDto> existingPersons = DatabaseHelper.getPersonDao().getPersonNameDtos();
                 List<Person> similarPersons = new ArrayList<>();
                 for (PersonNameDto existingPerson : existingPersons) {
@@ -192,7 +190,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
                 }
                 resultHolder.forList().add(similarPersons);
             }
-        });
+        };
         saveTask = executor.execute(new ITaskResultCallback() {
             @Override
             public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
@@ -260,11 +258,11 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
     private void savePersonAndContact(final Contact contactToSave) {
 
-        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+        DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
             private String saveUnsuccessful;
 
             @Override
-            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+            public void onPreExecute() {
                 showPreloader();
                 hideFragmentView();
 
@@ -281,7 +279,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
             }
 
             @Override
-            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+            public void execute(TaskResultHolder resultHolder) {
                 try {
                     PersonDao personDao = DatabaseHelper.getPersonDao();
                     ContactDao contactDao = DatabaseHelper.getContactDao();
@@ -293,7 +291,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
                     ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                 }
             }
-        });
+        };
         createPersonTask = executor.execute(new ITaskResultCallback() {
             @Override
             public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {

@@ -36,7 +36,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.component.InvalidValueException;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
@@ -49,11 +48,7 @@ import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -74,12 +69,10 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
 
     public static final String TAG = CaseEditFragment.class.getSimpleName();
 
-    private AsyncTask onResumeTask;
     private AsyncTask moveCaseTask;
     private String recordUuid = null;
     private InvestigationStatus pageStatus = null;
     private Case record;
-    private User user;
     private List<Item> caseClassificationList;
     private List<Item> caseOutcomeList;
     private List<Item> vaccinationList;
@@ -136,8 +129,6 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
 
             resultHolder.forItem().add(caze);
 
-            resultHolder.forItem().add(ConfigProvider.getUser());
-
             resultHolder.forOther().add(DataUtils.getEnumItems(CaseClassification.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(CaseOutcome.class, false));
 
@@ -151,9 +142,6 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
 
             if (itemIterator.hasNext())
                 record = itemIterator.next();
-
-            if (itemIterator.hasNext())
-                user = itemIterator.next();
 
             if (otherIterator.hasNext())
                 caseClassificationList = otherIterator.next();
@@ -254,11 +242,11 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
             });
         }
 
-        if (user != null && user.hasUserRight(UserRight.CASE_TRANSFER)) {
+        if (ConfigProvider.getUser().hasUserRight(UserRight.CASE_TRANSFER)) {
             contentBinding.casePageBottomCtrlPanel.setVisibility(View.VISIBLE);
         }
 
-        if (user.hasUserRight(UserRight.CASE_CLASSIFY)) {
+        if (ConfigProvider.getUser().hasUserRight(UserRight.CASE_CLASSIFY)) {
             contentBinding.spnOutcome.addValueChangedListener(new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
@@ -376,50 +364,7 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
-        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
-            @Override
-            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-            }
-
-            @Override
-            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                Case caze = getActivityRootData();
-
-                if (caze != null) {
-                    if (caze.isUnreadOrChildUnread())
-                        DatabaseHelper.getCaseDao().markAsRead(caze);
-
-                    if (caze.getPerson() == null) {
-                        caze.setPerson(DatabaseHelper.getPersonDao().build());
-                    }
-                }
-
-                resultHolder.forItem().add(caze);
-                resultHolder.forItem().add(ConfigProvider.getUser());
-            }
-        });
-        onResumeTask = executor.execute(new ITaskResultCallback() {
-            @Override
-            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                if (resultHolder == null){
-                    return;
-                }
-
-                ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                if (itemIterator.hasNext())
-                    record =  itemIterator.next();
-
-                if (itemIterator.hasNext())
-                    user = itemIterator.next();
-
-                if (record != null)
-                    requestLayoutRebind();
-                else {
-                    getActivity().finish();
-                }
-            }
-        });
+        record = getActivityRootData();
     }
 
     @Override
@@ -511,9 +456,6 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        if (onResumeTask != null && !onResumeTask.isCancelled())
-            onResumeTask.cancel(true);
 
         if (moveCaseTask != null && !moveCaseTask.isCancelled())
             moveCaseTask.cancel(true);

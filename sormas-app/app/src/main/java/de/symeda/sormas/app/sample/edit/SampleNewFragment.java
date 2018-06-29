@@ -37,11 +37,9 @@ import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.ISaveable;
 import de.symeda.sormas.app.core.YesNo;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -297,20 +295,20 @@ public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNe
             return;
 
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                     //getActivityCommunicator().showPreloader();
                     //getActivityCommunicator().hideFragmentView();
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     Sample sample = getActivityRootData();
 
                     resultHolder.forItem().add(sample);
                 }
-            });
+            };
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
@@ -426,11 +424,11 @@ public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNe
 //        }
 
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 private String saveUnsuccessful;
 
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                     //getActivityCommunicator().showPreloader();
                     //getActivityCommunicator().hideFragmentView();
 
@@ -438,7 +436,7 @@ public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNe
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     try {
                         SampleDao sampleDao = DatabaseHelper.getSampleDao();
                         sampleDao.saveAndSnapshot(sampleToSave);
@@ -448,7 +446,7 @@ public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNe
                         ErrorReportingHelper.sendCaughtException(tracker, e, sampleToSave, true);
                     }
                 }
-            });
+            };
             saveSample = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {

@@ -10,10 +10,6 @@ import java.io.Writer;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 
-/**
- * Created by Orson on 08/11/2017.
- */
-
 public class ErrorReportingHelper {
 
     public static Throwable getRootCause(Throwable throwable) {

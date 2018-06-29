@@ -21,13 +21,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
@@ -44,11 +39,9 @@ import de.symeda.sormas.app.core.IActivityRootDataRequestor;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
@@ -218,18 +211,18 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
 
     private void processActivityRootData(final Callback.IAction<TActivityRootData> callback) {
 
-        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+        DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
             @Override
-            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+            public void onPreExecute() {
                 showPreloader();
                 hideFragmentView();
             }
 
             @Override
-            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+            public void execute(TaskResultHolder resultHolder) {
                 resultHolder.forItem().add(getActivityRootDataProxy());
             }
-        });
+        };
         processActivityRootDataTask = executor.execute(new ITaskResultCallback() {
             @Override
             public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {

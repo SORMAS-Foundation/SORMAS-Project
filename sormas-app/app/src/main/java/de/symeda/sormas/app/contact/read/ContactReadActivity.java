@@ -24,11 +24,9 @@ import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.contact.edit.ContactEditActivity;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
@@ -161,15 +159,15 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
             return;
 
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                     //showPreloader();
                     //hideFragmentView();
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     Contact record = DatabaseHelper.getContactDao().queryUuid(recordUuid);
 
                     if (record == null) {
@@ -179,7 +177,7 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
                         resultHolder.forItem().add(record);
                     }
                 }
-            });
+            };
             jobTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {

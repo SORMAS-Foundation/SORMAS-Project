@@ -3,8 +3,6 @@ package de.symeda.sormas.app.event.read;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -17,19 +15,13 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.event.EventSection;
 import de.symeda.sormas.app.event.edit.EventEditActivity;
-import de.symeda.sormas.app.event.edit.EventEditFragment;
-import de.symeda.sormas.app.event.edit.EventEditPersonsInvolvedListFragment;
-import de.symeda.sormas.app.event.edit.EventEditTaskListFragement;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
-import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 /**
@@ -172,15 +164,15 @@ public class EventReadActivity extends BaseReadActivity<Event> {
             return;
 
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                     //showPreloader();
                     //hideFragmentView();
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     Event record = DatabaseHelper.getEventDao().queryUuid(recordUuid);
 
                     if (record == null) {
@@ -190,7 +182,7 @@ public class EventReadActivity extends BaseReadActivity<Event> {
                         resultHolder.forItem().add(record);
                     }
                 }
-            });
+            };
             jobTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {

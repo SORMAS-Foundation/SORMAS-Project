@@ -47,11 +47,9 @@ import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentEventEditPersonInfoLayoutBinding;
 import de.symeda.sormas.app.event.edit.OccupationTypeLayoutProcessor;
@@ -418,15 +416,15 @@ public class EventEditPersonsInvolvedInfoFragment extends BaseEditActivityFragme
             return;
 
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                     //getActivityCommunicator().showPreloader();
                     //getActivityCommunicator().hideFragmentView();
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     EventParticipant eventParticipant = getActivityRootData();
 
                     if (eventParticipant != null) {
@@ -436,7 +434,7 @@ public class EventEditPersonsInvolvedInfoFragment extends BaseEditActivityFragme
 
                     resultHolder.forItem().add(eventParticipant);
                 }
-            });
+            };
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {

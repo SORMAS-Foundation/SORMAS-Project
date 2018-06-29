@@ -21,10 +21,8 @@ import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.backend.visit.VisitDao;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -237,17 +235,17 @@ public class ContactEditFollowUpInfoActivity extends BaseEditActivity<Visit> {
             return true;
         }*/
 
-        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+        DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
             private Visit v;
             private String saveUnsuccessful;
 
             @Override
-            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+            public void onPreExecute() {
                 saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_visit));
             }
 
             @Override
-            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+            public void execute(TaskResultHolder resultHolder) {
                 try {
                         /*if (this.s != null)
                             v.setSymptoms(this.s);*/
@@ -264,13 +262,13 @@ public class ContactEditFollowUpInfoActivity extends BaseEditActivity<Visit> {
                 }
             }
 
-            private IJobDefinition init(Visit v) {
+            private DefaultAsyncTask init(Visit v) {
                 this.v = v;
 
                 return this;
             }
 
-        }.init(visit));
+        }.init(visit);
         saveTask = executor.execute(new ITaskResultCallback() {
             private Visit v;
 

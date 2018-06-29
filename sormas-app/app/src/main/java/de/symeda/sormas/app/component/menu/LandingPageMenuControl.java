@@ -29,22 +29,15 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.OnSwipeTouchListener;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 
 
@@ -261,14 +254,14 @@ public class LandingPageMenuControl extends LinearLayout {
 
     private void updateNotificationCount(final List<LandingPageMenuItem> inputMenuList, final Callback.IAction<BoolResult> callback) {
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
 
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     int position = 0;
                     for(final LandingPageMenuItem entry: inputMenuList) {
                         int result = performNotificationCountChange(entry, position);
@@ -280,7 +273,7 @@ public class LandingPageMenuControl extends LinearLayout {
 
                     resultHolder.setResultStatus(BoolResult.TRUE);
                 }
-            });
+            };
             updateNotificationCountTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {

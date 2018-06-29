@@ -21,10 +21,8 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -189,7 +187,7 @@ public class EventEditPersonsInvolvedInfoActivity extends BaseEditActivity<Event
         }*/
 
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 private EventParticipantDao eventParticipantDao;
                 private PersonDao personDao;
                 private EventParticipant ep;
@@ -197,7 +195,7 @@ public class EventEditPersonsInvolvedInfoActivity extends BaseEditActivity<Event
                 private String saveUnsuccessful;
 
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                     //getActivityCommunicator().showPreloader();
                     //getActivityCommunicator().hideFragmentView();
                     eventParticipantDao = DatabaseHelper.getEventParticipantDao();
@@ -207,7 +205,7 @@ public class EventEditPersonsInvolvedInfoActivity extends BaseEditActivity<Event
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     try {
                         personDao.saveAndSnapshot(this.p);
                         this.ep.setPerson(this.p);
@@ -219,14 +217,14 @@ public class EventEditPersonsInvolvedInfoActivity extends BaseEditActivity<Event
                     }
                 }
 
-                private IJobDefinition init(EventParticipant ep, Person p) {
+                private DefaultAsyncTask init(EventParticipant ep, Person p) {
                     this.ep = ep;
                     this.p = p;
 
                     return this;
                 }
 
-            }.init(record, person));
+            }.init(record, person);
             saveTask = executor.execute(new ITaskResultCallback() {
                 private EventParticipant ep;
 

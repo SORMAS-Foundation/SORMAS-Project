@@ -30,10 +30,8 @@ import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.DialogMoveCaseLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
@@ -73,11 +71,11 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, final Callback.IAction callback) {
         //DialogMoveCaseLayoutBinding _contentBinding = (DialogMoveCaseLayoutBinding)contentBinding;
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 private String saveUnsuccessful;
 
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                     /*CaseValidator.clearErrorsForMoveCaseData(binding);
                     if (!CaseValidator.validateMoveCaseData(binding)) {
                         resultHolder.setResultStatus(new BoolResult(false, getResources().getString(R.string.notification_case_move_validation_error)));
@@ -90,7 +88,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     try {
                         DatabaseHelper.getCaseDao().transferCase(data);
                     } catch (NullPointerException | DaoException e) {
@@ -100,7 +98,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
                         ErrorReportingHelper.sendCaughtException(tracker, e, data, true);
                     }
                 }
-            });
+            };
             moveCaseTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {

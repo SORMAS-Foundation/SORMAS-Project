@@ -29,11 +29,9 @@ import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.ISaveableWithCallback;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -140,19 +138,19 @@ public class EventNewPersonsInvolvedShortFragment extends BaseEditActivityFragme
             return;
 
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                     //getActivityCommunicator().showPreloader();
                     //getActivityCommunicator().hideFragmentView();
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     EventParticipant eventParticipant = getActivityRootData();
                     resultHolder.forItem().add(eventParticipant);
                 }
-            });
+            };
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
@@ -291,20 +289,20 @@ public class EventNewPersonsInvolvedShortFragment extends BaseEditActivityFragme
 
     private void checkExistingPersons(final NotificationContext nContext, final EventParticipant eventParticipantToSave, final Callback.IAction<List<Person>> callback) {
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
 
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
 //                    List<Person> existingPersons = DatabaseHelper.getPersonDao()
 //                            .getAllByName(eventParticipantToSave.getPerson().getFirstName(),
 //                            eventParticipantToSave.getPerson().getLastName());
 //                    resultHolder.forList().add(existingPersons);
                 }
-            });
+            };
             checkExistingPersonTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
@@ -336,12 +334,12 @@ public class EventNewPersonsInvolvedShortFragment extends BaseEditActivityFragme
 
     private void savePersonAndEventParticipant(final NotificationContext nContext, final EventParticipant eventParticipantToSave, final Callback.IAction callback) {
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 private PersonDao personDao;
                 private String saveUnsuccessful;
 
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                     getActivityCommunicator().showPreloader();
                     getActivityCommunicator().hideFragmentView();
 
@@ -350,7 +348,7 @@ public class EventNewPersonsInvolvedShortFragment extends BaseEditActivityFragme
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     try {
                         // save the person
                         personDao.saveAndSnapshot(eventParticipantToSave.getPerson());
@@ -368,7 +366,7 @@ public class EventNewPersonsInvolvedShortFragment extends BaseEditActivityFragme
                         ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                     }
                 }
-            });
+            };
             createPersonTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {

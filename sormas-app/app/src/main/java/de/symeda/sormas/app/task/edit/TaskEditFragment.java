@@ -28,11 +28,9 @@ import de.symeda.sormas.app.contact.edit.ContactEditActivity;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.NotificationContext;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -187,15 +185,15 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
             return;
 
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                     //getActivityCommunicator().showPreloader();
                     //getActivityCommunicator().hideFragmentView();
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     Task task = getActivityRootData();
 
                     if (task != null) {
@@ -205,7 +203,7 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
 
                     resultHolder.forItem().add(task);
                 }
-            });
+            };
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
@@ -241,12 +239,12 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
             @Override
             public void onClick(View v) {
                 try {
-                    ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                    DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                         private View button;
                         private String msgTaskClassificationError;
 
                         @Override
-                        public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                        public void onPreExecute() {
                             this.button.setEnabled(false);
                             this.msgTaskClassificationError = getResources().getString(R.string.snackbar_task_case_classification_error);
                             //getActivityCommunicator().showPreloader();
@@ -254,7 +252,7 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                         }
 
                         @Override
-                        public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                        public void execute(TaskResultHolder resultHolder) {
                             try {
                                 final TaskDao taskDao = DatabaseHelper.getTaskDao();
                                 taskDao.saveAndSnapshot(record);
@@ -268,11 +266,11 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                                 resultHolder.setResultStatus(new BoolResult(false, this.msgTaskClassificationError));
                             }
                         }
-                        private IJobDefinition init(View button){
+                        private DefaultAsyncTask init(View button){
                             this.button = button;
                             return this;
                         }
-                    }.init(v));
+                    }.init(v);
                     doneCallbackTask = executor.execute(new ITaskResultCallback() {
                         private View button;
 
@@ -330,12 +328,12 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                         return;
                     }
 
-                    ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                    DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                         private View button;
                         private String msgTaskStatusChangeError = "";
 
                         @Override
-                        public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                        public void onPreExecute() {
                             this.button.setEnabled(false);
                             this.msgTaskStatusChangeError = getResources().getString(R.string.snackbar_task_status_change_error);
                             //getActivityCommunicator().showPreloader();
@@ -343,7 +341,7 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                         }
 
                         @Override
-                        public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                        public void execute(TaskResultHolder resultHolder) {
                             try {
                                 final TaskDao taskDao = DatabaseHelper.getTaskDao();
                                 taskDao.saveAndSnapshot(record);
@@ -357,11 +355,11 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                                 // Will not happen here
                             }
                         }
-                        private IJobDefinition init(View button){
+                        private DefaultAsyncTask init(View button){
                             this.button = button;
                             return this;
                         }
-                    }.init(v));
+                    }.init(v);
                     notExecCallbackTask = executor.execute(new ITaskResultCallback() {
                         private View button;
 

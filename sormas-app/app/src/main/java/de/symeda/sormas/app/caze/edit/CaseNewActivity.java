@@ -35,11 +35,9 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.dialog.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -169,14 +167,14 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
         }*/
 
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
 
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     List<PersonNameDto> existingPersons = DatabaseHelper.getPersonDao().getPersonNameDtos();
                     List<Person> similarPersons = new ArrayList<>();
                     for (PersonNameDto existingPerson : existingPersons) {
@@ -188,7 +186,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                     }
                     resultHolder.forList().add(similarPersons);
                 }
-            });
+            };
             saveTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
@@ -271,12 +269,12 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
     private void savePersonAndCase(final Case caze) {
 
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 private PersonDao personDao;
                 private String saveUnsuccessful;
 
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                     showPreloader();
                     hideFragmentView();
 
@@ -285,7 +283,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     try {
                         personDao.saveAndSnapshot(caze.getPerson());
 
@@ -315,7 +313,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                         ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
                     }
                 }
-            });
+            };
             createPersonTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {

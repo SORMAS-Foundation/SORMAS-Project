@@ -26,7 +26,7 @@ public class MenuOptionsHelper {
                 return true;
 
             case R.id.option_menu_action_markAllAsRead:
-                MarkAllAsReadHelper.markCases(activity, null);
+                MarkAllAsReadHelper.markCasesAsRead(activity, null);
                 return true;
 
             // Report problem button
@@ -50,7 +50,7 @@ public class MenuOptionsHelper {
                 return true;
 
             case R.id.option_menu_action_markAllAsRead:
-                MarkAllAsReadHelper.markCases(activity, null);
+                MarkAllAsReadHelper.markCasesAsRead(activity, null);
                 return true;
 
             // Report problem button

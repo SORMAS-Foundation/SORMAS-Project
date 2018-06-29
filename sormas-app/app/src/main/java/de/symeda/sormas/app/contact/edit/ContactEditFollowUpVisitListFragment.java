@@ -21,11 +21,9 @@ import de.symeda.sormas.app.contact.edit.sub.ContactEditFollowUpInfoActivity;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -143,15 +141,15 @@ public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragme
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
-        ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+        DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
             @Override
-            public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+            public void onPreExecute() {
                 //getActivityCommunicator().showPreloader();
                 //getActivityCommunicator().hideFragmentView();
             }
 
             @Override
-            public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+            public void execute(TaskResultHolder resultHolder) {
                 Contact contact = getActivityRootData();
                 List<Visit> visitList = new ArrayList<Visit>();
 
@@ -165,7 +163,7 @@ public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragme
 
                 resultHolder.forList().add(visitList);
             }
-        });
+        };
         onResumeTask = executor.execute(new ITaskResultCallback() {
             @Override
             public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {

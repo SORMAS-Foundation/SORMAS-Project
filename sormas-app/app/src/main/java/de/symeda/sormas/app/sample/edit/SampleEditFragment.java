@@ -40,11 +40,9 @@ import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.ISaveable;
 import de.symeda.sormas.app.core.YesNo;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -374,15 +372,15 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
             return;
 
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                     //getActivityCommunicator().showPreloader();
                     //getActivityCommunicator().hideFragmentView();
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     SampleTest sampleTest = null;
                     Sample sample = getActivityRootData();
 
@@ -396,7 +394,7 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
                     resultHolder.forItem().add(sample);
                     resultHolder.forItem().add(sampleTest);
                 }
-            });
+            };
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
@@ -546,11 +544,11 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
         }
 
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 private String saveUnsuccessful;
 
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                     //getActivityCommunicator().showPreloader();
                     //getActivityCommunicator().hideFragmentView();
 
@@ -558,7 +556,7 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     try {
                         SampleDao sampleDao = DatabaseHelper.getSampleDao();
                         sampleDao.saveAndSnapshot(sampleToSave);
@@ -568,7 +566,7 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
                         ErrorReportingHelper.sendCaughtException(tracker, e, sampleToSave, true);
                     }
                 }
-            });
+            };
             saveSample = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {

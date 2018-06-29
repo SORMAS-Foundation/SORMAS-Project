@@ -33,9 +33,9 @@ public class AsyncTaskResult<T> {
         this.resultStatus = resultStatus;
     }
 
-    public AsyncTaskResult(BoolResult resultStatus, Exception error) {
+    public AsyncTaskResult(Exception error) {
         super();
         this.error = error;
-        this.resultStatus = resultStatus;
+        this.resultStatus = new BoolResult(false, error.getMessage());
     }
 }

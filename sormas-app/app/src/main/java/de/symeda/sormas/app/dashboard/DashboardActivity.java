@@ -84,7 +84,7 @@ public class DashboardActivity extends BaseDashboardActivity {
                 return true;
 
             case R.id.option_menu_action_markAllAsRead:
-                MarkAllAsReadHelper.markCases(this, new Callback.IAction<AsyncTask>() {
+                MarkAllAsReadHelper.markCasesAsRead(this, new Callback.IAction<AsyncTask>() {
                     @Override
                     public void call(AsyncTask asyncTask) {
                         /*if (asyncTask != null && !asyncTask.isCancelled())

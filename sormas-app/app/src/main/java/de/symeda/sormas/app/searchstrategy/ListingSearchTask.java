@@ -38,7 +38,7 @@ public class ListingSearchTask<ADO extends AbstractDomainObject> extends AsyncTa
         try {
             return new AsyncTaskResult<List<ADO>>(resultStatus, searchStrategy.search());
         } catch (Exception e) {
-            return new AsyncTaskResult<List<ADO>>(resultStatus, e);
+            return new AsyncTaskResult<List<ADO>>(e);
         }
     }
 

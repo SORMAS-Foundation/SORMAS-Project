@@ -18,10 +18,8 @@ import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 
 /**
@@ -97,19 +95,19 @@ public abstract class BaseReportActivityFragment<TBinding extends ViewDataBindin
 
 
             beforeLayoutBindingAsyncReturn = false;
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                     getActivityCommunicator().showPreloader();
                     getActivityCommunicator().hideFragmentView();
                 }
 
 
                 @Override
-                public void execute(BoolResult resultStatus, final TaskResultHolder resultHolder) {
+                public void execute(final TaskResultHolder resultHolder) {
                     onBeforeLayoutBinding(savedInstanceState, resultHolder, null, false);
                 }
-            });
+            };
 
             jobTask = executor.execute(new ITaskResultCallback() {
                 @Override

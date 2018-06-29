@@ -38,11 +38,9 @@ import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;
-import de.symeda.sormas.app.core.async.IJobDefinition;
-import de.symeda.sormas.app.core.async.ITaskExecutor;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskExecutorFor;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -257,18 +255,18 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
             return;
 
         if (mUser.hasUserRole(UserRole.INFORMANT)) {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 private String saveUnsuccessful;
 
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                     //getActivityCommunicator().showPreloader();
                     //getActivityCommunicator().hideFragmentView();
                     changeButtonsEnabledStatus(false);
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     List<PendingReportViewModel> list = new ArrayList<>();
                     for (WeeklyReportEntry entry : DatabaseHelper.getWeeklyReportEntryDao().getAllByWeeklyReport(c.getReport())) {
                         list.add(new PendingReportViewModel(entry.getDisease(), entry.getNumberOfCases()));
@@ -276,7 +274,7 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
 
                     resultHolder.forOther().add(list);
                 }
-            });
+            };
             onPendingReportTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
@@ -318,18 +316,18 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
 
         if (mUser.hasUserRole(UserRole.INFORMANT)) {
             try {
-                ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                     private String saveUnsuccessful;
 
                     @Override
-                    public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    public void onPreExecute() {
                         //getActivityCommunicator().showPreloader();
                         //getActivityCommunicator().hideFragmentView();
                         changeButtonsEnabledStatus(false);
                     }
 
                     @Override
-                    public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    public void execute(TaskResultHolder resultHolder) {
                         List<WeeklyReportViewModel> list = new ArrayList<>();
                         for (WeeklyReportEntry entry : DatabaseHelper.getWeeklyReportEntryDao().getAllByWeeklyReport(c.getReport())) {
                             list.add(new WeeklyReportViewModel(entry.getDisease(), entry.getNumberOfCases()));
@@ -337,7 +335,7 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
 
                         resultHolder.forOther().add(list);
                     }
-                });
+                };
                 onWeeklyReportTask = executor.execute(new ITaskResultCallback() {
                     @Override
                     public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
@@ -378,18 +376,18 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
             return;
 
         try {
-            ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 private String saveUnsuccessful;
 
                 @Override
-                public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void onPreExecute() {
                     //getActivityCommunicator().showPreloader();
                     //getActivityCommunicator().hideFragmentView();
                     changeButtonsEnabledStatus(false);
                 }
 
                 @Override
-                public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                public void execute(TaskResultHolder resultHolder) {
                     List<WeeklyReportOverviewViewModel> list = new ArrayList<>();
                     List<User> informants = DatabaseHelper.getUserDao().getByDistrictAndRole(mUser.getDistrict(), UserRole.INFORMANT, User.HEALTH_FACILITY + "_id");
                     for (User informant : informants) {
@@ -400,7 +398,7 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
 
                     resultHolder.forOther().add(list);
                 }
-            });
+            };
             onWeeklyReportOverviewTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
@@ -525,11 +523,11 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
 
 
                 try {
-                    ITaskExecutor executor = TaskExecutorFor.job(new IJobDefinition() {
+                    DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                         private String saveUnsuccessful;
 
                         @Override
-                        public void preExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                        public void onPreExecute() {
                             //getActivityCommunicator().showPreloader();
                             //getActivityCommunicator().hideFragmentView();
                             changeButtonsEnabledStatus(false);
@@ -538,7 +536,7 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
                         }
 
                         @Override
-                        public void execute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                        public void execute(TaskResultHolder resultHolder) {
                             try {
                                 DatabaseHelper.getWeeklyReportDao().create(mReportFilter.getEpiWeek());
                             } catch (DaoException e) {
@@ -548,7 +546,7 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
                                 ErrorReportingHelper.sendCaughtException(mTracker, e, null, true);
                             }
                         }
-                    });
+                    };
                     onConfirmReportTask = executor.execute(new ITaskResultCallback() {
                         @Override
                         public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
