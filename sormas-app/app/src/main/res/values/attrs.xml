@@ -217,7 +217,7 @@
     </declare-styleable>
 
 
-    <declare-styleable name="TeboPassword">
+    <declare-styleable name="ControlPasswordField">
         <attr name="labelCaption" />
         <attr name="labelColor" />
         <attr name="textAlignment" />
@@ -225,10 +225,6 @@
         <!--<attr name="hint" />-->
         <attr name="description" />
         <attr name="required" />
-        <attr name="singleLine" />
-        <attr name="maxLines" />
-        <attr name="inputType" />
-        <attr name="passwordToggleEnabled" />
     </declare-styleable>
 
 

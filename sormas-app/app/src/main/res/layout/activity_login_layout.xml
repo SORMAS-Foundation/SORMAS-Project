@@ -128,7 +128,7 @@
                 <!--app:nextFocusDown="@+id/txtPassword"-->
                 <!--app:nextFocusRight="@+id/txtPassword"-->
 
-                <de.symeda.sormas.app.component.controls.TeboPassword
+                <de.symeda.sormas.app.component.controls.ControlPasswordField
                     android:id="@+id/password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -138,8 +138,6 @@
                     app:description="@string/desc_login_password"
                     app:required="true"
                     app:value="@={data.password}"
-                    app:passwordToggleEnabled="true"
-                    app:inputType="textPassword"
 
                      />
 
