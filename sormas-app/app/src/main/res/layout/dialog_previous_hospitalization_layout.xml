@@ -129,28 +129,19 @@
 
                 />
 
-            <de.symeda.sormas.app.component.controls.TeboSwitch
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/swhIsolation"
                 android:layout_width="@dimen/teboSwitchMinWidth"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:paddingTop="@dimen/defaultControlVerticalPadding"
-                app:paddingBottom="@dimen/defaultControlVerticalPadding"
-                app:background="@drawable/control_switch_background_border"
-                app:borderSize="@dimen/defaultControlStrokeWidth"
-                app:textColor="@color/control_switch_color_selector"
                 app:hint="@string/hint_case_hos_isolation"
                 app:labelCaption="@string/label_case_hos_isolation"
                 app:description="@string/desc_case_hos_isolation"
                 app:required="true"
-                app:orientation="horizontal"
                 app:slim="true"
-                app:includeUnknown="@{false}"
                 app:enumClass="@{yesNoUnknownClass}"
                 app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                app:abbrevUnknown="@{false}"
                 app:value="@={data.isolated}"
-                app:onCheckedChangeListener="@{null}"
 
 
                 />

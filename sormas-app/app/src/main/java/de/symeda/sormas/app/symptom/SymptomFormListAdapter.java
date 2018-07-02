@@ -18,9 +18,8 @@ import java.util.List;
 
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
 import de.symeda.sormas.app.component.controls.ControlDateField;
-import de.symeda.sormas.app.component.controls.TeboSwitch;
+import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
@@ -128,7 +127,7 @@ public class SymptomFormListAdapter extends DataBoundAdapter<RowEditSymptomListI
         setOtherBindingVariable(holder.binding, record);
 
         holder.binding.setSymptomStateClass(SymptomState.class);
-        holder.binding.setCheckedCallback(createCallback(record, holder));
+//        holder.binding.setCheckedCallback(createCallback(record, holder));
     }
     @Override
     public int getItemCount() {
@@ -140,62 +139,62 @@ public class SymptomFormListAdapter extends DataBoundAdapter<RowEditSymptomListI
     }
 
     //<editor-fold desc="Private Methods">
-    private OnTeboSwitchCheckedChangeListener createCallback(Symptom symptomRecord,
-                                                             DataBoundViewHolder<RowEditSymptomListItemLayoutBinding> holder) {
-        return new OnTeboSwitchCheckedChangeListener() {
-            private Symptom _symptomItem;
-            private DataBoundViewHolder<RowEditSymptomListItemLayoutBinding> _holder;
-
-            @Override
-            public void onCheckedChanged(TeboSwitch teboSwitch, Object checkedItem, int checkedId) {
-                if (checkedId < 0)
-                    return;
-
-                SymptomState state = (SymptomState)checkedItem;
-                Symptom activeSymptom = getActiveSymptomRecord(teboSwitch, _symptomItem);
-
-                if (activeSymptom == null) {
-                    Log.e(TAG, "The active symptom is null.");
-                    return;
-                }
-
-                if (activeSymptom.getLastCheckedId() == checkedId) {
-                    return;
-                }
-
-                activeSymptom.setLastCheckedId(checkedId);
-
-                if (_symptomItem.getChildViewModel() instanceof DetailsViewModel) {
-                    if (teboSwitch.getId() == R.id.swhSymptomState) {
-                        if (state == SymptomState.YES && _symptomItem.hasDetail()) {
-                            _holder.binding.txtSymptomDetail.setVisibility(View.VISIBLE);
-                        } else {
-                            _holder.binding.txtSymptomDetail.setVisibility(View.GONE);
-                        }
-                    }
-                }
-
-                if (_symptomItem.getChildViewModel() instanceof LesionChildViewModel) {
-                    if (teboSwitch.getId() == R.id.swhSymptomState) {
-                        if (state == SymptomState.YES && _symptomItem.hasDetail()) {
-                            getChildLayout(_holder.binding).setVisibility(View.VISIBLE);
-                        } else {
-                            getChildLayout(_holder.binding).setVisibility(View.GONE);
-                        }
-                    }
-                }
-
-                performSymptomStateChanged(activeSymptom, state);
-            }
-
-
-            private OnTeboSwitchCheckedChangeListener init(Symptom s, DataBoundViewHolder<RowEditSymptomListItemLayoutBinding> h){
-                _symptomItem = s;
-                _holder = h;
-                return this;
-            }
-        }.init(symptomRecord, holder);
-    }
+//    private OnTeboSwitchCheckedChangeListener createCallback(Symptom symptomRecord,
+//                                                             DataBoundViewHolder<RowEditSymptomListItemLayoutBinding> holder) {
+//        return new OnTeboSwitchCheckedChangeListener() {
+//            private Symptom _symptomItem;
+//            private DataBoundViewHolder<RowEditSymptomListItemLayoutBinding> _holder;
+//
+//            @Override
+//            public void onCheckedChanged(ControlSwitchField teboSwitch, Object checkedItem, int checkedId) {
+//                if (checkedId < 0)
+//                    return;
+//
+//                SymptomState state = (SymptomState)checkedItem;
+//                Symptom activeSymptom = getActiveSymptomRecord(teboSwitch, _symptomItem);
+//
+//                if (activeSymptom == null) {
+//                    Log.e(TAG, "The active symptom is null.");
+//                    return;
+//                }
+//
+//                if (activeSymptom.getLastCheckedId() == checkedId) {
+//                    return;
+//                }
+//
+//                activeSymptom.setLastCheckedId(checkedId);
+//
+//                if (_symptomItem.getChildViewModel() instanceof DetailsViewModel) {
+//                    if (teboSwitch.getId() == R.id.swhSymptomState) {
+//                        if (state == SymptomState.YES && _symptomItem.hasDetail()) {
+//                            _holder.binding.txtSymptomDetail.setVisibility(View.VISIBLE);
+//                        } else {
+//                            _holder.binding.txtSymptomDetail.setVisibility(View.GONE);
+//                        }
+//                    }
+//                }
+//
+//                if (_symptomItem.getChildViewModel() instanceof LesionChildViewModel) {
+//                    if (teboSwitch.getId() == R.id.swhSymptomState) {
+//                        if (state == SymptomState.YES && _symptomItem.hasDetail()) {
+//                            getChildLayout(_holder.binding).setVisibility(View.VISIBLE);
+//                        } else {
+//                            getChildLayout(_holder.binding).setVisibility(View.GONE);
+//                        }
+//                    }
+//                }
+//
+//                performSymptomStateChanged(activeSymptom, state);
+//            }
+//
+//
+//            private OnTeboSwitchCheckedChangeListener init(Symptom s, DataBoundViewHolder<RowEditSymptomListItemLayoutBinding> h){
+//                _symptomItem = s;
+//                _holder = h;
+//                return this;
+//            }
+//        }.init(symptomRecord, holder);
+//    }
 
     private void buildChildLayout(Symptom s, DataBoundViewHolder<RowEditSymptomListItemLayoutBinding> holder, LinearLayout childRootView) {
         Integer layoutId = s.getDetailTemplateResId();
@@ -229,7 +228,7 @@ public class SymptomFormListAdapter extends DataBoundAdapter<RowEditSymptomListI
 //            binding.setHideNotificationCallback(holder.binding.getHideNotificationCallback());
             binding.setData((LesionChildViewModel)s.getChildViewModel());
             binding.setSymptomStateClass(SymptomState.class);
-            binding.setCheckedCallback(createCallback(s, holder));
+//            binding.setCheckedCallback(createCallback(s, holder));
         }
     }
 
@@ -275,7 +274,7 @@ public class SymptomFormListAdapter extends DataBoundAdapter<RowEditSymptomListI
         return (LinearLayout)binding.getRoot().findViewById(R.id.lesionsLayoutInclude);
     }
 
-    private Symptom getActiveSymptomRecord(TeboSwitch teboSwitch, Symptom parent) {
+    private Symptom getActiveSymptomRecord(ControlSwitchField teboSwitch, Symptom parent) {
         if (teboSwitch.getId() == R.id.swhSymptomState) {
             return parent;
         } else {

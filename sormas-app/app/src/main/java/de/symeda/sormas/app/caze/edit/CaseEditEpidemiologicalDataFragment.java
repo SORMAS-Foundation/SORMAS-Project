@@ -25,9 +25,8 @@ import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
-import de.symeda.sormas.app.component.controls.TeboSwitch;
+import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
@@ -65,10 +64,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     private int mGatheringLastCheckedId = -1;
     private int mTravelLastCheckedId = -1;
     private int mBurialLastCheckedId = -1;
-
-    private OnTeboSwitchCheckedChangeListener onSocialGatheringCheckedCallback;
-    private OnTeboSwitchCheckedChangeListener onTravelCheckedCallback;
-    private OnTeboSwitchCheckedChangeListener onBurialCheckedCallback;
 
     private IEntryItemOnClickListener onGatheringItemClickListener;
     private IEntryItemOnClickListener onTravelItemClickListener;
@@ -210,9 +205,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
 
         contentBinding.setData(record);
         contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
-        contentBinding.setGatheringCallback(onSocialGatheringCheckedCallback);
-        contentBinding.setTravelCallback(onTravelCheckedCallback);
-        contentBinding.setBurialCallback(onBurialCheckedCallback);
         contentBinding.setGatheringList(getGatherings());
         contentBinding.setTravelList(getTravels());
         contentBinding.setBurialList(getBurials());
@@ -346,75 +338,75 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     }
 
     private void setupCallback() {
-        onSocialGatheringCheckedCallback = new OnTeboSwitchCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(TeboSwitch teboSwitch, Object checkedItem, int checkedId) {
-                if (checkedId < 0)
-                    return;
-
-                if (mGatheringLastCheckedId == checkedId) {
-                    return;
-                }
-
-                mGatheringLastCheckedId = checkedId;
-
-                YesNoUnknown answer = (YesNoUnknown)checkedItem;
-
-                if (answer == YesNoUnknown.YES) {
-                    getContentBinding().ctrlGatherings.setVisibility(View.VISIBLE);
-                } else {
-                    getContentBinding().ctrlGatherings.setVisibility(View.GONE);
-                }
-            }
-        };
-
-
-        onTravelCheckedCallback = new OnTeboSwitchCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(TeboSwitch teboSwitch, Object checkedItem, int checkedId) {
-                if (checkedId < 0)
-                    return;
-
-                if (mTravelLastCheckedId == checkedId) {
-                    return;
-                }
-
-                mTravelLastCheckedId = checkedId;
-
-                YesNoUnknown answer = (YesNoUnknown)checkedItem;
-
-                if (answer == YesNoUnknown.YES) {
-                    getContentBinding().ctrlTravels.setVisibility(View.VISIBLE);
-                } else {
-                    getContentBinding().ctrlTravels.setVisibility(View.GONE);
-                }
-
-            }
-        };
-
-
-        onBurialCheckedCallback = new OnTeboSwitchCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(TeboSwitch teboSwitch, Object checkedItem, int checkedId) {
-                if (checkedId < 0)
-                    return;
-
-                if (mBurialLastCheckedId == checkedId) {
-                    return;
-                }
-
-                mBurialLastCheckedId = checkedId;
-
-                YesNoUnknown answer = (YesNoUnknown)checkedItem;
-
-                if (answer == YesNoUnknown.YES) {
-                    getContentBinding().ctrlBurials.setVisibility(View.VISIBLE);
-                } else {
-                    getContentBinding().ctrlBurials.setVisibility(View.GONE);
-                }
-
-            }
-        };
+//        onSocialGatheringCheckedCallback = new OnTeboSwitchCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(ControlSwitchField teboSwitch, Object checkedItem, int checkedId) {
+//                if (checkedId < 0)
+//                    return;
+//
+//                if (mGatheringLastCheckedId == checkedId) {
+//                    return;
+//                }
+//
+//                mGatheringLastCheckedId = checkedId;
+//
+//                YesNoUnknown answer = (YesNoUnknown)checkedItem;
+//
+//                if (answer == YesNoUnknown.YES) {
+//                    getContentBinding().ctrlGatherings.setVisibility(View.VISIBLE);
+//                } else {
+//                    getContentBinding().ctrlGatherings.setVisibility(View.GONE);
+//                }
+//            }
+//        };
+//
+//
+//        onTravelCheckedCallback = new OnTeboSwitchCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(ControlSwitchField teboSwitch, Object checkedItem, int checkedId) {
+//                if (checkedId < 0)
+//                    return;
+//
+//                if (mTravelLastCheckedId == checkedId) {
+//                    return;
+//                }
+//
+//                mTravelLastCheckedId = checkedId;
+//
+//                YesNoUnknown answer = (YesNoUnknown)checkedItem;
+//
+//                if (answer == YesNoUnknown.YES) {
+//                    getContentBinding().ctrlTravels.setVisibility(View.VISIBLE);
+//                } else {
+//                    getContentBinding().ctrlTravels.setVisibility(View.GONE);
+//                }
+//
+//            }
+//        };
+//
+//
+//        onBurialCheckedCallback = new OnTeboSwitchCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(ControlSwitchField teboSwitch, Object checkedItem, int checkedId) {
+//                if (checkedId < 0)
+//                    return;
+//
+//                if (mBurialLastCheckedId == checkedId) {
+//                    return;
+//                }
+//
+//                mBurialLastCheckedId = checkedId;
+//
+//                YesNoUnknown answer = (YesNoUnknown)checkedItem;
+//
+//                if (answer == YesNoUnknown.YES) {
+//                    getContentBinding().ctrlBurials.setVisibility(View.VISIBLE);
+//                } else {
+//                    getContentBinding().ctrlBurials.setVisibility(View.GONE);
+//                }
+//
+//            }
+//        };
 
 
         onGatheringItemClickListener = new IEntryItemOnClickListener() {

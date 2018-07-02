@@ -9,9 +9,6 @@
         <variable name="detailsChildViewModel" type="de.symeda.sormas.app.symptom.DetailsViewModel"/>
         <variable name="symptomStateClass" type="Class" />
 
-        <variable
-            name="checkedCallback"
-            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
     </data>
 
     <LinearLayout
@@ -54,25 +51,17 @@
                     android:fontFamily="sans-serif"
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboSwitch
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/swhSymptomState"
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
-                    app:paddingTop="@dimen/defaultControlVerticalPadding"
-                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
-                    app:background="@drawable/control_switch_background_border"
-                    app:borderSize="@dimen/defaultControlStrokeWidth"
-                    app:textColor="@color/control_switch_color_selector"
                     app:showCaption="false"
                     app:required="true"
-                    app:orientation="horizontal"
                     app:slim="true"
-                    app:includeUnknown="@{false}"
                     app:enumClass="@{symptomStateClass}"
                     app:defaultValue="@{SymptomState.UNKNOWN}"
-                    app:abbrevUnknown="@{true}"
+                    app:useAbbreviations="@{true}"
                     app:value="@={data.state}"
-                    app:onCheckedChangeListener="@{checkedCallback}"
                     />
             </LinearLayout>
 

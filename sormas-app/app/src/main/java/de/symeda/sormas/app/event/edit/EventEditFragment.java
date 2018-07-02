@@ -25,9 +25,8 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
-import de.symeda.sormas.app.component.controls.TeboSwitch;
+import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
@@ -67,7 +66,6 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
     private String recordUuid = null;
     private EventStatus pageStatus = null;
     private Event record;
-    private OnTeboSwitchCheckedChangeListener onEventTypeCheckedCallback;
     private IEntryItemOnClickListener onAddressLinkClickedCallback;
 
     private List<Item> diseaseList;
@@ -152,7 +150,7 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
 
         contentBinding.setData(record);
         contentBinding.setEventTypeClass(EventType.class);
-        contentBinding.setCheckedCallback(onEventTypeCheckedCallback);
+//        contentBinding.setCheckedCallback(onEventTypeCheckedCallback);
         contentBinding.setAddressLinkCallback(onAddressLinkClickedCallback);
     }
 
@@ -302,19 +300,19 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
     }
 
     private void setupCallback() {
-        onEventTypeCheckedCallback = new OnTeboSwitchCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(TeboSwitch teboSwitch, Object checkedItem, int checkedId) {
-                if (mLastCheckedId == checkedId) {
-                    return;
-                }
-
-                mLastCheckedId = checkedId;
-
-
-
-            }
-        };
+//        onEventTypeCheckedCallback = new OnTeboSwitchCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(ControlSwitchField teboSwitch, Object checkedItem, int checkedId) {
+//                if (mLastCheckedId == checkedId) {
+//                    return;
+//                }
+//
+//                mLastCheckedId = checkedId;
+//
+//
+//
+//            }
+//        };
 
         onAddressLinkClickedCallback = new IEntryItemOnClickListener() {
             @Override

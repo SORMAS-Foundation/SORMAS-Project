@@ -14,9 +14,6 @@
 
         <variable name="yesNoClass" type="Class" />
 
-        <variable
-            name="shippedYesCallback"
-            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
     </data>
 
     <ScrollView
@@ -184,28 +181,19 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.controls.TeboSwitch
+                    <de.symeda.sormas.app.component.controls.ControlSwitchField
                         android:id="@+id/swhShipped"
                         android:layout_width="@dimen/teboSwitchMinWidth"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        app:paddingTop="@dimen/defaultControlVerticalPadding"
-                        app:paddingBottom="@dimen/defaultControlVerticalPadding"
-                        app:background="@drawable/control_switch_background_border"
-                        app:borderSize="@dimen/defaultControlStrokeWidth"
-                        app:textColor="@color/control_switch_color_selector"
                         app:hint="@string/hint_sample_shipping_status"
                         app:labelCaption="@string/label_sample_shipping_status"
                         app:description="@string/desc_sample_shipping_status"
                         app:required="true"
-                        app:orientation="horizontal"
                         app:slim="false"
-                        app:includeUnknown="@{false}"
                         app:enumClass="@{yesNoClass}"
                         app:defaultValue="@{YesNo.NO}"
-                        app:abbrevUnknown="@{false}"
                         app:value="@={SampleHelper.isShipped(data.shipped)}"
-                        app:onCheckedChangeListener="@{shippedYesCallback}"
 
 
                         />

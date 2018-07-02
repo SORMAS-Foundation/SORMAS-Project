@@ -13,17 +13,6 @@
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
         <variable name="yesNoUnknownClass" type="Class" />
 
-        <variable
-            name="isolationCallback"
-            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
-
-        <variable
-            name="admittedToFacilityCallback"
-            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
-
-        <variable
-            name="previousHospitalizationCallback"
-            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
         <variable name="previousHospitalizationList" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization&gt;" />
 
         <variable
@@ -81,28 +70,19 @@
                     app:goneIfNull="@{caze.healthFacilityDetails}"
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboSwitch
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/swhAdmittedToHealthFacility"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:paddingTop="@dimen/defaultControlVerticalPadding"
-                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
-                    app:background="@drawable/control_switch_background_border"
-                    app:borderSize="@dimen/defaultControlStrokeWidth"
-                    app:textColor="@color/control_switch_color_selector"
                     app:hint="@string/hint_case_hos_admitted_to_health_facility"
                     app:labelCaption="@string/label_case_hos_admitted_to_health_facility"
                     app:description="@string/desc_case_hos_admitted_to_health_facility"
                     app:required="true"
-                    app:orientation="horizontal"
                     app:slim="false"
-                    app:includeUnknown="@{false}"
                     app:enumClass="@{yesNoUnknownClass}"
                     app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:abbrevUnknown="@{false}"
                     app:value="@={data.admittedToHealthFacility}"
-                    app:onCheckedChangeListener="@{admittedToFacilityCallback}"
 
 
                     />
@@ -150,29 +130,20 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.controls.TeboSwitch
+                    <de.symeda.sormas.app.component.controls.ControlSwitchField
                         android:id="@+id/swhIsolation"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        app:paddingTop="@dimen/defaultControlVerticalPadding"
-                        app:paddingBottom="@dimen/defaultControlVerticalPadding"
-                        app:background="@drawable/control_switch_background_border"
-                        app:borderSize="@dimen/defaultControlStrokeWidth"
-                        app:textColor="@color/control_switch_color_selector"
                         app:hint="@string/hint_case_hos_isolation"
                         app:labelCaption="@string/label_case_hos_isolation"
                         app:description="@string/desc_case_hos_isolation"
                         app:required="true"
-                        app:orientation="horizontal"
                         app:slim="false"
-                        app:includeUnknown="@{false}"
                         app:enumClass="@{yesNoUnknownClass}"
                         app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                        app:abbrevUnknown="@{false}"
                         app:value="@={data.isolated}"
-                        app:onCheckedChangeListener="@{isolationCallback}"
 
 
                         />
@@ -194,30 +165,20 @@
 
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.controls.TeboSwitch
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/swhPreviousHospitalization"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:paddingTop="@dimen/defaultControlVerticalPadding"
-                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
-                    app:background="@drawable/control_switch_background_border"
-                    app:borderSize="@dimen/defaultControlStrokeWidth"
-                    app:textColor="@color/control_switch_color_selector"
                     app:hint="@string/hint_case_hos_visited_previously_for_illness"
                     app:labelCaption="@string/label_case_hos_visited_previously_for_illness"
                     app:description="@string/desc_case_hos_visited_previously_for_illness"
                     app:required="true"
-                    app:orientation="horizontal"
                     app:slim="false"
-                    app:includeUnknown="@{false}"
                     app:enumClass="@{yesNoUnknownClass}"
                     app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:abbrevUnknown="@{false}"
                     app:value="@={data.admittedToHealthFacility}"
 
-
-                    app:onCheckedChangeListener="@{previousHospitalizationCallback}"
                     />
 
             </LinearLayout>

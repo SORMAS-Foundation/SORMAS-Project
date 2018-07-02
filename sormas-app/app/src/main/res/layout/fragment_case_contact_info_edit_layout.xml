@@ -11,9 +11,6 @@
         <variable name="contactProximityClass" type="Class" />
 
         <variable
-            name="checkedCallback"
-            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
-        <variable
             name="createCaseCallback"
             type="android.view.View.OnClickListener" />
 
@@ -88,7 +85,7 @@
 
         </LinearLayout>
 
-        <de.symeda.sormas.app.component.controls.TeboRadioGroup
+        <de.symeda.sormas.app.component.controls.ControlRadioGroupField
             android:id="@+id/chkContactProximity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -97,12 +94,6 @@
             app:labelCaption="@string/label_contact_type"
             app:description="@string/desc_contact_type"
             app:required="true"
-            app:horizontalFlow="false"
-            app:scaleX="1"
-            app:scaleY="1"
-            app:radioButtonMarginStart="@dimen/radioButtonMarginStart"
-            app:includeMarginStart="true"
-            app:radioButtonLabelMarginStart="@dimen/radioButtonLabelMarginStart"
             app:enumClass="@{contactProximityClass}"
             app:value="@={data.contactProximity}"
 

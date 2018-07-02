@@ -6,9 +6,6 @@
         <variable name="data" type="de.symeda.sormas.app.epid.AnimalContact"/>
         <variable name="yesNoUnknownClass" type="Class" />
 
-        <variable
-            name="checkedCallback"
-            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
     </data>
 
 

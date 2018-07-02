@@ -16,15 +16,6 @@
         <variable name="burialList" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataBurial&gt;" />
 
         <variable
-            name="gatheringCallback"
-            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
-        <variable
-            name="travelCallback"
-            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
-        <variable
-            name="burialCallback"
-            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
-        <variable
             name="gatheringItemClickCallback"
             type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
         <variable
@@ -76,7 +67,7 @@
                     android:text="@string/description_epidemiological_info"
                     style="@style/SubHeadingDescriptionStyle" />
 
-                <de.symeda.sormas.app.component.controls.TeboSwitch
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/directContactConfirmedCase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -88,7 +79,7 @@
                     app:value="@={data.directContactConfirmedCase}"
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboSwitch
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/directContactProbableCase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -100,7 +91,7 @@
                     app:value="@={data.directContactProbableCase}"
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboSwitch
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/closeContactProbableCase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -112,7 +103,7 @@
                     app:value="@={data.closeContactProbableCase}"
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboSwitch
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/areaConfirmedCases"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -124,7 +115,7 @@
                     app:value="@={data.areaConfirmedCases}"
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboSwitch
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/processingConfirmedCaseFluidUnsafe"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -136,7 +127,7 @@
                     app:value="@={data.processingConfirmedCaseFluidUnsafe}"
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboSwitch
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/percutaneousCaseBlood"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -148,7 +139,7 @@
                     app:value="@={data.percutaneousCaseBlood}"
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboSwitch
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/directContactDeadUnsafe"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -160,7 +151,7 @@
                     app:value="@={data.directContactDeadUnsafe}"
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboSwitch
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/processingSuspectedCaseSampleUnsafe"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -172,28 +163,19 @@
                     app:value="@={data.processingSuspectedCaseSampleUnsafe}"
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboSwitch
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/swhBurial"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:paddingTop="@dimen/defaultControlVerticalPadding"
-                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
-                    app:background="@drawable/control_switch_background_border"
-                    app:borderSize="@dimen/defaultControlStrokeWidth"
-                    app:textColor="@color/control_switch_color_selector"
                     app:hint="@string/hint_case_epid_visited_burial"
                     app:labelCaption="@string/label_case_epid_visited_burial"
                     app:description="@string/desc_case_epid_visited_burial"
                     app:required="true"
-                    app:orientation="horizontal"
                     app:slim="false"
-                    app:includeUnknown="@{false}"
                     app:enumClass="@{yesNoUnknownClass}"
                     app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:abbrevUnknown="@{false}"
                     app:value="@={data.burialAttended}"
-                    app:onCheckedChangeListener="@{burialCallback}"
 
 
                     />
@@ -279,28 +261,19 @@
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
                 >
 
-                <de.symeda.sormas.app.component.controls.TeboSwitch
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/swhGathering"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:paddingTop="@dimen/defaultControlVerticalPadding"
-                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
-                    app:background="@drawable/control_switch_background_border"
-                    app:borderSize="@dimen/defaultControlStrokeWidth"
-                    app:textColor="@color/control_switch_color_selector"
                     app:hint="@string/hint_case_epid_visited_social_event"
                     app:labelCaption="@string/label_case_epid_visited_social_event"
                     app:description="@string/desc_case_epid_visited_social_event"
                     app:required="true"
-                    app:orientation="horizontal"
                     app:slim="false"
-                    app:includeUnknown="@{false}"
                     app:enumClass="@{yesNoUnknownClass}"
                     app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:abbrevUnknown="@{false}"
                     app:value="@={data.gatheringAttended}"
-                    app:onCheckedChangeListener="@{gatheringCallback}"
 
 
                     />
@@ -383,28 +356,19 @@
                 android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
                 >
-                <de.symeda.sormas.app.component.controls.TeboSwitch
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/swhTraveled"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:paddingTop="@dimen/defaultControlVerticalPadding"
-                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
-                    app:background="@drawable/control_switch_background_border"
-                    app:borderSize="@dimen/defaultControlStrokeWidth"
-                    app:textColor="@color/control_switch_color_selector"
                     app:hint="@string/hint_case_epid_travel"
                     app:labelCaption="@string/label_case_epid_travel"
                     app:description="@string/desc_case_epid_travel"
                     app:required="true"
-                    app:orientation="horizontal"
                     app:slim="false"
-                    app:includeUnknown="@{false}"
                     app:enumClass="@{yesNoUnknownClass}"
                     app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:abbrevUnknown="@{false}"
                     app:value="@={data.traveled}"
-                    app:onCheckedChangeListener="@{travelCallback}"
 
 
                     />

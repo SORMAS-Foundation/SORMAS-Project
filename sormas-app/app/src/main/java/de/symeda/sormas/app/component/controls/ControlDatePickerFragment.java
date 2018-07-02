@@ -1,17 +1,16 @@
 package de.symeda.sormas.app.component.controls;
 
-
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.widget.DatePicker;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 import de.symeda.sormas.app.R;
 
@@ -23,7 +22,7 @@ public class ControlDatePickerFragment extends DialogFragment implements DatePic
 
     // Attributes
 
-    private Date dateValue = null;
+    private Date date = null;
 
     // Listeners
 
@@ -36,36 +35,28 @@ public class ControlDatePickerFragment extends DialogFragment implements DatePic
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        if (outState == null)
-            return;
-
-        outState.putSerializable(KEY_LINKED_DATE, dateValue);
+        if (outState != null) {
+            outState.putSerializable(KEY_LINKED_DATE, date);
+        }
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
 
-        if (arguments == null || arguments.isEmpty())
-            return;
-
-        if (!arguments.containsKey(KEY_LINKED_DATE))
-            return;
-
-        dateValue = (Date) arguments.get(KEY_LINKED_DATE);
+        if (arguments != null && arguments.containsKey(KEY_LINKED_DATE)) {
+            date = (Date) arguments.get(KEY_LINKED_DATE);
+        }
     }
 
     @Override
+    @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        //Date date = (Date) getArguments().get(KEY_LINKED_TIME);
-
         final Calendar calendar = Calendar.getInstance();
-        if(dateValue != null) {
-            GregorianCalendar date = new GregorianCalendar();
-            date.setGregorianChange(dateValue);
-            calendar.set(date.get(Calendar.YEAR), date.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        if (date != null) {
+            calendar.setTime(date);
         }
 
         int year = calendar.get(Calendar.YEAR);
@@ -75,8 +66,6 @@ public class ControlDatePickerFragment extends DialogFragment implements DatePic
         final DatePickerDialog datePickerWithClear = new DatePickerDialog(getActivity(),
                 R.style.Theme_Tebo_Dialog_DatePicker, this, year, month, dayOfMonth);
 
-        //datePickerWithClear.getDatePicker().setCalendarViewShown(true);
-        //datePickerWithClear.getDatePicker().setSpinnersShown(false);
         datePickerWithClear.setButton(
                 DialogInterface.BUTTON_NEUTRAL,
                 getResources().getText(R.string.action_clear),
@@ -93,8 +82,9 @@ public class ControlDatePickerFragment extends DialogFragment implements DatePic
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        if (onDateSetListener != null)
+        if (onDateSetListener != null) {
             onDateSetListener.onDateSet(view, year, month, dayOfMonth);
+        }
     }
 
     // Getters & setters

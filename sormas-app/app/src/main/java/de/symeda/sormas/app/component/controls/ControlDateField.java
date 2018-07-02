@@ -81,7 +81,6 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 input.setText(null);
-                ControlDateField.this.clearFocus();
             }
         });
 

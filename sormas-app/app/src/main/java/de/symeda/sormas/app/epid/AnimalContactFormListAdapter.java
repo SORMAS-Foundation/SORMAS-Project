@@ -13,9 +13,8 @@ import android.widget.LinearLayout;
 
 import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
 import de.symeda.sormas.app.component.controls.ControlDateField;
-import de.symeda.sormas.app.component.controls.TeboSwitch;
+import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.databinding.RowEditAnimalContactListItemLayoutBinding;
@@ -42,7 +41,6 @@ public class AnimalContactFormListAdapter  extends DataBoundAdapter<RowEditAnima
     private List<AnimalContact> data = new ArrayList<>();
     private OnSetBindingVariableListener mOnSetBindingVariableListener;
     private FragmentManager fragmentManager;
-    private OnTeboSwitchCheckedChangeListener checkedCallback;
 
     public AnimalContactFormListAdapter(Context context, int rowLayout, FragmentManager fragmentManager) {
         this(context, rowLayout, fragmentManager, new ArrayList<AnimalContact>());
@@ -66,11 +64,8 @@ public class AnimalContactFormListAdapter  extends DataBoundAdapter<RowEditAnima
         AnimalContact record = data.get(position);
 
 
-        this.checkedCallback = createCallback(record, holder);
-
         holder.setData(record);
         holder.binding.setYesNoUnknownClass(YesNoUnknown.class);
-        holder.binding.setCheckedCallback(checkedCallback);
     }
 
     @Override
@@ -78,53 +73,53 @@ public class AnimalContactFormListAdapter  extends DataBoundAdapter<RowEditAnima
         return data.size();
     }
 
-    private OnTeboSwitchCheckedChangeListener createCallback(final AnimalContact animalContactRecord,
-                                                              DataBoundViewHolder<RowEditAnimalContactListItemLayoutBinding> holder) {
-        return new OnTeboSwitchCheckedChangeListener() {
-            private AnimalContact _animalContactItem;
-            private DataBoundViewHolder<RowEditAnimalContactListItemLayoutBinding> _holder;
-
-            @Override
-            public void onCheckedChanged(TeboSwitch teboSwitch, Object checkedItem, int checkedId) {
-                if (checkedId < 0)
-                    return;
-
-                YesNoUnknown state = (YesNoUnknown)checkedItem;
-
-                if (_animalContactItem.getLastCheckedId() == checkedId) {
-                    return;
-                }
-
-                _animalContactItem.setLastCheckedId(checkedId);
-
-                if (animalContactRecord.hasChildLayout() && animalContactRecord.getState() == YesNoUnknown.YES) {
-                    String layoutName = teboSwitch.getContext().getResources().getResourceEntryName(animalContactRecord.getLayoutResourceId());
-                    ViewDataBinding binding = inflateChildLayout(animalContactRecord.getLayoutResourceId());
-
-                    if (binding == null)
-                        return;
-
-                    setLocalBindingVariable(binding, layoutName, animalContactRecord);
-                    performSetBindingVariable(binding, layoutName, animalContactRecord);
-
-                    View innerLayout = initializeChildLayout(binding);
-
-                    addToRootLayout(innerLayout, _holder);
-                } else {
-                    hideRootChildLayout(_holder);
-                }
-            }
-
-
-            private OnTeboSwitchCheckedChangeListener init(AnimalContact s,
-                DataBoundViewHolder<RowEditAnimalContactListItemLayoutBinding> h,
-                DataBoundAdapter<RowEditAnimalContactListItemLayoutBinding> adapter){
-                _animalContactItem = s;
-                _holder = h;
-                return this;
-            }
-        }.init(animalContactRecord, holder, this);
-    }
+//    private OnTeboSwitchCheckedChangeListener createCallback(final AnimalContact animalContactRecord,
+//                                                              DataBoundViewHolder<RowEditAnimalContactListItemLayoutBinding> holder) {
+//        return new OnTeboSwitchCheckedChangeListener() {
+//            private AnimalContact _animalContactItem;
+//            private DataBoundViewHolder<RowEditAnimalContactListItemLayoutBinding> _holder;
+//
+//            @Override
+//            public void onCheckedChanged(ControlSwitchField teboSwitch, Object checkedItem, int checkedId) {
+//                if (checkedId < 0)
+//                    return;
+//
+//                YesNoUnknown state = (YesNoUnknown)checkedItem;
+//
+//                if (_animalContactItem.getLastCheckedId() == checkedId) {
+//                    return;
+//                }
+//
+//                _animalContactItem.setLastCheckedId(checkedId);
+//
+//                if (animalContactRecord.hasChildLayout() && animalContactRecord.getState() == YesNoUnknown.YES) {
+//                    String layoutName = teboSwitch.getContext().getResources().getResourceEntryName(animalContactRecord.getLayoutResourceId());
+//                    ViewDataBinding binding = inflateChildLayout(animalContactRecord.getLayoutResourceId());
+//
+//                    if (binding == null)
+//                        return;
+//
+//                    setLocalBindingVariable(binding, layoutName, animalContactRecord);
+//                    performSetBindingVariable(binding, layoutName, animalContactRecord);
+//
+//                    View innerLayout = initializeChildLayout(binding);
+//
+//                    addToRootLayout(innerLayout, _holder);
+//                } else {
+//                    hideRootChildLayout(_holder);
+//                }
+//            }
+//
+//
+//            private OnTeboSwitchCheckedChangeListener init(AnimalContact s,
+//                DataBoundViewHolder<RowEditAnimalContactListItemLayoutBinding> h,
+//                DataBoundAdapter<RowEditAnimalContactListItemLayoutBinding> adapter){
+//                _animalContactItem = s;
+//                _holder = h;
+//                return this;
+//            }
+//        }.init(animalContactRecord, holder, this);
+//    }
 
 
     private ViewDataBinding inflateChildLayout(int layoutResId) {
@@ -179,10 +174,6 @@ public class AnimalContactFormListAdapter  extends DataBoundAdapter<RowEditAnima
 
         if (!binding.setVariable(BR.yesNoUnknownClass, YesNoUnknown.class)) {
             Log.e(TAG, "There is no variable 'yesNoUnknownClass' in layout " + layoutName);
-        }
-
-        if (!binding.setVariable(BR.checkedCallback, checkedCallback)) {
-            Log.e(TAG, "There is no variable 'checkedCallback' in layout " + layoutName);
         }
     }
 

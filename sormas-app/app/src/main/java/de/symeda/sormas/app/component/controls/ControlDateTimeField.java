@@ -116,7 +116,6 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 timeInput.setText(null);
-                ControlDateTimeField.this.clearFocus();
             }
         });
 

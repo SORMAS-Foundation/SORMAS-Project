@@ -13,10 +13,6 @@
         <variable name="presentConditionClass" type="Class" />
 
         <variable
-            name="checkedCallback"
-            type="de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener" />
-
-        <variable
             name="addressLinkCallback"
             type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
@@ -285,28 +281,19 @@
 
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.controls.TeboSwitch
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/swhPresentCondition"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:paddingTop="@dimen/defaultControlVerticalPadding"
-                    app:paddingBottom="@dimen/defaultControlVerticalPadding"
-                    app:background="@drawable/control_switch_background_border"
-                    app:borderSize="@dimen/defaultControlStrokeWidth"
-                    app:textColor="@color/control_switch_color_selector"
                     app:hint="@string/hint_event_pinvolv_present_condition"
                     app:labelCaption="@string/label_event_pinvolv_present_condition"
                     app:description="@string/desc_event_pinvolv_present_condition"
                     app:required="true"
-                    app:orientation="horizontal"
                     app:slim="false"
-                    app:includeUnknown="@{true}"
                     app:enumClass="@{presentConditionClass}"
                     app:defaultValue="@{null}"
-                    app:abbrevUnknown="@{false}"
                     app:value="@={data.presentCondition}"
-                    app:onCheckedChangeListener="@{checkedCallback}"
 
 
                     />

@@ -35,10 +35,9 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
 import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
-import de.symeda.sormas.app.component.controls.TeboSwitch;
+import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
@@ -76,7 +75,6 @@ public class EventEditPersonsInvolvedInfoFragment extends BaseEditActivityFragme
     private String recordUuid = null;
     private EventStatus pageStatus = null;
     private EventParticipant record;
-    private OnTeboSwitchCheckedChangeListener onPresentConditionCheckedCallback;
     private IEntryItemOnClickListener onAddressLinkClickedCallback;
 
     private List<Item> occupationTypeList;
@@ -222,7 +220,6 @@ public class EventEditPersonsInvolvedInfoFragment extends BaseEditActivityFragme
 
         contentBinding.setData(record);
         contentBinding.setPresentConditionClass(PresentCondition.class);
-        contentBinding.setCheckedCallback(onPresentConditionCheckedCallback);
         contentBinding.setAddressLinkCallback(onAddressLinkClickedCallback);
 
         //TODO: Validation
@@ -486,22 +483,22 @@ public class EventEditPersonsInvolvedInfoFragment extends BaseEditActivityFragme
     // <editor-fold defaultstate="collapsed" desc="Private Methods">
 
     private void setupCallback() {
-        onPresentConditionCheckedCallback = new OnTeboSwitchCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(TeboSwitch teboSwitch, Object checkedItem, int checkedId) {
-                if (checkedId < 0)
-                    return;
-
-                if (mLastCheckedId == checkedId) {
-                    return;
-                }
-
-                mLastCheckedId = checkedId;
-
-                if (!presentConditionLayoutProcessor.processLayout((PresentCondition)checkedItem))
-                    return;
-            }
-        };
+//        onPresentConditionCheckedCallback = new OnTeboSwitchCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(ControlSwitchField teboSwitch, Object checkedItem, int checkedId) {
+//                if (checkedId < 0)
+//                    return;
+//
+//                if (mLastCheckedId == checkedId) {
+//                    return;
+//                }
+//
+//                mLastCheckedId = checkedId;
+//
+//                if (!presentConditionLayoutProcessor.processLayout((PresentCondition)checkedItem))
+//                    return;
+//            }
+//        };
 
         onAddressLinkClickedCallback = new IEntryItemOnClickListener() {
             @Override

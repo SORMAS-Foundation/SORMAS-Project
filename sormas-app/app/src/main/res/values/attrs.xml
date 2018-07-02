@@ -50,6 +50,7 @@
     <attr name="distinct" format="boolean" />
     <attr name="iconOnly" format="boolean" />
     <attr name="includeUnknown" format="reference|boolean" />
+    <attr name="useAbbreviations" format="boolean" />
 
 
     <attr name="value" format="string" />
@@ -157,23 +158,8 @@
     </attr>
 
 
-    <declare-styleable name="TeboSwitch">
-        <attr name="checkedButton" />
-        <attr name="orientation" />
-        <attr name="background" />
-        <attr name="textColor" />
-        <attr name="scale" />
-        <attr name="borderSize" />
-        <attr name="paddingTop" />
-        <attr name="paddingBottom" />
-        <attr name="paddingLeft" />
-        <attr name="paddingRight" />
-        <attr name="textSize" />
-        <attr name="includeUnknown" />
-        <!--<attr name="marginTop" />
-        <attr name="marginBottom" />
-        <attr name="marginLeft" />
-        <attr name="marginRight" />-->
+    <declare-styleable name="ControlSwitchField">
+        <attr name="useAbbreviations" />
     </declare-styleable>
 
 
@@ -275,7 +261,7 @@
         <attr name="required" />
     </declare-styleable>
 
-    <declare-styleable name="TeboRadioGroup">
+    <declare-styleable name="ControlRadioGroupField">
         <attr name="labelCaption" />
         <attr name="labelColor" />
         <attr name="textAlignment" />

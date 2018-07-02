@@ -27,9 +27,8 @@ import de.symeda.sormas.app.backend.sample.SampleDao;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnLinkClickListener;
-import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
-import de.symeda.sormas.app.component.controls.TeboSwitch;
+import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IActivityCommunicator;
@@ -60,7 +59,7 @@ import de.symeda.sormas.app.util.SyncCallback;
  * sampson.orson@technologyboard.org
  */
 
-public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNewLayoutBinding, Sample, Sample> implements OnTeboSwitchCheckedChangeListener, ISaveable {
+public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNewLayoutBinding, Sample, Sample> implements ISaveable {
 
     private AsyncTask onResumeTask;
     private AsyncTask saveSample;
@@ -161,7 +160,7 @@ public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNe
         //TODO: Set required hints for sample data
         //SampleValidator.setRequiredHintsForSampleData(contentBinding);``
 
-        contentBinding.setShippedYesCallback(this);
+//        contentBinding.setShippedYesCallback(this);
         contentBinding.setYesNoClass(YesNo.class);
         contentBinding.setData(record);
         contentBinding.setCaze(record.getAssociatedCase());
@@ -363,30 +362,30 @@ public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNe
         return false;
     }
 
-    @Override
-    public void onCheckedChanged(TeboSwitch teboSwitch, Object checkedItem, int checkedId) {
-        if (checkedId < 0)
-            return;
-
-        if (mLastCheckedId == checkedId) {
-            return;
-        }
-
-        mLastCheckedId = checkedId;
-
-        YesNo result = ((YesNo)checkedItem);
-
-        if (result == YesNo.YES) {
-            //record.setShipmentDate(new Date());
-            getContentBinding().dtpShipmentDate.setVisibility(View.VISIBLE);
-            getContentBinding().txtShipmentDetails.setVisibility(View.VISIBLE);
-            getContentBinding().sampleReceivedLayout.setVisibility(View.VISIBLE);
-        } else {
-            getContentBinding().dtpShipmentDate.setVisibility(View.GONE);
-            getContentBinding().txtShipmentDetails.setVisibility(View.GONE);
-            getContentBinding().sampleReceivedLayout.setVisibility(View.GONE);
-        }
-    }
+//    @Override
+//    public void onCheckedChanged(ControlSwitchField teboSwitch, Object checkedItem, int checkedId) {
+//        if (checkedId < 0)
+//            return;
+//
+//        if (mLastCheckedId == checkedId) {
+//            return;
+//        }
+//
+//        mLastCheckedId = checkedId;
+//
+//        YesNo result = ((YesNo)checkedItem);
+//
+//        if (result == YesNo.YES) {
+//            //record.setShipmentDate(new Date());
+//            getContentBinding().dtpShipmentDate.setVisibility(View.VISIBLE);
+//            getContentBinding().txtShipmentDetails.setVisibility(View.VISIBLE);
+//            getContentBinding().sampleReceivedLayout.setVisibility(View.VISIBLE);
+//        } else {
+//            getContentBinding().dtpShipmentDate.setVisibility(View.GONE);
+//            getContentBinding().txtShipmentDetails.setVisibility(View.GONE);
+//            getContentBinding().sampleReceivedLayout.setVisibility(View.GONE);
+//        }
+//    }
 
     public static SampleNewFragment newInstance(IActivityCommunicator activityCommunicator, SampleFormNavigationCapsule capsule, Sample activityRootData) {
         return newInstance(activityCommunicator, SampleNewFragment.class, capsule, activityRootData);

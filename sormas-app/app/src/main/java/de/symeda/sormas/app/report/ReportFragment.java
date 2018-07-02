@@ -29,9 +29,8 @@ import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.report.WeeklyReportEntry;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.OnTeboSwitchCheckedChangeListener;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
-import de.symeda.sormas.app.component.controls.TeboSwitch;
+import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
@@ -76,7 +75,6 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
     private AsyncTask onWeeklyReportOverviewTask;
     private Tracker mTracker;
     private ReportFilterViewModel mReportFilter = new ReportFilterViewModel();
-    private OnTeboSwitchCheckedChangeListener mOnReportFilterChangeCallback;
     private int mReportFilterLastCheckedId;
     private List<Item> mYearList;
     private List<Item> mEpiWeeksList;
@@ -135,7 +133,6 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
         contentBinding.setData(mWeeklyReport);
         contentBinding.setReportFilter(mReportFilter);
         contentBinding.setReportFilterOptionClass(ReportFilterOption.class);
-        contentBinding.setReportFilterChangeCallback(mOnReportFilterChangeCallback);
     }
 
     @Override
@@ -466,49 +463,49 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
     }
 
     private void setupCallback() {
-        mOnReportFilterChangeCallback = new OnTeboSwitchCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(TeboSwitch teboSwitch, Object checkedItem, int checkedId) {
-                if (checkedId < 0)
-                    return;
-
-                if (mReportFilterLastCheckedId == checkedId) {
-                    return;
-                }
-
-                mReportFilterLastCheckedId = checkedId;
-
-                ReportFilterOption answer = (ReportFilterOption) checkedItem;
-
-                if (answer == ReportFilterOption.SPECIFY_WEEK) {
-                    getContentBinding().specifyReportFilterFrame.setVisibility(View.VISIBLE);
-                } else {
-                    getContentBinding().specifyReportFilterFrame.setVisibility(View.GONE);
-                }
-
-                if (answer == ReportFilterOption.LAST_WEEK) {
-                    EpiWeek epiWeek = DateHelper.getPreviousEpiWeek(new Date());
-
-                    mReportFilter.setYear(epiWeek.getYear());
-                    mReportFilter.setWeek(epiWeek.getWeek());
-
-                    getContentBinding().spnYear.notifyDataChanged();
-                    //requestLayoutRebind();
-                    updateUI();
-                }
-
-                if (answer == ReportFilterOption.THIS_WEEK) {
-                    EpiWeek epiWeek = DateHelper.getEpiWeek(new Date());
-
-                    mReportFilter.setYear(epiWeek.getYear());
-                    mReportFilter.setWeek(epiWeek.getWeek());
-
-                    getContentBinding().spnYear.notifyDataChanged();
-                    //requestLayoutRebind();
-                    updateUI();
-                }
-            }
-        };
+//        mOnReportFilterChangeCallback = new OnTeboSwitchCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(ControlSwitchField teboSwitch, Object checkedItem, int checkedId) {
+//                if (checkedId < 0)
+//                    return;
+//
+//                if (mReportFilterLastCheckedId == checkedId) {
+//                    return;
+//                }
+//
+//                mReportFilterLastCheckedId = checkedId;
+//
+//                ReportFilterOption answer = (ReportFilterOption)checkedItem;
+//
+//                if (answer == ReportFilterOption.SPECIFY_WEEK) {
+//                    getContentBinding().specifyReportFilterFrame.setVisibility(View.VISIBLE);
+//                } else {
+//                    getContentBinding().specifyReportFilterFrame.setVisibility(View.GONE);
+//                }
+//
+//                if (answer == ReportFilterOption.LAST_WEEK) {
+//                    EpiWeek epiWeek = DateHelper.getPreviousEpiWeek(new Date());
+//
+//                    mReportFilter.setYear(epiWeek.getYear());
+//                    mReportFilter.setWeek(epiWeek.getWeek());
+//
+//                    getContentBinding().spnYear.notifyDataChanged();
+//                    //requestLayoutRebind();
+//                    updateUI();
+//                }
+//
+//                if (answer == ReportFilterOption.THIS_WEEK) {
+//                    EpiWeek epiWeek = DateHelper.getEpiWeek(new Date());
+//
+//                    mReportFilter.setYear(epiWeek.getYear());
+//                    mReportFilter.setWeek(epiWeek.getWeek());
+//
+//                    getContentBinding().spnYear.notifyDataChanged();
+//                    //requestLayoutRebind();
+//                    updateUI();
+//                }
+//            }
+//        };
 
         onAddMissingCase = new IEntryItemOnClickListener() {
             @Override

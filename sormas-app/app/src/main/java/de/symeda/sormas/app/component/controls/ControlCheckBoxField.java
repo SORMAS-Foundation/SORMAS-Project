@@ -169,26 +169,12 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
 
     @Override
     public void setBackgroundResource(int resId) {
-        int paddingLeft = input.getPaddingLeft();
-        int paddingTop = input.getPaddingTop();
-        int paddingRight = input.getPaddingRight();
-        int paddingBottom = input.getPaddingBottom();
-
-        input.setBackgroundResource(resId);
-
-        input.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+        setBackgroundResourceFor(input, resId);
     }
 
     @Override
     public void setBackground(Drawable background) {
-        int paddingLeft = input.getPaddingLeft();
-        int paddingTop = input.getPaddingTop();
-        int paddingRight = input.getPaddingRight();
-        int paddingBottom = input.getPaddingBottom();
-
-        input.setBackground(background);
-
-        input.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+        setBackgroundFor(input, background);
     }
 
     @Override
@@ -217,9 +203,7 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
         int uncheckedStateColor = getResources().getColor(R.color.colorControlNormal);
         int checkedStateColor = getResources().getColor(R.color.colorControlActivated);
 
-        if (state == VisualState.FOCUSED) {
-            setStateColor(checkedStateColor, uncheckedStateColor);
-        } else if (state == VisualState.NORMAL) {
+        if (state == VisualState.FOCUSED || state == VisualState.NORMAL) {
             setStateColor(checkedStateColor, uncheckedStateColor);
         }
     }
