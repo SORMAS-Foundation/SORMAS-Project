@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.caze.read;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -22,32 +21,24 @@ import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.databinding.RowReadContactListItemLayoutBinding;
 import de.symeda.sormas.app.event.read.EventReadTaskListAdapter;
 
-public class CaseReadReadContactListAdapter extends DataBoundAdapter<RowReadContactListItemLayoutBinding> {
+public class CaseReadContactListAdapter extends DataBoundAdapter<RowReadContactListItemLayoutBinding> {
 
     private static final String TAG = EventReadTaskListAdapter.class.getSimpleName();
 
-    private final Context context;
-    private List<Contact> data = new ArrayList<>();
+    private List<Contact> data;
     private OnListItemClickListener mOnListItemClickListener;
 
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;
 
-    public CaseReadReadContactListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
-        this(context, rowLayout, onListItemClickListener, new ArrayList<Contact>());
-    }
-
-    public CaseReadReadContactListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Contact> data) {
+    public CaseReadContactListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Contact> data) {
         super(rowLayout);
-        this.context = context;
         this.mOnListItemClickListener = onListItemClickListener;
 
         if (data == null)
             this.data = new ArrayList<>();
         else
             this.data = new ArrayList<>(data);
-
-
     }
 
     @Override

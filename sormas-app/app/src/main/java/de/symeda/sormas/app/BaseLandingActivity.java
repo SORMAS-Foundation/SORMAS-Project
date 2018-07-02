@@ -16,7 +16,7 @@ public abstract class BaseLandingActivity extends BaseActivity implements Notifi
     private View rootView;
     private CharSequence mainViewTitle;
 
-    private BaseLandingActivityFragment activeFragment;
+    private BaseLandingFragment activeFragment;
     private MenuItem newMenu = null;
 
     @Override
@@ -50,9 +50,9 @@ public abstract class BaseLandingActivity extends BaseActivity implements Notifi
 
     protected abstract void initializeActivity(Bundle arguments);
 
-    public abstract BaseLandingActivityFragment getActiveLandingFragment();
+    public abstract BaseLandingFragment getActiveLandingFragment();
 
-    public void replaceFragment(BaseLandingActivityFragment f) {
+    public void replaceFragment(BaseLandingFragment f) {
         BaseFragment previousFragment = activeFragment;
         activeFragment = f;
 

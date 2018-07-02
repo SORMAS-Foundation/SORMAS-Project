@@ -2,15 +2,12 @@ package de.symeda.sormas.app.contact.edit.sub;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.BaseEditActivity;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
@@ -23,7 +20,6 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 import de.symeda.sormas.app.symptom.Symptom;
-import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 public class VisitEditActivity extends BaseEditActivity<Visit> {
 
@@ -31,33 +27,19 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
 
     private AsyncTask saveTask;
 
-    private String contactUuid = null;
-
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        saveContactUuidState(outState, contactUuid);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        contactUuid = getContactUuidArg(savedInstanceState);
-    }
-
-    @Override
-    protected Visit queryActivityRootEntity(String recordUuid) {
+    protected Visit queryRootEntity(String recordUuid) {
         return DatabaseHelper.getVisitDao().queryUuid(recordUuid);
     }
 
     @Override
-    protected Visit buildActivityRootEntity() {
+    protected Visit buildRootEntity() {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public VisitStatus getPageStatus() {
-        return (VisitStatus)super.getPageStatus();
+        return (VisitStatus) super.getPageStatus();
     }
 
     @Override
@@ -66,12 +48,12 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
     }
 
     @Override
-    protected BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, Visit activityRootData) {
+    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, Visit activityRootData) {
         VisitFormNavigationCapsule dataCapsule = new VisitFormNavigationCapsule(
                 VisitEditActivity.this, getRootEntityUuid(), getPageStatus());
 
         VisitSection section = VisitSection.fromMenuKey(menuItem.getKey());
-        BaseEditActivityFragment fragment;
+        BaseEditFragment fragment;
         switch (section) {
             case VISIT_INFO:
                 fragment = VisitEditFragment.newInstance(dataCapsule, activityRootData);
@@ -91,14 +73,6 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
         boolean result = super.onCreateOptionsMenu(menu);
         getSaveMenu().setTitle(R.string.action_save_followup);
         return result;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
-
-        return true;
     }
 
     @Override

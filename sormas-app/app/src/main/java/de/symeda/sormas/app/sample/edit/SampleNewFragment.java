@@ -13,7 +13,7 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SampleTestType;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -22,7 +22,6 @@ import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnLinkClickListener;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
-import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
@@ -36,7 +35,7 @@ import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.util.DataUtils;
 
-public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNewLayoutBinding, Sample, Sample> {
+public class SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sample, Sample> {
 
     private AsyncTask onResumeTask;
 
@@ -264,7 +263,6 @@ public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNe
         contentBinding.spnLaboratory.setValue(sample.getLab(), true);
     }
 
-    @Override
     public void onPageResume(FragmentSampleNewLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
@@ -329,12 +327,12 @@ public class SampleNewFragment extends BaseEditActivityFragment<FragmentSampleNe
     }
 
     @Override
-    public boolean showSaveAction() {
+    public boolean isShowSaveAction() {
         return true;
     }
 
     @Override
-    public boolean showAddAction() {
+    public boolean isShowAddAction() {
         return false;
     }
 

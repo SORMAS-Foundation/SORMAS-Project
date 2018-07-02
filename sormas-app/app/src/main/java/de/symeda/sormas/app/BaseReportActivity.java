@@ -20,7 +20,7 @@ public abstract class BaseReportActivity extends BaseActivity implements Notific
 
     private View rootView;
     private View applicationTitleBar = null;
-    private BaseReportActivityFragment activeFragment = null;
+    private BaseReportFragment activeFragment = null;
     private TextView subHeadingActivityTitle;
 
     @Override
@@ -85,7 +85,7 @@ public abstract class BaseReportActivity extends BaseActivity implements Notific
 
     protected abstract void initializeActivity(Bundle arguments);
 
-    public abstract BaseReportActivityFragment getActiveFragment();
+    public abstract BaseReportFragment getActiveFragment();
 
 
     protected void onCreateBaseActivity(Bundle savedInstanceState) {
@@ -115,7 +115,7 @@ public abstract class BaseReportActivity extends BaseActivity implements Notific
         fromActivity.startActivity(intent);
     }
 
-    private void replaceFragment(BaseReportActivityFragment f) {
+    private void replaceFragment(BaseReportFragment f) {
         BaseFragment previousFragment = activeFragment;
         activeFragment = f;
 

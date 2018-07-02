@@ -13,9 +13,8 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -38,12 +37,12 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
     private AsyncTask saveTask;
 
     @Override
-    protected Contact queryActivityRootEntity(String recordUuid) {
+    protected Contact queryRootEntity(String recordUuid) {
         return DatabaseHelper.getContactDao().queryUuid(recordUuid);
     }
 
     @Override
-    protected Contact buildActivityRootEntity() {
+    protected Contact buildRootEntity() {
         Person _person = DatabaseHelper.getPersonDao().build();
         Contact _contact = DatabaseHelper.getContactDao().build();
 
@@ -68,12 +67,12 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
     }
 
     @Override
-    protected BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, Contact activityRootData) {
+    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, Contact activityRootData) {
         ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactEditActivity.this,
                 getRootEntityUuid(), getPageStatus());
 
         ContactSection section = ContactSection.fromMenuKey(menuItem.getKey());
-        BaseEditActivityFragment fragment;
+        BaseEditFragment fragment;
         switch (section) {
             case CONTACT_INFO:
                 fragment = ContactEditFragment.newInstance(dataCapsule, activityRootData);
@@ -97,14 +96,6 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getSaveMenu().setTitle(R.string.action_save_contact);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
 
         return true;
     }
@@ -155,8 +146,7 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
         return R.string.heading_level4_contact_edit;
     }
 
-    public static <TActivity extends BaseActivity> void
-    goToActivity(Context fromActivity, ContactFormNavigationCapsule dataCapsule) {
+    public static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, ContactFormNavigationCapsule dataCapsule) {
         BaseEditActivity.goToActivity(fromActivity, ContactEditActivity.class, dataCapsule);
     }
 
@@ -170,5 +160,13 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 //                    VisitStatus.COOPERATIVE).setContactUuid(recordUuid);
 //            VisitNewActivity.goToActivity(this, dataCapsule);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (saveTask != null && !saveTask.isCancelled())
+            saveTask.cancel(true);
     }
 }

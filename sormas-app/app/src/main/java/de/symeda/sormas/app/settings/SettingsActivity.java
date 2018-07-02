@@ -10,7 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import de.symeda.sormas.app.BaseLandingActivity;
-import de.symeda.sormas.app.BaseLandingActivityFragment;
+import de.symeda.sormas.app.BaseLandingFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.dialog.UserReportDialog;
@@ -93,7 +93,7 @@ public class SettingsActivity extends BaseLandingActivity {
     }
 
     @Override
-    public BaseLandingActivityFragment getActiveLandingFragment() {
+    public BaseLandingFragment getActiveLandingFragment() {
         if (settingsFragment == null)
             settingsFragment = new SettingsFragment();
 

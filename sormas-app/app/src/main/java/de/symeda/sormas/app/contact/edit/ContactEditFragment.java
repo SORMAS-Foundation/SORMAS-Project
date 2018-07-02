@@ -10,7 +10,7 @@ import java.util.List;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -32,12 +32,11 @@ import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 
 
-public class ContactEditFragment extends BaseEditActivityFragment<FragmentContactEditLayoutBinding, Contact, Contact> {
-
-    private AsyncTask onResumeTask;
+public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLayoutBinding, Contact, Contact> {
 
     private Contact record;
     private Case associatedCase;
+
     private View.OnClickListener createCaseCallback;
     private View.OnClickListener openCaseCallback;
     private OnLinkClickListener openCaseLinkCallback;
@@ -56,59 +55,21 @@ public class ContactEditFragment extends BaseEditActivityFragment<FragmentContac
     }
 
     @Override
-    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
-        if (!executionComplete) {
-            Case _associatedCase = null;
-            Contact contact = getActivityRootData();
+    protected void prepareFragmentData(Bundle savedInstanceState) {
+        record = getActivityRootData();
+        associatedCase = DatabaseHelper.getCaseDao().queryUuidBasic(record.getCaseUuid());
 
-            if (contact != null) {
-                if (contact.isUnreadOrChildUnread())
-                    DatabaseHelper.getContactDao().markAsRead(contact);
-
-                _associatedCase = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
-            }
-
-            resultHolder.forItem().add(contact);
-            resultHolder.forItem().add(_associatedCase);
-
-            resultHolder.forOther().add(DataUtils.getEnumItems(ContactRelation.class, false));
-        } else {
-            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
-
-            if (itemIterator.hasNext())
-                record = itemIterator.next();
-
-            if (record == null)
-                getActivity().finish();
-
-            if (itemIterator.hasNext())
-                associatedCase = itemIterator.next();
-
-            if (otherIterator.hasNext())
-                relationshipList = otherIterator.next();
-
-            setupCallback();
-        }
-
-        return true;
+        relationshipList = DataUtils.getEnumItems(ContactRelation.class, false);
     }
 
     @Override
     public void onLayoutBinding(FragmentContactEditLayoutBinding contentBinding) {
 
-        //FieldHelper.initSpinnerField(binding.contactContactClassification, ContactClassification.class);
-        //FieldHelper.initSpinnerField(binding.contactContactStatus, ContactStatus.class);
-        //FieldHelper.initSpinnerField(binding.contactRelationToCase, ContactRelation.class);
+        setupCallback();
 
         updateBottonPanel();
 
-
         setVisibilityByDisease(ContactDto.class, record.getCaseDisease(), contentBinding.mainContent);
-
-        //contentBinding.contactLastContactDate.makeFieldSoftRequired();
-        //contentBinding.contactContactProximity.makeFieldSoftRequired();
-        //contentBinding.contactRelationToCase.makeFieldSoftRequired();
 
         contentBinding.setData(record);
         contentBinding.setCaze(associatedCase);
@@ -143,83 +104,8 @@ public class ContactEditFragment extends BaseEditActivityFragment<FragmentContac
     }
 
     @Override
-    protected void updateUI(FragmentContactEditLayoutBinding contentBinding, Contact contact) {
-
-    }
-
-    @Override
-    public void onPageResume(FragmentContactEditLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
-        if (!hasBeforeLayoutBindingAsyncReturn)
-            return;
-
-        DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-            @Override
-            public void onPreExecute() {
-                //getBaseActivity().showPreloader();
-                //
-            }
-
-            @Override
-            public void doInBackground(TaskResultHolder resultHolder) {
-                Case _associatedCase = null;
-                Contact contact = getActivityRootData();
-
-                if (contact != null) {
-                    if (contact.isUnreadOrChildUnread())
-                        DatabaseHelper.getContactDao().markAsRead(contact);
-
-                    _associatedCase = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
-                }
-
-                resultHolder.forItem().add(contact);
-                resultHolder.forItem().add(_associatedCase);
-            }
-        };
-        onResumeTask = executor.execute(new ITaskResultCallback() {
-            @Override
-            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                //getBaseActivity().hidePreloader();
-                //getBaseActivity().showFragmentView();
-
-                if (resultHolder == null) {
-                    return;
-                }
-
-                ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                if (itemIterator.hasNext())
-                    record = itemIterator.next();
-
-                if (itemIterator.hasNext())
-                    associatedCase = itemIterator.next();
-
-                if (record != null)
-                    requestLayoutRebind();
-                else {
-                    getActivity().finish();
-                }
-            }
-        });
-    }
-
-    @Override
     public int getEditLayout() {
         return R.layout.fragment_contact_edit_layout;
-    }
-
-    @Override
-    public boolean includeFabNonOverlapPadding() {
-        return false;
-    }
-
-    @Override
-    public boolean showSaveAction() {
-        return true;
-    }
-
-    @Override
-    public boolean showAddAction() {
-        return false;
     }
 
     private void setupCallback() {
@@ -268,13 +154,5 @@ public class ContactEditFragment extends BaseEditActivityFragment<FragmentContac
 
     public static ContactEditFragment newInstance(ContactFormNavigationCapsule capsule, Contact activityRootData) {
         return newInstance(ContactEditFragment.class, capsule, activityRootData);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (onResumeTask != null && !onResumeTask.isCancelled())
-            onResumeTask.cancel(true);
     }
 }

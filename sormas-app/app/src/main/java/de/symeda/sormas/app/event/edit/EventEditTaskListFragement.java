@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
@@ -37,7 +37,7 @@ import de.symeda.sormas.app.task.edit.TaskEditActivity;
  * sampson.orson@technologyboard.org
  */
 
-public class EventEditTaskListFragement extends BaseEditActivityFragment<FragmentFormListLayoutBinding, List<Task>, Event> implements OnListItemClickListener {
+public class EventEditTaskListFragement extends BaseEditFragment<FragmentFormListLayoutBinding, List<Task>, Event> implements OnListItemClickListener {
 
     private AsyncTask onResumeTask;
     private String recordUuid = null;
@@ -115,78 +115,6 @@ public class EventEditTaskListFragement extends BaseEditActivityFragment<Fragmen
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-
-    }
-
-    @Override
-    public void onPageResume(FragmentFormListLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
-        if (swiperefresh != null) {
-            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
-                }
-            });
-        }
-
-        if (!hasBeforeLayoutBindingAsyncReturn)
-            return;
-
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    //getBaseActivity().showPreloader();
-                    //
-                }
-
-                @Override
-                public void doInBackground(TaskResultHolder resultHolder) {
-                    Event event = getActivityRootData();
-                    List<Task> taskList = new ArrayList<Task>();
-
-                    //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
-                    if (event != null) {
-                        if (event.isUnreadOrChildUnread())
-                            DatabaseHelper.getEventDao().markAsRead(event);
-
-                        taskList = DatabaseHelper.getTaskDao().queryByEvent(event);
-                    }
-
-                    resultHolder.forList().add(taskList);
-                }
-            };
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getBaseActivity().hidePreloader();
-                    //getBaseActivity().showFragmentView();
-
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
-                    if (listIterator.hasNext())
-                        record = listIterator.next();
-
-                    requestLayoutRebind();
-                }
-            });
-        } catch (Exception ex) {
-            //getBaseActivity().hidePreloader();
-            //getBaseActivity().showFragmentView();
-        }
-    }
-
-    @Override
-    protected void updateUI(FragmentFormListLayoutBinding contentBinding, List<Task> tasks) {
-
-    }
-
-    @Override
     public int getRootEditLayout() {
         return R.layout.fragment_root_list_form_layout;
     }
@@ -202,12 +130,12 @@ public class EventEditTaskListFragement extends BaseEditActivityFragment<Fragmen
     }
 
     @Override
-    public boolean showSaveAction() {
+    public boolean isShowSaveAction() {
         return false;
     }
 
     @Override
-    public boolean showAddAction() {
+    public boolean isShowAddAction() {
         return false;
     }
 

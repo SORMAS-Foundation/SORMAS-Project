@@ -2,7 +2,6 @@ package de.symeda.sormas.app.contact.edit;
 
 import android.content.res.Resources;
 import android.databinding.ViewDataBinding;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -27,26 +26,19 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseActivity;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
-import de.symeda.sormas.app.component.controls.ControlSwitchField;
-import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
-import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentContactEditPersonLayoutBinding;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.shared.OnDateOfDeathChangeListener;
@@ -54,18 +46,18 @@ import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.layoutprocessor.OccupationTypeLayoutProcessor;
 import de.symeda.sormas.app.util.layoutprocessor.PresentConditionLayoutProcessor;
 
-public class ContactEditPersonFragment extends BaseEditActivityFragment<FragmentContactEditPersonLayoutBinding, Person, Contact> {
+/**
+ * TODO unify with case person fragment? Or at least share some code?
+ */
+public class ContactEditPersonFragment extends BaseEditFragment<FragmentContactEditPersonLayoutBinding, Person, Contact> {
 
     public static final String TAG = ContactEditPersonFragment.class.getSimpleName();
 
     private static final int DEFAULT_YEAR = 2000;
 
-    private AsyncTask onResumeTask;
-
     private Person record;
-    private IEntryItemOnClickListener onAddressLinkClickedCallback;
 
-    private List<Item> dateList;
+    private List<Item> dayList;
     private List<Item> monthList;
     private List<Item> yearList;
     private List<Item> ageTypeList;
@@ -77,8 +69,7 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
     private List<Item> diseaseList;
     private List<Item> burialConductorList;
 
-    private int mLastCheckedId = -1;
-
+    private IEntryItemOnClickListener onAddressLinkClickedCallback;
     private OccupationTypeLayoutProcessor occupationTypeLayoutProcessor;
     private PresentConditionLayoutProcessor presentConditionLayoutProcessor;
 
@@ -94,83 +85,28 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
     }
 
     @Override
-    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
-        if (!executionComplete) {
-            Person p = DatabaseHelper.getPersonDao().build();
-            Contact contact = getActivityRootData();
+    protected void prepareFragmentData(Bundle savedInstanceState) {
+        Contact contact = getActivityRootData();
+        record = contact.getPerson();
 
-            if (contact != null) {
-                if (contact.isUnreadOrChildUnread())
-                    DatabaseHelper.getContactDao().markAsRead(contact);
-
-                p = DatabaseHelper.getPersonDao().queryUuid(contact.getPerson().getUuid());
-            }
-
-            //resultHolder.forItem().add(contact);
-            resultHolder.forItem().add(p);
-
-            resultHolder.forOther().add(DataUtils.getEnumItems(OccupationType.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(Sex.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(ApproximateAgeType.class, false));
-            resultHolder.forOther().add(DataUtils.toItems(DateHelper.getDaysInMonth(),true));
-            resultHolder.forOther().add(DataUtils.getMonthItems(true));
-            resultHolder.forOther().add(DataUtils.toItems(DateHelper.getYearsToNow(),true));
-            resultHolder.forOther().add(DataUtils.getEnumItems(CauseOfDeath.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(DeathPlaceType.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(Disease.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(BurialConductor.class, false));
-
-        } else {
-            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
-
-            if (itemIterator.hasNext())
-                record =  itemIterator.next();
-
-            if (record == null)
-                getActivity().finish();
-
-            /*if (itemIterator.hasNext())
-                person =  itemIterator.next();*/
-
-            if (otherIterator.hasNext())
-                occupationTypeList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                genderList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                ageTypeList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                dateList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                monthList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                yearList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                causeOfDeathList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                deathPlaceTypeList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                diseaseList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                burialConductorList = otherIterator.next();
-
-            setupCallback();
-        }
-
-        return true;
+        // TODO not necessary to prepare this?
+        occupationTypeList = DataUtils.getEnumItems(OccupationType.class, false);
+        genderList = DataUtils.getEnumItems(Sex.class, false);
+        ageTypeList = DataUtils.getEnumItems(ApproximateAgeType.class, false);
+        dayList = DataUtils.toItems(DateHelper.getDaysInMonth(), true);
+        monthList = DataUtils.getMonthItems(true);
+        yearList = DataUtils.toItems(DateHelper.getYearsToNow(), true);
+        causeOfDeathList = DataUtils.getEnumItems(CauseOfDeath.class, false);
+        deathPlaceTypeList = DataUtils.getEnumItems(DeathPlaceType.class, false);
+        diseaseList = DataUtils.getEnumItems(Disease.class, false);
+        burialConductorList = DataUtils.getEnumItems(BurialConductor.class, false);
     }
 
     @Override
     public void onLayoutBinding(FragmentContactEditPersonLayoutBinding contentBinding) {
+
+        setupCallback();
+
         occupationTypeLayoutProcessor = new OccupationTypeLayoutProcessor(getContext(), contentBinding, record);
         occupationTypeLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
@@ -222,7 +158,7 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
 
             @Override
             public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                if (!occupationTypeLayoutProcessor.processLayout((OccupationType)value))
+                if (!occupationTypeLayoutProcessor.processLayout((OccupationType) value))
                     return;
             }
 
@@ -341,7 +277,7 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                return dateList;
+                return dayList;
             }
 
             @Override
@@ -372,100 +308,11 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
     }
 
     @Override
-    public void onPageResume(FragmentContactEditPersonLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
-        if (!hasBeforeLayoutBindingAsyncReturn)
-            return;
-
-        DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-            @Override
-            public void onPreExecute() {
-                //getBaseActivity().showPreloader();
-                //
-            }
-
-            @Override
-            public void doInBackground(TaskResultHolder resultHolder) {
-                Person p = DatabaseHelper.getPersonDao().build();
-                Contact contact = getActivityRootData();
-
-                if (contact != null) {
-                    if (contact.isUnreadOrChildUnread())
-                        DatabaseHelper.getContactDao().markAsRead(contact);
-
-                    p = DatabaseHelper.getPersonDao().queryUuid(contact.getPerson().getUuid());
-                }
-
-                //resultHolder.forItem().add(contact);
-                resultHolder.forItem().add(p);
-            }
-        };
-        onResumeTask = executor.execute(new ITaskResultCallback() {
-            @Override
-            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                //getBaseActivity().hidePreloader();
-                //getBaseActivity().showFragmentView();
-
-                if (resultHolder == null){
-                    return;
-                }
-
-                ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                if (itemIterator.hasNext())
-                    record = itemIterator.next();
-
-                /*if (itemIterator.hasNext())
-                    person = itemIterator.next();*/
-
-                if (record != null)
-                    requestLayoutRebind();
-                else {
-                    getActivity().finish();
-                }
-            }
-        });
-    }
-
-    @Override
     public int getEditLayout() {
         return R.layout.fragment_contact_edit_person_layout;
     }
 
-    @Override
-    public boolean includeFabNonOverlapPadding() {
-        return false;
-    }
-
-    @Override
-    public boolean showSaveAction() {
-        return true;
-    }
-
-    @Override
-    public boolean showAddAction() {
-        return false;
-    }
-
-
-    // <editor-fold defaultstate="collapsed" desc="Private Methods">
-
     private void setupCallback() {
-//        onPresentConditionCheckedCallback = new OnTeboSwitchCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(ControlSwitchField teboSwitch, Object checkedItem, int checkedId) {
-//                if (checkedId < 0)
-//                    return;
-//
-//                if (mLastCheckedId == checkedId) {
-//                    return;
-//                }
-//
-//                mLastCheckedId = checkedId;
-//
-//                if (!presentConditionLayoutProcessor.processLayout((PresentCondition)checkedItem))
-//                    return;
-//            }
-//        };
 
         onAddressLinkClickedCallback = new IEntryItemOnClickListener() {
             @Override
@@ -499,18 +346,18 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
         //TeboTextRead approximateAgeTextField =  getContentBinding().txtAge;
         //TeboSpinner approximateAgeTypeField = getContentBinding().spnAgeType;
 
-        if(birthyear != null) {
+        if (birthyear != null) {
             Integer birthday = record.getBirthdateDD();
             Integer birthmonth = record.getBirthdateMM();
 
             Calendar birthDate = new GregorianCalendar();
-            birthDate.set(birthyear, birthmonth!=null?birthmonth-1:0, birthday!=null?birthday:1);
+            birthDate.set(birthyear, birthmonth != null ? birthmonth - 1 : 0, birthday != null ? birthday : 1);
 
             Date to = new Date();
-            if(record.getDeathDate() != null) {
+            if (record.getDeathDate() != null) {
                 to = record.getDeathDate();
             }
-            DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = ApproximateAgeHelper.getApproximateAge(birthDate.getTime(),to);
+            DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = ApproximateAgeHelper.getApproximateAge(birthDate.getTime(), to);
             ApproximateAgeType ageType = approximateAge.getElement1();
             Integer age = approximateAge.getElement0();
 
@@ -524,17 +371,7 @@ public class ContactEditPersonFragment extends BaseEditActivityFragment<Fragment
         }
     }
 
-    // </editor-fold>
-
     public static ContactEditPersonFragment newInstance(ContactFormNavigationCapsule capsule, Contact activityRootData) {
         return newInstance(ContactEditPersonFragment.class, capsule, activityRootData);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (onResumeTask != null && !onResumeTask.isCancelled())
-            onResumeTask.cancel(true);
     }
 }

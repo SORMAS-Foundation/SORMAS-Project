@@ -3,20 +3,18 @@ package de.symeda.sormas.app.caze.edit;
 import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
 import android.databinding.ViewDataBinding;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 import android.widget.AdapterView;
 
 import java.util.List;
 
-import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -25,18 +23,12 @@ import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.TeboSpinner;
-import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
-import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentCaseEditEpidLayoutBinding;
 import de.symeda.sormas.app.epid.AnimalContact;
 import de.symeda.sormas.app.epid.AnimalContactCategory;
@@ -44,15 +36,12 @@ import de.symeda.sormas.app.epid.AnimalContactFormListAdapter;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 
-public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragment<FragmentCaseEditEpidLayoutBinding, EpiData, Case> {
+public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<FragmentCaseEditEpidLayoutBinding, EpiData, Case> {
 
     public static final String TAG = CaseEditEpidemiologicalDataFragment.class.getSimpleName();
 
-    private AsyncTask onResumeTask;
     private EpiData record;
-    private int mGatheringLastCheckedId = -1;
-    private int mTravelLastCheckedId = -1;
-    private int mBurialLastCheckedId = -1;
+    private Disease disease;
 
     private IEntryItemOnClickListener onGatheringItemClickListener;
     private IEntryItemOnClickListener onTravelItemClickListener;
@@ -82,57 +71,20 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     }
 
     @Override
-    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
-        if (!executionComplete) {
-            Case caze = getActivityRootData();
+    protected void prepareFragmentData(Bundle savedInstanceState) {
+        Case caze = getActivityRootData();
+        disease = caze.getDisease();
+        record = caze.getEpiData();
 
-            if (caze != null) {
-                if (caze.isUnreadOrChildUnread())
-                    DatabaseHelper.getCaseDao().markAsRead(caze);
-
-                if (caze.getPerson() == null) {
-                    caze.setPerson(DatabaseHelper.getPersonDao().build());
-                }
-
-                //TODO: Do we really need to do this
-                if (caze.getEpiData() != null)
-                    caze.setEpiData(DatabaseHelper.getEpiDataDao().queryUuid(caze.getEpiData().getUuid()));
-            }
-
-            resultHolder.forItem().add(caze.getEpiData());
-
-            resultHolder.forOther().add(DataUtils.getEnumItems(WaterSource.class, false));
-
-            //TODO: Talk to Martin, we need to categorize the type of Animal Contacts
-            resultHolder.forOther().add(AnimalContact.makeAnimalContacts(AnimalContactCategory.GENERAL).loadState(caze.getEpiData()));
-            resultHolder.forOther().add(AnimalContact.makeAnimalContacts(AnimalContactCategory.ENVIRONMENTAL_EXPOSURE).loadState(caze.getEpiData()));
-        } else {
-            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-            ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
-            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
-
-            if (itemIterator.hasNext())
-                record = itemIterator.next();
-
-            if (otherIterator.hasNext())
-                drinkingWaterSourceList = otherIterator.next();
-
-            if (otherIterator.hasNext())
-                animalContactList = otherIterator.next();
-
-            if (otherIterator.hasNext())
-                environmentalExposureList = otherIterator.next();
-
-            setupCallback();
-        }
-
-        return true;
+        drinkingWaterSourceList = DataUtils.getEnumItems(WaterSource.class, false);
+        animalContactList = AnimalContact.makeAnimalContacts(AnimalContactCategory.GENERAL).loadState(caze.getEpiData());
+        environmentalExposureList = AnimalContact.makeAnimalContacts(AnimalContactCategory.ENVIRONMENTAL_EXPOSURE).loadState(caze.getEpiData());
     }
 
     @Override
     public void onLayoutBinding(FragmentCaseEditEpidLayoutBinding contentBinding) {
 
-        Case caze = getActivityRootData();
+        setupCallback();
 
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false) {
             @Override
@@ -186,7 +138,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
         contentBinding.setAddTravelEntryClickCallback(onAddTravelEntryClickListener);
         contentBinding.setAddBurialEntryClickCallback(onAddBurialEntryClickListener);
 
-        setVisibilityByDisease(EpiDataDto.class, caze.getDisease(), contentBinding.mainContent);
+        setVisibilityByDisease(EpiDataDto.class, disease, contentBinding.mainContent);
     }
 
     @Override
@@ -210,7 +162,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
 
             @Override
             public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                WaterSource waterSource = (WaterSource)value;
+                WaterSource waterSource = (WaterSource) value;
 
                 if (waterSource == WaterSource.OTHER) {
                     getContentBinding().txtSourceOfDrinkingWaterOther.setVisibility(View.VISIBLE);
@@ -233,62 +185,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     }
 
     @Override
-    public void onPageResume(FragmentCaseEditEpidLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
-        if (!hasBeforeLayoutBindingAsyncReturn)
-            return;
-
-        DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-            @Override
-            public void onPreExecute() {
-                //getBaseActivity().showPreloader();
-                //
-            }
-
-            @Override
-            public void doInBackground(TaskResultHolder resultHolder) {
-                Case caze = getActivityRootData();
-
-                if (caze != null) {
-                    if (caze.isUnreadOrChildUnread())
-                        DatabaseHelper.getCaseDao().markAsRead(caze);
-
-                    if (caze.getPerson() == null) {
-                        caze.setPerson(DatabaseHelper.getPersonDao().build());
-                    }
-
-                    //TODO: Do we really need to do this
-                    if (caze.getEpiData() != null)
-                        caze.setEpiData(DatabaseHelper.getEpiDataDao().queryUuid(caze.getEpiData().getUuid()));
-                }
-
-                resultHolder.forItem().add(caze.getEpiData());
-            }
-        };
-        onResumeTask = executor.execute(new ITaskResultCallback() {
-            @Override
-            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                //getBaseActivity().hidePreloader();
-                //getBaseActivity().showFragmentView();
-
-                if (resultHolder == null){
-                    return;
-                }
-
-                ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                if (itemIterator.hasNext())
-                    record = itemIterator.next();
-
-                if (record != null)
-                    requestLayoutRebind();
-                else {
-                    getActivity().finish();
-                }
-            }
-        });
-    }
-
-    @Override
     public int getEditLayout() {
         return R.layout.fragment_case_edit_epid_layout;
     }
@@ -299,97 +195,27 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     }
 
     @Override
-    public boolean showSaveAction() {
+    public boolean isShowSaveAction() {
         return true;
     }
 
     @Override
-    public boolean showAddAction() {
+    public boolean isShowAddAction() {
         return false;
     }
 
     private void setupCallback() {
-//        onSocialGatheringCheckedCallback = new OnTeboSwitchCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(ControlSwitchField teboSwitch, Object checkedItem, int checkedId) {
-//                if (checkedId < 0)
-//                    return;
-//
-//                if (mGatheringLastCheckedId == checkedId) {
-//                    return;
-//                }
-//
-//                mGatheringLastCheckedId = checkedId;
-//
-//                YesNoUnknown answer = (YesNoUnknown)checkedItem;
-//
-//                if (answer == YesNoUnknown.YES) {
-//                    getContentBinding().ctrlGatherings.setVisibility(View.VISIBLE);
-//                } else {
-//                    getContentBinding().ctrlGatherings.setVisibility(View.GONE);
-//                }
-//            }
-//        };
-//
-//
-//        onTravelCheckedCallback = new OnTeboSwitchCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(ControlSwitchField teboSwitch, Object checkedItem, int checkedId) {
-//                if (checkedId < 0)
-//                    return;
-//
-//                if (mTravelLastCheckedId == checkedId) {
-//                    return;
-//                }
-//
-//                mTravelLastCheckedId = checkedId;
-//
-//                YesNoUnknown answer = (YesNoUnknown)checkedItem;
-//
-//                if (answer == YesNoUnknown.YES) {
-//                    getContentBinding().ctrlTravels.setVisibility(View.VISIBLE);
-//                } else {
-//                    getContentBinding().ctrlTravels.setVisibility(View.GONE);
-//                }
-//
-//            }
-//        };
-//
-//
-//        onBurialCheckedCallback = new OnTeboSwitchCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(ControlSwitchField teboSwitch, Object checkedItem, int checkedId) {
-//                if (checkedId < 0)
-//                    return;
-//
-//                if (mBurialLastCheckedId == checkedId) {
-//                    return;
-//                }
-//
-//                mBurialLastCheckedId = checkedId;
-//
-//                YesNoUnknown answer = (YesNoUnknown)checkedItem;
-//
-//                if (answer == YesNoUnknown.YES) {
-//                    getContentBinding().ctrlBurials.setVisibility(View.VISIBLE);
-//                } else {
-//                    getContentBinding().ctrlBurials.setVisibility(View.GONE);
-//                }
-//
-//            }
-//        };
-
 
         onGatheringItemClickListener = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
-                final EpiDataGathering gathering = (EpiDataGathering)item;
+                final EpiDataGathering gathering = (EpiDataGathering) item;
                 final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(CaseEditActivity.getActiveActivity(), gathering);
 
                 dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
-                        updateGatherings((EpiDataGathering)item);
+                        updateGatherings((EpiDataGathering) item);
                         dialog.dismiss();
                     }
                 });
@@ -397,7 +223,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
                 dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
                     @Override
                     public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeGatherings((EpiDataGathering)item);
+                        removeGatherings((EpiDataGathering) item);
                         dialog.dismiss();
                     }
                 });
@@ -409,13 +235,13 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
         onTravelItemClickListener = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
-                final EpiDataTravel travel = (EpiDataTravel)item;
+                final EpiDataTravel travel = (EpiDataTravel) item;
                 final EpiDataTravelDialog dialog = new EpiDataTravelDialog(CaseEditActivity.getActiveActivity(), travel);
 
                 dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
-                        updateTravels((EpiDataTravel)item);
+                        updateTravels((EpiDataTravel) item);
                         dialog.dismiss();
                     }
                 });
@@ -423,7 +249,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
                 dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
                     @Override
                     public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeTravels((EpiDataTravel)item);
+                        removeTravels((EpiDataTravel) item);
                         dialog.dismiss();
                     }
                 });
@@ -435,13 +261,13 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
         onBurialItemClickListener = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
-                final EpiDataBurial burial = (EpiDataBurial)item;
+                final EpiDataBurial burial = (EpiDataBurial) item;
                 final EpiDataBurialDialog dialog = new EpiDataBurialDialog(CaseEditActivity.getActiveActivity(), burial);
 
                 dialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
-                        updateBurials((EpiDataBurial)item);
+                        updateBurials((EpiDataBurial) item);
                         dialog.dismiss();
                     }
                 });
@@ -449,7 +275,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
                 dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
                     @Override
                     public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeBurials((EpiDataBurial)item);
+                        removeBurials((EpiDataBurial) item);
                         dialog.dismiss();
                     }
                 });
@@ -475,7 +301,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
                 dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
                     @Override
                     public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeGatherings((EpiDataGathering)item);
+                        removeGatherings((EpiDataGathering) item);
                         dialog.dismiss();
                     }
                 });
@@ -501,7 +327,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
                 dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
                     @Override
                     public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeTravels((EpiDataTravel)item);
+                        removeTravels((EpiDataTravel) item);
                         dialog.dismiss();
                     }
                 });
@@ -527,7 +353,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
                 dialog.setOnDeleteClickListener(new TeboAlertDialogInterface.DeleteOnClickListener() {
                     @Override
                     public void onDeleteClick(View v, Object item, View viewRoot) {
-                        removeBurials((EpiDataBurial)item);
+                        removeBurials((EpiDataBurial) item);
                         dialog.dismiss();
                     }
                 });
@@ -536,9 +362,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
             }
         };
     }
-
-
-    // <editor-fold defaultstate="collapsed" desc="Gathering Methods">
 
     private ObservableArrayList getGatherings() {
         ObservableArrayList newGatherings = new ObservableArrayList();
@@ -588,15 +411,11 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     private void verifyGatheringStatus() {
         YesNoUnknown hospitalizedPreviously = record.getGatheringAttended();
         if (hospitalizedPreviously == YesNoUnknown.YES && getGatherings().size() <= 0) {
-            getContentBinding().swhGathering.enableErrorState((NotificationContext)getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().swhGathering.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
         } else {
             getContentBinding().swhGathering.disableErrorState();
         }
     }
-
-    // </editor-fold>
-
-    // <editor-fold defaultstate="collapsed" desc="Burial Methods">
 
     private ObservableArrayList getBurials() {
         ObservableArrayList newBurials = new ObservableArrayList();
@@ -646,15 +465,11 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     private void verifyBurialStatus() {
         YesNoUnknown hospitalizedPreviously = record.getBurialAttended();
         if (hospitalizedPreviously == YesNoUnknown.YES && getBurials().size() <= 0) {
-            getContentBinding().swhBurial.enableErrorState((NotificationContext)getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().swhBurial.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
         } else {
             getContentBinding().swhBurial.disableErrorState();
         }
     }
-
-    // </editor-fold>
-
-    // <editor-fold defaultstate="collapsed" desc="Travels Methods">
 
     private ObservableArrayList getTravels() {
         ObservableArrayList newTravels = new ObservableArrayList();
@@ -704,23 +519,14 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     private void verifyTravelStatus() {
         YesNoUnknown hospitalizedPreviously = record.getTraveled();
         if (hospitalizedPreviously == YesNoUnknown.YES && getTravels().size() <= 0) {
-            getContentBinding().swhTraveled.enableErrorState((NotificationContext)getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().swhTraveled.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
         } else {
             getContentBinding().swhTraveled.disableErrorState();
         }
     }
 
-    // </editor-fold>
 
     public static CaseEditEpidemiologicalDataFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(CaseEditEpidemiologicalDataFragment.class, capsule, activityRootData);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (onResumeTask != null && !onResumeTask.isCancelled())
-            onResumeTask.cancel(true);
     }
 }

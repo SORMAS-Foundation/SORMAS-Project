@@ -10,7 +10,7 @@ import java.util.Date;
 
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -53,12 +53,12 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
     }
 
     @Override
-    protected Sample queryActivityRootEntity(String recordUuid) {
+    protected Sample queryRootEntity(String recordUuid) {
         return null;
     }
 
     @Override
-    protected Sample buildActivityRootEntity() {
+    protected Sample buildRootEntity() {
         Sample sample = null;
         if (caseUuid != null && !caseUuid.isEmpty()) {
             Case associatedCase = DatabaseHelper.getCaseDao().queryUuidReference(caseUuid);
@@ -75,18 +75,10 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
     }
 
     @Override
-    protected BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, Sample activityRootData) {
+    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, Sample activityRootData) {
         SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(
                 SampleNewActivity.this, getRootEntityUuid(), getPageStatus()).setCaseUuid(caseUuid);
         return SampleNewFragment.newInstance(dataCapsule, activityRootData);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
-
-        return true;
     }
 
     @Override

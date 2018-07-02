@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.app.BaseListActivityFragment;
+import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
@@ -31,7 +31,7 @@ import de.symeda.sormas.app.searchstrategy.SearchStrategyFor;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.SubheadingHelper;
 
-public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> implements OnListItemClickListener {
+public class CaseListFragment extends BaseListFragment<CaseListAdapter> implements OnListItemClickListener {
 
     private boolean dataLoaded = false;
     private AsyncTask searchTask;

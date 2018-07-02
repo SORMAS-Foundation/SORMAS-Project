@@ -1,13 +1,10 @@
 package de.symeda.sormas.app.sample.read;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import de.symeda.sormas.app.BaseReadActivity;
-import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
@@ -15,52 +12,23 @@ import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.sample.edit.SampleEditActivity;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
-import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 public class SampleReadActivity extends BaseReadActivity<Sample> {
 
-    private ShipmentStatus pageStatus = null;
-    private String recordUuid = null;
-    private BaseReadActivityFragment activeFragment = null;
-
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void initializeActivity(Bundle arguments) {
-        pageStatus = (ShipmentStatus) getPageStatusArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
-    }
-
-    @Override
-    protected Sample getActivityRootData(String recordUuid) {
+    protected Sample queryRootData(String recordUuid) {
         return DatabaseHelper.getSampleDao().queryUuid(recordUuid);
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment(Sample activityRootData) {
-        if (activeFragment == null) {
-            SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(SampleReadActivity.this,
-                    recordUuid, pageStatus);
-            activeFragment = SampleReadFragment.newInstance(dataCapsule, activityRootData);
-        }
+    public ShipmentStatus getPageStatus() {
+        return (ShipmentStatus)super.getPageStatus();
+    }
 
-        return activeFragment;
+    @Override
+    protected BaseReadFragment buildReadFragment(LandingPageMenuItem menuItem, Sample activityRootData) {
+        SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
+        return SampleReadFragment.newInstance(dataCapsule, activityRootData);
     }
 
     @Override
@@ -69,44 +37,10 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
     }
 
     @Override
-    public boolean showStatusFrame() {
-        return false;
-    }
-
-    @Override
-    public boolean showTitleBar() {
-        return true;
-    }
-
-    @Override
-    public boolean showPageMenu() {
-        return false;
-    }
-
-    @Override
-    public Enum getPageStatus() {
-        return pageStatus;
-    }
-
-    @Override
-    protected BaseReadActivityFragment getReadFragment(LandingPageMenuItem menuItem, Sample activityRootData) {
-        return null;
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
+        boolean result = super.onCreateOptionsMenu(menu);
         getEditMenu().setTitle(R.string.action_edit_sample);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleReadModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
-
-        return true;
+        return result;
     }
 
     @Override
@@ -116,15 +50,7 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
 
     @Override
     public void goToEditView() {
-        if (activeFragment == null)
-            return;
-
-        Sample record = (Sample)activeFragment.getPrimaryData();
-        String sampleMaterial = (record.getSampleMaterial() != null)? record.getSampleMaterial().toString() : "";
-
-        SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(SampleReadActivity.this,
-                record.getUuid(), pageStatus)
-                .setSampleMaterial(sampleMaterial);
+        SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
         SampleEditActivity.goToActivity(this, dataCapsule);
     }
 

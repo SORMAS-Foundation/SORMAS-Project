@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import de.symeda.sormas.api.task.TaskStatus;
-import de.symeda.sormas.app.BaseListActivityFragment;
+import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.BoolResult;
@@ -35,7 +35,7 @@ import de.symeda.sormas.app.util.SubheadingHelper;
  * Created by Orson on 02/12/2017.
  */
 
-public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> implements OnListItemClickListener {
+public class TaskListFragment extends BaseListFragment<TaskListAdapter> implements OnListItemClickListener {
 
 
     private boolean dataLoaded = false;

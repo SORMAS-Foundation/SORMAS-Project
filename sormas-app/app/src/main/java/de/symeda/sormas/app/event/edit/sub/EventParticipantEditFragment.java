@@ -29,7 +29,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseActivity;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
@@ -37,7 +37,6 @@ import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
-import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
@@ -52,7 +51,6 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentEventEditPersonInfoLayoutBinding;
 import de.symeda.sormas.app.event.edit.OccupationTypeLayoutProcessor;
 import de.symeda.sormas.app.event.edit.PresentConditionLayoutProcessor;
-import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 import de.symeda.sormas.app.shared.OnDateOfDeathChangeListener;
 import de.symeda.sormas.app.util.DataUtils;
@@ -65,7 +63,7 @@ import de.symeda.sormas.app.util.DataUtils;
  * sampson.orson@technologyboard.org
  */
 
-public class EventParticipantEditFragment extends BaseEditActivityFragment<FragmentEventEditPersonInfoLayoutBinding, EventParticipant, EventParticipant> {
+public class EventParticipantEditFragment extends BaseEditFragment<FragmentEventEditPersonInfoLayoutBinding, EventParticipant, EventParticipant> {
 
     public static final String TAG = EventParticipantEditFragment.class.getSimpleName();
 
@@ -408,59 +406,6 @@ public class EventParticipantEditFragment extends BaseEditActivityFragment<Fragm
     }
 
     @Override
-    public void onPageResume(FragmentEventEditPersonInfoLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
-        if (!hasBeforeLayoutBindingAsyncReturn)
-            return;
-
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    //getBaseActivity().showPreloader();
-                    //
-                }
-
-                @Override
-                public void doInBackground(TaskResultHolder resultHolder) {
-                    EventParticipant eventParticipant = getActivityRootData();
-
-                    if (eventParticipant != null) {
-                        if (eventParticipant.isUnreadOrChildUnread())
-                            DatabaseHelper.getEventParticipantDao().markAsRead(eventParticipant);
-                    }
-
-                    resultHolder.forItem().add(eventParticipant);
-                }
-            };
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getBaseActivity().hidePreloader();
-                    //getBaseActivity().showFragmentView();
-
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                    if (itemIterator.hasNext())
-                        record = itemIterator.next();
-
-                    if (record != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            //getBaseActivity().hidePreloader();
-            //getBaseActivity().showFragmentView();
-        }
-    }
-
-    @Override
     public int getEditLayout() {
         return R.layout.fragment_event_edit_person_info_layout;
     }
@@ -471,12 +416,12 @@ public class EventParticipantEditFragment extends BaseEditActivityFragment<Fragm
     }
 
     @Override
-    public boolean showSaveAction() {
+    public boolean isShowSaveAction() {
         return true;
     }
 
     @Override
-    public boolean showAddAction() {
+    public boolean isShowAddAction() {
         return false;
     }
 

@@ -7,7 +7,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.view.Menu;
@@ -27,7 +26,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.component.menu.LandingPageMenuControl;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.component.menu.LandingPageMenuParser;
@@ -35,10 +33,9 @@ import de.symeda.sormas.app.component.menu.OnLandingPageMenuClickListener;
 import de.symeda.sormas.app.component.menu.OnSelectInitialActiveMenuItemListener;
 import de.symeda.sormas.app.component.menu.PageMenuNavAdapter;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.IActivityRootDataRequestor;
 import de.symeda.sormas.app.core.INavigationCapsule;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -48,8 +45,9 @@ import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.ConstantHelper;
+import de.symeda.sormas.app.util.MenuOptionsHelper;
 
-public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomainObject> extends BaseActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, NotificationContext, IActivityRootDataRequestor<ActivityRootEntity> {
+public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomainObject> extends BaseActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, NotificationContext {
 
     private LinearLayout notificationFrame;
     private View statusFrame = null;
@@ -62,7 +60,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     private int activeMenuKey = 0;
 
     private View rootView;
-    private BaseEditActivityFragment activeFragment = null;
+    private BaseEditFragment activeFragment = null;
 
     private AsyncTask getRootEntityTask;
     private ActivityRootEntity storedRootEntity = null;
@@ -111,14 +109,6 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         saveRootEntityUuidState(outState, rootEntityUuid);
     }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        activeMenuKey = getActiveMenuArg(savedInstanceState);
-        pageStatus = getPageStatusArg(savedInstanceState);
-        rootEntityUuid = getRecordUuidArg(savedInstanceState);
-    }
-
     protected void onCreateBaseActivity(Bundle savedInstanceState) {
         menuList = new ArrayList<LandingPageMenuItem>();
         rootView = findViewById(R.id.base_layout);
@@ -131,7 +121,6 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         activeMenuKey = getActiveMenuArg(savedInstanceState);
         pageStatus = getPageStatusArg(savedInstanceState);
         rootEntityUuid = getRecordUuidArg(savedInstanceState);
-        initializeActivity(savedInstanceState);
 
         if (notificationFrame != null) {
             notificationFrame.setOnClickListener(new View.OnClickListener() {
@@ -185,7 +174,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
             }
         }
 
-        requestActivityRootData(new Callback.IAction<ActivityRootEntity>() {
+        requestRootData(new Callback.IAction<ActivityRootEntity>() {
             @Override
             public void call(ActivityRootEntity result) {
                 replaceFragment(buildEditFragment(getActiveMenuItem(), result));
@@ -194,7 +183,13 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     }
 
     @Override
-    public void requestActivityRootData(final Callback.IAction<ActivityRootEntity> callback) {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
+            return super.onOptionsItemSelected(item);
+        return true;
+    }
+
+    protected void requestRootData(final Callback.IAction<ActivityRootEntity> callback) {
 
         getRootEntityTask = new DefaultAsyncTask(getContext()) {
             @Override
@@ -206,13 +201,13 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
             public void doInBackground(TaskResultHolder resultHolder) {
                 ActivityRootEntity result;
                 if (rootEntityUuid != null && !rootEntityUuid.isEmpty()) {
-                    result = queryActivityRootEntity(rootEntityUuid);
+                    result = queryRootEntity(rootEntityUuid);
 
                     if (result == null) {
-                        result = buildActivityRootEntity();
+                        result = buildRootEntity();
                     }
                 } else {
-                    result = buildActivityRootEntity();
+                    result = buildRootEntity();
                 }
                 resultHolder.forItem().add(result);
             }
@@ -227,8 +222,12 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
                     boolean hadRootEntity = storedRootEntity != null;
                     if (itemIterator.hasNext())
                         storedRootEntity = itemIterator.next();
+                    else
+                        storedRootEntity = null;
 
-                    if (storedRootEntity.isUnreadOrChildUnread()) {
+                    if (storedRootEntity != null
+                            && !storedRootEntity.isNew()
+                            && storedRootEntity.isUnreadOrChildUnread()) {
                         DatabaseHelper.getAdoDao(storedRootEntity.getClass()).markAsReadWithCast(storedRootEntity);
                         if (hadRootEntity) {
                             NotificationHelper.showNotification(BaseEditActivity.this, NotificationType.WARNING,
@@ -242,9 +241,9 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         }.executeOnThreadPool();
     }
 
-    protected abstract ActivityRootEntity queryActivityRootEntity(String recordUuid);
+    protected abstract ActivityRootEntity queryRootEntity(String recordUuid);
 
-    protected abstract ActivityRootEntity buildActivityRootEntity();
+    protected abstract ActivityRootEntity buildRootEntity();
 
     protected ActivityRootEntity getStoredRootEntity() {
         return storedRootEntity;
@@ -254,15 +253,9 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         return rootEntityUuid;
     }
 
-    protected BaseEditActivityFragment getActiveFragment() {
+    protected BaseEditFragment getActiveFragment() {
         return activeFragment;
     }
-
-    /**
-     * May be removed
-     */
-    @Deprecated
-    protected void initializeActivity(Bundle arguments) { }
 
     public void setSubHeadingTitle(String title) {
         String t = (title == null)? "" : title;
@@ -333,10 +326,10 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
             return;
 
         if (saveMenu != null)
-            saveMenu.setVisible(activeFragment.showSaveAction());
+            saveMenu.setVisible(activeFragment.isShowSaveAction());
 
         if (addMenu != null)
-            addMenu.setVisible(activeFragment.showAddAction());
+            addMenu.setVisible(activeFragment.isShowAddAction());
     }
 
     public MenuItem getSaveMenu() {
@@ -371,7 +364,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         return R.color.noColor;
     }
 
-    public void replaceFragment(BaseEditActivityFragment f) {
+    public void replaceFragment(BaseEditFragment f) {
         BaseFragment previousFragment = activeFragment;
         activeFragment = f;
 
@@ -438,7 +431,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         fromActivity.startActivity(intent);
     }
 
-    protected abstract BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, ActivityRootEntity activityRootData);
+    protected abstract BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, ActivityRootEntity activityRootData);
 
     public LandingPageMenuItem getActiveMenuItem() {
         return activeMenu;
@@ -476,7 +469,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     }
 
     public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-        BaseEditActivityFragment newActiveFragment = buildEditFragment(menuItem, storedRootEntity);
+        BaseEditFragment newActiveFragment = buildEditFragment(menuItem, storedRootEntity);
 
         if (newActiveFragment == null)
             return false;
@@ -505,7 +498,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         LandingPageMenuItem m = menuList.get(newMenukey);
         setActiveMenu(m);
 
-        BaseEditActivityFragment newActiveFragment = buildEditFragment(m, storedRootEntity);
+        BaseEditFragment newActiveFragment = buildEditFragment(m, storedRootEntity);
 
         if (newActiveFragment == null)
             return false;

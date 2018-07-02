@@ -15,7 +15,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -55,12 +55,12 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     private AsyncTask caseBeforeSaveAndPlagueTypeAlertTask;
 
     @Override
-    protected Case queryActivityRootEntity(String recordUuid) {
+    protected Case queryRootEntity(String recordUuid) {
         return DatabaseHelper.getCaseDao().queryUuidWithEmbedded(recordUuid);
     }
 
     @Override
-    protected Case buildActivityRootEntity() {
+    protected Case buildRootEntity() {
         throw new UnsupportedOperationException();
     }
 
@@ -75,11 +75,11 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     }
 
     @Override
-    protected BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, Case activityRootData) {
+    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, Case activityRootData) {
         CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
 
         CaseSection section = CaseSection.fromMenuKey(menuItem.getKey());
-        BaseEditActivityFragment fragment;
+        BaseEditFragment fragment;
         switch (section) {
 
             case CASE_INFO:
@@ -117,14 +117,6 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getSaveMenu().setTitle(R.string.action_save_case);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
 
         return true;
     }

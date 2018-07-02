@@ -20,11 +20,10 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityRootDataRequestor;
 import de.symeda.sormas.app.core.INavigationCapsule;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
@@ -35,9 +34,9 @@ import de.symeda.sormas.app.util.SoftKeyboardHelper;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding, TData, TActivityRootData extends AbstractDomainObject> extends BaseFragment {
+public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, TActivityRootData extends AbstractDomainObject> extends BaseFragment {
 
-    public static final String TAG = BaseEditActivityFragment.class.getSimpleName();
+    public static final String TAG = BaseEditFragment.class.getSimpleName();
 
     private AsyncTask jobTask;
     private BaseEditActivity baseEditActivity;
@@ -52,7 +51,6 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
     private boolean skipAfterLayoutBinding = false;
     private TActivityRootData activityRootData;
     private View rootView;
-    private IActivityRootDataRequestor activityRootDataRequestor;
 
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -68,20 +66,6 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public final void onResume() {
-        super.onResume();
-
-//        this.activityRootDataRequestor.requestActivityRootData(new Callback.IAction<TActivityRootData>() {
-//            @Override
-//            public void call(TActivityRootData result) {
-//
-//                setActivityRootData(result);
-//                onPageResume(getContentBinding(), beforeLayoutBindingAsyncReturn);
-//            }
-//        });
     }
 
     @Override
@@ -113,107 +97,96 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
                     + "implement NotificationContext");
         }
 
-        if (getActivity() instanceof IActivityRootDataRequestor) {
-            this.activityRootDataRequestor = (IActivityRootDataRequestor) this.getActivity();
-        } else {
-            throw new NotImplementedException("The edit activity for fragment must implement IActivityRootDataRequestor");
-        }
-
         super.onCreateView(inflater, container, savedInstanceState);
 
         //Inflate Root
         rootBinding = DataBindingUtil.inflate(inflater, getRootEditLayout(), container, false);
         rootView = rootBinding.getRoot();
 
-        if (getEditLayout() > 0) {
-            final ViewStub vsChildFragmentFrame = (ViewStub) rootView.findViewById(R.id.vsChildFragmentFrame);
+        final ViewStub vsChildFragmentFrame = (ViewStub) rootView.findViewById(R.id.vsChildFragmentFrame);
+        vsChildFragmentFrame.setOnInflateListener(new ViewStub.OnInflateListener() {
+            @Override
+            public void onInflate(ViewStub stub, View inflated) {
+                //onLayoutBindingHelper(stub, inflated);
 
-            vsChildFragmentFrame.setOnInflateListener(new ViewStub.OnInflateListener() {
-                @Override
-                public void onInflate(ViewStub stub, View inflated) {
-                    //onLayoutBindingHelper(stub, inflated);
+                contentViewStubBinding = DataBindingUtil.bind(inflated);
+                contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
+                    @Override
+                    public void onBound(ViewDataBinding binding) {
+                        super.onBound(binding);
 
-                    contentViewStubBinding = DataBindingUtil.bind(inflated);
-                    contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
-                        @Override
-                        public void onBound(ViewDataBinding binding) {
-                            super.onBound(binding);
+                        if (!skipAfterLayoutBinding)
+                            onAfterLayoutBinding(contentViewStubBinding);
+                        skipAfterLayoutBinding = false;
 
-                            if (!skipAfterLayoutBinding)
-                                onAfterLayoutBinding(contentViewStubBinding);
-                            skipAfterLayoutBinding = false;
-
-                            getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
-                        }
-                    });
-                    onLayoutBinding(contentViewStubBinding);
-                    contentViewStubRoot = contentViewStubBinding.getRoot();
-
-                    if (includeFabNonOverlapPadding()) {
-                        int lp = contentViewStubRoot.getPaddingLeft();
-                        int rp = contentViewStubRoot.getPaddingRight();
-                        int tp = contentViewStubRoot.getPaddingTop();
-                        int bp = (int) getResources().getDimension(R.dimen.fabNonOverlapPaddingBottom);
-
-                        contentViewStubRoot.setPadding(lp, tp, rp, bp);
-
-                        ViewGroup.LayoutParams params = contentViewStubRoot.getLayoutParams();
-                        params.height = MATCH_PARENT;
-
+                        getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
                     }
+                });
+                onLayoutBinding(contentViewStubBinding);
+                contentViewStubRoot = contentViewStubBinding.getRoot();
 
-                    if (makeHeightMatchParent()) {
-                        contentViewStubRoot.getLayoutParams().height = MATCH_PARENT;
-                    } else {
-                        contentViewStubRoot.getLayoutParams().height = WRAP_CONTENT;
+                if (includeFabNonOverlapPadding()) {
+                    int lp = contentViewStubRoot.getPaddingLeft();
+                    int rp = contentViewStubRoot.getPaddingRight();
+                    int tp = contentViewStubRoot.getPaddingTop();
+                    int bp = (int) getResources().getDimension(R.dimen.fabNonOverlapPaddingBottom);
+
+                    contentViewStubRoot.setPadding(lp, tp, rp, bp);
+
+                    ViewGroup.LayoutParams params = contentViewStubRoot.getLayoutParams();
+                    params.height = MATCH_PARENT;
+
+                }
+
+                if (makeHeightMatchParent()) {
+                    contentViewStubRoot.getLayoutParams().height = MATCH_PARENT;
+                } else {
+                    contentViewStubRoot.getLayoutParams().height = WRAP_CONTENT;
+                }
+            }
+        });
+
+        vsChildFragmentFrame.setLayoutResource(getEditLayout());
+
+
+        beforeLayoutBindingAsyncReturn = false;
+        jobTask = new DefaultAsyncTask(getContext()) {
+            @Override
+            public void onPreExecute() {
+                getBaseActivity().showPreloader();
+            }
+
+            @Override
+            public void doInBackground(final TaskResultHolder resultHolder) {
+                prepareFragmentData(savedInstanceState);
+                onBeforeLayoutBinding(savedInstanceState, resultHolder, null, false);
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                getBaseActivity().hidePreloader();
+
+                if (taskResult.getResultStatus().isFailed())
+                    return;
+
+                beforeLayoutBindingAsyncReturn = onBeforeLayoutBinding(savedInstanceState, taskResult.getResult(), taskResult.getResultStatus(), true);
+
+                vsChildFragmentFrame.inflate();
+
+                contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
+                    @Override
+                    public void onBound(ViewDataBinding binding) {
+                        super.onBound(binding);
+
+                        if (!skipAfterLayoutBinding)
+                            onAfterLayoutBinding(contentViewStubBinding);
+                        skipAfterLayoutBinding = false;
+
+                        getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
                     }
-                }
-            });
-
-            vsChildFragmentFrame.setLayoutResource(getEditLayout());
-
-
-            beforeLayoutBindingAsyncReturn = false;
-            jobTask = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    getBaseActivity().showPreloader();
-                }
-
-                @Override
-                public void doInBackground(final TaskResultHolder resultHolder) {
-                    prepareFragmentData(savedInstanceState);
-                    onBeforeLayoutBinding(savedInstanceState, resultHolder, null, false);
-                }
-
-                @Override
-                protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-                    getBaseActivity().hidePreloader();
-
-                    if (taskResult.getResultStatus().isFailed())
-                        return;
-
-                    beforeLayoutBindingAsyncReturn = onBeforeLayoutBinding(savedInstanceState, taskResult.getResult(), taskResult.getResultStatus(), true);
-
-                    vsChildFragmentFrame.inflate();
-
-                    contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
-                        @Override
-                        public void onBound(ViewDataBinding binding) {
-                            super.onBound(binding);
-
-                            if (!skipAfterLayoutBinding)
-                                onAfterLayoutBinding(contentViewStubBinding);
-                            skipAfterLayoutBinding = false;
-
-                            getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
-                        }
-                    });
-                }
-            }.executeOnThreadPool();
-        } else {
-            throw new ExceptionInInitializerError("Child layout not specified");
-        }
+                });
+            }
+        }.executeOnThreadPool();
 
         return rootView;
     }
@@ -258,8 +231,6 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
             onLayoutBinding(contentViewStubBinding);
         }
     }
-
-    public abstract void onPageResume(TBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn);
 
     public int getRootEditLayout() {
         return R.layout.fragment_root_edit_layout;
@@ -326,7 +297,7 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
     protected void updateUI(TBinding contentBinding, TData data) {
     }
 
-    protected static <TFragment extends BaseEditActivityFragment, TCapsule extends INavigationCapsule> TFragment newInstance(Class<TFragment> f, TCapsule dataCapsule, AbstractDomainObject activityRootData) {
+    protected static <TFragment extends BaseEditFragment, TCapsule extends INavigationCapsule> TFragment newInstance(Class<TFragment> f, TCapsule dataCapsule, AbstractDomainObject activityRootData) {
 
         TFragment fragment;
         try {
@@ -584,11 +555,11 @@ public abstract class BaseEditActivityFragment<TBinding extends ViewDataBinding,
         }
     }
 
-    public boolean showSaveAction() {
+    public boolean isShowSaveAction() {
         return true;
     }
 
-    public boolean showAddAction() {
+    public boolean isShowAddAction() {
         return false;
     }
 

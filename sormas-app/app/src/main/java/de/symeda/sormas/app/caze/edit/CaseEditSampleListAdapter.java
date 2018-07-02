@@ -9,37 +9,30 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.RowEditSampleListItemLayoutBinding;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import de.symeda.sormas.api.sample.SpecimenCondition;
-import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.backend.sample.SampleTest;
-
 public class CaseEditSampleListAdapter extends DataBoundAdapter<RowEditSampleListItemLayoutBinding> {
 
     private static final String TAG = CaseEditSampleListAdapter.class.getSimpleName();
 
-    private final Context context;
-    private List<Sample> data = new ArrayList<>();
+    private List<Sample> data;
     private OnListItemClickListener mOnListItemClickListener;
 
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;
 
-    public CaseEditSampleListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
-        this(context, rowLayout, onListItemClickListener, new ArrayList<Sample>());
-    }
-
-    public CaseEditSampleListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Sample> data) {
+    public CaseEditSampleListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Sample> data) {
         super(rowLayout);
-        this.context = context;
         this.mOnListItemClickListener = onListItemClickListener;
         this.data = data;
 
@@ -47,7 +40,6 @@ public class CaseEditSampleListAdapter extends DataBoundAdapter<RowEditSampleLis
             this.data = new ArrayList<>();
         else
             this.data = new ArrayList<>(data);
-
     }
 
     @Override
@@ -56,7 +48,7 @@ public class CaseEditSampleListAdapter extends DataBoundAdapter<RowEditSampleLis
 
         Sample record = data.get(position);
         holder.setData(record);
-        holder.binding.setTestResultMessage(getSampleTestResultMessage(record));
+        holder.binding.setTestResultMessage(getSampleTestResultMessage(holder.context, record));
         holder.setOnListItemClickListener(this.mOnListItemClickListener);
 
         //indicateShipmentStatus(holder.binding.imgShipmentStatusIcon, record);
@@ -94,7 +86,7 @@ public class CaseEditSampleListAdapter extends DataBoundAdapter<RowEditSampleLis
 
     private void indicateShipmentStatus(ImageView img, Sample record) {
         Resources resources = img.getContext().getResources();
-        Drawable drw = (Drawable)ContextCompat.getDrawable(img.getContext(), R.drawable.indicator_status_circle);
+        Drawable drw = (Drawable) ContextCompat.getDrawable(img.getContext(), R.drawable.indicator_status_circle);
 
         if (record.getReferredTo() != null) {
             drw.setColorFilter(resources.getColor(R.color.indicatorShipmentReferred), PorterDuff.Mode.SRC_OVER);
@@ -109,10 +101,10 @@ public class CaseEditSampleListAdapter extends DataBoundAdapter<RowEditSampleLis
         img.setBackground(drw);
     }
 
-    private String getSampleTestResultMessage(Sample record) {
+    private String getSampleTestResultMessage(Context context, Sample record) {
         SampleTest mostRecentTest = null;
         if (record.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
-            return context.getResources().getString(R.string.inadequate_specimen_cond);
+            return record.getSpecimenCondition().toString();
         } else {
             if (mostRecentTest != null) {
                 return mostRecentTest.getTestResult().toString();
@@ -121,5 +113,4 @@ public class CaseEditSampleListAdapter extends DataBoundAdapter<RowEditSampleLis
             }
         }
     }
-
 }

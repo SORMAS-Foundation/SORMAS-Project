@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.app.BaseListActivityFragment;
+import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.core.BoolResult;
@@ -35,7 +35,7 @@ import de.symeda.sormas.app.util.SubheadingHelper;
  * Created by Orson on 07/12/2017.
  */
 
-public class EventListFragment extends BaseListActivityFragment<EventListAdapter> implements OnListItemClickListener {
+public class EventListFragment extends BaseListFragment<EventListAdapter> implements OnListItemClickListener {
 
     private boolean dataLoaded = false;
     private AsyncTask searchTask;

@@ -13,13 +13,11 @@ import com.google.android.gms.analytics.Tracker;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.app.BaseReportActivityFragment;
+import de.symeda.sormas.app.BaseReportFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -30,7 +28,6 @@ import de.symeda.sormas.app.backend.report.WeeklyReportEntry;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
-import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
@@ -66,7 +63,7 @@ import de.symeda.sormas.app.util.SyncCallback;
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
-public class ReportFragment extends BaseReportActivityFragment<FragmentReportWeeklyLayoutBinding, WeeklyReport> {
+public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayoutBinding, WeeklyReport> {
 
     private AsyncTask onConfirmReportTask;
     private AsyncTask onWeeklyReportTask;
@@ -103,7 +100,7 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
     @Override
     protected boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            //WeeklyReport task = queryActivityRootEntity();
+            //WeeklyReport task = queryRootEntity();
 
             resultHolder.forOther().add(DataUtils.toItems(DateHelper.getYearsToNow()));
             resultHolder.forOther().add(DataUtils.toItems(DateHelper.createIntegerEpiWeeksList(mReportFilter.getYear())));

@@ -11,7 +11,7 @@ import com.google.android.gms.analytics.Tracker;
 
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.utils.ValidationException;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -42,20 +42,8 @@ import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 
-/**
- * Created by Orson on 22/01/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
+public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBinding, Task, Task> {
 
-public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditLayoutBinding, Task, Task> {
-
-    private AsyncTask onResumeTask;
-    private Tracker tracker;
-    private String recordUuid = null;
-    private TaskStatus pageStatus = null;
     private Task record;
 
     private View.OnClickListener doneCallback;
@@ -66,25 +54,6 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
 
     private AsyncTask doneCallbackTask;
     private AsyncTask notExecCallbackTask;
-
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        pageStatus = (TaskStatus) getPageStatusArg(arguments);
-    }
 
     @Override
     protected String getSubHeadingTitle() {
@@ -98,36 +67,14 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
     }
 
     @Override
-    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
-        if (!executionComplete) {
-            Task task = getActivityRootData();
-
-            if (task != null) {
-                if (task.isUnreadOrChildUnread())
-                    DatabaseHelper.getTaskDao().markAsRead(task);
-            }
-
-            resultHolder.forItem().add(task);
-        } else {
-            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-            if (itemIterator.hasNext())
-                record = itemIterator.next();
-
-            if (record == null) {
-                getActivity().finish();
-            }
-
-            setupCallback();
-        }
-
-        return true;
+    protected void prepareFragmentData(Bundle savedInstanceState) {
+        record = getActivityRootData();
     }
 
     @Override
     public void onLayoutBinding(FragmentTaskEditLayoutBinding contentBinding) {
-        SormasApplication application = (SormasApplication) getContext().getApplicationContext();
-        tracker = application.getDefaultTracker();
+
+        setupCallback();
 
         if (record.getCaze() == null) {
             contentBinding.txtAssocCaze.setVisibility(View.GONE);
@@ -164,72 +111,8 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentTaskEditLayoutBinding contentBinding) {
-
-    }
-
-    @Override
-    protected void updateUI(FragmentTaskEditLayoutBinding contentBinding, Task task) {
-
-    }
-
-    @Override
     public int getEditLayout() {
         return R.layout.fragment_task_edit_layout;
-    }
-
-    @Override
-    public void onPageResume(FragmentTaskEditLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
-        if (!hasBeforeLayoutBindingAsyncReturn)
-            return;
-
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    //getBaseActivity().showPreloader();
-                    //
-                }
-
-                @Override
-                public void doInBackground(TaskResultHolder resultHolder) {
-                    Task task = getActivityRootData();
-
-                    if (task != null) {
-                        if (task.isUnreadOrChildUnread())
-                            DatabaseHelper.getTaskDao().markAsRead(task);
-                    }
-
-                    resultHolder.forItem().add(task);
-                }
-            };
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getBaseActivity().hidePreloader();
-                    //getBaseActivity().showFragmentView();
-
-                    if (resultHolder == null) {
-                        return;
-                    }
-
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                    if (itemIterator.hasNext())
-                        record = itemIterator.next();
-
-                    if (record != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            //getBaseActivity().hidePreloader();
-            //getBaseActivity().showFragmentView();
-        }
-
     }
 
     private void setupCallback() {
@@ -476,12 +359,12 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
     }
 
     @Override
-    public boolean showSaveAction() {
+    public boolean isShowSaveAction() {
         return false;
     }
 
     @Override
-    public boolean showAddAction() {
+    public boolean isShowAddAction() {
         return false;
     }
 
@@ -512,8 +395,5 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
 
         if (notExecCallbackTask != null && !notExecCallbackTask.isCancelled())
             notExecCallbackTask.cancel(true);
-
-        if (onResumeTask != null && !onResumeTask.isCancelled())
-            onResumeTask.cancel(true);
     }
 }

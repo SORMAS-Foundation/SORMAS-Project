@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.caze.read;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -27,20 +26,14 @@ public class CaseReadSampleListAdapter extends DataBoundAdapter<RowReadCaseSampl
 
     private static final String TAG = CaseReadSampleListAdapter.class.getSimpleName();
 
-    private final Context context;
-    private List<Sample> data = new ArrayList<>();
+    private List<Sample> data;
     private OnListItemClickListener mOnListItemClickListener;
 
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;
 
-    public CaseReadSampleListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
-        this(context, rowLayout, onListItemClickListener, new ArrayList<Sample>());
-    }
-
-    public CaseReadSampleListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Sample> data) {
+    public CaseReadSampleListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Sample> data) {
         super(rowLayout);
-        this.context = context;
         this.mOnListItemClickListener = onListItemClickListener;
 
         if (data == null)
@@ -56,10 +49,6 @@ public class CaseReadSampleListAdapter extends DataBoundAdapter<RowReadCaseSampl
         Sample record = data.get(position);
         holder.setData(record);
         holder.setOnListItemClickListener(this.mOnListItemClickListener);
-
-        //indicatePriority(holder.binding.imgPriorityStatusIcon, record);
-        //indicateStatus(holder.binding.imgTaskStatusIcon, record);
-
 
         //Sync Icon
         if (record.isModifiedOrChildModified()) {

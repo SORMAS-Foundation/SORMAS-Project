@@ -9,7 +9,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
@@ -26,7 +26,7 @@ import de.symeda.sormas.app.symptom.Symptom;
  * Created by Orson on 02/01/2018.
  */
 
-public class VisitReadSymptomsFragment extends BaseReadActivityFragment<FragmentContactReadSymptomsInfoLayoutBinding, Symptoms, Visit> {
+public class VisitReadSymptomsFragment extends BaseReadFragment<FragmentContactReadSymptomsInfoLayoutBinding, Symptoms, Visit> {
 
     private String recordUuid;
     private VisitStatus pageStatus;

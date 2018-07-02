@@ -1,13 +1,9 @@
 package de.symeda.sormas.app.contact.edit;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -22,21 +18,18 @@ import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.dialog.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -44,14 +37,7 @@ import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
-import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.sample.edit.SampleNewActivity;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
-import de.symeda.sormas.app.util.MenuOptionsHelper;
-import de.symeda.sormas.app.util.SyncCallback;
-import de.symeda.sormas.app.util.TimeoutHelper;
 
 public class ContactNewActivity extends BaseEditActivity<Contact> {
 
@@ -74,12 +60,12 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
     }
 
     @Override
-    protected Contact queryActivityRootEntity(String recordUuid) {
+    protected Contact queryRootEntity(String recordUuid) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected Contact buildActivityRootEntity() {
+    protected Contact buildRootEntity() {
 
         Person _person = DatabaseHelper.getPersonDao().build();
         Contact _contact = DatabaseHelper.getContactDao().build();
@@ -108,22 +94,14 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
     @Override
     public ContactClassification getPageStatus() {
-        return (ContactClassification)super.getPageStatus();
+        return (ContactClassification) super.getPageStatus();
     }
 
     @Override
-    protected BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, Contact activityRootData) {
+    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, Contact activityRootData) {
         ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactNewActivity.this,
                 getRootEntityUuid(), getPageStatus());
         return ContactNewFragment.newInstance(dataCapsule, activityRootData);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
-
-        return true;
     }
 
     @Override

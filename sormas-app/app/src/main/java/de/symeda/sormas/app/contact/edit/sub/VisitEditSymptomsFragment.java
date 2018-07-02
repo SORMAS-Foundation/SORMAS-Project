@@ -16,7 +16,7 @@ import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.BaseActivity;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
@@ -43,7 +43,7 @@ import de.symeda.sormas.app.symptom.SymptomFormListAdapter;
 import de.symeda.sormas.app.util.DataUtils;
 
 
-public class VisitEditSymptomsFragment extends BaseEditActivityFragment<FragmentContactEditSymptomsInfoLayoutBinding, Visit, Visit> {
+public class VisitEditSymptomsFragment extends BaseEditFragment<FragmentContactEditSymptomsInfoLayoutBinding, Visit, Visit> {
 
     private static final float DEFAULT_BODY_TEMPERATURE = 37.0f;
     private AsyncTask onResumeTask;
@@ -217,75 +217,6 @@ public class VisitEditSymptomsFragment extends BaseEditActivityFragment<Fragment
     }
 
     @Override
-    protected void updateUI(FragmentContactEditSymptomsInfoLayoutBinding contentBinding, Visit visit) {
-
-    }
-
-    @Override
-    public void onPageResume(FragmentContactEditSymptomsInfoLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
-        if (!hasBeforeLayoutBindingAsyncReturn)
-            return;
-
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    //getBaseActivity().showPreloader();
-                    //
-                }
-
-                @Override
-                public void doInBackground(TaskResultHolder resultHolder) {
-                    Symptoms _symptom = null;
-                    Visit visit = getActivityRootData();
-
-                    if (visit != null) {
-                        if (visit.isUnreadOrChildUnread())
-                            DatabaseHelper.getVisitDao().markAsRead(visit);
-
-                        //symptoms = DatabaseHelper.getSymptomsDao().queryUuid(visit.getSymptoms().getUuid());
-                        _symptom = visit.getSymptoms();
-                    } else {
-                        _symptom = DatabaseHelper.getSymptomsDao().build();
-                    }
-
-                    resultHolder.forItem().add(visit);
-                    resultHolder.forItem().add(_symptom); //TODO: Do we need this
-                }
-            };
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getBaseActivity().hidePreloader();
-                    //getBaseActivity().showFragmentView();
-
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                    if (itemIterator.hasNext())
-                        record = itemIterator.next();
-
-                    if (itemIterator.hasNext())
-                        symptoms = itemIterator.next();
-
-                    if (record != null && symptoms != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            //getBaseActivity().hidePreloader();
-            //getBaseActivity().showFragmentView();
-        }
-
-    }
-
-    @Override
     public int getEditLayout() {
         return R.layout.fragment_contact_edit_symptoms_info_layout;
     }
@@ -296,12 +227,12 @@ public class VisitEditSymptomsFragment extends BaseEditActivityFragment<Fragment
     }
 
     @Override
-    public boolean showSaveAction() {
+    public boolean isShowSaveAction() {
         return true;
     }
 
     @Override
-    public boolean showAddAction() {
+    public boolean isShowAddAction() {
         return false;
     }
 

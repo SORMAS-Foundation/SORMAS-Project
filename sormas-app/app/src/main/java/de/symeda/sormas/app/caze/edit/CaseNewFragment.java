@@ -2,9 +2,7 @@ package de.symeda.sormas.app.caze.edit;
 
 import android.content.res.Resources;
 import android.databinding.ViewDataBinding;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,13 +14,11 @@ import java.util.Random;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.DengueFeverType;
-import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.region.Community;
@@ -30,30 +26,23 @@ import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.dialog.CommunityLoader;
 import de.symeda.sormas.app.component.dialog.DistrictLoader;
 import de.symeda.sormas.app.component.dialog.FacilityLoader;
 import de.symeda.sormas.app.component.dialog.RegionLoader;
-import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 
 
-public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLayoutBinding, Case, Case> {
+public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBinding, Case, Case> {
 
     public static final String TAG = CaseNewFragment.class.getSimpleName();
 
-    private AsyncTask onResumeTask;
     private Case record;
-    //private Person person;
 
     private List<Item> diseaseList;
     private List<Item> plagueTypeList;
@@ -73,54 +62,16 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
     }
 
     @Override
-    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
-        if (!executionComplete) {
-            Case caze = getActivityRootData();
+    protected void prepareFragmentData(Bundle savedInstanceState) {
+        record = getActivityRootData();
 
-            if (caze != null) {
-                if (caze.getPerson() == null) {
-                    caze.setPerson(DatabaseHelper.getPersonDao().build());
-                } /*else {
-                    caze.setPerson(DatabaseHelper.getPersonDao().queryUuid(caze.getPerson().getUuid()));
-                }*/
-            }
-
-
-            resultHolder.forItem().add(caze);
-            //resultHolder.forItem().add(caze.getPerson());
-
-            resultHolder.forOther().add(DataUtils.getEnumItems(Disease.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(PlagueType.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(DengueFeverType.class, false));
-        } else {
-            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
-
-            if (itemIterator.hasNext())
-                record = itemIterator.next();
-
-            /*if (itemIterator.hasNext())
-                person = itemIterator.next();*/
-
-            /*if (itemIterator.hasNext())
-                record = itemIterator.next();*/
-
-            if (otherIterator.hasNext())
-                diseaseList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                plagueTypeList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                dengueFeverTypeList = otherIterator.next();
-        }
-
-        return true;
+        diseaseList = DataUtils.getEnumItems(Disease.class, false);
+        plagueTypeList = DataUtils.getEnumItems(PlagueType.class, false);
+        dengueFeverTypeList = DataUtils.getEnumItems(DengueFeverType.class, false);
     }
 
     @Override
     public void onLayoutBinding(FragmentCaseNewLayoutBinding contentBinding) {
-        //binding = DataBindingUtil.inflate(inflater, getEditLayout(), container, true);
 
         healthFacilityLayoutProcessor = new HealthFacilityLayoutProcessor(getContext(), contentBinding, record);
         healthFacilityLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
@@ -175,7 +126,7 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
                 if (value == null)
                     return;
 
-                Disease disease = (Disease)value;
+                Disease disease = (Disease) value;
 
                 if (disease == Disease.OTHER) {
                     getContentBinding().txtDiseaseDetail.setVisibility(View.VISIBLE);
@@ -262,7 +213,7 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                List<Item> districts = DistrictLoader.getInstance().load((Region)parentValue);
+                List<Item> districts = DistrictLoader.getInstance().load((Region) parentValue);
                 return (districts.size() > 0) ? DataUtils.addEmptyItem(districts) : districts;
             }
 
@@ -280,7 +231,7 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
 
             @Override
             public List<Item> getDataSource(Object parentValue) {
-                List<Item> communities = CommunityLoader.getInstance().load((District)parentValue);
+                List<Item> communities = CommunityLoader.getInstance().load((District) parentValue);
                 return (communities.size() > 0) ? DataUtils.addEmptyItem(communities) : communities;
             }
 
@@ -299,8 +250,8 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
             @Override
             public List<Item> getDataSource(Object parentValue) {
                 List<Item> facilities;
-                if(parentValue != null) {
-                    facilities = FacilityLoader.getInstance().load((Community)parentValue, true);
+                if (parentValue != null) {
+                    facilities = FacilityLoader.getInstance().load((Community) parentValue, true);
                 } else {
                     facilities = FacilityLoader.getInstance().load((District) record.getDistrict(), true);
                 }
@@ -340,7 +291,7 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
         //contentBinding.spnLga.changeVisualState(VisualState.DISABLED);
 
         User user = ConfigProvider.getUser();
-        if (user.hasUserRole(UserRole.INFORMANT)&& user.getHealthFacility() != null) {
+        if (user.hasUserRole(UserRole.INFORMANT) && user.getHealthFacility() != null) {
             // this is ok, because informants are required to have a community and health facility
             contentBinding.spnWard.changeVisualState(VisualState.DISABLED);
             contentBinding.spnFacility.changeVisualState(VisualState.DISABLED);
@@ -351,81 +302,17 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
     }
 
     @Override
-    protected void updateUI(FragmentCaseNewLayoutBinding contentBinding, Case aCase) {
-
-    }
-
-    @Override
-    public void onPageResume(FragmentCaseNewLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
-        if (!hasBeforeLayoutBindingAsyncReturn)
-            return;
-
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    //getBaseActivity().showPreloader();
-                    //
-                }
-
-                @Override
-                public void doInBackground(TaskResultHolder resultHolder) {
-                    Case caze = getActivityRootData();
-
-                    if (caze != null && caze.getPerson() == null) {
-                        caze.setPerson(DatabaseHelper.getPersonDao().build());
-                    }
-
-
-                    resultHolder.forItem().add(caze);
-                }
-            };
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getBaseActivity().hidePreloader();
-                    //getBaseActivity().showFragmentView();
-
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                    if (itemIterator.hasNext())
-                        record =  itemIterator.next();
-
-                    if (record != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            //getBaseActivity().hidePreloader();
-            //getBaseActivity().showFragmentView();
-        }
-
-    }
-
-    @Override
     public int getEditLayout() {
         return R.layout.fragment_case_new_layout;
     }
 
     @Override
-    public boolean includeFabNonOverlapPadding() {
-        return false;
-    }
-
-    @Override
-    public boolean showSaveAction() {
+    public boolean isShowSaveAction() {
         return true;
     }
 
     @Override
-    public boolean showAddAction() {
+    public boolean isShowAddAction() {
         return false;
     }
 
@@ -435,16 +322,7 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
         }
     }
 
-
     public static CaseNewFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(CaseNewFragment.class, capsule, activityRootData);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (onResumeTask != null && !onResumeTask.isCancelled())
-            onResumeTask.cancel(true);
     }
 }

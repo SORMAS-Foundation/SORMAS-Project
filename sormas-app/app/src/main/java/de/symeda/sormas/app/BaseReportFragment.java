@@ -21,16 +21,9 @@ import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 
-/**
- * Created by Orson on 24/04/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-public abstract class BaseReportActivityFragment<TBinding extends ViewDataBinding, TData> extends BaseFragment {
+public abstract class BaseReportFragment<TBinding extends ViewDataBinding, TData> extends BaseFragment {
 
-    private final static String TAG = BaseReportActivityFragment.class.getSimpleName();
+    private final static String TAG = BaseReportFragment.class.getSimpleName();
 
     private AsyncTask jobTask;
     private BaseReportActivity baseReportActivity;
@@ -188,7 +181,7 @@ public abstract class BaseReportActivityFragment<TBinding extends ViewDataBindin
         return contentViewStubBinding;
     }
 
-    protected static <TFragment extends BaseReportActivityFragment> TFragment newInstance(Class<TFragment> f)  {
+    protected static <TFragment extends BaseReportFragment> TFragment newInstance(Class<TFragment> f)  {
 
         TFragment fragment;
         try {

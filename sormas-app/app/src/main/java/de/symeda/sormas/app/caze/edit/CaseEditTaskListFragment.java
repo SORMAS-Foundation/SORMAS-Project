@@ -1,39 +1,27 @@
 package de.symeda.sormas.app.caze.edit;
 
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
-import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
 
-public class CaseEditTaskListFragment extends BaseEditActivityFragment<FragmentFormListLayoutBinding, List<Task>, Case> implements OnListItemClickListener {
+public class CaseEditTaskListFragment extends BaseEditFragment<FragmentFormListLayoutBinding, List<Task>, Case> implements OnListItemClickListener {
 
-    private AsyncTask onResumeTask;
     private List<Task> record;
-    private FragmentFormListLayoutBinding binding;
+
     private CaseEditTaskListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
 
@@ -49,33 +37,9 @@ public class CaseEditTaskListFragment extends BaseEditActivityFragment<FragmentF
     }
 
     @Override
-    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
-        if (!executionComplete) {
-            Case caze = getActivityRootData();
-            List<Task> taskList = new ArrayList<Task>();
-
-            //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
-            if (caze != null) {
-                if (caze.isUnreadOrChildUnread())
-                    DatabaseHelper.getCaseDao().markAsRead(caze);
-
-                if (caze.getPerson() == null) {
-                    caze.setPerson(DatabaseHelper.getPersonDao().build());
-                }
-
-                taskList = DatabaseHelper.getTaskDao().queryByCase(caze);
-            }
-
-            resultHolder.forList().add(taskList);
-        } else {
-            ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
-            if (listIterator.hasNext()) {
-                record = listIterator.next();
-
-            }
-        }
-
-        return true;
+    protected void prepareFragmentData(Bundle savedInstanceState) {
+        Case caze = getActivityRootData();
+        record = DatabaseHelper.getTaskDao().queryByCase(caze);
     }
 
     @Override
@@ -83,92 +47,10 @@ public class CaseEditTaskListFragment extends BaseEditActivityFragment<FragmentF
         showEmptyListHint(record, R.string.entity_task);
 
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        adapter = new CaseEditTaskListAdapter(this.getActivity(), R.layout.row_edit_task_list_item_layout, this, record);
+        adapter = new CaseEditTaskListAdapter(R.layout.row_edit_task_list_item_layout, this, record);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
         contentBinding.recyclerViewForList.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onAfterLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
-
-    }
-
-    @Override
-    protected void updateUI(FragmentFormListLayoutBinding contentBinding, List<Task> tasks) {
-
-    }
-
-    @Override
-    public void onPageResume(FragmentFormListLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
-        if (swiperefresh != null) {
-            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
-                }
-            });
-        }
-
-        if (!hasBeforeLayoutBindingAsyncReturn)
-            return;
-
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    //getBaseActivity().showPreloader();
-                    //
-                }
-
-                @Override
-                public void doInBackground(TaskResultHolder resultHolder) {
-                    Case caze = getActivityRootData();
-                    List<Task> taskList = new ArrayList<Task>();
-
-                    //Case caze = DatabaseHelper.getCaseDao().queryUuidReference(recordUuid);
-                    if (caze != null) {
-                        if (caze.isUnreadOrChildUnread())
-                            DatabaseHelper.getCaseDao().markAsRead(caze);
-
-                        if (caze.getPerson() == null) {
-                            caze.setPerson(DatabaseHelper.getPersonDao().build());
-                        }
-
-                        taskList = DatabaseHelper.getTaskDao().queryByCase(caze);
-                    }
-
-                    resultHolder.forList().add(taskList);
-                }
-            };
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getBaseActivity().hidePreloader();
-                    //getBaseActivity().showFragmentView();
-
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
-
-                    if (listIterator.hasNext())
-                        record = listIterator.next();
-
-                    if (record != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            //getBaseActivity().hidePreloader();
-            //getBaseActivity().showFragmentView();
-        }
-
     }
 
     @Override
@@ -182,39 +64,23 @@ public class CaseEditTaskListFragment extends BaseEditActivityFragment<FragmentF
     }
 
     @Override
-    public boolean includeFabNonOverlapPadding() {
+    public boolean isShowSaveAction() {
         return false;
     }
 
     @Override
-    public boolean showSaveAction() {
+    public boolean isShowAddAction() {
         return false;
     }
-
-    @Override
-    public boolean showAddAction() { return false; }
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        Task task = (Task)item;
-        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(),
-                task.getUuid(), task.getTaskStatus());
+        Task task = (Task) item;
+        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(), task.getUuid(), task.getTaskStatus());
         TaskEditActivity.goToActivity(getActivity(), dataCapsule);
-
-        /*Task r = (Task)item;
-        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(), r.getUuid(), pageStatus);
-        CaseEditTaskInfoActivity.goToActivity(getActivity(), dataCapsule);*/
     }
 
     public static CaseEditTaskListFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
         return newInstance(CaseEditTaskListFragment.class, capsule, activityRootData);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (onResumeTask != null && !onResumeTask.isCancelled())
-            onResumeTask.cancel(true);
     }
 }

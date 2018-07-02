@@ -20,13 +20,11 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.IActivityRootDataRequestor;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
+import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.util.ConstantHelper;
@@ -35,13 +33,9 @@ import de.symeda.sormas.app.util.SoftKeyboardHelper;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-/**
- * Created by Orson on 11/12/2017.
- */
+public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, TActivityRootData extends AbstractDomainObject> extends BaseFragment {
 
-public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding, TData, TActivityRootData extends AbstractDomainObject> extends BaseFragment {
-
-    public static final String TAG = BaseReadActivityFragment.class.getSimpleName();
+    public static final String TAG = BaseReadFragment.class.getSimpleName();
 
     private AsyncTask jobTask;
     private BaseReadActivity baseReadActivity;
@@ -53,8 +47,6 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
     private boolean skipAfterLayoutBinding = false;
     private TActivityRootData activityRootData;
     private View rootView;
-    private IActivityRootDataRequestor activityRootDataRequestor;
-    private int onResumeExecCount = 0;
 
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -66,13 +58,13 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
         editOrCreateUserRight = (UserRight) getUserRightArg(arguments);
     }
 
     @Override
     public final View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
-        //View view = inflater.inflate(this.getReadLayout(), container, false);
+
         if (getActivity() instanceof BaseReadActivity) {
             this.baseReadActivity = (BaseReadActivity) this.getActivity();
         } else {
@@ -86,107 +78,97 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
                     + "implement IUpdateSubHeadingTitle");
         }
 
-        if (getActivity() instanceof IActivityRootDataRequestor) {
-            this.activityRootDataRequestor = (IActivityRootDataRequestor) this.getActivity();
-        } else {
-            throw new NotImplementedException("The read activity for fragment must implement IActivityRootDataRequestor");
-        }
-
         super.onCreateView(inflater, container, savedInstanceState);
 
         //Inflate Root
         rootBinding = DataBindingUtil.inflate(inflater, getRootReadLayout(), container, false);
         rootView = rootBinding.getRoot();
 
-        if (getReadLayout() > 0) {
-            final ViewStub vsChildFragmentFrame = (ViewStub)rootView.findViewById(R.id.vsChildFragmentFrame);
+        final ViewStub vsChildFragmentFrame = (ViewStub) rootView.findViewById(R.id.vsChildFragmentFrame);
+        vsChildFragmentFrame.setOnInflateListener(new ViewStub.OnInflateListener() {
+            @Override
+            public void onInflate(ViewStub stub, View inflated) {
 
-            vsChildFragmentFrame.setOnInflateListener(new ViewStub.OnInflateListener() {
-                @Override
-                public void onInflate(ViewStub stub, View inflated) {
-                    //onLayoutBindingHelper(stub, inflated);
+                contentViewStubBinding = DataBindingUtil.bind(inflated);
+                contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
+                    @Override
+                    public void onBound(ViewDataBinding binding) {
+                        super.onBound(binding);
 
-                    contentViewStubBinding = DataBindingUtil.bind(inflated);
-                    String layoutName = getResources().getResourceEntryName(getReadLayout());
-                    onLayoutBinding(contentViewStubBinding);
-                    contentViewStubRoot = contentViewStubBinding.getRoot();
+                        if (!skipAfterLayoutBinding)
+                            onAfterLayoutBinding(contentViewStubBinding);
+                        skipAfterLayoutBinding = false;
 
-                    if (includeFabNonOverlapPadding()) {
-                        int lp = contentViewStubRoot.getPaddingLeft();
-                        int rp = contentViewStubRoot.getPaddingRight();
-                        int tp = contentViewStubRoot.getPaddingTop();
-                        int bp = (int)getResources().getDimension(R.dimen.fabNonOverlapPaddingBottom);
-
-                        contentViewStubRoot.setPadding(lp, tp, rp, bp);
-
-                        ViewGroup.LayoutParams params = contentViewStubRoot.getLayoutParams();
-                        params.height = MATCH_PARENT;
+                        getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
                     }
+                });
+                onLayoutBinding(contentViewStubBinding);
+                contentViewStubRoot = contentViewStubBinding.getRoot();
 
-                    if (makeHeightMatchParent()) {
-                        contentViewStubRoot.getLayoutParams().height = MATCH_PARENT;
-                    } else {
-                        contentViewStubRoot.getLayoutParams().height = WRAP_CONTENT;
+                if (includeFabNonOverlapPadding()) {
+                    int lp = contentViewStubRoot.getPaddingLeft();
+                    int rp = contentViewStubRoot.getPaddingRight();
+                    int tp = contentViewStubRoot.getPaddingTop();
+                    int bp = (int) getResources().getDimension(R.dimen.fabNonOverlapPaddingBottom);
+
+                    contentViewStubRoot.setPadding(lp, tp, rp, bp);
+
+                    ViewGroup.LayoutParams params = contentViewStubRoot.getLayoutParams();
+                    params.height = MATCH_PARENT;
+
+                }
+
+                if (makeHeightMatchParent()) {
+                    contentViewStubRoot.getLayoutParams().height = MATCH_PARENT;
+                } else {
+                    contentViewStubRoot.getLayoutParams().height = WRAP_CONTENT;
+                }
+            }
+        });
+
+        vsChildFragmentFrame.setLayoutResource(getReadLayout());
+
+        beforeLayoutBindingAsyncReturn = false;
+        jobTask = new DefaultAsyncTask(getContext()) {
+            @Override
+            public void onPreExecute() {
+                getBaseActivity().showPreloader();
+            }
+
+            @Override
+            public void doInBackground(final TaskResultHolder resultHolder) {
+                prepareFragmentData(savedInstanceState);
+                onBeforeLayoutBinding(savedInstanceState, resultHolder, null, false);
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                getBaseActivity().hidePreloader();
+
+                if (taskResult.getResultStatus().isFailed())
+                    return;
+
+                beforeLayoutBindingAsyncReturn = onBeforeLayoutBinding(savedInstanceState, taskResult.getResult(), taskResult.getResultStatus(), true);
+
+                vsChildFragmentFrame.inflate();
+
+                contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
+                    @Override
+                    public void onBound(ViewDataBinding binding) {
+                        super.onBound(binding);
+
+                        if (!skipAfterLayoutBinding)
+                            onAfterLayoutBinding(contentViewStubBinding);
+                        skipAfterLayoutBinding = false;
+
+                        getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
                     }
-                }
-            });
+                });
+            }
+        }.executeOnThreadPool();
 
-            vsChildFragmentFrame.setLayoutResource(getReadLayout());
-
-
-            beforeLayoutBindingAsyncReturn = false;
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    getBaseActivity().showPreloader();
-
-                }
-
-
-                @Override
-                public void doInBackground(final TaskResultHolder resultHolder) {
-                    onBeforeLayoutBinding(savedInstanceState, resultHolder, null, false);
-                }
-            };
-
-            jobTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    getBaseActivity().hidePreloader();
-
-                    if (resultHolder == null)
-                        return;
-
-                    beforeLayoutBindingAsyncReturn = onBeforeLayoutBinding(savedInstanceState, resultHolder, resultStatus, true);
-
-                    View dialogContentInflated = vsChildFragmentFrame.inflate();
-
-                    contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
-                        @Override
-                        public void onBound(ViewDataBinding binding) {
-                            super.onBound(binding);
-
-                            //After
-                            //onAfterLayoutBindingHelper(contentViewStubBinding);
-                            if (!skipAfterLayoutBinding)
-                                onAfterLayoutBinding(contentViewStubBinding);
-
-                            skipAfterLayoutBinding = false;
-
-                            getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
-                        }
-                    });
-                }
-            });
-        } else {
-            throw new ExceptionInInitializerError("Child layout not specified");
-        }
 
         return rootView;
-    }
-
-    public void showEmptyListHintWithAdd(List list, int entityNameResId) {
-        showEmptyListHint(list, R.string.hint_no_records_found_add_new, entityNameResId);
     }
 
     public void showEmptyListHint(List list, int entityNameResId) {
@@ -199,7 +181,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         if (rootView == null)
             return;
 
-        TextView emptyListHintView = (TextView)rootView.findViewById(R.id.emptyListHint);
+        TextView emptyListHintView = (TextView) rootView.findViewById(R.id.emptyListHint);
 
         if (emptyListHintView == null)
             return;
@@ -225,43 +207,31 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
     }
 
     // TODO make abstract
-    protected void prepareFragmentData(Bundle savedInstanceState) { }
+    protected void prepareFragmentData(Bundle savedInstanceState) {
+    }
 
     /**
      * @Deprecated Use prepareFragmentData and onLayoutBinding isntead
      */
     @Deprecated
-    public abstract boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete);
+    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
+        return true;
+    }
 
     public abstract void onLayoutBinding(TBinding contentBinding);
 
-    public void onAfterLayoutBinding(TBinding contentBinding) { }
+    public void onAfterLayoutBinding(TBinding contentBinding) {
+    }
 
-    protected void updateUI(TBinding contentBinding, TData data) { }
+    protected void updateUI(TBinding contentBinding, TData data) {
+    }
 
     public boolean includeFabNonOverlapPadding() {
-        return true;
+        return false;
     }
 
     public boolean makeHeightMatchParent() {
         return false;
-    }
-
-    @Override
-    public final void onResume() {
-        super.onResume();
-
-        if (onResumeExecCount > 0) {
-            this.activityRootDataRequestor.requestActivityRootData(new Callback.IAction<TActivityRootData>() {
-                @Override
-                public void call(TActivityRootData result) {
-                    setActivityRootData(result);
-                    onPageResume(getContentBinding(), beforeLayoutBindingAsyncReturn);
-                }
-            });
-        }
-
-        onResumeExecCount = onResumeExecCount + 1;
     }
 
     @Override
@@ -271,7 +241,9 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         SoftKeyboardHelper.hideKeyboard(getActivity(), this);
     }
 
-    public abstract void onPageResume(TBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn);
+    @Deprecated
+    public void onPageResume(TBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+    }
 
     public int getRootReadLayout() {
         return R.layout.fragment_root_read_layout;
@@ -309,7 +281,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         return contentViewStubBinding;
     }
 
-    protected static <TFragment extends BaseReadActivityFragment, TCapsule extends INavigationCapsule> TFragment newInstance(Class<TFragment> f, TCapsule dataCapsule, AbstractDomainObject activityRootData) {
+    protected static <TFragment extends BaseReadFragment, TCapsule extends INavigationCapsule> TFragment newInstance(Class<TFragment> f, TCapsule dataCapsule, AbstractDomainObject activityRootData) {
         TFragment fragment;
         try {
             fragment = f.newInstance();
@@ -366,7 +338,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
     protected String getRecordUuidArg(Bundle arguments) {
         String result = null;
         if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.KEY_DATA_UUID)) {
+            if (arguments.containsKey(ConstantHelper.KEY_DATA_UUID)) {
                 result = (String) arguments.getString(ConstantHelper.KEY_DATA_UUID);
             }
         }
@@ -377,7 +349,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
     protected <E extends Enum<E>> E getFilterStatusArg(Bundle arguments) {
         E e = null;
         if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_FILTER_STATUS)) {
+            if (arguments.containsKey(ConstantHelper.ARG_FILTER_STATUS)) {
                 e = (E) arguments.getSerializable(ConstantHelper.ARG_FILTER_STATUS);
             }
         }
@@ -388,7 +360,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
     protected <E extends Enum<E>> E getPageStatusArg(Bundle arguments) {
         E e = null;
         if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_PAGE_STATUS)) {
+            if (arguments.containsKey(ConstantHelper.ARG_PAGE_STATUS)) {
                 e = (E) arguments.getSerializable(ConstantHelper.ARG_PAGE_STATUS);
             }
         }
@@ -399,7 +371,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
     protected UserRight getUserRightArg(Bundle arguments) {
         UserRight e = null;
         if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT)) {
+            if (arguments.containsKey(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT)) {
                 e = (UserRight) arguments.getSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT);
             }
         }
@@ -410,14 +382,13 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
     protected String getSampleMaterialArg(Bundle arguments) {
         String result = null;
         if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.KEY_SAMPLE_MATERIAL)) {
+            if (arguments.containsKey(ConstantHelper.KEY_SAMPLE_MATERIAL)) {
                 result = (String) arguments.getString(ConstantHelper.KEY_SAMPLE_MATERIAL);
             }
         }
 
         return result;
     }
-
 
 
     protected <E extends Enum<E>> void saveFilterStatusState(Bundle outState, E status) {

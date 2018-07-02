@@ -17,7 +17,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.BaseListActivity;
-import de.symeda.sormas.app.BaseListActivityFragment;
+import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -39,7 +39,7 @@ public class CaseListActivity extends BaseListActivity {
     private InvestigationStatus filterStatus = null;
     private SearchBy searchBy = null;
     private String recordUuid = null;
-    private BaseListActivityFragment activeFragment = null;
+    private BaseListFragment activeFragment = null;
 
     @Override
     public int getPageMenuData() {
@@ -63,7 +63,7 @@ public class CaseListActivity extends BaseListActivity {
     }
 
     @Override
-    public BaseListActivityFragment getActiveListFragment()  {
+    public BaseListFragment getActiveListFragment()  {
         if (activeFragment == null) {
             IListNavigationCapsule dataCapsule = new ListNavigationCapsule(CaseListActivity.this, filterStatus, searchBy);
             activeFragment = CaseListFragment.newInstance(dataCapsule);
@@ -80,7 +80,7 @@ public class CaseListActivity extends BaseListActivity {
     }
 
     @Override
-    protected BaseListActivityFragment getListFragment(LandingPageMenuItem menuItem) {
+    protected BaseListFragment getListFragment(LandingPageMenuItem menuItem) {
         InvestigationStatus status = statusFilters[menuItem.getKey()];
 
         if (status == null)

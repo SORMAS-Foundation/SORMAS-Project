@@ -30,25 +30,24 @@ import de.symeda.sormas.app.component.menu.LandingPageMenuParser;
 import de.symeda.sormas.app.component.menu.OnLandingPageMenuClickListener;
 import de.symeda.sormas.app.component.menu.OnSelectInitialActiveMenuItemListener;
 import de.symeda.sormas.app.component.menu.PageMenuNavAdapter;
-import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.IActivityRootDataRequestor;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotificationContext;
+import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.util.ConstantHelper;
+import de.symeda.sormas.app.util.MenuOptionsHelper;
 
-public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomainObject> extends BaseActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, NotificationContext, IActivityRootDataRequestor<ActivityRootEntity> {
+public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomainObject> extends BaseActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, NotificationContext {
 
-    private AsyncTask processActivityRootDataTask;
+    private AsyncTask getRootEntityTask;
     private View rootView;
-    private ActivityRootEntity storedActivityRootEntity = null;
+    private ActivityRootEntity storedRootEntity = null;
     private View statusFrame = null;
     private View applicationTitleBar = null;
     private TextView subHeadingListActivityTitle;
@@ -61,22 +60,15 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     private Enum pageStatus;
     private String rootEntityUuid;
 
-    private BaseReadActivityFragment activeFragment = null;
+    private BaseReadFragment activeFragment = null;
     private MenuItem editMenu = null;
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        activeMenuKey = getActiveMenuArg(savedInstanceState);
-        initializeActivity(savedInstanceState);
-    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
         saveActiveMenuState(outState, activeMenuKey);
+        savePageStatusState(outState, pageStatus);
+        saveRootEntityUuidState(outState, rootEntityUuid);
     }
 
     @Override
@@ -86,21 +78,19 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
 
     protected void onCreateBaseActivity(Bundle savedInstanceState) {
         rootView = findViewById(R.id.base_layout);
-        subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingActivityTitle);
+        subHeadingListActivityTitle = (TextView) findViewById(R.id.subHeadingActivityTitle);
         menuList = new ArrayList<LandingPageMenuItem>();
         pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);
 
         ensureFabHiddenOnSoftKeyboardShown(pageMenu);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
 
         activeMenuKey = getActiveMenuArg(arguments);
         pageStatus = getPageStatusArg(arguments);
         rootEntityUuid = getRecordUuidArg(arguments);
 
-        initializeActivity(arguments);
-
-        if(pageMenu != null)
+        if (pageMenu != null)
             pageMenu.hide();
 
         if (pageMenu != null) {
@@ -138,7 +128,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
                     if (landingPageMenuControl != null) {
                         landingPageMenuControl.hideAll();
                     }
-                } else{
+                } else {
                     landingPageMenuControl.showFab();
                 }
             }
@@ -146,13 +136,15 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     }
 
     @Override
-    public void requestActivityRootData(Callback.IAction<ActivityRootEntity> callback) {
-        processActivityRootData(callback);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (!MenuOptionsHelper.handleReadModuleOptionsItemSelected(this, item))
+            return super.onOptionsItemSelected(item);
+        return true;
     }
 
-    private void processActivityRootData(final Callback.IAction<ActivityRootEntity> callback) {
+    protected void requestRootData(final Callback.IAction<ActivityRootEntity> callback) {
 
-        DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
+        getRootEntityTask = new DefaultAsyncTask(getContext()) {
             @Override
             public void onPreExecute() {
                 showPreloader();
@@ -162,43 +154,36 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
             public void doInBackground(TaskResultHolder resultHolder) {
                 ActivityRootEntity result;
                 if (rootEntityUuid != null && !rootEntityUuid.isEmpty()) {
-                    result = getActivityRootData(rootEntityUuid);
+                    result = queryRootData(rootEntityUuid);
                 } else {
                     result = null;
                 }
                 resultHolder.forItem().add(result);
             }
-        };
-        processActivityRootDataTask = executor.execute(new ITaskResultCallback() {
+
             @Override
-            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
                 hidePreloader();
 
-                if (resultHolder == null){
-                    return;
+                if (taskResult.getResultStatus().isSuccess()) {
+                    ITaskResultHolderIterator itemIterator = taskResult.getResult().forItem().iterator();
+
+                    if (itemIterator.hasNext())
+                        storedRootEntity = itemIterator.next();
+                    else
+                        storedRootEntity = null;
+
+                    callback.call(storedRootEntity);
                 }
-
-                ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                if (itemIterator.hasNext())
-                    storedActivityRootEntity = itemIterator.next();
-
-                callback.call(storedActivityRootEntity);
             }
-        });
+        }.executeOnThreadPool();
     }
 
-    protected abstract ActivityRootEntity getActivityRootData(String recordUuid);
+    protected abstract ActivityRootEntity queryRootData(String recordUuid);
 
-    protected ActivityRootEntity getStoredActivityRootEntity() {
-        return storedActivityRootEntity;
+    protected ActivityRootEntity getStoredRootEntity() {
+        return storedRootEntity;
     }
-
-    /**
-     * May be removed
-     */
-    @Deprecated
-    protected void initializeActivity(Bundle arguments) { }
 
     @Override
     protected void onResume() {
@@ -213,8 +198,8 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
                 Drawable drw = (Drawable) ContextCompat.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
                 drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource(statusFrameContext)), PorterDuff.Mode.SRC);
 
-                TextView txtStatusName = (TextView)statusFrame.findViewById(R.id.txtStatusName);
-                ImageView imgStatus = (ImageView)statusFrame.findViewById(R.id.statusIcon);
+                TextView txtStatusName = (TextView) statusFrame.findViewById(R.id.txtStatusName);
+                ImageView imgStatus = (ImageView) statusFrame.findViewById(R.id.statusIcon);
 
 
                 txtStatusName.setText(getStatusName(statusFrameContext));
@@ -224,16 +209,16 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
             }
         }
 
-        processActivityRootData(new Callback.IAction<ActivityRootEntity>() {
+        requestRootData(new Callback.IAction<ActivityRootEntity>() {
             @Override
             public void call(ActivityRootEntity result) {
-                replaceFragment(getActiveReadFragment(result));
+                replaceFragment(buildReadFragment(getActiveMenuItem(), result));
             }
         });
     }
 
     public void setSubHeadingTitle(String title) {
-        String t = (title == null)? "" : title;
+        String t = (title == null) ? "" : title;
 
         if (subHeadingListActivityTitle != null)
             subHeadingListActivityTitle.setText(t);
@@ -245,7 +230,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         LandingPageMenuItem activeMenu = getActiveMenuItem();
 
         if (activeFragment != null) {
-            subHeadingTitle = (activeMenu == null)? activeFragment.getSubHeadingTitle() : activeMenu.getTitle();
+            subHeadingTitle = (activeMenu == null) ? activeFragment.getSubHeadingTitle() : activeMenu.getTitle();
         }
 
         setSubHeadingTitle(subHeadingTitle);
@@ -270,8 +255,8 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
 
         activeMenu = menuList.get(0);
 
-        for(LandingPageMenuItem m: menuList){
-            if (m.getKey() == activeMenuKey){
+        for (LandingPageMenuItem m : menuList) {
+            if (m.getKey() == activeMenuKey) {
                 activeMenu = m;
             }
         }
@@ -290,6 +275,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         inflater.inflate(R.menu.read_action_menu, menu);
 
         editMenu = menu.findItem(R.id.action_edit);
+        editMenu.setTitle(R.string.action_edit);
 
         processActionbarMenu();
 
@@ -332,7 +318,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         return R.color.noColor;
     }
 
-    public void replaceFragment(BaseReadActivityFragment f) {
+    public void replaceFragment(BaseReadFragment f) {
         BaseFragment previousFragment = activeFragment;
         activeFragment = f;
 
@@ -397,17 +383,8 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
 
         intent.putExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA, bundle);
 
-        /*if (record != null)
-            intent.putExtra(ConstantHelper.ARG_PAGE_RECORD, record);*/
-
-        /*for (IStatusElaborator e: dataCapsule.getOtherStatus()) {
-            if (e != null)
-                intent.putExtra(e.getStatekey(), e.getValue());
-        }*/
         fromActivity.startActivity(intent);
     }
-
-    public abstract BaseReadActivityFragment getActiveReadFragment(ActivityRootEntity activityRootData);
 
     public LandingPageMenuItem getActiveMenuItem() {
         return activeMenu;
@@ -434,7 +411,9 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         return pageStatus;
     }
 
-    public int getPageMenuData() { return -1; }
+    public int getPageMenuData() {
+        return -1;
+    }
 
     public int getActiveMenuKey() {
         return activeMenuKey;
@@ -450,7 +429,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     }
 
     public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-        BaseReadActivityFragment newActiveFragment = getReadFragment(menuItem, storedActivityRootEntity);
+        BaseReadFragment newActiveFragment = buildReadFragment(menuItem, storedRootEntity);
 
         if (newActiveFragment == null)
             return false;
@@ -465,14 +444,12 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
 
     public abstract void goToEditView();
 
-    protected BaseReadActivityFragment getReadFragment(LandingPageMenuItem menuItem, ActivityRootEntity activityRootData) {
-        return null;
-    }
+    protected abstract BaseReadFragment buildReadFragment(LandingPageMenuItem menuItem, ActivityRootEntity activityRootData);
 
     protected String getRecordUuidArg(Bundle arguments) {
         String result = null;
         if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.KEY_DATA_UUID)) {
+            if (arguments.containsKey(ConstantHelper.KEY_DATA_UUID)) {
                 result = (String) arguments.getString(ConstantHelper.KEY_DATA_UUID);
             }
         }
@@ -483,7 +460,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     protected <E extends Enum<E>> E getFilterStatusArg(Bundle arguments) {
         E e = null;
         if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_FILTER_STATUS)) {
+            if (arguments.containsKey(ConstantHelper.ARG_FILTER_STATUS)) {
                 e = (E) arguments.getSerializable(ConstantHelper.ARG_FILTER_STATUS);
             }
         }
@@ -494,7 +471,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     protected <E extends Enum<E>> E getPageStatusArg(Bundle arguments) {
         E e = null;
         if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_PAGE_STATUS)) {
+            if (arguments.containsKey(ConstantHelper.ARG_PAGE_STATUS)) {
                 e = (E) arguments.getSerializable(ConstantHelper.ARG_PAGE_STATUS);
             }
         }
@@ -523,7 +500,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         }
     }
 
-    protected void saveRecordUuidState(Bundle outState, String recordUuid) {
+    protected void saveRootEntityUuidState(Bundle outState, String recordUuid) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_DATA_UUID, recordUuid);
         }
@@ -539,8 +516,8 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     public void onDestroy() {
         super.onDestroy();
 
-        if (processActivityRootDataTask != null && !processActivityRootDataTask.isCancelled())
-            processActivityRootDataTask.cancel(true);
+        if (getRootEntityTask != null && !getRootEntityTask.isCancelled())
+            getRootEntityTask.cancel(true);
 
         if (pageMenu != null) {
             pageMenu.onDestroy();

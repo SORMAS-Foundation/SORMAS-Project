@@ -1,10 +1,8 @@
 package de.symeda.sormas.app.sample.edit;
 
-import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -16,7 +14,7 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -25,9 +23,8 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnLinkClickListener;
-import de.symeda.sormas.app.component.controls.TeboSpinner;
-import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.YesNo;
@@ -41,17 +38,12 @@ import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.validation.SampleValidator;
 
-public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleEditLayoutBinding, Sample, Sample> {
+public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayoutBinding, Sample, Sample> {
 
-    private AsyncTask onResumeTask;
-
-    private String caseUuid = null;
-    private String recordUuid = null;
-    private String sampleMaterial = null;
-    private ShipmentStatus pageStatus;
     private Sample record;
+    private SampleTest mostRecentTest;
+
     private IEntryItemOnClickListener onRecentTestItemClickListener;
-    private int mLastCheckedId = -1;
 
     private List<Item> sampleMaterialList;
     private List<Item> testTypeList;
@@ -59,34 +51,10 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
     private List<Facility> labList;
 
     private OnLinkClickListener referralLinkCallback;
-    private SampleTest mostRecentTest;
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
-        saveCaseUuidState(outState, caseUuid);
-        saveSampleMaterialState(outState, sampleMaterial);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        caseUuid = getCaseUuidArg(arguments);
-        sampleMaterial = getSampleMaterialArg(arguments);
-        pageStatus = (ShipmentStatus) getPageStatusArg(arguments);
-    }
 
     @Override
     protected String getSubHeadingTitle() {
-        Resources r = getResources();
-        return r.getString(R.string.caption_sample_information);
+        return getResources().getString(R.string.caption_sample_information);
     }
 
     @Override
@@ -95,63 +63,22 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
     }
 
     @Override
-    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
-        if (!executionComplete) {
-            SampleTest sampleTest = null;
-            Sample sample = getActivityRootData();
+    protected void prepareFragmentData(Bundle savedInstanceState) {
+        record = getActivityRootData();
+        mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record);
 
-            if (sample != null) {
-                if (sample.isUnreadOrChildUnread())
-                    DatabaseHelper.getSampleDao().markAsRead(sample);
-
-                sampleTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(sample);
-            }
-
-            resultHolder.forItem().add(sample);
-            resultHolder.forItem().add(sampleTest);
-
-            resultHolder.forOther().add(DataUtils.getEnumItems(SampleMaterial.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(SampleTestType.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(SampleSource.class, false));
-
-            resultHolder.forList().add(DatabaseHelper.getFacilityDao().getLaboratories(true));
-        } else {
-            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-            ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
-            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
-
-            //Item Data
-            if (itemIterator.hasNext())
-                record =  itemIterator.next();
-
-            if (record == null)
-                getActivity().finish();
-
-            if (itemIterator.hasNext())
-                mostRecentTest = itemIterator.next();
-
-            if (listIterator.hasNext())
-                labList =  listIterator.next();
-
-            if (otherIterator.hasNext())
-                sampleMaterialList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                testTypeList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                sampleSourceList =  otherIterator.next();
-
-            setupCallback();
-        }
-
-        return true;
+        labList = DatabaseHelper.getFacilityDao().getLaboratories(true);
+        sampleMaterialList = DataUtils.getEnumItems(SampleMaterial.class, false);
+        testTypeList = DataUtils.getEnumItems(SampleTestType.class, false);
+        sampleSourceList = DataUtils.getEnumItems(SampleSource.class, false);
     }
 
     @Override
     public void onLayoutBinding(FragmentSampleEditLayoutBinding contentBinding) {
         if (record == null)
             return;
+
+        setupCallback();
 
         if (!record.isShipped()) {
             contentBinding.dtpShipmentDate.setVisibility(View.GONE);
@@ -203,7 +130,6 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
         contentBinding.setRecentTestItemClickCallback(onRecentTestItemClickListener);
 
         contentBinding.setYesNoClass(YesNo.class);
-//        contentBinding.setShippedYesCallback(this);
         contentBinding.setReferralLinkCallback(referralLinkCallback);
     }
 
@@ -264,7 +190,7 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
 
             @Override
             public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                SampleMaterial material = (SampleMaterial)value;
+                SampleMaterial material = (SampleMaterial) value;
 
                 if (material == SampleMaterial.OTHER) {
                     contentBinding.txtSampleMaterialText.setVisibility(View.VISIBLE);
@@ -332,76 +258,14 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
             contentBinding.dtpShipmentDate.changeVisualState(VisualState.DISABLED);
             contentBinding.txtShipmentDetails.changeVisualState(VisualState.DISABLED);
         }
-
     }
 
-    @Override
-    protected void updateUI(FragmentSampleEditLayoutBinding contentBinding, Sample sample) {
-        contentBinding.spnSampleMaterial.setValue(sample.getSampleMaterial(), true);
-        contentBinding.spnTestType.setValue(sample.getSuggestedTypeOfTest(), true);
-        contentBinding.spnLaboratory.setValue(sample.getLab(), true);
-    }
-
-    @Override
-    public void onPageResume(FragmentSampleEditLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
-        if (!hasBeforeLayoutBindingAsyncReturn)
-            return;
-
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    //getBaseActivity().showPreloader();
-                    //
-                }
-
-                @Override
-                public void doInBackground(TaskResultHolder resultHolder) {
-                    SampleTest sampleTest = null;
-                    Sample sample = getActivityRootData();
-
-                    if (sample != null) {
-                        if (sample.isUnreadOrChildUnread())
-                            DatabaseHelper.getSampleDao().markAsRead(sample);
-
-                        sampleTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(sample);
-                    }
-
-                    resultHolder.forItem().add(sample);
-                    resultHolder.forItem().add(sampleTest);
-                }
-            };
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getBaseActivity().hidePreloader();
-                    //getBaseActivity().showFragmentView();
-
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                    if (itemIterator.hasNext())
-                        record = itemIterator.next();
-
-                    if (itemIterator.hasNext())
-                        mostRecentTest = itemIterator.next();
-
-                    if (record != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            //getBaseActivity().hidePreloader();
-            //getBaseActivity().showFragmentView();
-        }
-
-    }
+//    @Override
+//    protected void updateUI(FragmentSampleEditLayoutBinding contentBinding, Sample sample) {
+//        contentBinding.spnSampleMaterial.setValue(sample.getSampleMaterial(), true);
+//        contentBinding.spnTestType.setValue(sample.getSuggestedTypeOfTest(), true);
+//        contentBinding.spnLaboratory.setValue(sample.getLab(), true);
+//    }
 
     @Override
     public int getEditLayout() {
@@ -410,10 +274,8 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
 
     private ObservableArrayList getTestResults() {
         ObservableArrayList results = new ObservableArrayList();
-
         if (mostRecentTest != null)
             results.add(mostRecentTest);
-
         return results;
     }
 
@@ -431,9 +293,9 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
                 if (record != null && record.getReferredTo() != null) {
                     Sample referredSample = record.getReferredTo();
                     String sampleMaterial = record.getSampleMaterialText();
+                    ShipmentStatus pageStatus = (ShipmentStatus)getBaseEditActivity().getPageStatus();
 
-                    SampleFormNavigationCapsule dataCapsule = (SampleFormNavigationCapsule)new SampleFormNavigationCapsule(getContext(),
-                            referredSample.getUuid(), pageStatus)
+                    SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(getContext(), referredSample.getUuid(), pageStatus)
                             .setSampleMaterial(sampleMaterial);
                     SampleEditActivity.goToActivity(getActivity(), dataCapsule);
                 }
@@ -441,59 +303,7 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
         };
     }
 
-    @Override
-    public boolean includeFabNonOverlapPadding() {
-        return false;
-    }
-
-    @Override
-    public boolean showSaveAction() {
-        return true;
-    }
-
-    @Override
-    public boolean showAddAction() {
-        return false;
-    }
-
-//    @Override
-//    public void onCheckedChanged(ControlSwitchField teboSwitch, Object checkedItem, int checkedId) {
-//        if (checkedId < 0)
-//            return;
-//
-//        if (mLastCheckedId == checkedId) {
-//            return;
-//        }
-//
-//        mLastCheckedId = checkedId;
-//
-//        YesNo result = ((YesNo)checkedItem);
-//
-//        if (result == YesNo.YES) {
-//            //record.setShipmentDate(new Date());
-//            getContentBinding().dtpShipmentDate.setVisibility(View.VISIBLE);
-//            getContentBinding().txtShipmentDetails.setVisibility(View.VISIBLE);
-//            //getContentBinding().divShippingStatusTop.setVisibility(View.VISIBLE);
-//            //getContentBinding().divShippingStatusBottom.setVisibility(View.VISIBLE);
-//            getContentBinding().sampleReceivedLayout.setVisibility(View.VISIBLE);
-//        } else {
-//            getContentBinding().dtpShipmentDate.setVisibility(View.GONE);
-//            getContentBinding().txtShipmentDetails.setVisibility(View.GONE);
-//            //getContentBinding().divShippingStatusTop.setVisibility(View.GONE);
-//            //getContentBinding().divShippingStatusBottom.setVisibility(View.GONE);
-//            getContentBinding().sampleReceivedLayout.setVisibility(View.GONE);
-//        }
-//    }
-
     public static SampleEditFragment newInstance(SampleFormNavigationCapsule capsule, Sample activityRootData) {
         return newInstance(SampleEditFragment.class, capsule, activityRootData);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (onResumeTask != null && !onResumeTask.isCancelled())
-            onResumeTask.cancel(true);
     }
 }

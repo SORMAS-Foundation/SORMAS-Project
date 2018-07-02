@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 import android.view.View;
 
 import de.symeda.sormas.api.task.TaskStatus;
-import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -33,7 +33,7 @@ import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
  * Created by Orson on 31/12/2017.
  */
 
-public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadLayoutBinding, Task, Task> {
+public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBinding, Task, Task> {
 
     private AsyncTask onResumeTask;
     private String recordUuid = null;

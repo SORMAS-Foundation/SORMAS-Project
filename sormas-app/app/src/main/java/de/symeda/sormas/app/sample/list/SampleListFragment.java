@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-import de.symeda.sormas.app.BaseListActivityFragment;
+import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.core.BoolResult;
@@ -31,7 +31,7 @@ import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.util.SubheadingHelper;
 
-public class SampleListFragment extends BaseListActivityFragment<SampleListAdapter> implements OnListItemClickListener {
+public class SampleListFragment extends BaseListFragment<SampleListAdapter> implements OnListItemClickListener {
 
     private AsyncTask searchTask;
     private List<Sample> samples;

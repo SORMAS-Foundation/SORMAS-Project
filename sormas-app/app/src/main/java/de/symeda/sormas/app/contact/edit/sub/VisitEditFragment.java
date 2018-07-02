@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
@@ -15,7 +15,7 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentContactEditVisitInfoLayoutBinding;
 import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 
-public class VisitEditFragment extends BaseEditActivityFragment<FragmentContactEditVisitInfoLayoutBinding, Visit, Visit> {
+public class VisitEditFragment extends BaseEditFragment<FragmentContactEditVisitInfoLayoutBinding, Visit, Visit> {
 
     private String recordUuid;
     private String contactUuid = null;
@@ -88,29 +88,17 @@ public class VisitEditFragment extends BaseEditActivityFragment<FragmentContactE
     }
 
     @Override
-    protected void updateUI(FragmentContactEditVisitInfoLayoutBinding contentBinding, Visit visit) {
-
-    }
-
-    @Override
-    public void onPageResume(FragmentContactEditVisitInfoLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
-        if (!hasBeforeLayoutBindingAsyncReturn)
-            return;
-        record = getActivityRootData();
-    }
-
-    @Override
     public int getEditLayout() {
         return R.layout.fragment_contact_edit_visit_info_layout;
     }
 
     @Override
-    public boolean showSaveAction() {
+    public boolean isShowSaveAction() {
         return true;
     }
 
     @Override
-    public boolean showAddAction() {
+    public boolean isShowAddAction() {
         return false;
     }
 

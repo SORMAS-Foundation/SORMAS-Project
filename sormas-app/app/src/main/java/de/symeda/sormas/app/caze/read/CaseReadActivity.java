@@ -2,12 +2,11 @@ package de.symeda.sormas.app.caze.read;
 
 import android.content.Context;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
-import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -15,13 +14,10 @@ import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
-import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 public class CaseReadActivity extends BaseReadActivity<Case> {
 
     public static final String TAG = CaseReadActivity.class.getSimpleName();
-
-    private BaseReadActivityFragment activeFragment = null;
 
     @Override
     public CaseClassification getPageStatus() {
@@ -29,17 +25,8 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
     }
 
     @Override
-    protected Case getActivityRootData(String recordUuid) {
+    protected Case queryRootData(String recordUuid) {
         return DatabaseHelper.getCaseDao().queryUuidWithEmbedded(recordUuid);
-    }
-
-    @Override
-    public BaseReadActivityFragment getActiveReadFragment(Case activityRootData) {
-        if (activeFragment == null) {
-            CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
-            activeFragment = CaseReadFragment.newInstance(dataCapsule, activityRootData);
-        }
-        return activeFragment;
     }
 
     @Override
@@ -48,57 +35,49 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
     }
 
     @Override
-    protected BaseReadActivityFragment getReadFragment(LandingPageMenuItem menuItem, Case activityRootData) {
+    protected BaseReadFragment buildReadFragment(LandingPageMenuItem menuItem, Case activityRootData) {
         CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
 
         CaseSection section = CaseSection.fromMenuKey(menuItem.getKey());
+        BaseReadFragment fragment;
         switch (section) {
 
             case CASE_INFO:
-                activeFragment = CaseReadFragment.newInstance(dataCapsule, activityRootData);
+                fragment = CaseReadFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case PERSON_INFO:
-                activeFragment = CaseReadPatientInfoFragment.newInstance(dataCapsule, activityRootData);
+                fragment = CaseReadPersonFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case HOSPITALIZATION:
-                activeFragment = CaseReadHospitalizationFragment.newInstance(dataCapsule, activityRootData);
+                fragment = CaseReadHospitalizationFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case SYMPTOMS:
-                activeFragment = CaseReadSymptomsFragment.newInstance(dataCapsule, activityRootData);
+                fragment = CaseReadSymptomsFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case EPIDEMIOLOGICAL_DATA:
-                activeFragment = CaseReadEpidemiologicalDataFragment.newInstance(dataCapsule, activityRootData);
+                fragment = CaseReadEpidemiologicalDataFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case CONTACTS:
-                activeFragment = CaseReadContactListFragment.newInstance(dataCapsule, activityRootData);
+                fragment = CaseReadContactListFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case SAMPLES:
-                activeFragment = CaseReadSampleListFragment.newInstance(dataCapsule, activityRootData);
+                fragment = CaseReadSampleListFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case TASKS:
-                activeFragment = CaseReadTaskListFragment.newInstance(dataCapsule, activityRootData);
+                fragment = CaseReadTaskListFragment.newInstance(dataCapsule, activityRootData);
                 break;
             default:
                 throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
         }
 
-        return activeFragment;
+        return fragment;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
+        boolean result = super.onCreateOptionsMenu(menu);
         getEditMenu().setTitle(R.string.action_edit_case);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleReadModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
-
-        return true;
+        return result;
     }
 
     @Override
@@ -108,13 +87,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 
     @Override
     public void goToEditView() {
-        if (activeFragment == null)
-            return;
-
-        Case record = getStoredActivityRootEntity();
-
-        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(this,
-                record.getUuid(), record.getCaseClassification());
+        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
         CaseEditActivity.goToActivity(CaseReadActivity.this, dataCapsule);
     }
 

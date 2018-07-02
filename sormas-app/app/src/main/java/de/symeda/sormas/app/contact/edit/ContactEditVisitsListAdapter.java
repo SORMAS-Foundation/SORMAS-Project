@@ -1,41 +1,33 @@
 package de.symeda.sormas.app.contact.edit;
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.RowReadFollowupListItemLayoutBinding;
 import de.symeda.sormas.app.event.read.EventReadTaskListAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import de.symeda.sormas.app.backend.visit.Visit;
-
 public class ContactEditVisitsListAdapter extends DataBoundAdapter<RowReadFollowupListItemLayoutBinding> {
 
     private static final String TAG = EventReadTaskListAdapter.class.getSimpleName();
 
-    private final Context context;
-    private List<Visit> data = new ArrayList<>();
+    private List<Visit> data;
     private OnListItemClickListener mOnListItemClickListener;
 
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;
 
-    public ContactEditVisitsListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
-        this(context, rowLayout, onListItemClickListener, new ArrayList<Visit>());
-    }
-
-    public ContactEditVisitsListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Visit> data) {
+    public ContactEditVisitsListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Visit> data) {
         super(rowLayout);
-        this.context = context;
         this.mOnListItemClickListener = onListItemClickListener;
 
         if (data == null)
@@ -81,5 +73,4 @@ public class ContactEditVisitsListAdapter extends DataBoundAdapter<RowReadFollow
             }
         }
     }
-
 }

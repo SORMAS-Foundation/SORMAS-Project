@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
@@ -19,7 +19,7 @@ import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
  * Created by Orson on 02/01/2018.
  */
 
-public class VisitReadFragment extends BaseReadActivityFragment<FragmentContactReadVisitInfoLayoutBinding, Visit, Visit> {
+public class VisitReadFragment extends BaseReadFragment<FragmentContactReadVisitInfoLayoutBinding, Visit, Visit> {
 
     private String recordUuid;
     private VisitStatus pageStatus;

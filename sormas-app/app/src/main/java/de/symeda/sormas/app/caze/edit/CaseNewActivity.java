@@ -20,7 +20,7 @@ import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -58,12 +58,12 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
     }
 
     @Override
-    protected Case queryActivityRootEntity(String recordUuid) {
+    protected Case queryRootEntity(String recordUuid) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected Case buildActivityRootEntity() {
+    protected Case buildRootEntity() {
         Person _person = DatabaseHelper.getPersonDao().build();
         Case _case = DatabaseHelper.getCaseDao().build(_person);
         return _case;
@@ -77,18 +77,9 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
     }
 
     @Override
-    protected BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, Case activityRootData) {
+    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, Case activityRootData) {
         CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
         return CaseNewFragment.newInstance(dataCapsule, activityRootData);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //TODO: Fix this
-        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
-
-        return true;
     }
 
     @Override
@@ -283,8 +274,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     }
 
-    public static <TActivity extends BaseActivity> void
-    goToActivity(Context fromActivity, CaseFormNavigationCapsule dataCapsule) {
+    public static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, CaseFormNavigationCapsule dataCapsule) {
         BaseEditActivity.goToActivity(fromActivity, CaseNewActivity.class, dataCapsule);
     }
 

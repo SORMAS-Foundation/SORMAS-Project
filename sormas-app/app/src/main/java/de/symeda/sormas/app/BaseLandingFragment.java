@@ -8,12 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import de.symeda.sormas.app.component.menu.LandingPageMenuAdapter;
 import de.symeda.sormas.app.component.menu.LandingPageMenuControl;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
@@ -23,11 +17,7 @@ import de.symeda.sormas.app.component.menu.OnNotificationCountChangingListener;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 
-/**
- * Created by Orson on 11/12/2017.
- */
-
-public abstract class BaseLandingActivityFragment<E extends Enum<E>, TAdapter extends EnumMapDataBinderAdapter<E>> extends BaseFragment implements OnNotificationCountChangingListener, OnLandingPageMenuClickListener {
+public abstract class BaseLandingFragment<E extends Enum<E>, TAdapter extends EnumMapDataBinderAdapter<E>> extends BaseFragment implements OnNotificationCountChangingListener, OnLandingPageMenuClickListener {
 
     private BaseLandingActivity baseLandingActivity;
     private RecyclerView.LayoutManager layoutManager;
@@ -131,7 +121,7 @@ public abstract class BaseLandingActivityFragment<E extends Enum<E>, TAdapter ex
         this.recyclerView.setLayoutManager(this.layoutManager);
     }
 
-    protected static <TFragment extends BaseLandingActivityFragment, TActivity extends BaseLandingActivity> TFragment newInstance(Class<TFragment> f) throws IllegalAccessException, java.lang.InstantiationException {
+    protected static <TFragment extends BaseLandingFragment, TActivity extends BaseLandingActivity> TFragment newInstance(Class<TFragment> f) throws IllegalAccessException, java.lang.InstantiationException {
         TFragment fragment = f.newInstance();
         /*Bundle bundle = fragment.getArguments();
         if (bundle == null) {

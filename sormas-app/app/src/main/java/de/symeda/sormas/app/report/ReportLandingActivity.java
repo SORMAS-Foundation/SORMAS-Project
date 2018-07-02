@@ -6,7 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import de.symeda.sormas.app.BaseReportActivity;
-import de.symeda.sormas.app.BaseReportActivityFragment;
+import de.symeda.sormas.app.BaseReportFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
 
@@ -14,7 +14,7 @@ public class ReportLandingActivity extends BaseReportActivity {
 
     private final static String TAG = ReportLandingActivity.class.getSimpleName();
 
-    private BaseReportActivityFragment activeFragment = null;
+    private BaseReportFragment activeFragment = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -27,7 +27,7 @@ public class ReportLandingActivity extends BaseReportActivity {
     }
 
     @Override
-    public BaseReportActivityFragment getActiveFragment() {
+    public BaseReportFragment getActiveFragment() {
         if (activeFragment == null) {
             activeFragment = ReportFragment.newInstance();
         }

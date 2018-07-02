@@ -4,7 +4,6 @@ import android.content.res.Resources;
 import android.databinding.ViewDataBinding;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -18,7 +17,6 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.DengueFeverType;
-import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -29,17 +27,16 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseActivity;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
-import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.MoveCaseDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
@@ -47,8 +44,6 @@ import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
@@ -56,12 +51,13 @@ import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.layoutprocessor.CaseDiseaseLayoutProcessor;
 
-public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditLayoutBinding, Case, Case> {
+public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBinding, Case, Case> {
 
     public static final String TAG = CaseEditFragment.class.getSimpleName();
 
     private AsyncTask moveCaseTask;
     private Case record;
+
     private List<Item> caseClassificationList;
     private List<Item> caseOutcomeList;
     private List<Item> vaccinationList;
@@ -85,61 +81,22 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
     }
 
     @Override
-    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
-        if (!executionComplete) {
-            Case caze = getActivityRootData();
+    protected void prepareFragmentData(Bundle savedInstanceState) {
+        record = getActivityRootData();
 
-            if (caze != null) {
-                if (caze.isUnreadOrChildUnread())
-                    DatabaseHelper.getCaseDao().markAsRead(caze);
-
-                if (caze.getPerson() == null) {
-                    caze.setPerson(DatabaseHelper.getPersonDao().build());
-                }
-            }
-
-            resultHolder.forItem().add(caze);
-
-            resultHolder.forOther().add(DataUtils.getEnumItems(CaseClassification.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(CaseOutcome.class, false));
-
-            resultHolder.forOther().add(DataUtils.getEnumItems(Vaccination.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(VaccinationInfoSource.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(PlagueType.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(DengueFeverType.class, false));
-        } else {
-            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
-
-            if (itemIterator.hasNext())
-                record = itemIterator.next();
-
-            if (otherIterator.hasNext())
-                caseClassificationList = otherIterator.next();
-
-            if (otherIterator.hasNext())
-                caseOutcomeList = otherIterator.next();
-
-            if (otherIterator.hasNext())
-                vaccinationList = otherIterator.next();
-
-            if (otherIterator.hasNext())
-                vaccinationInfoSourceList = otherIterator.next();
-
-            if (otherIterator.hasNext())
-                plagueList = otherIterator.next();
-
-            if (otherIterator.hasNext())
-                dengueFeverList = otherIterator.next();
-
-            setupCallback();
-        }
-
-        return true;
+        caseClassificationList = DataUtils.getEnumItems(CaseClassification.class, false);
+        caseOutcomeList = DataUtils.getEnumItems(CaseOutcome.class, false);
+        vaccinationList = DataUtils.getEnumItems(Vaccination.class, false);
+        vaccinationInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, false);
+        plagueList = DataUtils.getEnumItems(PlagueType.class, false);
+        dengueFeverList = DataUtils.getEnumItems(DengueFeverType.class, false);
     }
 
     @Override
     public void onLayoutBinding(FragmentCaseEditLayoutBinding contentBinding) {
+
+        setupCallback();
+
         caseDiseaseLayoutProcessor = new CaseDiseaseLayoutProcessor(getContext(), getFragmentManager(), contentBinding, record, vaccinationList, vaccinationInfoSourceList, plagueList, dengueFeverList);
         caseDiseaseLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
@@ -187,11 +144,11 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
                 public void onChange(ControlPropertyField field) {
                     String value = (String) field.getValue();
                     if (value.trim().isEmpty()) {
-                        getContentBinding().txtEpidNumber.enableWarningState((NotificationContext)getActivity(), R.string.validation_soft_case_epid_number_empty);
+                        getContentBinding().txtEpidNumber.enableWarningState((NotificationContext) getActivity(), R.string.validation_soft_case_epid_number_empty);
                     } else if (value.matches(DataHelper.getEpidNumberRegexp())) {
                         getContentBinding().txtEpidNumber.disableWarningState();
                     } else {
-                        getContentBinding().txtEpidNumber.enableWarningState((NotificationContext)getActivity(), R.string.validation_soft_case_epid_number);
+                        getContentBinding().txtEpidNumber.enableWarningState((NotificationContext) getActivity(), R.string.validation_soft_case_epid_number);
                     }
                 }
             });
@@ -205,7 +162,7 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
                 public void onChange(ControlPropertyField field) {
                     CaseClassification caseClassification = (CaseClassification) field.getValue();
                     if (caseClassification == CaseClassification.NOT_CLASSIFIED) {
-                        getContentBinding().spnCaseOfficerClassification.enableErrorState((NotificationContext)getActivity(), R.string.validation_soft_case_classification);
+                        getContentBinding().spnCaseOfficerClassification.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_case_classification);
                     } else {
                         getContentBinding().spnCaseOfficerClassification.disableErrorState();
                     }
@@ -223,14 +180,14 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
                 public void onChange(ControlPropertyField field) {
                     CaseOutcome outcome = (CaseOutcome) field.getValue();
                     if (outcome == null) {
-                        getContentBinding().spnOutcome.enableErrorState((NotificationContext)getActivity(), R.string.validation_soft_case_outcome);
+                        getContentBinding().spnOutcome.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_case_outcome);
                     } else {
                         getContentBinding().spnOutcome.disableErrorState();
                     }
 
                     if (outcome == null || outcome == CaseOutcome.NO_OUTCOME) {
-                            getContentBinding().dtpDateOfOutcome.setVisibility(View.GONE);
-                            getContentBinding().dtpDateOfOutcome.setValue(null);
+                        getContentBinding().dtpDateOfOutcome.setVisibility(View.GONE);
+                        getContentBinding().dtpDateOfOutcome.setValue(null);
 
                     } else {
                         getContentBinding().dtpDateOfOutcome.setVisibility(View.VISIBLE);
@@ -305,7 +262,7 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
 
             @Override
             public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                CaseOutcome caseOutcome = (CaseOutcome)value;
+                CaseOutcome caseOutcome = (CaseOutcome) value;
 
                 if (caseOutcome == CaseOutcome.NO_OUTCOME || caseOutcome == null) {
                     getContentBinding().dtpDateOfOutcome.setVisibility(View.GONE);
@@ -326,36 +283,17 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
     }
 
     @Override
-    protected void updateUI(FragmentCaseEditLayoutBinding contentBinding, Case aCase) {
-
-    }
-
-    @Override
-    public void onPageResume(FragmentCaseEditLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
-        if (!hasBeforeLayoutBindingAsyncReturn)
-            return;
-
-        record = getActivityRootData();
-        requestLayoutRebind();
-    }
-
-    @Override
     public int getEditLayout() {
         return R.layout.fragment_case_edit_layout;
     }
 
     @Override
-    public boolean includeFabNonOverlapPadding() {
-        return false;
-    }
-
-    @Override
-    public boolean showSaveAction() {
+    public boolean isShowSaveAction() {
         return true;
     }
 
     @Override
-    public boolean showAddAction() {
+    public boolean isShowAddAction() {
         return false;
     }
 
@@ -363,7 +301,7 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
         moveToAnotherHealthFacilityCallback = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final CaseEditActivity activity = (CaseEditActivity)CaseEditFragment.this.getActivity();
+                final CaseEditActivity activity = (CaseEditActivity) CaseEditFragment.this.getActivity();
 
                 if (activity == null)
                     return;
@@ -381,7 +319,7 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
                         moveCaseDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                             @Override
                             public void onOkClick(View v, Object item, View viewRoot) {
-                                record = (Case)item;
+                                record = (Case) item;
                                 requestLayoutRebind();
                                 moveCaseDialog.dismiss();
 

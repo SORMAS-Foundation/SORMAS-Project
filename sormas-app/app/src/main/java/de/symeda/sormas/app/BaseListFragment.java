@@ -19,7 +19,7 @@ import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.util.ConstantHelper;
 
-public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView.Adapter> extends BaseFragment implements IListActivityAdapterDataObserverCommunicator, OnListItemClickListener {
+public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter> extends BaseFragment implements IListActivityAdapterDataObserverCommunicator, OnListItemClickListener {
 
     private BaseListActivity baseListActivity;
     private IUpdateSubHeadingTitle subHeadingHandler;
@@ -179,7 +179,7 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
         }
     }
 
-    protected static <TFragment extends BaseListActivityFragment, TCapsule extends IListNavigationCapsule> TFragment newInstance(Class<TFragment> f, TCapsule dataCapsule) {
+    protected static <TFragment extends BaseListFragment, TCapsule extends IListNavigationCapsule> TFragment newInstance(Class<TFragment> f, TCapsule dataCapsule) {
         TFragment fragment;
         try {
             fragment = f.newInstance();

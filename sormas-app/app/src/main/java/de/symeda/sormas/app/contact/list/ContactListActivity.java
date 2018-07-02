@@ -13,7 +13,7 @@ import java.util.Random;
 
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.BaseListActivity;
-import de.symeda.sormas.app.BaseListActivityFragment;
+import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
@@ -21,19 +21,7 @@ import de.symeda.sormas.app.core.ListNavigationCapsule;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
 
-/**
- * Created by Orson on 07/12/2017.
- */
-
 public class ContactListActivity extends BaseListActivity {
-
-    private final int DATA_XML_PAGE_MENU = R.xml.data_landing_page_contact_menu; // "xml/data_landing_page_contact_menu.xml";
-
-    private static final int MENU_INDEX_CONTACT_FOLLOWUP_ONGOING = 0;
-    private static final int MENU_INDEX_CONTACT_FOLLOWUP_COMPLETED = 1;
-    private static final int MENU_INDEX_CONTACT_FOLLOWUP_CANCELLED = 2;
-    private static final int MENU_INDEX_CONTACT_LOST_TO_FOLLOWUP = 2;
-    private static final int MENU_INDEX_CONTACT_NO_FOLLOWUP = 2;
 
     private FollowUpStatus statusFilters[] = new FollowUpStatus[] { FollowUpStatus.FOLLOW_UP, FollowUpStatus.COMPLETED,
             FollowUpStatus.CANCELED, FollowUpStatus.LOST,FollowUpStatus.NO_FOLLOW_UP };
@@ -41,7 +29,7 @@ public class ContactListActivity extends BaseListActivity {
     private FollowUpStatus filterStatus = null;
     private SearchBy searchBy = null;
     private String recordUuid = null;
-    private BaseListActivityFragment activeFragment = null;
+    private BaseListFragment activeFragment = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -70,7 +58,7 @@ public class ContactListActivity extends BaseListActivity {
     }
 
     @Override
-    public BaseListActivityFragment getActiveListFragment() {
+    public BaseListFragment getActiveListFragment() {
         if (activeFragment == null) {
             IListNavigationCapsule dataCapsule = new ListNavigationCapsule(ContactListActivity.this, filterStatus, searchBy);
             activeFragment = ContactListFragment.newInstance(dataCapsule);
@@ -81,7 +69,7 @@ public class ContactListActivity extends BaseListActivity {
 
     @Override
     public int getPageMenuData() {
-        return DATA_XML_PAGE_MENU;
+        return R.xml.data_landing_page_contact_menu;
     }
 
     @Override
@@ -91,7 +79,7 @@ public class ContactListActivity extends BaseListActivity {
     }
 
     @Override
-    protected BaseListActivityFragment getListFragment(LandingPageMenuItem menuItem) {
+    protected BaseListFragment getListFragment(LandingPageMenuItem menuItem) {
         FollowUpStatus status = statusFilters[menuItem.getKey()];
 
         if (status == null)

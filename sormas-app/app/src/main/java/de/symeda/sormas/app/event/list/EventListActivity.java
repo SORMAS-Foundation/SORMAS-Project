@@ -14,7 +14,7 @@ import java.util.Random;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
-import de.symeda.sormas.app.BaseListActivityFragment;
+import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
@@ -41,7 +41,7 @@ public class EventListActivity extends BaseListActivity {
     private EventStatus filterStatus = null;
     private SearchBy searchBy = null;
     private String recordUuid = null;
-    private BaseListActivityFragment activeFragment = null;
+    private BaseListFragment activeFragment = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -70,7 +70,7 @@ public class EventListActivity extends BaseListActivity {
     }
 
     @Override
-    public BaseListActivityFragment getActiveListFragment() {
+    public BaseListFragment getActiveListFragment() {
         if (activeFragment == null) {
             IListNavigationCapsule dataCapsule = new ListNavigationCapsule(EventListActivity.this, filterStatus, searchBy);
             activeFragment = EventListFragment.newInstance(dataCapsule);
@@ -91,7 +91,7 @@ public class EventListActivity extends BaseListActivity {
     }
 
     @Override
-    protected BaseListActivityFragment getListFragment(LandingPageMenuItem menuItem) {
+    protected BaseListFragment getListFragment(LandingPageMenuItem menuItem) {
         EventStatus status = statusFilters[menuItem.getKey()];
 
         if (status == null)

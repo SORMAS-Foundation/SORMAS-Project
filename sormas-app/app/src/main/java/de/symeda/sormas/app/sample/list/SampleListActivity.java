@@ -11,7 +11,7 @@ import org.joda.time.DateTime;
 import java.util.Random;
 
 import de.symeda.sormas.app.BaseListActivity;
-import de.symeda.sormas.app.BaseListActivityFragment;
+import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
@@ -31,7 +31,7 @@ public class SampleListActivity extends BaseListActivity {
 
     private ShipmentStatus filterStatus = null;
     private SearchBy searchBy = null;
-    private BaseListActivityFragment activeFragment = null;
+    private BaseListFragment activeFragment = null;
     private String recordUuid = null;
 
 
@@ -51,7 +51,7 @@ public class SampleListActivity extends BaseListActivity {
     }
 
     @Override
-    public BaseListActivityFragment getActiveListFragment() {
+    public BaseListFragment getActiveListFragment() {
         if (activeFragment == null) {
             IListNavigationCapsule dataCapsule = new ListNavigationCapsule(SampleListActivity.this, filterStatus, searchBy);
             activeFragment = SampleListFragment.newInstance(dataCapsule);
@@ -72,7 +72,7 @@ public class SampleListActivity extends BaseListActivity {
     }
 
     @Override
-    protected BaseListActivityFragment getListFragment(LandingPageMenuItem menuItem) {
+    protected BaseListFragment getListFragment(LandingPageMenuItem menuItem) {
         ShipmentStatus status = statusFilters[menuItem.getKey()];
 
         if (status == null)

@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.app.BaseListActivityFragment;
+import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.contact.read.ContactReadActivity;
@@ -31,11 +31,7 @@ import de.symeda.sormas.app.searchstrategy.SearchStrategyFor;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.util.SubheadingHelper;
 
-/**
- * Created by Orson on 07/12/2017.
- */
-
-public class ContactListFragment extends BaseListActivityFragment<ContactListAdapter> implements OnListItemClickListener {
+public class ContactListFragment extends BaseListFragment<ContactListAdapter> implements OnListItemClickListener {
 
     private boolean dataLoaded = false;
     private AsyncTask searchTask;
@@ -59,7 +55,7 @@ public class ContactListFragment extends BaseListActivityFragment<ContactListAda
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
 
         filterStatus = (FollowUpStatus) getFilterStatusArg(arguments);
         searchBy = (SearchBy) getSearchStrategyArg(arguments);
@@ -77,12 +73,12 @@ public class ContactListFragment extends BaseListActivityFragment<ContactListAda
 
     @Override
     public ContactListAdapter getNewListAdapter() {
-        return new ContactListAdapter(this.getActivity(), R.layout.row_read_contact_list_item_layout, this, this.contacts);
+        return new ContactListAdapter(R.layout.row_read_contact_list_item_layout, this, this.contacts);
     }
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        Contact c = (Contact)item;
+        Contact c = (Contact) item;
         ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(),
                 c.getUuid(), c.getContactClassification());
         ContactReadActivity.goToActivity(getActivity(), dataCapsule);
@@ -150,7 +146,7 @@ public class ContactListFragment extends BaseListActivityFragment<ContactListAda
             dataLoaded = false;
         }
 
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout) this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
@@ -169,21 +165,6 @@ public class ContactListFragment extends BaseListActivityFragment<ContactListAda
         //recyclerViewForList.setHasFixedSize(true);
         recyclerViewForList.setLayoutManager(linearLayoutManager);
         recyclerViewForList.setAdapter(getListAdapter());
-    }
-
-    public void showContactReadView(Contact contact) {
-        /*Intent intent = new Intent(getActivity(), TaskEditActivity.class);
-        intent.putExtra(Task.UUID, task.getUuid());
-        if(parentCaseUuid != null) {
-            intent.putExtra(KEY_CASE_UUID, parentCaseUuid);
-        }
-        if(parentContactUuid != null) {
-            intent.putExtra(KEY_CONTACT_UUID, parentContactUuid);
-        }
-        if(parentEventUuid != null) {
-            intent.putExtra(KEY_EVENT_UUID, parentEventUuid);
-        }
-        startActivity(intent);*/
     }
 
     public static ContactListFragment newInstance(IListNavigationCapsule capsule) {

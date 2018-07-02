@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
@@ -22,7 +22,7 @@ import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
  * Created by Orson on 24/12/2017.
  */
 
-public class EventReadFragment extends BaseReadActivityFragment<FragmentEventReadLayoutBinding, Event, Event> {
+public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutBinding, Event, Event> {
 
     private AsyncTask onResumeTask;
     private String recordUuid;

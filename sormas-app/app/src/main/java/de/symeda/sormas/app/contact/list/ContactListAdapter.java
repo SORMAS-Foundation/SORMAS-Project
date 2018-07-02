@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.contact.list;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -9,7 +8,11 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
@@ -18,33 +21,18 @@ import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.databinding.RowReadContactListItemLayoutBinding;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import de.symeda.sormas.app.backend.contact.Contact;
-
-/**
- * Created by Orson on 07/12/2017.
- */
-
 public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemLayoutBinding> implements ISetOnListItemClickListener {
 
     private static final String TAG = ContactListAdapter.class.getSimpleName();
 
-    private final Context context;
     private List<Contact> data = new ArrayList<>();
     private OnListItemClickListener mOnListItemClickListener;
 
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;
 
-    public ContactListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
-        this(context, rowLayout, onListItemClickListener, new ArrayList<Contact>());
-    }
-
-    public ContactListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Contact> data) {
+    public ContactListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Contact> data) {
         super(rowLayout);
-        this.context = context;
         this.mOnListItemClickListener = onListItemClickListener;
 
         if (data == null)
@@ -52,7 +40,6 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
         else
             this.data = new ArrayList<>(data);
     }
-
 
     @Override
     protected void bindItem(DataBoundViewHolder<RowReadContactListItemLayoutBinding> holder,
@@ -97,7 +84,7 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
 
     public void indicateContactClassification(ImageView img, Contact record) {
         Resources resources = img.getContext().getResources();
-        Drawable drw = (Drawable)ContextCompat.getDrawable(img.getContext(), R.drawable.indicator_status_circle);
+        Drawable drw = (Drawable) ContextCompat.getDrawable(img.getContext(), R.drawable.indicator_status_circle);
         IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(img.getContext(), record.getContactClassification());
         drw.setColorFilter(resources.getColor(elaborator.getColorIndicatorResource()), PorterDuff.Mode.SRC_OVER);
         img.setBackground(drw);
@@ -110,7 +97,7 @@ public class ContactListAdapter extends DataBoundAdapter<RowReadContactListItemL
         if (position >= this.data.size())
             return null;
 
-        return (Contact)this.data.get(position);
+        return (Contact) this.data.get(position);
     }
 
     public void addAll(List<Contact> data) {

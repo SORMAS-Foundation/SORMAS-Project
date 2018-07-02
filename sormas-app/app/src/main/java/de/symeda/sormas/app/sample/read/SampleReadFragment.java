@@ -11,7 +11,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
-import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
@@ -26,7 +26,7 @@ import de.symeda.sormas.app.databinding.FragmentSampleReadLayoutBinding;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
 
-public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleReadLayoutBinding, Sample, Sample> {
+public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayoutBinding, Sample, Sample> {
 
     private AsyncTask onResumeTask;
     private String recordUuid = null;

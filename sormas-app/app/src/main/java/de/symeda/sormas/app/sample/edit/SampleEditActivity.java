@@ -2,13 +2,11 @@ package de.symeda.sormas.app.sample.edit;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
@@ -20,32 +18,18 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
-import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 public class SampleEditActivity extends BaseEditActivity<Sample> {
 
     private AsyncTask saveTask;
-    private String caseUuid = null;
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        saveCaseUuidState(outState, caseUuid);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        caseUuid = getCaseUuidArg(savedInstanceState);
-    }
-
-    @Override
-    protected Sample queryActivityRootEntity(String recordUuid) {
+    protected Sample queryRootEntity(String recordUuid) {
         return DatabaseHelper.getSampleDao().queryUuid(recordUuid);
     }
 
     @Override
-    protected Sample buildActivityRootEntity() {
+    protected Sample buildRootEntity() {
         return null;
     }
 
@@ -58,23 +42,15 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
 
     @Override
     public ShipmentStatus getPageStatus() {
-        return (ShipmentStatus)super.getPageStatus();
+        return (ShipmentStatus) super.getPageStatus();
     }
 
     @Override
-    protected BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, Sample activityRootData) {
+    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, Sample activityRootData) {
 
         SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(
-                SampleEditActivity.this, getRootEntityUuid(), getPageStatus()).setCaseUuid(caseUuid);
+                SampleEditActivity.this, getRootEntityUuid(), getPageStatus());
         return SampleEditFragment.newInstance(dataCapsule, activityRootData);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
-
-        return true;
     }
 
     @Override
@@ -85,7 +61,7 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
     @Override
     public void saveData() {
 
-        final Sample sampleToSave = (Sample)getActiveFragment().getPrimaryData();
+        final Sample sampleToSave = (Sample) getActiveFragment().getPrimaryData();
 
         // TODO validate
 //        SampleValidator.clearErrorsForSampleData(getContentBinding());

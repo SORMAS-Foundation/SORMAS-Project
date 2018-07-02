@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
@@ -33,7 +33,7 @@ import de.symeda.sormas.app.task.read.TaskReadActivity;
  * Created by Orson on 26/12/2017.
  */
 
-public class EventReadTaskListFragement extends BaseReadActivityFragment<FragmentFormListLayoutBinding, List<Task>, Event> implements OnListItemClickListener {
+public class EventReadTaskListFragement extends BaseReadFragment<FragmentFormListLayoutBinding, List<Task>, Event> implements OnListItemClickListener {
 
     private AsyncTask onResumeTask;
     private String recordUuid;

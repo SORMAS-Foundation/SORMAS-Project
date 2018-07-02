@@ -6,19 +6,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentEventNewPersonShortLayoutBinding;
-import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 
-public class EventParticipantNewFragment extends BaseEditActivityFragment<FragmentEventNewPersonShortLayoutBinding, EventParticipant, EventParticipant> {
+public class EventParticipantNewFragment extends BaseEditFragment<FragmentEventNewPersonShortLayoutBinding, EventParticipant, EventParticipant> {
 
     public static final String TAG = EventParticipantNewFragment.class.getSimpleName();
 
@@ -74,63 +71,6 @@ public class EventParticipantNewFragment extends BaseEditActivityFragment<Fragme
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentEventNewPersonShortLayoutBinding contentBinding) {
-
-    }
-
-    @Override
-    protected void updateUI(FragmentEventNewPersonShortLayoutBinding contentBinding, EventParticipant eventParticipant) {
-
-    }
-
-    @Override
-    public void onPageResume(FragmentEventNewPersonShortLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
-        if (!hasBeforeLayoutBindingAsyncReturn)
-            return;
-
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    //getBaseActivity().showPreloader();
-                    //
-                }
-
-                @Override
-                public void doInBackground(TaskResultHolder resultHolder) {
-                    EventParticipant eventParticipant = getActivityRootData();
-                    resultHolder.forItem().add(eventParticipant);
-                }
-            };
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getBaseActivity().hidePreloader();
-                    //getBaseActivity().showFragmentView();
-
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                    if (itemIterator.hasNext())
-                        record = itemIterator.next();
-
-                    if (record != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            //getBaseActivity().hidePreloader();
-            //getBaseActivity().showFragmentView();
-        }
-    }
-
-    @Override
     public int getEditLayout() {
         return R.layout.fragment_event_new_person_short_layout;
     }
@@ -141,12 +81,12 @@ public class EventParticipantNewFragment extends BaseEditActivityFragment<Fragme
     }
 
     @Override
-    public boolean showSaveAction() {
+    public boolean isShowSaveAction() {
         return true;
     }
 
     @Override
-    public boolean showAddAction() {
+    public boolean isShowAddAction() {
         return false;
     }
 

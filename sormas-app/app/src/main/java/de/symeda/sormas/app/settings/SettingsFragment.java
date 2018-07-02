@@ -16,9 +16,10 @@ import android.widget.AdapterView;
 import java.net.ConnectException;
 
 import de.symeda.sormas.api.utils.InfoProvider;
-import de.symeda.sormas.app.BaseLandingActivityFragment;
+import de.symeda.sormas.app.BaseLandingFragment;
 import de.symeda.sormas.app.EnterPinActivity;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.SyncLogDialog;
 import de.symeda.sormas.app.component.dialog.TeboProgressDialog;
@@ -41,7 +42,7 @@ import de.symeda.sormas.app.util.SyncCallback;
  * Created by Orson on 03/11/2017.
  */
 
-public class SettingsFragment extends BaseLandingActivityFragment {
+public class SettingsFragment extends BaseLandingFragment {
 
     private final int SHOW_DEV_OPTIONS_CLICK_LIMIT = 5;
 
@@ -160,6 +161,7 @@ public class SettingsFragment extends BaseLandingActivityFragment {
             });
             //binding.configProgressBar.setVisibility(View.VISIBLE);
 
+            DatabaseHelper.clearTables(false);
             SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.CompleteAndRepull, getContext(), new SyncCallback() {
                 @Override
                 public void call(boolean syncFailed, String syncFailedMessage) {

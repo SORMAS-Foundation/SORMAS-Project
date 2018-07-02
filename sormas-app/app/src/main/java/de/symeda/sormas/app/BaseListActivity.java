@@ -120,7 +120,7 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
     @Deprecated
     protected void initializeActivity(Bundle arguments) { }
 
-    public abstract BaseListActivityFragment getActiveListFragment();
+    public abstract BaseListFragment getActiveListFragment();
 
     public void replaceFragment(BaseFragment f) {
         BaseFragment previousFragment = activeFragment;
@@ -237,7 +237,7 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
 
     @Override
     public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-        BaseListActivityFragment newActiveFragment = getListFragment(menuItem); //, storedListData
+        BaseListFragment newActiveFragment = getListFragment(menuItem); //, storedListData
 
         if (newActiveFragment == null)
             return false;
@@ -250,7 +250,7 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
         return true;
     }
 
-    protected BaseListActivityFragment getListFragment(LandingPageMenuItem menuItem) {
+    protected BaseListFragment getListFragment(LandingPageMenuItem menuItem) {
         return null;
     }
 

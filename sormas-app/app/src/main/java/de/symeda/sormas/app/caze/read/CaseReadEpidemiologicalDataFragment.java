@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.app.BaseReadActivityFragment;
+import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -31,7 +31,7 @@ import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
  * Created by Orson on 08/01/2018.
  */
 
-public class CaseReadEpidemiologicalDataFragment extends BaseReadActivityFragment<FragmentCaseReadEpidLayoutBinding, EpiData, Case> {
+public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<FragmentCaseReadEpidLayoutBinding, EpiData, Case> {
 
     public static final String TAG = CaseReadEpidemiologicalDataFragment.class.getSimpleName();
 

@@ -9,7 +9,7 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -32,12 +32,12 @@ public class EventEditActivity extends BaseEditActivity<Event> {
     private AsyncTask saveTask;
 
     @Override
-    protected Event queryActivityRootEntity(String recordUuid) {
+    protected Event queryRootEntity(String recordUuid) {
         return DatabaseHelper.getEventDao().queryUuid(recordUuid);
     }
 
     @Override
-    protected Event buildActivityRootEntity() {
+    protected Event buildRootEntity() {
         throw new UnsupportedOperationException();
     }
 
@@ -52,12 +52,12 @@ public class EventEditActivity extends BaseEditActivity<Event> {
     }
 
     @Override
-    protected BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, Event activityRootData) {
+    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, Event activityRootData) {
         EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventEditActivity.this,
                 getRootEntityUuid(), getPageStatus());
 
         EventSection section = EventSection.fromMenuKey(menuItem.getKey());
-        BaseEditActivityFragment fragment;
+        BaseEditFragment fragment;
         switch (section) {
             case EVENT_INFO:
                 fragment = EventEditFragment.newInstance(dataCapsule, activityRootData);
@@ -79,13 +79,6 @@ public class EventEditActivity extends BaseEditActivity<Event> {
         boolean result = super.onCreateOptionsMenu(menu);
         getSaveMenu().setTitle(R.string.action_save_event);
         return result;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
-        return true;
     }
 
     @Override

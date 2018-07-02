@@ -13,7 +13,7 @@ import java.util.Random;
 
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseListActivity;
-import de.symeda.sormas.app.BaseListActivityFragment;
+import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
@@ -38,7 +38,7 @@ public class TaskListActivity  extends BaseListActivity {
     private TaskStatus filterStatus = null;
     private SearchBy searchBy = null;
     private String recordUuid = null;
-    private BaseListActivityFragment activeFragment = null;
+    private BaseListFragment activeFragment = null;
     private boolean showStatusFrame;
     private boolean showTitleBar;
     private MenuItem newMenu = null;
@@ -73,7 +73,7 @@ public class TaskListActivity  extends BaseListActivity {
     }
 
     @Override
-    public BaseListActivityFragment getActiveListFragment() {
+    public BaseListFragment getActiveListFragment() {
         if (activeFragment == null) {
             IListNavigationCapsule dataCapsule = new ListNavigationCapsule(TaskListActivity.this, filterStatus, searchBy);
             activeFragment = TaskListFragment.newInstance(dataCapsule);
@@ -94,7 +94,7 @@ public class TaskListActivity  extends BaseListActivity {
     }
 
     @Override
-    protected BaseListActivityFragment getListFragment(LandingPageMenuItem menuItem) {
+    protected BaseListFragment getListFragment(LandingPageMenuItem menuItem) {
         TaskStatus status = statusFilters[menuItem.getKey()];
 
         if (status == null)

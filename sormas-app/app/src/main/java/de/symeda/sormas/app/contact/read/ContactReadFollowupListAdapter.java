@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.contact.read;
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.support.v4.content.ContextCompat;
@@ -17,28 +16,18 @@ import java.util.List;
 
 import de.symeda.sormas.app.backend.visit.Visit;
 
-/**
- * Created by Orson on 02/01/2018.
- */
-
 public class ContactReadFollowupListAdapter extends DataBoundAdapter<RowReadFollowupListItemLayoutBinding> {
 
     private static final String TAG = ContactReadFollowupListAdapter.class.getSimpleName();
 
-    private final Context context;
     private List<Visit> data = new ArrayList<>();
     private OnListItemClickListener mOnListItemClickListener;
 
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;
 
-    public ContactReadFollowupListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
-        this(context, rowLayout, onListItemClickListener, new ArrayList<Visit>());
-    }
-
-    public ContactReadFollowupListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Visit> data) {
+    public ContactReadFollowupListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Visit> data) {
         super(rowLayout);
-        this.context = context;
         this.mOnListItemClickListener = onListItemClickListener;
 
         if (data == null)
@@ -84,5 +73,4 @@ public class ContactReadFollowupListAdapter extends DataBoundAdapter<RowReadFoll
             }
         }
     }
-
 }

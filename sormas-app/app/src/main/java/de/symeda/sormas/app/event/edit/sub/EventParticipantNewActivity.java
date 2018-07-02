@@ -14,7 +14,7 @@ import java.util.List;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -65,12 +65,12 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
     }
 
     @Override
-    protected EventParticipant queryActivityRootEntity(String recordUuid) {
+    protected EventParticipant queryRootEntity(String recordUuid) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected EventParticipant buildActivityRootEntity() {
+    protected EventParticipant buildRootEntity() {
         Person person = DatabaseHelper.getPersonDao().build();
         EventParticipant eventParticipant = DatabaseHelper.getEventParticipantDao().build();
         eventParticipant.setPerson(person);
@@ -79,25 +79,16 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getSaveMenu().setTitle(R.string.action_save_case);
-
-        return true;
+        boolean result = super.onCreateOptionsMenu(menu);
+        getSaveMenu().setTitle(R.string.action_save_event);
+        return result;
     }
 
     @Override
-    protected BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, EventParticipant activityRootData) {
+    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, EventParticipant activityRootData) {
         EventParticipantFormNavigationCapsule dataCapsule = new EventParticipantFormNavigationCapsule(EventParticipantNewActivity.this,
                 getRootEntityUuid()).setEventUuid(eventUuid);
         return EventParticipantNewFragment.newInstance(dataCapsule, activityRootData);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
-
-        return true;
     }
 
     @Override

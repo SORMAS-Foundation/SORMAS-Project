@@ -1,14 +1,12 @@
 package de.symeda.sormas.app.task.edit;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseEditActivity;
-import de.symeda.sormas.app.BaseEditActivityFragment;
+import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
@@ -24,12 +22,12 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
     }
 
     @Override
-    protected Task queryActivityRootEntity(String recordUuid) {
+    protected Task queryRootEntity(String recordUuid) {
         return DatabaseHelper.getTaskDao().queryUuid(recordUuid);
     }
 
     @Override
-    protected Task buildActivityRootEntity() {
+    protected Task buildRootEntity() {
         return null;
     }
 
@@ -51,18 +49,9 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
     }
 
     @Override
-    protected BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, Task activityRootData) {
-        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(TaskEditActivity.this,
-                getRootEntityUuid(), getPageStatus());
+    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, Task activityRootData) {
+        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
         return TaskEditFragment.newInstance(dataCapsule, activityRootData);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
-
-        return true;
     }
 
     @Override
@@ -73,5 +62,4 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
     public static void goToActivity(Context fromActivity, TaskFormNavigationCapsule dataCapsule) {
         BaseEditActivity.goToActivity(fromActivity, TaskEditActivity.class, dataCapsule);
     }
-
 }
