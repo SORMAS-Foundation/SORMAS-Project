@@ -166,15 +166,7 @@
         </activity>
 
         <activity
-            android:name=".contact.read.sub.ContactReadTaskInfoActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
-            android:parentActivityName=".contact.read.ContactReadActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop">
-        </activity>
-
-        <activity
-            android:name=".contact.read.sub.ContactReadFollowUpVisitInfoActivity"
+            android:name=".contact.read.sub.VisitReadActivity"
             android:theme="@style/ActivityWithOverflowMenuTheme"
             android:parentActivityName=".contact.read.ContactReadActivity"
             android:screenOrientation="portrait"
@@ -190,7 +182,7 @@
         </activity>
 
         <activity
-            android:name=".contact.edit.sub.ContactEditFollowUpInfoActivity"
+            android:name=".contact.edit.sub.VisitEditActivity"
             android:theme="@style/ActivityWithOverflowMenuTheme"
             android:parentActivityName=".contact.edit.ContactEditActivity"
             android:screenOrientation="portrait"
@@ -212,14 +204,7 @@
         </activity>
 
 
-        <activity android:name=".event.read.sub.EventReadPersonsInvolvedInfoActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
-            android:parentActivityName=".event.read.EventReadActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop">
-        </activity>
-
-        <activity android:name=".event.read.sub.EventReadTaskInfoActivity"
+        <activity android:name=".event.read.sub.EventParticipantReadActivity"
             android:theme="@style/ActivityWithOverflowMenuTheme"
             android:parentActivityName=".event.read.EventReadActivity"
             android:screenOrientation="portrait"
@@ -233,14 +218,14 @@
             android:launchMode="singleTop">
         </activity>
 
-        <activity android:name=".event.edit.sub.EventNewPersonsInvolvedActivity"
+        <activity android:name=".event.edit.sub.EventParticipantNewActivity"
             android:theme="@style/ActivityWithOverflowMenuTheme"
             android:parentActivityName=".event.edit.EventEditActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleTop">
         </activity>
 
-        <activity android:name=".event.edit.sub.EventEditPersonsInvolvedInfoActivity"
+        <activity android:name=".event.edit.sub.EventParticipantEditActivity"
             android:theme="@style/ActivityWithOverflowMenuTheme"
             android:parentActivityName=".event.edit.EventEditActivity"
             android:screenOrientation="portrait"
@@ -305,7 +290,6 @@
             android:name=".core.TaskNotificationService"
             android:enabled="true" />
 
-        <activity android:name=".TestBackendActivity"></activity>
     </application>
 
 </manifest>

@@ -8,13 +8,13 @@ import de.symeda.sormas.app.core.BaseFormNavigationCapsule;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 
-public class EventFormNavigationCapsule extends BaseFormNavigationCapsule<Event, EventFormNavigationCapsule> {
+public class EventParticipantFormNavigationCapsule extends BaseFormNavigationCapsule<Event, EventParticipantFormNavigationCapsule> {
 
-    public EventFormNavigationCapsule(Context context, EventStatus pageStatus) {
+    public EventParticipantFormNavigationCapsule(Context context, EventStatus pageStatus) {
         super(context, null, pageStatus);
     }
 
-    public EventFormNavigationCapsule(Context context, String recordUuid, EventStatus pageStatus) {
-        super(context, recordUuid, pageStatus);
+    public EventParticipantFormNavigationCapsule(Context context, String recordUuid) {
+        super(context, recordUuid, null);
     }
 }

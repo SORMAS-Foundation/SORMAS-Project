@@ -15,7 +15,6 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
-import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 /**
@@ -31,8 +30,8 @@ public class TaskReadActivity extends BaseReadActivity<Task> {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -57,16 +56,11 @@ public class TaskReadActivity extends BaseReadActivity<Task> {
     }
 
     @Override
-    protected Task getActivityRootDataIfRecordUuidNull() {
-        return null;
-    }
-
-    @Override
     public BaseReadActivityFragment getActiveReadFragment(Task activityRootData) {
         if (activeFragment == null) {
             TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(TaskReadActivity.this,
                     recordUuid, pageStatus);
-            activeFragment = TaskReadFragment.newInstance(this, dataCapsule, activityRootData);
+            activeFragment = TaskReadFragment.newInstance(dataCapsule, activityRootData);
         }
 
         return activeFragment;
@@ -132,7 +126,7 @@ public class TaskReadActivity extends BaseReadActivity<Task> {
     }
 
     @Override
-    public void gotoEditView() {
+    public void goToEditView() {
         if (activeFragment == null)
             return;
 

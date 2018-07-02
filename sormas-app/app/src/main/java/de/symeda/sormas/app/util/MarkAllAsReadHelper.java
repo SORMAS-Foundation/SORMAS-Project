@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment;
 
 import java.util.List;
 
-import de.symeda.sormas.app.AbstractSormasActivity;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -17,10 +17,10 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 
 public class MarkAllAsReadHelper {
 
-    public static AsyncTask markCasesAsRead(final AbstractSormasActivity activity, final Callback.IAction callback) {
+    public static AsyncTask markCasesAsRead(final BaseActivity activity, final Callback.IAction callback) {
         DefaultAsyncTask executor = new DefaultAsyncTask(activity.getContext()) {
             @Override
-            public void execute(TaskResultHolder resultHolder) {
+            public void doInBackground(TaskResultHolder resultHolder) {
                 CaseDao caseDao = DatabaseHelper.getCaseDao();
                 List<Case> cases = caseDao.queryForAll();
                 for (Case caseToMark : cases) {

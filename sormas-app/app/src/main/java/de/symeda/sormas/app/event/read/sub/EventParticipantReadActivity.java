@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.event.read.sub;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Menu;
@@ -11,15 +12,12 @@ import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
-import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
+import de.symeda.sormas.app.event.edit.sub.EventParticipantEditActivity;
+import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
 
-/**
- * Created by Orson on 27/12/2017.
- */
-
-public class EventReadPersonsInvolvedInfoActivity extends BaseReadActivity<EventParticipant> {
+public class EventParticipantReadActivity extends BaseReadActivity<EventParticipant> {
 
     private String recordUuid = null;
     private EventStatus eventStatus = null;
@@ -30,9 +28,9 @@ public class EventReadPersonsInvolvedInfoActivity extends BaseReadActivity<Event
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, eventStatus);
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
+        saveFilterStatusState(outState, eventStatus);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -58,19 +56,18 @@ public class EventReadPersonsInvolvedInfoActivity extends BaseReadActivity<Event
     }
 
     @Override
-    protected EventParticipant getActivityRootDataIfRecordUuidNull() {
-        return null;
+    public BaseReadActivityFragment getActiveReadFragment(EventParticipant activityRootData) {
+        if (activeFragment == null) {
+            EventParticipantFormNavigationCapsule dataCapsule = new EventParticipantFormNavigationCapsule(this, recordUuid);
+            activeFragment = EventParticipantReadFragment.newInstance(dataCapsule, activityRootData);
+        }
+        return activeFragment;
     }
 
     @Override
-    public BaseReadActivityFragment getActiveReadFragment(EventParticipant activityRootData) {
-        if (activeFragment == null) {
-            EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventReadPersonsInvolvedInfoActivity.this,
-                    recordUuid, pageStatus);
-            activeFragment = EventReadPersonsInvolvedInfoFragment.newInstance(this, dataCapsule, activityRootData);
-        }
-
-        return activeFragment;
+    public void goToEditView() {
+        EventParticipantFormNavigationCapsule dataCapsule = new EventParticipantFormNavigationCapsule(this, recordUuid);
+        EventParticipantEditActivity.goToActivity(this, dataCapsule);
     }
 
     @Override
@@ -92,6 +89,10 @@ public class EventReadPersonsInvolvedInfoActivity extends BaseReadActivity<Event
     @Override
     protected int getActivityTitle() {
         return R.string.heading_level3_1_event_read_person_involved_info;
+    }
+
+    public static void goToActivity(Context fromActivity, EventParticipantFormNavigationCapsule dataCapsule) {
+        BaseReadActivity.goToActivity(fromActivity, EventParticipantReadActivity.class, dataCapsule);
     }
 
     private EventStatus getEventStatusArg(Bundle arguments) {

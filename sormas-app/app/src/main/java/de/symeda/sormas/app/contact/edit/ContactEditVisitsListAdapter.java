@@ -18,15 +18,7 @@ import java.util.List;
 
 import de.symeda.sormas.app.backend.visit.Visit;
 
-/**
- * Created by Orson on 13/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
-public class ContactEditFollowupListAdapter extends DataBoundAdapter<RowReadFollowupListItemLayoutBinding> {
+public class ContactEditVisitsListAdapter extends DataBoundAdapter<RowReadFollowupListItemLayoutBinding> {
 
     private static final String TAG = EventReadTaskListAdapter.class.getSimpleName();
 
@@ -37,11 +29,11 @@ public class ContactEditFollowupListAdapter extends DataBoundAdapter<RowReadFoll
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;
 
-    public ContactEditFollowupListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
+    public ContactEditVisitsListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
         this(context, rowLayout, onListItemClickListener, new ArrayList<Visit>());
     }
 
-    public ContactEditFollowupListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Visit> data) {
+    public ContactEditVisitsListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Visit> data) {
         super(rowLayout);
         this.context = context;
         this.mOnListItemClickListener = onListItemClickListener;

@@ -24,14 +24,6 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.DialogEpidTravelsLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 
-/**
- * Created by Orson on 19/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class EpiDataTravelDialog extends BaseTeboAlertDialog {
 
     public static final String TAG = EpiDataTravelDialog.class.getSimpleName();

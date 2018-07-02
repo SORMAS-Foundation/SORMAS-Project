@@ -261,7 +261,7 @@ public class LandingPageMenuControl extends LinearLayout {
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     int position = 0;
                     for(final LandingPageMenuItem entry: inputMenuList) {
                         int result = performNotificationCountChange(entry, position);
@@ -316,7 +316,7 @@ public class LandingPageMenuControl extends LinearLayout {
             }
         });
     }
-    //Orson on Init
+
     public int performNotificationCountChange(LandingPageMenuItem menuItem, int position) {
         int result = 0;
         if (mOnNotificationCountChangingListener != null) {

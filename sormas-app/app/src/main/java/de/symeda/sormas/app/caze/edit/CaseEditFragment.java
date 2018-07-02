@@ -28,7 +28,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.AbstractSormasActivity;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -45,7 +45,6 @@ import de.symeda.sormas.app.component.dialog.MoveCaseDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -57,21 +56,11 @@ import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.layoutprocessor.CaseDiseaseLayoutProcessor;
 
-/**
- * Created by Orson on 16/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditLayoutBinding, Case, Case> {
 
     public static final String TAG = CaseEditFragment.class.getSimpleName();
 
     private AsyncTask moveCaseTask;
-    private String recordUuid = null;
-    private InvestigationStatus pageStatus = null;
     private Case record;
     private List<Item> caseClassificationList;
     private List<Item> caseOutcomeList;
@@ -83,24 +72,6 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
     private CaseDiseaseLayoutProcessor caseDiseaseLayoutProcessor;
 
     private View.OnClickListener moveToAnotherHealthFacilityCallback;
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
-    }
 
     @Override
     protected String getSubHeadingTitle() {
@@ -365,6 +336,7 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
             return;
 
         record = getActivityRootData();
+        requestLayoutRebind();
     }
 
     @Override
@@ -405,7 +377,7 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
                             return;
                         }
 
-                        final MoveCaseDialog moveCaseDialog = new MoveCaseDialog(AbstractSormasActivity.getActiveActivity(), record);
+                        final MoveCaseDialog moveCaseDialog = new MoveCaseDialog(BaseActivity.getActiveActivity(), record);
                         moveCaseDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                             @Override
                             public void onOkClick(View v, Object item, View viewRoot) {
@@ -449,8 +421,8 @@ public class CaseEditFragment extends BaseEditActivityFragment<FragmentCaseEditL
         }
     }
 
-    public static CaseEditFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(activityCommunicator, CaseEditFragment.class, capsule, activityRootData);
+    public static CaseEditFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
+        return newInstance(CaseEditFragment.class, capsule, activityRootData);
     }
 
     @Override

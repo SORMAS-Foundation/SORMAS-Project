@@ -14,27 +14,14 @@ import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.core.IActivityCommunicator;
-
-/**
- * Created by Orson on 11/03/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 
 public class BaseFragment extends Fragment {
 
     protected UserRight editOrCreateUserRight;
     protected Tracker tracker;
 
-    public IActivityCommunicator getActivityCommunicator() {
-        return (IActivityCommunicator)getActivity();
-    }
-
-    protected void setActivityCommunicator(IActivityCommunicator activityCommunicator) {
-        // TODO remove calls
+    public BaseActivity getBaseActivity() {
+        return (BaseActivity)getActivity();
     }
 
     @Override

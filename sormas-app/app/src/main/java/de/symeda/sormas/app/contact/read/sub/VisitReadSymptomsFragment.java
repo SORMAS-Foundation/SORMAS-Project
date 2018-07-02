@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.contact.read.sub;
 
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
@@ -17,22 +16,18 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.tagview.Tag;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentContactReadSymptomsInfoLayoutBinding;
-import de.symeda.sormas.app.shared.ContactFormFollowUpNavigationCapsule;
+import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 import de.symeda.sormas.app.symptom.Symptom;
 
 /**
  * Created by Orson on 02/01/2018.
  */
 
-public class ContactReadFollowUpSymptomsFragment extends BaseReadActivityFragment<FragmentContactReadSymptomsInfoLayoutBinding, Symptoms, Visit> {
+public class VisitReadSymptomsFragment extends BaseReadActivityFragment<FragmentContactReadSymptomsInfoLayoutBinding, Symptoms, Visit> {
 
-    private AsyncTask onResumeTask;
     private String recordUuid;
     private VisitStatus pageStatus;
     private Symptoms record;
@@ -45,8 +40,8 @@ public class ContactReadFollowUpSymptomsFragment extends BaseReadActivityFragmen
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -131,80 +126,7 @@ public class ContactReadFollowUpSymptomsFragment extends BaseReadActivityFragmen
     public void onPageResume(FragmentContactReadSymptomsInfoLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
-
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
-                }
-
-                @Override
-                public void execute(TaskResultHolder resultHolder) {
-                    Symptoms _symptom = null;
-                    Visit visit = getActivityRootData();
-                    List<Symptom> sList = new ArrayList<>();
-
-                    if (visit != null) {
-                        if (visit.isUnreadOrChildUnread())
-                            DatabaseHelper.getVisitDao().markAsRead(visit);
-
-                        _symptom = visit.getSymptoms();
-                        //_symptom = DatabaseHelper.getSymptomsDao().queryUuid(visit.getSymptoms().getUuid());
-
-                        //sList = Symptom.makeSymptoms(visit.getDisease()).loadState(visit.getSymptoms());
-                    }
-
-                    resultHolder.forItem().add(visit);
-                    resultHolder.forItem().add(_symptom); //TODO: Do we need this
-
-                    /*resultHolder.forOther().add(getSymptomsYes(sList));
-                    resultHolder.forOther().add(getSymptomsNo(sList));
-                    resultHolder.forOther().add(getSymptomsUnknown(sList));*/
-                }
-            };
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
-
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-                    ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
-
-                    if (itemIterator.hasNext())
-                        record = itemIterator.next();
-
-                    //TODO: Do we need this
-                    /*if (itemIterator.hasNext())
-                        symptom = itemIterator.next();*/
-
-                    /*if (otherIterator.hasNext())
-                        yesResult =  otherIterator.next();
-
-                    if (otherIterator.hasNext())
-                        noResult =  otherIterator.next();
-
-                    if (otherIterator.hasNext())
-                        unknownResult =  otherIterator.next();*/
-
-                    if (record != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
-
+        record = getActivityRootData().getSymptoms();
     }
 
     @Override
@@ -233,9 +155,8 @@ public class ContactReadFollowUpSymptomsFragment extends BaseReadActivityFragmen
         return false;
     }
 
-    public static ContactReadFollowUpSymptomsFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormFollowUpNavigationCapsule capsule, Visit activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, ContactReadFollowUpSymptomsFragment.class, capsule, activityRootData);
+    public static VisitReadSymptomsFragment newInstance(VisitFormNavigationCapsule capsule, Visit activityRootData) {
+        return newInstance(VisitReadSymptomsFragment.class, capsule, activityRootData);
     }
 
     private List<Tag> getSymptomsYes(List<Symptom> list) {
@@ -269,13 +190,5 @@ public class ContactReadFollowUpSymptomsFragment extends BaseReadActivityFragmen
         }
 
         return results;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (onResumeTask != null && !onResumeTask.isCancelled())
-            onResumeTask.cancel(true);
     }
 }

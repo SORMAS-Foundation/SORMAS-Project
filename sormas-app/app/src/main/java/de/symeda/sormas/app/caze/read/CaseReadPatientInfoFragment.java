@@ -3,17 +3,13 @@ package de.symeda.sormas.app.caze.read;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -21,39 +17,12 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentCaseReadPatientInfoLayoutBinding;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 
-/**
- * Created by Orson on 08/01/2018.
- */
-
 public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<FragmentCaseReadPatientInfoLayoutBinding, Person, Case> {
-
 
     public static final String TAG = CaseReadPatientInfoFragment.class.getSimpleName();
 
     private AsyncTask onResumeTask;
-    private String recordUuid = null;
-    private InvestigationStatus filterStatus = null;
-    private CaseClassification pageStatus = null;
     private Person record;
-    private Case caze;
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        pageStatus = (CaseClassification) getPageStatusArg(arguments);
-    }
 
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
@@ -102,12 +71,12 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
         DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
             @Override
             public void onPreExecute() {
-                //getActivityCommunicator().showPreloader();
-                //getActivityCommunicator().hideFragmentView();
+                //getBaseActivity().showPreloader();
+                //
             }
 
             @Override
-            public void execute(TaskResultHolder resultHolder) {
+            public void doInBackground(TaskResultHolder resultHolder) {
                 Case caze = getActivityRootData();
 
                 if (caze != null) {
@@ -128,8 +97,8 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
         onResumeTask = executor.execute(new ITaskResultCallback() {
             @Override
             public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                //getActivityCommunicator().hidePreloader();
-                //getActivityCommunicator().showFragmentView();
+                //getBaseActivity().hidePreloader();
+                //getBaseActivity().showFragmentView();
 
                 if (resultHolder == null) {
                     return;
@@ -183,8 +152,8 @@ public class CaseReadPatientInfoFragment extends BaseReadActivityFragment<Fragme
         return false;
     }
 
-    public static CaseReadPatientInfoFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(activityCommunicator, CaseReadPatientInfoFragment.class, capsule, activityRootData);
+    public static CaseReadPatientInfoFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
+        return newInstance(CaseReadPatientInfoFragment.class, capsule, activityRootData);
     }
 
     @Override

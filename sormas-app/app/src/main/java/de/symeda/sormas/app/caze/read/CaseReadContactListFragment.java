@@ -19,7 +19,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.contact.read.ContactReadActivity;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -39,30 +38,10 @@ public class CaseReadContactListFragment extends BaseReadActivityFragment<Fragme
     public static final String TAG = CaseReadContactListFragment.class.getSimpleName();
 
     private AsyncTask onResumeTask;
-    private String recordUuid = null;
-    private CaseClassification pageStatus = null;
     private List<Contact> record;
 
     private CaseReadReadContactListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        pageStatus = (CaseClassification) getPageStatusArg(arguments);
-    }
 
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
@@ -120,7 +99,7 @@ public class CaseReadContactListFragment extends BaseReadActivityFragment<Fragme
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, false, true, true, swiperefresh, null);
+                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, false, true, true, swiperefresh, null);
                 }
             });
         }
@@ -132,12 +111,12 @@ public class CaseReadContactListFragment extends BaseReadActivityFragment<Fragme
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Case caze = getActivityRootData();
                     List<Contact> contactList = new ArrayList<Contact>();
 
@@ -159,8 +138,8 @@ public class CaseReadContactListFragment extends BaseReadActivityFragment<Fragme
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -179,8 +158,8 @@ public class CaseReadContactListFragment extends BaseReadActivityFragment<Fragme
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
 
     }
@@ -219,8 +198,8 @@ public class CaseReadContactListFragment extends BaseReadActivityFragment<Fragme
         ContactReadActivity.goToActivity(getActivity(), dataCapsule);
     }
 
-    public static CaseReadContactListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(activityCommunicator, CaseReadContactListFragment.class, capsule, activityRootData);
+    public static CaseReadContactListFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
+        return newInstance(CaseReadContactListFragment.class, capsule, activityRootData);
     }
 
     @Override

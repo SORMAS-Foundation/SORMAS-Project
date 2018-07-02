@@ -30,7 +30,6 @@ import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
@@ -45,21 +44,11 @@ import de.symeda.sormas.app.epid.AnimalContactFormListAdapter;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 
-/**
- * Created by Orson on 16/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragment<FragmentCaseEditEpidLayoutBinding, EpiData, Case> {
 
     public static final String TAG = CaseEditEpidemiologicalDataFragment.class.getSimpleName();
 
     private AsyncTask onResumeTask;
-    private String recordUuid = null;
-    private InvestigationStatus pageStatus = null;
     private EpiData record;
     private int mGatheringLastCheckedId = -1;
     private int mTravelLastCheckedId = -1;
@@ -80,24 +69,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
     private List<AnimalContact> animalContactList;
     private List<AnimalContact> environmentalExposureList;
     private List<Item> drinkingWaterSourceList;
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        pageStatus = (InvestigationStatus)getPageStatusArg(arguments);
-    }
 
     @Override
     protected String getSubHeadingTitle() {
@@ -269,12 +240,12 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
         DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
             @Override
             public void onPreExecute() {
-                //getActivityCommunicator().showPreloader();
-                //getActivityCommunicator().hideFragmentView();
+                //getBaseActivity().showPreloader();
+                //
             }
 
             @Override
-            public void execute(TaskResultHolder resultHolder) {
+            public void doInBackground(TaskResultHolder resultHolder) {
                 Case caze = getActivityRootData();
 
                 if (caze != null) {
@@ -296,8 +267,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
         onResumeTask = executor.execute(new ITaskResultCallback() {
             @Override
             public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                //getActivityCommunicator().hidePreloader();
-                //getActivityCommunicator().showFragmentView();
+                //getBaseActivity().hidePreloader();
+                //getBaseActivity().showFragmentView();
 
                 if (resultHolder == null){
                     return;
@@ -741,8 +712,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditActivityFragmen
 
     // </editor-fold>
 
-    public static CaseEditEpidemiologicalDataFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(activityCommunicator, CaseEditEpidemiologicalDataFragment.class, capsule, activityRootData);
+    public static CaseEditEpidemiologicalDataFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
+        return newInstance(CaseEditEpidemiologicalDataFragment.class, capsule, activityRootData);
     }
 
     @Override

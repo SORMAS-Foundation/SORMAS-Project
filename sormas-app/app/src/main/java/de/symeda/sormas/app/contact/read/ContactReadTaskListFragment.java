@@ -19,7 +19,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -52,9 +51,9 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, followUpStatus);
-        SavePageStatusState(outState, contactClassification);
-        SaveRecordUuidState(outState, recordUuid);
+        saveFilterStatusState(outState, followUpStatus);
+        savePageStatusState(outState, contactClassification);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -123,7 +122,7 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
+                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
                 }
             });
         }
@@ -135,12 +134,12 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Contact contact = getActivityRootData();
                     List<Task> taskList = new ArrayList<Task>();
 
@@ -158,8 +157,8 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -173,8 +172,8 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
 
     }
@@ -213,8 +212,8 @@ public class ContactReadTaskListFragment extends BaseReadActivityFragment<Fragme
         return false;
     }
 
-    public static ContactReadTaskListFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule, Contact activityRootData) {
-        return newInstance(activityCommunicator, ContactReadTaskListFragment.class, capsule, activityRootData);
+    public static ContactReadTaskListFragment newInstance(ContactFormNavigationCapsule capsule, Contact activityRootData) {
+        return newInstance(ContactReadTaskListFragment.class, capsule, activityRootData);
     }
 
     @Override

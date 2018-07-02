@@ -12,14 +12,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.contact.edit.sub.ContactEditFollowUpInfoActivity;
+import de.symeda.sormas.app.contact.edit.sub.VisitEditActivity;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -27,18 +28,11 @@ import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.shared.ContactFormFollowUpNavigationCapsule;
+import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 
-/**
- * Created by Orson on 13/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 
-public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragment<FragmentFormListLayoutBinding, List<Visit>, Contact> implements OnListItemClickListener {
+public class ContactEditVisitsListFragment extends BaseEditActivityFragment<FragmentFormListLayoutBinding, List<Visit>, Contact> implements OnListItemClickListener {
 
     private AsyncTask onResumeTask;
     private String recordUuid;
@@ -46,7 +40,7 @@ public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragme
     private List<Visit> record;
     private FragmentFormListLayoutBinding binding;
 
-    private ContactEditFollowupListAdapter adapter;
+    private ContactEditVisitsListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
 
     @Override
@@ -108,7 +102,7 @@ public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragme
     public void onLayoutBinding(FragmentFormListLayoutBinding contentBinding) {
         showEmptyListHint(record, R.string.entity_visit);
 
-        adapter = new ContactEditFollowupListAdapter(this.getActivity(), R.layout.row_read_followup_list_item_layout, this, record);
+        adapter = new ContactEditVisitsListAdapter(this.getActivity(), R.layout.row_read_followup_list_item_layout, this, record);
 
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
@@ -133,7 +127,7 @@ public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragme
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
+                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
                 }
             });
         }
@@ -144,12 +138,12 @@ public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragme
         DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
             @Override
             public void onPreExecute() {
-                //getActivityCommunicator().showPreloader();
-                //getActivityCommunicator().hideFragmentView();
+                //getBaseActivity().showPreloader();
+                //
             }
 
             @Override
-            public void execute(TaskResultHolder resultHolder) {
+            public void doInBackground(TaskResultHolder resultHolder) {
                 Contact contact = getActivityRootData();
                 List<Visit> visitList = new ArrayList<Visit>();
 
@@ -167,8 +161,8 @@ public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragme
         onResumeTask = executor.execute(new ITaskResultCallback() {
             @Override
             public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                //getActivityCommunicator().hidePreloader();
-                //getActivityCommunicator().showFragmentView();
+                //getBaseActivity().hidePreloader();
+                //getBaseActivity().showFragmentView();
 
                 if (resultHolder == null) {
                     return;
@@ -204,20 +198,18 @@ public class ContactEditFollowUpVisitListFragment extends BaseEditActivityFragme
     }
 
     @Override
-    public boolean showAddAction() {
-        return false;
-    }
+    public boolean showAddAction() { return ConfigProvider.getUser().hasUserRight(UserRight.VISIT_CREATE); }
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
         Visit record = (Visit) item;
-        ContactFormFollowUpNavigationCapsule dataCapsule = (ContactFormFollowUpNavigationCapsule) new ContactFormFollowUpNavigationCapsule(getContext(),
+        VisitFormNavigationCapsule dataCapsule = (VisitFormNavigationCapsule) new VisitFormNavigationCapsule(getContext(),
                 record.getUuid(), record.getVisitStatus()).setContactUuid(recordUuid);
-        ContactEditFollowUpInfoActivity.goToActivity(getActivity(), dataCapsule);
+        VisitEditActivity.goToActivity(getActivity(), dataCapsule);
     }
 
-    public static ContactEditFollowUpVisitListFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule, Contact activityRootData) {
-        return newInstance(activityCommunicator, ContactEditFollowUpVisitListFragment.class, capsule, activityRootData);
+    public static ContactEditVisitsListFragment newInstance(ContactFormNavigationCapsule capsule, Contact activityRootData) {
+        return newInstance(ContactEditVisitsListFragment.class, capsule, activityRootData);
     }
 
     @Override

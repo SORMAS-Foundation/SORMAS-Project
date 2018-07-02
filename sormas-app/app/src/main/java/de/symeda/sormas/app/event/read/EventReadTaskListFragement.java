@@ -18,7 +18,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -48,8 +47,8 @@ public class EventReadTaskListFragement extends BaseReadActivityFragment<Fragmen
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -111,7 +110,7 @@ public class EventReadTaskListFragement extends BaseReadActivityFragment<Fragmen
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
+                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
                 }
             });
         }
@@ -123,12 +122,12 @@ public class EventReadTaskListFragement extends BaseReadActivityFragment<Fragmen
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Event event = getActivityRootData();
                     List<Task> taskList = new ArrayList<Task>();
 
@@ -146,8 +145,8 @@ public class EventReadTaskListFragement extends BaseReadActivityFragment<Fragmen
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -161,8 +160,8 @@ public class EventReadTaskListFragement extends BaseReadActivityFragment<Fragmen
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
 
     }
@@ -206,8 +205,8 @@ public class EventReadTaskListFragement extends BaseReadActivityFragment<Fragmen
         return false;
     }
 
-    public static EventReadTaskListFragement newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData) {
-        return newInstance(activityCommunicator, EventReadTaskListFragement.class, capsule, activityRootData);
+    public static EventReadTaskListFragement newInstance(EventFormNavigationCapsule capsule, Event activityRootData) {
+        return newInstance(EventReadTaskListFragement.class, capsule, activityRootData);
     }
 
     @Override

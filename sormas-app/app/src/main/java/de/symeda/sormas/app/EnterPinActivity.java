@@ -26,10 +26,6 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
 
-/**
- * Created by Orson on 15/11/2017.
- */
-
 public class EnterPinActivity extends AppCompatActivity implements NotificationContext {
 
     public static final String CALLED_FROM_SETTINGS = "calledFromSettings";
@@ -46,15 +42,7 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //setContentView(R.layout.activity_enter_pin_layout);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_enter_pin_layout);
-
-        /*ViewStub dialogContent = binding.vsApplicationNotificationView.getViewStub();
-        dialogContent.setLayoutResource(R.layout.activity_root_notification_layout);
-        View dialogContentInflated = dialogContent.inflate();*/
-
-        //((ViewStub) binding.vsApplicationNotificationView.getViewStub()).inflate();
-
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
@@ -216,7 +204,6 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
 
         if (number.length() != 4) {
             if (showSnackbar) {
-                //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_too_short, Snackbar.LENGTH_LONG).show();
                 NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_too_short);
             }
             return false;
@@ -225,7 +212,6 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
         boolean consecutiveNumbers = Pattern.matches("(0123|1234|2345|3456|4567|5678|6789|9876|8765|7654|6543|5432|4321|3210)", number);
         if (consecutiveNumbers) {
             if (showSnackbar) {
-                //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_no_consecutive, Snackbar.LENGTH_LONG).show();
                 NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_no_consecutive);
             }
             return false;
@@ -234,7 +220,6 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
         boolean sameNumbers = Pattern.matches("\\\\d*?(\\\\d)\\\\1{2,}\\\\d*", number);
         if (sameNumbers) {
             if (showSnackbar) {
-                //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_no_same, Snackbar.LENGTH_LONG).show();
                 NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_no_same);
             }
             return false;
@@ -258,8 +243,7 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
 
         if (savedPIN == null) {
             if (lastEnteredPIN == null) {
-                // Store the entered PIN and restart the activity because the user has to
-                // enter it twice
+                // Store the entered PIN and restart the activity because the user has to enter it twice
                 lastEnteredPIN = enteredPIN;
                 onResume();
             } else {
@@ -268,12 +252,10 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
                 if (lastEnteredPIN.equals(enteredPIN)) {
                     ConfigProvider.setPin(enteredPIN);
                     ConfigProvider.setAccessGranted(true);
-                    //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_correct_loading, Snackbar.LENGTH_LONG).show();
                     NotificationHelper.showNotification(binding, NotificationType.SUCCESS, R.string.snackbar_pin_correct_loading);
                     finish();
                 } else {
                     lastEnteredPIN = null;
-                    //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_not_matching, Snackbar.LENGTH_LONG).show();
                     NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_not_matching);
                     onResume();
                 }
@@ -287,12 +269,10 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
                     } else {
                         if (lastEnteredPIN.equals(enteredPIN)) {
                             ConfigProvider.setPin(enteredPIN);
-                            //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_changed, Snackbar.LENGTH_LONG).show();
                             NotificationHelper.showNotification(binding, NotificationType.INFO, R.string.snackbar_pin_changed);
                             finish();
                         } else {
                             lastEnteredPIN = null;
-                            //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_not_matching, Snackbar.LENGTH_LONG).show();
                             NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_not_matching);
                             onResume();
                         }
@@ -302,7 +282,6 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
                         confirmedCurrentPIN = true;
                         onResume();
                     } else {
-                        //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_wrong, Snackbar.LENGTH_LONG).show();
                         NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_wrong);
                         triedAgain = true;
                         onResume();
@@ -312,25 +291,15 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
                 // Process the login if the PIN is correct, otherwise display an error message and restart the activity
                 if (enteredPIN.equals(savedPIN)) {
                     ConfigProvider.setAccessGranted(true);
-                    //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_correct_loading, Snackbar.LENGTH_LONG).show();
                     NotificationHelper.showNotification(binding, NotificationType.SUCCESS, R.string.snackbar_pin_correct_loading);
                     finish();
                 } else {
-                    //Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_pin_wrong, Snackbar.LENGTH_LONG).show();
                     NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_wrong);
                     triedAgain = true;
                     onResume();
                 }
             }
         }
-    }
-
-    private void startLandingPageActivity() {
-        //Get user role
-        //ConfigProvider.getUser().getUserRole()
-        //Inject User
-        Intent intent = new Intent(this, DashboardActivity.class);
-        startActivity(intent);
     }
 
     public void backToSettings(View view) {

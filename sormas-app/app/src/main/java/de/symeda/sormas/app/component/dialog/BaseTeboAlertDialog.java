@@ -582,20 +582,20 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     initializeData(resultHolder, false);
                 }
             };
             dialogTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -623,8 +623,8 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
     }
 

@@ -1,9 +1,7 @@
 package de.symeda.sormas.app.caze.list;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,6 +10,7 @@ import android.widget.AdapterView;
 import java.util.Date;
 import java.util.Random;
 
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -33,13 +32,7 @@ import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
 
-/**
- * Created by Orson on 05/12/2017.
- */
-
 public class CaseListActivity extends BaseListActivity {
-
-    private final int DATA_XML_PAGE_MENU = R.xml.data_landing_page_case_menu;// "xml/data_landing_page_case_menu.xml";
 
     private InvestigationStatus statusFilters[] = new InvestigationStatus[] { InvestigationStatus.PENDING, InvestigationStatus.DONE, InvestigationStatus.DISCARDED };
 
@@ -49,34 +42,34 @@ public class CaseListActivity extends BaseListActivity {
     private BaseListActivityFragment activeFragment = null;
 
     @Override
+    public int getPageMenuData() {
+        return R.xml.data_landing_page_case_menu;
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchBy);
-        SaveRecordUuidState(outState, recordUuid);
+        saveFilterStatusState(outState, filterStatus);
+        saveSearchStrategyState(outState, searchBy);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
-    protected void initializeActivity(Bundle arguments) {
-        filterStatus = (InvestigationStatus) getFilterStatusArg(arguments);
-        searchBy = (SearchBy) getSearchStrategyArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        filterStatus = (InvestigationStatus) getFilterStatusArg(savedInstanceState);
+        searchBy = (SearchBy) getSearchStrategyArg(savedInstanceState);
+        recordUuid = getRecordUuidArg(savedInstanceState);
     }
 
     @Override
-    public BaseListActivityFragment getActiveReadFragment()  {
+    public BaseListActivityFragment getActiveListFragment()  {
         if (activeFragment == null) {
             IListNavigationCapsule dataCapsule = new ListNavigationCapsule(CaseListActivity.this, filterStatus, searchBy);
-            activeFragment = CaseListFragment.newInstance(this, dataCapsule);
+            activeFragment = CaseListFragment.newInstance(dataCapsule);
         }
 
         return activeFragment;
-    }
-
-    @Override
-    public int getPageMenuData() {
-        return DATA_XML_PAGE_MENU;
     }
 
     @Override
@@ -87,7 +80,7 @@ public class CaseListActivity extends BaseListActivity {
     }
 
     @Override
-    protected BaseListActivityFragment getNextFragment(LandingPageMenuItem menuItem) {
+    protected BaseListActivityFragment getListFragment(LandingPageMenuItem menuItem) {
         InvestigationStatus status = statusFilters[menuItem.getKey()];
 
         if (status == null)
@@ -96,7 +89,7 @@ public class CaseListActivity extends BaseListActivity {
         filterStatus = status;
         IListNavigationCapsule dataCapsule = new ListNavigationCapsule(CaseListActivity.this, filterStatus, searchBy);
 
-        activeFragment = CaseListFragment.newInstance(this, dataCapsule);
+        activeFragment = CaseListFragment.newInstance(dataCapsule);
         return activeFragment;
     }
 
@@ -143,8 +136,8 @@ public class CaseListActivity extends BaseListActivity {
         if (user.hasUserRole(UserRole.INFORMANT)
                 && DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(lastEpiWeek, ConfigProvider.getUser()) == null) {
 
+            // TODO reactivate reports
             MissingWeeklyReportDialog confirmationDialog = new MissingWeeklyReportDialog(this);
-
             confirmationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                 @Override
                 public void onOkClick(View v, Object item, View viewRoot) {
@@ -155,8 +148,8 @@ public class CaseListActivity extends BaseListActivity {
 
             confirmationDialog.show(null);
         } else {
-            CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(CaseListActivity.this,
-                    null).setEditPageStatus(filterStatus).setPersonUuid(null);
+            CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(this,
+                    null, CaseClassification.NOT_CLASSIFIED).setPersonUuid(null);
             CaseNewActivity.goToActivity(this, dataCapsule);
         }
     }

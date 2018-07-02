@@ -22,10 +22,6 @@ import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.backend.task.Task;
 
-/**
- * Created by Orson on 11/01/2018.
- */
-
 public class CaseReadTaskListAdapter extends DataBoundAdapter<RowReadCaseTaskListItemLayoutBinding> {
 
     private static final String TAG = CaseReadTaskListAdapter.class.getSimpleName();
@@ -33,7 +29,6 @@ public class CaseReadTaskListAdapter extends DataBoundAdapter<RowReadCaseTaskLis
     private final Context context;
     private List<Task> data = new ArrayList<>();
     private OnListItemClickListener mOnListItemClickListener;
-    //private ActionCallback mActionCallback;
 
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;

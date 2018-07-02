@@ -5,11 +5,9 @@ import android.databinding.ObservableArrayList;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 
-import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
@@ -18,15 +16,12 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.backend.sample.SampleDao;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnLinkClickListener;
@@ -34,39 +29,21 @@ import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.core.NotificationContext;
-import de.symeda.sormas.app.core.ISaveable;
 import de.symeda.sormas.app.core.YesNo;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentSampleEditLayoutBinding;
-import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
-import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.validation.SampleValidator;
 
-/**
- * Created by Orson on 05/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
-public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleEditLayoutBinding, Sample, Sample> implements ISaveable {
+public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleEditLayoutBinding, Sample, Sample> {
 
     private AsyncTask onResumeTask;
-    private AsyncTask saveSample;
 
     private String caseUuid = null;
     private String recordUuid = null;
@@ -374,12 +351,12 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     SampleTest sampleTest = null;
                     Sample sample = getActivityRootData();
 
@@ -397,8 +374,8 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -420,8 +397,8 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
 
     }
@@ -508,8 +485,8 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
 //        }
 //    }
 
-    public static SampleEditFragment newInstance(IActivityCommunicator activityCommunicator, SampleFormNavigationCapsule capsule, Sample activityRootData) {
-        return newInstance(activityCommunicator, SampleEditFragment.class, capsule, activityRootData);
+    public static SampleEditFragment newInstance(SampleFormNavigationCapsule capsule, Sample activityRootData) {
+        return newInstance(SampleEditFragment.class, capsule, activityRootData);
     }
 
     @Override
@@ -518,93 +495,5 @@ public class SampleEditFragment extends BaseEditActivityFragment<FragmentSampleE
 
         if (onResumeTask != null && !onResumeTask.isCancelled())
             onResumeTask.cancel(true);
-
-        if (saveSample != null && !saveSample.isCancelled())
-            saveSample.cancel(true);
-    }
-
-    @Override
-    public void save(final NotificationContext nContext) {
-        final Sample sampleToSave = getActivityRootData();
-
-        if (sampleToSave == null)
-            throw new IllegalArgumentException("sampleToSave is null");
-
-        if (sampleToSave.getReportingUser() == null) {
-            sampleToSave.setReportingUser(ConfigProvider.getUser());
-        }
-        if (sampleToSave.getReportDateTime() == null) {
-            sampleToSave.setReportDateTime(new Date());
-        }
-
-        SampleValidator.clearErrorsForSampleData(getContentBinding());
-        if (!SampleValidator.validateSampleData(nContext, sampleToSave, getContentBinding())) {
-            return;
-        }
-
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                private String saveUnsuccessful;
-
-                @Override
-                public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
-
-                    saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_sample));
-                }
-
-                @Override
-                public void execute(TaskResultHolder resultHolder) {
-                    try {
-                        SampleDao sampleDao = DatabaseHelper.getSampleDao();
-                        sampleDao.saveAndSnapshot(sampleToSave);
-                    } catch (DaoException e) {
-                        Log.e(getClass().getName(), "Error while trying to save sample", e);
-                        resultHolder.setResultStatus(new BoolResult(false, saveUnsuccessful));
-                        ErrorReportingHelper.sendCaughtException(tracker, e, sampleToSave, true);
-                    }
-                }
-            };
-            saveSample = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    if (!resultStatus.isSuccess()) {
-                        NotificationHelper.showNotification(nContext, NotificationType.ERROR, resultStatus.getMessage());
-                        return;
-                    } else {
-                        NotificationHelper.showNotification(nContext, NotificationType.SUCCESS, "Sample " + DataHelper.getShortUuid(sampleToSave.getUuid()) + " saved");
-                    }
-
-                    if (RetroProvider.isConnected()) {
-                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, getContext(), new SyncCallback() {
-                            @Override
-                            public void call(boolean syncFailed, String syncFailedMessage) {
-                                if (syncFailed) {
-                                    NotificationHelper.showNotification(nContext, NotificationType.WARNING, String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_sample)));
-                                } else {
-                                    NotificationHelper.showNotification(nContext, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_sample)));
-                                }
-                                getActivity().finish();
-                            }
-                        });
-                    } else {
-                        NotificationHelper.showNotification(nContext, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_sample)));
-                        getActivity().finish();
-                    }
-
-                }
-            });
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
-
     }
 }

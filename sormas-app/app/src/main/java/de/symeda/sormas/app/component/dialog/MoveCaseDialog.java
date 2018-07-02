@@ -88,7 +88,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     try {
                         DatabaseHelper.getCaseDao().transferCase(data);
                     } catch (NullPointerException | DaoException e) {

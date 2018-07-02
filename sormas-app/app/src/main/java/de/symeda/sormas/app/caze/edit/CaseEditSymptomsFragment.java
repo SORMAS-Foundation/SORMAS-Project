@@ -15,7 +15,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
-import de.symeda.sormas.app.AbstractSormasActivity;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -28,7 +28,6 @@ import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.OnRecyclerViewReadyListener;
@@ -43,20 +42,10 @@ import de.symeda.sormas.app.symptom.Symptom;
 import de.symeda.sormas.app.symptom.SymptomFormListAdapter;
 import de.symeda.sormas.app.util.DataUtils;
 
-/**
- * Created by Orson on 16/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentCaseEditSymptomsInfoLayoutBinding, Symptoms, Case> {
 
     private static final float DEFAULT_BODY_TEMPERATURE = 37.0f;
     private AsyncTask onResumeTask;
-    private String recordUuid;
-    private InvestigationStatus pageStatus;
     private Symptoms record;
     private Case caze;
     private SymptomFormListAdapter symptomAdapter;
@@ -71,24 +60,6 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
     private IEntryItemOnClickListener clearAllCallback;
     private IEntryItemOnClickListener setAllToNoCallback;
     private IEntryItemOnClickListener onAddressLinkClickedCallback;
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
-    }
 
     @Override
     protected String getSubHeadingTitle() {
@@ -269,63 +240,10 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
-                }
+        caze = getActivityRootData();
+        record = caze.getSymptoms();
 
-                @Override
-                public void execute(TaskResultHolder resultHolder) {
-                    Case caze = null;
-                    Symptoms symptom = null;
-
-                    if (recordUuid != null && !recordUuid.isEmpty()) {
-                        // TODO #558 necessary?
-                        caze = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(recordUuid);
-                        if (caze != null) {
-                            symptom = DatabaseHelper.getSymptomsDao().queryUuid(caze.getSymptoms().getUuid());
-                            //symptom = caze.getSymptoms();
-                        }
-                    }
-
-                    resultHolder.forItem().add(symptom);
-                    resultHolder.forItem().add(caze);
-                }
-            };
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
-
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                    //Item Data
-                    if (itemIterator.hasNext())
-                        record = itemIterator.next();
-
-                    if (itemIterator.hasNext())
-                        caze = itemIterator.next();
-
-                    if (record != null && caze != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
-
+        requestLayoutRebind();
     }
 
     @Override
@@ -390,7 +308,7 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
             @Override
             public void onClick(View v, Object item) {
                 final Location location = new Location();
-                final LocationDialog locationDialog = new LocationDialog(AbstractSormasActivity.getActiveActivity(), location);
+                final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), location);
 
                 locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
@@ -436,8 +354,8 @@ public class CaseEditSymptomsFragment extends BaseEditActivityFragment<FragmentC
         return temperature;
     }
 
-    public static CaseEditSymptomsFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(activityCommunicator, CaseEditSymptomsFragment.class, capsule, activityRootData);
+    public static CaseEditSymptomsFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
+        return newInstance(CaseEditSymptomsFragment.class, capsule, activityRootData);
     }
 
     @Override

@@ -22,14 +22,6 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 
-/**
- * Created by Orson on 16/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class CaseEditSampleListAdapter extends DataBoundAdapter<RowEditSampleListItemLayoutBinding> {
 
     private static final String TAG = CaseEditSampleListAdapter.class.getSimpleName();

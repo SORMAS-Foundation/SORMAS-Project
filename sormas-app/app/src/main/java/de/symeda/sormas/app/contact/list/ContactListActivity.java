@@ -3,7 +3,6 @@ package de.symeda.sormas.app.contact.list;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
@@ -13,12 +12,9 @@ import org.joda.time.DateTime;
 import java.util.Random;
 
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.ListNavigationCapsule;
@@ -51,9 +47,9 @@ public class ContactListActivity extends BaseListActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchBy);
-        SaveRecordUuidState(outState, recordUuid);
+        saveFilterStatusState(outState, filterStatus);
+        saveSearchStrategyState(outState, searchBy);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -74,10 +70,10 @@ public class ContactListActivity extends BaseListActivity {
     }
 
     @Override
-    public BaseListActivityFragment getActiveReadFragment() {
+    public BaseListActivityFragment getActiveListFragment() {
         if (activeFragment == null) {
             IListNavigationCapsule dataCapsule = new ListNavigationCapsule(ContactListActivity.this, filterStatus, searchBy);
-            activeFragment = ContactListFragment.newInstance(this, dataCapsule);
+            activeFragment = ContactListFragment.newInstance(dataCapsule);
         }
 
         return activeFragment;
@@ -95,7 +91,7 @@ public class ContactListActivity extends BaseListActivity {
     }
 
     @Override
-    protected BaseListActivityFragment getNextFragment(LandingPageMenuItem menuItem) {
+    protected BaseListActivityFragment getListFragment(LandingPageMenuItem menuItem) {
         FollowUpStatus status = statusFilters[menuItem.getKey()];
 
         if (status == null)
@@ -104,7 +100,7 @@ public class ContactListActivity extends BaseListActivity {
         filterStatus = status;
         IListNavigationCapsule dataCapsule = new ListNavigationCapsule(ContactListActivity.this, filterStatus, searchBy);
 
-        activeFragment = ContactListFragment.newInstance(this, dataCapsule);
+        activeFragment = ContactListFragment.newInstance(dataCapsule);
         return activeFragment;
     }
 

@@ -262,21 +262,19 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             ADO snapshot = null;
             boolean withSnapshot = ado.getId() != null;
             if (withSnapshot) {
-                if (ado.isModified()) {
-                    // there should already be a snapshot
-                    snapshot = querySnapshotByUuid(ado.getUuid());
-                    if (snapshot == null) {
-                        Log.w(this.getClass().getSimpleName(), "Snapshot was missing for " + ado);
-                    } else if (!ado.getChangeDate().equals(snapshot.getChangeDate())) {
-                        throw new DaoException("Change date does not match. Looks like sync was done between opening and saving the entity.");
-                    }
-                }
 
+                snapshot = querySnapshotByUuid(ado.getUuid());
                 if (snapshot == null) {
+                    if (ado.isModified()) {
+                        Log.w(this.getClass().getSimpleName(), "Snapshot was missing for " + ado);
+                    }
+
                     // we need to build a snapshot of the current version, so we can use it for comparison when merging
                     snapshot = queryForId(ado.getId());
                     snapshot.setId(null);
                     snapshot.setSnapshot(true);
+                } else if (!ado.getChangeDate().equals(snapshot.getChangeDate())) {
+                    throw new DaoException("Change date does not match. Looks like sync was done between opening and saving the entity.");
                 }
             }
 

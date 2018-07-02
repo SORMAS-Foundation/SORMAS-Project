@@ -20,7 +20,7 @@ import java.net.ConnectException;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.app.AbstractSormasActivity;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -63,7 +63,7 @@ public class TaskNotificationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         // don't sync, when user is currently editing data
-        AbstractSormasActivity activeActivity = AbstractSormasActivity.getActiveActivity();
+        BaseActivity activeActivity = BaseActivity.getActiveActivity();
         if (activeActivity == null || !activeActivity.isEditing()) {
 
             if (!RetroProvider.isConnected()) {

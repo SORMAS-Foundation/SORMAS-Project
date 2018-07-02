@@ -3,7 +3,6 @@ package de.symeda.sormas.app.event.list;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
@@ -48,9 +47,9 @@ public class EventListActivity extends BaseListActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchBy);
-        SaveRecordUuidState(outState, recordUuid);
+        saveFilterStatusState(outState, filterStatus);
+        saveSearchStrategyState(outState, searchBy);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -71,10 +70,10 @@ public class EventListActivity extends BaseListActivity {
     }
 
     @Override
-    public BaseListActivityFragment getActiveReadFragment() {
+    public BaseListActivityFragment getActiveListFragment() {
         if (activeFragment == null) {
             IListNavigationCapsule dataCapsule = new ListNavigationCapsule(EventListActivity.this, filterStatus, searchBy);
-            activeFragment = EventListFragment.newInstance(this, dataCapsule);
+            activeFragment = EventListFragment.newInstance(dataCapsule);
         }
 
         return activeFragment;
@@ -92,7 +91,7 @@ public class EventListActivity extends BaseListActivity {
     }
 
     @Override
-    protected BaseListActivityFragment getNextFragment(LandingPageMenuItem menuItem) {
+    protected BaseListActivityFragment getListFragment(LandingPageMenuItem menuItem) {
         EventStatus status = statusFilters[menuItem.getKey()];
 
         if (status == null)
@@ -101,7 +100,7 @@ public class EventListActivity extends BaseListActivity {
         filterStatus = status;
         IListNavigationCapsule dataCapsule = new ListNavigationCapsule(EventListActivity.this, filterStatus, searchBy);
 
-        activeFragment = EventListFragment.newInstance(this, dataCapsule);
+        activeFragment = EventListFragment.newInstance(dataCapsule);
         return activeFragment;
     }
 

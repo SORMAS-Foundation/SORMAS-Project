@@ -2,7 +2,6 @@ package de.symeda.sormas.app.sample.list;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
@@ -21,18 +20,9 @@ import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
 
-/**
- * Created by Orson on 07/12/2017.
- */
-
 public class SampleListActivity extends BaseListActivity {
 
     private final int DATA_XML_PAGE_MENU = R.xml.data_landing_page_sample_menu; // "xml/data_landing_page_sample_menu.xml";
-
-    private static final int MENU_INDEX_SAMPLE_NOT_SHIPPED = 0;
-    private static final int MENU_INDEX_SAMPLE_SHIPPED = 1;
-    private static final int MENU_INDEX_SAMPLE_RECEIVED = 2;
-    private static final int MENU_INDEX_SAMPLE_REFERRED_OTHER_LAB = 3;
 
     private ShipmentStatus statusFilters[] = new ShipmentStatus[] {
             ShipmentStatus.NOT_SHIPPED, ShipmentStatus.SHIPPED,
@@ -49,9 +39,9 @@ public class SampleListActivity extends BaseListActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchBy);
-        SaveRecordUuidState(outState, recordUuid);
+        saveFilterStatusState(outState, filterStatus);
+        saveSearchStrategyState(outState, searchBy);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -61,10 +51,10 @@ public class SampleListActivity extends BaseListActivity {
     }
 
     @Override
-    public BaseListActivityFragment getActiveReadFragment() {
+    public BaseListActivityFragment getActiveListFragment() {
         if (activeFragment == null) {
             IListNavigationCapsule dataCapsule = new ListNavigationCapsule(SampleListActivity.this, filterStatus, searchBy);
-            activeFragment = SampleListFragment.newInstance(this, dataCapsule);
+            activeFragment = SampleListFragment.newInstance(dataCapsule);
         }
 
         return activeFragment;
@@ -82,7 +72,7 @@ public class SampleListActivity extends BaseListActivity {
     }
 
     @Override
-    protected BaseListActivityFragment getNextFragment(LandingPageMenuItem menuItem) {
+    protected BaseListActivityFragment getListFragment(LandingPageMenuItem menuItem) {
         ShipmentStatus status = statusFilters[menuItem.getKey()];
 
         if (status == null)
@@ -91,7 +81,7 @@ public class SampleListActivity extends BaseListActivity {
         filterStatus = status;
         IListNavigationCapsule dataCapsule = new ListNavigationCapsule(SampleListActivity.this, filterStatus, searchBy);
 
-        activeFragment = SampleListFragment.newInstance(this, dataCapsule);
+        activeFragment = SampleListFragment.newInstance(dataCapsule);
         return activeFragment;
     }
 

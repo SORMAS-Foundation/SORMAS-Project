@@ -18,7 +18,6 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -30,41 +29,13 @@ import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
 
-/**
- * Created by Orson on 16/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class CaseEditTaskListFragment extends BaseEditActivityFragment<FragmentFormListLayoutBinding, List<Task>, Case> implements OnListItemClickListener {
 
     private AsyncTask onResumeTask;
-    private String recordUuid;
-    private InvestigationStatus pageStatus = null;
     private List<Task> record;
     private FragmentFormListLayoutBinding binding;
     private CaseEditTaskListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
-    }
 
     @Override
     protected String getSubHeadingTitle() {
@@ -135,7 +106,7 @@ public class CaseEditTaskListFragment extends BaseEditActivityFragment<FragmentF
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
+                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
                 }
             });
         }
@@ -147,12 +118,12 @@ public class CaseEditTaskListFragment extends BaseEditActivityFragment<FragmentF
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Case caze = getActivityRootData();
                     List<Task> taskList = new ArrayList<Task>();
 
@@ -174,8 +145,8 @@ public class CaseEditTaskListFragment extends BaseEditActivityFragment<FragmentF
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -194,8 +165,8 @@ public class CaseEditTaskListFragment extends BaseEditActivityFragment<FragmentF
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
 
     }
@@ -221,9 +192,7 @@ public class CaseEditTaskListFragment extends BaseEditActivityFragment<FragmentF
     }
 
     @Override
-    public boolean showAddAction() {
-        return false;
-    }
+    public boolean showAddAction() { return false; }
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
@@ -237,8 +206,8 @@ public class CaseEditTaskListFragment extends BaseEditActivityFragment<FragmentF
         CaseEditTaskInfoActivity.goToActivity(getActivity(), dataCapsule);*/
     }
 
-    public static CaseEditTaskListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(activityCommunicator, CaseEditTaskListFragment.class, capsule, activityRootData);
+    public static CaseEditTaskListFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
+        return newInstance(CaseEditTaskListFragment.class, capsule, activityRootData);
     }
 
     @Override

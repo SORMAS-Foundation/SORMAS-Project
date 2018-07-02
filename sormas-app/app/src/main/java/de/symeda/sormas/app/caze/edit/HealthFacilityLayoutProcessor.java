@@ -13,14 +13,6 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 
-/**
- * Created by Orson on 15/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class HealthFacilityLayoutProcessor {
 
     private Context context;

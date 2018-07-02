@@ -22,14 +22,6 @@ import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.backend.task.Task;
 
-/**
- * Created by Orson on 16/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class CaseEditTaskListAdapter extends DataBoundAdapter<RowEditTaskListItemLayoutBinding> {
 
     private static final String TAG = CaseEditTaskListAdapter.class.getSimpleName();

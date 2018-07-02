@@ -5,9 +5,6 @@ import android.content.res.Resources;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.shared.ShipmentStatus;
 
-/**
- * Created by Orson on 25/12/2017.
- */
 public class ShipmentStatusElaborator implements IStatusElaborator {
 
     private Resources resources = null;
@@ -29,8 +26,7 @@ public class ShipmentStatusElaborator implements IStatusElaborator {
         } else if (status == ShipmentStatus.REFERRED_OTHER_LAB) {
             return resources.getString(R.string.status_shipment_referred_other_lab);
         }
-
-        return "";
+return "";
     }
 
     @Override

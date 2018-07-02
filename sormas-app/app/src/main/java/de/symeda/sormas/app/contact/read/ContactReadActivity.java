@@ -23,11 +23,6 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.contact.edit.ContactEditActivity;
-import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
 
@@ -50,8 +45,8 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -77,25 +72,10 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
     }
 
     @Override
-    protected Contact getActivityRootDataIfRecordUuidNull() {
-        Person _person = DatabaseHelper.getPersonDao().build();
-        Contact _contact = DatabaseHelper.getContactDao().build();
-
-        _contact.setPerson(_person);
-        _contact.setReportDateTime(new Date());
-        _contact.setContactClassification(ContactClassification.UNCONFIRMED);
-        _contact.setContactStatus(ContactStatus.ACTIVE);
-        _contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
-        _contact.setReportingUser(ConfigProvider.getUser());
-
-        return _contact;
-    }
-
-    @Override
     public BaseReadActivityFragment getActiveReadFragment(Contact activityRootData) {
         if (activeFragment == null) {
             ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactReadActivity.this, recordUuid, pageStatus);
-            activeFragment = ContactReadFragment.newInstance(this, dataCapsule, activityRootData);
+            activeFragment = ContactReadFragment.newInstance(dataCapsule, activityRootData);
         }
 
         return activeFragment;
@@ -114,16 +94,16 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
         ContactSection section = ContactSection.fromMenuKey(menuItem.getKey());
         switch (section) {
             case CONTACT_INFO:
-                activeFragment = ContactReadFragment.newInstance(this, dataCapsule, activityRootData);
+                activeFragment = ContactReadFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case PERSON_INFO:
-                activeFragment = ContactReadPersonFragment.newInstance(this, dataCapsule, activityRootData);
+                activeFragment = ContactReadPersonFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case VISITS:
-                activeFragment = ContactReadFollowUpVisitListFragment.newInstance(this, dataCapsule, activityRootData);
+                activeFragment = ContactReadFollowUpVisitListFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case TASKS:
-                activeFragment = ContactReadTaskListFragment.newInstance(this, dataCapsule, activityRootData);
+                activeFragment = ContactReadTaskListFragment.newInstance(dataCapsule, activityRootData);
                 break;
             default:
                 throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
@@ -154,53 +134,10 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
     }
 
     @Override
-    public void gotoEditView() {
-        if (activeFragment == null)
-            return;
-
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    //showPreloader();
-                    //hideFragmentView();
-                }
-
-                @Override
-                public void execute(TaskResultHolder resultHolder) {
-                    Contact record = DatabaseHelper.getContactDao().queryUuid(recordUuid);
-
-                    if (record == null) {
-                        // build a new event for empty uuid
-                        resultHolder.forItem().add(DatabaseHelper.getEventDao().build());
-                    } else {
-                        resultHolder.forItem().add(record);
-                    }
-                }
-            };
-            jobTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //hidePreloader();
-                    //showFragmentView();
-
-                    if (resultHolder == null)
-                        return;
-
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-                    if (itemIterator.hasNext()) {
-                        Contact record = itemIterator.next();
-
-                        ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactReadActivity.this,
-                                record.getUuid(), pageStatus);
-                        ContactEditActivity.goToActivity(ContactReadActivity.this, dataCapsule);
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            //hidePreloader();
-            //showFragmentView();
-        }
+    public void goToEditView() {
+        ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactReadActivity.this,
+                recordUuid, pageStatus);
+        ContactEditActivity.goToActivity(ContactReadActivity.this, dataCapsule);
     }
 
     public static void goToActivity(Context fromActivity, ContactFormNavigationCapsule dataCapsule) {

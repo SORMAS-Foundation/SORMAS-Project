@@ -19,7 +19,6 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -31,38 +30,13 @@ import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.task.read.TaskReadActivity;
 
-/**
- * Created by Orson on 08/01/2018.
- */
-
 public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentFormListLayoutBinding, List<Task>, Case> implements OnListItemClickListener {
 
     private AsyncTask onResumeTask;
-    private String recordUuid = null;
-    private InvestigationStatus filterStatus = null;
-    private CaseClassification pageStatus = null;
     private List<Task> record;
 
     private CaseReadTaskListAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        pageStatus = (CaseClassification) getPageStatusArg(arguments);
-    }
 
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
@@ -120,7 +94,7 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentF
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
+                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
                 }
             });
         }
@@ -132,12 +106,12 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentF
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Case caze = getActivityRootData();
                     List<Task> taskList = new ArrayList<Task>();
 
@@ -159,8 +133,8 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentF
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -179,8 +153,8 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentF
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
 
     }
@@ -194,17 +168,6 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentF
     @Override
     public List<Task> getPrimaryData() {
         return null;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-
-        //recyclerViewForList.setLayoutManager(linearLayoutManager);
-        //recyclerViewForList.setAdapter(adapter);
-        //binding.recyclerViewForList.setLayoutManager(linearLayoutManager);
-        //binding.recyclerViewForList.setAdapter(adapter);
     }
 
     @Override
@@ -243,8 +206,8 @@ public class CaseReadTaskListFragment extends BaseReadActivityFragment<FragmentF
         return false;
     }
 
-    public static CaseReadTaskListFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(activityCommunicator, CaseReadTaskListFragment.class, capsule, activityRootData);
+    public static CaseReadTaskListFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
+        return newInstance(CaseReadTaskListFragment.class, capsule, activityRootData);
     }
 
     @Override

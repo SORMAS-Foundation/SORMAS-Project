@@ -17,7 +17,6 @@ import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
@@ -51,9 +50,9 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchBy);
-        SaveRecordUuidState(outState, recordUuid);
+        saveFilterStatusState(outState, filterStatus);
+        saveSearchStrategyState(outState, searchBy);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -114,13 +113,13 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
                 searchTask = executor.search(new ISearchResultCallback<Event>() {
                     @Override
                     public void preExecute() {
-                        getActivityCommunicator().showPreloader();
-                        getActivityCommunicator().hideFragmentView();
+                        getBaseActivity().showPreloader();
+
                     }
 
                     @Override
                     public void searchResult(List<Event> result, BoolResult resultStatus) {
-                        getActivityCommunicator().hidePreloader();
+                        getBaseActivity().hidePreloader();
 
                         if (!resultStatus.isSuccess()) {
                             String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Events");
@@ -136,19 +135,18 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
 
                         dataLoaded = true;
 
-                        getActivityCommunicator().hidePreloader();
-                        getActivityCommunicator().showFragmentView();
+                        getBaseActivity().hidePreloader();
                     }
 
                     private ISearchResultCallback<Event> init() {
-                        getActivityCommunicator().showPreloader();
+                        getBaseActivity().showPreloader();
 
                         return this;
                     }
                 }.init());
             }
         } catch (Exception ex) {
-            getActivityCommunicator().hidePreloader();
+            getBaseActivity().hidePreloader();
             dataLoaded = false;
         }
 
@@ -157,7 +155,7 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
+                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
                 }
             });
         }
@@ -172,8 +170,8 @@ public class EventListFragment extends BaseListActivityFragment<EventListAdapter
         recyclerViewForList.setAdapter(getListAdapter());
     }
 
-    public static EventListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule) {
-        return newInstance(communicator, EventListFragment.class, capsule);
+    public static EventListFragment newInstance(IListNavigationCapsule capsule) {
+        return newInstance(EventListFragment.class, capsule);
     }
 
     @Override

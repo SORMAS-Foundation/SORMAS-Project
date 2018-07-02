@@ -15,7 +15,7 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.app.AbstractSormasActivity;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -28,7 +28,6 @@ import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.OnRecyclerViewReadyListener;
@@ -37,28 +36,21 @@ import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentContactEditSymptomsInfoLayoutBinding;
-import de.symeda.sormas.app.shared.ContactFormFollowUpNavigationCapsule;
+import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 import de.symeda.sormas.app.symptom.OnSymptomStateChangeListener;
 import de.symeda.sormas.app.symptom.Symptom;
 import de.symeda.sormas.app.symptom.SymptomFormListAdapter;
 import de.symeda.sormas.app.util.DataUtils;
 
-/**
- * Created by Orson on 13/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 
-public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragment<FragmentContactEditSymptomsInfoLayoutBinding, Visit, Visit> {
+public class VisitEditSymptomsFragment extends BaseEditActivityFragment<FragmentContactEditSymptomsInfoLayoutBinding, Visit, Visit> {
 
     private static final float DEFAULT_BODY_TEMPERATURE = 37.0f;
     private AsyncTask onResumeTask;
     private String recordUuid;
     private VisitStatus pageStatus;
     private Visit record;
-    private Symptoms symptom;
+    private Symptoms symptoms;
     private SymptomFormListAdapter symptomAdapter;
     private LinearLayoutManager linearLayoutManager;
 
@@ -98,66 +90,26 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
 
     @Override
     public Visit getPrimaryData() {
-        if (symptom != null)
-            record.setSymptoms(symptom);
-
+        if (symptoms != null)
+            record.setSymptoms(symptoms);
         return record;
     }
 
     @Override
-    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
-        if (!executionComplete) {
-            Symptoms _symptom = null;
-            Visit visit = getActivityRootData();
-
-            if (visit != null) {
-                if (visit.isUnreadOrChildUnread())
-                    DatabaseHelper.getVisitDao().markAsRead(visit);
-
-                //symptom = DatabaseHelper.getSymptomsDao().queryUuid(visit.getSymptoms().getUuid());
-                _symptom = visit.getSymptoms();
-            } else {
-                _symptom = DatabaseHelper.getSymptomsDao().build();
-            }
-
-            resultHolder.forItem().add(visit);
-            resultHolder.forItem().add(_symptom); //TODO: Do we need this
-
-            resultHolder.forOther().add(Symptom.makeSymptoms(visit.getDisease()).loadState(symptom));
-            resultHolder.forOther().add(getTemperatures(false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(TemperatureSource.class, false));
-            resultHolder.forOther().add(new ArrayList<Symptom>());
-        } else {
-            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
-
-            //Item Data
-            if (itemIterator.hasNext())
-                record = itemIterator.next();
-
-            if (itemIterator.hasNext())
-                symptom = itemIterator.next();
-
-            if (otherIterator.hasNext())
-                symptomList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                bodyTempList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                tempSourceList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                yesSymptomList =  otherIterator.next();
-
-            setupCallback();
-        }
-
-        return true;
+    protected void prepareFragmentData(Bundle savedInstanceState) {
+        record = getActivityRootData();
+        symptoms = record.getSymptoms();
+        symptomList = Symptom.makeSymptoms(record.getDisease()).loadState(symptoms);
+        bodyTempList = getTemperatures(false);
+        tempSourceList = DataUtils.getEnumItems(TemperatureSource.class, false);
+        yesSymptomList = new ArrayList<Symptom>();
     }
 
     @Override
     public void onLayoutBinding(FragmentContactEditSymptomsInfoLayoutBinding contentBinding) {
+
+        setupCallback();
+
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false) {
             @Override
             public boolean canScrollVertically() {
@@ -200,7 +152,7 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
         //For Visit
         contentBinding.txtSymptomaticLocation.setVisibility(View.GONE);
 
-        contentBinding.setData(symptom);
+        contentBinding.setData(symptoms);
         contentBinding.setClearAllCallback(clearAllCallback);
         contentBinding.setSetAllToNoCallback(setAllToNoCallback);
         contentBinding.setAddressLinkCallback(onAddressLinkClickedCallback);
@@ -278,12 +230,12 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Symptoms _symptom = null;
                     Visit visit = getActivityRootData();
 
@@ -291,7 +243,7 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
                         if (visit.isUnreadOrChildUnread())
                             DatabaseHelper.getVisitDao().markAsRead(visit);
 
-                        //symptom = DatabaseHelper.getSymptomsDao().queryUuid(visit.getSymptoms().getUuid());
+                        //symptoms = DatabaseHelper.getSymptomsDao().queryUuid(visit.getSymptoms().getUuid());
                         _symptom = visit.getSymptoms();
                     } else {
                         _symptom = DatabaseHelper.getSymptomsDao().build();
@@ -304,8 +256,8 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -317,9 +269,9 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
                         record = itemIterator.next();
 
                     if (itemIterator.hasNext())
-                        symptom = itemIterator.next();
+                        symptoms = itemIterator.next();
 
-                    if (record != null && symptom != null)
+                    if (record != null && symptoms != null)
                         requestLayoutRebind();
                     else {
                         getActivity().finish();
@@ -327,8 +279,8 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
 
     }
@@ -391,13 +343,13 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
             @Override
             public void onClick(View v, Object item) {
                 final Location location = new Location();
-                final LocationDialog locationDialog = new LocationDialog(AbstractSormasActivity.getActiveActivity(), location);
+                final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), location);
 
                 locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
                         getContentBinding().txtSymptomaticLocation.setValue(location.toString());
-                        symptom.setPatientIllLocation(location.toString());
+                        symptoms.setPatientIllLocation(location.toString());
 
                         locationDialog.dismiss();
                     }
@@ -437,9 +389,8 @@ public class ContactEditFollowUpSymptomsFragment extends BaseEditActivityFragmen
         return temperature;
     }
 
-    public static ContactEditFollowUpSymptomsFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormFollowUpNavigationCapsule capsule, Visit activityRootData)
-            throws java.lang.InstantiationException, IllegalAccessException {
-        return newInstance(activityCommunicator, ContactEditFollowUpSymptomsFragment.class, capsule, activityRootData);
+    public static VisitEditSymptomsFragment newInstance(VisitFormNavigationCapsule capsule, Visit activityRootData) {
+        return newInstance(VisitEditSymptomsFragment.class, capsule, activityRootData);
     }
 
     @Override

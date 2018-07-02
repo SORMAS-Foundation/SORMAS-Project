@@ -24,14 +24,7 @@ import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.dashboard.SummaryRegisterItem;
 import de.symeda.sormas.app.util.ConstantHelper;
 
-/**
- * Created by Orson on 08/04/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-public abstract class BaseDashboardActivity extends AbstractSormasActivity implements NotificationContext { //, ISummaryLoadingStatusCommunicator
+public abstract class BaseDashboardActivity extends BaseActivity implements NotificationContext {
 
     private View rootView;
     private View fragmentFrame = null;
@@ -40,16 +33,12 @@ public abstract class BaseDashboardActivity extends AbstractSormasActivity imple
     private TextView subHeadingListActivityTitle;
 
     private Enum pageStatus;
-    /*private List<SummaryRegisterItem> mRegisteredFragments = null;
-    private List<SummaryRegisterItem> mRegisteredFragments = null;*/
     private Map<String, SummaryRegisterItem> mRegisteredFragments = new HashMap<String, SummaryRegisterItem>();
-    //private Map<String, ICallback<BoolResult>> mSummaryCompleteCallbacks = new HashMap<String, ICallback<BoolResult>>();
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        //initializeActivity(savedInstanceState);
         initializeActivity(savedInstanceState);
     }
 
@@ -68,7 +57,7 @@ public abstract class BaseDashboardActivity extends AbstractSormasActivity imple
         return true;
     }
 
-    protected void initializeBaseActivity(Bundle savedInstanceState) {
+    protected void onCreateBaseActivity(Bundle savedInstanceState) {
         rootView = findViewById(R.id.base_layout);
         subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingActivityTitle);
 
@@ -112,22 +101,6 @@ public abstract class BaseDashboardActivity extends AbstractSormasActivity imple
                 statusFrame.setVisibility(View.VISIBLE);
             }
         }
-
-
-    }
-
-    //<editor-fold desc="Public Methods">
-
-    @Override
-    public void showFragmentView() {
-        if (fragmentFrame != null)
-            fragmentFrame.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideFragmentView() {
-        if (fragmentFrame != null)
-            fragmentFrame.setVisibility(View.GONE);
     }
 
     public boolean showTitleBar() {
@@ -170,15 +143,11 @@ public abstract class BaseDashboardActivity extends AbstractSormasActivity imple
     public View getRootView() {
         return rootView;
     }
-    //</editor-fold>
 
-    //<editor-fold desc="Abstract Methods">
     protected abstract void initializeActivity(Bundle arguments);
 
     protected abstract List<BaseSummaryFragment> getSummaryFragments();
-    //</editor-fold>
 
-    //<editor-fold desc="Private Methods">
     private void replaceFragment(List<BaseSummaryFragment> fragments) {
 
         boolean hadFragments = mRegisteredFragments != null && !mRegisteredFragments.isEmpty();
@@ -212,9 +181,6 @@ public abstract class BaseDashboardActivity extends AbstractSormasActivity imple
             ft.commit();
         }
     }
-    //</editor-fold>
-
-    //<editor-fold desc="Navigation Capsule Stuff">
 
     protected <E extends Enum<E>> E getPageStatusArg(Bundle arguments) {
         E e = null;
@@ -233,16 +199,12 @@ public abstract class BaseDashboardActivity extends AbstractSormasActivity imple
         }
     }
 
-    //</editor-fold>
-
-    //<editor-fold desc="Overrides">
     @Override
     protected int getRootActivityLayout() {
         return R.layout.activity_root_dashboard_layout;
     }
-    //</editor-fold>
 
-    protected static <TActivity extends AbstractSormasActivity, TCapsule extends IDashboardNavigationCapsule>
+    protected static <TActivity extends BaseActivity, TCapsule extends IDashboardNavigationCapsule>
     void goToActivity(Context fromActivity, Class<TActivity> toActivity, TCapsule dataCapsule) {
 
         IStatusElaborator pageStatus = dataCapsule.getPageStatus();
@@ -256,35 +218,4 @@ public abstract class BaseDashboardActivity extends AbstractSormasActivity imple
 
         fromActivity.startActivity(intent);
     }
-
-    /*@Override
-    public void registerOnSummaryLoadingCompletedCallback(String identifier, ICallback<BoolResult> callback) {
-        if (!mSummaryCompleteCallbacks.containsKey(identifier))
-            mSummaryCompleteCallbacks.put(identifier, callback);
-    }
-
-    @Override
-    public void loadingCompleted(String identifier) {
-        SummaryRegisterItem item = mRegisteredFragments.get(identifier);
-        item.setCompleteStatus(true);
-
-        boolean allComplete = true;
-        for (Map.Entry<String, SummaryRegisterItem> entry : mRegisteredFragments.entrySet()) {
-            allComplete = allComplete && entry.getValue().isCompleteStatus();
-        }
-
-        if (allComplete) {
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    for (Map.Entry<String, ICallback<BoolResult>> entry : mSummaryCompleteCallbacks.entrySet()) {
-                        ICallback<BoolResult> callback = entry.getValue();
-                        callback.call(BoolResult.TRUE);
-                    }
-                }
-            }, 5000);
-        }
-
-    }*/
 }

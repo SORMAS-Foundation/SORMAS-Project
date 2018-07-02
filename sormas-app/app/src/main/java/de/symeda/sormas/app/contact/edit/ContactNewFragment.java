@@ -19,7 +19,6 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -159,12 +158,12 @@ public class ContactNewFragment extends BaseEditActivityFragment<FragmentContact
         DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
             @Override
             public void onPreExecute() {
-                //getActivityCommunicator().showPreloader();
-                //getActivityCommunicator().hideFragmentView();
+                //getBaseActivity().showPreloader();
+                //
             }
 
             @Override
-            public void execute(TaskResultHolder resultHolder) {
+            public void doInBackground(TaskResultHolder resultHolder) {
                 Contact contact = getActivityRootData();
 
                 resultHolder.forItem().add(contact);
@@ -173,8 +172,8 @@ public class ContactNewFragment extends BaseEditActivityFragment<FragmentContact
         onResumeTask = executor.execute(new ITaskResultCallback() {
             @Override
             public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                //getActivityCommunicator().hidePreloader();
-                //getActivityCommunicator().showFragmentView();
+                //getBaseActivity().hidePreloader();
+                //getBaseActivity().showFragmentView();
 
                 if (resultHolder == null) {
                     return;
@@ -221,8 +220,8 @@ public class ContactNewFragment extends BaseEditActivityFragment<FragmentContact
 
     }
 
-    public static ContactNewFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule, Contact activityRootData) {
-        return newInstance(activityCommunicator, ContactNewFragment.class, capsule, activityRootData);
+    public static ContactNewFragment newInstance(ContactFormNavigationCapsule capsule, Contact activityRootData) {
+        return newInstance(ContactNewFragment.class, capsule, activityRootData);
     }
 
     @Override

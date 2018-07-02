@@ -3,7 +3,6 @@ package de.symeda.sormas.app.contact.read.sub;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -15,19 +14,18 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.shared.ContactFormFollowUpNavigationCapsule;
+import de.symeda.sormas.app.contact.VisitSection;
+import de.symeda.sormas.app.contact.edit.sub.VisitEditActivity;
+import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 /**
  * Created by Orson on 02/01/2018.
  */
 
-public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity<Visit> {
+public class VisitReadActivity extends BaseReadActivity<Visit> {
 
-    public static final String TAG = ContactReadFollowUpVisitInfoActivity.class.getSimpleName();
-
-    private static final int MENU_INDEX_VISIT_INFO = 0;
-    private static final int MENU_INDEX_SYMPTOMS_INFO = 1;
+    public static final String TAG = VisitReadActivity.class.getSimpleName();
 
     private final int DATA_XML_PAGE_MENU = R.xml.data_form_page_followup_menu; // "xml/data_read_page_3_1_followup_menu.xml";
 
@@ -40,9 +38,9 @@ public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity<Visit
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
+        saveFilterStatusState(outState, filterStatus);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -68,16 +66,11 @@ public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity<Visit
     }
 
     @Override
-    protected Visit getActivityRootDataIfRecordUuidNull() {
-        return null;
-    }
-
-    @Override
     public BaseReadActivityFragment getActiveReadFragment(Visit activityRootData) {
         if (activeFragment == null) {
-            ContactFormFollowUpNavigationCapsule dataCapsule = new ContactFormFollowUpNavigationCapsule(
-                    ContactReadFollowUpVisitInfoActivity.this, recordUuid, pageStatus);
-            activeFragment = ContactReadFollowUpVisitInfoFragment.newInstance(this, dataCapsule, activityRootData);
+            VisitFormNavigationCapsule dataCapsule = new VisitFormNavigationCapsule(
+                    VisitReadActivity.this, recordUuid, pageStatus);
+            activeFragment = VisitReadFragment.newInstance(dataCapsule, activityRootData);
         }
 
         return activeFragment;
@@ -90,19 +83,18 @@ public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity<Visit
 
     @Override
     protected BaseReadActivityFragment getReadFragment(LandingPageMenuItem menuItem, Visit activityRootData) {
-        ContactFormFollowUpNavigationCapsule dataCapsule = new ContactFormFollowUpNavigationCapsule(
-                ContactReadFollowUpVisitInfoActivity.this, recordUuid, pageStatus);
+        VisitFormNavigationCapsule dataCapsule = new VisitFormNavigationCapsule(
+                VisitReadActivity.this, recordUuid, pageStatus);
 
-        try {
-            if (menuItem.getKey() == MENU_INDEX_VISIT_INFO) {
-                activeFragment = ContactReadFollowUpVisitInfoFragment.newInstance(this, dataCapsule, activityRootData);
-            } else if (menuItem.getKey() == MENU_INDEX_SYMPTOMS_INFO) {
-                activeFragment = ContactReadFollowUpSymptomsFragment.newInstance(this, dataCapsule, activityRootData);
-            }
-        } catch (InstantiationException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, e.getMessage());
+        VisitSection section = VisitSection.fromMenuKey(menuItem.getKey());
+        switch (section) {
+
+            case VISIT_INFO:
+                activeFragment = VisitReadFragment.newInstance(dataCapsule, activityRootData);
+                break;
+            case SYMPTOMS:
+                activeFragment = VisitReadSymptomsFragment.newInstance(dataCapsule, activityRootData);
+                break;
         }
 
         return activeFragment;
@@ -129,7 +121,14 @@ public class ContactReadFollowUpVisitInfoActivity extends BaseReadActivity<Visit
         return R.string.heading_level3_1_contact_visit_info;
     }
 
-    public static void goToActivity(Context fromActivity, ContactFormFollowUpNavigationCapsule dataCapsule) {
-        BaseReadActivity.goToActivity(fromActivity, ContactReadFollowUpVisitInfoActivity.class, dataCapsule);
+    public static void goToActivity(Context fromActivity, VisitFormNavigationCapsule dataCapsule) {
+        BaseReadActivity.goToActivity(fromActivity, VisitReadActivity.class, dataCapsule);
+    }
+
+    @Override
+    public void goToEditView() {
+        VisitFormNavigationCapsule dataCapsule = new VisitFormNavigationCapsule(VisitReadActivity.this,
+                recordUuid, pageStatus);
+        VisitEditActivity.goToActivity(VisitReadActivity.this, dataCapsule);
     }
 }

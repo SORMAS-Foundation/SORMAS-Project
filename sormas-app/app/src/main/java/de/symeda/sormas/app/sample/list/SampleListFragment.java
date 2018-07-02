@@ -16,7 +16,6 @@ import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
@@ -32,10 +31,6 @@ import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.util.SubheadingHelper;
 
-/**
- * Created by Orson on 07/12/2017.
- */
-
 public class SampleListFragment extends BaseListActivityFragment<SampleListAdapter> implements OnListItemClickListener {
 
     private AsyncTask searchTask;
@@ -50,9 +45,9 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchBy);
-        SaveRecordUuidState(outState, recordUuid);
+        saveFilterStatusState(outState, filterStatus);
+        saveSearchStrategyState(outState, searchBy);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -109,13 +104,12 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
         searchTask = executor.search(new ISearchResultCallback<Sample>() {
             @Override
             public void preExecute() {
-                getActivityCommunicator().showPreloader();
-                getActivityCommunicator().hideFragmentView();
+                getBaseActivity().showPreloader();
             }
 
             @Override
             public void searchResult(List<Sample> result, BoolResult resultStatus) {
-                getActivityCommunicator().hidePreloader();
+                getBaseActivity().hidePreloader();
 
                 if (!resultStatus.isSuccess()) {
                     String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Samples");
@@ -129,12 +123,11 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
                 SampleListFragment.this.getListAdapter().replaceAll(samples);
                 SampleListFragment.this.getListAdapter().notifyDataSetChanged();
 
-                getActivityCommunicator().hidePreloader();
-                getActivityCommunicator().showFragmentView();
+                getBaseActivity().hidePreloader();
             }
 
             private ISearchResultCallback<Sample> init() {
-                getActivityCommunicator().showPreloader();
+                getBaseActivity().showPreloader();
 
                 return this;
             }
@@ -147,7 +140,7 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
+                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
                 }
             });
         }
@@ -163,15 +156,15 @@ public class SampleListFragment extends BaseListActivityFragment<SampleListAdapt
         recyclerViewForList.setAdapter(getListAdapter());
     }
 
-    public static SampleListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule) {
-        return newInstance(communicator, SampleListFragment.class, capsule);
+    public static SampleListFragment newInstance(IListNavigationCapsule capsule) {
+        return newInstance(SampleListFragment.class, capsule);
     }
 
-    /*@Override
+    @Override
     public void onDestroy() {
         super.onDestroy();
 
         if (searchTask != null && !searchTask.isCancelled())
             searchTask.cancel(true);
-    }*/
+    }
 }

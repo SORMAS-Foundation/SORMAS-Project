@@ -36,7 +36,7 @@ public class DashboardActivity extends BaseDashboardActivity {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        //SavePageStatusState(outState, pageStatus);
+        //savePageStatusState(outState, pageStatus);
     }
 
     @Override
@@ -48,11 +48,11 @@ public class DashboardActivity extends BaseDashboardActivity {
     protected List<BaseSummaryFragment> getSummaryFragments() {
         if (activeFragments == null) {
             activeFragments = new ArrayList<BaseSummaryFragment>() {{
-                add(TaskSummaryFragment.newInstance(DashboardActivity.this, new DashboardNavigationCapsule(DashboardActivity.this)));
-                add(CaseSummaryFragment.newInstance(DashboardActivity.this, new DashboardNavigationCapsule(DashboardActivity.this)));
-                add(ContactSummaryFragment.newInstance(DashboardActivity.this, new DashboardNavigationCapsule(DashboardActivity.this)));
-                add(EventSummaryFragment.newInstance(DashboardActivity.this, new DashboardNavigationCapsule(DashboardActivity.this)));
-                add(SampleSummaryFragment.newInstance(DashboardActivity.this, new DashboardNavigationCapsule(DashboardActivity.this)));
+                add(TaskSummaryFragment.newInstance(new DashboardNavigationCapsule(DashboardActivity.this)));
+                add(CaseSummaryFragment.newInstance(new DashboardNavigationCapsule(DashboardActivity.this)));
+                add(ContactSummaryFragment.newInstance(new DashboardNavigationCapsule(DashboardActivity.this)));
+                add(EventSummaryFragment.newInstance(new DashboardNavigationCapsule(DashboardActivity.this)));
+                add(SampleSummaryFragment.newInstance(new DashboardNavigationCapsule(DashboardActivity.this)));
             }};
         }
 

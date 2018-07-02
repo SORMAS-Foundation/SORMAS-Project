@@ -17,7 +17,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -27,19 +26,13 @@ import de.symeda.sormas.app.databinding.FragmentSampleReadLayoutBinding;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
 
-/**
- * Created by Orson on 11/12/2017.
- */
-
 public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleReadLayoutBinding, Sample, Sample> {
 
     private AsyncTask onResumeTask;
     private String recordUuid = null;
-    private String caseUuid = null;
     private ShipmentStatus pageStatus = null;
     private Sample record;
     private SampleTest mostRecentTest;
-    private String sampleMaterial = null;
 
     private IEntryItemOnClickListener onRecentTestItemClickListener;
 
@@ -47,10 +40,8 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
-        SaveCaseUuidState(outState, caseUuid);
-        SaveSampleMaterialState(outState, sampleMaterial);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -61,8 +52,6 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
 
         recordUuid = getRecordUuidArg(arguments);
         pageStatus = (ShipmentStatus) getPageStatusArg(arguments);
-        caseUuid = getCaseUuidArg(arguments);
-        sampleMaterial = getSampleMaterialArg(arguments);
     }
 
     @Override
@@ -155,12 +144,12 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     SampleTest sampleTest = null;
                     Sample sample = getActivityRootData();
 
@@ -178,8 +167,8 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -201,8 +190,8 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
     }
 
@@ -245,8 +234,8 @@ public class SampleReadFragment extends BaseReadActivityFragment<FragmentSampleR
         return false;
     }
 
-    public static SampleReadFragment newInstance(IActivityCommunicator activityCommunicator, SampleFormNavigationCapsule capsule, Sample activityRootData) {
-        return newInstance(activityCommunicator, SampleReadFragment.class, capsule, activityRootData);
+    public static SampleReadFragment newInstance(SampleFormNavigationCapsule capsule, Sample activityRootData) {
+        return newInstance(SampleReadFragment.class, capsule, activityRootData);
     }
 
     @Override

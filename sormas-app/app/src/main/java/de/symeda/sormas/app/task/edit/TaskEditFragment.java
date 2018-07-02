@@ -26,7 +26,6 @@ import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.component.OnLinkClickListener;
 import de.symeda.sormas.app.contact.edit.ContactEditActivity;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -81,7 +80,7 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
         pageStatus = (TaskStatus) getPageStatusArg(arguments);
@@ -113,7 +112,7 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
             if (itemIterator.hasNext())
-                record =  itemIterator.next();
+                record = itemIterator.next();
 
             if (record == null) {
                 getActivity().finish();
@@ -130,17 +129,17 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
         SormasApplication application = (SormasApplication) getContext().getApplicationContext();
         tracker = application.getDefaultTracker();
 
-        if(record.getCaze() == null) {
+        if (record.getCaze() == null) {
             contentBinding.txtAssocCaze.setVisibility(View.GONE);
         }
-        if(record.getContact() == null) {
+        if (record.getContact() == null) {
             contentBinding.txtAssocContact.setVisibility(View.GONE);
         }
-        if(record.getEvent() == null) {
+        if (record.getEvent() == null) {
             contentBinding.txtAssocEvent.setVisibility(View.GONE);
         }
 
-        if(record.getCreatorUser() == null) {
+        if (record.getCreatorUser() == null) {
             contentBinding.txtCreatorUser.setVisibility(View.GONE);
         }
 
@@ -188,12 +187,12 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Task task = getActivityRootData();
 
                     if (task != null) {
@@ -207,17 +206,17 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
-                    if (resultHolder == null){
+                    if (resultHolder == null) {
                         return;
                     }
 
                     ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
                     if (itemIterator.hasNext())
-                        record =  itemIterator.next();
+                        record = itemIterator.next();
 
                     if (record != null)
                         requestLayoutRebind();
@@ -227,8 +226,8 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
 
     }
@@ -247,12 +246,12 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                         public void onPreExecute() {
                             this.button.setEnabled(false);
                             this.msgTaskClassificationError = getResources().getString(R.string.snackbar_task_case_classification_error);
-                            //getActivityCommunicator().showPreloader();
-                            //getActivityCommunicator().hideFragmentView();
+                            //getBaseActivity().showPreloader();
+                            //
                         }
 
                         @Override
-                        public void execute(TaskResultHolder resultHolder) {
+                        public void doInBackground(TaskResultHolder resultHolder) {
                             try {
                                 final TaskDao taskDao = DatabaseHelper.getTaskDao();
                                 taskDao.saveAndSnapshot(record);
@@ -266,7 +265,8 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                                 resultHolder.setResultStatus(new BoolResult(false, this.msgTaskClassificationError));
                             }
                         }
-                        private DefaultAsyncTask init(View button){
+
+                        private DefaultAsyncTask init(View button) {
                             this.button = button;
                             return this;
                         }
@@ -276,8 +276,8 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
 
                         @Override
                         public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                            //getActivityCommunicator().hidePreloader();
-                            //getActivityCommunicator().showFragmentView();
+                            //getBaseActivity().hidePreloader();
+                            //getBaseActivity().showFragmentView();
 
                             if (resultHolder == null) {
                                 this.button.setEnabled(true);
@@ -291,7 +291,7 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                                     NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.notification_save_task_successful);
                                 }
 
-                                getActivityCommunicator().synchronizeChangedData(new Callback() {
+                                getBaseActivity().synchronizeChangedData(new Callback() {
                                     @Override
                                     public void call() {
                                         getActivity().finish();
@@ -306,15 +306,16 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                             this.button.setEnabled(true);
                             updateButtonState();
                         }
-                        private ITaskResultCallback init(View button){
+
+                        private ITaskResultCallback init(View button) {
                             this.button = button;
                             return this;
                         }
                     }.init(v));
                 } catch (Exception ex) {
                     v.setEnabled(true);
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
                 }
             }
         };
@@ -323,7 +324,7 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
             @Override
             public void onClick(final View v) {
                 try {
-                    if(record.getAssigneeReply().isEmpty()) {
+                    if (record.getAssigneeReply().isEmpty()) {
                         NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, R.string.snackbar_task_reply);
                         return;
                     }
@@ -336,12 +337,12 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                         public void onPreExecute() {
                             this.button.setEnabled(false);
                             this.msgTaskStatusChangeError = getResources().getString(R.string.snackbar_task_status_change_error);
-                            //getActivityCommunicator().showPreloader();
-                            //getActivityCommunicator().hideFragmentView();
+                            //getBaseActivity().showPreloader();
+                            //
                         }
 
                         @Override
-                        public void execute(TaskResultHolder resultHolder) {
+                        public void doInBackground(TaskResultHolder resultHolder) {
                             try {
                                 final TaskDao taskDao = DatabaseHelper.getTaskDao();
                                 taskDao.saveAndSnapshot(record);
@@ -355,7 +356,8 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                                 // Will not happen here
                             }
                         }
-                        private DefaultAsyncTask init(View button){
+
+                        private DefaultAsyncTask init(View button) {
                             this.button = button;
                             return this;
                         }
@@ -365,10 +367,10 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
 
                         @Override
                         public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                            //getActivityCommunicator().hidePreloader();
-                            //getActivityCommunicator().showFragmentView();
+                            //getBaseActivity().hidePreloader();
+                            //getBaseActivity().showFragmentView();
 
-                            if (resultHolder == null){
+                            if (resultHolder == null) {
                                 this.button.setEnabled(true);
                                 return;
                             }
@@ -380,7 +382,7 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                                     NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.notification_save_task_successful);
                                 }
 
-                                getActivityCommunicator().synchronizeChangedData(new Callback() {
+                                getBaseActivity().synchronizeChangedData(new Callback() {
                                     @Override
                                     public void call() {
                                         getActivity().finish();
@@ -395,15 +397,16 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                             this.button.setEnabled(true);
                             updateButtonState();
                         }
-                        private ITaskResultCallback init(View button){
+
+                        private ITaskResultCallback init(View button) {
                             this.button = button;
                             return this;
                         }
                     }.init(v));
                 } catch (Exception ex) {
                     v.setEnabled(true);
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
                 }
             }
         };
@@ -414,16 +417,15 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                 if (item == null)
                     return;
 
-                Task task = (Task)item;
+                Task task = (Task) item;
                 Case caze = task.getCaze();
 
                 if (caze == null)
                     return;
 
                 CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(),
-                        caze.getUuid()).setEditPageStatus(caze.getInvestigationStatus()).setTaskUuid(task.getUuid());
+                        caze.getUuid(), caze.getCaseClassification()).setTaskUuid(task.getUuid());
                 CaseEditActivity.goToActivity(getActivity(), dataCapsule);
-
             }
         };
 
@@ -433,7 +435,7 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                 if (item == null)
                     return;
 
-                Task task = (Task)item;
+                Task task = (Task) item;
                 Contact contact = task.getContact();
 
                 if (contact == null)
@@ -451,7 +453,7 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
                 if (item == null)
                     return;
 
-                Task task = (Task)item;
+                Task task = (Task) item;
                 Event event = task.getEvent();
 
                 if (event == null)
@@ -484,8 +486,8 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
     }
 
     private void updateButtonState() {
-        int btnDoneVisibleStatus = (record.getTaskStatus() == TaskStatus.PENDING)? View.VISIBLE : View.GONE;
-        int btnNotExecutableStatus = (record.getTaskStatus() == TaskStatus.PENDING)? View.VISIBLE : View.GONE;
+        int btnDoneVisibleStatus = (record.getTaskStatus() == TaskStatus.PENDING) ? View.VISIBLE : View.GONE;
+        int btnNotExecutableStatus = (record.getTaskStatus() == TaskStatus.PENDING) ? View.VISIBLE : View.GONE;
 
         getContentBinding().btnDone.setVisibility(btnDoneVisibleStatus);
         getContentBinding().btnNotExecutable.setVisibility(btnNotExecutableStatus);
@@ -497,8 +499,8 @@ public class TaskEditFragment extends BaseEditActivityFragment<FragmentTaskEditL
         }
     }
 
-    public static TaskEditFragment newInstance(IActivityCommunicator activityCommunicator, TaskFormNavigationCapsule capsule, Task activityRootData) {
-        return newInstance(activityCommunicator, TaskEditFragment.class, capsule, activityRootData);
+    public static TaskEditFragment newInstance(TaskFormNavigationCapsule capsule, Task activityRootData) {
+        return newInstance(TaskEditFragment.class, capsule, activityRootData);
     }
 
     @Override

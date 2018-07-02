@@ -17,18 +17,14 @@ import java.util.Locale;
 
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.core.TaskNotificationService;
 import de.symeda.sormas.app.core.VibrationHelper;
 import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.UncaughtExceptionParser;
 
-/**
- * Created by Orson on 03/11/2017.
- */
-
 public class SormasApplication extends Application implements Application.ActivityLifecycleCallbacks {
     private static final String PROPERTY_ID = "UA-98128295-1";
 
-    //private AsyncTask loaderTask;
     private Tracker tracker;
 
     synchronized public Tracker getDefaultTracker() {
@@ -37,7 +33,6 @@ public class SormasApplication extends Application implements Application.Activi
 
     @Override
     public void onCreate() {
-        //updateLocale(this);
         DatabaseHelper.init(this);
         ConfigProvider.init(this);
         LocationService.init(this);
@@ -47,13 +42,12 @@ public class SormasApplication extends Application implements Application.Activi
         // Make sure the Enter Pin Activity is shown when the app has just started
         ConfigProvider.setAccessGranted(false);
 
-        //TaskNotificationService.startTaskNotificationAlarm(this);
+        TaskNotificationService.startTaskNotificationAlarm(this);
 
         // Initialize the tracker that is used to send information to Google Analytics
         GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
         tracker = analytics.newTracker(PROPERTY_ID);
         tracker.enableExceptionReporting(true);
-        // TODO find a way to automatically disable exception reporting when the app is started in Android Studio
 
         // Enable the forwarding of uncaught exceptions to Google Analytics
         Thread.UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
@@ -63,9 +57,6 @@ public class SormasApplication extends Application implements Application.Activi
         super.onCreate();
 
         this.registerActivityLifecycleCallbacks(this);
-
-        //TODO: Remove Temporary Database
-        //MemoryDatabaseHelper.init(this);
     }
 
     public static void updateLocale(Context ctx) {
@@ -116,7 +107,6 @@ public class SormasApplication extends Application implements Application.Activi
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-        /*if (loaderTask != null && !loaderTask.isCancelled())
-            loaderTask.cancel(true);*/
+
     }
 }

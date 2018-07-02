@@ -69,7 +69,7 @@ public class UserReportDialog extends BaseTeboAlertDialog {
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     try {
                         String description = UserReportDialog.this.data.getMessage();
                         Tracker tracker = ((SormasApplication) getActivity().getApplication()).getDefaultTracker();

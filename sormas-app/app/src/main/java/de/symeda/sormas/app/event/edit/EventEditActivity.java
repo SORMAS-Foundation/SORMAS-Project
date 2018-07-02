@@ -2,166 +2,89 @@ package de.symeda.sormas.app.event.edit;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.app.AbstractSormasActivity;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.contact.ContactSection;
-import de.symeda.sormas.app.contact.edit.ContactEditFollowUpVisitListFragment;
-import de.symeda.sormas.app.contact.edit.ContactEditFragment;
-import de.symeda.sormas.app.contact.edit.ContactEditPersonFragment;
-import de.symeda.sormas.app.contact.edit.ContactEditTaskListFragment;
+import de.symeda.sormas.app.core.async.AsyncTaskResult;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.event.EventSection;
-import de.symeda.sormas.app.event.edit.sub.EventNewPersonsInvolvedActivity;
-import de.symeda.sormas.app.core.ISaveable;
+import de.symeda.sormas.app.event.edit.sub.EventParticipantNewActivity;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
-import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
-
-/**
- * Created by Orson on 07/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 
 public class EventEditActivity extends BaseEditActivity<Event> {
 
     public static final String TAG = EventEditActivity.class.getSimpleName();
 
     private AsyncTask saveTask;
-    private final int DATA_XML_PAGE_MENU = R.xml.data_form_page_alert_menu; // "xml/data_edit_page_alert_menu.xml";
-
-    private boolean showStatusFrame = false;
-    private boolean showTitleBar = true;
-    private boolean showPageMenu = false;
-
-    private EventStatus pageStatus = null;
-    private String recordUuid = null;
-    private BaseEditActivityFragment activeFragment = null;
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void initializeActivity(Bundle arguments) {
-        pageStatus = (EventStatus)getPageStatusArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
-
-        this.showStatusFrame = true;
-        this.showTitleBar = true;
-        this.showPageMenu = true;
-    }
-
-    @Override
-    protected Event getActivityRootData(String recordUuid) {
+    protected Event queryActivityRootEntity(String recordUuid) {
         return DatabaseHelper.getEventDao().queryUuid(recordUuid);
     }
 
     @Override
-    protected Event getActivityRootDataIfRecordUuidNull() {
-        return null;
-    }
-
-    @Override
-    public BaseEditActivityFragment getActiveEditFragment(Event activityRootData) {
-        if (activeFragment == null) {
-            EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventEditActivity.this,
-                    recordUuid, pageStatus);
-            activeFragment = EventEditFragment.newInstance(this, dataCapsule, activityRootData);
-        }
-
-        return activeFragment;
-    }
-
-    @Override
-    public boolean showStatusFrame() {
-        return showStatusFrame;
-    }
-
-    @Override
-    public boolean showTitleBar() {
-        return showTitleBar;
-    }
-
-    @Override
-    public boolean showPageMenu() {
-        return showPageMenu;
-    }
-
-    @Override
-    public Enum getPageStatus() {
-        return pageStatus;
+    protected Event buildActivityRootEntity() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public int getPageMenuData() {
-        return DATA_XML_PAGE_MENU;
+        return R.xml.data_form_page_alert_menu;
     }
 
     @Override
-    protected BaseEditActivityFragment getEditFragment(LandingPageMenuItem menuItem, Event activityRootData) {
+    public EventStatus getPageStatus() {
+        return (EventStatus) super.getPageStatus();
+    }
+
+    @Override
+    protected BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, Event activityRootData) {
         EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventEditActivity.this,
-                recordUuid, pageStatus);
+                getRootEntityUuid(), getPageStatus());
 
         EventSection section = EventSection.fromMenuKey(menuItem.getKey());
+        BaseEditActivityFragment fragment;
         switch (section) {
             case EVENT_INFO:
-                activeFragment = EventEditFragment.newInstance(this, dataCapsule, activityRootData);
+                fragment = EventEditFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case EVENT_PERSONS:
-                activeFragment = EventEditPersonsInvolvedListFragment.newInstance(this, dataCapsule, activityRootData);
+                fragment = EventEditPersonsInvolvedListFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case TASKS:
-                activeFragment = EventEditTaskListFragement.newInstance(this, dataCapsule, activityRootData);
+                fragment = EventEditTaskListFragement.newInstance(dataCapsule, activityRootData);
                 break;
             default:
                 throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
         }
-
-        return activeFragment;
+        return fragment;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
+        boolean result = super.onCreateOptionsMenu(menu);
         getSaveMenu().setTitle(R.string.action_save_event);
-
-        return true;
+        return result;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
             return super.onOptionsItemSelected(item);
-
         return true;
     }
 
@@ -172,24 +95,56 @@ public class EventEditActivity extends BaseEditActivity<Event> {
 
     @Override
     public void goToNewView() {
-        EventFormNavigationCapsule dataCapsule = (EventFormNavigationCapsule)new EventFormNavigationCapsule(getContext(), pageStatus)
-                .setEventUuid(recordUuid);
-        EventNewPersonsInvolvedActivity.goToActivity(EventEditActivity.this, dataCapsule);
+
+        EventSection section = EventSection.fromMenuKey(getActiveMenuItem().getKey());
+        switch (section) {
+            case EVENT_PERSONS:
+
+                EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(getContext(), getPageStatus())
+                        .setEventUuid(getRootEntityUuid());
+                EventParticipantNewActivity.goToActivity(this, dataCapsule);
+                break;
+            default:
+                throw new IllegalArgumentException(DataHelper.toStringNullable(section));
+        }
     }
 
     @Override
     public void saveData() {
-        if (activeFragment == null)
-            return;
 
-        ISaveable fragment = (ISaveable)activeFragment;
+        final Event eventToSave = (Event) getActiveFragment().getPrimaryData();
 
-        if (fragment != null)
-            fragment.save(this);
+        // TODO validation
+//        EventValidator.clearErrorsForEventData(getContentBinding());
+//        if (!EventValidator.validateEventData(nContext, eventToSave, getContentBinding())) {
+//            return;
+//        }
+
+        saveTask = new DefaultAsyncTask(getContext(), eventToSave) {
+
+            @Override
+            public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
+                DatabaseHelper.getEventDao().saveAndSnapshot(eventToSave);
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+
+                if (taskResult.getResultStatus().isFailed()) {
+                    NotificationHelper.showNotification(EventEditActivity.this, NotificationType.ERROR,
+                            String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_event)));
+                } else {
+                    NotificationHelper.showNotification(EventEditActivity.this, NotificationType.SUCCESS,
+                            String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_event)));
+
+                    goToNextMenu();
+                }
+
+            }
+        }.executeOnThreadPool();
     }
 
-    public static <TActivity extends AbstractSormasActivity> void
-    goToActivity(Context fromActivity, EventFormNavigationCapsule dataCapsule) {
+    public static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, EventFormNavigationCapsule dataCapsule) {
         BaseEditActivity.goToActivity(fromActivity, EventEditActivity.class, dataCapsule);
     }
 

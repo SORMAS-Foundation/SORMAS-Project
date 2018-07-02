@@ -17,7 +17,6 @@ import de.symeda.sormas.app.BaseListActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
@@ -58,9 +57,9 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchBy);
-        SaveRecordUuidState(outState, recordUuid);
+        saveFilterStatusState(outState, filterStatus);
+        saveSearchStrategyState(outState, searchBy);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -122,8 +121,8 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
                 searchTask = executor.search(new ISearchResultCallback<Task>() {
                     @Override
                     public void preExecute() {
-                        getActivityCommunicator().showPreloader();
-                        getActivityCommunicator().hideFragmentView();
+                        getBaseActivity().showPreloader();
+
                     }
 
                     @Override
@@ -142,19 +141,17 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
 
                         dataLoaded = true;
 
-                        getActivityCommunicator().hidePreloader();
-                        getActivityCommunicator().showFragmentView();
+                        getBaseActivity().hidePreloader();
                     }
                     private ISearchResultCallback<Task> init() {
-                        getActivityCommunicator().showPreloader();
+                        getBaseActivity().showPreloader();
 
                         return this;
                     }
                 }.init());
             }
         } catch (Exception ex) {
-            getActivityCommunicator().hidePreloader();
-            getActivityCommunicator().showFragmentView();
+            getBaseActivity().hidePreloader();
             dataLoaded = false;
         }
 
@@ -163,7 +160,7 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
+                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
                 }
             });
         }
@@ -177,8 +174,8 @@ public class TaskListFragment extends BaseListActivityFragment<TaskListAdapter> 
         recyclerViewForList.setAdapter(getListAdapter());
     }
 
-    public static TaskListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule) {
-        return newInstance(communicator, TaskListFragment.class, capsule);
+    public static TaskListFragment newInstance(IListNavigationCapsule capsule) {
+        return newInstance(TaskListFragment.class, capsule);
     }
 
     @Override

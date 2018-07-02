@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.event.read;
 
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,17 +18,16 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
-import de.symeda.sormas.app.event.read.sub.EventReadPersonsInvolvedInfoActivity;
+import de.symeda.sormas.app.event.read.sub.EventParticipantReadActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
-import de.symeda.sormas.app.util.ConstantHelper;
+import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 
 /**
  * Created by Orson on 26/12/2017.
@@ -49,8 +47,8 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadActivityFragme
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -118,7 +116,7 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadActivityFragme
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
+                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
                 }
             });
         }
@@ -130,12 +128,12 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadActivityFragme
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Event event = getActivityRootData();
                     List<EventParticipant> eventParticipantList = new ArrayList<EventParticipant>();
 
@@ -153,8 +151,8 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadActivityFragme
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -168,8 +166,8 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadActivityFragme
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
 
     }
@@ -206,14 +204,9 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadActivityFragme
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        EventParticipant record = (EventParticipant)item;
-
-        if(record != null) {
-            Intent intent = new Intent(getActivity(), EventReadPersonsInvolvedInfoActivity.class);
-            intent.putExtra(ConstantHelper.KEY_DATA_UUID, record.getUuid());
-            intent.putExtra(ConstantHelper.ARG_PAGE_STATUS, record.getEvent().getEventStatus());
-            startActivity(intent);
-        }
+        EventParticipant o = (EventParticipant)item;
+        EventParticipantFormNavigationCapsule dataCapsule = new EventParticipantFormNavigationCapsule(getContext(), o.getUuid());
+        EventParticipantReadActivity.goToActivity(getActivity(), dataCapsule);
     }
 
     @Override
@@ -221,8 +214,8 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadActivityFragme
         return false;
     }
 
-    public static EventReadPersonsInvolvedListFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData) {
-        return newInstance(activityCommunicator, EventReadPersonsInvolvedListFragment.class, capsule, activityRootData);
+    public static EventReadPersonsInvolvedListFragment newInstance(EventFormNavigationCapsule capsule, Event activityRootData) {
+        return newInstance(EventReadPersonsInvolvedListFragment.class, capsule, activityRootData);
     }
 
     @Override

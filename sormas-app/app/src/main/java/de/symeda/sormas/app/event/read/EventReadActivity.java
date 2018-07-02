@@ -14,11 +14,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.event.EventSection;
 import de.symeda.sormas.app.event.edit.EventEditActivity;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
@@ -45,9 +40,9 @@ public class EventReadActivity extends BaseReadActivity<Event> {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
+        saveFilterStatusState(outState, filterStatus);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -68,16 +63,11 @@ public class EventReadActivity extends BaseReadActivity<Event> {
     }
 
     @Override
-    protected Event getActivityRootDataIfRecordUuidNull() {
-        return null;
-    }
-
-    @Override
     public BaseReadActivityFragment getActiveReadFragment(Event activityRootData) {
         if (activeFragment == null) {
             EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventReadActivity.this,
                     recordUuid, pageStatus);
-            activeFragment = EventReadFragment.newInstance(this, dataCapsule, activityRootData);
+            activeFragment = EventReadFragment.newInstance(dataCapsule, activityRootData);
         }
 
         return activeFragment;
@@ -122,13 +112,13 @@ public class EventReadActivity extends BaseReadActivity<Event> {
         EventSection section = EventSection.fromMenuKey(menuItem.getKey());
         switch (section) {
             case EVENT_INFO:
-                activeFragment = EventReadFragment.newInstance(this, dataCapsule, activityRootData);
+                activeFragment = EventReadFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case EVENT_PERSONS:
-                activeFragment = EventReadPersonsInvolvedListFragment.newInstance(this, dataCapsule, activityRootData);
+                activeFragment = EventReadPersonsInvolvedListFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case TASKS:
-                activeFragment = EventReadTaskListFragement.newInstance(this, dataCapsule, activityRootData);
+                activeFragment = EventReadTaskListFragement.newInstance(dataCapsule, activityRootData);
                 break;
             default:
                 throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
@@ -159,53 +149,9 @@ public class EventReadActivity extends BaseReadActivity<Event> {
     }
 
     @Override
-    public void gotoEditView() {
-        if (activeFragment == null)
-            return;
-
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    //showPreloader();
-                    //hideFragmentView();
-                }
-
-                @Override
-                public void execute(TaskResultHolder resultHolder) {
-                    Event record = DatabaseHelper.getEventDao().queryUuid(recordUuid);
-
-                    if (record == null) {
-                        // build a new event for empty uuid
-                        resultHolder.forItem().add(DatabaseHelper.getEventDao().build());
-                    } else {
-                        resultHolder.forItem().add(record);
-                    }
-                }
-            };
-            jobTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //hidePreloader();
-                    //showFragmentView();
-
-                    if (resultHolder == null)
-                        return;
-
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-                    if (itemIterator.hasNext()) {
-                        Event record = itemIterator.next();
-
-                        EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventReadActivity.this,
-                                record.getUuid(), pageStatus);
-                        EventEditActivity.goToActivity(EventReadActivity.this, dataCapsule);
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            //hidePreloader();
-            //showFragmentView();
-        }
+    public void goToEditView() {
+        EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventReadActivity.this, recordUuid, pageStatus);
+        EventEditActivity.goToActivity(EventReadActivity.this, dataCapsule);
     }
 
     public static void goToActivity(Context fromActivity, EventFormNavigationCapsule dataCapsule) {

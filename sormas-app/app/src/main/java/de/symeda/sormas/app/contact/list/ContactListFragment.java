@@ -18,7 +18,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.contact.read.ContactReadActivity;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
@@ -51,9 +50,9 @@ public class ContactListFragment extends BaseListActivityFragment<ContactListAda
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchBy);
-        SaveRecordUuidState(outState, recordUuid);
+        saveFilterStatusState(outState, filterStatus);
+        saveSearchStrategyState(outState, searchBy);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -114,13 +113,13 @@ public class ContactListFragment extends BaseListActivityFragment<ContactListAda
                 searchTask = executor.search(new ISearchResultCallback<Contact>() {
                     @Override
                     public void preExecute() {
-                        getActivityCommunicator().showPreloader();
-                        getActivityCommunicator().hideFragmentView();
+                        getBaseActivity().showPreloader();
+
                     }
 
                     @Override
                     public void searchResult(List<Contact> result, BoolResult resultStatus) {
-                        getActivityCommunicator().hidePreloader();
+                        getBaseActivity().hidePreloader();
 
                         if (!resultStatus.isSuccess()) {
                             String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Contacts");
@@ -136,19 +135,18 @@ public class ContactListFragment extends BaseListActivityFragment<ContactListAda
 
                         dataLoaded = true;
 
-                        getActivityCommunicator().hidePreloader();
-                        getActivityCommunicator().showFragmentView();
+                        getBaseActivity().hidePreloader();
                     }
 
                     private ISearchResultCallback<Contact> init() {
-                        getActivityCommunicator().showPreloader();
+                        getBaseActivity().showPreloader();
 
                         return this;
                     }
                 }.init());
             }
         } catch (Exception ex) {
-            getActivityCommunicator().hidePreloader();
+            getBaseActivity().hidePreloader();
             dataLoaded = false;
         }
 
@@ -157,7 +155,7 @@ public class ContactListFragment extends BaseListActivityFragment<ContactListAda
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, false, true, true, swiperefresh, null);
+                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, false, true, true, swiperefresh, null);
                 }
             });
         }
@@ -188,8 +186,8 @@ public class ContactListFragment extends BaseListActivityFragment<ContactListAda
         startActivity(intent);*/
     }
 
-    public static ContactListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule) {
-        return newInstance(communicator, ContactListFragment.class, capsule);
+    public static ContactListFragment newInstance(IListNavigationCapsule capsule) {
+        return newInstance(ContactListFragment.class, capsule);
     }
 
     @Override

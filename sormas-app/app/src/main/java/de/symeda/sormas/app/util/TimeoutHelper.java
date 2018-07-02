@@ -19,7 +19,7 @@ public class TimeoutHelper {
         DefaultAsyncTask executor = new DefaultAsyncTask(null) {
 
             @Override
-            public void execute(TaskResultHolder resultHolder) {
+            public void doInBackground(TaskResultHolder resultHolder) {
                 long endTimeMillis = System.currentTimeMillis() + milliSeconds;
                 while (true) {
                     // method logic

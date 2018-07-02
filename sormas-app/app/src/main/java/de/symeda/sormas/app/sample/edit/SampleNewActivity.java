@@ -3,99 +3,82 @@ package de.symeda.sormas.app.sample.edit;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import de.symeda.sormas.app.AbstractSormasActivity;
+import java.util.Date;
+
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.core.ISaveable;
+import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.core.async.AsyncTaskResult;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
-
-/**
- * Created by Orson on 29/03/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 
 public class SampleNewActivity extends BaseEditActivity<Sample> {
 
     public static final String TAG = SampleNewActivity.class.getSimpleName();
 
     private AsyncTask saveTask;
-    private ShipmentStatus pageStatus = null;
-    private String recordUuid = null;
+
     private String caseUuid = null;
-    private BaseEditActivityFragment activeFragment = null;
+
+    @Override
+    public ShipmentStatus getPageStatus() {
+        return (ShipmentStatus)super.getPageStatus();
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
         saveCaseUuidState(outState, caseUuid);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        caseUuid = getCaseUuidArg(savedInstanceState);
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void initializeActivity(Bundle arguments) {
-        pageStatus = (ShipmentStatus) getPageStatusArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
-        caseUuid = getCaseUuidArg(arguments);
-    }
-
-    @Override
-    protected Sample getActivityRootData(String recordUuid) {
+    protected Sample queryActivityRootEntity(String recordUuid) {
         return null;
     }
 
     @Override
-    protected Sample getActivityRootDataIfRecordUuidNull() {
+    protected Sample buildActivityRootEntity() {
         Sample sample = null;
         if (caseUuid != null && !caseUuid.isEmpty()) {
             Case associatedCase = DatabaseHelper.getCaseDao().queryUuidReference(caseUuid);
             sample = DatabaseHelper.getSampleDao().build(associatedCase);
         }
-
         return sample;
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment(Sample activityRootData) {
-        if (activeFragment == null) {
-            SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(
-                    SampleNewActivity.this, recordUuid, pageStatus).setCaseUuid(caseUuid);
-            activeFragment = SampleNewFragment.newInstance(this, dataCapsule, activityRootData);
-        }
-
-        return activeFragment;
+    public boolean onCreateOptionsMenu(Menu menu) {
+        boolean result = super.onCreateOptionsMenu(menu);
+        getSaveMenu().setTitle(R.string.action_save_sample);
+        return result;
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getSaveMenu().setTitle(R.string.action_save_sample);
-
-        return true;
+    protected BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, Sample activityRootData) {
+        SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(
+                SampleNewActivity.this, getRootEntityUuid(), getPageStatus()).setCaseUuid(caseUuid);
+        return SampleNewFragment.newInstance(dataCapsule, activityRootData);
     }
 
     @Override
@@ -113,19 +96,50 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
 
     @Override
     public void saveData() {
-        if (activeFragment == null)
-            return;
 
-        ISaveable fragment = (ISaveable)activeFragment;
+        final Sample sampleToSave = (Sample)getActiveFragment().getPrimaryData();
 
-        if (fragment != null)
-            fragment.save(this);
-    }
+        if (sampleToSave.getReportingUser() == null) {
+            sampleToSave.setReportingUser(ConfigProvider.getUser());
+        }
+        if (sampleToSave.getReportDateTime() == null) {
+            sampleToSave.setReportDateTime(new Date());
+        }
 
+        // TODO: re-enable validation
+//        SampleValidator.clearErrorsForSampleData(getContentBinding());
+//        if (!SampleValidator.validateSampleData(nContext, sampleToSave, getContentBinding())) {
+//            return;
+//        }
 
-    public static <TActivity extends AbstractSormasActivity> void
-    goToActivity(Context fromActivity, SampleFormNavigationCapsule dataCapsule) {
-        BaseEditActivity.goToActivity(fromActivity, SampleNewActivity.class, dataCapsule);
+        saveTask = new DefaultAsyncTask(getContext(), sampleToSave) {
+
+            @Override
+            protected void onPreExecute() {
+                showPreloader();
+            }
+
+            @Override
+            public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
+                DatabaseHelper.getSampleDao().saveAndSnapshot(sampleToSave);
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+
+                hidePreloader();
+
+                if (taskResult.getResultStatus().isFailed()) {
+                    NotificationHelper.showNotification(SampleNewActivity.this, NotificationType.ERROR,
+                            String.format(getResources().getString(R.string.snackbar_save_error), sampleToSave.getEntityName()));
+                } else {
+                    NotificationHelper.showNotification(SampleNewActivity.this, NotificationType.SUCCESS,
+                            String.format(getResources().getString(R.string.snackbar_save_success), sampleToSave.getEntityName()));
+
+                    finish();
+                }
+            }
+        }.executeOnThreadPool();
     }
 
     @Override
@@ -136,4 +150,7 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
             saveTask.cancel(true);
     }
 
+    public static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, SampleFormNavigationCapsule dataCapsule) {
+        BaseEditActivity.goToActivity(fromActivity, SampleNewActivity.class, dataCapsule);
+    }
 }

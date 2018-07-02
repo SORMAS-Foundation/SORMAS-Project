@@ -18,16 +18,16 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
-import de.symeda.sormas.app.event.edit.sub.EventEditPersonsInvolvedInfoActivity;
+import de.symeda.sormas.app.event.edit.sub.EventParticipantEditActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
+import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 
 /**
  * Created by Orson on 12/02/2018.
@@ -131,7 +131,7 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
+                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
                 }
             });
         }
@@ -143,12 +143,12 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Event event = getActivityRootData();
                     List<EventParticipant> eventParticipantList = new ArrayList<EventParticipant>();
 
@@ -166,8 +166,8 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -181,8 +181,8 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
     }
 
@@ -214,13 +214,12 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditActivityFragme
     @Override
     public void onListItemClick(View view, int position, Object item) {
         EventParticipant o = (EventParticipant)item;
-
-        EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(getContext(), o.getUuid(), pageStatus);
-        EventEditPersonsInvolvedInfoActivity.goToActivity(getActivity(), dataCapsule);
+        EventParticipantFormNavigationCapsule dataCapsule = new EventParticipantFormNavigationCapsule(getContext(), o.getUuid());
+        EventParticipantEditActivity.goToActivity(getActivity(), dataCapsule);
     }
 
-    public static EventEditPersonsInvolvedListFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData) {
-        return newInstance(activityCommunicator, EventEditPersonsInvolvedListFragment.class, capsule, activityRootData);
+    public static EventEditPersonsInvolvedListFragment newInstance(EventFormNavigationCapsule capsule, Event activityRootData) {
+        return newInstance(EventEditPersonsInvolvedListFragment.class, capsule, activityRootData);
     }
 
     @Override

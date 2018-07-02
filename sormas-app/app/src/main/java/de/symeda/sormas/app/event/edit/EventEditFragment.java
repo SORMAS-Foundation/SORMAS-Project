@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -15,14 +14,11 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.app.AbstractSormasActivity;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
-import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
@@ -32,23 +28,14 @@ import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentEventEditLayoutBinding;
-import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.core.ISaveable;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
-import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.validation.EventValidator;
 
 /**
@@ -59,7 +46,7 @@ import de.symeda.sormas.app.validation.EventValidator;
  * sampson.orson@technologyboard.org
  */
 
-public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEditLayoutBinding, Event, Event> implements ISaveable {
+public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEditLayoutBinding, Event, Event> {
 
     private AsyncTask onResumeTask;
     private AsyncTask saveEvent;
@@ -235,12 +222,12 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Event event = getActivityRootData();
 
                     if (event != null) {
@@ -254,8 +241,8 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -274,8 +261,8 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
     }
 
@@ -318,7 +305,7 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
             @Override
             public void onClick(View v, Object item) {
                 final Location location = record.getEventLocation();
-                final LocationDialog locationDialog = new LocationDialog(AbstractSormasActivity.getActiveActivity(), location);
+                final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), location);
 
                 locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
@@ -351,8 +338,8 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
         }
     }
 
-    public static EventEditFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData) {
-        return newInstance(activityCommunicator, EventEditFragment.class, capsule, activityRootData);
+    public static EventEditFragment newInstance(EventFormNavigationCapsule capsule, Event activityRootData) {
+        return newInstance(EventEditFragment.class, capsule, activityRootData);
     }
 
     @Override
@@ -364,90 +351,5 @@ public class EventEditFragment extends BaseEditActivityFragment<FragmentEventEdi
 
         if (saveEvent != null && !saveEvent.isCancelled())
             saveEvent.cancel(true);
-    }
-
-    @Override
-    public void save(final NotificationContext nContext) {
-        final Event eventToSave = getActivityRootData();
-
-        if (eventToSave == null)
-            throw new IllegalArgumentException("eventToSave is null");
-
-        EventValidator.clearErrorsForEventData(getContentBinding());
-        if (!EventValidator.validateEventData(nContext, eventToSave, getContentBinding())) {
-            return;
-        }
-
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                private EventDao dao;
-                private String saveUnsuccessful;
-
-                @Override
-                public void onPreExecute() {
-                    dao = DatabaseHelper.getEventDao();
-                    saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_event));
-                }
-
-                @Override
-                public void execute(TaskResultHolder resultHolder) {
-                    try {
-                        this.dao.saveAndSnapshot(eventToSave);
-                    } catch (DaoException e) {
-                        Log.e(getClass().getName(), "Error while trying to save event", e);
-                        resultHolder.setResultStatus(new BoolResult(false, saveUnsuccessful));
-                        ErrorReportingHelper.sendCaughtException(tracker, e, eventToSave, true);
-                    }
-                }
-            };
-            saveEvent = executor.execute(new ITaskResultCallback() {
-                private Event event;
-
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
-
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    if (!resultStatus.isSuccess()) {
-                        NotificationHelper.showNotification(nContext, NotificationType.ERROR, resultStatus.getMessage());
-                        return;
-                    } else {
-                        NotificationHelper.showNotification(nContext, NotificationType.SUCCESS, "Event " + DataHelper.getShortUuid(event.getUuid()) + " saved");
-                    }
-
-                    if (RetroProvider.isConnected()) {
-                        SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, getContext(), new SyncCallback() {
-                            @Override
-                            public void call(boolean syncFailed, String syncFailedMessage) {
-                                if (syncFailed) {
-                                    NotificationHelper.showNotification(nContext, NotificationType.WARNING, String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_event)));
-                                } else {
-                                    NotificationHelper.showNotification(nContext, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_event)));
-                                }
-                                getActivity().finish();
-                            }
-                        });
-                    } else {
-                        NotificationHelper.showNotification(nContext, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_event)));
-                        getActivity().finish();
-                    }
-
-                }
-
-                private ITaskResultCallback init(Event event) {
-                    this.event = event;
-
-                    return this;
-                }
-
-            }.init(record));
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
     }
 }

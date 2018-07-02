@@ -3,13 +3,11 @@ package de.symeda.sormas.app.caze.read;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
@@ -19,7 +17,6 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.component.OnLinkClickListener;
 import de.symeda.sormas.app.component.tagview.Tag;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -28,17 +25,11 @@ import de.symeda.sormas.app.databinding.FragmentCaseReadSymptomsLayoutBinding;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.symptom.Symptom;
 
-/**
- * Created by Orson on 08/01/2018.
- */
-
 public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentCaseReadSymptomsLayoutBinding, Symptoms, Case> {
 
     public static final String TAG = CaseReadSymptomsFragment.class.getSimpleName();
 
     private AsyncTask onResumeTask;
-    private String recordUuid = null;
-    private CaseClassification pageStatus = null;
     private Symptoms record;
 
     private List<Tag> yesResult;
@@ -46,24 +37,6 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
     private List<Tag> unknownResult;
 
     private OnLinkClickListener onLinkClickListener;
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        pageStatus = (CaseClassification) getPageStatusArg(arguments);
-    }
 
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
@@ -136,12 +109,12 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
         DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
             @Override
             public void onPreExecute() {
-                //getActivityCommunicator().showPreloader();
-                //getActivityCommunicator().hideFragmentView();
+                //getBaseActivity().showPreloader();
+                //
             }
 
             @Override
-            public void execute(TaskResultHolder resultHolder) {
+            public void doInBackground(TaskResultHolder resultHolder) {
                 Symptoms _symptom = null;
                 Case caze = getActivityRootData();
                 List<Symptom> sList = new ArrayList<>();
@@ -162,8 +135,8 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
         onResumeTask = executor.execute(new ITaskResultCallback() {
             @Override
             public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                //getActivityCommunicator().hidePreloader();
-                //getActivityCommunicator().showFragmentView();
+                //getBaseActivity().hidePreloader();
+                //getBaseActivity().showFragmentView();
 
                 if (resultHolder == null) {
                     return;
@@ -200,8 +173,8 @@ public class CaseReadSymptomsFragment extends BaseReadActivityFragment<FragmentC
         return R.layout.fragment_case_read_symptoms_layout;
     }
 
-    public static CaseReadSymptomsFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(activityCommunicator, CaseReadSymptomsFragment.class, capsule, activityRootData);
+    public static CaseReadSymptomsFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
+        return newInstance(CaseReadSymptomsFragment.class, capsule, activityRootData);
     }
 
     private List<Tag> getSymptomsYes(List<Symptom> list) {

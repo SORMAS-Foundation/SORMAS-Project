@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
@@ -98,13 +97,11 @@ public abstract class BaseReportActivityFragment<TBinding extends ViewDataBindin
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    getActivityCommunicator().showPreloader();
-                    getActivityCommunicator().hideFragmentView();
+                    getBaseActivity().showPreloader();
                 }
 
-
                 @Override
-                public void execute(final TaskResultHolder resultHolder) {
+                public void doInBackground(final TaskResultHolder resultHolder) {
                     onBeforeLayoutBinding(savedInstanceState, resultHolder, null, false);
                 }
             };
@@ -112,8 +109,7 @@ public abstract class BaseReportActivityFragment<TBinding extends ViewDataBindin
             jobTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    getActivityCommunicator().hidePreloader();
-                    getActivityCommunicator().showFragmentView();
+                    getBaseActivity().hidePreloader();
 
                     if (resultHolder == null)
                         return;
@@ -192,18 +188,14 @@ public abstract class BaseReportActivityFragment<TBinding extends ViewDataBindin
         return contentViewStubBinding;
     }
 
-    protected static <TFragment extends BaseReportActivityFragment> TFragment newInstance(IActivityCommunicator activityCommunicator, Class<TFragment> f)  {
-        TFragment fragment = null;
+    protected static <TFragment extends BaseReportActivityFragment> TFragment newInstance(Class<TFragment> f)  {
 
+        TFragment fragment;
         try {
             fragment = f.newInstance();
-        } catch (java.lang.InstantiationException e) {
-            Log.e(TAG, e.getMessage(), e);
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, e.getMessage(), e);
+        } catch (java.lang.InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
-
-        fragment.setActivityCommunicator(activityCommunicator);
 
         Bundle bundle = fragment.getArguments();
         if (bundle == null) {

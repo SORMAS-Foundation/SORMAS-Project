@@ -23,10 +23,6 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.task.Task;
 
-/**
- * Created by Orson on 11/01/2018.
- */
-
 public class CaseReadSampleListAdapter extends DataBoundAdapter<RowReadCaseSampleListItemLayoutBinding> {
 
     private static final String TAG = CaseReadSampleListAdapter.class.getSimpleName();
@@ -34,7 +30,6 @@ public class CaseReadSampleListAdapter extends DataBoundAdapter<RowReadCaseSampl
     private final Context context;
     private List<Sample> data = new ArrayList<>();
     private OnListItemClickListener mOnListItemClickListener;
-    //private ActionCallback mActionCallback;
 
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;

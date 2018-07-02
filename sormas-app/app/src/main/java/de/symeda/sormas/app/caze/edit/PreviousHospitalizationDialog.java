@@ -30,14 +30,6 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 
-/**
- * Created by Orson on 18/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
 
     public static final String TAG = PreviousHospitalizationDialog.class.getSimpleName();

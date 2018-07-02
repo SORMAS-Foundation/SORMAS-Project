@@ -18,7 +18,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
@@ -32,10 +31,6 @@ import de.symeda.sormas.app.searchstrategy.SearchStrategyFor;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.SubheadingHelper;
 
-/**
- * Created by Orson on 05/12/2017.
- */
-
 public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> implements OnListItemClickListener {
 
     private boolean dataLoaded = false;
@@ -45,15 +40,13 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
     private RecyclerView recyclerViewForList;
     private InvestigationStatus filterStatus = null;
     private SearchBy searchBy = null;
-    String recordUuid = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchBy);
-        SaveRecordUuidState(outState, recordUuid);
+        saveFilterStatusState(outState, filterStatus);
+        saveSearchStrategyState(outState, searchBy);
     }
 
     @Override
@@ -65,7 +58,6 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
 
         filterStatus = (InvestigationStatus) getFilterStatusArg(arguments);
         searchBy = (SearchBy) getSearchStrategyArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
     }
 
     @Override
@@ -85,8 +77,7 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
     @Override
     public void onListItemClick(View view, int position, Object item) {
         Case c = (Case)item;
-        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(),
-                c.getUuid()).setReadPageStatus(c.getCaseClassification());
+        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(), c.getUuid(), c.getCaseClassification());
         CaseReadActivity.goToActivity(getActivity(), dataCapsule);
     }
 
@@ -115,17 +106,16 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
 
         dataLoaded = false;
         if (!dataLoaded) {
-            ISearchExecutor<Case> executor = SearchStrategyFor.CASE.selector(searchBy, filterStatus, recordUuid);
+            ISearchExecutor<Case> executor = SearchStrategyFor.CASE.selector(searchBy, filterStatus, null);
             searchTask = executor.search(new ISearchResultCallback<Case>() {
                 @Override
                 public void preExecute() {
-                    getActivityCommunicator().showPreloader();
-                    getActivityCommunicator().hideFragmentView();
+                    getBaseActivity().showPreloader();
                 }
 
                 @Override
                 public void searchResult(List<Case> result, BoolResult resultStatus) {
-                    getActivityCommunicator().hidePreloader();
+                    getBaseActivity().hidePreloader();
 
                     if (!resultStatus.isSuccess()) {
                         String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Cases");
@@ -142,12 +132,11 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
 
                     dataLoaded = true;
 
-                    getActivityCommunicator().hidePreloader();
-                    getActivityCommunicator().showFragmentView();
+                    getBaseActivity().hidePreloader();
                 }
 
                 private ISearchResultCallback<Case> init() {
-                    getActivityCommunicator().showPreloader();
+                    getBaseActivity().showPreloader();
 
                     return this;
                 }
@@ -159,7 +148,7 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
+                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
                 }
             });
         }
@@ -174,8 +163,8 @@ public class CaseListFragment extends BaseListActivityFragment<CaseListAdapter> 
         recyclerViewForList.setAdapter(getListAdapter());
     }
 
-    public static CaseListFragment newInstance(IActivityCommunicator communicator, IListNavigationCapsule capsule) {
-        return newInstance(communicator, CaseListFragment.class, capsule);
+    public static CaseListFragment newInstance(IListNavigationCapsule capsule) {
+        return newInstance(CaseListFragment.class, capsule);
     }
 
     @Override

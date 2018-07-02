@@ -17,9 +17,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.contact.read.sub.ContactReadFollowUpVisitInfoActivity;
+import de.symeda.sormas.app.contact.read.sub.VisitReadActivity;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -27,7 +26,7 @@ import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.shared.ContactFormFollowUpNavigationCapsule;
+import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 
 /**
@@ -48,8 +47,8 @@ public class ContactReadFollowUpVisitListFragment extends BaseReadActivityFragme
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, contactClassification);
-        SaveRecordUuidState(outState, recordUuid);
+        savePageStatusState(outState, contactClassification);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -117,7 +116,7 @@ public class ContactReadFollowUpVisitListFragment extends BaseReadActivityFragme
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
+                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
                 }
             });
         }
@@ -130,12 +129,12 @@ public class ContactReadFollowUpVisitListFragment extends BaseReadActivityFragme
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Contact contact = getActivityRootData();
                     List<Visit> visitList = new ArrayList<Visit>();
 
@@ -153,8 +152,8 @@ public class ContactReadFollowUpVisitListFragment extends BaseReadActivityFragme
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -168,8 +167,8 @@ public class ContactReadFollowUpVisitListFragment extends BaseReadActivityFragme
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
     }
 
@@ -208,8 +207,8 @@ public class ContactReadFollowUpVisitListFragment extends BaseReadActivityFragme
     @Override
     public void onListItemClick(View view, int position, Object item) {
         Visit record = (Visit)item;
-        ContactFormFollowUpNavigationCapsule dataCapsule = new ContactFormFollowUpNavigationCapsule(getContext(), record.getUuid(), record.getVisitStatus());
-        ContactReadFollowUpVisitInfoActivity.goToActivity(getActivity(), dataCapsule);
+        VisitFormNavigationCapsule dataCapsule = new VisitFormNavigationCapsule(getContext(), record.getUuid(), record.getVisitStatus());
+        VisitReadActivity.goToActivity(getActivity(), dataCapsule);
     }
 
     @Override
@@ -217,8 +216,8 @@ public class ContactReadFollowUpVisitListFragment extends BaseReadActivityFragme
         return false;
     }
 
-    public static ContactReadFollowUpVisitListFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule, Contact activityRootData) {
-        return newInstance(activityCommunicator, ContactReadFollowUpVisitListFragment.class, capsule, activityRootData);
+    public static ContactReadFollowUpVisitListFragment newInstance(ContactFormNavigationCapsule capsule, Contact activityRootData) {
+        return newInstance(ContactReadFollowUpVisitListFragment.class, capsule, activityRootData);
     }
 
     @Override

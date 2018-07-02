@@ -19,7 +19,6 @@ import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
@@ -40,8 +39,6 @@ import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<FragmentCaseEditHospitalizationLayoutBinding, Hospitalization, Case> {
 
     private AsyncTask onResumeTask;
-    private String recordUuid = null;
-    private InvestigationStatus pageStatus = null;
     private Hospitalization record;
     private Case caze;
     private int mAdmittedToFacilityLastCheckedId = -1;
@@ -49,24 +46,6 @@ public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<Fr
     private int mPreviousHospitalizationLastCheckedId = -1;
     private IEntryItemOnClickListener onAddEntryClickListener;
     private IEntryItemOnClickListener onPrevHosItemClickListener;
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
-    }
 
     @Override
     protected String getSubHeadingTitle() {
@@ -166,12 +145,12 @@ public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<Fr
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Case caze = getActivityRootData();
 
                     if (caze != null) {
@@ -194,8 +173,8 @@ public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<Fr
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -217,8 +196,8 @@ public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<Fr
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
     }
 
@@ -430,8 +409,8 @@ public class CaseEditHospitalizationFragment extends BaseEditActivityFragment<Fr
         }
     }
 
-    public static CaseEditHospitalizationFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(activityCommunicator, CaseEditHospitalizationFragment.class, capsule, activityRootData);
+    public static CaseEditHospitalizationFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
+        return newInstance(CaseEditHospitalizationFragment.class, capsule, activityRootData);
     }
 
     @Override

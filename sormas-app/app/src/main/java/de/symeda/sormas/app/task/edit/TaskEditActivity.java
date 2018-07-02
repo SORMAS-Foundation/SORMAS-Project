@@ -12,109 +12,49 @@ import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
-import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
-
-/**
- * Created by Orson on 22/01/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 
 public class TaskEditActivity extends BaseEditActivity<Task> {
 
-    private boolean showStatusFrame = false;
-    private boolean showTitleBar = true;
-    private boolean showPageMenu = false;
-    private final int DATA_XML_PAGE_MENU = -1;
-
-    private TaskStatus pageStatus = null;
-    private String recordUuid = null;
-    private BaseEditActivityFragment activeFragment = null;
-
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
+    public TaskStatus getPageStatus() {
+        return (TaskStatus)super.getPageStatus();
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void initializeActivity(Bundle arguments) {
-        pageStatus = (TaskStatus) getPageStatusArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
-
-        this.showStatusFrame = false;
-        this.showTitleBar = true;
-        this.showPageMenu = false;
-    }
-
-    @Override
-    protected Task getActivityRootData(String recordUuid) {
+    protected Task queryActivityRootEntity(String recordUuid) {
         return DatabaseHelper.getTaskDao().queryUuid(recordUuid);
     }
 
     @Override
-    protected Task getActivityRootDataIfRecordUuidNull() {
+    protected Task buildActivityRootEntity() {
         return null;
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment(Task activityRootData) {
-        if (activeFragment == null) {
-            TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(TaskEditActivity.this,
-                    recordUuid, pageStatus);
-            activeFragment = TaskEditFragment.newInstance(this, dataCapsule, activityRootData);
-        }
-
-        return activeFragment;
+    public boolean isShowStatusFrame() {
+        return false;
     }
 
     @Override
-    public boolean showStatusFrame() {
-        return showStatusFrame;
-    }
-
-    @Override
-    public boolean showTitleBar() {
-        return showTitleBar;
-    }
-
-    @Override
-    public boolean showPageMenu() {
-        return showPageMenu;
-    }
-
-    @Override
-    public Enum getPageStatus() {
-        return pageStatus;
-    }
-
-    @Override
-    public int getPageMenuData() {
-        return DATA_XML_PAGE_MENU;
+    public void saveData() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
+        boolean result = super.onCreateOptionsMenu(menu);
         getSaveMenu().setTitle(R.string.action_save_task);
+        return result;
+    }
 
-        return true;
+    @Override
+    protected BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, Task activityRootData) {
+        TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(TaskEditActivity.this,
+                getRootEntityUuid(), getPageStatus());
+        return TaskEditFragment.newInstance(dataCapsule, activityRootData);
     }
 
     @Override

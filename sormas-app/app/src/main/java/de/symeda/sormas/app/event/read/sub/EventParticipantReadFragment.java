@@ -11,19 +11,18 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentEventReadPersonInvolvedInfoLayoutBinding;
-import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
+import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 
 /**
  * Created by Orson on 28/12/2017.
  */
 
-public class EventReadPersonsInvolvedInfoFragment extends BaseReadActivityFragment<FragmentEventReadPersonInvolvedInfoLayoutBinding, EventParticipant, EventParticipant> {
+public class EventParticipantReadFragment extends BaseReadActivityFragment<FragmentEventReadPersonInvolvedInfoLayoutBinding, EventParticipant, EventParticipant> {
 
     private AsyncTask onResumeTask;
     private String recordUuid;
@@ -35,8 +34,8 @@ public class EventReadPersonsInvolvedInfoFragment extends BaseReadActivityFragme
         super.onSaveInstanceState(outState);
 
         //saveFilterStatusState(outState, filterStatus);
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -94,12 +93,12 @@ public class EventReadPersonsInvolvedInfoFragment extends BaseReadActivityFragme
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     EventParticipant eventParticipant = getActivityRootData();
 
                     if (eventParticipant != null) {
@@ -113,8 +112,8 @@ public class EventReadPersonsInvolvedInfoFragment extends BaseReadActivityFragme
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -133,8 +132,8 @@ public class EventReadPersonsInvolvedInfoFragment extends BaseReadActivityFragme
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
     }
 
@@ -164,8 +163,8 @@ public class EventReadPersonsInvolvedInfoFragment extends BaseReadActivityFragme
         return false;
     }
 
-    public static EventReadPersonsInvolvedInfoFragment newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, EventParticipant activityRootData) {
-        return newInstance(activityCommunicator, EventReadPersonsInvolvedInfoFragment.class, capsule, activityRootData);
+    public static EventParticipantReadFragment newInstance(EventParticipantFormNavigationCapsule capsule, EventParticipant activityRootData) {
+        return newInstance(EventParticipantReadFragment.class, capsule, activityRootData);
     }
 
     @Override

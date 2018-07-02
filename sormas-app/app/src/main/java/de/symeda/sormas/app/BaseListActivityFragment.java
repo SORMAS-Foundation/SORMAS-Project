@@ -2,14 +2,12 @@ package de.symeda.sormas.app;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IListActivityAdapterDataObserverCommunicator;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
@@ -20,10 +18,6 @@ import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.util.ConstantHelper;
-
-/**
- * Created by Orson on 02/12/2017.
- */
 
 public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView.Adapter> extends BaseFragment implements IListActivityAdapterDataObserverCommunicator, OnListItemClickListener {
 
@@ -161,44 +155,31 @@ public abstract class BaseListActivityFragment<TListAdapter extends RecyclerView
         return e;
     }
 
-    protected <E extends Enum<E>> E getArgByElaboratorKey(Bundle arguments, String key) {
-        E e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(key)) {
-                e = (E) arguments.getSerializable(key);
-            }
-        }
-
-        return e;
-    }
-
-
-
-    protected void SaveSearchStrategyState(Bundle outState, SearchBy status) {
+    protected void saveSearchStrategyState(Bundle outState, SearchBy status) {
         if (outState != null) {
             outState.putSerializable(ConstantHelper.ARG_SEARCH_STRATEGY, status);
         }
     }
 
-    protected <E extends Enum<E>> void SaveFilterStatusState(Bundle outState, E status) {
+    protected <E extends Enum<E>> void saveFilterStatusState(Bundle outState, E status) {
         if (outState != null) {
             outState.putSerializable(ConstantHelper.ARG_FILTER_STATUS, status);
         }
     }
 
-    protected <E extends Enum<E>> void SavePageStatusState(Bundle outState, E status) {
+    protected <E extends Enum<E>> void savePageStatusState(Bundle outState, E status) {
         if (outState != null) {
             outState.putSerializable(ConstantHelper.ARG_PAGE_STATUS, status);
         }
     }
 
-    protected void SaveRecordUuidState(Bundle outState, String recordUuid) {
+    protected void saveRecordUuidState(Bundle outState, String recordUuid) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_DATA_UUID, recordUuid);
         }
     }
 
-    protected static <TFragment extends BaseListActivityFragment, TCapsule extends IListNavigationCapsule> TFragment newInstance(IActivityCommunicator activityCommunicator, Class<TFragment> f, TCapsule dataCapsule) {
+    protected static <TFragment extends BaseListActivityFragment, TCapsule extends IListNavigationCapsule> TFragment newInstance(Class<TFragment> f, TCapsule dataCapsule) {
         TFragment fragment;
         try {
             fragment = f.newInstance();

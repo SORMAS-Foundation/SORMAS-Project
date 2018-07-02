@@ -16,7 +16,6 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.OnLinkClickListener;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -43,8 +42,8 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -116,12 +115,12 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Case _associatedCase = null;
                     Contact contact = getActivityRootData();
 
@@ -139,8 +138,8 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -162,8 +161,8 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
 
     }
@@ -204,7 +203,7 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
             public void onClick(View v, Object item) {
                 if (associatedCase != null) {
                     CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(),
-                            associatedCase.getUuid()).setReadPageStatus(associatedCase.getCaseClassification());
+                            associatedCase.getUuid(), associatedCase.getCaseClassification());
                     CaseReadActivity.goToActivity(getActivity(), dataCapsule);
                 }
             }
@@ -216,8 +215,8 @@ public class ContactReadFragment extends BaseReadActivityFragment<FragmentContac
         return false;
     }
 
-    public static ContactReadFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormNavigationCapsule capsule, Contact activityRootData) {
-        return newInstance(activityCommunicator, ContactReadFragment.class, capsule, activityRootData);
+    public static ContactReadFragment newInstance(ContactFormNavigationCapsule capsule, Contact activityRootData) {
+        return newInstance(ContactReadFragment.class, capsule, activityRootData);
     }
 
     @Override

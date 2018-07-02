@@ -1,5 +1,6 @@
-package de.symeda.sormas.app.caze.edit;
+package de.symeda.sormas.app.event.edit.sub;
 
+import android.app.AlertDialog;
 import android.content.res.Resources;
 import android.databinding.ViewDataBinding;
 import android.os.AsyncTask;
@@ -17,10 +18,9 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
-import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.OccupationType;
@@ -28,13 +28,12 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.app.AbstractSormasActivity;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.location.Location;
-import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.TeboSpinner;
@@ -43,57 +42,56 @@ import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.databinding.FragmentCaseEditPatientLayoutBinding;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.databinding.FragmentEventEditPersonInfoLayoutBinding;
+import de.symeda.sormas.app.event.edit.OccupationTypeLayoutProcessor;
+import de.symeda.sormas.app.event.edit.PresentConditionLayoutProcessor;
+import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
+import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 import de.symeda.sormas.app.shared.OnDateOfDeathChangeListener;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.layoutprocessor.OccupationTypeLayoutProcessor;
-import de.symeda.sormas.app.util.layoutprocessor.PresentConditionLayoutProcessor;
 
 /**
- * Created by Orson on 16/02/2018.
+ * Created by Orson on 07/02/2018.
  * <p>
  * www.technologyboard.org
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
  */
 
-public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<FragmentCaseEditPatientLayoutBinding, Person, Case> {
+public class EventParticipantEditFragment extends BaseEditActivityFragment<FragmentEventEditPersonInfoLayoutBinding, EventParticipant, EventParticipant> {
 
-    public static final String TAG = CaseEditPatientInfoFragment.class.getSimpleName();
+    public static final String TAG = EventParticipantEditFragment.class.getSimpleName();
 
     private static final int DEFAULT_YEAR = 2000;
 
     private AsyncTask onResumeTask;
     private String recordUuid = null;
-    private InvestigationStatus pageStatus = null;
-    private Person record;
+    private EventStatus pageStatus = null;
+    private EventParticipant record;
     private IEntryItemOnClickListener onAddressLinkClickedCallback;
 
+    private List<Item> occupationTypeList;
+    private List<Item> genderList;
+    private List<Item> ageTypeList;
     private List<Item> dateList;
     private List<Item> monthList;
     private List<Item> yearList;
-    private List<Item> ageTypeList;
-    private List<Item> genderList;
-    private List<Item> occupationTypeList;
 
     private List<Item> causeOfDeathList;
     private List<Item> deathPlaceTypeList;
     private List<Item> diseaseList;
-    private List<Item> burialConductorList;
 
     private int mLastCheckedId = -1;
 
     private OccupationTypeLayoutProcessor occupationTypeLayoutProcessor;
     private PresentConditionLayoutProcessor presentConditionLayoutProcessor;
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -107,98 +105,81 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
+        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
         recordUuid = getRecordUuidArg(arguments);
-        pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
+        pageStatus = (EventStatus) getPageStatusArg(arguments);
     }
 
     @Override
     protected String getSubHeadingTitle() {
         Resources r = getResources();
-        return r.getString(R.string.caption_patient_information);
+        return r.getString(R.string.caption_person_involved);
     }
 
     @Override
-    public Person getPrimaryData() {
-        /*if (person != null)
-            record.setPerson(person);*/
-
+    public EventParticipant getPrimaryData() {
         return record;
     }
 
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            Case caze = getActivityRootData();
+            EventParticipant eventParticipant = getActivityRootData();
 
-            if (caze != null) {
-                if (caze.isUnreadOrChildUnread())
-                    DatabaseHelper.getCaseDao().markAsRead(caze);
-
-                if (caze.getPerson() == null) {
-                    caze.setPerson(DatabaseHelper.getPersonDao().build());
-                } else {
-                    caze.setPerson(DatabaseHelper.getPersonDao().queryUuid(caze.getPerson().getUuid()));
-                }
+            if (eventParticipant != null) {
+                if (eventParticipant.isUnreadOrChildUnread())
+                    DatabaseHelper.getEventParticipantDao().markAsRead(eventParticipant);
             }
 
-            resultHolder.forItem().add(caze.getPerson());
-            //resultHolder.forItem().add(caze);
+            resultHolder.forItem().add(eventParticipant);
 
             resultHolder.forOther().add(DataUtils.getEnumItems(OccupationType.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(Sex.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(ApproximateAgeType.class, false));
-            resultHolder.forOther().add(DataUtils.toItems(DateHelper.getDaysInMonth(), true));
+            resultHolder.forOther().add(DataUtils.toItems(DateHelper.getDaysInMonth(),true));
             resultHolder.forOther().add(DataUtils.getMonthItems(true));
-            resultHolder.forOther().add(DataUtils.toItems(DateHelper.getYearsToNow(), true));
+            resultHolder.forOther().add(DataUtils.toItems(DateHelper.getYearsToNow(),true));
             resultHolder.forOther().add(DataUtils.getEnumItems(CauseOfDeath.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(DeathPlaceType.class, false));
             resultHolder.forOther().add(DataUtils.getEnumItems(Disease.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(BurialConductor.class, false));
 
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
             ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
 
             if (itemIterator.hasNext())
-                record = itemIterator.next();
+                record =  itemIterator.next();
 
             if (record == null)
                 getActivity().finish();
 
-            /*if (itemIterator.hasNext())
-                caze = itemIterator.next();*/
+            if (otherIterator.hasNext())
+                occupationTypeList =  otherIterator.next();
 
             if (otherIterator.hasNext())
-                occupationTypeList = otherIterator.next();
+                genderList =  otherIterator.next();
 
             if (otherIterator.hasNext())
-                genderList = otherIterator.next();
+                ageTypeList =  otherIterator.next();
 
             if (otherIterator.hasNext())
-                ageTypeList = otherIterator.next();
+                dateList =  otherIterator.next();
 
             if (otherIterator.hasNext())
-                dateList = otherIterator.next();
+                monthList =  otherIterator.next();
 
             if (otherIterator.hasNext())
-                monthList = otherIterator.next();
+                yearList =  otherIterator.next();
 
             if (otherIterator.hasNext())
-                yearList = otherIterator.next();
+                causeOfDeathList =  otherIterator.next();
 
             if (otherIterator.hasNext())
-                causeOfDeathList = otherIterator.next();
+                deathPlaceTypeList =  otherIterator.next();
 
             if (otherIterator.hasNext())
-                deathPlaceTypeList = otherIterator.next();
-
-            if (otherIterator.hasNext())
-                diseaseList = otherIterator.next();
-
-            if (otherIterator.hasNext())
-                burialConductorList = otherIterator.next();
+                diseaseList =  otherIterator.next();
 
             setupCallback();
         }
@@ -207,8 +188,13 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
     }
 
     @Override
-    public void onLayoutBinding(FragmentCaseEditPatientLayoutBinding contentBinding) {
-        occupationTypeLayoutProcessor = new OccupationTypeLayoutProcessor(getContext(), contentBinding, record);
+    public void onLayoutBinding(FragmentEventEditPersonInfoLayoutBinding contentBinding) {
+        //binding = DataBindingUtil.inflate(inflater, getEditLayout(), container, true);
+
+        //TODO: Validation
+        //EventParticipantValidator.setRequiredHintsForEventParticipantData(binding);
+
+        occupationTypeLayoutProcessor = new OccupationTypeLayoutProcessor(getContext(), contentBinding, record.getPerson());
         occupationTypeLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
             public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
@@ -217,8 +203,7 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
             }
         });
 
-        presentConditionLayoutProcessor = new PresentConditionLayoutProcessor(getContext(),
-                getFragmentManager(), contentBinding, record, causeOfDeathList, deathPlaceTypeList, diseaseList, burialConductorList);
+        presentConditionLayoutProcessor = new PresentConditionLayoutProcessor(getContext(), getFragmentManager(), contentBinding, record.getPerson(), causeOfDeathList, deathPlaceTypeList, diseaseList);
         presentConditionLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
             public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
@@ -236,10 +221,24 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
         contentBinding.setData(record);
         contentBinding.setPresentConditionClass(PresentCondition.class);
         contentBinding.setAddressLinkCallback(onAddressLinkClickedCallback);
+
+        //TODO: Validation
+        /*PersonValidator.setRequiredHintsForPersonData(binding);
+        contentBinding.personPresentCondition.makeFieldSoftRequired();
+        contentBinding.personSex.makeFieldSoftRequired();
+        contentBinding.personDeathDate.makeFieldSoftRequired();
+        contentBinding.personDeathPlaceDescription.makeFieldSoftRequired();
+        contentBinding.personDeathPlaceType.makeFieldSoftRequired();
+        contentBinding.personCauseOfDeath.makeFieldSoftRequired();
+        contentBinding.personCauseOfDeathDetails.makeFieldSoftRequired();
+        contentBinding.personCauseOfDeathDisease.makeFieldSoftRequired();
+        contentBinding.personBurialDate.makeFieldSoftRequired();
+        contentBinding.personBurialPlaceDescription.makeFieldSoftRequired();
+        contentBinding.personBurialConductor.makeFieldSoftRequired();*/
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentCaseEditPatientLayoutBinding contentBinding) {
+    public void onAfterLayoutBinding(FragmentEventEditPersonInfoLayoutBinding contentBinding) {
         contentBinding.spnOccupationType.initialize(new TeboSpinner.ISpinnerInitConfig() {
             @Override
             public Object getSelectedValue() {
@@ -259,7 +258,7 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
 
             @Override
             public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                if (!occupationTypeLayoutProcessor.processLayout((OccupationType) value))
+                if (!occupationTypeLayoutProcessor.processLayout((OccupationType)value))
                     return;
             }
 
@@ -395,80 +394,75 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
 
             }
         });
+
     }
 
     @Override
-    protected void updateUI(FragmentCaseEditPatientLayoutBinding contentBinding, Person person) {
-        contentBinding.spnOccupationType.setValue(person.getOccupationType(), true);
-        contentBinding.spnGender.setValue(person.getSex(), true);
-        contentBinding.spnAgeType.setValue(person.getApproximateAgeType(), true);
-        contentBinding.spnYear.setValue(person.getBirthdateYYYY(), true);
-        contentBinding.spnMonth.setValue(person.getBirthdateMM(), true);
-        contentBinding.spnDate.setValue(person.getBirthdateDD(), true);
+    protected void updateUI(FragmentEventEditPersonInfoLayoutBinding contentBinding, EventParticipant eventParticipant) {
+        contentBinding.spnOccupationType.setValue(eventParticipant.getPerson().getOccupationType(), true);
+        contentBinding.spnGender.setValue(eventParticipant.getPerson().getSex(), true);
+        contentBinding.spnAgeType.setValue(eventParticipant.getPerson().getApproximateAgeType(), true);
+        contentBinding.spnYear.setValue(eventParticipant.getPerson().getBirthdateYYYY(), true);
+        contentBinding.spnMonth.setValue(eventParticipant.getPerson().getBirthdateMM(), true);
+        contentBinding.spnDate.setValue(eventParticipant.getPerson().getBirthdateDD(), true);
     }
 
     @Override
-    public void onPageResume(FragmentCaseEditPatientLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
+    public void onPageResume(FragmentEventEditPersonInfoLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
 
-        DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-            @Override
-            public void onPreExecute() {
-                //getActivityCommunicator().showPreloader();
-                //getActivityCommunicator().hideFragmentView();
-            }
+        try {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
+                @Override
+                public void onPreExecute() {
+                    //getBaseActivity().showPreloader();
+                    //
+                }
 
-            @Override
-            public void execute(TaskResultHolder resultHolder) {
+                @Override
+                public void doInBackground(TaskResultHolder resultHolder) {
+                    EventParticipant eventParticipant = getActivityRootData();
 
-                Case caze = getActivityRootData();
+                    if (eventParticipant != null) {
+                        if (eventParticipant.isUnreadOrChildUnread())
+                            DatabaseHelper.getEventParticipantDao().markAsRead(eventParticipant);
+                    }
 
-                if (caze != null) {
-                    if (caze.isUnreadOrChildUnread())
-                        DatabaseHelper.getCaseDao().markAsRead(caze);
+                    resultHolder.forItem().add(eventParticipant);
+                }
+            };
+            onResumeTask = executor.execute(new ITaskResultCallback() {
+                @Override
+                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
-                    if (caze.getPerson() == null) {
-                        caze.setPerson(DatabaseHelper.getPersonDao().build());
-                    } else {
-                        caze.setPerson(DatabaseHelper.getPersonDao().queryUuid(caze.getPerson().getUuid()));
+                    if (resultHolder == null){
+                        return;
+                    }
+
+                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
+
+                    if (itemIterator.hasNext())
+                        record = itemIterator.next();
+
+                    if (record != null)
+                        requestLayoutRebind();
+                    else {
+                        getActivity().finish();
                     }
                 }
-
-                resultHolder.forItem().add(caze.getPerson());
-                //resultHolder.forItem().add(caze);
-            }
-        };
-        onResumeTask = executor.execute(new ITaskResultCallback() {
-            @Override
-            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                //getActivityCommunicator().hidePreloader();
-                //getActivityCommunicator().showFragmentView();
-
-                if (resultHolder == null) {
-                    return;
-                }
-
-                ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                if (itemIterator.hasNext())
-                    record = itemIterator.next();
-
-                    /*if (itemIterator.hasNext())
-                        caze = itemIterator.next();*/
-
-                if (record != null)
-                    requestLayoutRebind();
-                else {
-                    getActivity().finish();
-                }
-            }
-        });
+            });
+        } catch (Exception ex) {
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
+        }
     }
 
     @Override
     public int getEditLayout() {
-        return R.layout.fragment_case_edit_patient_layout;
+        return R.layout.fragment_event_edit_person_info_layout;
     }
 
     @Override
@@ -485,7 +479,6 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
     public boolean showAddAction() {
         return false;
     }
-
 
     // <editor-fold defaultstate="collapsed" desc="Private Methods">
 
@@ -510,18 +503,23 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
         onAddressLinkClickedCallback = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
-                final Location location = record.getAddress();
-                final LocationDialog locationDialog = new LocationDialog(AbstractSormasActivity.getActiveActivity(), location);
-                locationDialog.show(null);
-
+                final Location location = record.getPerson().getAddress();
+                final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), location);
 
                 locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
                         getContentBinding().txtPermAddress.setValue(location.toString());
-                        record.setAddress(location);
+                        record.getPerson().setAddress(location);
 
                         locationDialog.dismiss();
+                    }
+                });
+
+                locationDialog.show(new Callback.IAction<AlertDialog>() {
+                    @Override
+                    public void call(AlertDialog result) {
+
                     }
                 });
             }
@@ -529,33 +527,33 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
     }
 
     private void setLocalBindingVariable(final ViewDataBinding binding, String layoutName) {
-        if (!binding.setVariable(BR.data, record)) {
+        if (!binding.setVariable(BR.data, record.getPerson())) {
             Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
     }
 
     private void updateApproximateAgeField() {
-        Integer birthyear = record.getBirthdateYYYY();
+        Integer birthyear = record.getPerson().getBirthdateYYYY();
         //TeboTextRead approximateAgeTextField =  getContentBinding().txtAge;
         //TeboSpinner approximateAgeTypeField = getContentBinding().spnAgeType;
 
-        if (birthyear != null) {
-            Integer birthday = record.getBirthdateDD();
-            Integer birthmonth = record.getBirthdateMM();
+        if(birthyear != null) {
+            Integer birthday = record.getPerson().getBirthdateDD();
+            Integer birthmonth = record.getPerson().getBirthdateMM();
 
             Calendar birthDate = new GregorianCalendar();
-            birthDate.set(birthyear, birthmonth != null ? birthmonth - 1 : 0, birthday != null ? birthday : 1);
+            birthDate.set(birthyear, birthmonth!=null?birthmonth-1:0, birthday!=null?birthday:1);
 
             Date to = new Date();
-            if (record.getDeathDate() != null) {
-                to = record.getDeathDate();
+            if(record.getPerson().getDeathDate() != null) {
+                to = record.getPerson().getDeathDate();
             }
-            DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = ApproximateAgeHelper.getApproximateAge(birthDate.getTime(), to);
+            DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = ApproximateAgeHelper.getApproximateAge(birthDate.getTime(),to);
             ApproximateAgeType ageType = approximateAge.getElement1();
             Integer age = approximateAge.getElement0();
 
-            record.setApproximateAge(age);
-            record.setApproximateAgeType(ageType);
+            record.getPerson().setApproximateAge(age);
+            record.getPerson().setApproximateAgeType(ageType);
 
             updateUI();
         } else {
@@ -566,8 +564,8 @@ public class CaseEditPatientInfoFragment extends BaseEditActivityFragment<Fragme
 
     // </editor-fold>
 
-    public static CaseEditPatientInfoFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(activityCommunicator, CaseEditPatientInfoFragment.class, capsule, activityRootData);
+    public static EventParticipantEditFragment newInstance(EventParticipantFormNavigationCapsule capsule, EventParticipant activityRootData) {
+        return newInstance(EventParticipantEditFragment.class, capsule, activityRootData);
     }
 
     @Override

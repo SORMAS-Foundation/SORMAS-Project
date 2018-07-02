@@ -14,7 +14,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -29,31 +28,7 @@ import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 public class CaseReadFragment extends BaseReadActivityFragment<FragmentCaseReadLayoutBinding, Case, Case> {
 
     private AsyncTask onResumeTask;
-    private String recordUuid = null;
-    private InvestigationStatus filterStatus = null;
-    private CaseClassification pageStatus = null;
     private Case record;
-    private User user;
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        SaveFilterStatusState(outState, filterStatus);
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        filterStatus = (InvestigationStatus) getFilterStatusArg(arguments);
-        pageStatus = (CaseClassification) getPageStatusArg(arguments);
-    }
 
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
@@ -70,15 +45,11 @@ public class CaseReadFragment extends BaseReadActivityFragment<FragmentCaseReadL
             }
 
             resultHolder.forItem().add(caze);
-            resultHolder.forItem().add(ConfigProvider.getUser());
         } else {
             ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
 
             if (itemIterator.hasNext())
                 record =  itemIterator.next();
-
-            if (itemIterator.hasNext())
-                user = itemIterator.next();
         }
 
         return true;
@@ -108,12 +79,12 @@ public class CaseReadFragment extends BaseReadActivityFragment<FragmentCaseReadL
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Case caze = getActivityRootData();
 
                     if (caze != null) {
@@ -132,8 +103,8 @@ public class CaseReadFragment extends BaseReadActivityFragment<FragmentCaseReadL
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -144,9 +115,6 @@ public class CaseReadFragment extends BaseReadActivityFragment<FragmentCaseReadL
                     if (itemIterator.hasNext())
                         record =  itemIterator.next();
 
-                    if (itemIterator.hasNext())
-                        user = itemIterator.next();
-
                     if (record != null)
                         requestLayoutRebind();
                     else {
@@ -155,8 +123,8 @@ public class CaseReadFragment extends BaseReadActivityFragment<FragmentCaseReadL
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
     }
 
@@ -176,8 +144,8 @@ public class CaseReadFragment extends BaseReadActivityFragment<FragmentCaseReadL
         return R.layout.fragment_case_read_layout;
     }
 
-    public static CaseReadFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(activityCommunicator, CaseReadFragment.class, capsule, activityRootData);
+    public static CaseReadFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
+        return newInstance(CaseReadFragment.class, capsule, activityRootData);
     }
 
     @Override

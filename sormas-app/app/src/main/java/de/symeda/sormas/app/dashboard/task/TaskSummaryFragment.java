@@ -24,7 +24,6 @@ import de.symeda.sormas.app.component.visualization.data.SummaryPieData;
 import de.symeda.sormas.app.component.visualization.data.SummaryPieEntry;
 import de.symeda.sormas.app.component.visualization.data.SummaryTotalData;
 import de.symeda.sormas.app.core.DashboardNavigationCapsule;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterDataModifier;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationContext;
 import de.symeda.sormas.app.core.adapter.multiview.IAdapterRegistrationService;
@@ -410,9 +409,9 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
     //</editor-fold>
 
 
-    public static TaskSummaryFragment newInstance(IActivityCommunicator activityCommunicator, DashboardNavigationCapsule capsule) {
+    public static TaskSummaryFragment newInstance(DashboardNavigationCapsule capsule) {
         try {
-            return newInstance(activityCommunicator, TaskSummaryFragment.class, capsule);
+            return newInstance(TaskSummaryFragment.class, capsule);
         } catch (IllegalAccessException e) {
             Log.e(TAG, e.getMessage(), e);
         } catch (java.lang.InstantiationException e) {

@@ -2,10 +2,6 @@ package de.symeda.sormas.app.shared;
 
 import de.symeda.sormas.api.I18nProperties;
 
-/**
- * Created by Mate Strysewske on 10.08.2017.
- */
-
 public enum ShipmentStatus {
 
     NOT_SHIPPED,

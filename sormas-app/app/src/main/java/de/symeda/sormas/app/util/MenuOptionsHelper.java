@@ -2,7 +2,7 @@ package de.symeda.sormas.app.util;
 
 import android.view.MenuItem;
 
-import de.symeda.sormas.app.AbstractSormasActivity;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseReadActivity;
@@ -72,7 +72,7 @@ public class MenuOptionsHelper {
                 return true;
 
             case R.id.action_edit:
-                activity.gotoEditView();
+                activity.goToEditView();
                 return true;
 
             // Report problem button
@@ -114,7 +114,7 @@ public class MenuOptionsHelper {
         return false;
     }
 
-    private static void showUserReportDialog(AbstractSormasActivity activity) {
+    private static void showUserReportDialog(BaseActivity activity) {
         UserReportDialog userReportDialog = new UserReportDialog(activity, activity.getClass().getSimpleName(), null);
         userReportDialog.show(null);
     }

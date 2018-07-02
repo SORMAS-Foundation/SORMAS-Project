@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.view.Menu;
@@ -16,13 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.component.menu.LandingPageMenuAdapter;
@@ -40,45 +33,31 @@ import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.util.ConstantHelper;
 
-/**
- * Created by Orson on 03/12/2017.
- */
-
-public abstract class BaseListActivity<TListItemData extends AbstractDomainObject> extends AbstractSormasActivity implements IUpdateSubHeadingTitle, NotificationContext, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, OnNotificationCountChangingListener {
+public abstract class BaseListActivity<TListItemData extends AbstractDomainObject> extends BaseActivity implements IUpdateSubHeadingTitle, NotificationContext, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, OnNotificationCountChangingListener {
 
     private View statusFrame = null;
     private View applicationTitleBar = null;
     private TextView subHeadingListActivityTitle;
-    private View fragmentFrame = null;
     private View rootView;
     private MenuItem newMenu = null;
     private BaseFragment activeFragment = null;
 
-    private List<TListItemData> storedListData = null;
     private LandingPageMenuControl pageMenu = null;
-    private List<LandingPageMenuItem> menuList;
+    private List<LandingPageMenuItem> menuList = null;
     private LandingPageMenuItem activeMenu = null;
     private int activeMenuKey = 0;
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        //initializeActivity(savedInstanceState);
-        activeMenuKey = getActiveMenuArg(savedInstanceState);
-        initializeActivity(savedInstanceState);
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        SaveActiveMenuState(outState, activeMenuKey);
+        saveActiveMenuState(outState, activeMenuKey);
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        activeMenuKey = getActiveMenuArg(savedInstanceState);
+        initializeActivity(savedInstanceState);
     }
 
     @Override
@@ -86,69 +65,62 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
         return true;
     }
 
-    @Override
-    public void showFragmentView() {
-        if (fragmentFrame != null)
-            fragmentFrame.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideFragmentView() {
-        if (fragmentFrame != null)
-            fragmentFrame.setVisibility(View.GONE);
-    }
-
-    protected void initializeBaseActivity(Bundle savedInstanceState) {
+    protected void onCreateBaseActivity(Bundle savedInstanceState) {
         rootView = findViewById(R.id.base_layout);
         subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingActivityTitle);
-        menuList = new ArrayList<LandingPageMenuItem>();
         pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);
-        /*Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getExtras();
-        initializeActivity(arguments);*/
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
         activeMenuKey = getActiveMenuArg(arguments);
         initializeActivity(arguments);
 
-        if(pageMenu != null)
-            pageMenu.hide();
-
         if (pageMenu != null) {
+            pageMenu.hide();
             Context menuControlContext = this.pageMenu.getContext();
-
 
             pageMenu.setOnNotificationCountChangingListener(this);
             pageMenu.setOnLandingPageMenuClickListener(this);
             pageMenu.setOnSelectInitialActiveMenuItem(this);
-
-            //pageMenu.setOnLandingPageMenuClickListener(this);
-            //pageMenu.setOnSelectInitialActiveMenuItem(this);
-
-            //pageMenu.setAdapter(new PageMenuNavAdapter(menuControlContext));
-
             pageMenu.setAdapter(new LandingPageMenuAdapter(menuControlContext));
             pageMenu.setMenuParser(new LandingPageMenuParser(menuControlContext));
             pageMenu.setMenuData(getPageMenuData());
-
-            //configureFab(fab, pageMenu);
         }
 
         if (showTitleBar()) {
             applicationTitleBar = findViewById(R.id.applicationTitleBar);
             statusFrame = findViewById(R.id.statusFrame);
         }
-
-        fragmentFrame = findViewById(R.id.fragment_frame);
-        if (fragmentFrame != null) {
-            if (savedInstanceState == null) {
-                replaceFragment(getActiveReadFragment());
-            }
-        }
     }
 
-    protected abstract void initializeActivity(Bundle arguments);
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-    public abstract BaseListActivityFragment getActiveReadFragment();
+        if (applicationTitleBar != null && showTitleBar()) {
+            applicationTitleBar.setVisibility(View.VISIBLE);
+
+            if (statusFrame != null && showStatusFrame()) {
+                Context statusFrameContext = statusFrame.getContext();
+
+                Drawable drw = (Drawable) ContextCompat.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
+                drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource(statusFrameContext)), PorterDuff.Mode.SRC_OVER);
+
+                TextView txtStatusName = (TextView)statusFrame.findViewById(R.id.txtStatusName);
+                ImageView imgStatus = (ImageView)statusFrame.findViewById(R.id.statusIcon);
+
+                txtStatusName.setText(getStatusName(statusFrameContext));
+                imgStatus.setBackground(drw);
+
+                statusFrame.setVisibility(View.VISIBLE);
+            }
+        }
+        replaceFragment(getActiveListFragment());
+    }
+
+    @Deprecated
+    protected void initializeActivity(Bundle arguments) { }
+
+    public abstract BaseListActivityFragment getActiveListFragment();
 
     public void replaceFragment(BaseFragment f) {
         BaseFragment previousFragment = activeFragment;
@@ -180,15 +152,6 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        /*if (menuDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }*/
-
-        return super.onOptionsItemSelected(item);
-    }
-
     protected boolean isEntryCreateAllowed() {
         return false;
     }
@@ -205,30 +168,6 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
         return newMenu;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (applicationTitleBar != null && showTitleBar()) {
-            applicationTitleBar.setVisibility(View.VISIBLE);
-
-            if (statusFrame != null && showStatusFrame()) {
-                Context statusFrameContext = statusFrame.getContext();
-
-                Drawable drw = (Drawable) ContextCompat.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
-                drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource(statusFrameContext)), PorterDuff.Mode.SRC_OVER);
-
-                TextView txtStatusName = (TextView)statusFrame.findViewById(R.id.txtStatusName);
-                ImageView imgStatus = (ImageView)statusFrame.findViewById(R.id.statusIcon);
-
-
-                txtStatusName.setText(getStatusName(statusFrameContext));
-                imgStatus.setBackground(drw);
-
-                statusFrame.setVisibility(View.VISIBLE);
-            }
-        }
-    }
 
     public void setSubHeadingTitle(String title) {
         String t = (title == null)? "" : title;
@@ -262,8 +201,6 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
     protected int getRootActivityLayout() {
         return R.layout.activity_root_list_layout;
     }
-
-    //<editor-fold desc="Landing Menu Methods">
 
     public int getPageMenuData() {
         return -1;
@@ -300,7 +237,7 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
 
     @Override
     public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-        BaseListActivityFragment newActiveFragment = getNextFragment(menuItem); //, storedListData
+        BaseListActivityFragment newActiveFragment = getListFragment(menuItem); //, storedListData
 
         if (newActiveFragment == null)
             return false;
@@ -309,53 +246,13 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
         replaceFragment(newActiveFragment);
 
         processActionbarMenu();
-        //updateSubHeadingTitle();
 
         return true;
     }
 
-    protected boolean goToNextMenu() {
-        if (pageMenu == null)
-            return false;
-
-        if (menuList == null || menuList.size() <= 0)
-            return false;
-
-        int lastMenuKey = menuList.size() - 1;
-
-        if (activeMenuKey == lastMenuKey)
-            return false;
-
-        int newMenukey = activeMenuKey + 1;
-
-        LandingPageMenuItem m = menuList.get(newMenukey);
-        setActiveMenu(m);
-
-        BaseListActivityFragment newActiveFragment = getNextFragment(m); //, storedListData
-
-        if (newActiveFragment == null)
-            return false;
-
-        setActiveMenu(m);
-
-        pageMenu.markActiveMenuItem(m);
-
-        replaceFragment(newActiveFragment);
-
-        //this.activeFragment = newActiveFragment;
-
-        processActionbarMenu();
-        //updateSubHeadingTitle();
-
-        return true;
-    }
-
-    protected BaseListActivityFragment getNextFragment(LandingPageMenuItem menuItem) { //, List<TListItemData> activityListData
+    protected BaseListActivityFragment getListFragment(LandingPageMenuItem menuItem) {
         return null;
     }
-
-    //</editor-fold>
-
 
     public String getStatusName(Context context) {
         Enum status = getStatus();
@@ -423,33 +320,31 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
         return 0;
     }
 
-
-
-    protected <E extends Enum<E>> void SaveFilterStatusState(Bundle outState, E status) {
+    protected <E extends Enum<E>> void saveFilterStatusState(Bundle outState, E status) {
         if (outState != null) {
             outState.putSerializable(ConstantHelper.ARG_FILTER_STATUS, status);
         }
     }
 
-    protected void SaveRecordUuidState(Bundle outState, String recordUuid) {
+    protected void saveRecordUuidState(Bundle outState, String recordUuid) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_DATA_UUID, recordUuid);
         }
     }
 
-    protected void SaveSearchStrategyState(Bundle outState, SearchBy status) {
+    protected void saveSearchStrategyState(Bundle outState, SearchBy status) {
         if (outState != null) {
             outState.putSerializable(ConstantHelper.ARG_SEARCH_STRATEGY, status);
         }
     }
 
-    protected void SaveActiveMenuState(Bundle outState, int activeMenuKey) {
+    protected void saveActiveMenuState(Bundle outState, int activeMenuKey) {
         if (outState != null) {
             outState.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
         }
     }
 
-    protected static <TActivity extends AbstractSormasActivity, TCapsule extends IListNavigationCapsule>
+    protected static <TActivity extends BaseActivity, TCapsule extends IListNavigationCapsule>
     void goToActivity(Context fromActivity, Class<TActivity> toActivity, TCapsule dataCapsule) {
 
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();

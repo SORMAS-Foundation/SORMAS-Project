@@ -73,13 +73,8 @@ public class NavigationHelper {
         TaskListActivity.goToActivity(context, dataCapsule);
     }
 
-    public static void gotoReport(Context context) {
-
-    }
-
     public static void gotoNewCase(Context context) {
-        CaseFormNavigationCapsule dataCapsule = (CaseFormNavigationCapsule)new CaseFormNavigationCapsule(context,
-                null).setEditPageStatus(InvestigationStatus.PENDING).setPersonUuid(null);
+        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(context).setPersonUuid(null);
         CaseNewActivity.goToActivity(context, dataCapsule);
     }
 }

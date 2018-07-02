@@ -20,7 +20,7 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonNameDto;
-import de.symeda.sormas.app.AbstractSormasActivity;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
@@ -34,8 +34,10 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.dialog.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
+import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
+import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -44,19 +46,12 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.sample.edit.SampleNewActivity;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.TimeoutHelper;
-
-/**
- * Created by Orson on 26/03/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 
 public class ContactNewActivity extends BaseEditActivity<Contact> {
 
@@ -64,48 +59,28 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
     private AsyncTask saveTask;
     private AsyncTask createPersonTask;
-    private ContactClassification pageStatus = null;
-    private String recordUuid = null;
     private String caseUuid = null;
-    private BaseEditActivityFragment activeFragment = null;
-    private MenuItem saveMenu = null;
-    private MenuItem addMenu = null;
-    private ProgressDialog progressDialog = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
         saveCaseUuidState(outState, caseUuid);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        caseUuid = getCaseUuidArg(savedInstanceState);
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void initializeActivity(Bundle arguments) {
-        pageStatus = (ContactClassification) getPageStatusArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
-        caseUuid = getCaseUuidArg(arguments);
-    }
-
-    @Override
-    protected Contact getActivityRootData(String recordUuid) {
+    protected Contact queryActivityRootEntity(String recordUuid) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected Contact getActivityRootDataIfRecordUuidNull() {
-        Case _associatedCase;
+    protected Contact buildActivityRootEntity() {
+
         Person _person = DatabaseHelper.getPersonDao().build();
         Contact _contact = DatabaseHelper.getContactDao().build();
 
@@ -125,22 +100,22 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment(Contact activityRootData) {
-        if (activeFragment == null) {
-            ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactNewActivity.this,
-                    recordUuid, pageStatus);
-            activeFragment = ContactNewFragment.newInstance(this, dataCapsule, activityRootData);
-        }
-
-        return activeFragment;
+    public boolean onCreateOptionsMenu(Menu menu) {
+        boolean result = super.onCreateOptionsMenu(menu);
+        getSaveMenu().setTitle(R.string.action_save_contact);
+        return result;
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getSaveMenu().setTitle(R.string.action_save_contact);
+    public ContactClassification getPageStatus() {
+        return (ContactClassification)super.getPageStatus();
+    }
 
-        return true;
+    @Override
+    protected BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, Contact activityRootData) {
+        ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactNewActivity.this,
+                getRootEntityUuid(), getPageStatus());
+        return ContactNewFragment.newInstance(dataCapsule, activityRootData);
     }
 
     @Override
@@ -158,10 +133,8 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
     @Override
     public void saveData() {
-        if (activeFragment == null)
-            return;
 
-        final Contact contactToSave = getStoredActivityRootData();
+        final Contact contactToSave = getStoredRootEntity();
 
         if (contactToSave == null)
             return;
@@ -178,7 +151,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
             }
 
             @Override
-            public void execute(TaskResultHolder resultHolder) {
+            public void doInBackground(TaskResultHolder resultHolder) {
                 List<PersonNameDto> existingPersons = DatabaseHelper.getPersonDao().getPersonNameDtos();
                 List<Person> similarPersons = new ArrayList<>();
                 for (PersonNameDto existingPerson : existingPersons) {
@@ -194,8 +167,8 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
         saveTask = executor.execute(new ITaskResultCallback() {
             @Override
             public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                //getActivityCommunicator().hidePreloader();
-                //getActivityCommunicator().showFragmentView();
+                //getBaseActivity().hidePreloader();
+                //getBaseActivity().showFragmentView();
 
                 if (resultHolder == null) {
                     return;
@@ -209,7 +182,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
 
                 if (existingPersons.size() > 0) {
-                    final SelectOrCreatePersonDialog personDialog = new SelectOrCreatePersonDialog(AbstractSormasActivity.getActiveActivity(), contactToSave.getPerson(), existingPersons);
+                    final SelectOrCreatePersonDialog personDialog = new SelectOrCreatePersonDialog(BaseActivity.getActiveActivity(), contactToSave.getPerson(), existingPersons);
                     personDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                         @Override
                         public void onOkClick(View v, Object item, View viewRoot) {
@@ -258,15 +231,15 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
     private void savePersonAndContact(final Contact contactToSave) {
 
-        DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-            private String saveUnsuccessful;
+        createPersonTask = new DefaultAsyncTask(getContext(), contactToSave) {
 
             @Override
-            public void onPreExecute() {
+            protected void onPreExecute() {
                 showPreloader();
-                hideFragmentView();
+            }
 
-                saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_contact));
+            @Override
+            public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
 
                 if (contactToSave.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && contactToSave.getPerson().getAddress().isEmptyLocation()) {
                     Case contactCase = DatabaseHelper.getCaseDao().queryUuidBasic(contactToSave.getCaseUuid());
@@ -276,84 +249,40 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
                         contactToSave.getPerson().getAddress().setCommunity(contactCase.getCommunity());
                     }
                 }
+
+                DatabaseHelper.getPersonDao().saveAndSnapshot(contactToSave.getPerson());
+                DatabaseHelper.getContactDao().saveAndSnapshot(contactToSave);
             }
 
             @Override
-            public void execute(TaskResultHolder resultHolder) {
-                try {
-                    PersonDao personDao = DatabaseHelper.getPersonDao();
-                    ContactDao contactDao = DatabaseHelper.getContactDao();
-                    personDao.saveAndSnapshot(contactToSave.getPerson());
-                    contactDao.saveAndSnapshot(contactToSave);
-                } catch (DaoException e) {
-                    Log.e(getClass().getName(), "Error while trying to save case", e);
-                    resultHolder.setResultStatus(new BoolResult(false, saveUnsuccessful));
-                    ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
-                }
-            }
-        };
-        createPersonTask = executor.execute(new ITaskResultCallback() {
-            @Override
-            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
+            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+
                 hidePreloader();
-                showFragmentView();
 
-                if (resultHolder == null) {
-                    return;
-                }
-
-                if (RetroProvider.isConnected()) {
-                    progressDialog = SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, ContactNewActivity.this, new SyncCallback() {
-                        @Override
-                        public void call(boolean syncFailed, String syncFailedMessage) {
-                            if (syncFailed) {
-                                NotificationHelper.showNotification(ContactNewActivity.this, NotificationType.WARNING, String.format(getResources().getString(R.string.snackbar_sync_error_saved), getResources().getString(R.string.entity_contact)));
-                            } else {
-                                NotificationHelper.showNotification(ContactNewActivity.this, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_contact)));
-                            }
-
-                            TimeoutHelper.executeIn5Seconds(new Callback.IAction<AsyncTask>() {
-                                @Override
-                                public void call(AsyncTask result) {
-                                    goToCaseContacts();
-                                }
-                            });
-
-                        }
-                    });
+                if (taskResult.getResultStatus().isFailed()) {
+                    NotificationHelper.showNotification(ContactNewActivity.this, NotificationType.ERROR,
+                            String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_sample)));
                 } else {
-                    NotificationHelper.showNotification(ContactNewActivity.this, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_contact)));
-                    TimeoutHelper.executeIn5Seconds(new Callback.IAction<AsyncTask>() {
-                        @Override
-                        public void call(AsyncTask result) {
-                            goToCaseContacts();
-                        }
-                    });
+                    NotificationHelper.showNotification(ContactNewActivity.this, NotificationType.SUCCESS,
+                            String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_sample)));
+
+                    finish();
                 }
             }
-        });
+        }.executeOnThreadPool();
     }
 
     private void goToCaseContacts() {
         ContactNewActivity.this.finish();
-        //NavigationHelper.navigateUpFrom(this);
-        /*Contact record = getStoredActivityRootData();
-
-        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(),
-                record.getCaze().getUuid()).setEditPageStatus(record.getCaze().getInvestigationStatus());
-        CaseEditActivity.goToActivity(ContactNewActivity.this, dataCapsule);*/
     }
 
-    public static <TActivity extends AbstractSormasActivity> void
-    goToActivity(Context fromActivity, ContactFormNavigationCapsule dataCapsule) {
+    public static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, ContactFormNavigationCapsule dataCapsule) {
         BaseEditActivity.goToActivity(fromActivity, ContactNewActivity.class, dataCapsule);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        progressDialog.dismiss();
 
         if (saveTask != null && !saveTask.isCancelled())
             saveTask.cancel(true);

@@ -10,10 +10,6 @@ import de.symeda.sormas.app.BaseReportActivityFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
 
-/**
- * Created by Orson on 21/11/2017.
- */
-
 public class ReportLandingActivity extends BaseReportActivity {
 
     private final static String TAG = ReportLandingActivity.class.getSimpleName();
@@ -33,9 +29,8 @@ public class ReportLandingActivity extends BaseReportActivity {
     @Override
     public BaseReportActivityFragment getActiveFragment() {
         if (activeFragment == null) {
-            activeFragment = ReportFragment.newInstance(this);
+            activeFragment = ReportFragment.newInstance();
         }
-
         return activeFragment;
     }
 

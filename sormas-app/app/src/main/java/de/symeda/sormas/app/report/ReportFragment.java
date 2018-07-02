@@ -34,7 +34,6 @@ import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
@@ -104,7 +103,7 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
     @Override
     protected boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
         if (!executionComplete) {
-            //WeeklyReport task = getActivityRootData();
+            //WeeklyReport task = queryActivityRootEntity();
 
             resultHolder.forOther().add(DataUtils.toItems(DateHelper.getYearsToNow()));
             resultHolder.forOther().add(DataUtils.toItems(DateHelper.createIntegerEpiWeeksList(mReportFilter.getYear())));
@@ -257,13 +256,13 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
 
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                     changeButtonsEnabledStatus(false);
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     List<PendingReportViewModel> list = new ArrayList<>();
                     for (WeeklyReportEntry entry : DatabaseHelper.getWeeklyReportEntryDao().getAllByWeeklyReport(c.getReport())) {
                         list.add(new PendingReportViewModel(entry.getDisease(), entry.getNumberOfCases()));
@@ -275,8 +274,8 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
             onPendingReportTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     changeButtonsEnabledStatus(true);
 
@@ -318,13 +317,13 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
 
                     @Override
                     public void onPreExecute() {
-                        //getActivityCommunicator().showPreloader();
-                        //getActivityCommunicator().hideFragmentView();
+                        //getBaseActivity().showPreloader();
+                        //
                         changeButtonsEnabledStatus(false);
                     }
 
                     @Override
-                    public void execute(TaskResultHolder resultHolder) {
+                    public void doInBackground(TaskResultHolder resultHolder) {
                         List<WeeklyReportViewModel> list = new ArrayList<>();
                         for (WeeklyReportEntry entry : DatabaseHelper.getWeeklyReportEntryDao().getAllByWeeklyReport(c.getReport())) {
                             list.add(new WeeklyReportViewModel(entry.getDisease(), entry.getNumberOfCases()));
@@ -336,8 +335,8 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
                 onWeeklyReportTask = executor.execute(new ITaskResultCallback() {
                     @Override
                     public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                        //getActivityCommunicator().hidePreloader();
-                        //getActivityCommunicator().showFragmentView();
+                        //getBaseActivity().hidePreloader();
+                        //getBaseActivity().showFragmentView();
 
                         changeButtonsEnabledStatus(true);
 
@@ -358,8 +357,8 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
                     }
                 });
             } catch (Exception ex) {
-                //getActivityCommunicator().hidePreloader();
-                //getActivityCommunicator().showFragmentView();
+                //getBaseActivity().hidePreloader();
+                //getBaseActivity().showFragmentView();
             }
         }
 
@@ -378,13 +377,13 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
 
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                     changeButtonsEnabledStatus(false);
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     List<WeeklyReportOverviewViewModel> list = new ArrayList<>();
                     List<User> informants = DatabaseHelper.getUserDao().getByDistrictAndRole(mUser.getDistrict(), UserRole.INFORMANT, User.HEALTH_FACILITY + "_id");
                     for (User informant : informants) {
@@ -399,8 +398,8 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
             onWeeklyReportOverviewTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     changeButtonsEnabledStatus(true);
 
@@ -421,8 +420,8 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
     }
 
@@ -525,15 +524,15 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
 
                         @Override
                         public void onPreExecute() {
-                            //getActivityCommunicator().showPreloader();
-                            //getActivityCommunicator().hideFragmentView();
+                            //getBaseActivity().showPreloader();
+                            //
                             changeButtonsEnabledStatus(false);
 
                             saveUnsuccessful = getActivity().getString(R.string.snackbar_weekly_report_error);
                         }
 
                         @Override
-                        public void execute(TaskResultHolder resultHolder) {
+                        public void doInBackground(TaskResultHolder resultHolder) {
                             try {
                                 DatabaseHelper.getWeeklyReportDao().create(mReportFilter.getEpiWeek());
                             } catch (DaoException e) {
@@ -547,8 +546,8 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
                     onConfirmReportTask = executor.execute(new ITaskResultCallback() {
                         @Override
                         public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                            //getActivityCommunicator().hidePreloader();
-                            //getActivityCommunicator().showFragmentView();
+                            //getBaseActivity().hidePreloader();
+                            //getBaseActivity().showFragmentView();
 
                             changeButtonsEnabledStatus(true);
 
@@ -580,15 +579,15 @@ public class ReportFragment extends BaseReportActivityFragment<FragmentReportWee
                         }
                     });
                 } catch (Exception ex) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
                 }
             }
         };
     }
 
-    public static ReportFragment newInstance(IActivityCommunicator communicator) {
-        return newInstance(communicator, ReportFragment.class);
+    public static ReportFragment newInstance() {
+        return newInstance(ReportFragment.class);
     }
 
     @Override

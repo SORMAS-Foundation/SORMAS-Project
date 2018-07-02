@@ -22,10 +22,6 @@ import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.databinding.RowReadContactListItemLayoutBinding;
 import de.symeda.sormas.app.event.read.EventReadTaskListAdapter;
 
-/**
- * Created by Orson on 11/01/2018.
- */
-
 public class CaseReadReadContactListAdapter extends DataBoundAdapter<RowReadContactListItemLayoutBinding> {
 
     private static final String TAG = EventReadTaskListAdapter.class.getSimpleName();
@@ -33,7 +29,6 @@ public class CaseReadReadContactListAdapter extends DataBoundAdapter<RowReadCont
     private final Context context;
     private List<Contact> data = new ArrayList<>();
     private OnListItemClickListener mOnListItemClickListener;
-    //private ActionCallback mActionCallback;
 
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;

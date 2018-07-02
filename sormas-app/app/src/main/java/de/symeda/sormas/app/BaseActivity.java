@@ -33,7 +33,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.core.IActivityCommunicator;
+import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -44,26 +44,27 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.UserHelper;
 
-public abstract class AbstractSormasActivity extends AppCompatActivity implements IActivityCommunicator {
+public abstract class BaseActivity extends AppCompatActivity {
 
-    public static final String TAG = AbstractSormasActivity.class.getSimpleName();
+    public static final String TAG = BaseActivity.class.getSimpleName();
 
-    private View rootView;
+    protected Tracker tracker;
+
+    private ProgressBar preloader;
+    private View fragmentFrame;
+
     private ActionBarDrawerToggle menuDrawerToggle;
     private DrawerLayout menuDrawerLayout;
-    private CharSequence mainViewTitle;
     private NavigationView navigationView;
     private TextView taskNotificationCounter;
     private TextView caseNotificationCounter;
     private TextView contactNotificationCounter;
     private TextView eventNotificationCounter;
     private TextView sampleNotificationCounter;
-
-    protected Tracker tracker;
-    private ProgressBar preloader;
 
     private ProgressDialog progressDialog = null;
 
@@ -74,11 +75,9 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
         return false;
     }
 
-    private static WeakReference<AbstractSormasActivity> activeActivity;
+    private static WeakReference<BaseActivity> activeActivity;
 
-    private boolean isFirstRun;
-
-    public static AbstractSormasActivity getActiveActivity() {
+    public static BaseActivity getActiveActivity() {
         if (activeActivity != null) {
             return activeActivity.get();
         }
@@ -92,35 +91,9 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
         SormasApplication application = (SormasApplication) getApplication();
         tracker = application.getDefaultTracker();
 
-        setContentView(getRootActivityLayout());
-
-        preloader = (ProgressBar)findViewById(R.id.preloader);
-
-        SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(this);
-        isFirstRun = wmbPreference.getBoolean("FIRSTRUN", true);
-
-        Drawable drawable = ContextCompat.getDrawable(this,
-                R.drawable.selector_actionbar_back_button);
-
-        final Toolbar toolbar = (Toolbar)findViewById(R.id.applicationToolbar);
-        if (toolbar != null) {
-            toolbar.setNavigationIcon(drawable);
-            //toolbar.setSubtitle("Hello");
-
-            setSupportActionBar(toolbar);
-            getSupportActionBar().setHomeButtonEnabled(true);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (savedInstanceState == null) {
+            savedInstanceState = getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
         }
-
-        setTitle(getResources().getString(getActivityTitle()));
-
-        preInitializeBaseActivity(savedInstanceState);
-        initializeBaseActivity(savedInstanceState);
-
-        if (setHomeAsUpIndicator())
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_blue_36dp);
-
-        setupDrawer(navigationView);
 
         // Show the Enter Pin Activity if the user doesn't have access to the app
         if (!ConfigProvider.isAccessGranted()) {
@@ -129,11 +102,39 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
             finish();
             return;
         }
+
+        setContentView(getRootActivityLayout());
+
+        preloader = (ProgressBar)findViewById(R.id.preloader);
+        fragmentFrame = findViewById(R.id.fragment_frame);
+
+        SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(this);
+
+        Drawable drawable = ContextCompat.getDrawable(this,
+                R.drawable.selector_actionbar_back_button);
+
+        final Toolbar toolbar = (Toolbar)findViewById(R.id.applicationToolbar);
+        if (toolbar != null) {
+            toolbar.setNavigationIcon(drawable);
+
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
+        setTitle(getResources().getString(getActivityTitle()));
+
+        preSetupDrawer(savedInstanceState);
+        onCreateBaseActivity(savedInstanceState);
+
+        if (setHomeAsUpIndicator())
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_blue_36dp);
+
+        setupDrawer(navigationView);
     }
 
-    private void preInitializeBaseActivity(Bundle savedInstanceState) {
+    private void preSetupDrawer(Bundle savedInstanceState) {
 
-        rootView = findViewById(R.id.base_layout);
         menuDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.main_navigation_view);
         navigationView.setNavigationItemSelectedListener(new MainMenuItemSelectedListener(this, menuDrawerLayout));
@@ -186,7 +187,6 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
             userName.setText(user.getLastName() + " " + user.getFirstName());
             userRole.setText(UserHelper.getUserRole(user));
 
-
             Menu menuNav = navView.getMenu();
 
             MenuItem dashboardMenu = menuNav.findItem(R.id.menu_item_dashboard);
@@ -196,6 +196,10 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
             MenuItem eventMenu = menuNav.findItem(R.id.menu_item_events);
             MenuItem sampleMenu = menuNav.findItem(R.id.menu_item_samples);
             MenuItem reportMenu = menuNav.findItem(R.id.menu_item_reports);
+
+            // TODO implement dashboard
+            if (dashboardMenu != null)
+                dashboardMenu.setVisible(false);
 
             if (taskMenu != null)
                 taskMenu.setVisible(user.hasUserRight(UserRight.TASK_VIEW));
@@ -226,7 +230,6 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                //getSupportActionBar().setTitle("");
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
@@ -242,6 +245,12 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
         menuDrawerToggle.setHomeAsUpIndicator(R.drawable.ic_menu_blue_36dp);
         menuDrawerLayout.addDrawerListener(menuDrawerToggle);
 
+        // TODO implement unread entity counters
+        taskNotificationCounter.setVisibility(View.GONE);
+        caseNotificationCounter.setVisibility(View.GONE);
+        contactNotificationCounter.setVisibility(View.GONE);
+        eventNotificationCounter.setVisibility(View.GONE);
+        sampleNotificationCounter.setVisibility(View.GONE);
 //        taskNotificationCounter.setText("3");
 //        caseNotificationCounter.setText("10");
 //        contactNotificationCounter.setText("7");
@@ -249,34 +258,21 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
 //        sampleNotificationCounter.setText("50");
     }
 
-    @Override
     public Context getContext() {
         return this;
     }
 
-    @Override
-    public ProgressBar getPreloader() {
-        return preloader;
-    }
-
-    @Override
     public void showPreloader() {
-        if (preloader != null)
-            preloader.setVisibility(View.VISIBLE);
+        fragmentFrame.setVisibility(View.GONE);
+        preloader.setVisibility(View.VISIBLE);
     }
 
-    @Override
     public void hidePreloader() {
-        if (preloader != null)
-            preloader.setVisibility(View.GONE);
+        preloader.setVisibility(View.GONE);
+        fragmentFrame.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public boolean isFirstRun() {
-        return isFirstRun;
-    }
-
-    protected abstract void initializeBaseActivity(Bundle savedInstanceState);
+    protected abstract void onCreateBaseActivity(Bundle savedInstanceState);
 
     @Override
     protected void onResume() {
@@ -305,19 +301,16 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
         synchronizeData(SynchronizeDataAsync.SyncMode.Complete, true, refreshLayout == null, true, refreshLayout, null);
     }
 
-    @Override
     public void synchronizeChangedData() {
         SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, refreshLayout == null, true, refreshLayout, null);
     }
 
-    @Override
     public void synchronizeChangedData(Callback callback) {
         SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, refreshLayout == null, false, refreshLayout, callback);
     }
 
-    @Override
     public void synchronizeData(final SynchronizeDataAsync.SyncMode syncMode, final boolean showResultSnackbar, final boolean showProgressDialog, boolean showUpgradePrompt, final SwipeRefreshLayout swipeRefreshLayout, final Callback callback) {
 
         if (swipeRefreshLayout != null) {
@@ -334,7 +327,6 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
                 RetroProvider.connect(getApplicationContext());
             } catch (AuthenticatorException e) {
                 if (showResultSnackbar) {
-                    //Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
                     NotificationHelper.showNotification((NotificationContext) this, NotificationType.ERROR, e.getMessage());
                     errorMessage = e.getMessage();
                 }
@@ -344,7 +336,6 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
                     if (swipeRefreshLayout != null) {
                         swipeRefreshLayout.setRefreshing(false);
                     }
-                    //TODO: Orson Remove Version Check
                     AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), true,
                             new Callback() {
                                 @Override
@@ -354,13 +345,11 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
                             });
                     return;
                 } else if (showResultSnackbar) {
-                    //Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
                     NotificationHelper.showNotification((NotificationContext) this, NotificationType.ERROR, e.getMessage());
                     errorMessage = e.getMessage();
                 }
             } catch (ConnectException e) {
                 if (showResultSnackbar) {
-                    //Snackbar.make(findViewById(android.R.id.content), e.getMessage(), Snackbar.LENGTH_LONG).show();
                     NotificationHelper.showNotification((NotificationContext) this, NotificationType.ERROR, e.getMessage());
                     errorMessage = e.getMessage();
                 }
@@ -411,12 +400,10 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
                             if (syncLogCountAfter > syncLogCountBefore) {
                                 showConflictSnackbar();
                             } else {
-                                //Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_sync_success, Snackbar.LENGTH_LONG).show();
-                                NotificationHelper.showNotification((NotificationContext) AbstractSormasActivity.this, NotificationType.SUCCESS, R.string.snackbar_sync_success);
+                                NotificationHelper.showNotification((NotificationContext) BaseActivity.this, NotificationType.SUCCESS, R.string.snackbar_sync_success);
                             }
                         } else {
-                            //Snackbar.make(findViewById(android.R.id.content), syncFailedMessage, Snackbar.LENGTH_LONG).show();
-                            NotificationHelper.showNotification((NotificationContext) AbstractSormasActivity.this, NotificationType.ERROR, syncFailedMessage);
+                            NotificationHelper.showNotification((NotificationContext) BaseActivity.this, NotificationType.ERROR, syncFailedMessage);
                         }
                     } else {
                         if (syncLogCountAfter > syncLogCountBefore) {
@@ -436,21 +423,23 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
             }
 
             if (showResultSnackbar) {
-                //Snackbar.make(findViewById(android.R.id.content), errorMessage, Snackbar.LENGTH_LONG).show();
-                NotificationHelper.showNotification((NotificationContext) AbstractSormasActivity.this, NotificationType.ERROR, errorMessage);
+                NotificationHelper.showNotification((NotificationContext) BaseActivity.this, NotificationType.ERROR, errorMessage);
             }
         }
     }
 
     private void showConflictSnackbar() {
-        /*Snackbar snackbar = Snackbar.make(findViewById(R.id.base_layout), R.string.snackbar_sync_conflict, Snackbar.LENGTH_LONG);
-        snackbar.setAction(R.string.snackbar_open_synclog, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openSyncLog();
-            }
-        });
-        snackbar.show();*/
+
+        NotificationHelper.showNotification((NotificationContext) BaseActivity.this, NotificationType.ERROR, R.string.snackbar_sync_conflict);
+
+        // TODO allow user to open sync log from here
+//        snackbar.setAction(R.string.snackbar_open_synclog, new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                openSyncLog();
+//            }
+//        });
+//        snackbar.show();
     }
 
     public void goToSettings(View view) {
@@ -459,7 +448,7 @@ public abstract class AbstractSormasActivity extends AppCompatActivity implement
     }
 
     public void goToNewView() {
-
+        throw new NotImplementedException("goToNewView");
     }
 
     protected int getRootActivityLayout() {

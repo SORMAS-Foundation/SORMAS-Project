@@ -37,7 +37,6 @@ import de.symeda.sormas.app.component.dialog.DistrictLoader;
 import de.symeda.sormas.app.component.dialog.FacilityLoader;
 import de.symeda.sormas.app.component.dialog.RegionLoader;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -48,23 +47,11 @@ import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 
 
-/**
- * Created by Orson on 15/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLayoutBinding, Case, Case> {
 
     public static final String TAG = CaseNewFragment.class.getSimpleName();
 
     private AsyncTask onResumeTask;
-    private String recordUuid = null;
-    private String personUuid = null;
-    private String contactUuid = null;
-    private InvestigationStatus pageStatus = null;
     private Case record;
     //private Person person;
 
@@ -73,28 +60,6 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
     private List<Item> dengueFeverTypeList;
 
     private HealthFacilityLayoutProcessor healthFacilityLayoutProcessor;
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
-        savePersonUuidState(outState, personUuid);
-        saveContactUuidState(outState, contactUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
-        personUuid = getPersonUuidArg(arguments);
-        contactUuid = getContactUuidArg(arguments);
-    }
 
     @Override
     protected String getSubHeadingTitle() {
@@ -148,8 +113,6 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
 
             if (otherIterator.hasNext())
                 dengueFeverTypeList = otherIterator.next();
-
-            setupCallback();
         }
 
         return true;
@@ -198,9 +161,11 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
 
             @Override
             public VisualState getInitVisualState() {
-                if ((recordUuid != null && !recordUuid.isEmpty()) || (contactUuid != null && !contactUuid.isEmpty()) || (personUuid != null && !personUuid.isEmpty())) {
-                    return VisualState.DISABLED;
-                }
+                // TODO find out when this needs to be disabled
+//                if ((recordUuid != null && !recordUuid.isEmpty()) || (contactUuid != null && !contactUuid.isEmpty()) || (personUuid != null && !personUuid.isEmpty()))
+//                {
+//                    return VisualState.DISABLED;
+//                }
 
                 return VisualState.NORMAL;
             }
@@ -363,16 +328,13 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
             }
         });
 
-        //&& record.getDisease() != null
-        //&& recordUuid != null && !recordUuid.isEmpty()
-        if ((recordUuid != null && !recordUuid.isEmpty()) || (contactUuid != null && !contactUuid.isEmpty()) || (personUuid != null && !personUuid.isEmpty())) {
-            contentBinding.txtFirstName.changeVisualState(VisualState.DISABLED);
-            contentBinding.txtLastName.changeVisualState(VisualState.DISABLED);
-            //contentBinding.spnDisease.changeVisualState(VisualState.DISABLED);
-            contentBinding.txtDiseaseDetail.changeVisualState(VisualState.DISABLED);
-
-            //record.setPerson(person);
-        }
+        // TODO lock fields again
+//        if ((recordUuid != null && !recordUuid.isEmpty()) || (contactUuid != null && !contactUuid.isEmpty()) || (personUuid != null && !personUuid.isEmpty()))
+//        {
+//            contentBinding.txtFirstName.changeVisualState(VisualState.DISABLED);
+//            contentBinding.txtLastName.changeVisualState(VisualState.DISABLED);
+//            contentBinding.txtDiseaseDetail.changeVisualState(VisualState.DISABLED);
+//        }
 
         //contentBinding.spnState.changeVisualState(VisualState.DISABLED);
         //contentBinding.spnLga.changeVisualState(VisualState.DISABLED);
@@ -402,12 +364,12 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Case caze = getActivityRootData();
 
                     if (caze != null && caze.getPerson() == null) {
@@ -421,8 +383,8 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -441,8 +403,8 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
 
     }
@@ -467,20 +429,6 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
         return false;
     }
 
-    private void setupCallback() {
-        /*onEventTypeCheckedCallback = new OnTeboSwitchCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(TeboSwitch teboSwitch, Object checkedItem, int checkedId) {
-                if (mLastCheckedId == checkedId) {
-                    return;
-                }
-
-                mLastCheckedId = checkedId;
-
-            }
-        };*/
-    }
-
     private void setLocalBindingVariable(final ViewDataBinding binding, String layoutName) {
         if (!binding.setVariable(BR.data, record)) {
             Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
@@ -488,8 +436,8 @@ public class CaseNewFragment extends BaseEditActivityFragment<FragmentCaseNewLay
     }
 
 
-    public static CaseNewFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(activityCommunicator, CaseNewFragment.class, capsule, activityRootData);
+    public static CaseNewFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
+        return newInstance(CaseNewFragment.class, capsule, activityRootData);
     }
 
     @Override

@@ -14,7 +14,6 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -31,33 +30,9 @@ public class CaseReadHospitalizationFragment extends BaseReadActivityFragment<Fr
     public static final String TAG = CaseReadHospitalizationFragment.class.getSimpleName();
     private AsyncTask onResumeTask;
 
-    private String recordUuid = null;
-    private InvestigationStatus filterStatus = null;
-    private CaseClassification pageStatus = null;
-    private Hospitalization record;
     private Case caze;
-    private Case caseRecord;
+    private Hospitalization record;
     private ObservableArrayList preHospitalizations = new ObservableArrayList();
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        SaveFilterStatusState(outState, filterStatus);
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        filterStatus = (InvestigationStatus) getFilterStatusArg(arguments);
-        pageStatus = (CaseClassification) getPageStatusArg(arguments);
-    }
 
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
@@ -87,7 +62,7 @@ public class CaseReadHospitalizationFragment extends BaseReadActivityFragment<Fr
 
             //TODO: Orson - Use recordUuid (Verify this todo)
             if (itemIterator.hasNext())
-                caseRecord =  itemIterator.next();
+                caze =  itemIterator.next();
         }
 
         return true;
@@ -96,7 +71,7 @@ public class CaseReadHospitalizationFragment extends BaseReadActivityFragment<Fr
     @Override
     public void onLayoutBinding(FragmentCaseReadHospitalizationLayoutBinding contentBinding) {
         contentBinding.setData(record);
-        contentBinding.setCaze(caseRecord);
+        contentBinding.setCaze(caze);
         contentBinding.setHospitalizations(getHospitalizations());
     }
 
@@ -119,12 +94,12 @@ public class CaseReadHospitalizationFragment extends BaseReadActivityFragment<Fr
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Case caze = getActivityRootData();
 
                     if (caze != null) {
@@ -147,8 +122,8 @@ public class CaseReadHospitalizationFragment extends BaseReadActivityFragment<Fr
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -170,8 +145,8 @@ public class CaseReadHospitalizationFragment extends BaseReadActivityFragment<Fr
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
 
     }
@@ -192,8 +167,8 @@ public class CaseReadHospitalizationFragment extends BaseReadActivityFragment<Fr
         return R.layout.fragment_case_read_hospitalization_layout;
     }
 
-    public static CaseReadHospitalizationFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(activityCommunicator, CaseReadHospitalizationFragment.class, capsule, activityRootData);
+    public static CaseReadHospitalizationFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
+        return newInstance(CaseReadHospitalizationFragment.class, capsule, activityRootData);
     }
 
     private ObservableArrayList getHospitalizations() {

@@ -3,8 +3,6 @@ package de.symeda.sormas.app.caze.edit;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,7 +18,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.app.AbstractSormasActivity;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
@@ -34,6 +32,7 @@ import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.dialog.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
+import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -45,14 +44,6 @@ import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
 
-/**
- * Created by Orson on 15/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class CaseNewActivity extends BaseEditActivity<Case> {
 
     public static final String TAG = CaseNewActivity.class.getSimpleName();
@@ -61,78 +52,34 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
     private AsyncTask selectPersonTask;
     private AsyncTask saveTask;
 
-    private InvestigationStatus pageStatus = null;
-    private String recordUuid = null;
-    private BaseEditActivityFragment activeFragment = null;
-
-    private MenuItem saveMenu = null;
-    private MenuItem addMenu = null;
-
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
+    public CaseClassification getPageStatus() {
+        return (CaseClassification) super.getPageStatus();
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
+    protected Case queryActivityRootEntity(String recordUuid) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void initializeActivity(Bundle arguments) {
-        pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
-    }
-
-    @Override
-    protected Case getActivityRootData(String recordUuid) {
-        return DatabaseHelper.getCaseDao().queryUuidWithEmbedded(recordUuid);
-    }
-
-    @Override
-    protected Case getActivityRootDataIfRecordUuidNull() {
+    protected Case buildActivityRootEntity() {
         Person _person = DatabaseHelper.getPersonDao().build();
         Case _case = DatabaseHelper.getCaseDao().build(_person);
-
         return _case;
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment(Case activityRootData) {
-        if (activeFragment == null) {
-            CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(CaseNewActivity.this,
-                    recordUuid).setEditPageStatus(pageStatus);
-            activeFragment = CaseNewFragment.newInstance(this, dataCapsule, activityRootData);
-        }
-
-        return activeFragment;
+    public boolean onCreateOptionsMenu(Menu menu) {
+        boolean result = super.onCreateOptionsMenu(menu);
+        getSaveMenu().setTitle(R.string.action_save_case);
+        return result;
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getSaveMenu().setTitle(R.string.action_save_case);
-
-        return true;
-        /*MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.edit_action_menu, menu);
-
-        saveMenu = menu.findItem(R.id.action_save);
-        addMenu = menu.findItem(R.id.action_new);
-
-        saveMenu.setTitle(R.string.action_save_case);
-
-        processActionbarMenu();
-
-        return true;*/
+    protected BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, Case activityRootData) {
+        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
+        return CaseNewFragment.newInstance(dataCapsule, activityRootData);
     }
 
     @Override
@@ -151,13 +98,11 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     @Override
     public void saveData() {
-        if (activeFragment == null)
-            return;
 
-        final Case aCase = getStoredActivityRootData();
-        final Person person = aCase.getPerson();
+        final Case caze = getStoredRootEntity();
+        final Person person = caze.getPerson();
 
-        if (aCase == null || person == null)
+        if (caze == null || person == null)
             return;
 
         //TODO: Validation
@@ -174,7 +119,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     List<PersonNameDto> existingPersons = DatabaseHelper.getPersonDao().getPersonNameDtos();
                     List<Person> similarPersons = new ArrayList<>();
                     for (PersonNameDto existingPerson : existingPersons) {
@@ -190,10 +135,10 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
             saveTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
-                    if (resultHolder == null){
+                    if (resultHolder == null) {
                         return;
                     }
 
@@ -204,7 +149,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                         existingPersons = listIterator.next();
 
                     if (existingPersons.size() > 0) {
-                        final SelectOrCreatePersonDialog personDialog = new SelectOrCreatePersonDialog(AbstractSormasActivity.getActiveActivity(), person, existingPersons);
+                        final SelectOrCreatePersonDialog personDialog = new SelectOrCreatePersonDialog(BaseActivity.getActiveActivity(), person, existingPersons);
                         personDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                             @Override
                             public void onOkClick(View v, Object item, View viewRoot) {
@@ -220,8 +165,8 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                                     CaseDao caseDao;
                                     caseDao.getByPersonAndDisease(_person, aCase.getDisease());*/
 
-                                    aCase.setPerson((Person)item);
-                                    savePersonAndCase(aCase);
+                                    caze.setPerson((Person) item);
+                                    savePersonAndCase(caze);
                                 }
 
                             }
@@ -233,8 +178,8 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                                 personDialog.dismiss();
 
                                 if (item instanceof Person) {
-                                    aCase.setPerson((Person)item);
-                                    savePersonAndCase(aCase);
+                                    caze.setPerson((Person) item);
+                                    savePersonAndCase(caze);
                                 }
                             }
                         });
@@ -249,20 +194,20 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
                         personDialog.show(null);
                     } else {
-                        savePersonAndCase(aCase);
+                        savePersonAndCase(caze);
                     }
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
 
     }
 
     private void showCaseEditView(Case caze) {
         CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(),
-                caze.getUuid()).setEditPageStatus(caze.getInvestigationStatus());
+                caze.getUuid(), caze.getCaseClassification());
         CaseEditActivity.goToActivity(CaseNewActivity.this, dataCapsule);
     }
 
@@ -276,14 +221,13 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                 @Override
                 public void onPreExecute() {
                     showPreloader();
-                    hideFragmentView();
 
                     personDao = DatabaseHelper.getPersonDao();
                     saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_case));
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     try {
                         personDao.saveAndSnapshot(caze.getPerson());
 
@@ -318,9 +262,8 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
                     hidePreloader();
-                    showFragmentView();
 
-                    if (resultHolder == null){
+                    if (resultHolder == null) {
                         return;
                     }
 
@@ -336,12 +279,11 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
             });
         } catch (Exception ex) {
             hidePreloader();
-            showFragmentView();
         }
 
     }
 
-    public static <TActivity extends AbstractSormasActivity> void
+    public static <TActivity extends BaseActivity> void
     goToActivity(Context fromActivity, CaseFormNavigationCapsule dataCapsule) {
         BaseEditActivity.goToActivity(fromActivity, CaseNewActivity.class, dataCapsule);
     }

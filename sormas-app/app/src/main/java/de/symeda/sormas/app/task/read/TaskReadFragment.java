@@ -18,7 +18,6 @@ import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.OnLinkClickListener;
 import de.symeda.sormas.app.contact.read.ContactReadActivity;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -49,8 +48,8 @@ public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadL
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
+        savePageStatusState(outState, pageStatus);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -117,12 +116,12 @@ public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadL
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Task task = getActivityRootData();
 
                     if (task != null) {
@@ -136,8 +135,8 @@ public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadL
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -156,8 +155,8 @@ public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadL
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
     }
 
@@ -191,7 +190,7 @@ public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadL
                     return;
 
                 CaseFormNavigationCapsule dataCapsule = (CaseFormNavigationCapsule)new CaseFormNavigationCapsule(getContext(),
-                        caze.getUuid()).setReadPageStatus(caze.getCaseClassification()).setTaskUuid(task.getUuid());
+                        caze.getUuid(), caze.getCaseClassification()).setTaskUuid(task.getUuid());
                 CaseReadActivity.goToActivity(getActivity(), dataCapsule);
 
             }
@@ -234,8 +233,8 @@ public class TaskReadFragment extends BaseReadActivityFragment<FragmentTaskReadL
         };
     }
 
-    public static TaskReadFragment newInstance(IActivityCommunicator activityCommunicator, TaskFormNavigationCapsule capsule, Task activityRootData) {
-        return newInstance(activityCommunicator, TaskReadFragment.class, capsule, activityRootData);
+    public static TaskReadFragment newInstance(TaskFormNavigationCapsule capsule, Task activityRootData) {
+        return newInstance(TaskReadFragment.class, capsule, activityRootData);
     }
 
     @Override

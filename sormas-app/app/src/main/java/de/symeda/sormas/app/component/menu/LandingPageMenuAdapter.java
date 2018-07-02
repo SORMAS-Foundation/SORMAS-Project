@@ -114,6 +114,8 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
 
         LandingPageMenuItem landingPageMenuItem = menuItems.get(position);
         viewHolder.txtNotificationCounter.setText(String.valueOf(landingPageMenuItem.getNotificationCount()));
+        // TODO show notifications count
+        viewHolder.txtNotificationCounter.setVisibility(View.GONE);
 
         Drawable counterDrawable = viewHolder.txtNotificationCounter.getBackground();
 

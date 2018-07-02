@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.contact.edit.sub;
 
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
@@ -11,26 +10,13 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentContactEditVisitInfoLayoutBinding;
-import de.symeda.sormas.app.shared.ContactFormFollowUpNavigationCapsule;
+import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 
-/**
- * Created by Orson on 13/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
+public class VisitEditFragment extends BaseEditActivityFragment<FragmentContactEditVisitInfoLayoutBinding, Visit, Visit> {
 
-public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragment<FragmentContactEditVisitInfoLayoutBinding, Visit, Visit> {
-
-    private AsyncTask onResumeTask;
-    private AsyncTask jobTask;
     private String recordUuid;
     private String contactUuid = null;
     private VisitStatus pageStatus;
@@ -51,9 +37,9 @@ public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragme
 
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
 
+        pageStatus = (VisitStatus) getPageStatusArg(arguments);
         recordUuid = getRecordUuidArg(arguments);
         contactUuid = getContactUuidArg(arguments);
-        pageStatus = (VisitStatus) getPageStatusArg(arguments);
     }
 
     @Override
@@ -110,54 +96,7 @@ public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragme
     public void onPageResume(FragmentContactEditVisitInfoLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
         if (!hasBeforeLayoutBindingAsyncReturn)
             return;
-
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
-                }
-
-                @Override
-                public void execute(TaskResultHolder resultHolder) {
-                    Visit visit = getActivityRootData();
-
-                    if (visit != null) {
-                        if (visit.isUnreadOrChildUnread())
-                            DatabaseHelper.getVisitDao().markAsRead(visit);
-                    }
-
-                    resultHolder.forItem().add(visit);
-                }
-            };
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
-
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                    if (itemIterator.hasNext())
-                        record = itemIterator.next();
-
-                    if (record != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
-        }
-
+        record = getActivityRootData();
     }
 
     @Override
@@ -179,15 +118,7 @@ public class ContactEditFollowUpVisitInfoFragment extends BaseEditActivityFragme
 
     }
 
-    public static ContactEditFollowUpVisitInfoFragment newInstance(IActivityCommunicator activityCommunicator, ContactFormFollowUpNavigationCapsule capsule, Visit activityRootData) {
-        return newInstance(activityCommunicator, ContactEditFollowUpVisitInfoFragment.class, capsule, activityRootData);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (onResumeTask != null && !onResumeTask.isCancelled())
-            onResumeTask.cancel(true);
+    public static VisitEditFragment newInstance(VisitFormNavigationCapsule capsule, Visit activityRootData) {
+        return newInstance(VisitEditFragment.class, capsule, activityRootData);
     }
 }

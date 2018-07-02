@@ -3,8 +3,6 @@ package de.symeda.sormas.app.core.enumeration;
 import android.content.Context;
 import android.content.res.Resources;
 
-import de.symeda.sormas.app.shared.ShipmentStatus;
-
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -13,6 +11,7 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.app.shared.ShipmentStatus;
 
 /**
  * Created by Orson on 06/01/2018.

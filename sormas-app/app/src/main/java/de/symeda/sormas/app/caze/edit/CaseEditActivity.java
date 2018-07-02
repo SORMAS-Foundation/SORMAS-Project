@@ -2,20 +2,18 @@ package de.symeda.sormas.app.caze.edit;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.app.AbstractSormasActivity;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditActivityFragment;
 import de.symeda.sormas.app.R;
@@ -31,8 +29,8 @@ import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.contact.edit.ContactNewActivity;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -49,143 +47,70 @@ import de.symeda.sormas.app.util.MenuOptionsHelper;
 import de.symeda.sormas.app.validation.NewSymptomValidator;
 import de.symeda.sormas.app.validation.PersonValidator;
 
-/**
- * Created by Orson on 16/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class CaseEditActivity extends BaseEditActivity<Case> {
 
     public static final String TAG = CaseEditActivity.class.getSimpleName();
 
-    private final int DATA_XML_PAGE_MENU = R.xml.data_form_page_case_menu;// "xml/data_edit_page_case_menu.xml";
-
     private AsyncTask saveTask;
-    private AsyncTask finalizeSaveTask;
     private AsyncTask caseBeforeSaveAndPlagueTypeAlertTask;
 
-    private boolean showStatusFrame;
-    private boolean showTitleBar;
-    private boolean showPageMenu;
-
-    private InvestigationStatus pageStatus = null;
-    private String recordUuid = null;
-    private BaseEditActivityFragment activeFragment = null;
-
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void initializeActivity(Bundle arguments) {
-        pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
-
-        this.showStatusFrame = true;
-        this.showTitleBar = true;
-        this.showPageMenu = true;
-    }
-
-    @Override
-    protected Case getActivityRootData(String recordUuid) {
+    protected Case queryActivityRootEntity(String recordUuid) {
         return DatabaseHelper.getCaseDao().queryUuidWithEmbedded(recordUuid);
     }
 
     @Override
-    protected Case getActivityRootDataIfRecordUuidNull() {
-        return DatabaseHelper.getCaseDao().build(DatabaseHelper.getPersonDao().build());
+    protected Case buildActivityRootEntity() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public BaseEditActivityFragment getActiveEditFragment(Case activityRootData) {
-        if (activeFragment == null) {
-            CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(CaseEditActivity.this,
-                    recordUuid).setEditPageStatus(pageStatus);
-            activeFragment = CaseEditFragment.newInstance(this, dataCapsule, activityRootData);
-        }
-
-        return activeFragment;
-    }
-
-    @Override
-    public boolean showStatusFrame() {
-        return showStatusFrame;
-    }
-
-    @Override
-    public boolean showTitleBar() {
-        return showTitleBar;
-    }
-
-    @Override
-    public boolean showPageMenu() {
-        return showPageMenu;
-    }
-
-    @Override
-    public Enum getPageStatus() {
-        return pageStatus;
+    public CaseClassification getPageStatus() {
+        return (CaseClassification)super.getPageStatus();
     }
 
     @Override
     public int getPageMenuData() {
-        return DATA_XML_PAGE_MENU;
+        return R.xml.data_form_page_case_menu;
     }
 
     @Override
-    protected BaseEditActivityFragment getEditFragment(LandingPageMenuItem menuItem, Case activityRootData) {
-        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(CaseEditActivity.this,
-                recordUuid).setEditPageStatus(pageStatus);
+    protected BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, Case activityRootData) {
+        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
 
         CaseSection section = CaseSection.fromMenuKey(menuItem.getKey());
+        BaseEditActivityFragment fragment;
         switch (section) {
 
             case CASE_INFO:
-                activeFragment = CaseEditFragment.newInstance(this, dataCapsule, activityRootData);
+                fragment = CaseEditFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case PERSON_INFO:
-                activeFragment = CaseEditPatientInfoFragment.newInstance(this, dataCapsule, activityRootData);
+                fragment = CaseEditPersonFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case HOSPITALIZATION:
-                activeFragment = CaseEditHospitalizationFragment.newInstance(this, dataCapsule, activityRootData);
+                fragment = CaseEditHospitalizationFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case SYMPTOMS:
-                activeFragment = CaseEditSymptomsFragment.newInstance(this, dataCapsule, activityRootData);
+                fragment = CaseEditSymptomsFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case EPIDEMIOLOGICAL_DATA:
-                activeFragment = CaseEditEpidemiologicalDataFragment.newInstance(this, dataCapsule, activityRootData);
+                fragment = CaseEditEpidemiologicalDataFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case CONTACTS:
-                activeFragment = CaseEditContactListFragment.newInstance(this, dataCapsule, activityRootData);
+                fragment = CaseEditContactListFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case SAMPLES:
-                activeFragment = CaseEditSampleListFragment.newInstance(this, dataCapsule, activityRootData);
+                fragment = CaseEditSampleListFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case TASKS:
-                activeFragment = CaseEditTaskListFragment.newInstance(this, dataCapsule, activityRootData);
+                fragment = CaseEditTaskListFragment.newInstance(dataCapsule, activityRootData);
                 break;
             default:
                 throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
         }
 
-        return activeFragment;
+        return fragment;
     }
 
     @Override
@@ -229,7 +154,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
         caseBeforeSaveAndPlagueTypeAlertTask = new DefaultAsyncTask(getContext()) {
             @Override
-            public void execute(TaskResultHolder resultHolder) {
+            public void doInBackground(TaskResultHolder resultHolder) {
                 final Case caseBeforeSaving = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(cazeToSave.getUuid());
                 boolean showPlagueTypeChangeAlert = false;
                 if (cazeToSave.getDisease() == Disease.PLAGUE) {
@@ -262,39 +187,33 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         }.executeOnThreadPool();
     }
 
-    private void finalizeSaveProcess(final Case caze, final Case caseBeforeSaving, final Callback.IAction<BoolResult> callback) {
+    private void finalizeSaveProcess(BoolResult result, final Case caze, final Case caseBeforeSaving) {
 
 //        if (savedCase.getDisease() == Disease.PLAGUE && caseBeforeSaving.getPlagueType() != savedCase.getPlagueType() &&
 //                (caseBeforeSaving.getPlagueType() == PlagueType.PNEUMONIC || savedCase.getPlagueType() == PlagueType.PNEUMONIC)) {
 //            setAdapter(savedCase);
 //        }
-    }
 
-    private void finalizeSaveProcessHelper(BoolResult result) {
-        if (!result.isSuccess()) {
-            NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.ERROR, result.getMessage());
-            return;
+        if (result.isFailed()) {
+            NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.ERROR,
+                    String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_case)));
         } else {
-            NotificationHelper.showNotification(CaseEditActivity.this,
-                    NotificationType.SUCCESS,
+            NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.SUCCESS,
                     String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)));
-        }
 
-        if (!goToNextMenu())
-            NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.INFO, R.string.notification_reach_last_menu);
+            goToNextMenu();
+        }
     }
 
     @Override
     public void saveData() {
-        if (activeFragment == null)
-            return;
 
         CaseSection activeSection = CaseSection.fromMenuKey(getActiveMenuItem().getKey());
 
         if (activeSection == CaseSection.CONTACTS || activeSection == CaseSection.SAMPLES || activeSection == CaseSection.TASKS)
             return;
 
-        final Case cazeToSave = getStoredActivityRootData();
+        final Case cazeToSave = getStoredRootEntity();
 
         if (cazeToSave == null)
             return;
@@ -308,35 +227,23 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 getCaseBeforeSaveAndPlagueTypeAlert(cazeToSave, new Callback.IAction3<BoolResult, Case, Boolean>() {
 
                     @Override
-                    public void call(BoolResult result1, final Case caseBeforeSaving, Boolean showPlagueTypeChangeAlert) {
+                    public void call(final BoolResult result, final Case caseBeforeSaving, Boolean showPlagueTypeChangeAlert) {
                         if (cazeToSave.getDisease() == Disease.PLAGUE && showPlagueTypeChangeAlert) {
 
                             String plagueTypeString = cazeToSave.getPlagueType().toString();
                             String confirmationMessage = String.format(getResources().getString(R.string.alert_plague_type_change), plagueTypeString, plagueTypeString);
-                            final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActiveActivity(), R.string.alert_title_plague_type_change,
-                                    confirmationMessage);
+                            final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActiveActivity(), R.string.alert_title_plague_type_change, confirmationMessage);
 
                             confirmationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                                 @Override
                                 public void onOkClick(View v, Object item, View viewRoot) {
                                     confirmationDialog.dismiss();
-                                    finalizeSaveProcess(cazeToSave, caseBeforeSaving, new Callback.IAction<BoolResult>() {
-                                        @Override
-                                        public void call(BoolResult result) {
-                                            finalizeSaveProcessHelper(result);
-                                        }
-                                    });
+                                    finalizeSaveProcess(result, cazeToSave, caseBeforeSaving);
                                 }
                             });
-
                             confirmationDialog.show(null);
                         } else {
-                            finalizeSaveProcess(cazeToSave, caseBeforeSaving, new Callback.IAction<BoolResult>() {
-                                @Override
-                                public void call(BoolResult result) {
-                                    finalizeSaveProcessHelper(result);
-                                }
-                            });
+                            finalizeSaveProcess(result, cazeToSave, caseBeforeSaving);
                         }
                     }
                 });
@@ -350,22 +257,17 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
         if (activeSection == CaseSection.CONTACTS) {
             ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(),
-                    ContactClassification.UNCONFIRMED).setCaseUuid(recordUuid);
+                    ContactClassification.UNCONFIRMED).setCaseUuid(getRootEntityUuid());
             ContactNewActivity.goToActivity(this, dataCapsule);
         } else if (activeSection == CaseSection.SAMPLES) {
             SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(getContext(),
-                    ShipmentStatus.NOT_SHIPPED).setCaseUuid(recordUuid);
+                    ShipmentStatus.NOT_SHIPPED).setCaseUuid(getRootEntityUuid());
             SampleNewActivity.goToActivity(this, dataCapsule);
         }
     }
 
     public void saveCaseToDatabase(final Callback.IAction<BoolResult> callback) {
         final String saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_case));
-
-        if (activeFragment == null) {
-            callback.call(new BoolResult(false, saveUnsuccessful));
-            return;
-        }
 
         CaseSection activeSection = CaseSection.fromMenuKey(getActiveMenuItem().getKey());
 
@@ -374,7 +276,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             return;
         }
 
-        final Case cazeToSave = getStoredActivityRootData();
+        final Case cazeToSave = getStoredRootEntity();
 
         if (cazeToSave == null) {
             callback.call(new BoolResult(false, saveUnsuccessful));
@@ -382,7 +284,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         }
 
         if (activeSection == CaseSection.PERSON_INFO) {
-            FragmentCaseEditPatientLayoutBinding personBinding = (FragmentCaseEditPatientLayoutBinding) activeFragment.getContentBinding();
+            FragmentCaseEditPatientLayoutBinding personBinding = (FragmentCaseEditPatientLayoutBinding) getActiveFragment().getContentBinding();
             PersonValidator.clearErrors(personBinding);
             if (!PersonValidator.validatePersonData(this, cazeToSave.getPerson(), personBinding)) {
                 return;
@@ -393,7 +295,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             Symptoms symptoms = cazeToSave.getSymptoms();
             //symptoms = (Symptoms)activeFragment.getPrimaryData();
 
-            CaseEditSymptomsFragment symptomsFragment = (CaseEditSymptomsFragment) activeFragment;
+            CaseEditSymptomsFragment symptomsFragment = (CaseEditSymptomsFragment) getActiveFragment();
 
             if (symptomsFragment == null)
                 return;
@@ -418,38 +320,31 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             }
         }
 
-        saveTask = new DefaultAsyncTask(getContext()) {
+        saveTask = new DefaultAsyncTask(getContext(), cazeToSave) {
 
                     @Override
-                    protected void execute(TaskResultHolder resultHolder) {
-                        try {
-                            DatabaseHelper.getPersonDao().saveAndSnapshot(cazeToSave.getPerson());
-                            DatabaseHelper.getCaseDao().saveAndSnapshot(cazeToSave);
-                        } catch (DaoException e) {
-                            handleException(e, cazeToSave);
-                        }
+                    protected void doInBackground(TaskResultHolder resultHolder) throws DaoException {
+                        DatabaseHelper.getPersonDao().saveAndSnapshot(cazeToSave.getPerson());
+                        DatabaseHelper.getCaseDao().saveAndSnapshot(cazeToSave);
                     }
 
                     @Override
                     protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
 
-                        if (!taskResult.getResultStatus().isSuccess()) {
-                            NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.ERROR, taskResult.getResultStatus().getMessage());
+                        if (taskResult.getResultStatus().isFailed()) {
+                            NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.ERROR,
+                                    String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_case)));
                         } else {
-                            NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.SUCCESS, "Case " + DataHelper.getShortUuid(cazeToSave.getUuid()) + " saved");
+                            NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.SUCCESS,
+                                    String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)));
 
-                            if (callback != null) {
-                                callback.call(taskResult.getResultStatus());
-                            } else if (!goToNextMenu()) {
-                                NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.INFO, R.string.notification_reach_last_menu);
-                            }
+                            goToNextMenu();
                         }
                     }
                 }.executeOnThreadPool();
     }
 
-    public static <TActivity extends AbstractSormasActivity> void
-    goToActivity(Context fromActivity, CaseFormNavigationCapsule dataCapsule) {
+    public static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, CaseFormNavigationCapsule dataCapsule) {
         BaseEditActivity.goToActivity(fromActivity, CaseEditActivity.class, dataCapsule);
     }
 
@@ -462,10 +357,5 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
         if (caseBeforeSaveAndPlagueTypeAlertTask != null && !caseBeforeSaveAndPlagueTypeAlertTask.isCancelled())
             caseBeforeSaveAndPlagueTypeAlertTask.cancel(true);
-
-        if (finalizeSaveTask != null && !finalizeSaveTask.isCancelled())
-            finalizeSaveTask.cancel(true);
-
     }
-
 }

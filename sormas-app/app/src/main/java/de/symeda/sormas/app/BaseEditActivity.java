@@ -7,8 +7,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.view.Menu;
@@ -27,93 +26,56 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.component.menu.LandingPageMenuControl;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.component.menu.LandingPageMenuParser;
 import de.symeda.sormas.app.component.menu.OnLandingPageMenuClickListener;
 import de.symeda.sormas.app.component.menu.OnSelectInitialActiveMenuItemListener;
 import de.symeda.sormas.app.component.menu.PageMenuNavAdapter;
-import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IActivityRootDataRequestor;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
+import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.ConstantHelper;
 
-/**
- * Created by Orson on 22/01/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
+public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomainObject> extends BaseActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, NotificationContext, IActivityRootDataRequestor<ActivityRootEntity> {
 
-public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainObject> extends AbstractSormasActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, NotificationContext, IActivityRootDataRequestor<TActivityRootData> {
-
-    private AsyncTask processActivityRootDataTask;
-    private boolean firstTimeReplaceFragment;
     private LinearLayout notificationFrame;
-    private TextView tvNotificationMessage;
-    private View fragmentFrame = null;
     private View statusFrame = null;
     private View applicationTitleBar = null;
     private TextView subHeadingListActivityTitle;
+
     private LandingPageMenuControl pageMenu = null;
-    private LandingPageMenuItem activeMenu = null;
     private List<LandingPageMenuItem> menuList;
-    private int activeMenuKey = -1;
+    private LandingPageMenuItem activeMenu = null;
+    private int activeMenuKey = 0;
+
     private View rootView;
-    private TActivityRootData storedActivityRootData = null;
     private BaseEditActivityFragment activeFragment = null;
 
+    private AsyncTask getRootEntityTask;
+    private ActivityRootEntity storedRootEntity = null;
+
     private Enum pageStatus;
-    private String recordUuid;
+    private String rootEntityUuid;
 
     private MenuItem saveMenu = null;
     private MenuItem addMenu = null;
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        saveActiveMenuState(outState, activeMenuKey);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        activeMenuKey = restoreActiveMenuState(savedInstanceState);
-        initializeActivity(savedInstanceState);
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     protected boolean setHomeAsUpIndicator() {
         return false;
-    }
-
-    @Override
-    public void showFragmentView() {
-        if (fragmentFrame != null)
-            fragmentFrame.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideFragmentView() {
-        if (fragmentFrame != null)
-            fragmentFrame.setVisibility(View.GONE);
     }
 
     private void ensureFabHiddenOnSoftKeyboardShown(final LandingPageMenuControl landingPageMenuControl) {
@@ -140,28 +102,38 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         });
     }
 
-    protected void initializeBaseActivity(Bundle savedInstanceState) {
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        saveActiveMenuState(outState, activeMenuKey);
+        savePageStatusState(outState, pageStatus);
+        saveRootEntityUuidState(outState, rootEntityUuid);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        activeMenuKey = getActiveMenuArg(savedInstanceState);
+        pageStatus = getPageStatusArg(savedInstanceState);
+        rootEntityUuid = getRecordUuidArg(savedInstanceState);
+    }
+
+    protected void onCreateBaseActivity(Bundle savedInstanceState) {
         menuList = new ArrayList<LandingPageMenuItem>();
         rootView = findViewById(R.id.base_layout);
         subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingActivityTitle);
-        fragmentFrame = findViewById(R.id.fragment_frame);
         pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);
         notificationFrame = (LinearLayout)findViewById(R.id.notificationFrame);
 
-
         ensureFabHiddenOnSoftKeyboardShown(pageMenu);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
-
-        activeMenuKey = getActiveMenuArg(arguments);
-        pageStatus = getPageStatusArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
-        initializeActivity(arguments);
-
+        activeMenuKey = getActiveMenuArg(savedInstanceState);
+        pageStatus = getPageStatusArg(savedInstanceState);
+        rootEntityUuid = getRecordUuidArg(savedInstanceState);
+        initializeActivity(savedInstanceState);
 
         if (notificationFrame != null) {
-            //notificationFrame.getViewTreeObserver().addOnGlobalLayoutListener(new OnViewGlobalLayoutListener(notificationFrame));
-            tvNotificationMessage = (TextView)findViewById(R.id.tvNotificationMessage);
             notificationFrame.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -171,10 +143,8 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
             });
         }
 
-        if(pageMenu != null)
-            pageMenu.hide();
-
         if (pageMenu != null) {
+            pageMenu.hide();
             Context menuControlContext = this.pageMenu.getContext();
 
             pageMenu.setOnLandingPageMenuClickListener(this);
@@ -185,103 +155,20 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
             pageMenu.setMenuData(getPageMenuData());
         }
 
-        if (showTitleBar()) {
+        if (isShowTitleBar()) {
             applicationTitleBar = findViewById(R.id.applicationTitleBar);
             statusFrame = findViewById(R.id.statusFrame);
         }
-
-        if (fragmentFrame != null && savedInstanceState == null) {
-            processActivityRootData(new Callback.IAction<TActivityRootData>() {
-                @Override
-                public void call(TActivityRootData result) {
-                    replaceFragment(getActiveEditFragment(result));
-                    firstTimeReplaceFragment = true;
-                }
-            });
-
-
-        }
-    }
-
-
-    @Override
-    public void requestActivityRootData(Callback.IAction<TActivityRootData> callback) {
-        processActivityRootData(callback);
-    }
-
-    private void processActivityRootData(final Callback.IAction<TActivityRootData> callback) {
-
-        DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-            @Override
-            public void onPreExecute() {
-                showPreloader();
-                hideFragmentView();
-            }
-
-            @Override
-            public void execute(TaskResultHolder resultHolder) {
-                resultHolder.forItem().add(getActivityRootDataProxy());
-            }
-        };
-        processActivityRootDataTask = executor.execute(new ITaskResultCallback() {
-            @Override
-            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                hidePreloader();
-                showFragmentView();
-
-                if (resultHolder == null){
-                    return;
-                }
-
-                ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                if (itemIterator.hasNext())
-                    storedActivityRootData = itemIterator.next();
-
-                callback.call(storedActivityRootData);
-            }
-        });
-    }
-
-    private TActivityRootData getActivityRootDataProxy() {
-        TActivityRootData result;
-        if (recordUuid != null && !recordUuid.isEmpty()) {
-            result = getActivityRootData(recordUuid);
-
-            if (result == null) {
-                result = getActivityRootDataIfRecordUuidNull();
-            }
-        } else {
-            result = getActivityRootDataIfRecordUuidNull();
-        }
-
-        return result;
-    }
-
-    protected abstract TActivityRootData getActivityRootData(String recordUuid);
-
-    protected abstract TActivityRootData getActivityRootDataIfRecordUuidNull();
-
-    protected TActivityRootData getStoredActivityRootData() {
-        return storedActivityRootData;
-    }
-
-    protected abstract void initializeActivity(Bundle arguments);
-
-    @Override
-    public void onAttachFragment(Fragment fragment) {
-        super.onAttachFragment(fragment);
-        //updateSubHeadingTitle();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if (applicationTitleBar != null && showTitleBar()) {
+        if (applicationTitleBar != null && isShowTitleBar()) {
             applicationTitleBar.setVisibility(View.VISIBLE);
 
-            if (statusFrame != null && showStatusFrame()) {
+            if (statusFrame != null && isShowStatusFrame()) {
                 Context statusFrameContext = statusFrame.getContext();
 
                 Drawable drw = (Drawable) ContextCompat.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
@@ -298,8 +185,84 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
             }
         }
 
-
+        requestActivityRootData(new Callback.IAction<ActivityRootEntity>() {
+            @Override
+            public void call(ActivityRootEntity result) {
+                replaceFragment(buildEditFragment(getActiveMenuItem(), result));
+            }
+        });
     }
+
+    @Override
+    public void requestActivityRootData(final Callback.IAction<ActivityRootEntity> callback) {
+
+        getRootEntityTask = new DefaultAsyncTask(getContext()) {
+            @Override
+            public void onPreExecute() {
+                showPreloader();
+            }
+
+            @Override
+            public void doInBackground(TaskResultHolder resultHolder) {
+                ActivityRootEntity result;
+                if (rootEntityUuid != null && !rootEntityUuid.isEmpty()) {
+                    result = queryActivityRootEntity(rootEntityUuid);
+
+                    if (result == null) {
+                        result = buildActivityRootEntity();
+                    }
+                } else {
+                    result = buildActivityRootEntity();
+                }
+                resultHolder.forItem().add(result);
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                hidePreloader();
+
+                if (taskResult.getResultStatus().isSuccess()) {
+                    ITaskResultHolderIterator itemIterator = taskResult.getResult().forItem().iterator();
+
+                    boolean hadRootEntity = storedRootEntity != null;
+                    if (itemIterator.hasNext())
+                        storedRootEntity = itemIterator.next();
+
+                    if (storedRootEntity.isUnreadOrChildUnread()) {
+                        DatabaseHelper.getAdoDao(storedRootEntity.getClass()).markAsReadWithCast(storedRootEntity);
+                        if (hadRootEntity) {
+                            NotificationHelper.showNotification(BaseEditActivity.this, NotificationType.WARNING,
+                                    String.format(getResources().getString(R.string.snackbar_entity_overridden), storedRootEntity.getEntityName()));
+                        }
+                    }
+
+                    callback.call(storedRootEntity);
+                }
+            }
+        }.executeOnThreadPool();
+    }
+
+    protected abstract ActivityRootEntity queryActivityRootEntity(String recordUuid);
+
+    protected abstract ActivityRootEntity buildActivityRootEntity();
+
+    protected ActivityRootEntity getStoredRootEntity() {
+        return storedRootEntity;
+    }
+
+    protected String getRootEntityUuid() {
+        return rootEntityUuid;
+    }
+
+    protected BaseEditActivityFragment getActiveFragment() {
+        return activeFragment;
+    }
+
+    /**
+     * May be removed
+     */
+    @Deprecated
+    protected void initializeActivity(Bundle arguments) { }
 
     public void setSubHeadingTitle(String title) {
         String t = (title == null)? "" : title;
@@ -346,8 +309,6 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
 
         return activeMenu;
     }
-
-
 
     @Override
     protected int getRootActivityLayout() {
@@ -430,11 +391,9 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         }
     }
 
-    protected static <TActivity extends AbstractSormasActivity, TCapsule extends INavigationCapsule>
-    void goToActivity(Context fromActivity, Class<TActivity> toActivity, TCapsule dataCapsule) {
+    protected static <TActivity extends BaseActivity, TCapsule extends INavigationCapsule> void goToActivity(Context fromActivity, Class<TActivity> toActivity, TCapsule dataCapsule) {
 
         int activeMenuKey = dataCapsule.getActiveMenuKey();
-        //int activeMenuKey = dataCapsule.getActiveMenuKey() < 0? BaseEditActivity.this.getActiveMenuKey() : dataCapsule.getActiveMenuKey();
         String dataUuid = dataCapsule.getRecordUuid();
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
         IStatusElaborator pageStatus = dataCapsule.getPageStatus();
@@ -449,7 +408,6 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         boolean isForVisit = dataCapsule.isForVisit();
         boolean isVisitCooperative = dataCapsule.isVisitCooperative();
         UserRight userRight = dataCapsule.getUserRight();
-        //AbstractDomainObject record = dataCapsule.getRecord();
 
         Intent intent = new Intent(fromActivity, toActivity);
 
@@ -477,17 +435,10 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
 
         intent.putExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA, bundle);
 
-        /*if (record != null)
-            intent.putExtra(ConstantHelper.ARG_PAGE_RECORD, (Serializable)record);*/
-
-        /*for (IStatusElaborator e: dataCapsule.getOtherStatus()) { // dataCapsule.getOtherStatus()) {
-            if (e != null)
-                intent.putExtra(e.getStatekey(), e.getValue());
-        }*/
         fromActivity.startActivity(intent);
     }
 
-    public abstract BaseEditActivityFragment getActiveEditFragment(TActivityRootData activityRootData);
+    protected abstract BaseEditActivityFragment buildEditFragment(LandingPageMenuItem menuItem, ActivityRootEntity activityRootData);
 
     public LandingPageMenuItem getActiveMenuItem() {
         return activeMenu;
@@ -498,15 +449,15 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         return rootView;
     }
 
-    public boolean showStatusFrame() {
+    public boolean isShowStatusFrame() {
         return true;
     }
 
-    public boolean showTitleBar() {
+    public boolean isShowTitleBar() {
         return true;
     }
 
-    public boolean showPageMenu() {
+    public boolean isShowPageMenu() {
         return getPageMenuData() > 0;
     }
 
@@ -518,21 +469,14 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         return -1;
     }
 
-    public int getActiveMenuKey() {
-        return activeMenuKey;
-    }
-
-    public void saveData() {
-
-    }
+    public abstract void saveData();
 
     protected void setActiveMenu(LandingPageMenuItem menuItem) {
         activeMenu = menuItem;
-        activeMenuKey = menuItem.getKey();
     }
 
     public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-        BaseEditActivityFragment newActiveFragment = getEditFragment(menuItem, storedActivityRootData);
+        BaseEditActivityFragment newActiveFragment = buildEditFragment(menuItem, storedRootEntity);
 
         if (newActiveFragment == null)
             return false;
@@ -561,7 +505,7 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         LandingPageMenuItem m = menuList.get(newMenukey);
         setActiveMenu(m);
 
-        BaseEditActivityFragment newActiveFragment = getEditFragment(m, storedActivityRootData);
+        BaseEditActivityFragment newActiveFragment = buildEditFragment(m, storedRootEntity);
 
         if (newActiveFragment == null)
             return false;
@@ -572,16 +516,9 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
 
         replaceFragment(newActiveFragment);
 
-        //this.activeFragment = newActiveFragment;
-
         processActionbarMenu();
-        //updateSubHeadingTitle();
 
         return true;
-    }
-
-    protected BaseEditActivityFragment getEditFragment(LandingPageMenuItem menuItem, TActivityRootData activityRootData) {
-        return null;
     }
 
     protected String getRecordUuidArg(Bundle arguments) {
@@ -659,19 +596,13 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         return result;
     }
 
-    protected <E extends Enum<E>> void saveFilterStatusState(Bundle outState, E status) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_FILTER_STATUS, status);
-        }
-    }
-
     protected <E extends Enum<E>> void savePageStatusState(Bundle outState, E status) {
         if (outState != null) {
             outState.putSerializable(ConstantHelper.ARG_PAGE_STATUS, status);
         }
     }
 
-    protected void saveRecordUuidState(Bundle outState, String recordUuid) {
+    protected void saveRootEntityUuidState(Bundle outState, String recordUuid) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_DATA_UUID, recordUuid);
         }
@@ -701,24 +632,15 @@ public abstract class BaseEditActivity<TActivityRootData extends AbstractDomainO
         }
     }
 
-    private int restoreActiveMenuState(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            return savedInstanceState.getInt(ConstantHelper.KEY_ACTIVE_MENU);
-        }
-
-        return -1;
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        if (processActivityRootDataTask != null && !processActivityRootDataTask.isCancelled())
-            processActivityRootDataTask.cancel(true);
+        if (getRootEntityTask != null && !getRootEntityTask.isCancelled())
+            getRootEntityTask.cancel(true);
 
         if (pageMenu != null) {
             pageMenu.onDestroy();
         }
     }
-
 }

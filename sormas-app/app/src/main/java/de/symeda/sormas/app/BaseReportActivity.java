@@ -14,19 +14,11 @@ import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.util.ConstantHelper;
 
-/**
- * Created by Orson on 24/04/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-public abstract class BaseReportActivity extends AbstractSormasActivity implements NotificationContext, IUpdateSubHeadingTitle {
+public abstract class BaseReportActivity extends BaseActivity implements NotificationContext, IUpdateSubHeadingTitle {
 
     private final static String TAG = BaseReportActivity.class.getSimpleName();
 
     private View rootView;
-    private View fragmentFrame = null;
     private View applicationTitleBar = null;
     private BaseReportActivityFragment activeFragment = null;
     private TextView subHeadingActivityTitle;
@@ -40,18 +32,6 @@ public abstract class BaseReportActivity extends AbstractSormasActivity implemen
     @Override
     protected boolean setHomeAsUpIndicator() {
         return true;
-    }
-
-    @Override
-    public void showFragmentView() {
-        if (fragmentFrame != null)
-            fragmentFrame.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideFragmentView() {
-        if (fragmentFrame != null)
-            fragmentFrame.setVisibility(View.GONE);
     }
 
     public void setSubHeadingTitle(String title) {
@@ -108,7 +88,7 @@ public abstract class BaseReportActivity extends AbstractSormasActivity implemen
     public abstract BaseReportActivityFragment getActiveFragment();
 
 
-    protected void initializeBaseActivity(Bundle savedInstanceState) {
+    protected void onCreateBaseActivity(Bundle savedInstanceState) {
         rootView = findViewById(R.id.base_layout);
         subHeadingActivityTitle = (TextView)findViewById(R.id.subHeadingActivityTitle);
 
@@ -118,20 +98,19 @@ public abstract class BaseReportActivity extends AbstractSormasActivity implemen
             if (applicationTitleBar != null)
                 applicationTitleBar.setVisibility(View.VISIBLE);
         }
+    }
 
-        fragmentFrame = findViewById(R.id.fragment_frame);
-        if (fragmentFrame != null) {
-            if (savedInstanceState == null) {
-                replaceFragment(getActiveFragment());
-            }
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        replaceFragment(getActiveFragment());
     }
 
     protected boolean showTitleBar() {
         return true;
     }
 
-    protected static <TActivity extends AbstractSormasActivity> void goToActivity(Context fromActivity, Class<TActivity> toActivity) {
+    protected static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, Class<TActivity> toActivity) {
         Intent intent = new Intent(fromActivity, toActivity);
         fromActivity.startActivity(intent);
     }

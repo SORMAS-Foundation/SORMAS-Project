@@ -5,13 +5,11 @@ import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.app.BaseReadActivityFragment;
 import de.symeda.sormas.app.R;
@@ -21,7 +19,6 @@ import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.component.dialog.SimpleDialog;
 import de.symeda.sormas.app.component.tagview.Tag;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -39,8 +36,6 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadActivityFragmen
     public static final String TAG = CaseReadEpidemiologicalDataFragment.class.getSimpleName();
 
     private AsyncTask onResumeTask;
-    private String recordUuid = null;
-    private CaseClassification pageStatus = null;
     private EpiData record;
     private ObservableArrayList burials = new ObservableArrayList();
     private ObservableArrayList gatherings = new ObservableArrayList();
@@ -49,24 +44,6 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadActivityFragmen
     private IEntryItemOnClickListener onBurialItemClickListener;
     private IEntryItemOnClickListener onSocialEventItemClickListener;
     private IEntryItemOnClickListener onTravelItemClickListener;
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        SavePageStatusState(outState, pageStatus);
-        SaveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        pageStatus = (CaseClassification) getPageStatusArg(arguments);
-    }
 
     @Override
     public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
@@ -138,12 +115,12 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadActivityFragmen
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Case caze = getActivityRootData();
 
                     if (caze != null) {
@@ -165,8 +142,8 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadActivityFragmen
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -185,8 +162,8 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadActivityFragmen
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
     }
 
@@ -206,8 +183,8 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadActivityFragmen
         return R.layout.fragment_case_read_epid_layout;
     }
 
-    public static CaseReadEpidemiologicalDataFragment newInstance(IActivityCommunicator activityCommunicator, CaseFormNavigationCapsule capsule, Case activityRootData) {
-        return newInstance(activityCommunicator, CaseReadEpidemiologicalDataFragment.class, capsule, activityRootData);
+    public static CaseReadEpidemiologicalDataFragment newInstance(CaseFormNavigationCapsule capsule, Case activityRootData) {
+        return newInstance(CaseReadEpidemiologicalDataFragment.class, capsule, activityRootData);
     }
 
     private ObservableArrayList getBurialVisits() {

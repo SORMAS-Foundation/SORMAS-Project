@@ -3,7 +3,6 @@ package de.symeda.sormas.app.task.list;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
@@ -48,9 +47,9 @@ public class TaskListActivity  extends BaseListActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveFilterStatusState(outState, filterStatus);
-        SaveSearchStrategyState(outState, searchBy);
-        SaveRecordUuidState(outState, recordUuid);
+        saveFilterStatusState(outState, filterStatus);
+        saveSearchStrategyState(outState, searchBy);
+        saveRecordUuidState(outState, recordUuid);
     }
 
     @Override
@@ -74,10 +73,10 @@ public class TaskListActivity  extends BaseListActivity {
     }
 
     @Override
-    public BaseListActivityFragment getActiveReadFragment() {
+    public BaseListActivityFragment getActiveListFragment() {
         if (activeFragment == null) {
             IListNavigationCapsule dataCapsule = new ListNavigationCapsule(TaskListActivity.this, filterStatus, searchBy);
-            activeFragment = TaskListFragment.newInstance(this, dataCapsule);
+            activeFragment = TaskListFragment.newInstance(dataCapsule);
         }
 
         return activeFragment;
@@ -95,7 +94,7 @@ public class TaskListActivity  extends BaseListActivity {
     }
 
     @Override
-    protected BaseListActivityFragment getNextFragment(LandingPageMenuItem menuItem) {
+    protected BaseListActivityFragment getListFragment(LandingPageMenuItem menuItem) {
         TaskStatus status = statusFilters[menuItem.getKey()];
 
         if (status == null)
@@ -104,7 +103,7 @@ public class TaskListActivity  extends BaseListActivity {
         filterStatus = status;
         IListNavigationCapsule dataCapsule = new ListNavigationCapsule(TaskListActivity.this, filterStatus, searchBy);
 
-        activeFragment = TaskListFragment.newInstance(this, dataCapsule);
+        activeFragment = TaskListFragment.newInstance(dataCapsule);
         return activeFragment;
     }
 

@@ -18,7 +18,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
@@ -127,7 +126,7 @@ public class EventEditTaskListFragement extends BaseEditActivityFragment<Fragmen
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getActivityCommunicator().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
+                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
                 }
             });
         }
@@ -139,12 +138,12 @@ public class EventEditTaskListFragement extends BaseEditActivityFragment<Fragmen
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    //getActivityCommunicator().showPreloader();
-                    //getActivityCommunicator().hideFragmentView();
+                    //getBaseActivity().showPreloader();
+                    //
                 }
 
                 @Override
-                public void execute(TaskResultHolder resultHolder) {
+                public void doInBackground(TaskResultHolder resultHolder) {
                     Event event = getActivityRootData();
                     List<Task> taskList = new ArrayList<Task>();
 
@@ -162,8 +161,8 @@ public class EventEditTaskListFragement extends BaseEditActivityFragment<Fragmen
             onResumeTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getActivityCommunicator().hidePreloader();
-                    //getActivityCommunicator().showFragmentView();
+                    //getBaseActivity().hidePreloader();
+                    //getBaseActivity().showFragmentView();
 
                     if (resultHolder == null){
                         return;
@@ -177,8 +176,8 @@ public class EventEditTaskListFragement extends BaseEditActivityFragment<Fragmen
                 }
             });
         } catch (Exception ex) {
-            //getActivityCommunicator().hidePreloader();
-            //getActivityCommunicator().showFragmentView();
+            //getBaseActivity().hidePreloader();
+            //getBaseActivity().showFragmentView();
         }
     }
 
@@ -220,8 +219,8 @@ public class EventEditTaskListFragement extends BaseEditActivityFragment<Fragmen
         TaskEditActivity.goToActivity(getActivity(), dataCapsule);
     }
 
-    public static EventEditTaskListFragement newInstance(IActivityCommunicator activityCommunicator, EventFormNavigationCapsule capsule, Event activityRootData) {
-        return newInstance(activityCommunicator, EventEditTaskListFragement.class, capsule, activityRootData);
+    public static EventEditTaskListFragement newInstance(EventFormNavigationCapsule capsule, Event activityRootData) {
+        return newInstance(EventEditTaskListFragement.class, capsule, activityRootData);
     }
 
     @Override

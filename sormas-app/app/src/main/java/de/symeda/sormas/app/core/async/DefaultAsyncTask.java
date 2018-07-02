@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.google.android.gms.analytics.Tracker;
 
+import java.lang.ref.WeakReference;
+
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.core.BoolResult;
@@ -13,14 +15,28 @@ import de.symeda.sormas.app.util.ErrorReportingHelper;
 
 public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskResult<TaskResultHolder>> {
 
-    private final Context context;
+    // for error reporting
+    private final WeakReference<SormasApplication> applicationReference;
+    private final Class entityClass;
+    private final String entityUuid;
+
     private ITaskResultCallback resultCallback;
 
     public DefaultAsyncTask(Context context) {
-        this.context = context;
+        this(context, null);
+    }
+    public DefaultAsyncTask(Context context, AbstractDomainObject relatedEntity) {
+        this.applicationReference = new WeakReference<>((SormasApplication)context.getApplicationContext());
+        if (relatedEntity != null) {
+            entityClass = relatedEntity.getClass();
+            entityUuid  = relatedEntity.getUuid();
+        } else {
+            entityClass = null;
+            entityUuid = null;
+        }
     }
 
-    protected abstract void execute(TaskResultHolder resultHolder) throws Exception;
+    protected abstract void doInBackground(TaskResultHolder resultHolder) throws Exception;
 
     @Override
     protected AsyncTaskResult<TaskResultHolder> doInBackground(Void... voids) {
@@ -28,10 +44,10 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
         TaskResultHolder resultHolder = new TaskResultHolder();
 
         try {
-            execute(resultHolder);
+            doInBackground(resultHolder);
             return new AsyncTaskResult<>(resultHolder.getResultStatus(), resultHolder);
         } catch (Exception e) {
-            return handleException(e, null);
+            return handleException(e);
         }
     }
 
@@ -50,21 +66,24 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
         }
     }
 
-    protected AsyncTaskResult handleException(Exception e, AbstractDomainObject relatedEntity) {
+    protected AsyncTaskResult handleException(Exception e) {
         Log.e(getClass().getName(), "Error executing an async task", e);
         Log.e(getClass().getName(), "- root cause: ", ErrorReportingHelper.getRootCause(e));
 
-        SormasApplication application = (SormasApplication) context.getApplicationContext();
-        Tracker tracker = application.getDefaultTracker();
-        ErrorReportingHelper.sendCaughtException(tracker, e, relatedEntity, true);
+        SormasApplication application = applicationReference.get();
+        if (application != null) {
+            ErrorReportingHelper.sendCaughtException(application.getDefaultTracker(), e, entityClass, entityUuid, true);
+        }
 
         return new AsyncTaskResult<>(e);
     }
 
+    @Deprecated
     public static AsyncTask execute(DefaultAsyncTask jobDefinition) {
         return jobDefinition.execute((ITaskResultCallback)null);
     }
 
+    @Deprecated
     public AsyncTask execute(ITaskResultCallback resultCallback) {
         this.resultCallback = resultCallback;
         return executeOnThreadPool();

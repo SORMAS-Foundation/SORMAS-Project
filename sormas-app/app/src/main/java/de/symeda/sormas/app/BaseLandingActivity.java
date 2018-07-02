@@ -9,19 +9,13 @@ import android.view.View;
 
 import de.symeda.sormas.app.core.NotificationContext;
 
-/**
- * Created by Orson on 03/12/2017.
- */
-
-public abstract class BaseLandingActivity extends AbstractSormasActivity implements NotificationContext {
+public abstract class BaseLandingActivity extends BaseActivity implements NotificationContext {
 
     public static final String TAG = BaseLandingActivity.class.getSimpleName();
 
     private View rootView;
     private CharSequence mainViewTitle;
 
-
-    private View fragmentFrame = null;
     private BaseLandingActivityFragment activeFragment;
     private MenuItem newMenu = null;
 
@@ -41,34 +35,17 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
         return true;
     }
 
-    @Override
-    public void showFragmentView() {
-        if (fragmentFrame != null)
-            fragmentFrame.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideFragmentView() {
-        if (fragmentFrame != null)
-            fragmentFrame.setVisibility(View.GONE);
-    }
-
-    protected void initializeBaseActivity(Bundle savedInstanceState) {
+    protected void onCreateBaseActivity(Bundle savedInstanceState) {
         rootView = findViewById(R.id.base_layout);
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getExtras();
         initializeActivity(arguments);
+    }
 
-        /*if (setHomeAsUpIndicator())
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_blue_36dp);
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-        setupDrawer(navigationView);*/
-
-        fragmentFrame = findViewById(R.id.fragment_frame);
-        if (fragmentFrame != null) {
-            if (savedInstanceState == null) {
-                replaceFragment(getActiveLandingFragment());
-            }
-        }
+        replaceFragment(getActiveLandingFragment());
     }
 
     protected abstract void initializeActivity(Bundle arguments);
@@ -96,19 +73,6 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (activeFragment != null)
-            activeFragment.onResume();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        //outState.putInt(KEY_PAGE, currentTab);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.landing_action_bar, menu);
@@ -130,15 +94,6 @@ public abstract class BaseLandingActivity extends AbstractSormasActivity impleme
 
     public MenuItem getNewMenu() {
         return newMenu;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        /*if (menuDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }*/
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -21,7 +21,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.IActivityCommunicator;
 import de.symeda.sormas.app.core.IActivityRootDataRequestor;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
@@ -60,7 +59,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        SaveUserRightState(outState, editOrCreateUserRight);
+        saveUserRightState(outState, editOrCreateUserRight);
     }
 
     @Override
@@ -109,7 +108,6 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
 
                     contentViewStubBinding = DataBindingUtil.bind(inflated);
                     String layoutName = getResources().getResourceEntryName(getReadLayout());
-                    setRootNotificationBindingVariable(contentViewStubBinding, layoutName);
                     onLayoutBinding(contentViewStubBinding);
                     contentViewStubRoot = contentViewStubBinding.getRoot();
 
@@ -140,13 +138,13 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
                 public void onPreExecute() {
-                    getActivityCommunicator().showPreloader();
-                    getActivityCommunicator().hideFragmentView();
+                    getBaseActivity().showPreloader();
+
                 }
 
 
                 @Override
-                public void execute(final TaskResultHolder resultHolder) {
+                public void doInBackground(final TaskResultHolder resultHolder) {
                     onBeforeLayoutBinding(savedInstanceState, resultHolder, null, false);
                 }
             };
@@ -154,8 +152,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
             jobTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    getActivityCommunicator().hidePreloader();
-                    getActivityCommunicator().showFragmentView();
+                    getBaseActivity().hidePreloader();
 
                     if (resultHolder == null)
                         return;
@@ -227,23 +224,20 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         onLayoutBinding(contentViewStubBinding);
     }
 
+    // TODO make abstract
+    protected void prepareFragmentData(Bundle savedInstanceState) { }
+
+    /**
+     * @Deprecated Use prepareFragmentData and onLayoutBinding isntead
+     */
+    @Deprecated
     public abstract boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete);
 
     public abstract void onLayoutBinding(TBinding contentBinding);
 
-    public abstract void onAfterLayoutBinding(TBinding contentBinding);
+    public void onAfterLayoutBinding(TBinding contentBinding) { }
 
-    protected abstract void updateUI(TBinding contentBinding, TData data);
-
-    protected void setRootNotificationBindingVariable(final ViewDataBinding binding, String layoutName) {
-        /*if (!binding.setVariable(de.symeda.sormas.app.BR.showNotificationCallback, this)) {
-            Log.e(TAG, "There is no variable 'showNotificationCallback' in layout " + layoutName);
-        }
-
-        if (!binding.setVariable(de.symeda.sormas.app.BR.hideNotificationCallback, this)) {
-            Log.e(TAG, "There is no variable 'hideNotificationCallback' in layout " + layoutName);
-        }*/
-    }
+    protected void updateUI(TBinding contentBinding, TData data) { }
 
     public boolean includeFabNonOverlapPadding() {
         return true;
@@ -252,10 +246,6 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
     public boolean makeHeightMatchParent() {
         return false;
     }
-
-    /*public boolean hasBeforeLayoutBindingAsyncReturned() {
-        return beforeLayoutBindingAsyncReturn;
-    }*/
 
     @Override
     public final void onResume() {
@@ -270,18 +260,6 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
                 }
             });
         }
-
-
-
-        //getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
-
-        /*final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getBaseReadActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, refreshLayout, null);
-            }
-        });*/
 
         onResumeExecCount = onResumeExecCount + 1;
     }
@@ -323,9 +301,6 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
 
     public abstract TData getPrimaryData();
 
-    //TODO: We don't need this anymore
-    //public abstract TBinding getBinding();
-
     public ViewDataBinding getRootBinding() {
         return rootBinding;
     }
@@ -334,8 +309,7 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         return contentViewStubBinding;
     }
 
-    protected static <TFragment extends BaseReadActivityFragment, TCapsule extends INavigationCapsule>
-    TFragment newInstance(IActivityCommunicator activityCommunicator, Class<TFragment> f, TCapsule dataCapsule, AbstractDomainObject activityRootData) {
+    protected static <TFragment extends BaseReadActivityFragment, TCapsule extends INavigationCapsule> TFragment newInstance(Class<TFragment> f, TCapsule dataCapsule, AbstractDomainObject activityRootData) {
         TFragment fragment;
         try {
             fragment = f.newInstance();
@@ -343,13 +317,10 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
             throw new RuntimeException(e);
         }
 
-        fragment.setActivityCommunicator(activityCommunicator);
-
         Bundle bundle = fragment.getArguments();
         if (bundle == null) {
             bundle = new Bundle();
         }
-
 
         String dataUuid = dataCapsule.getRecordUuid();
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
@@ -366,7 +337,6 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         boolean isForVisit = dataCapsule.isForVisit();
         boolean isVisitCooperative = dataCapsule.isVisitCooperative();
         UserRight userRight = dataCapsule.getUserRight();
-        //AbstractDomainObject record = dataCapsule.getRecord();
 
         bundle.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
         bundle.putString(ConstantHelper.KEY_DATA_UUID, dataUuid);
@@ -387,14 +357,6 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
 
         if (pageStatus != null)
             bundle.putSerializable(ConstantHelper.ARG_PAGE_STATUS, pageStatus.getValue());
-
-        /*if (record != null)
-            bundle.putSerializable(ConstantHelper.ARG_PAGE_RECORD, record);*/
-
-        /*for (IStatusElaborator e: dataCapsule.getOtherStatus()) {
-            if (e != null)
-                bundle.putSerializable(e.getStatekey(), e.getValue());
-        }*/
 
         fragment.setArguments(bundle);
         fragment.setActivityRootData(activityRootData);
@@ -434,105 +396,6 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
         return e;
     }
 
-    protected <E extends Enum<E>> E getArgByElaboratorKey(Bundle arguments, String key) {
-        E e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(key)) {
-                e = (E) arguments.getSerializable(key);
-            }
-        }
-
-        return e;
-    }
-
-    protected String getEventUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.KEY_EVENT_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_EVENT_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected String getTaskUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.KEY_TASK_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_TASK_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected String getContactUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.KEY_CONTACT_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_CONTACT_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected String getCaseUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.KEY_CASE_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_CASE_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected String getSampleUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.KEY_SAMPLE_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_SAMPLE_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected Disease getDiseaseArg(Bundle arguments) {
-        Disease result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_DISEASE)) {
-                result = (Disease) arguments.getSerializable(ConstantHelper.ARG_DISEASE);
-            }
-        }
-
-        return result;
-    }
-
-    protected boolean getForVisitArg(Bundle arguments) {
-        boolean result = false;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_FOR_VISIT)) {
-                result = (boolean) arguments.getBoolean(ConstantHelper.ARG_FOR_VISIT);
-            }
-        }
-
-        return result;
-    }
-
-    protected boolean getVisitCooperativeArg(Bundle arguments) {
-        boolean result = false;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_VISIT_COOPERATIVE)) {
-                result = (boolean) arguments.getBoolean(ConstantHelper.ARG_VISIT_COOPERATIVE);
-            }
-        }
-
-        return result;
-    }
-
     protected UserRight getUserRightArg(Bundle arguments) {
         UserRight e = null;
         if (arguments != null && !arguments.isEmpty()) {
@@ -557,81 +420,27 @@ public abstract class BaseReadActivityFragment<TBinding extends ViewDataBinding,
 
 
 
-    protected <E extends Enum<E>> void SaveFilterStatusState(Bundle outState, E status) {
+    protected <E extends Enum<E>> void saveFilterStatusState(Bundle outState, E status) {
         if (outState != null) {
             outState.putSerializable(ConstantHelper.ARG_FILTER_STATUS, status);
         }
     }
 
-    protected <E extends Enum<E>> void SavePageStatusState(Bundle outState, E status) {
+    protected <E extends Enum<E>> void savePageStatusState(Bundle outState, E status) {
         if (outState != null) {
             outState.putSerializable(ConstantHelper.ARG_PAGE_STATUS, status);
         }
     }
 
-    protected void SaveRecordUuidState(Bundle outState, String recordUuid) {
+    protected void saveRecordUuidState(Bundle outState, String recordUuid) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_DATA_UUID, recordUuid);
         }
     }
 
-    protected void SaveEventUuidState(Bundle outState, String eventUuid) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_EVENT_UUID, eventUuid);
-        }
-    }
-
-    protected void SaveTaskUuidState(Bundle outState, String taskUuid) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_TASK_UUID, taskUuid);
-        }
-    }
-
-    protected void SaveContactUuidState(Bundle outState, String contactUuid) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_CONTACT_UUID, contactUuid);
-        }
-    }
-
-    protected void SaveCaseUuidState(Bundle outState, String caseUuid) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);
-        }
-    }
-
-    protected void SaveSampleUuidState(Bundle outState, String sampleUuid) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_SAMPLE_UUID, sampleUuid);
-        }
-    }
-
-    protected void SaveDiseaseState(Bundle outState, Disease disease) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_DISEASE, disease);
-        }
-    }
-
-    protected void SaveForVisitState(Bundle outState, boolean isForVisit) {
-        if (outState != null) {
-            outState.putBoolean(ConstantHelper.ARG_FOR_VISIT, isForVisit);
-        }
-    }
-
-    protected void SaveVisitCooperativeState(Bundle outState, boolean isVisitCooperative) {
-        if (outState != null) {
-            outState.putBoolean(ConstantHelper.ARG_VISIT_COOPERATIVE, isVisitCooperative);
-        }
-    }
-
-    protected void SaveUserRightState(Bundle outState, UserRight userRight) {
+    protected void saveUserRightState(Bundle outState, UserRight userRight) {
         if (outState != null) {
             outState.putSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT, userRight);
-        }
-    }
-
-    protected void SaveSampleMaterialState(Bundle outState, String sampleMaterial) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
         }
     }
 

@@ -250,7 +250,10 @@ public  class AbstractDomainObject extends BaseObservable implements Serializabl
 
 	@Override
 	public String toString() {
-		return I18nProperties.getFieldCaption(getI18nPrefix());
+		return getEntityName();
 	}
 
+	public String getEntityName() {
+		return I18nProperties.getFieldCaption(getI18nPrefix());
+	}
 }
