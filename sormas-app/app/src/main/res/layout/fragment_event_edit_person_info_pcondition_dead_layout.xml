@@ -45,7 +45,7 @@
                     />
 
 
-                <de.symeda.sormas.app.component.controls.TeboSpinner
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/spnCauseOfDeath"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
                     app:labelCaption="@string/label_event_pinvolv_cause_of_death"
                     app:description="@string/desc_event_pinvolv_cause_of_death"
                     app:required="true"
-                    app:spinnerMode="dialog"
+
                     app:value="@={data.causeOfDeath}"
                     />
 
@@ -76,7 +76,7 @@
                 app:labelCaption="@string/label_event_pinvolv_responsible_disease"
                 app:description="@string/desc_event_pinvolv_responsible_disease"
                 app:required="true"
-                app:spinnerMode="dialog"
+
                 app:value="@={data.person.causeOfDeathDisease}"
                 android:visibility="gone"
                 />

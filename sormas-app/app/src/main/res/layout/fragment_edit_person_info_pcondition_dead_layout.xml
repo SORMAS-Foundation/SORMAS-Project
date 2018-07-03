@@ -40,7 +40,7 @@
                 />
 
 
-            <de.symeda.sormas.app.component.controls.TeboSpinner
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/spnCauseOfDeath"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
                 app:labelCaption="@string/label_contact_person_death_cause"
                 app:description="@string/desc_contact_person_death_cause"
                 app:required="true"
-                app:spinnerMode="dialog"
+
                 app:value="@={data.causeOfDeath}"
                 />
 
@@ -61,7 +61,7 @@
             layout="@layout/blank_layout"
             />
 
-        <de.symeda.sormas.app.component.controls.TeboSpinner
+        <de.symeda.sormas.app.component.controls.ControlSpinnerField
             android:id="@+id/spnDeathPlaceType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
             app:labelCaption="@string/label_contact_person_death_place"
             app:description="@string/desc_contact_person_death_place"
             app:required="true"
-            app:spinnerMode="dialog"
+
             app:value="@={data.deathPlaceType}"
             />
 

@@ -132,7 +132,7 @@
                 />
 
 
-            <de.symeda.sormas.app.component.controls.TeboSpinner
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/spnDisease"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -140,7 +140,7 @@
                 app:hint="@string/hint_alert_disease"
                 app:labelCaption="@string/label_alert_disease"
                 app:description="@string/desc_alert_disease"
-                app:spinnerMode="dialog"
+
                 app:value="@={data.disease}"
                 />
 
@@ -171,7 +171,7 @@
                 />
 
 
-            <de.symeda.sormas.app.component.controls.TeboSpinner
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/spnTypeOfPlace"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -179,7 +179,7 @@
                 app:hint="@string/hint_alert_type_of_place"
                 app:labelCaption="@string/label_alert_type_of_place"
                 app:description="@string/desc_alert_type_of_place"
-                app:spinnerMode="dialog"
+
                 app:value="@={data.typeOfPlace}"
                 />
 

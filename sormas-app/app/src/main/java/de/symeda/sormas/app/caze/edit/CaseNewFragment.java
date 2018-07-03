@@ -19,6 +19,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.region.Community;
@@ -27,7 +28,9 @@ import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.VisualState;
-import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.CommunityLoader;
 import de.symeda.sormas.app.component.dialog.DistrictLoader;
 import de.symeda.sormas.app.component.dialog.FacilityLoader;
@@ -97,36 +100,14 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentCaseNewLayoutBinding contentBinding) {
-        contentBinding.spnDisease.initialize(new TeboSpinner.ISpinnerInitConfig() {
+    public void onAfterLayoutBinding(final FragmentCaseNewLayoutBinding contentBinding) {
+        contentBinding.spnDisease.initializeSpinner(diseaseList, null, new ValueChangeListener() {
             @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (diseaseList.size() > 0) ? DataUtils.addEmptyItem(diseaseList)
-                        : diseaseList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                // TODO find out when this needs to be disabled
-//                if ((recordUuid != null && !recordUuid.isEmpty()) || (contactUuid != null && !contactUuid.isEmpty()) || (personUuid != null && !personUuid.isEmpty()))
-//                {
-//                    return VisualState.DISABLED;
-//                }
-
-                return VisualState.NORMAL;
-            }
-
-            @Override
-            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                if (value == null)
+            public void onChange(ControlPropertyField field) {
+                if (field.getValue() == null)
                     return;
 
-                Disease disease = (Disease) value;
+                Disease disease = (Disease) field.getValue();
 
                 if (disease == Disease.OTHER) {
                     getContentBinding().txtDiseaseDetail.setVisibility(View.VISIBLE);
@@ -146,138 +127,72 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
                     getContentBinding().spnDengueFever.setVisibility(View.GONE);
                 }
             }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
         });
 
-        contentBinding.spnPlague.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
+        contentBinding.spnPlague.initializeSpinner(plagueTypeList);
 
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (plagueTypeList.size() > 0) ? DataUtils.addEmptyItem(plagueTypeList) : plagueTypeList;
-            }
+        contentBinding.spnDengueFever.initializeSpinner(dengueFeverTypeList);
 
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
-
-        contentBinding.spnDengueFever.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (dengueFeverTypeList.size() > 0) ? DataUtils.addEmptyItem(dengueFeverTypeList) : dengueFeverTypeList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
-
-        contentBinding.spnState.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                List<Item> regions = RegionLoader.getInstance().load();
-                return (regions.size() > 0) ? DataUtils.addEmptyItem(regions) : regions;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return VisualState.DISABLED;
-            }
-        });
-
-        contentBinding.spnLga.initialize(contentBinding.spnState, new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                List<Item> districts = DistrictLoader.getInstance().load((Region) parentValue);
-                return (districts.size() > 0) ? DataUtils.addEmptyItem(districts) : districts;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return VisualState.DISABLED;
-            }
-        });
-
-        contentBinding.spnWard.initialize(contentBinding.spnLga, new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                List<Item> communities = CommunityLoader.getInstance().load((District) parentValue);
-                return (communities.size() > 0) ? DataUtils.addEmptyItem(communities) : communities;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
-
-        contentBinding.spnFacility.initialize(contentBinding.spnWard, new TeboSpinner.ISpinnerInitConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                List<Item> facilities;
-                if (parentValue != null) {
-                    facilities = FacilityLoader.getInstance().load((Community) parentValue, true);
-                } else {
-                    facilities = FacilityLoader.getInstance().load((District) record.getDistrict(), true);
+        if (contentBinding.spnState != null) {
+            contentBinding.spnState.initializeSpinner(RegionLoader.getInstance().load(), null, new ValueChangeListener() {
+                @Override
+                public void onChange(ControlPropertyField field) {
+                    Region selectedValue = (Region) field.getValue();
+                    if (selectedValue != null) {
+                        contentBinding.spnLga.setSpinnerData(DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(selectedValue)), contentBinding.spnLga.getValue());
+                    } else {
+                        contentBinding.spnLga.setSpinnerData(null);
+                    }
                 }
+            });
+        }
 
-                return (facilities.size() > 0) ? DataUtils.addEmptyItem(facilities) : facilities;
-            }
+        if (contentBinding.spnLga != null) {
+            contentBinding.spnLga.initializeSpinner(DistrictLoader.getInstance().load((Region) contentBinding.spnState.getValue()), null, new ValueChangeListener() {
+                @Override
+                public void onChange(ControlPropertyField field) {
+                    District selectedValue = (District) field.getValue();
+                    if (selectedValue != null) {
+                        contentBinding.spnWard.setSpinnerData(DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(selectedValue)), contentBinding.spnWard.getValue());
+                        contentBinding.spnFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(selectedValue, true)), contentBinding.spnFacility.getValue());
+                    } else {
+                        contentBinding.spnWard.setSpinnerData(null);
+                        contentBinding.spnFacility.setSpinnerData(null);
+                    }
+                }
+            });
+        }
 
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
+        if (contentBinding.spnWard != null) {
+            contentBinding.spnWard.initializeSpinner(CommunityLoader.getInstance().load((District) contentBinding.spnLga.getValue()), null, new ValueChangeListener() {
+                @Override
+                public void onChange(ControlPropertyField field) {
+                    Community selectedValue = (Community) field.getValue();
+                    if (selectedValue != null) {
+                        contentBinding.spnFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(selectedValue, true)));
+                    } else if (contentBinding.spnLga.getValue() != null) {
+                        contentBinding.spnFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) contentBinding.spnLga.getValue(), true)));
+                    } else {
+                        contentBinding.spnFacility.setSpinnerData(null);
+                    }
+                }
+            });
+        }
 
-            @Override
-            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                if (value == null)
-                    return;
+        List<Item> facilities = contentBinding.spnWard.getValue() != null ? FacilityLoader.getInstance().load((Community) contentBinding.spnWard.getValue(), true)
+                : FacilityLoader.getInstance().load((District) contentBinding.spnLga.getValue(), true);
+        if (contentBinding.spnFacility != null) {
+            contentBinding.spnFacility.initializeSpinner(facilities, null, new ValueChangeListener() {
+                @Override
+                public void onChange(ControlPropertyField field) {
+                    if (field.getValue() == null)
+                        return;
 
-                if (!healthFacilityLayoutProcessor.processLayout((Facility) value))
-                    return;
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+                    if (!healthFacilityLayoutProcessor.processLayout((Facility) field.getValue()))
+                        return;
+                }
+            });
+        }
 
         // TODO lock fields again
 //        if ((recordUuid != null && !recordUuid.isEmpty()) || (contactUuid != null && !contactUuid.isEmpty()) || (personUuid != null && !personUuid.isEmpty()))

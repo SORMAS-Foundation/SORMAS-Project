@@ -20,7 +20,7 @@ import de.symeda.sormas.app.util.FormFragment;
  * (see https://developer.android.com/reference/android/app/DialogFragment).
  *
  * It keeps state variables and so doesn't support resuming based on savedInstanceState.
- * Instead initialize needs to be called.
+ * Instead initializeSpinner needs to be called.
  *
  * DialogFragment is deprecated starting in Android P anyway.
  * Long-term we should replace this using another approach.
@@ -46,7 +46,7 @@ abstract public class AbstractFormDialogFragment<FormClass> extends DialogFragme
         if (formItem == null) {
             // when the fragement is restored it's ok to have formItem == null. Otherwise we have to throw an exception
             // sadly we can't find out whether it was restored
-            // throw new IllegalStateException("Make sure to call initialize before creating (showing) the dialog. May also be called by a dialog that was send to the background");
+            // throw new IllegalStateException("Make sure to call initializeSpinner before creating (showing) the dialog. May also be called by a dialog that was send to the background");
             setShowsDialog(false);
             dismiss();
             return null;

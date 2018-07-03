@@ -99,7 +99,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.controls.TeboSpinner
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/spnSampleMaterial"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -109,7 +109,7 @@
                         app:labelCaption="@string/label_sample_material"
                         app:description="@string/desc_sample_material"
                         app:required="true"
-                        app:spinnerMode="dialog"
+
                         app:value="@={data.sampleMaterial}"
                         />
 
@@ -132,7 +132,7 @@
 
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.controls.TeboSpinner
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/spnSampleSource"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -141,12 +141,12 @@
                     app:labelCaption="@string/label_sample_source"
                     app:description="@string/desc_sample_source"
                     app:required="true"
-                    app:spinnerMode="dialog"
+
                     app:value="@={data.sampleSource}"
                     />
 
 
-                <de.symeda.sormas.app.component.controls.TeboSpinner
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/spnTestType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -155,12 +155,12 @@
                     app:labelCaption="@string/label_sample_test_type"
                     app:description="@string/desc_sample_test_type"
                     app:required="true"
-                    app:spinnerMode="dialog"
+
                     app:value="@={data.suggestedTypeOfTest}"
                     />
 
 
-                <de.symeda.sormas.app.component.controls.TeboSpinner
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/spnLaboratory"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -169,7 +169,7 @@
                     app:labelCaption="@string/label_sample_laboratory"
                     app:description="@string/desc_sample_laboratory"
                     app:required="true"
-                    app:spinnerMode="dialog"
+
                     app:value="@={data.lab}"
                     />
 

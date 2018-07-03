@@ -23,7 +23,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlDateField;
-import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.util.DataUtils;
@@ -60,10 +60,10 @@ public class CaseDiseaseLayoutProcessor {
     private List<Item> dengueFeverList;
 
     private FragmentManager fragmentManager;
-    private TeboSpinner spnVaccination;
-    private TeboSpinner spnVaccinationInfoSource;
-    private TeboSpinner spnPlague;
-    private TeboSpinner spnDengueFever;
+    private ControlSpinnerField spnVaccination;
+    private ControlSpinnerField spnVaccinationInfoSource;
+    private ControlSpinnerField spnPlague;
+    private ControlSpinnerField spnDengueFever;
     private ControlDateField dtpLastVaccinationDate;
 
     private OnSetBindingVariableListener mOnSetBindingVariableListener;
@@ -144,10 +144,10 @@ public class CaseDiseaseLayoutProcessor {
     private boolean initializeChildLayout(ViewDataBinding binding) {
         View innerRootLayout = binding.getRoot();
 
-        spnVaccination = (TeboSpinner)innerRootLayout.findViewById(R.id.spnVaccination);
-        spnVaccinationInfoSource = (TeboSpinner)innerRootLayout.findViewById(R.id.spnVaccinationInfoSource);
-        spnPlague = (TeboSpinner)innerRootLayout.findViewById(R.id.spnPlague);
-        spnDengueFever = (TeboSpinner)innerRootLayout.findViewById(R.id.spnDengueFever);
+        spnVaccination = (ControlSpinnerField)innerRootLayout.findViewById(R.id.spnVaccination);
+        spnVaccinationInfoSource = (ControlSpinnerField)innerRootLayout.findViewById(R.id.spnVaccinationInfoSource);
+        spnPlague = (ControlSpinnerField)innerRootLayout.findViewById(R.id.spnPlague);
+        spnDengueFever = (ControlSpinnerField)innerRootLayout.findViewById(R.id.spnDengueFever);
         dtpLastVaccinationDate = (ControlDateField) innerRootLayout.findViewById(R.id.dtpLastVaccinationDate);
 
         if (dtpLastVaccinationDate != null)
@@ -159,83 +159,20 @@ public class CaseDiseaseLayoutProcessor {
                 super.onBound(binding);
 
                 if (spnPlague != null) {
-                    spnPlague.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-                        @Override
-                        public Object getSelectedValue() {
-                            return null;
-                        }
-
-                        @Override
-                        public List<Item> getDataSource(Object parentValue) {
-                            return (plagueList.size() > 0) ? DataUtils.addEmptyItem(plagueList)
-                                    : plagueList;
-                        }
-
-                        @Override
-                        public VisualState getInitVisualState() {
-                            return null;
-                        }
-                    });
+                    spnPlague.initializeSpinner(plagueList);
                 }
 
                 if (spnDengueFever != null) {
-                    spnDengueFever.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-                        @Override
-                        public Object getSelectedValue() {
-                            return null;
-                        }
-
-                        @Override
-                        public List<Item> getDataSource(Object parentValue) {
-                            return (dengueFeverList.size() > 0) ? DataUtils.addEmptyItem(dengueFeverList)
-                                    : dengueFeverList;
-                        }
-
-                        @Override
-                        public VisualState getInitVisualState() {
-                            return null;
-                        }
-                    });
+                    spnDengueFever.initializeSpinner(dengueFeverList);
                 }
 
 
                 if (spnVaccination != null) {
-                    spnVaccination.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-                        @Override
-                        public Object getSelectedValue() {
-                            return null;
-                        }
-
-                        @Override
-                        public List<Item> getDataSource(Object parentValue) {
-                            return (vaccinationList.size() > 0) ? DataUtils.addEmptyItem(vaccinationList)
-                                    : vaccinationList;
-                        }
-
-                        @Override
-                        public VisualState getInitVisualState() {
-                            return null;
-                        }
-                    });
+                    spnVaccination.initializeSpinner(vaccinationList);
                 }
 
                 if (spnVaccinationInfoSource != null) {
-                    spnVaccinationInfoSource.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-                        @Override
-                        public Object getSelectedValue() {
-                            return null;
-                        }
-
-                        @Override
-                        public List<Item> getDataSource(Object parentValue) {
-                            return (vaccinationInfoSourceList.size() > 0) ? DataUtils.addEmptyItem(vaccinationInfoSourceList) : vaccinationInfoSourceList;
-                        }
-
-                        @Override
-                        public VisualState getInitVisualState() {
-                            return null;
-                        }
-                    });
+                    spnVaccinationInfoSource.initializeSpinner(vaccinationInfoSourceList);
                 }
 
 

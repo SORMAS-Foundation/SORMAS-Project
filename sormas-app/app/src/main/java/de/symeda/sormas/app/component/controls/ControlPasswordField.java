@@ -185,7 +185,7 @@ public class ControlPasswordField extends ControlPropertyEditField<String> {
 
     @Override
     protected void initialize(Context context, AttributeSet attrs, int defStyle) {
-        // Nothing to initialize
+        // Nothing to initializeSpinner
     }
 
     @Override

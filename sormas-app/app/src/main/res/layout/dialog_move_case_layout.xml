@@ -33,7 +33,7 @@
                 android:textSize="@dimen/defaultPageHintTextSize"/>-->
 
 
-            <de.symeda.sormas.app.component.controls.TeboSpinner
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/spnState"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -43,14 +43,14 @@
                 app:description="@string/desc_case_state"
                 app:labelCaption="@string/label_case_state"
                 app:required="true"
-                app:spinnerMode="dialog"
+
                 app:imeOptions="actionNext"
                 app:value="@={data.region}"
 
 
                 />
 
-            <de.symeda.sormas.app.component.controls.TeboSpinner
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/spnLga"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -60,14 +60,14 @@
                 app:description="@string/desc_case_lga"
                 app:labelCaption="@string/label_case_lga"
                 app:required="true"
-                app:spinnerMode="dialog"
+
                 app:imeOptions="actionNext"
                 app:value="@={data.district}"
 
 
                 />
 
-            <de.symeda.sormas.app.component.controls.TeboSpinner
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/spnWard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -77,14 +77,14 @@
                 app:description="@string/desc_case_ward"
                 app:labelCaption="@string/label_case_ward"
                 app:required="true"
-                app:spinnerMode="dialog"
+
                 app:imeOptions="actionNext"
                 app:value="@={data.community}"
 
 
                 />
 
-            <de.symeda.sormas.app.component.controls.TeboSpinner
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/spnFacility"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -94,7 +94,7 @@
                 app:description="@string/desc_case_health_facility"
                 app:labelCaption="@string/label_case_health_facility"
                 app:required="true"
-                app:spinnerMode="dialog"
+
                 app:imeOptions="actionNext"
                 app:value="@={data.healthFacility}"
 

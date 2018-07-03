@@ -225,6 +225,17 @@
         <item name="android:textIsSelectable">false</item>
     </style>
 
+    <style name="ControlSpinnerStyle">
+        <item name="android:layout_height">@dimen/maxSpinnerHeight</item>
+    </style>
+
+    <style name="ControlSpinnerSlimStyle">
+        <item name="android:layout_height">@dimen/dropdownListSlimItemHeight</item>
+        <item name="android:paddingTop">@dimen/slimTextViewTopPadding</item>
+        <item name="android:paddingBottom">@dimen/slimTextViewBottomPadding</item>
+        <item name="android:textSize">@dimen/slimControlTextSize</item>
+    </style>
+
     <style name="ControlLabelStyle">
         <item name="android:textColor">@color/controlLabelColor</item>
         <item name="android:textSize">@dimen/controlLabelSize</item>

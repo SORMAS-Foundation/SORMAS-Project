@@ -152,12 +152,6 @@
         <!--<enum name="line_danger" value="14"/>-->
     <!--</attr>-->
 
-    <attr name="spinnerMode" format="enum">
-        <enum name="dialog" value="0"/>
-        <enum name="dropdown" value="1"/>
-    </attr>
-
-
     <declare-styleable name="ControlSwitchField">
         <attr name="useAbbreviations" />
     </declare-styleable>
@@ -167,11 +161,6 @@
         <attr name="caption2" />
         <attr name="caption3" />
         <attr name="caption4" />-->
-
-
-    <declare-styleable name="TeboSpinner">
-        <attr name="spinnerMode" />
-    </declare-styleable>
 
     <declare-styleable name="ControlPropertyField">
         <attr name="caption" />

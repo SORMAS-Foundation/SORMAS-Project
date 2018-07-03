@@ -21,7 +21,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
@@ -58,7 +58,7 @@ public class PresentConditionLayoutProcessor {
     private OnDateOfDeathChangeListener mOnDateOfDeathChangeListener;
 
     private FragmentManager fragmentManager;
-    private TeboSpinner spnCauseOfDeath;
+    private ControlSpinnerField spnCauseOfDeath;
     private ControlDateField dtpDateOfDeath;
 
 
@@ -150,7 +150,7 @@ public class PresentConditionLayoutProcessor {
 
     private boolean initializeChildLayout(ViewDataBinding binding) {
         View innerRootLayout = binding.getRoot();
-        spnCauseOfDeath = (TeboSpinner)innerRootLayout.findViewById(R.id.spnCauseOfDeath);
+        spnCauseOfDeath = (ControlSpinnerField)innerRootLayout.findViewById(R.id.spnCauseOfDeath);
         dtpDateOfDeath = (ControlDateField)innerRootLayout.findViewById(R.id.dtpDateOfDeath);
 
 
@@ -170,32 +170,11 @@ public class PresentConditionLayoutProcessor {
                 if (spnCauseOfDeath == null)
                     return;
 
-                spnCauseOfDeath.initialize(new TeboSpinner.ISpinnerInitConfig() {
+                spnCauseOfDeath.initializeSpinner(causeOfDeathList, null, new ValueChangeListener() {
                     @Override
-                    public Object getSelectedValue() {
-                        return null;
-                    }
-
-                    @Override
-                    public List<Item> getDataSource(Object parentValue) {
-                        return (causeOfDeathList.size() > 0) ? DataUtils.addEmptyItem(causeOfDeathList)
-                                : causeOfDeathList;
-                    }
-
-                    @Override
-                    public VisualState getInitVisualState() {
-                        return null;
-                    }
-
-                    @Override
-                    public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                        if (!causeOfDeathProcessor.processLayout((CauseOfDeath)value))
+                    public void onChange(ControlPropertyField field) {
+                        if (!causeOfDeathProcessor.processLayout((CauseOfDeath) field.getValue()))
                             return;
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
                     }
                 });
 

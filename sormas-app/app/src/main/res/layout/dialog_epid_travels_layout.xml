@@ -64,7 +64,7 @@
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.TeboSpinner
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/spnTravelType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -73,7 +73,7 @@
                 app:labelCaption="@string/label_case_epid_travel_type"
                 app:description="@string/desc_case_epid_travel_type"
                 app:required="true"
-                app:spinnerMode="dialog"
+
                 app:value="@={data.travelType}"
                 />
 

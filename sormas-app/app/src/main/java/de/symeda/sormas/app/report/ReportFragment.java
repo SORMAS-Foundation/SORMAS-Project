@@ -27,8 +27,10 @@ import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.report.WeeklyReportEntry;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
@@ -132,59 +134,25 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
     }
 
     @Override
-    protected void onAfterLayoutBinding(FragmentReportWeeklyLayoutBinding contentBinding) {
+    protected void onAfterLayoutBinding(final FragmentReportWeeklyLayoutBinding contentBinding) {
 
-        contentBinding.spnYear.initialize(new TeboSpinner.ISpinnerInitConfig() {
+        contentBinding.spnYear.initializeSpinner(mYearList, mReportFilter.getYear(), new ValueChangeListener() {
             @Override
-            public Object getSelectedValue() {
-                return mReportFilter.getYear();
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return mYearList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-
-            @Override
-            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+            public void onChange(ControlPropertyField field) {
+                Integer year = (Integer) field.getValue();
+                if (year != null) {
+                    contentBinding.spnEpiWeek.setSpinnerData(DataUtils.toItems(DateHelper.createIntegerEpiWeeksList(year)));
+                } else {
+                    contentBinding.spnEpiWeek.setSpinnerData(null);
+                }
             }
         });
 
-        contentBinding.spnEpiWeek.initialize(contentBinding.spnYear, new TeboSpinner.ISpinnerInitConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return mReportFilter.getWeek();
-            }
 
+        contentBinding.spnEpiWeek.initializeSpinner(mEpiWeeksList, mReportFilter.getWeek(), new ValueChangeListener() {
             @Override
-            public List<Item> getDataSource(Object parentValue) {
-                if (parentValue != null) {
-                    mEpiWeeksList = DataUtils.toItems(DateHelper.createIntegerEpiWeeksList((Integer) parentValue));
-                } else {
-                    mEpiWeeksList = Collections.emptyList();
-                }
-                return (mEpiWeeksList.size() > 0) ? DataUtils.addEmptyItem(mEpiWeeksList) : mEpiWeeksList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-
-            @Override
-            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                Integer selectedEpiWeek = (Integer) value;
+            public void onChange(ControlPropertyField field) {
+                Integer selectedEpiWeek = (Integer) field.getValue();
 
                 if (selectedEpiWeek != null) {
                     mReportFilter.setYear((int) getContentBinding().spnYear.getValue());
@@ -225,11 +193,6 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                     mReportFilter.setWeek(null);
                     updateUI();
                 }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
     }

@@ -29,7 +29,7 @@
             />
 
 
-        <de.symeda.sormas.app.component.controls.TeboSpinner
+        <de.symeda.sormas.app.component.controls.ControlSpinnerField
             android:id="@+id/spnVaccination"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
             app:labelCaption="@string/label_case_vaccination_received"
             app:description="@string/desc_case_vaccination_received"
             app:required="true"
-            app:spinnerMode="dialog"
+
             app:value="@={data.vaccination}"
             />
 
@@ -57,7 +57,7 @@
 
             />
 
-        <de.symeda.sormas.app.component.controls.TeboSpinner
+        <de.symeda.sormas.app.component.controls.ControlSpinnerField
             android:id="@+id/spnVaccinationInfoSource"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
             app:labelCaption="@string/label_case_vaccination_info_source"
             app:description="@string/desc_case_vaccination_info_source"
             app:required="true"
-            app:spinnerMode="dialog"
+
             app:value="@={data.vaccinationInfoSource}"
             />
 

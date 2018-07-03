@@ -44,7 +44,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.controls.TeboSpinner
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/spnBodyTemperature"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -54,11 +54,11 @@
                     app:labelCaption="@string/label_contact_symptoms_body_temperature"
                     app:description="@string/desc_contact_symptoms_body_temperature"
                     app:required="true"
-                    app:spinnerMode="dialog"
+
                     app:value="@={data.temperature}"
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboSpinner
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/spnBodyTemperatureSource"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
                     app:labelCaption="@string/label_contact_symptoms_body_temperature_source"
                     app:description="@string/desc_contact_symptoms_body_temperature_source"
                     app:required="true"
-                    app:spinnerMode="dialog"
+
                     app:value="@={data.temperatureSource}"
                     />
 
@@ -175,7 +175,7 @@
                 />
 
 
-            <de.symeda.sormas.app.component.controls.TeboSpinner
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/spnFirstSymptoms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -184,7 +184,7 @@
                 app:labelCaption="@string/label_contact_symptoms_first_symptom"
                 app:description="@string/desc_contact_symptoms_first_symptom"
                 app:required="true"
-                app:spinnerMode="dialog"
+
                 app:value="@={data.firstSymptom}"
                 />
 

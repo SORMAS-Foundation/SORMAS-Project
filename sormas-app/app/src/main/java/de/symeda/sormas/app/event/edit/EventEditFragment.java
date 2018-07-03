@@ -21,8 +21,10 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BoolResult;
@@ -142,26 +144,10 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
     @Override
     public void onAfterLayoutBinding(FragmentEventEditLayoutBinding contentBinding) {
-        contentBinding.spnDisease.initialize(new TeboSpinner.ISpinnerInitConfig() {
+        contentBinding.spnDisease.initializeSpinner(diseaseList, null, new ValueChangeListener() {
             @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (diseaseList.size() > 0) ? DataUtils.addEmptyItem(diseaseList)
-                        : diseaseList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-
-            @Override
-            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                Disease disease = (Disease)value;
+            public void onChange(ControlPropertyField field) {
+                Disease disease = (Disease) field.getValue();
 
                 if (disease == Disease.OTHER) {
                     getContentBinding().txtOtherDisease.setVisibility(View.VISIBLE);
@@ -170,37 +156,11 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
                     getContentBinding().txtOtherDisease.setValue("");
                 }
             }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
         });
-        contentBinding.spnTypeOfPlace.initialize(new TeboSpinner.ISpinnerInitConfig() {
+        contentBinding.spnTypeOfPlace.initializeSpinner(typeOfPlaceList, null, new ValueChangeListener() {
             @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (typeOfPlaceList.size() > 0) ? DataUtils.addEmptyItem(typeOfPlaceList)
-                        : typeOfPlaceList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-
-            @Override
-            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
+            public void onChange(ControlPropertyField field) {
                 toggleTypeOfPlaceTextField();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
         contentBinding.dtpDateOfAlert.setFragmentManager(getFragmentManager());
@@ -208,8 +168,8 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
     @Override
     protected void updateUI(FragmentEventEditLayoutBinding contentBinding, Event event) {
-        contentBinding.spnDisease.setValue(event.getDisease(), true);
-        contentBinding.spnTypeOfPlace.setValue(event.getTypeOfPlace(), true);
+        contentBinding.spnDisease.setValue(event.getDisease());
+        contentBinding.spnTypeOfPlace.setValue(event.getTypeOfPlace());
     }
 
     @Override

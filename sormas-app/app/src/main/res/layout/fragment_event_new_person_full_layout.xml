@@ -144,7 +144,7 @@
                     >
 
 
-                    <de.symeda.sormas.app.component.controls.TeboSpinner
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/spnYear"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -154,12 +154,12 @@
                         app:labelCaption="@string/label_event_pinvolv_year"
                         app:description="@string/desc_event_pinvolv_year"
                         app:required="true"
-                        app:spinnerMode="dialog"
+
                         app:value="@={data.person.birthdateYYYY}"
                         />
 
 
-                    <de.symeda.sormas.app.component.controls.TeboSpinner
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/spnMonth"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -170,12 +170,12 @@
                         app:labelCaption="@string/label_event_pinvolv_month"
                         app:description="@string/desc_event_pinvolv_month"
                         app:required="true"
-                        app:spinnerMode="dialog"
+
                         app:value="@={data.person.birthdateMM}"
                         />
 
 
-                    <de.symeda.sormas.app.component.controls.TeboSpinner
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/spnDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -186,7 +186,7 @@
                         app:labelCaption="@string/label_event_pinvolv_date"
                         app:description="@string/desc_event_pinvolv_date"
                         app:required="true"
-                        app:spinnerMode="dialog"
+
                         app:value="@={data.person.birthdateDD}"
                         />
 
@@ -216,7 +216,7 @@
                         />
 
 
-                    <de.symeda.sormas.app.component.controls.TeboSpinner
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/spnAgeType"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -227,7 +227,7 @@
                         app:labelCaption="@string/label_event_pinvolv_age_unit"
                         app:description="@string/desc_event_pinvolv_age_unit"
                         app:required="true"
-                        app:spinnerMode="dialog"
+
                         app:value="@={data.person.approximateAgeType}"
                         />
 
@@ -235,7 +235,7 @@
                 </LinearLayout>
 
 
-                <de.symeda.sormas.app.component.controls.TeboSpinner
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/spnGender"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -244,7 +244,7 @@
                     app:labelCaption="@string/label_event_pinvolv_gender"
                     app:description="@string/desc_event_pinvolv_gender"
                     app:required="true"
-                    app:spinnerMode="dialog"
+
                     app:value="@={data.person.sex}"
                     />
 
@@ -342,7 +342,7 @@
                     style="@style/SubHeadingStyle"
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboSpinner
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/spnOccupationType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -351,7 +351,7 @@
                     app:labelCaption="@string/label_event_pinvolv_occupation_type"
                     app:description="@string/desc_event_pinvolv_occupation_type"
                     app:required="true"
-                    app:spinnerMode="dialog"
+
                     app:value="@={data.person.occupationType}"
                     />
 

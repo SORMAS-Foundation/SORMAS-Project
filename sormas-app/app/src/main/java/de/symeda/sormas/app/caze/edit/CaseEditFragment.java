@@ -36,7 +36,7 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.MoveCaseDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
@@ -207,74 +207,18 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
     @Override
     public void onAfterLayoutBinding(FragmentCaseEditLayoutBinding contentBinding) {
-        contentBinding.spnCaseClassification.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
+        contentBinding.spnCaseClassification.initializeSpinner(DataUtils.addEmptyItem(caseClassificationList));
+        contentBinding.spnCaseOfficerClassification.initializeSpinner(DataUtils.addEmptyItem(caseClassificationList));
+        contentBinding.spnOutcome.initializeSpinner(caseOutcomeList, null, new ValueChangeListener() {
             @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (caseClassificationList.size() > 0) ? DataUtils.addEmptyItem(caseClassificationList)
-                        : caseClassificationList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
-
-        contentBinding.spnCaseOfficerClassification.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (caseClassificationList.size() > 0) ? DataUtils.addEmptyItem(caseClassificationList)
-                        : caseClassificationList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
-
-        contentBinding.spnOutcome.initialize(new TeboSpinner.ISpinnerInitConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (caseOutcomeList.size() > 0) ? DataUtils.addEmptyItem(caseOutcomeList)
-                        : caseOutcomeList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-
-            @Override
-            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                CaseOutcome caseOutcome = (CaseOutcome) value;
+            public void onChange(ControlPropertyField field) {
+                CaseOutcome caseOutcome = (CaseOutcome) field.getValue();
 
                 if (caseOutcome == CaseOutcome.NO_OUTCOME || caseOutcome == null) {
                     getContentBinding().dtpDateOfOutcome.setVisibility(View.GONE);
-                    return;
+                } else {
+                    getContentBinding().dtpDateOfOutcome.setVisibility(View.VISIBLE);
                 }
-
-                getContentBinding().dtpDateOfOutcome.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
 

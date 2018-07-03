@@ -23,7 +23,7 @@ import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
@@ -133,7 +133,7 @@ public class VisitEditSymptomsFragment extends BaseEditFragment<FragmentContactE
                     yesSymptomList.remove(result);
                 }
 
-                getContentBinding().spnFirstSymptoms.notifyDataChanged();
+//                getContentBinding().spnFirstSymptoms.notifyDataChanged();
             }
         });
 
@@ -162,58 +162,11 @@ public class VisitEditSymptomsFragment extends BaseEditFragment<FragmentContactE
     public void onAfterLayoutBinding(FragmentContactEditSymptomsInfoLayoutBinding contentBinding) {
         contentBinding.dtpSymptomOnset.setFragmentManager(getFragmentManager());
 
-        contentBinding.spnBodyTemperature.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return DEFAULT_BODY_TEMPERATURE;
-            }
+        contentBinding.spnBodyTemperature.initializeSpinner(bodyTempList, DEFAULT_BODY_TEMPERATURE);
 
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return bodyTempList;
-            }
+        contentBinding.spnBodyTemperatureSource.initializeSpinner(tempSourceList);
 
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
-
-        contentBinding.spnBodyTemperatureSource.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (tempSourceList.size() > 0) ? DataUtils.addEmptyItem(tempSourceList)
-                        : tempSourceList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
-
-        contentBinding.spnFirstSymptoms.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (yesSymptomList.size() > 0) ? DataUtils.toItems(yesSymptomList)
-                        : DataUtils.toItems(yesSymptomList, false);
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
+        contentBinding.spnFirstSymptoms.initializeSpinner(DataUtils.toItems(null, true));
     }
 
     @Override
@@ -242,7 +195,7 @@ public class VisitEditSymptomsFragment extends BaseEditFragment<FragmentContactE
             @Override
             public void onLayoutReady() {
                 //getContentBinding().spnFirstSymptoms.reload();
-                getContentBinding().spnFirstSymptoms.notifyDataChanged();
+//                getContentBinding().spnFirstSymptoms.notifyDataChanged();
             }
         };
 

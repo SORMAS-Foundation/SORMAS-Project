@@ -60,7 +60,7 @@
                     android:layout_marginTop="@dimen/closelyRelatedControlMarginBottom"
                     >
 
-                    <de.symeda.sormas.app.component.controls.TeboSpinner
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/spnYear"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -70,11 +70,11 @@
                         app:description="@string/desc_report_year"
                         app:slim="true"
                         app:required="false"
-                        app:spinnerMode="dialog"
+
                         app:value="@={reportFilter.year}"
                         />
 
-                    <de.symeda.sormas.app.component.controls.TeboSpinner
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/spnEpiWeek"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
                         app:description="@string/desc_report_epi_week"
                         app:slim="true"
                         app:required="false"
-                        app:spinnerMode="dialog"
+
                         app:value="@={reportFilter.week}"
                         />
 

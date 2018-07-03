@@ -23,8 +23,10 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnLinkClickListener;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.VisualState;
-import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.YesNo;
@@ -135,62 +137,14 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 
     @Override
     public void onAfterLayoutBinding(final FragmentSampleEditLayoutBinding contentBinding) {
-        contentBinding.spnTestType.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
+        contentBinding.spnTestType.initializeSpinner(testTypeList);
 
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (testTypeList.size() > 0) ? DataUtils.addEmptyItem(testTypeList)
-                        : testTypeList;
-            }
+        contentBinding.spnSampleSource.initializeSpinner(sampleSourceList);
 
+        contentBinding.spnSampleMaterial.initializeSpinner(sampleMaterialList, null, new ValueChangeListener() {
             @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
-
-        contentBinding.spnSampleSource.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (sampleSourceList.size() > 0) ? DataUtils.addEmptyItem(sampleSourceList)
-                        : sampleSourceList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
-
-        contentBinding.spnSampleMaterial.initialize(new TeboSpinner.ISpinnerInitConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (sampleMaterialList.size() > 0) ? DataUtils.addEmptyItem(sampleMaterialList)
-                        : sampleMaterialList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-
-            @Override
-            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                SampleMaterial material = (SampleMaterial) value;
+            public void onChange(ControlPropertyField field) {
+                SampleMaterial material = (SampleMaterial) field.getValue();
 
                 if (material == SampleMaterial.OTHER) {
                     contentBinding.txtSampleMaterialText.setVisibility(View.VISIBLE);
@@ -199,28 +153,12 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
                     contentBinding.txtSampleMaterialText.setValue("");
                 }
             }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
         });
 
-        contentBinding.spnLaboratory.initialize(new TeboSpinner.ISpinnerInitConfig() {
+        contentBinding.spnLaboratory.initializeSpinner(DataUtils.toItems(labList), null, new ValueChangeListener() {
             @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (labList.size() > 0) ? DataUtils.toItems(labList)
-                        : DataUtils.toItems(labList, false);
-            }
-
-            @Override
-            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                Facility laboratory = (Facility) value;
+            public void onChange(ControlPropertyField field) {
+                Facility laboratory = (Facility) field.getValue();
 
                 if (laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
                     contentBinding.txtLaboratoryDetails.setVisibility(View.VISIBLE);
@@ -228,16 +166,6 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
                     contentBinding.txtLaboratoryDetails.setVisibility(View.GONE);
                     contentBinding.txtLaboratoryDetails.setValue("");
                 }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
             }
         });
 

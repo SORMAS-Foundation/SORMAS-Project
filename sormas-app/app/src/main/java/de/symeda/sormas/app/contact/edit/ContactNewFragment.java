@@ -16,7 +16,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.caze.edit.CaseNewFragment;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
@@ -61,23 +61,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 
     @Override
     public void onAfterLayoutBinding(FragmentContactNewLayoutBinding contentBinding) {
-        contentBinding.spnContactRelationship.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (relationshipList.size() > 0) ? DataUtils.addEmptyItem(relationshipList)
-                        : relationshipList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
+        contentBinding.spnContactRelationship.initializeSpinner(relationshipList);
 
         contentBinding.dtpDateOfLastContact.setFragmentManager(getFragmentManager());
     }

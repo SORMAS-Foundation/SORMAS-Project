@@ -30,7 +30,7 @@
             style="@style/SubHeadingStyle"
             />
 
-        <de.symeda.sormas.app.component.controls.TeboSpinner
+        <de.symeda.sormas.app.component.controls.ControlSpinnerField
             android:id="@+id/spnPlague"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
             app:labelCaption="@string/label_case_plague_type"
             app:description="@string/desc_case_plague_type"
             app:required="true"
-            app:spinnerMode="dialog"
+
             app:value="@={data.plagueType}"
 
 

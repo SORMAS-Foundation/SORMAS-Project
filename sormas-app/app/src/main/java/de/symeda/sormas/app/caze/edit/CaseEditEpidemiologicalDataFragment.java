@@ -23,8 +23,10 @@ import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.VisualState;
-import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;
@@ -143,37 +145,16 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
 
     @Override
     public void onAfterLayoutBinding(FragmentCaseEditEpidLayoutBinding contentBinding) {
-        contentBinding.spnSourceOfDrinkingWater.initialize(new TeboSpinner.ISpinnerInitConfig() {
+        contentBinding.spnSourceOfDrinkingWater.initializeSpinner(drinkingWaterSourceList, null, new ValueChangeListener() {
             @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (drinkingWaterSourceList.size() > 0) ? DataUtils.toItems(drinkingWaterSourceList)
-                        : DataUtils.toItems(drinkingWaterSourceList, false);
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-
-            @Override
-            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                WaterSource waterSource = (WaterSource) value;
+            public void onChange(ControlPropertyField field) {
+                WaterSource waterSource = (WaterSource) field.getValue();
 
                 if (waterSource == WaterSource.OTHER) {
                     getContentBinding().txtSourceOfDrinkingWaterOther.setVisibility(View.VISIBLE);
                 } else {
                     getContentBinding().txtSourceOfDrinkingWaterOther.setVisibility(View.GONE);
                 }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
 

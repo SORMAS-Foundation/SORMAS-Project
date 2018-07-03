@@ -40,7 +40,7 @@
             android:paddingEnd="@dimen/spinnerIconWidth"
             android:background="@drawable/selector_spinner"
             android:spinnerMode="dialog"
-            style="@style/ControlSpinnerStyle" />
+            style="@style/ControlSpinnerSlimStyle" />
 
     </LinearLayout>
 

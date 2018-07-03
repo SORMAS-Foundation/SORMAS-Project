@@ -88,7 +88,7 @@
 
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboSpinner
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/spnCaseOfficerClassification"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -97,11 +97,11 @@
                     app:labelCaption="@string/label_case_case_classification"
                     app:description="@string/desc_case_case_classification"
                     app:required="true"
-                    app:spinnerMode="dialog"
+
                     app:value="@={data.caseClassification}"
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboSpinner
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/spnCaseClassification"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -110,7 +110,7 @@
                     app:labelCaption="@string/label_case_case_classification"
                     app:description="@string/desc_case_case_classification"
                     app:required="true"
-                    app:spinnerMode="dialog"
+
                     app:value="@={data.caseClassification}"
                     />
 
@@ -130,7 +130,7 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.controls.TeboSpinner
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/spnOutcome"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -140,7 +140,7 @@
                         app:labelCaption="@string/label_case_outcome"
                         app:description="@string/desc_case_outcome"
                         app:required="true"
-                        app:spinnerMode="dialog"
+
                         app:value="@={data.outcome}"
                         />
 

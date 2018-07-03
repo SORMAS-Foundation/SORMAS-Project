@@ -23,7 +23,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
@@ -66,9 +66,9 @@ public class PresentConditionLayoutProcessor {
     private OnDateOfDeathChangeListener mOnDateOfDeathChangeListener;
 
     private FragmentManager fragmentManager;
-    private TeboSpinner spnCauseOfDeath;
-    private TeboSpinner spnDeathPlaceType;
-    private TeboSpinner spnBurialConductor;
+    private ControlSpinnerField spnCauseOfDeath;
+    private ControlSpinnerField spnDeathPlaceType;
+    private ControlSpinnerField spnBurialConductor;
     private ControlDateField dtpDateOfDeath;
     private ControlDateField dtpBurialDate;
 
@@ -167,9 +167,9 @@ public class PresentConditionLayoutProcessor {
 
     private View initializeChildLayout(ViewDataBinding binding) {
         final View innerLayout = binding.getRoot();
-        spnCauseOfDeath = (TeboSpinner)innerLayout.findViewById(R.id.spnCauseOfDeath);
-        spnDeathPlaceType = (TeboSpinner)innerLayout.findViewById(R.id.spnDeathPlaceType);
-        spnBurialConductor = (TeboSpinner)innerLayout.findViewById(R.id.spnBurialConductor);
+        spnCauseOfDeath = (ControlSpinnerField)innerLayout.findViewById(R.id.spnCauseOfDeath);
+        spnDeathPlaceType = (ControlSpinnerField)innerLayout.findViewById(R.id.spnDeathPlaceType);
+        spnBurialConductor = (ControlSpinnerField)innerLayout.findViewById(R.id.spnBurialConductor);
         dtpDateOfDeath = (ControlDateField)innerLayout.findViewById(R.id.dtpDateOfDeath);
         dtpBurialDate = (ControlDateField)innerLayout.findViewById(R.id.dtpBurialDate);
 
@@ -192,76 +192,23 @@ public class PresentConditionLayoutProcessor {
                 super.onBound(binding);
 
                 if (spnCauseOfDeath != null) {
-                    spnCauseOfDeath.initialize(new TeboSpinner.ISpinnerInitConfig() {
+                    spnCauseOfDeath.initializeSpinner(causeOfDeathList, null, new ValueChangeListener() {
                         @Override
-                        public Object getSelectedValue() {
-                            return null;
-                        }
-
-                        @Override
-                        public List<Item> getDataSource(Object parentValue) {
-                            return (causeOfDeathList.size() > 0) ? DataUtils.addEmptyItem(causeOfDeathList)
-                                    : causeOfDeathList;
-                        }
-
-                        @Override
-                        public VisualState getInitVisualState() {
-                            return null;
-                        }
-
-                        @Override
-                        public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                            if (!causeOfDeathProcessor.processLayout((CauseOfDeath)value))
+                        public void onChange(ControlPropertyField field) {
+                            if (!causeOfDeathProcessor.processLayout((CauseOfDeath) field.getValue()))
                                 return;
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
-
                         }
                     });
                 }
 
 
                 if (spnDeathPlaceType != null) {
-                    spnDeathPlaceType.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-                        @Override
-                        public Object getSelectedValue() {
-                            return null;
-                        }
-
-                        @Override
-                        public List<Item> getDataSource(Object parentValue) {
-                            return (deathPlaceTypeList.size() > 0) ? DataUtils.addEmptyItem(deathPlaceTypeList)
-                                    : deathPlaceTypeList;
-                        }
-
-                        @Override
-                        public VisualState getInitVisualState() {
-                            return null;
-                        }
-                    });
+                    spnDeathPlaceType.initializeSpinner(deathPlaceTypeList);
                 }
 
                 if (spnBurialConductor != null) {
                     toggleBurialControls(innerLayout, true);
-                    spnBurialConductor.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-                        @Override
-                        public Object getSelectedValue() {
-                            return null;
-                        }
-
-                        @Override
-                        public List<Item> getDataSource(Object parentValue) {
-                            return (burialConductorList.size() > 0) ? DataUtils.addEmptyItem(burialConductorList)
-                                    : burialConductorList;
-                        }
-
-                        @Override
-                        public VisualState getInitVisualState() {
-                            return null;
-                        }
-                    });
+                    spnBurialConductor.initializeSpinner(burialConductorList);
                 }
 
             }
@@ -357,7 +304,7 @@ public class PresentConditionLayoutProcessor {
 
     private void toggleBurialControls(View innerLayout, boolean visibility) {
         ControlDateField dtpBurialDate = (ControlDateField)innerLayout.findViewById(R.id.dtpBurialDate);
-        TeboSpinner spnBurialConductor = (TeboSpinner)innerLayout.findViewById(R.id.spnBurialConductor);
+        ControlSpinnerField spnBurialConductor = (ControlSpinnerField)innerLayout.findViewById(R.id.spnBurialConductor);
         ControlTextEditField txtBurialPlaceDesc = (ControlTextEditField)innerLayout.findViewById(R.id.txtBurialPlaceDesc);
 
         if (dtpBurialDate != null)

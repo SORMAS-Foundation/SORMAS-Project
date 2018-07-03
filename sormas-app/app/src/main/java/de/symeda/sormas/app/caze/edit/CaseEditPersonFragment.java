@@ -34,7 +34,9 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ControlDateField;
-import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
@@ -137,171 +139,53 @@ public class CaseEditPersonFragment extends BaseEditFragment<FragmentCaseEditPat
 
     @Override
     public void onAfterLayoutBinding(FragmentCaseEditPatientLayoutBinding contentBinding) {
-        contentBinding.spnOccupationType.initialize(new TeboSpinner.ISpinnerInitConfig() {
+        contentBinding.spnOccupationType.initializeSpinner(occupationTypeList, null, new ValueChangeListener() {
             @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (occupationTypeList.size() > 0) ? DataUtils.addEmptyItem(occupationTypeList)
-                        : occupationTypeList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-
-            @Override
-            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                if (!occupationTypeLayoutProcessor.processLayout((OccupationType) value))
+            public void onChange(ControlPropertyField field) {
+                if (!occupationTypeLayoutProcessor.processLayout((OccupationType) field.getValue()))
                     return;
             }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
         });
 
-        contentBinding.spnGender.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
+        contentBinding.spnGender.initializeSpinner(genderList);
 
+        contentBinding.spnAgeType.initializeSpinner(ageTypeList, null, new ValueChangeListener() {
             @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (genderList.size() > 0) ? DataUtils.addEmptyItem(genderList)
-                        : genderList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
-
-        contentBinding.spnAgeType.initialize(new TeboSpinner.ISpinnerInitConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return (ageTypeList.size() > 0) ? DataUtils.addEmptyItem(ageTypeList)
-                        : ageTypeList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-
-            @Override
-            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
+            public void onChange(ControlPropertyField field) {
                 updateApproximateAgeField();
             }
+        });
 
+        contentBinding.spnYear.initializeSpinner(yearList, null, new ValueChangeListener() {
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+            public void onChange(ControlPropertyField field) {
+                updateApproximateAgeField();
             }
         });
 
-        contentBinding.spnYear.initialize(new TeboSpinner.ISpinnerInitConfig() {
+        contentBinding.spnMonth.initializeSpinner(monthList, null, new ValueChangeListener() {
             @Override
-            public Object getSelectedValue() {
-                return DEFAULT_YEAR;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return yearList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-
-            @Override
-            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
+            public void onChange(ControlPropertyField field) {
                 updateApproximateAgeField();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
 
-        contentBinding.spnMonth.initialize(new TeboSpinner.ISpinnerInitConfig() {
+        contentBinding.spnDate.initializeSpinner(dayList, null, new ValueChangeListener() {
             @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return monthList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-
-            @Override
-            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
+            public void onChange(ControlPropertyField field) {
                 updateApproximateAgeField();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        contentBinding.spnDate.initialize(new TeboSpinner.ISpinnerInitConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                return dayList;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-
-            @Override
-            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                updateApproximateAgeField();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
     }
 
     @Override
     protected void updateUI(FragmentCaseEditPatientLayoutBinding contentBinding, Person person) {
-        contentBinding.spnOccupationType.setValue(person.getOccupationType(), true);
-        contentBinding.spnGender.setValue(person.getSex(), true);
-        contentBinding.spnAgeType.setValue(person.getApproximateAgeType(), true);
-        contentBinding.spnYear.setValue(person.getBirthdateYYYY(), true);
-        contentBinding.spnMonth.setValue(person.getBirthdateMM(), true);
-        contentBinding.spnDate.setValue(person.getBirthdateDD(), true);
+        contentBinding.spnOccupationType.setValue(person.getOccupationType());
+        contentBinding.spnGender.setValue(person.getSex());
+        contentBinding.spnAgeType.setValue(person.getApproximateAgeType());
+        contentBinding.spnYear.setValue(person.getBirthdateYYYY());
+        contentBinding.spnMonth.setValue(person.getBirthdateMM());
+        contentBinding.spnDate.setValue(person.getBirthdateDD());
     }
 
     @Override

@@ -493,7 +493,7 @@
                     />
 
 
-                <de.symeda.sormas.app.component.controls.TeboSpinner
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/spnSourceOfDrinkingWater"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -502,7 +502,7 @@
                     app:labelCaption="@string/label_case_epid_source_of_drinking_water"
                     app:description="@string/desc_case_epid_source_of_drinking_water"
                     app:required="true"
-                    app:spinnerMode="dialog"
+
                     app:value="@={data.waterSource}"
                     />
 

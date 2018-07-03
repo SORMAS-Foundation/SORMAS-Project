@@ -82,7 +82,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.controls.TeboSpinner
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/spnState"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -93,14 +93,14 @@
                     app:description="@string/desc_location_state"
                     app:labelCaption="@string/label_location_state"
                     app:required="true"
-                    app:spinnerMode="dialog"
+
                     app:imeOptions="actionNext"
                     app:value="@={data.region}"
 
 
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboSpinner
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/spnLga"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -112,7 +112,7 @@
                     app:description="@string/desc_location_lga"
                     app:labelCaption="@string/label_location_lga"
                     app:required="true"
-                    app:spinnerMode="dialog"
+
                     app:imeOptions="actionNext"
                     app:value="@={data.district}"
 
@@ -130,7 +130,7 @@
                 android:orientation="horizontal"
                 >
 
-                <de.symeda.sormas.app.component.controls.TeboSpinner
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/spnWard"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -141,7 +141,7 @@
                     app:description="@string/desc_location_ward"
                     app:labelCaption="@string/label_location_ward"
                     app:required="true"
-                    app:spinnerMode="dialog"
+
                     app:imeOptions="actionNext"
                     app:value="@={data.community}"
 

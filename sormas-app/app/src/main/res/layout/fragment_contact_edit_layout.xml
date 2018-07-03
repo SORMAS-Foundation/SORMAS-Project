@@ -181,7 +181,7 @@
 
                     />
 
-                <de.symeda.sormas.app.component.controls.TeboSpinner
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/spnContactRelationship"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -190,7 +190,7 @@
                     app:labelCaption="@string/label_contact_relationship_with_case"
                     app:description="@string/desc_contact_relationship_with_case"
                     app:required="true"
-                    app:spinnerMode="dialog"
+
                     app:value="@={data.relationToCase}"
                     />
 

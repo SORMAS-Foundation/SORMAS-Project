@@ -16,7 +16,7 @@ import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.util.DataUtils;
@@ -97,7 +97,7 @@ public class CauseOfDeathLayoutProcessor {
 
     private boolean initializeChildLayout(ViewDataBinding binding, final CauseOfDeath causeOfDeath) {
         View innerRootLayout = binding.getRoot();
-        final TeboSpinner spnDisease = (TeboSpinner) innerRootLayout.findViewById(R.id.spnDisease);
+        final ControlSpinnerField spnDisease = (ControlSpinnerField) innerRootLayout.findViewById(R.id.spnDisease);
 
 
         binding.addOnRebindCallback(new OnRebindCallback() {
@@ -109,23 +109,7 @@ public class CauseOfDeathLayoutProcessor {
                     return;
 
                 if (causeOfDeath == CauseOfDeath.EPIDEMIC_DISEASE) {
-                    spnDisease.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-                        @Override
-                        public Object getSelectedValue() {
-                            return null;
-                        }
-
-                        @Override
-                        public List<Item> getDataSource(Object parentValue) {
-                            return (diseaseList.size() > 0) ? DataUtils.addEmptyItem(diseaseList)
-                                    : diseaseList;
-                        }
-
-                        @Override
-                        public VisualState getInitVisualState() {
-                            return null;
-                        }
-                    });
+                    spnDisease.initializeSpinner(diseaseList);
                 }
             }
         });

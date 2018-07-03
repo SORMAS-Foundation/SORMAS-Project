@@ -1,6 +1,6 @@
 package de.symeda.sormas.app.component;
 
-import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 
 /**
  * Created by Orson on 10/02/2018.
@@ -12,5 +12,5 @@ import de.symeda.sormas.app.component.controls.TeboSpinner;
 
 public interface OnTeboSpinnerAttachedToWindowListener {
 
-    void onAttachedToWindow(TeboSpinner spinner);
+    void onAttachedToWindow(ControlSpinnerField spinner);
 }

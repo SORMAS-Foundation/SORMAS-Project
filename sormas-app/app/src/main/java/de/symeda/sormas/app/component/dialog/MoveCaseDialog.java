@@ -25,9 +25,11 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.TeboSpinner;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
@@ -164,109 +166,65 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
     protected void initializeContentView(ViewDataBinding rootBinding, final ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
         final DialogMoveCaseLayoutBinding _contentBinding = (DialogMoveCaseLayoutBinding)contentBinding;
 
-
-        _contentBinding.spnState.initialize(new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return data.getRegion();
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                /*Community comm = DatabaseHelper.getCommunityDao().queryForAll().get(0);
-                return DataUtils.toItems(DatabaseHelper.getFacilityDao()
-                        .getHealthFacilitiesByCommunity(comm, false));*/
-
-
-                //return DataUtils.toItems(communityList);
-
-                List<Item> regions = RegionLoader.getInstance().load();
-
-                return (regions.size() > 0) ? DataUtils.addEmptyItem(regions) : regions;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
-
-        _contentBinding.spnLga.initialize(_contentBinding.spnState, new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return data.getDistrict();
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                List<Item> districts = DistrictLoader.getInstance().load((Region)parentValue);
-
-                return (districts.size() > 0) ? DataUtils.addEmptyItem(districts) : districts;
-
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
-
-        _contentBinding.spnWard.initialize(_contentBinding.spnLga, new TeboSpinner.ISpinnerInitSimpleConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return data.getCommunity();
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                List<Item> communities = CommunityLoader.getInstance().load((District)parentValue);
-
-                return (communities.size() > 0) ? DataUtils.addEmptyItem(communities) : communities;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-        });
-
-        _contentBinding.spnFacility.initialize(_contentBinding.spnWard, new TeboSpinner.ISpinnerInitConfig() {
-            @Override
-            public Object getSelectedValue() {
-                return null;
-            }
-
-            @Override
-            public List<Item> getDataSource(Object parentValue) {
-                List<Item> facilities = FacilityLoader.getInstance().load((Community)parentValue, false);
-
-                return (facilities.size() > 0) ? DataUtils.addEmptyItem(facilities) : facilities;
-            }
-
-            @Override
-            public VisualState getInitVisualState() {
-                return null;
-            }
-
-            @Override
-            public void onItemSelected(TeboSpinner view, Object value, int position, long id) {
-                Facility facility = (Facility)value;
-
-                boolean otherHealthFacility = facility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
-                boolean noneHealthFacility = facility.getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
-
-                if (otherHealthFacility || noneHealthFacility) {
-                    _contentBinding.txtFacilityDetails.setVisibility(View.VISIBLE);
-                } else {
-                    _contentBinding.txtFacilityDetails.setVisibility(View.GONE);
+        if (_contentBinding.spnState != null) {
+            _contentBinding.spnState.initializeSpinner(RegionLoader.getInstance().load(), null, new ValueChangeListener() {
+                @Override
+                public void onChange(ControlPropertyField field) {
+                    Region selectedValue = (Region) field.getValue();
+                    if (selectedValue != null) {
+                        _contentBinding.spnLga.setSpinnerData(DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(selectedValue)), _contentBinding.spnLga.getValue());
+                    } else {
+                        _contentBinding.spnLga.setSpinnerData(null);
+                    }
                 }
-            }
+            });
+        }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+        if (_contentBinding.spnLga != null) {
+            _contentBinding.spnLga.initializeSpinner(DistrictLoader.getInstance().load((Region) _contentBinding.spnState.getValue()), null, new ValueChangeListener() {
+                @Override
+                public void onChange(ControlPropertyField field) {
+                    District selectedValue = (District) field.getValue();
+                    if (selectedValue != null) {
+                        _contentBinding.spnWard.setSpinnerData(DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(selectedValue)), _contentBinding.spnWard.getValue());
+                        _contentBinding.spnFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(selectedValue, true)), _contentBinding.spnFacility.getValue());
+                    } else {
+                        _contentBinding.spnWard.setSpinnerData(null);
+                        _contentBinding.spnFacility.setSpinnerData(null);
+                    }
+                }
+            });
+        }
 
-            }
-        });
+        if (_contentBinding.spnWard != null) {
+            _contentBinding.spnWard.initializeSpinner(CommunityLoader.getInstance().load((District) _contentBinding.spnLga.getValue()), null, new ValueChangeListener() {
+                @Override
+                public void onChange(ControlPropertyField field) {
+                    Community selectedValue = (Community) field.getValue();
+                    if (selectedValue != null) {
+                        _contentBinding.spnFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(selectedValue, true)));
+                    } else if (_contentBinding.spnLga.getValue() != null) {
+                        _contentBinding.spnFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) _contentBinding.spnLga.getValue(), true)));
+                    } else {
+                        _contentBinding.spnFacility.setSpinnerData(null);
+                    }
+                }
+            });
+        }
+
+        List<Item> facilities = _contentBinding.spnWard.getValue() != null ? FacilityLoader.getInstance().load((Community) _contentBinding.spnWard.getValue(), true)
+                : FacilityLoader.getInstance().load((District) _contentBinding.spnLga.getValue(), true);
+        if (_contentBinding.spnFacility != null) {
+            _contentBinding.spnFacility.initializeSpinner(facilities, null, new ValueChangeListener() {
+                @Override
+                public void onChange(ControlPropertyField field) {
+                    if (field.getValue() == null)
+                        return;
+
+                    // TODO Re-add facility details field
+                }
+            });
+        }
     }
 
     @Override

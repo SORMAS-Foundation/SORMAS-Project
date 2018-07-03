@@ -246,7 +246,7 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 
     @Override
     protected void initialize(Context context, AttributeSet attrs, int defStyle) {
-        // Nothing to initialize
+        // Nothing to initializeSpinner
     }
 
     @Override
