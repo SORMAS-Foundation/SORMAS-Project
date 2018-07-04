@@ -13,15 +13,6 @@
             type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataGathering&gt;" />
         <variable name="travels"
             type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.epidata.EpiDataTravel&gt;" />
-        <variable
-            name="animalContactYes"
-            type="java.util.List&lt;de.symeda.sormas.app.component.tagview.Tag&gt;" />
-        <variable
-            name="animalContactUnknown"
-            type="java.util.List&lt;de.symeda.sormas.app.component.tagview.Tag&gt;" />
-        <variable
-            name="animalContactNo"
-            type="java.util.List&lt;de.symeda.sormas.app.component.tagview.Tag&gt;" />
 
         <variable
             name="burialItemClickCallback"
@@ -329,86 +320,29 @@
                     app:value="@{@string/epiData_infoText}"
                     />-->
 
-                <de.symeda.sormas.app.component.tagview.TagView
+                <de.symeda.sormas.app.component.controls.ControlTagViewField
                     android:id="@+id/tvAnimalContactYes"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="@dimen/tagViewVerticalSeparator"
                     app:description="@string/desc_epid_animal_contact_yes"
-                    app:labelCaption="@string/label_epid_animal_contact_yes"
-                    app:lineMargin="@dimen/tagViewLineMargin"
-                    app:tagMargin="@dimen/tagViewTagMargin"
-                    app:textPaddingLeft="@dimen/tagViewTextPaddingLeft"
-                    app:textPaddingRight="@dimen/tagViewTextPaddingRight"
-                    app:textPaddingTop="@dimen/tagViewTextPaddingTop"
-                    app:textPaddingBottom="@dimen/tagViewTextPaddingBottom"
-                    app:textSize="@{@dimen/tagViewTextSize}"
-                    app:textColor="@{@color/tagViewTextColor}"
-                    app:layoutColor="@{@color/tagViewLayoutColor}"
-                    app:layoutColorPress="@{@color/tagViewLayoutColorPress}"
-                    app:deletable="@{@bool/tagViewIsDeletable}"
-                    app:deleteIndicatorColor="@{@color/deleteIndicatorColor}"
-                    app:deleteIndicatorSize="@{@dimen/deleteIndicatorSize}"
-                    app:radius="@{@dimen/tagViewRadius}"
-                    app:deleteIcon="@string/tagViewDeleteIcon"
-                    app:layoutBorderSize="@dimen/tagViewLayoutBorderSize"
-                    app:layoutBorderColor="@{@color/tagViewLayoutBorderColor}"
-                    app:rowLayout="@{@layout/row_symptom_read_item_layout}"
-                    app:tags="@{animalContactYes}" />
+                    app:labelCaption="@string/label_epid_animal_contact_yes" />
 
-                <de.symeda.sormas.app.component.tagview.TagView
+                <de.symeda.sormas.app.component.controls.ControlTagViewField
                     android:id="@+id/tvAnimalContactUnknown"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="@dimen/tagViewVerticalSeparator"
                     app:description="@string/desc_epid_animal_contact_unknown"
-                    app:labelCaption="@string/label_epid_animal_contact_unknown"
-                    app:lineMargin="@dimen/tagViewLineMargin"
-                    app:tagMargin="@dimen/tagViewTagMargin"
-                    app:textPaddingLeft="@dimen/tagViewTextPaddingLeft"
-                    app:textPaddingRight="@dimen/tagViewTextPaddingRight"
-                    app:textPaddingTop="@dimen/tagViewTextPaddingTop"
-                    app:textPaddingBottom="@dimen/tagViewTextPaddingBottom"
-                    app:textSize="@{@dimen/tagViewTextSize}"
-                    app:textColor="@{@color/tagViewTextColor}"
-                    app:layoutColor="@{@color/tagViewLayoutColor}"
-                    app:layoutColorPress="@{@color/tagViewLayoutColorPress}"
-                    app:deletable="@{@bool/tagViewIsDeletable}"
-                    app:deleteIndicatorColor="@{@color/deleteIndicatorColor}"
-                    app:deleteIndicatorSize="@{@dimen/deleteIndicatorSize}"
-                    app:radius="@{@dimen/tagViewRadius}"
-                    app:deleteIcon="@string/tagViewDeleteIcon"
-                    app:layoutBorderSize="@dimen/tagViewLayoutBorderSize"
-                    app:layoutBorderColor="@{@color/tagViewLayoutBorderColor}"
-                    app:rowLayout="@{@layout/row_symptom_read_item_layout}"
-                    app:tags="@{animalContactUnknown}" />
+                    app:labelCaption="@string/label_epid_animal_contact_unknown" />
 
-                <de.symeda.sormas.app.component.tagview.TagView
+                <de.symeda.sormas.app.component.controls.ControlTagViewField
                     android:id="@+id/tvAnimalContactNo"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="@dimen/tagViewVerticalSeparator"
                     app:description="@string/desc_epid_animal_contact_no"
-                    app:labelCaption="@string/label_epid_animal_contact_no"
-                    app:lineMargin="@dimen/tagViewLineMargin"
-                    app:tagMargin="@dimen/tagViewTagMargin"
-                    app:textPaddingLeft="@dimen/tagViewTextPaddingLeft"
-                    app:textPaddingRight="@dimen/tagViewTextPaddingRight"
-                    app:textPaddingTop="@dimen/tagViewTextPaddingTop"
-                    app:textPaddingBottom="@dimen/tagViewTextPaddingBottom"
-                    app:textSize="@{@dimen/tagViewTextSize}"
-                    app:textColor="@{@color/tagViewTextColor}"
-                    app:layoutColor="@{@color/tagViewLayoutColor}"
-                    app:layoutColorPress="@{@color/tagViewLayoutColorPress}"
-                    app:deletable="@{@bool/tagViewIsDeletable}"
-                    app:deleteIndicatorColor="@{@color/deleteIndicatorColor}"
-                    app:deleteIndicatorSize="@{@dimen/deleteIndicatorSize}"
-                    app:radius="@{@dimen/tagViewRadius}"
-                    app:deleteIcon="@string/tagViewDeleteIcon"
-                    app:layoutBorderSize="@dimen/tagViewLayoutBorderSize"
-                    app:layoutBorderColor="@{@color/tagViewLayoutBorderColor}"
-                    app:rowLayout="@{@layout/row_symptom_read_item_layout}"
-                    app:tags="@{animalContactNo}" />
+                    app:labelCaption="@string/label_epid_animal_contact_no" />
 
 
 

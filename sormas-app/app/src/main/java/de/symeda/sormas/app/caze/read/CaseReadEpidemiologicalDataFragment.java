@@ -17,7 +17,6 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.component.dialog.SimpleDialog;
-import de.symeda.sormas.app.component.tagview.Tag;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
@@ -85,9 +84,9 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
         contentBinding.setBurials(getBurialVisits());
         contentBinding.setSocialEvents(getGatherings());
         contentBinding.setTravels(getTravels());
-        contentBinding.setAnimalContactYes(getAnimalContactYes());
-        contentBinding.setAnimalContactUnknown(getAnimalContactUnknown());
-        contentBinding.setAnimalContactNo(getAnimalContactNo());
+        contentBinding.tvAnimalContactYes.setTags(getAnimalContactYes());
+        contentBinding.tvAnimalContactUnknown.setTags(getAnimalContactUnknown());
+        contentBinding.tvAnimalContactNo.setTags(getAnimalContactNo());
 
         contentBinding.setBurialItemClickCallback(onBurialItemClickListener);
         contentBinding.setSocialEventItemClickCallback(onSocialEventItemClickListener);
@@ -211,23 +210,23 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
         return travels;
     }
 
-    private List<Tag> getAnimalContactYes() {
-        List<Tag> results = new ArrayList();
-        results.add(new Tag("Rodents or their excreta"));
-        results.add(new Tag("Bats or their excreta"));
+    private List<String> getAnimalContactYes() {
+        List<String> results = new ArrayList();
+        results.add("Rodents or their excreta");
+        results.add("Bats or their excreta");
         return results;
     }
 
-    private List<Tag> getAnimalContactUnknown() {
-        List<Tag> results = new ArrayList();
-        results.add(new Tag("Primates (monkeys)"));
-        results.add(new Tag("Swine"));
+    private List<String> getAnimalContactUnknown() {
+        List<String> results = new ArrayList();
+        results.add("Primates (monkeys)");
+        results.add("Swine");
         return results;
     }
 
-    private List<Tag> getAnimalContactNo() {
-        List<Tag> results = new ArrayList();
-        results.add(new Tag("Poultry or wild birds"));
+    private List<String> getAnimalContactNo() {
+        List<String> results = new ArrayList();
+        results.add("Poultry or wild birds");
         return results;
     }
 

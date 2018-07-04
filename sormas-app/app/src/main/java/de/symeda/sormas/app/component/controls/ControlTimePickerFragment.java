@@ -19,7 +19,7 @@ public class ControlTimePickerFragment extends DialogFragment implements TimePic
 
     // Constants
 
-    public static final String KEY_LINKED_TIME = "LinkedTime";
+    public static final String KEY_TIME = "Time";
 
     // Attributes
 
@@ -37,7 +37,7 @@ public class ControlTimePickerFragment extends DialogFragment implements TimePic
         super.onSaveInstanceState(outState);
 
         if (outState != null) {
-            outState.putSerializable(KEY_LINKED_TIME, time);
+            outState.putSerializable(KEY_TIME, time);
         }
     }
 
@@ -47,8 +47,8 @@ public class ControlTimePickerFragment extends DialogFragment implements TimePic
 
         Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
 
-        if (arguments != null && arguments.containsKey(KEY_LINKED_TIME)) {
-            time = (Date) arguments.get(KEY_LINKED_TIME);
+        if (arguments != null && arguments.containsKey(KEY_TIME)) {
+            time = (Date) arguments.get(KEY_TIME);
         }
     }
 

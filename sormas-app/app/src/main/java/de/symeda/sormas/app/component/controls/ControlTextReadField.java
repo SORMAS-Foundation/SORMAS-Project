@@ -37,7 +37,6 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 
     // Attributes
 
-    private String value;
     private String valueFormat;
     private boolean singleLine;
     private int maxLines;
@@ -71,24 +70,16 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         }
     }
 
-    // TODO: Remove after child classes have been refactored
-    public void updateControl(String value) {
-        textView.setText(value);
-        invalidate();
-        requestLayout();
-    }
-
     // Overrides
 
     @Override
     public void setValue(String value) {
-        this.value = value;
         textView.setText(value);
     }
 
     @Override
     public String getValue() {
-        return this.value;
+        throw new UnsupportedOperationException("getValue is not supported by a read-only field");
     }
 
     @Override

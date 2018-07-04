@@ -18,7 +18,7 @@ public class ControlDatePickerFragment extends DialogFragment implements DatePic
 
     // Constants
 
-    public static final String KEY_LINKED_DATE = "LinkedDate";
+    public static final String KEY_DATE = "Date";
 
     // Attributes
 
@@ -36,7 +36,7 @@ public class ControlDatePickerFragment extends DialogFragment implements DatePic
         super.onSaveInstanceState(outState);
 
         if (outState != null) {
-            outState.putSerializable(KEY_LINKED_DATE, date);
+            outState.putSerializable(KEY_DATE, date);
         }
     }
 
@@ -46,8 +46,8 @@ public class ControlDatePickerFragment extends DialogFragment implements DatePic
 
         Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
 
-        if (arguments != null && arguments.containsKey(KEY_LINKED_DATE)) {
-            date = (Date) arguments.get(KEY_LINKED_DATE);
+        if (arguments != null && arguments.containsKey(KEY_DATE)) {
+            date = (Date) arguments.get(KEY_DATE);
         }
     }
 

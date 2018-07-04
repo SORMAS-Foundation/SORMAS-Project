@@ -85,7 +85,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
         });
 
         Bundle dateBundle = new Bundle();
-        dateBundle.putSerializable(ControlDatePickerFragment.KEY_LINKED_DATE, this.getValue());
+        dateBundle.putSerializable(ControlDatePickerFragment.KEY_DATE, this.getValue());
         fragment.setArguments(dateBundle);
         fragment.show(fragmentManager, getResources().getText(R.string.hint_select_a_date).toString());
     }

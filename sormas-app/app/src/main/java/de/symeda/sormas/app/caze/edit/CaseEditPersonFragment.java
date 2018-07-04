@@ -104,9 +104,6 @@ public class CaseEditPersonFragment extends BaseEditFragment<FragmentCaseEditPat
 
     @Override
     public void onLayoutBinding(FragmentCaseEditPatientLayoutBinding contentBinding) {
-
-        setupCallback();
-
         occupationTypeLayoutProcessor = new OccupationTypeLayoutProcessor(getContext(), contentBinding, record);
         occupationTypeLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
@@ -176,6 +173,13 @@ public class CaseEditPersonFragment extends BaseEditFragment<FragmentCaseEditPat
                 updateApproximateAgeField();
             }
         });
+
+        contentBinding.txtPermAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAddressPopup(v);
+            }
+        });
     }
 
     @Override
@@ -203,27 +207,20 @@ public class CaseEditPersonFragment extends BaseEditFragment<FragmentCaseEditPat
         return false;
     }
 
-    private void setupCallback() {
+    public void openAddressPopup(View v) {
+        final Location location = record.getAddress();
+        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), location);
+        locationDialog.show(null);
 
-        onAddressLinkClickedCallback = new IEntryItemOnClickListener() {
+        locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
             @Override
-            public void onClick(View v, Object item) {
-                final Location location = record.getAddress();
-                final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), location);
-                locationDialog.show(null);
+            public void onOkClick(View v, Object item, View viewRoot) {
+                getContentBinding().txtPermAddress.setValue(location.toString());
+                record.setAddress(location);
 
-
-                locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
-                    @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
-                        getContentBinding().txtPermAddress.setValue(location.toString());
-                        record.setAddress(location);
-
-                        locationDialog.dismiss();
-                    }
-                });
+                locationDialog.dismiss();
             }
-        };
+        });
     }
 
     private void setLocalBindingVariable(final ViewDataBinding binding, String layoutName) {

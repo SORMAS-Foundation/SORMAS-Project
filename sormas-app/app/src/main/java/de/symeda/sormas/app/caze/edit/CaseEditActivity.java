@@ -54,6 +54,8 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     private AsyncTask saveTask;
     private AsyncTask caseBeforeSaveAndPlagueTypeAlertTask;
 
+    private BaseEditFragment fragment;
+
     @Override
     protected Case queryRootEntity(String recordUuid) {
         return DatabaseHelper.getCaseDao().queryUuidWithEmbedded(recordUuid);
@@ -79,7 +81,6 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
 
         CaseSection section = CaseSection.fromMenuKey(menuItem.getKey());
-        BaseEditFragment fragment;
         switch (section) {
 
             case CASE_INFO:
@@ -350,4 +351,5 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         if (caseBeforeSaveAndPlagueTypeAlertTask != null && !caseBeforeSaveAndPlagueTypeAlertTask.isCancelled())
             caseBeforeSaveAndPlagueTypeAlertTask.cancel(true);
     }
+
 }

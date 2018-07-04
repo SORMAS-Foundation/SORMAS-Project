@@ -345,36 +345,6 @@
         <attr name="android:layout_margin" />
     </declare-styleable>
 
-    <declare-styleable name="TagView">
-        <attr name="lineMargin" format="dimension" />
-        <attr name="tagMargin" format="dimension" />
-        <attr name="textPaddingLeft" format="dimension" />
-        <attr name="textPaddingRight" format="dimension" />
-        <attr name="textPaddingTop" format="dimension" />
-        <attr name="textPaddingBottom" format="dimension" />
-
-
-        <attr name="textSize" />
-        <attr name="layoutBorderSize" format="dimension|reference" />
-        <attr name="layoutColor" format="reference" />
-        <attr name="layoutColorPress" format="reference" />
-        <attr name="textColor" />
-        <attr name="deleteIndicatorColor" format="reference" />
-        <attr name="layoutBorderColor" format="reference" />
-        <attr name="deletable" format="reference" />
-        <attr name="rowLayout" format="reference" />
-
-        <attr name="radius" format="dimension|reference" />
-        <attr name="deleteIndicatorSize" format="dimension|reference" />
-        <attr name="deleteIcon" format="string|reference" />
-        <attr name="background" />
-        <attr name="description" />
-        <attr name="labelCaption" />
-        <attr name="labelColor" />
-        <attr name="textAlignment" />
-        <attr name="gravity" />
-    </declare-styleable>
-
     <attr name="inputType">
         <flag name="none" value="0x00000000" />
         <flag name="text" value="0x00000001" />

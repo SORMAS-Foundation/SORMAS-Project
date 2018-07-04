@@ -14,7 +14,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.component.tagview.Tag;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
@@ -32,9 +31,9 @@ public class VisitReadSymptomsFragment extends BaseReadFragment<FragmentContactR
     private VisitStatus pageStatus;
     private Symptoms record;
 
-    private List<Tag> yesResult;
-    private List<Tag> noResult;
-    private List<Tag> unknownResult;
+    private List<String> yesResult;
+    private List<String> noResult;
+    private List<String> unknownResult;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -106,9 +105,9 @@ public class VisitReadSymptomsFragment extends BaseReadFragment<FragmentContactR
         if (record != null) {
             contentBinding.setData(record);
 
-            contentBinding.setSymptomsYes(yesResult);
-            contentBinding.setSymptomsUnknown(unknownResult);
-            contentBinding.setSymptomsNo(noResult);
+            contentBinding.tvSymptomsYes.setTags(yesResult);
+            contentBinding.tvSymptomsUnknown.setTags(unknownResult);
+            contentBinding.tvSymptomsNo.setTags(noResult);
         }
     }
 
@@ -159,33 +158,33 @@ public class VisitReadSymptomsFragment extends BaseReadFragment<FragmentContactR
         return newInstance(VisitReadSymptomsFragment.class, capsule, activityRootData);
     }
 
-    private List<Tag> getSymptomsYes(List<Symptom> list) {
-        List<Tag> results = new ArrayList();
+    private List<String> getSymptomsYes(List<Symptom> list) {
+        List<String> results = new ArrayList();
         for (Symptom s: list) {
             if (s.getState() == SymptomState.YES) {
-                results.add(new Tag(s.getName()));
+                results.add(s.getName());
             }
         }
 
         return results;
     }
 
-    private List<Tag> getSymptomsUnknown(List<Symptom> list) {
-        List<Tag> results = new ArrayList();
+    private List<String> getSymptomsUnknown(List<Symptom> list) {
+        List<String> results = new ArrayList();
         for (Symptom s: list) {
             if (s.getState() == SymptomState.UNKNOWN) {
-                results.add(new Tag(s.getName()));
+                results.add(s.getName());
             }
         }
 
         return results;
     }
 
-    private List<Tag> getSymptomsNo(List<Symptom> list) {
-        List<Tag> results = new ArrayList();
+    private List<String> getSymptomsNo(List<Symptom> list) {
+        List<String> results = new ArrayList();
         for (Symptom s: list) {
             if (s.getState() == SymptomState.NO) {
-                results.add(new Tag(s.getName()));
+                results.add(s.getName());
             }
         }
 

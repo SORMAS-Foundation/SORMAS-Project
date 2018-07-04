@@ -68,7 +68,6 @@ public class FormBindingAdapters {
 
         if (sample == null) {
             control.setValue(val);
-            control.updateControl(val);
         } else {
 
             String stringValue;
@@ -80,8 +79,6 @@ public class FormBindingAdapters {
 
                     //Set icon to check & tint
                     control.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.goodJob);
-
-                    control.updateControl(val);
                 }
 
             } else {
@@ -92,8 +89,6 @@ public class FormBindingAdapters {
 
                     //Set icon to cancel & tint
                     control.setImageBackground(R.drawable.ic_cancel_24dp, R.color.watchOut);
-
-                    control.updateControl(val);
                 }
             }
         }
@@ -107,7 +102,6 @@ public class FormBindingAdapters {
 
         if (sample == null) {
             control.setValue(val);
-            control.updateControl(val);
         } else {
 
             String stringValue;
@@ -119,8 +113,6 @@ public class FormBindingAdapters {
 
                     //Set icon to check & tint
                     control.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.goodJob);
-
-                    control.updateControl(val);
                 }
 
             } else {
@@ -131,8 +123,6 @@ public class FormBindingAdapters {
 
                     //Set icon to cancel & tint
                     control.setImageBackground(R.drawable.ic_cancel_24dp, R.color.watchOut);
-
-                    control.updateControl(val);
                 }
             }
         }
@@ -145,19 +135,17 @@ public class FormBindingAdapters {
 
         if (caze == null) {
             control.setValue(val);
-            control.updateControl(val);
         } else {
             String location = "";
             if (caze.getPerson() != null && caze.getPerson().getAddress() != null) {
                 location = "\n" + caze.getPerson().getAddress().toString();
             }
             val = caze.toString() + location;
-            control.setValue(val);
 
             if (valueFormat != null && valueFormat.trim() != "") {
-                control.updateControl(String.format(valueFormat, val));
+                control.setValue(String.format(valueFormat, val));
             } else {
-                control.updateControl(val);
+                control.setValue(val);
             }
         }
     }
@@ -169,19 +157,17 @@ public class FormBindingAdapters {
 
         if (contact == null) {
             control.setValue(val);
-            control.updateControl(val);
         } else {
             String location = "";
             if (contact.getPerson() != null && contact.getPerson().getAddress() != null) {
                 location = "\n" + contact.getPerson().getAddress().toString();
             }
             val = contact.toString() + location;
-            control.setValue(val);
 
             if (valueFormat != null && valueFormat.trim() != "") {
-                control.updateControl(String.format(valueFormat, val));
+                control.setValue(String.format(valueFormat, val));
             } else {
-                control.updateControl(val);
+                control.setValue(val);
             }
         }
     }
@@ -193,19 +179,17 @@ public class FormBindingAdapters {
 
         if (event == null) {
             control.setValue(val);
-            control.updateControl(val);
         } else {
             String location = "";
             if (event.getEventLocation() != null) {
                 location = "\n" + event.getEventLocation().toString();
             }
             val = event.toString() + location;
-            control.setValue(val);
 
             if (valueFormat != null && valueFormat.trim() != "") {
-                control.updateControl(String.format(valueFormat, val));
+                control.setValue(String.format(valueFormat, val));
             } else {
-                control.updateControl(val);
+                control.setValue(val);
             }
         }
     }
@@ -250,15 +234,13 @@ public class FormBindingAdapters {
 
         if (location == null) {
             textField.setValue(val);
-            textField.updateControl(val);
         } else {
             val = location.toString();
-            textField.setValue(val);
 
             if (valueFormat != null && valueFormat.trim() != "") {
-                textField.updateControl(String.format(valueFormat, val));
+                textField.setValue(String.format(valueFormat, val));
             } else {
-                textField.updateControl(val);
+                textField.setValue(val);
             }
         }
     }

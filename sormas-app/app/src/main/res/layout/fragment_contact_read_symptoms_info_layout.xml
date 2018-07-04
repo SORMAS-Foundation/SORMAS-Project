@@ -6,9 +6,6 @@
 
     <data>
         <variable name="data" type="de.symeda.sormas.app.backend.symptoms.Symptoms"/>
-        <variable name="symptomsYes" type="java.util.List&lt;de.symeda.sormas.app.component.tagview.Tag&gt;" />
-        <variable name="symptomsUnknown" type="java.util.List&lt;de.symeda.sormas.app.component.tagview.Tag&gt;" />
-        <variable name="symptomsNo" type="java.util.List&lt;de.symeda.sormas.app.component.tagview.Tag&gt;" />
     </data>
 
 
@@ -39,86 +36,29 @@
                 app:defaultValue='@{@string/not_available}'
                 />
 
-            <de.symeda.sormas.app.component.tagview.TagView
+            <de.symeda.sormas.app.component.controls.ControlTagViewField
                 android:id="@+id/tvSymptomsYes"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="@dimen/tagViewVerticalSeparator"
                 app:description="@string/desc_contact_symptoms_yes"
-                app:labelCaption="@string/label_contact_symptoms_yes"
-                app:lineMargin="@dimen/tagViewLineMargin"
-                app:tagMargin="@dimen/tagViewTagMargin"
-                app:textPaddingLeft="@dimen/tagViewTextPaddingLeft"
-                app:textPaddingRight="@dimen/tagViewTextPaddingRight"
-                app:textPaddingTop="@dimen/tagViewTextPaddingTop"
-                app:textPaddingBottom="@dimen/tagViewTextPaddingBottom"
-                app:textSize="@{@dimen/tagViewTextSize}"
-                app:textColor="@{@color/tagViewTextColor}"
-                app:layoutColor="@{@color/tagViewLayoutColor}"
-                app:layoutColorPress="@{@color/tagViewLayoutColorPress}"
-                app:deletable="@{@bool/tagViewIsDeletable}"
-                app:deleteIndicatorColor="@{@color/deleteIndicatorColor}"
-                app:deleteIndicatorSize="@{@dimen/deleteIndicatorSize}"
-                app:radius="@{@dimen/tagViewRadius}"
-                app:deleteIcon="@string/tagViewDeleteIcon"
-                app:layoutBorderSize="@dimen/tagViewLayoutBorderSize"
-                app:layoutBorderColor="@{@color/tagViewLayoutBorderColor}"
-                app:rowLayout="@{@layout/row_symptom_read_item_layout}"
-                app:tags="@{symptomsYes}" />
+                app:labelCaption="@string/label_contact_symptoms_yes" />
 
-            <de.symeda.sormas.app.component.tagview.TagView
+            <de.symeda.sormas.app.component.controls.ControlTagViewField
                 android:id="@+id/tvSymptomsUnknown"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="@dimen/tagViewVerticalSeparator"
                 app:description="@string/desc_contact_symptoms_unknown"
-                app:labelCaption="@string/label_contact_symptoms_unknown"
-                app:lineMargin="@dimen/tagViewLineMargin"
-                app:tagMargin="@dimen/tagViewTagMargin"
-                app:textPaddingLeft="@dimen/tagViewTextPaddingLeft"
-                app:textPaddingRight="@dimen/tagViewTextPaddingRight"
-                app:textPaddingTop="@dimen/tagViewTextPaddingTop"
-                app:textPaddingBottom="@dimen/tagViewTextPaddingBottom"
-                app:textSize="@{@dimen/tagViewTextSize}"
-                app:textColor="@{@color/tagViewTextColor}"
-                app:layoutColor="@{@color/tagViewLayoutColor}"
-                app:layoutColorPress="@{@color/tagViewLayoutColorPress}"
-                app:deletable="@{@bool/tagViewIsDeletable}"
-                app:deleteIndicatorColor="@{@color/deleteIndicatorColor}"
-                app:deleteIndicatorSize="@{@dimen/deleteIndicatorSize}"
-                app:radius="@{@dimen/tagViewRadius}"
-                app:deleteIcon="@string/tagViewDeleteIcon"
-                app:layoutBorderSize="@dimen/tagViewLayoutBorderSize"
-                app:layoutBorderColor="@{@color/tagViewLayoutBorderColor}"
-                app:rowLayout="@{@layout/row_symptom_read_item_layout}"
-                app:tags="@{symptomsUnknown}" />
+                app:labelCaption="@string/label_contact_symptoms_unknown" />
 
-            <de.symeda.sormas.app.component.tagview.TagView
+            <de.symeda.sormas.app.component.controls.ControlTagViewField
                 android:id="@+id/tvSymptomsNo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="@dimen/tagViewVerticalSeparator"
                 app:description="@string/desc_contact_symptoms_no"
-                app:labelCaption="@string/label_contact_symptoms_no"
-                app:lineMargin="@dimen/tagViewLineMargin"
-                app:tagMargin="@dimen/tagViewTagMargin"
-                app:textPaddingLeft="@dimen/tagViewTextPaddingLeft"
-                app:textPaddingRight="@dimen/tagViewTextPaddingRight"
-                app:textPaddingTop="@dimen/tagViewTextPaddingTop"
-                app:textPaddingBottom="@dimen/tagViewTextPaddingBottom"
-                app:textSize="@{@dimen/tagViewTextSize}"
-                app:textColor="@{@color/tagViewTextColor}"
-                app:layoutColor="@{@color/tagViewLayoutColor}"
-                app:layoutColorPress="@{@color/tagViewLayoutColorPress}"
-                app:deletable="@{@bool/tagViewIsDeletable}"
-                app:deleteIndicatorColor="@{@color/deleteIndicatorColor}"
-                app:deleteIndicatorSize="@{@dimen/deleteIndicatorSize}"
-                app:radius="@{@dimen/tagViewRadius}"
-                app:deleteIcon="@string/tagViewDeleteIcon"
-                app:layoutBorderSize="@dimen/tagViewLayoutBorderSize"
-                app:layoutBorderColor="@{@color/tagViewLayoutBorderColor}"
-                app:rowLayout="@{@layout/row_symptom_read_item_layout}"
-                app:tags="@{symptomsNo}" />
+                app:labelCaption="@string/label_contact_symptoms_no" />
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
