@@ -177,12 +177,7 @@ public class Location extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
-
-		String result = getCompleteString();
-		if (!result.isEmpty()) {
-			return result;
-		}
-		return super.toString();
+		return getCompleteString();
 	}
 
 	public boolean isEmptyLocation() {

@@ -51,81 +51,46 @@
 
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtTaskType"
+                    android:id="@+id/task_taskType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:maxLines="2"
-                    app:singleLine="false"
-                    app:description="@string/desc_task_type"
-                    app:labelCaption="@string/label_task_type"
-                    app:value="@{data.taskType}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{data.taskType}" />
 
                 <de.symeda.sormas.app.component.controls.ControlLinkField
-                    android:id="@+id/txtAssocCaze"
+                    android:id="@+id/task_caze"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:singleLine="false"
-                    app:maxLines="2"
-                    app:description="@string/desc_task_assoc_caze"
-                    app:labelCaption="@string/label_task_assoc_caze"
-                    app:cazeAndLocation="@{data.caze}"
-                    app:defaultValue='@{@string/not_available}'
-                    app:goneIfNull='@{data.caze}'
-                    />
+                    app:cazeAndLocation="@{data.caze}" />
 
                 <de.symeda.sormas.app.component.controls.ControlLinkField
-                    android:id="@+id/txtAssocContact"
+                    android:id="@+id/task_contact"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:singleLine="false"
-                    app:maxLines="2"
-                    app:description="@string/desc_task_assoc_contact"
-                    app:labelCaption="@string/label_task_assoc_contact"
-                    app:contactAndLocation="@{data.contact}"
-                    app:defaultValue='@{@string/not_available}'
-                    app:goneIfNull='@{data.contact}'
-                    />
+                    app:contactAndLocation="@{data.contact}" />
 
                 <de.symeda.sormas.app.component.controls.ControlLinkField
-                    android:id="@+id/txtAssocEvent"
+                    android:id="@+id/task_event"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:singleLine="false"
-                    app:maxLines="2"
-                    app:description="@string/desc_task_assoc_event"
-                    app:labelCaption="@string/label_task_assoc_event"
-                    app:eventAndLocation="@{data.event}"
-                    app:defaultValue='@{@string/not_available}'
-                    app:goneIfNull='@{data.event}'
-                    />
+                    app:eventAndLocation="@{data.event}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtCreatorUser"
+                    android:id="@+id/task_creatorUser"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:labelCaption="@string/label_task_creator"
-                    app:description="@string/desc_task_creator"
-                    app:value="@{data.creatorUser}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{data.creatorUser}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtCreatorComment"
+                    android:id="@+id/task_creatorComment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:labelCaption="@string/label_task_creator_comment"
-                    app:description="@string/desc_task_creator_comment"
-                    app:value="@{data.creatorComment}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{data.creatorComment}" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -134,36 +99,28 @@
                     >
 
                     <de.symeda.sormas.app.component.controls.ControlTextImageField
-                        android:id="@+id/txtTaskPriority"
+                        android:id="@+id/task_priority"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_task_priority"
-                        app:labelCaption="@string/label_task_priority"
                         app:imageColor="@color/green"
                         app:image="@drawable/indicator_status_circle"
                         app:imageWidth="@dimen/readControlSmallIconWidth"
                         app:imageHeight="@dimen/readControlSmallIconHeight"
-                        app:taskPriorityValue="@{data.priority}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                        app:taskPriorityValue="@{data.priority}" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextImageField
-                        android:id="@+id/txtTaskStatus"
+                        android:id="@+id/task_taskStatus"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
+                        android:layout_marginStart="@dimen/formLayoutGutterSize"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_task_status"
-                        app:labelCaption="@string/label_task_status"
                         app:image="@drawable/indicator_status_circle"
                         app:imageWidth="@dimen/readControlSmallIconWidth"
                         app:imageHeight="@dimen/readControlSmallIconHeight"
-                        app:taskStatusValue="@{data.taskStatus}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                        app:taskStatusValue="@{data.taskStatus}" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -173,45 +130,29 @@
                     >
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/txtSuggestedStart"
+                        android:id="@+id/task_suggestedStart"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_task_suggested_start"
-                        app:labelCaption="@string/label_task_suggested_start"
-                        app:value="@{data.suggestedStart}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                        app:value="@{data.suggestedStart}" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/txtDueDate"
+                        android:id="@+id/task_dueDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
+                        android:layout_marginStart="@dimen/formLayoutGutterSize"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_task_due_date_time"
-                        app:labelCaption="@string/label_task_due_date_time"
-                        app:value="@{data.dueDate}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                        app:value="@{data.dueDate}" />
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/txtCommentOnExec"
+                    android:id="@+id/task_assigneeReply"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:hint="@string/hint_task_comment_on_exc"
-                    app:labelCaption="@string/label_task_comment_on_exc"
-                    app:description="@string/desc_task_comment_on_exc"
-                    app:required="true"
-                    app:value="@={data.assigneeReply}"
-                    app:imeOptions="actionNext"
-
-
-                    />
+                    app:value="@={data.assigneeReply}" />
             </LinearLayout>
 
             <RelativeLayout
@@ -228,36 +169,34 @@
                 >
 
                 <de.symeda.sormas.app.component.controls.ControlButton
-                    android:id="@+id/btnNotExecutable"
+                    android:id="@+id/set_not_executable"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@+id/btnDivider"
+                    android:layout_toStartOf="@+id/btnDivider"
                     android:text="@string/action_not_executable"
                     app:buttonType="@{ControlButtonType.LINE_DANGER}"
                     app:rounded="true"
                     app:iconStart="@drawable/ic_block_black_24dp"
-                    android:onClick="@{notExecCallback}"
-                    />
+                    android:onClick="@{notExecCallback}" />
 
 
                 <ImageView
                     android:id="@+id/btnDivider"
-                    android:layout_toLeftOf="@+id/btnDone"
+                    android:layout_toStartOf="@+id/set_done"
                     android:layout_centerVertical="true"
                     style="@style/FormButtonDividerStyle"
                     />
 
                 <de.symeda.sormas.app.component.controls.ControlButton
-                    android:id="@+id/btnDone"
+                    android:id="@+id/set_done"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
                     android:text="@string/action_done"
                     app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                     app:rounded="true"
                     app:iconStart="@drawable/ic_done_black_24dp"
-                    android:onClick="@{doneCallback}"
-                    />
+                    android:onClick="@{doneCallback}" />
 
             </RelativeLayout>
 

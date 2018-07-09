@@ -91,29 +91,29 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
             return;
 
 
-        contentBinding.txtShipmentDetails.setVisibility((record.isShipped())? View.VISIBLE : View.GONE);
-        contentBinding.txtSampleMaterialText.setVisibility((record.getSampleMaterial() == SampleMaterial.OTHER)? View.VISIBLE : View.GONE);
-        contentBinding.txtSampleSource.setVisibility((record.getAssociatedCase().getDisease() == Disease.NEW_INFLUENCA)? View.VISIBLE : View.GONE);
+        contentBinding.sampleShipmentDetails.setVisibility((record.isShipped())? View.VISIBLE : View.GONE);
+        contentBinding.sampleSampleMaterialText.setVisibility((record.getSampleMaterial() == SampleMaterial.OTHER)? View.VISIBLE : View.GONE);
+        contentBinding.sampleSampleSource.setVisibility((record.getAssociatedCase().getDisease() == Disease.NEW_INFLUENCA)? View.VISIBLE : View.GONE);
         contentBinding.sampleReceivedLayout.setVisibility((record.isReceived())? View.VISIBLE : View.GONE);
 
         if (record.getSpecimenCondition() != SpecimenCondition.NOT_ADEQUATE) {
             contentBinding.recentTestLayout.setVisibility(View.VISIBLE);
             if (mostRecentTest != null) {
-                contentBinding.txtTestType.setVisibility(View.VISIBLE);
+                contentBinding.sampleSuggestedTypeOfTest.setVisibility(View.VISIBLE);
                 //contentBinding.sampleTestResult.setVisibility(View.VISIBLE);
             }
 
-            //contentBinding.txtTestType.setVisibility((mostRecentTest != null) ? View.VISIBLE : View.GONE);
+            //contentBinding.sampleSuggestedTypeOfTest.setVisibility((mostRecentTest != null) ? View.VISIBLE : View.GONE);
             contentBinding.sampleNoRecentTestText.setVisibility((mostRecentTest == null) ? View.VISIBLE : View.GONE);
         }
 
         // only show referred to field when there is a referred sample
         if (record.getReferredTo() != null) {
             final Sample referredSample = record.getReferredTo();
-            contentBinding.txtReferredTo.setVisibility(View.VISIBLE);
-            contentBinding.txtReferredTo.setValue(getActivity().getResources().getString(R.string.sample_referred_to) + " " + referredSample.getLab().toString() + " " + "\u279D");
+            contentBinding.sampleReferredTo.setVisibility(View.VISIBLE);
+            contentBinding.sampleReferredTo.setValue(getActivity().getResources().getString(R.string.sample_referred_to) + " " + referredSample.getLab().toString() + " " + "\u279D");
         } else {
-            contentBinding.txtReferredTo.setVisibility(View.GONE);
+            contentBinding.sampleReferredTo.setVisibility(View.GONE);
         }
 
         contentBinding.setSample(record);
@@ -125,7 +125,7 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
 
     @Override
     public void onAfterLayoutBinding(FragmentSampleReadLayoutBinding contentBinding) {
-        contentBinding.txtLaboratoryName.setValue(record.getLab() +
+        contentBinding.sampleLab.setValue(record.getLab() +
                 (record.getLab().getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID) ?
                         (" (" + record.getLabDetails() + ")") : ""));
     }

@@ -85,7 +85,8 @@
     <string name="hint_sample_code">Sample Code</string>
     <string name="hint_sample_material">Sample Material</string>
     <string name="hint_sample_other_material">Specify Other Material</string>
-    <string name="hint_sample_date_time_sampling">Date &amp; Time of Sampling</string>
+    <string name="hint_sample_date_of_sampling">Date of Sampling</string>
+    <string name="hint_sample_time_of_sampling">Time of Sampling</string>
     <string name="hint_sample_test_type">Suggested Test Type</string>
     <string name="hint_sample_source">Sample Source</string>
     <string name="hint_sample_laboratory">Laboratory</string>
@@ -1251,20 +1252,20 @@
     <!-- Label -->
     <string name="label_report_year">Year</string>
     <string name="label_report_epi_week">Epi Week</string>
-    <string name="label_report_start_period">Start Period</string>
-    <string name="label_report_end_period">End Period</string>
+    <string name="label_report_start_period">Period Start</string>
+    <string name="label_report_end_period">Period End</string>
 
     <!-- Description -->
     <string name="desc_report_year">Year</string>
     <string name="desc_report_epi_week">Epi Week</string>
-    <string name="desc_report_start_period">Start Period</string>
-    <string name="desc_report_end_period">End Period</string>
+    <string name="desc_report_start_period">Period Start</string>
+    <string name="desc_report_end_period">Period End</string>
 
     <!-- Hint -->
-    <string name="hint_report_year">Year</string>
-    <string name="hint_report_epi_week">Epi Week</string>
-    <string name="hint_report_start_period">Start Period</string>
-    <string name="hint_report_end_period">End Period</string>
+    <string name="hint_report_year">Select Year</string>
+    <string name="hint_report_epi_week">Select Epi Week</string>
+    <string name="hint_report_start_period">Period Start</string>
+    <string name="hint_report_end_period">Period End</string>
     <!-- ........................................................................ -->
 
 

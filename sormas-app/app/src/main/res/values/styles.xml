@@ -227,10 +227,14 @@
 
     <style name="ControlSpinnerStyle">
         <item name="android:layout_height">@dimen/maxSpinnerHeight</item>
+        <item name="android:minHeight">@dimen/maxSpinnerHeight</item>
+        <item name="android:maxHeight">@dimen/maxSpinnerHeight</item>
     </style>
 
     <style name="ControlSpinnerSlimStyle">
         <item name="android:layout_height">@dimen/dropdownListSlimItemHeight</item>
+        <item name="android:minHeight">@dimen/dropdownListSlimItemHeight</item>
+        <item name="android:maxHeight">@dimen/dropdownListSlimItemHeight</item>
         <item name="android:paddingTop">@dimen/slimTextViewTopPadding</item>
         <item name="android:paddingBottom">@dimen/slimTextViewBottomPadding</item>
         <item name="android:textSize">@dimen/slimControlTextSize</item>

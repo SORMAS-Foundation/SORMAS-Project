@@ -23,49 +23,30 @@
             >
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/txtInvolvementDesc"
+                android:id="@+id/eventParticipant_involvementDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_event_pinvolv_desc"
-                app:labelCaption="@string/label_event_pinvolv_desc"
-                app:description="@string/desc_event_pinvolv_desc"
                 app:required="true"
                 app:value="@={data.involvementDescription}"
-                app:imeOptions="actionNext"
-
-
-                />
+                app:imeOptions="actionNext" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/txtLastName"
+                android:id="@+id/eventParticipant_firstName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_event_pinvolv_last_name"
-                app:labelCaption="@string/label_event_pinvolv_last_name"
-                app:description="@string/desc_event_pinvolv_last_name"
-                app:required="true"
-                app:value="@={data.person.lastName}"
-                app:imeOptions="actionNext"
-
-
-                />
-
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/txtFirstName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_event_pinvolv_first_name"
-                app:labelCaption="@string/label_event_pinvolv_first_name"
-                app:description="@string/desc_event_pinvolv_first_name"
                 app:required="true"
                 app:value="@={data.person.firstName}"
-                app:imeOptions="actionNext"
+                app:imeOptions="actionNext" />
 
-
-                />
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/eventParticipant_lastName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                app:required="true"
+                app:value="@={data.person.lastName}" />
 
         </LinearLayout>
 

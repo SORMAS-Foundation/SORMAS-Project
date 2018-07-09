@@ -77,8 +77,11 @@ public class ControlSpinnerAdapter extends ArrayAdapter<Item> {
         }
 
         if (textView != null && (StringUtils.isEmpty(textView.getText()))) {
-            textView.setHint(getContext().getResources().getString(R.string.hint_select_entry));
-            textView.setText(getContext().getResources().getString(R.string.hint_select_entry));
+            if (spinner.getHint() != null) {
+                textView.setHint(spinner.getHint());
+            } else {
+                textView.setHint(getContext().getResources().getString(R.string.hint_select_entry));
+            }
             textView.setTextColor(getContext().getResources().getColor(R.color.hintText));
         }
 

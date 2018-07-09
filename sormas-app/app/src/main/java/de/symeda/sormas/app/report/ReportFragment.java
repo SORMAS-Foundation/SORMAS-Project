@@ -136,27 +136,27 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
     @Override
     protected void onAfterLayoutBinding(final FragmentReportWeeklyLayoutBinding contentBinding) {
 
-        contentBinding.spnYear.initializeSpinner(mYearList, mReportFilter.getYear(), new ValueChangeListener() {
+        contentBinding.weeklyReportYear.initializeSpinner(mYearList, mReportFilter.getYear(), new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 Integer year = (Integer) field.getValue();
                 if (year != null) {
-                    contentBinding.spnEpiWeek.setSpinnerData(DataUtils.toItems(DateHelper.createIntegerEpiWeeksList(year)));
+                    contentBinding.weeklyReportEpiWeek.setSpinnerData(DataUtils.toItems(DateHelper.createIntegerEpiWeeksList(year)));
                 } else {
-                    contentBinding.spnEpiWeek.setSpinnerData(null);
+                    contentBinding.weeklyReportEpiWeek.setSpinnerData(null);
                 }
             }
         });
 
 
-        contentBinding.spnEpiWeek.initializeSpinner(mEpiWeeksList, mReportFilter.getWeek(), new ValueChangeListener() {
+        contentBinding.weeklyReportEpiWeek.initializeSpinner(mEpiWeeksList, mReportFilter.getWeek(), new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 Integer selectedEpiWeek = (Integer) field.getValue();
 
                 if (selectedEpiWeek != null) {
-                    mReportFilter.setYear((int) getContentBinding().spnYear.getValue());
-                    mReportFilter.setWeek((int) getContentBinding().spnEpiWeek.getValue());
+                    mReportFilter.setYear((int) getContentBinding().weeklyReportYear.getValue());
+                    mReportFilter.setWeek((int) getContentBinding().weeklyReportEpiWeek.getValue());
 
                     if (mUser.hasUserRole(UserRole.INFORMANT)) {
                         mWeeklyReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(mReportFilter.getEpiWeek(), mUser);
@@ -174,8 +174,8 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
 
                                 getContentBinding().noWeeklyReportHint.setVisibility(c.showNoReportNotification() ? View.VISIBLE : View.GONE);
                                 getContentBinding().noWeeklyReportData.setVisibility(c.showNoDataNotification() ? View.VISIBLE : View.GONE);
-                                getContentBinding().btnAddMissingCase.setVisibility(c.showAddMissingButton() ? View.VISIBLE : View.GONE);
-                                getContentBinding().btnConfirmReport.setVisibility(c.showConfirmButton() ? View.VISIBLE : View.GONE);
+                                getContentBinding().addMissingCase.setVisibility(c.showAddMissingButton() ? View.VISIBLE : View.GONE);
+                                getContentBinding().confirmReport.setVisibility(c.showConfirmButton() ? View.VISIBLE : View.GONE);
 
                                 mReportDate = reportDate;
                                 updateUI();
@@ -389,14 +389,14 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
         getContentBinding().reportContentFrame.setVisibility(View.VISIBLE);
         getContentBinding().noWeeklyReportHint.setVisibility(View.GONE);
         getContentBinding().noWeeklyReportData.setVisibility(View.GONE);
-        getContentBinding().btnAddMissingCase.setVisibility(View.GONE);
-        getContentBinding().btnConfirmReport.setVisibility(View.GONE);
+        getContentBinding().addMissingCase.setVisibility(View.GONE);
+        getContentBinding().confirmReport.setVisibility(View.GONE);
     }
 
     @Override
     protected void updateUI(FragmentReportWeeklyLayoutBinding contentBinding, WeeklyReport weeklyReport) {
-        contentBinding.txtStartPeroid.setValue(mReportFilter.getStartDate());
-        contentBinding.txtEndPeroid.setValue(mReportFilter.getEndDate());
+        contentBinding.weeklyReportStartDate.setValue(mReportFilter.getStartDate());
+        contentBinding.weeklyReportEndDate.setValue(mReportFilter.getEndDate());
 
         getSubHeadingHandler().updateSubHeadingTitle();
     }
@@ -417,8 +417,8 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
     }
 
     private void changeButtonsEnabledStatus(boolean status) {
-        getContentBinding().btnAddMissingCase.setEnabled(status);
-        getContentBinding().btnConfirmReport.setEnabled(status);
+        getContentBinding().addMissingCase.setEnabled(status);
+        getContentBinding().confirmReport.setEnabled(status);
     }
 
     private void setupCallback() {
@@ -448,7 +448,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
 //                    mReportFilter.setYear(epiWeek.getYear());
 //                    mReportFilter.setWeek(epiWeek.getWeek());
 //
-//                    getContentBinding().spnYear.notifyDataChanged();
+//                    getContentBinding().weeklyReportYear.notifyDataChanged();
 //                    //requestLayoutRebind();
 //                    updateUI();
 //                }
@@ -459,7 +459,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
 //                    mReportFilter.setYear(epiWeek.getYear());
 //                    mReportFilter.setWeek(epiWeek.getWeek());
 //
-//                    getContentBinding().spnYear.notifyDataChanged();
+//                    getContentBinding().weeklyReportYear.notifyDataChanged();
 //                    //requestLayoutRebind();
 //                    updateUI();
 //                }

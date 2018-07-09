@@ -30,7 +30,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -48,78 +50,49 @@
                     />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtHealthFacility"
+                    android:id="@+id/hospitalization_healthFacility"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_case_health_facility"
-                    app:labelCaption="@string/label_case_health_facility"
-                    app:value="@{caze.healthFacility}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{caze.healthFacility}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtHealthFacilityDesc"
+                    android:id="@+id/hospitalization_healthFacilityDetails"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_case_health_facility_desc"
-                    app:labelCaption="@string/label_case_health_facility_desc"
-                    app:value="@{caze.healthFacilityDetails}"
-                    app:defaultValue='@{@string/not_available}'
-                    app:goneIfNull="@{caze.healthFacilityDetails}"
-                    />
+                    app:value="@{caze.healthFacilityDetails}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/swhAdmittedToHealthFacility"
+                    android:id="@+id/hospitalization_admittedToHealthFacility"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_case_hos_admitted_to_health_facility"
-                    app:labelCaption="@string/label_case_hos_admitted_to_health_facility"
-                    app:description="@string/desc_case_hos_admitted_to_health_facility"
-                    app:required="true"
-                    app:slim="false"
                     app:enumClass="@{yesNoUnknownClass}"
-                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:value="@={data.admittedToHealthFacility}"
-
-
-                    />
+                    app:value="@={data.admittedToHealthFacility}" />
 
                 <LinearLayout
                     android:id="@+id/ctrlAdmission"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlDateField
-                        android:id="@+id/dtpDateOfAdmission"
+                        android:id="@+id/hospitalization_admissionDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        app:hint="@string/hint_case_hos_admission_date"
-                        app:labelCaption="@string/label_case_hos_admission_date"
-                        app:description="@string/desc_case_hos_admission_date"
-                        app:required="true"
-                        app:value="@={data.admissionDate}"
-                        />
+                        app:value="@={data.admissionDate}" />
 
                     <de.symeda.sormas.app.component.controls.ControlDateField
-                        android:id="@+id/dtpDateOfDischarge"
+                        android:id="@+id/hospitalization_dischargeDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        app:hint="@string/hint_case_hos_discharge_date"
-                        app:labelCaption="@string/label_case_hos_discharge_date"
-                        app:description="@string/desc_case_hos_discharge_date"
-                        app:required="true"
-                        app:value="@={data.dischargeDate}"
-                        />
+                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        app:value="@={data.dischargeDate}" />
 
                 </LinearLayout>
 
@@ -127,59 +100,36 @@
                     android:id="@+id/ctrlIsolation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlSwitchField
-                        android:id="@+id/swhIsolation"
+                        android:id="@+id/hospitalization_isolated"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        app:hint="@string/hint_case_hos_isolation"
-                        app:labelCaption="@string/label_case_hos_isolation"
-                        app:description="@string/desc_case_hos_isolation"
-                        app:required="true"
-                        app:slim="false"
                         app:enumClass="@{yesNoUnknownClass}"
-                        app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                        app:value="@={data.isolated}"
-
-
-                        />
-
+                        app:useAbbreviations="true"
+                        app:value="@={data.isolated}" />
 
                     <de.symeda.sormas.app.component.controls.ControlDateField
-                        android:id="@+id/dtpIsolationDate"
+                        android:id="@+id/hospitalization_isolationDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        app:hint="@string/hint_case_hos_isolation_date"
-                        app:labelCaption="@string/label_case_hos_isolation_date"
-                        app:description="@string/desc_case_hos_isolation_date"
-                        app:required="true"
-                        app:value="@={data.isolationDate}"
-                        />
+                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        app:value="@={data.isolationDate}" />
 
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/swhPreviousHospitalization"
+                    android:id="@+id/hospitalization_hospitalizedPreviously"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_case_hos_visited_previously_for_illness"
-                    app:labelCaption="@string/label_case_hos_visited_previously_for_illness"
-                    app:description="@string/desc_case_hos_visited_previously_for_illness"
-                    app:required="true"
-                    app:slim="false"
                     app:enumClass="@{yesNoUnknownClass}"
-                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:value="@={data.admittedToHealthFacility}"
-
-                    />
+                    app:value="@={data.hospitalizedPreviously}" />
 
             </LinearLayout>
 
@@ -218,7 +168,7 @@
                         android:id="@+id/btnNewEntry"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
                         android:text="@string/action_new"
                         app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                         app:rounded="true"

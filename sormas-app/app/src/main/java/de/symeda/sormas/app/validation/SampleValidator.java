@@ -29,14 +29,14 @@ public final class SampleValidator {
         // Shipped
         if (sample.isShipped()) {
             if (sample.getShipmentDate() == null) {
-                binding.dtpShipmentDate.enableErrorState(activityContext, R.string.validation_sample_material);
+                binding.sampleShipmentDate.enableErrorState(activityContext, R.string.validation_sample_material);
                 success = false;
             }
         }
 
         // Sample lab
         if (sample.getLab() == null) {
-            binding.spnLaboratory.enableErrorState(activityContext, R.string.validation_sample_material);
+            binding.sampleLab.enableErrorState(activityContext, R.string.validation_sample_material);
             success = false;
         } else {
             if (sample.getLab().getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID) && sample.getLabDetails().trim().isEmpty()) {
@@ -48,12 +48,12 @@ public final class SampleValidator {
 
         // Sample material & details
         if (sample.getSampleMaterial() == null) {
-            binding.spnSampleMaterial.enableErrorState(activityContext, R.string.validation_sample_material);
+            binding.sampleSampleMaterial.enableErrorState(activityContext, R.string.validation_sample_material);
             success = false;
         } else {
             if (sample.getSampleMaterial().equals(SampleMaterial.OTHER)) {
                 if (sample.getSampleMaterialText() == null || sample.getSampleMaterialText().trim().isEmpty()) {
-                    binding.spnSampleMaterial.enableErrorState(activityContext, R.string.validation_sample_material_details);
+                    binding.sampleSampleMaterial.enableErrorState(activityContext, R.string.validation_sample_material_details);
                     success = false;
                 }
             }
@@ -61,7 +61,7 @@ public final class SampleValidator {
 
         // Sample date & time
         if (sample.getSampleDateTime() == null) {
-            binding.dtpDateAndTimeOfSampling.enableErrorState(activityContext, R.string.validation_sample_date_time);
+            binding.sampleSampleDateTime.enableErrorState(activityContext, R.string.validation_sample_date_time);
             //binding.sampleDateTime.setError(resources.getString(R.string.validation_sample_date_time));
             success = false;
         }
@@ -83,8 +83,8 @@ public final class SampleValidator {
 
     private static final List<? extends ControlPropertyEditField<?>> getSampleDataFields(FragmentSampleEditLayoutBinding binding) {
         // TODO #558 sampleDetails
-        return Arrays.asList(binding.dtpDateAndTimeOfSampling, binding.spnSampleMaterial, binding.txtSampleMaterialText,
-                binding.dtpShipmentDate, binding.spnLaboratory);
+        return Arrays.asList(binding.sampleSampleDateTime, binding.sampleSampleMaterial, binding.sampleSampleMaterialText,
+                binding.sampleShipmentDate, binding.sampleLab);
     }
 
     public static boolean validateSampleData(NotificationContext activityContext, Sample sample, FragmentSampleNewLayoutBinding binding) {
@@ -95,25 +95,25 @@ public final class SampleValidator {
         // Shipped
         if (sample.isShipped()) {
             if (sample.getShipmentDate() == null) {
-                binding.dtpShipmentDate.enableErrorState(activityContext, R.string.validation_sample_material);
+                binding.sampleShipmentDate.enableErrorState(activityContext, R.string.validation_sample_material);
                 success = false;
             }
         }
 
         // Sample lab
         if (sample.getLab() == null) {
-            binding.spnLaboratory.enableErrorState(activityContext, R.string.validation_sample_material);
+            binding.sampleLab.enableErrorState(activityContext, R.string.validation_sample_material);
             success = false;
         }
 
         // Sample material & details
         if (sample.getSampleMaterial() == null) {
-            binding.spnSampleMaterial.enableErrorState(activityContext, R.string.validation_sample_material);
+            binding.sampleSampleMaterial.enableErrorState(activityContext, R.string.validation_sample_material);
             success = false;
         } else {
             if (sample.getSampleMaterial().equals(SampleMaterial.OTHER)) {
                 if (sample.getSampleMaterialText() == null || sample.getSampleMaterialText().trim().isEmpty()) {
-                    binding.spnSampleMaterial.enableErrorState(activityContext, R.string.validation_sample_material_details);
+                    binding.sampleSampleMaterial.enableErrorState(activityContext, R.string.validation_sample_material_details);
                     success = false;
                 }
             }
@@ -121,7 +121,7 @@ public final class SampleValidator {
 
         // Sample date & time
         if (sample.getSampleDateTime() == null) {
-            binding.dtpDateAndTimeOfSampling.enableErrorState(activityContext, R.string.validation_sample_date_time);
+            binding.sampleSampleDateTime.enableErrorState(activityContext, R.string.validation_sample_date_time);
             //binding.sampleDateTime.setError(resources.getString(R.string.validation_sample_date_time));
             success = false;
         }
@@ -136,8 +136,8 @@ public final class SampleValidator {
     }
 
     private static final List<? extends ControlPropertyEditField<?>> getSampleDataFields(FragmentSampleNewLayoutBinding binding) {
-        return Arrays.asList(binding.dtpDateAndTimeOfSampling, binding.spnSampleMaterial, binding.txtSampleMaterialText,
-                binding.dtpShipmentDate, binding.spnLaboratory);
+        return Arrays.asList(binding.sampleSampleDateTime, binding.sampleSampleMaterial, binding.sampleSampleMaterialText,
+                binding.sampleShipmentDate, binding.sampleLab);
     }
 
 }

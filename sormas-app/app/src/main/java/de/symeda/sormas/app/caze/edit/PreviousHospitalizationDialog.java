@@ -58,7 +58,7 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
         /*DialogPreviousHospitalizationLayoutBinding _contentBinding = (DialogPreviousHospitalizationLayoutBinding)contentBinding;
 
-        _contentBinding.spnState.enableErrorState("Hello");*/
+        _contentBinding.casePreviousHospitalizationRegion.enableErrorState("Hello");*/
         if (callback != null)
             callback.call(null);
     }
@@ -100,59 +100,59 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
         //DialogPreviousHospitalizationLayoutBinding _contentBinding = (DialogPreviousHospitalizationLayoutBinding)contentBinding;
 
-        mContentBinding.dtpDateOfAdmission.setFragmentManager(getFragmentManager());
-        mContentBinding.dtpDateOfDischarge.setFragmentManager(getFragmentManager());
+        mContentBinding.casePreviousHospitalizationAdmissionDate.setFragmentManager(getFragmentManager());
+        mContentBinding.casePreviousHospitalizationDischargeDate.setFragmentManager(getFragmentManager());
 
-        if (mContentBinding.spnState != null) {
-            mContentBinding.spnState.initializeSpinner(RegionLoader.getInstance().load(), null, new ValueChangeListener() {
+        if (mContentBinding.casePreviousHospitalizationRegion != null) {
+            mContentBinding.casePreviousHospitalizationRegion.initializeSpinner(RegionLoader.getInstance().load(), null, new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
                     Region selectedValue = (Region) field.getValue();
                     if (selectedValue != null) {
-                        mContentBinding.spnLga.setSpinnerData(DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(selectedValue)), mContentBinding.spnLga.getValue());
+                        mContentBinding.casePreviousHospitalizationDistrict.setSpinnerData(DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(selectedValue)), mContentBinding.casePreviousHospitalizationDistrict.getValue());
                     } else {
-                        mContentBinding.spnLga.setSpinnerData(null);
+                        mContentBinding.casePreviousHospitalizationDistrict.setSpinnerData(null);
                     }
                 }
             });
         }
 
-        if (mContentBinding.spnLga != null) {
-            mContentBinding.spnLga.initializeSpinner(DistrictLoader.getInstance().load((Region) mContentBinding.spnState.getValue()), null, new ValueChangeListener() {
+        if (mContentBinding.casePreviousHospitalizationDistrict != null) {
+            mContentBinding.casePreviousHospitalizationDistrict.initializeSpinner(DistrictLoader.getInstance().load((Region) mContentBinding.casePreviousHospitalizationRegion.getValue()), null, new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
                     District selectedValue = (District) field.getValue();
                     if (selectedValue != null) {
-                        mContentBinding.spnWard.setSpinnerData(DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(selectedValue)), mContentBinding.spnWard.getValue());
-                        mContentBinding.spnFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(selectedValue, true)), mContentBinding.spnFacility.getValue());
+                        mContentBinding.casePreviousHospitalizationCommunity.setSpinnerData(DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(selectedValue)), mContentBinding.casePreviousHospitalizationCommunity.getValue());
+                        mContentBinding.casePreviousHospitalizationHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(selectedValue, true)), mContentBinding.casePreviousHospitalizationHealthFacility.getValue());
                     } else {
-                        mContentBinding.spnWard.setSpinnerData(null);
-                        mContentBinding.spnFacility.setSpinnerData(null);
+                        mContentBinding.casePreviousHospitalizationCommunity.setSpinnerData(null);
+                        mContentBinding.casePreviousHospitalizationHealthFacility.setSpinnerData(null);
                     }
                 }
             });
         }
 
-        if (mContentBinding.spnWard != null) {
-            mContentBinding.spnWard.initializeSpinner(CommunityLoader.getInstance().load((District) mContentBinding.spnLga.getValue()), null, new ValueChangeListener() {
+        if (mContentBinding.casePreviousHospitalizationCommunity != null) {
+            mContentBinding.casePreviousHospitalizationCommunity.initializeSpinner(CommunityLoader.getInstance().load((District) mContentBinding.casePreviousHospitalizationDistrict.getValue()), null, new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
                     Community selectedValue = (Community) field.getValue();
                     if (selectedValue != null) {
-                        mContentBinding.spnFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(selectedValue, true)));
-                    } else if (mContentBinding.spnLga.getValue() != null) {
-                        mContentBinding.spnFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) mContentBinding.spnLga.getValue(), true)));
+                        mContentBinding.casePreviousHospitalizationHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(selectedValue, true)));
+                    } else if (mContentBinding.casePreviousHospitalizationDistrict.getValue() != null) {
+                        mContentBinding.casePreviousHospitalizationHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) mContentBinding.casePreviousHospitalizationDistrict.getValue(), true)));
                     } else {
-                        mContentBinding.spnFacility.setSpinnerData(null);
+                        mContentBinding.casePreviousHospitalizationHealthFacility.setSpinnerData(null);
                     }
                 }
             });
         }
 
-        List<Item> facilities = mContentBinding.spnWard.getValue() != null ? FacilityLoader.getInstance().load((Community) mContentBinding.spnWard.getValue(), true)
-                : FacilityLoader.getInstance().load((District) mContentBinding.spnLga.getValue(), true);
-        if (mContentBinding.spnFacility != null) {
-            mContentBinding.spnFacility.initializeSpinner(facilities, null, new ValueChangeListener() {
+        List<Item> facilities = mContentBinding.casePreviousHospitalizationCommunity.getValue() != null ? FacilityLoader.getInstance().load((Community) mContentBinding.casePreviousHospitalizationCommunity.getValue(), true)
+                : FacilityLoader.getInstance().load((District) mContentBinding.casePreviousHospitalizationDistrict.getValue(), true);
+        if (mContentBinding.casePreviousHospitalizationHealthFacility != null) {
+            mContentBinding.casePreviousHospitalizationHealthFacility.initializeSpinner(facilities, null, new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
 

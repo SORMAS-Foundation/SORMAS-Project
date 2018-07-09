@@ -24,9 +24,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
-import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
-import de.symeda.sormas.app.util.DataUtils;
 
 /**
  * Created by Orson on 22/03/2018.
@@ -144,11 +142,11 @@ public class CaseDiseaseLayoutProcessor {
     private boolean initializeChildLayout(ViewDataBinding binding) {
         View innerRootLayout = binding.getRoot();
 
-        spnVaccination = (ControlSpinnerField)innerRootLayout.findViewById(R.id.spnVaccination);
-        spnVaccinationInfoSource = (ControlSpinnerField)innerRootLayout.findViewById(R.id.spnVaccinationInfoSource);
-        spnPlague = (ControlSpinnerField)innerRootLayout.findViewById(R.id.spnPlague);
-        spnDengueFever = (ControlSpinnerField)innerRootLayout.findViewById(R.id.spnDengueFever);
-        dtpLastVaccinationDate = (ControlDateField) innerRootLayout.findViewById(R.id.dtpLastVaccinationDate);
+        spnVaccination = (ControlSpinnerField)innerRootLayout.findViewById(R.id.caseData_vaccination);
+        spnVaccinationInfoSource = (ControlSpinnerField)innerRootLayout.findViewById(R.id.caseData_vaccinationInfoSource);
+        spnPlague = (ControlSpinnerField)innerRootLayout.findViewById(R.id.caseData_plagueType);
+        spnDengueFever = (ControlSpinnerField)innerRootLayout.findViewById(R.id.caseData_dengueFeverType);
+        dtpLastVaccinationDate = (ControlDateField) innerRootLayout.findViewById(R.id.caseData_vaccinationDate);
 
         if (dtpLastVaccinationDate != null)
             dtpLastVaccinationDate.setFragmentManager(fragmentManager);

@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.LinearLayout;
 
 import java.util.Date;
@@ -22,12 +21,10 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
-import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.databinding.FragmentEventEditPersonInfoLayoutBinding;
 import de.symeda.sormas.app.shared.OnDateOfDeathChangeListener;
-import de.symeda.sormas.app.util.DataUtils;
 
 /**
  * Created by Orson on 12/02/2018.
@@ -150,8 +147,8 @@ public class PresentConditionLayoutProcessor {
 
     private boolean initializeChildLayout(ViewDataBinding binding) {
         View innerRootLayout = binding.getRoot();
-        spnCauseOfDeath = (ControlSpinnerField)innerRootLayout.findViewById(R.id.spnCauseOfDeath);
-        dtpDateOfDeath = (ControlDateField)innerRootLayout.findViewById(R.id.dtpDateOfDeath);
+        spnCauseOfDeath = (ControlSpinnerField)innerRootLayout.findViewById(R.id.person_causeOfDeath);
+        dtpDateOfDeath = (ControlDateField)innerRootLayout.findViewById(R.id.person_deathDate);
 
 
         dtpDateOfDeath.setFragmentManager(fragmentManager);

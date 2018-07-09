@@ -28,7 +28,7 @@ public final class EventValidator {
         if (event.getTypeOfPlace() != null) {
             if (event.getTypeOfPlace().equals(TypeOfPlace.OTHER)) {
                 if (event.getTypeOfPlaceText() == null || event.getTypeOfPlaceText().trim().isEmpty()) {
-                    binding.txtOtherEventPlace.enableErrorState(activityContext, R.string.validation_event_type_of_place_details);
+                    binding.eventTypeOfPlaceText.enableErrorState(activityContext, R.string.validation_event_type_of_place_details);
                     success = false;
                 }
             }
@@ -36,19 +36,19 @@ public final class EventValidator {
 
         // Disease details
         if (event.getDisease() == Disease.OTHER) {
-            binding.txtOtherDisease.enableErrorState(activityContext, R.string.validation_case_disease_details);
+            binding.eventDiseaseDetails.enableErrorState(activityContext, R.string.validation_case_disease_details);
             success = false;
         }
 
         // Event description
         if (event.getEventDesc() == null || event.getEventDesc().trim().isEmpty()) {
-            binding.txtAlertDescription.enableErrorState(activityContext, R.string.validation_event_description);
+            binding.eventEventDesc.enableErrorState(activityContext, R.string.validation_event_description);
             success = false;
         }
 
         // Event type
         if (event.getEventType() == null) {
-            binding.swhAlertType.enableErrorState(activityContext, R.string.validation_event_type);
+            binding.eventEventType.enableErrorState(activityContext, R.string.validation_event_type);
             success = false;
         }
 
@@ -75,11 +75,11 @@ public final class EventValidator {
     }
 
     private static final List<? extends ControlPropertyEditField<?>> getEventDataFields(FragmentEventEditLayoutBinding binding) {
-        return Arrays.asList(binding.txtAlertDescription, binding.spnTypeOfPlace, binding.txtOtherDisease); //binding.swhAlertType,
+        return Arrays.asList(binding.eventEventDesc, binding.eventTypeOfPlace, binding.eventDiseaseDetails); //binding.swhAlertType,
     }
 
     private static final List<? extends ControlPropertyEditField<?>> getSoftRequiredEventDataFields(FragmentEventEditLayoutBinding binding) {
-        return Arrays.asList(binding.dtpDateOfAlert, binding.txtSourceFirstName, binding.txtSourceLastName, binding.txtSourceTelNumber, binding.spnTypeOfPlace);
+        return Arrays.asList(binding.eventEventDate, binding.eventSrcFirstName, binding.eventSrcLastName, binding.eventSrcTelNo, binding.eventTypeOfPlace);
         //return Arrays.asList(binding.dtpDateOfAlert, binding.txtSourceFirstName, binding.txtSourceLastName, binding.txtSourceTelNumber, binding.spnTypeOfPlace, binding.txtSurveillanceOfficer);
     }
 

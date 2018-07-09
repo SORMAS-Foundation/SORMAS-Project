@@ -17,70 +17,39 @@
         >
 
         <de.symeda.sormas.app.component.controls.ControlTextEditField
-            android:id="@+id/navigation_number"
+            android:id="@+id/person_occupationDetails"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
-            app:hint="@string/hint_event_pinvolv_occupation_position"
-            app:labelCaption="@string/label_event_pinvolv_occupation_position"
-            app:description="@string/desc_event_pinvolv_occupation_position"
-            app:required="true"
-            app:imeOptions="actionNext"
-
-
-            />
+            app:value="@={data.occupationDetails}" />
 
         <de.symeda.sormas.app.component.controls.ControlSpinnerField
-            android:id="@+id/spnFacilityState"
+            android:id="@+id/person_occupationRegion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
-            app:hint="@string/hint_event_pinvolv_occupation_facility_state"
-            app:labelCaption="@string/label_event_pinvolv_occupation_facility_state"
-            app:description="@string/desc_event_pinvolv_occupation_facility_state"
-            app:required="true"
-
-            app:value="@={data.occupationRegion}"
-            />
+            app:value="@={data.occupationRegion}" />
 
         <de.symeda.sormas.app.component.controls.ControlSpinnerField
-            android:id="@+id/spnFacilityLga"
+            android:id="@+id/person_occupationDistrict"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
-            app:hint="@string/hint_event_pinvolv_occupation_facility_lga"
-            app:labelCaption="@string/label_event_pinvolv_occupation_facility_lga"
-            app:description="@string/desc_event_pinvolv_occupation_facility_lga"
-            app:required="true"
-
-            app:value="@={data.occupationDistrict}"
-            />
+            app:value="@={data.occupationDistrict}" />
 
         <de.symeda.sormas.app.component.controls.ControlSpinnerField
-            android:id="@+id/spnFacilityWard"
+            android:id="@+id/person_occupationCommunity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
-            app:hint="@string/hint_event_pinvolv_occupation_facility_ward"
-            app:labelCaption="@string/label_event_pinvolv_occupation_facility_ward"
-            app:description="@string/desc_event_pinvolv_occupation_facility_ward"
-            app:required="true"
-
-            app:value="@={data.occupationCommunity}"
-            />
+            app:value="@={data.occupationCommunity}" />
 
         <de.symeda.sormas.app.component.controls.ControlSpinnerField
-            android:id="@+id/spnHealthCareFacility"
+            android:id="@+id/person_occupationFacility"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
-            app:hint="@string/hint_event_pinvolv_occupation_facility"
-            app:labelCaption="@string/label_event_pinvolv_occupation_facility"
-            app:description="@string/desc_event_pinvolv_occupation_facility"
-            app:required="true"
-
-            app:value="@={data.occupationFacility}"
-            />
+            app:value="@={data.occupationFacility}" />
 
 
     </LinearLayout>

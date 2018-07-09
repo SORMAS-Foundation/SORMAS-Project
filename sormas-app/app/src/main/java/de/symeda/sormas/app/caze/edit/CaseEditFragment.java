@@ -110,11 +110,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         updateCaseClassificationUI();
 
         if (record.getPerson().getSex() != Sex.FEMALE) {
-            contentBinding.swhPregnant.setVisibility(View.GONE);
+            contentBinding.caseDataPregnant.setVisibility(View.GONE);
         }
 
 
-        contentBinding.txtHealthFacility.addValueChangedListener(new ValueChangeListener() {
+        contentBinding.caseDataHealthFacility.addValueChangedListener(new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 Facility selectedFacility = record.getHealthFacility();
@@ -123,48 +123,48 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
                     boolean noneHealthFacility = selectedFacility.getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
 
                     if (otherHealthFacility) {
-                        getContentBinding().txtHealthFacilityDesc.setVisibility(View.VISIBLE);
-                        getContentBinding().txtHealthFacilityDesc.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+                        getContentBinding().hospitalizationHealthFacilityDetails.setVisibility(View.VISIBLE);
+                        getContentBinding().hospitalizationHealthFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
                     } else if (noneHealthFacility) {
-                        getContentBinding().txtHealthFacilityDesc.setVisibility(View.VISIBLE);
-                        getContentBinding().txtHealthFacilityDesc.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+                        getContentBinding().hospitalizationHealthFacilityDetails.setVisibility(View.VISIBLE);
+                        getContentBinding().hospitalizationHealthFacilityDetails.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
                     } else {
-                        getContentBinding().txtHealthFacilityDesc.setVisibility(View.GONE);
+                        getContentBinding().hospitalizationHealthFacilityDetails.setVisibility(View.GONE);
                     }
                 } else {
-                    getContentBinding().txtHealthFacilityDesc.setVisibility(View.GONE);
+                    getContentBinding().hospitalizationHealthFacilityDetails.setVisibility(View.GONE);
                 }
             }
         });
 
 
         if (!ConfigProvider.getUser().hasUserRole(UserRole.INFORMANT)) {
-            contentBinding.txtEpidNumber.addValueChangedListener(new ValueChangeListener() {
+            contentBinding.caseDataEpidNumber.addValueChangedListener(new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
                     String value = (String) field.getValue();
                     if (value.trim().isEmpty()) {
-                        getContentBinding().txtEpidNumber.enableWarningState((NotificationContext) getActivity(), R.string.validation_soft_case_epid_number_empty);
+                        getContentBinding().caseDataEpidNumber.enableWarningState((NotificationContext) getActivity(), R.string.validation_soft_case_epid_number_empty);
                     } else if (value.matches(DataHelper.getEpidNumberRegexp())) {
-                        getContentBinding().txtEpidNumber.disableWarningState();
+                        getContentBinding().caseDataEpidNumber.disableWarningState();
                     } else {
-                        getContentBinding().txtEpidNumber.enableWarningState((NotificationContext) getActivity(), R.string.validation_soft_case_epid_number);
+                        getContentBinding().caseDataEpidNumber.enableWarningState((NotificationContext) getActivity(), R.string.validation_soft_case_epid_number);
                     }
                 }
             });
         } else {
-            getContentBinding().txtEpidNumber.changeVisualState(VisualState.DISABLED);
+            getContentBinding().caseDataEpidNumber.changeVisualState(VisualState.DISABLED);
         }
 
         if (ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
-            contentBinding.spnCaseOfficerClassification.addValueChangedListener(new ValueChangeListener() {
+            contentBinding.caseDataCaseOfficerClassification.addValueChangedListener(new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
                     CaseClassification caseClassification = (CaseClassification) field.getValue();
                     if (caseClassification == CaseClassification.NOT_CLASSIFIED) {
-                        getContentBinding().spnCaseOfficerClassification.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_case_classification);
+                        getContentBinding().caseDataCaseOfficerClassification.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_case_classification);
                     } else {
-                        getContentBinding().spnCaseOfficerClassification.disableErrorState();
+                        getContentBinding().caseDataCaseOfficerClassification.disableErrorState();
                     }
                 }
             });
@@ -175,28 +175,28 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         }
 
         if (ConfigProvider.getUser().hasUserRight(UserRight.CASE_CLASSIFY)) {
-            contentBinding.spnOutcome.addValueChangedListener(new ValueChangeListener() {
+            contentBinding.caseDataOutcome.addValueChangedListener(new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
                     CaseOutcome outcome = (CaseOutcome) field.getValue();
                     if (outcome == null) {
-                        getContentBinding().spnOutcome.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_case_outcome);
+                        getContentBinding().caseDataOutcome.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_case_outcome);
                     } else {
-                        getContentBinding().spnOutcome.disableErrorState();
+                        getContentBinding().caseDataOutcome.disableErrorState();
                     }
 
                     if (outcome == null || outcome == CaseOutcome.NO_OUTCOME) {
-                        getContentBinding().dtpDateOfOutcome.setVisibility(View.GONE);
-                        getContentBinding().dtpDateOfOutcome.setValue(null);
+                        getContentBinding().caseDataOutcomeDate.setVisibility(View.GONE);
+                        getContentBinding().caseDataOutcomeDate.setValue(null);
 
                     } else {
-                        getContentBinding().dtpDateOfOutcome.setVisibility(View.VISIBLE);
+                        getContentBinding().caseDataOutcomeDate.setVisibility(View.VISIBLE);
                     }
                 }
             });
         } else {
-            contentBinding.spnOutcome.changeVisualState(VisualState.DISABLED);
-            contentBinding.dtpDateOfOutcome.changeVisualState(VisualState.DISABLED);
+            contentBinding.caseDataOutcome.changeVisualState(VisualState.DISABLED);
+            contentBinding.caseDataOutcomeDate.changeVisualState(VisualState.DISABLED);
         }
 
         contentBinding.setData(record);
@@ -207,22 +207,22 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
     @Override
     public void onAfterLayoutBinding(FragmentCaseEditLayoutBinding contentBinding) {
-        contentBinding.spnCaseClassification.initializeSpinner(DataUtils.addEmptyItem(caseClassificationList));
-        contentBinding.spnCaseOfficerClassification.initializeSpinner(DataUtils.addEmptyItem(caseClassificationList));
-        contentBinding.spnOutcome.initializeSpinner(caseOutcomeList, null, new ValueChangeListener() {
+        contentBinding.caseDataCaseClassification.initializeSpinner(DataUtils.addEmptyItem(caseClassificationList));
+        contentBinding.caseDataCaseOfficerClassification.initializeSpinner(DataUtils.addEmptyItem(caseClassificationList));
+        contentBinding.caseDataOutcome.initializeSpinner(caseOutcomeList, null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 CaseOutcome caseOutcome = (CaseOutcome) field.getValue();
 
                 if (caseOutcome == CaseOutcome.NO_OUTCOME || caseOutcome == null) {
-                    getContentBinding().dtpDateOfOutcome.setVisibility(View.GONE);
+                    getContentBinding().caseDataOutcomeDate.setVisibility(View.GONE);
                 } else {
-                    getContentBinding().dtpDateOfOutcome.setVisibility(View.VISIBLE);
+                    getContentBinding().caseDataOutcomeDate.setVisibility(View.VISIBLE);
                 }
             }
         });
 
-        contentBinding.dtpDateOfOutcome.setFragmentManager(getFragmentManager());
+        contentBinding.caseDataOutcomeDate.setFragmentManager(getFragmentManager());
         //contentBinding.dtpDateOfLastVaccination.setFragmentManager(getFragmentManager());
     }
 
@@ -280,12 +280,12 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     private void updateCaseClassificationUI() {
         User user = ConfigProvider.getUser();
         if (user.hasUserRole(UserRole.INFORMANT)) {
-            getContentBinding().spnCaseOfficerClassification.setVisibility(View.GONE);
+            getContentBinding().caseDataCaseOfficerClassification.setVisibility(View.GONE);
             if (record.getCaseClassification() == CaseClassification.NOT_CLASSIFIED) {
-                getContentBinding().spnCaseClassification.setVisibility(View.GONE);
+                getContentBinding().caseDataCaseClassification.setVisibility(View.GONE);
             }
         } else {
-            getContentBinding().spnCaseClassification.setVisibility(View.GONE);
+            getContentBinding().caseDataCaseClassification.setVisibility(View.GONE);
         }
     }
 

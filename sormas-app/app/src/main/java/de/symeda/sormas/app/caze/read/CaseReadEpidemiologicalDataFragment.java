@@ -84,9 +84,9 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
         contentBinding.setBurials(getBurialVisits());
         contentBinding.setSocialEvents(getGatherings());
         contentBinding.setTravels(getTravels());
-        contentBinding.tvAnimalContactYes.setTags(getAnimalContactYes());
-        contentBinding.tvAnimalContactUnknown.setTags(getAnimalContactUnknown());
-        contentBinding.tvAnimalContactNo.setTags(getAnimalContactNo());
+        contentBinding.epiDataAnimalContactExposed.setTags(getAnimalContactYes());
+        contentBinding.epiDataAnimalContactUnknownExposed.setTags(getAnimalContactUnknown());
+        contentBinding.epiDataAnimalContactNotExposed.setTags(getAnimalContactNo());
 
         contentBinding.setBurialItemClickCallback(onBurialItemClickListener);
         contentBinding.setSocialEventItemClickCallback(onSocialEventItemClickListener);

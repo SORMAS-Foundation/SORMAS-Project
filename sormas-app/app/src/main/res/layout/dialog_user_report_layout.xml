@@ -36,7 +36,6 @@
             app:labelCaption="@string/label_dialog_report_message"
             app:description="@string/desc_dialog_report_message"
             app:showCaption="false"
-            app:singleLine="false"
             app:inputType="textMultiLine"
             app:textAlignment="gravity"
             app:gravity="top|start"

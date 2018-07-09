@@ -354,9 +354,8 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
         view.inverseBindingListener = listener;
     }
 
-    @BindingAdapter(value = {"value", "enumClass", "defaultValue", "useAbbreviations"}, requireAll = false)
-    public static void setValue(ControlSwitchField view, Object value, Class enumClass, Object defaultValue, boolean useAbbreviations) {
-        view.setUseAbbreviations(useAbbreviations);
+    @BindingAdapter(value = {"value", "enumClass", "defaultValue"}, requireAll = false)
+    public static void setValue(ControlSwitchField view, Object value, Class enumClass, Object defaultValue) {
         view.setEnumClass(enumClass);
 
         if (value == null) {

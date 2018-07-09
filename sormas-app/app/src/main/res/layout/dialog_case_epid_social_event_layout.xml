@@ -49,7 +49,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
                 app:maxLines="2"
                 app:description="@string/desc_case_epid_social_event_desc"
                 app:labelCaption="@string/label_case_epid_social_event_desc"
@@ -65,7 +64,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
                 app:maxLines="2"
                 app:description="@string/desc_case_epid_social_event_address"
                 app:labelCaption="@string/label_case_epid_social_event_address"
@@ -113,7 +111,7 @@
                 >
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtWard"
+                    android:id="@+id/caseData_community"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

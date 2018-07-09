@@ -64,7 +64,7 @@
                         />-->
 
                     <TextView
-                        android:id="@+id/txtTaskPriority"
+                        android:id="@+id/task_priority"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/contentHorizontalSpacing"
@@ -103,7 +103,7 @@
                     />
 
                 <TextView
-                    android:id="@+id/txtHealthFacility"
+                    android:id="@+id/hospitalization_healthFacility"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
@@ -130,7 +130,7 @@
                 >
 
                 <TextView
-                    android:id="@+id/txtCreatorComment"
+                    android:id="@+id/task_creatorComment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -140,7 +140,6 @@
                     android:textColor="@color/listActivityRowLeastText"
                     android:fontFamily="sans-serif-medium"
                     android:scrollHorizontally="true"
-                    app:singleLine="false"
                     app:maxLines="2"
                     android:ellipsize="end"
                     app:value="@{data.userRole}"

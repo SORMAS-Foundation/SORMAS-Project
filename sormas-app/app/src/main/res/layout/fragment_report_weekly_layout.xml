@@ -38,21 +38,17 @@
                 >
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/swhReportFilter"
+                    android:id="@+id/report_selector"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:required="true"
-                    app:showCaption="false"
                     app:slim="true"
+                    app:showCaption="false"
                     app:enumClass="@{reportFilterOptionClass}"
-                    app:defaultValue="@{ReportFilterOption.SPECIFY_WEEK}"
-                    app:value="@={reportFilter.option}"
-
-
-                    />
+                    app:defaultValue="@{ReportFilterOption.THIS_WEEK}"
+                    app:value="@={reportFilter.option}" />
 
                 <LinearLayout
-                    android:id="@+id/specifyReportFilterFrame"
+                    android:id="@+id/specify_report_selector_frame"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -61,7 +57,7 @@
                     >
 
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                        android:id="@+id/spnYear"
+                        android:id="@+id/weeklyReport_year"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -69,25 +65,19 @@
                         app:labelCaption="@string/label_report_year"
                         app:description="@string/desc_report_year"
                         app:slim="true"
-                        app:required="false"
-
-                        app:value="@={reportFilter.year}"
-                        />
+                        app:value="@={reportFilter.year}" />
 
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                        android:id="@+id/spnEpiWeek"
+                        android:id="@+id/weeklyReport_epiWeek"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
+                        android:layout_marginStart="@dimen/formLayoutGutterSize"
                         app:hint="@string/hint_report_epi_week"
                         app:labelCaption="@string/label_report_epi_week"
                         app:description="@string/desc_report_epi_week"
                         app:slim="true"
-                        app:required="false"
-
-                        app:value="@={reportFilter.week}"
-                        />
+                        app:value="@={reportFilter.week}" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -110,32 +100,26 @@
                     >
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/txtStartPeroid"
+                        android:id="@+id/weeklyReport_startDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:singleLine="false"
-                        app:maxLines="2"
                         app:labelCaption="@string/label_report_start_period"
                         app:description="@string/desc_report_start_period"
                         app:value="@{reportFilter.startDate}"
-                        app:defaultValue='@{@string/invalid}'
-                        />
+                        app:defaultValue="@string/invalid" />
 
                     <ImageView style="@style/FluidHorizontalDividerStyle"/>
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/txtEndPeroid"
+                        android:id="@+id/weeklyReport_endDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:singleLine="false"
-                        app:maxLines="2"
                         app:labelCaption="@string/label_report_end_period"
                         app:description="@string/desc_report_end_period"
                         app:value="@{reportFilter.endDate}"
-                        app:defaultValue='@{@string/invalid}'
-                        />
+                        app:defaultValue="@string/invalid" />
 
                 </LinearLayout>
 
@@ -203,7 +187,7 @@
                 >
 
                 <de.symeda.sormas.app.component.controls.ControlButton
-                    android:id="@+id/btnAddMissingCase"
+                    android:id="@+id/add_missing_case"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -211,23 +195,19 @@
                     android:text="@string/action_add_missing_case"
                     app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                     app:rounded="true"
-                    app:slim="false"
-                    android:onClick="@{(view) -> addMissingCaseCallback.onClick(view, data)}"
-                    />
+                    android:onClick="@{(view) -> addMissingCaseCallback.onClick(view, data)}" />
 
                 <de.symeda.sormas.app.component.controls.ControlButton
-                    android:id="@+id/btnConfirmReport"
+                    android:id="@+id/confirm_report"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
-                    android:visibility="gone"
+                    android:layout_marginStart="@dimen/formLayoutGutterSize"
                     android:text="@string/action_confirm_report"
                     app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                     app:rounded="true"
-                    app:slim="false"
-                    android:onClick="@{(view) -> confirmReportCallback.onClick(view, data)}"
-                    />
+                    android:onClick="@{(view) -> confirmReportCallback.onClick(view, data)}" />
+
             </LinearLayout>
 
         </LinearLayout>

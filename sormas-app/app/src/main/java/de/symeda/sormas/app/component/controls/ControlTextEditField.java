@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.VisualState;
@@ -231,6 +232,9 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         super.onFinishInflate();
 
         input = (EditText) this.findViewById(R.id.input);
+        if (getImeOptions() == EditorInfo.IME_NULL) {
+            setImeOptions(EditorInfo.IME_ACTION_DONE);
+        }
         input.setImeOptions(getImeOptions());
         input.setImeActionLabel(null, getImeOptions());
         input.setTextAlignment(getTextAlignment());
@@ -257,6 +261,15 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         setUpOnEditorActionListener();
         setUpOnFocusChangeListener();
         initializeOnClickListener();
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        if (getHint() == null) {
+            setHint(I18nProperties.getFieldCaption(getFieldCaptionPropertyId()));
+        }
     }
 
     @Override
@@ -328,6 +341,10 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
     }
 
     public String getHint() {
+        if (input.getHint() == null) {
+            return null;
+        }
+
         return input.getHint().toString();
     }
 

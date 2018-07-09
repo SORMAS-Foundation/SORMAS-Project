@@ -112,14 +112,14 @@ public class SelectOrCreatePersonDialog extends BaseTeboAlertDialog {
         /*if (callback != null)
             callback.call(getSelectedPerson());*/
 
-        if (binding.txtFirstName.getValue().isEmpty() || binding.txtLastName.getValue().isEmpty()) {
+        if (binding.personFirstName.getValue().isEmpty() || binding.personLastName.getValue().isEmpty()) {
             NotificationHelper.showDialogNotification((NotificationContext)this, NotificationType.ERROR, R.string.snackbar_person_first_last_name);
 
             if (callback != null)
                 callback.call(null);
         } else {
-            data.setFirstName(binding.txtFirstName.getValue());
-            data.setLastName(binding.txtLastName.getValue());
+            data.setFirstName(binding.personFirstName.getValue());
+            data.setLastName(binding.personLastName.getValue());
 
             if (callback != null)
                 callback.call(data);

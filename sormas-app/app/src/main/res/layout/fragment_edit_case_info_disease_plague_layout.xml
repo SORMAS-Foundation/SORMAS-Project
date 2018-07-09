@@ -31,45 +31,12 @@
             />
 
         <de.symeda.sormas.app.component.controls.ControlSpinnerField
-            android:id="@+id/spnPlague"
+            android:id="@+id/caseData_plagueType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
-            app:hint="@string/hint_case_plague_type"
-            app:labelCaption="@string/label_case_plague_type"
-            app:description="@string/desc_case_plague_type"
-            app:required="true"
+            app:value="@={data.plagueType}" />
 
-            app:value="@={data.plagueType}"
-
-
-            />
-
-        <!--<de.symeda.sormas.app.component.controls.TeboSwitch
-            android:id="@+id/swhPlague"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/textControlMarginBottom"
-            app:paddingTop="@dimen/defaultControlVerticalPadding"
-            app:paddingBottom="@dimen/defaultControlVerticalPadding"
-            app:background="@drawable/control_switch_background_border"
-            app:borderSize="@dimen/defaultControlStrokeWidth"
-            app:textColor="@color/control_switch_color_selector"
-            app:hint="@string/hint_case_plague_type"
-            app:labelCaption="@string/label_case_plague_type"
-            app:description="@string/desc_case_plague_type"
-            app:required="true"
-            app:orientation="horizontal"
-            app:slim="false"
-            app:includeUnknown="@{false}"
-            app:enumClass="@{plagueTypeClass}"
-            app:defaultValue="@{null}"
-            app:abbrevUnknown="@{false}"
-            app:value="@={data.plagueType}"
-            app:onCheckedChangeListener="@{null}"
-
-
-            />-->
 
     </LinearLayout>
 

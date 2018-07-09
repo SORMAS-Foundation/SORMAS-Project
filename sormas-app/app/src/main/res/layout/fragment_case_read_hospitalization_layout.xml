@@ -41,78 +41,58 @@
 
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtHospitalName"
+                    android:id="@+id/hospitalization_healthFacility"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:singleLine="false"
-                    app:maxLines="2"
-                    app:description="@string/desc_case_hos_hospital_name"
-                    app:labelCaption="@string/label_case_hos_hospital_name"
-                    app:value="@{caze.healthFacility}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{caze.healthFacility}"  />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/txtAdmissionDate"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_case_hos_admission_date"
-                        app:labelCaption="@string/label_case_hos_admission_date"
-                        app:value="@{data.admissionDate}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                    android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/txtDischargeDate"
+                        android:id="@+id/hospitalization_admissionDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_case_hos_discharge_date"
-                        app:labelCaption="@string/label_case_hos_discharge_date"
-                        app:value="@{data.dischargeDate}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                        app:value="@{data.admissionDate}" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/hospitalization_dischargeDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        app:value="@{data.dischargeDate}" />
+
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/txtIsolation"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_case_hos_isolation"
-                        app:labelCaption="@string/label_case_hos_isolation"
-                        app:value="@{data.isolated}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                    android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/txtIsolationDate"
+                        android:id="@+id/hospitalization_isolated"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_case_hos_isolation_date"
-                        app:labelCaption="@string/label_case_hos_isolation_date"
-                        app:value="@{data.isolationDate}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                        app:value="@{data.isolated}" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/hospitalization_isolationDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        app:value="@{data.isolationDate}" />
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -126,18 +106,13 @@
                 android:paddingTop="@dimen/parentLayoutVerticalMargin"
                 android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                >
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom">
 
-                <!--android:layout_marginBottom="@dimen/parentLayoutVerticalMargin"
-                    app:removeBottomMarginIfEmpty="@{hospitalizations}"
-                    app:bottomMargin="@{@dimen/parentLayoutVerticalMargin}"-->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginBottom="@dimen/parentLayoutVerticalMargin"
-                    >
+                    android:layout_marginBottom="@dimen/parentLayoutVerticalMargin">
 
                     <TextView
                         android:layout_width="0dp"

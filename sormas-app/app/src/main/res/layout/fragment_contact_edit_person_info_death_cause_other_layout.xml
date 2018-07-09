@@ -17,19 +17,11 @@
         >
 
         <de.symeda.sormas.app.component.controls.ControlTextEditField
-            android:id="@+id/txtCauseOfDeathDisease"
+            android:id="@+id/person_causeOfDeathDetails"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
-            app:hint="@string/hint_event_pinvolv_other_cause_of_death"
-            app:labelCaption="@string/label_event_pinvolv_other_cause_of_death"
-            app:description="@string/desc_event_pinvolv_other_cause_of_death"
-            app:required="true"
-            app:value="@={data.causeOfDeathDetails}"
-            app:imeOptions="actionNext"
-
-
-            />
+            app:value="@={data.causeOfDeathDetails}" />
 
     </LinearLayout>
 

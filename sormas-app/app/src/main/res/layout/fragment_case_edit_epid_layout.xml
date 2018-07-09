@@ -68,117 +68,76 @@
                     style="@style/SubHeadingDescriptionStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/directContactConfirmedCase"
+                    android:id="@+id/epiData_directContactConfirmedCase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:background="@drawable/control_switch_background_border"
-                    app:labelCaption="@string/label_case_epid_directContactConfirmedCase"
                     app:enumClass="@{yesNoUnknownClass}"
-                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:value="@={data.directContactConfirmedCase}"
-                    />
+                    app:value="@={data.directContactConfirmedCase}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/directContactProbableCase"
+                    android:id="@+id/epiData_directContactProbableCase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:background="@drawable/control_switch_background_border"
-                    app:labelCaption="@string/label_case_epid_directContactProbableCase"
                     app:enumClass="@{yesNoUnknownClass}"
-                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:value="@={data.directContactProbableCase}"
-                    />
+                    app:value="@={data.directContactProbableCase}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/closeContactProbableCase"
+                    android:id="@+id/epiData_closeContactProbableCase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:background="@drawable/control_switch_background_border"
-                    app:labelCaption="@string/label_case_epid_closeContactProbableCase"
                     app:enumClass="@{yesNoUnknownClass}"
-                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:value="@={data.closeContactProbableCase}"
-                    />
+                    app:value="@={data.closeContactProbableCase}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/areaConfirmedCases"
+                    android:id="@+id/epiData_areaConfirmedCases"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:background="@drawable/control_switch_background_border"
-                    app:labelCaption="@string/label_case_epid_areaConfirmedCases"
                     app:enumClass="@{yesNoUnknownClass}"
-                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:value="@={data.areaConfirmedCases}"
-                    />
+                    app:value="@={data.areaConfirmedCases}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/processingConfirmedCaseFluidUnsafe"
+                    android:id="@+id/epiData_processingConfirmedCaseFluidUnsafe"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:background="@drawable/control_switch_background_border"
-                    app:labelCaption="@string/label_case_epid_processingConfirmedCaseFluidUnsafe"
                     app:enumClass="@{yesNoUnknownClass}"
-                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:value="@={data.processingConfirmedCaseFluidUnsafe}"
-                    />
+                    app:value="@={data.processingConfirmedCaseFluidUnsafe}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/percutaneousCaseBlood"
+                    android:id="@+id/epiData_percutaneousCaseBlood"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:background="@drawable/control_switch_background_border"
-                    app:labelCaption="@string/label_case_epid_percutaneousCaseBlood"
                     app:enumClass="@{yesNoUnknownClass}"
-                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:value="@={data.percutaneousCaseBlood}"
-                    />
+                    app:value="@={data.percutaneousCaseBlood}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/directContactDeadUnsafe"
+                    android:id="@+id/epiData_directContactDeadUnsafe"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:background="@drawable/control_switch_background_border"
-                    app:labelCaption="@string/label_case_epid_directContactDeadUnsafe"
                     app:enumClass="@{yesNoUnknownClass}"
-                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:value="@={data.directContactDeadUnsafe}"
-                    />
+                    app:value="@={data.directContactDeadUnsafe}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/processingSuspectedCaseSampleUnsafe"
+                    android:id="@+id/epiData_processingSuspectedCaseSampleUnsafe"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:background="@drawable/control_switch_background_border"
-                    app:labelCaption="@string/label_case_epid_processingSuspectedCaseSampleUnsafe"
                     app:enumClass="@{yesNoUnknownClass}"
-                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:value="@={data.processingSuspectedCaseSampleUnsafe}"
-                    />
+                    app:value="@={data.processingSuspectedCaseSampleUnsafe}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/swhBurial"
+                    android:id="@+id/epiData_burialAttended"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_case_epid_visited_burial"
-                    app:labelCaption="@string/label_case_epid_visited_burial"
-                    app:description="@string/desc_case_epid_visited_burial"
-                    app:required="true"
-                    app:slim="false"
                     app:enumClass="@{yesNoUnknownClass}"
-                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:value="@={data.burialAttended}"
-
-
-                    />
+                    app:value="@={data.burialAttended}" />
 
             </LinearLayout>
 
@@ -215,17 +174,16 @@
                         />
 
                     <de.symeda.sormas.app.component.controls.ControlButton
-                        android:id="@+id/btnNewBurialEntry"
+                        android:id="@+id/btn_add_burial"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
                         android:text="@string/action_new"
                         app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                         app:rounded="true"
                         app:slim="true"
                         app:iconStart="@drawable/ic_add_24dp"
-                        android:onClick="@{(view) -> addBurialEntryClickCallback.onClick(view, data)}"
-                        />
+                        android:onClick="@{(view) -> addBurialEntryClickCallback.onClick(view, data)}" />
 
                 </RelativeLayout>
 
@@ -262,21 +220,12 @@
                 >
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/swhGathering"
+                    android:id="@+id/epiData_gatheringAttended"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_case_epid_visited_social_event"
-                    app:labelCaption="@string/label_case_epid_visited_social_event"
-                    app:description="@string/desc_case_epid_visited_social_event"
-                    app:required="true"
-                    app:slim="false"
                     app:enumClass="@{yesNoUnknownClass}"
-                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:value="@={data.gatheringAttended}"
-
-
-                    />
+                    app:value="@={data.gatheringAttended}" />
 
             </LinearLayout>
 
@@ -312,17 +261,16 @@
                         />
 
                     <de.symeda.sormas.app.component.controls.ControlButton
-                        android:id="@+id/btnNewGatheringEntry"
+                        android:id="@+id/btn_add_gathering"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
                         android:text="@string/action_new"
                         app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                         app:rounded="true"
                         app:slim="true"
                         app:iconStart="@drawable/ic_add_24dp"
-                        android:onClick="@{(view) -> addGatheringEntryClickCallback.onClick(view, data)}"
-                        />
+                        android:onClick="@{(view) -> addGatheringEntryClickCallback.onClick(view, data)}" />
 
                 </RelativeLayout>
 
@@ -357,21 +305,12 @@
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
                 >
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/swhTraveled"
+                    android:id="@+id/epiData_traveled"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_case_epid_travel"
-                    app:labelCaption="@string/label_case_epid_travel"
-                    app:description="@string/desc_case_epid_travel"
-                    app:required="true"
-                    app:slim="false"
                     app:enumClass="@{yesNoUnknownClass}"
-                    app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-                    app:value="@={data.traveled}"
-
-
-                    />
+                    app:value="@={data.traveled}" />
 
             </LinearLayout>
 
@@ -408,17 +347,16 @@
                         />
 
                     <de.symeda.sormas.app.component.controls.ControlButton
-                        android:id="@+id/btnNewTravelEntry"
+                        android:id="@+id/btn_add_travel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
                         android:text="@string/action_new"
                         app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                         app:rounded="true"
                         app:slim="true"
                         app:iconStart="@drawable/ic_add_24dp"
-                        android:onClick="@{(view) -> addTravelEntryClickCallback.onClick(view, data)}"
-                        />
+                        android:onClick="@{(view) -> addTravelEntryClickCallback.onClick(view, data)}" />
 
                 </RelativeLayout>
 
@@ -494,34 +432,19 @@
 
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/spnSourceOfDrinkingWater"
+                    android:id="@+id/epiData_waterSource"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_case_epid_source_of_drinking_water"
-                    app:labelCaption="@string/label_case_epid_source_of_drinking_water"
-                    app:description="@string/desc_case_epid_source_of_drinking_water"
-                    app:required="true"
-
-                    app:value="@={data.waterSource}"
-                    />
+                    app:value="@={data.waterSource}" />
 
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/txtSourceOfDrinkingWaterOther"
+                    android:id="@+id/epiData_waterSourceOther"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    android:visibility="gone"
-                    app:hint="@string/hint_case_epid_source_of_drinking_water"
-                    app:labelCaption="@string/label_case_epid_source_of_drinking_water"
-                    app:description="@string/desc_case_epid_source_of_drinking_water"
-                    app:required="true"
-                    app:value="@={data.waterSourceOther}"
-                    app:imeOptions="actionNext"
-
-
-                    />
+                    app:value="@={data.waterSourceOther}" />
 
 
                 <android.support.v4.widget.NestedScrollView

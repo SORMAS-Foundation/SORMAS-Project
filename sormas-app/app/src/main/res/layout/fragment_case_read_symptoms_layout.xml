@@ -26,17 +26,13 @@
 
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/txtBodyTemperature"
+                android:id="@+id/symptoms_temperature"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:description="@string/desc_case_symptoms_body_temperature"
-                app:labelCaption="@string/label_case_symptoms_body_temperature"
                 app:value="@{data.temperature}"
                 app:appendValue="@{data.temperatureSource.toString()}"
-                app:valueFormat='@{@string/text_with_bracket_desc_format}'
-                app:defaultValue='@{@string/not_available}'
-                />
+                app:valueFormat='@{@string/two_strings_with_brackets_format}' />
 
             <TextView
                 android:layout_width="match_parent"
@@ -46,119 +42,64 @@
                 />
 
             <de.symeda.sormas.app.component.controls.ControlTagViewField
-                android:id="@+id/tvSymptomsYes"
+                android:id="@+id/symptoms_symptomsOccurred"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="@dimen/tagViewVerticalSeparator"
-                app:description="@string/desc_contact_symptoms_yes"
-                app:labelCaption="@string/label_contact_symptoms_yes" />
+                android:layout_marginBottom="@dimen/tagViewVerticalSeparator" />
 
             <de.symeda.sormas.app.component.controls.ControlTagViewField
-                android:id="@+id/tvSymptomsUnknown"
+                android:id="@+id/symptoms_symptomsUnknownOccurred"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="@dimen/tagViewVerticalSeparator"
-                app:description="@string/desc_contact_symptoms_unknown"
-                app:labelCaption="@string/label_contact_symptoms_unknown" />
+                android:layout_marginBottom="@dimen/tagViewVerticalSeparator" />
 
             <de.symeda.sormas.app.component.controls.ControlTagViewField
-                android:id="@+id/tvSymptomsNo"
+                android:id="@+id/symptoms_symptomsNotOccurred"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="@dimen/tagViewVerticalSeparator"
-                app:description="@string/desc_contact_symptoms_no"
-                app:labelCaption="@string/label_contact_symptoms_no" />
+                android:layout_marginBottom="@dimen/tagViewVerticalSeparator" />
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/txtOtherClinicalSymptoms"
+                android:id="@+id/symptoms_otherHemorrhagicSymptoms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:description="@string/desc_case_symptoms_other_clinical_symptoms"
-                app:labelCaption="@string/label_case_symptoms_other_clinical_symptoms"
-                app:value="@{data.otherHemorrhagicSymptoms}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                app:value="@{data.otherHemorrhagicSymptoms}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/txtOtherClinicalSymptomsComment"
+                android:id="@+id/symptoms_symptomsComments"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:description="@string/desc_case_symptoms_comment"
-                app:labelCaption="@string/label_case_symptoms_comment"
-                app:value="@{data.symptomsComments}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                app:value="@{data.otherHemorrhagicSymptomsText}"  />
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtFirstSymptomDate"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_case_symptoms_first_symptom_date"
-                    app:labelCaption="@string/label_case_symptoms_first_symptom_date"
-                    app:value="@{data.onsetDate}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtFirstSymptom"
+                    android:id="@+id/symptoms_onsetSymptom"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_case_symptoms_first_symptom"
-                    app:labelCaption="@string/label_case_symptoms_first_symptom"
-                    app:value="@{data.onsetSymptom}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{data.onsetSymptom}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/symptoms_onsetDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    app:value="@{data.onsetDate}" />
+
             </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/heading_sub_case_where_symptomatic"
-                style="@style/SubHeadingStyle"
-                />
-
-            <!--<de.symeda.sormas.app.component.controls.TeboTextLinkRead
-                android:id="@+id/txtSymptomLocation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:description="@string/desc_case_symptoms_location_address"
-                app:labelCaption="@string/label_case_symptoms_location_address"
-                app:locationValue="@{data.illLocation}"
-                app:defaultValue='@{@string/not_available}'
-                app:onLinkClick="@{(view, item) -> locationClickCallback.onClick(view, data)}"
-                />
-
-            <de.symeda.sormas.app.component.controls.TeboTextRead
-                android:id="@+id/txtStayPeriod"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:description="@string/desc_case_symptoms_time_period_of_stay"
-                app:labelCaption="@string/label_case_symptoms_time_period_of_stay"
-                app:dateRangeValue="@{data.illLocationFrom}"
-                app:appendValue="@{data.illLocationTo}"
-                app:valueFormat='@{@string/date_range_format}'
-                app:defaultValue='@{@string/not_available}'
-                />-->
 
         </LinearLayout>
 

@@ -30,44 +30,25 @@
 
 
         <de.symeda.sormas.app.component.controls.ControlSpinnerField
-            android:id="@+id/spnVaccination"
+            android:id="@+id/caseData_vaccination"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
-            app:hint="@string/hint_case_vaccination_received"
-            app:labelCaption="@string/label_case_vaccination_received"
-            app:description="@string/desc_case_vaccination_received"
-            app:required="true"
-
-            app:value="@={data.vaccination}"
-            />
+            app:value="@={data.vaccination}" />
 
         <de.symeda.sormas.app.component.controls.ControlSpinnerField
-            android:id="@+id/spnVaccinationInfoSource"
+            android:id="@+id/caseData_vaccinationInfoSource"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
-            app:hint="@string/hint_case_vaccination_info_source"
-            app:labelCaption="@string/label_case_vaccination_info_source"
-            app:description="@string/desc_case_vaccination_info_source"
-            app:required="true"
-
-            app:value="@={data.vaccinationInfoSource}"
-            />
+            app:value="@={data.vaccinationInfoSource}" />
 
         <de.symeda.sormas.app.component.controls.ControlDateField
-            android:id="@+id/dtpLastVaccinationDate"
+            android:id="@+id/caseData_vaccinationDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
-            android:paddingLeft="@dimen/formLayoutGutterSize"
-            android:visibility="gone"
-            app:hint="@string/hint_case_last_vaccination_date"
-            app:labelCaption="@string/label_case_last_vaccination_date"
-            app:description="@string/desc_case_last_vaccination_date"
-            app:required="true"
-            app:value="@={data.vaccinationDate}"
-            />
+            app:value="@={data.vaccinationDate}" />
 
     </LinearLayout>
 

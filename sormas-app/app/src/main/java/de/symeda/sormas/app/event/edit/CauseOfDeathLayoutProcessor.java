@@ -17,9 +17,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
-import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
-import de.symeda.sormas.app.util.DataUtils;
 
 /**
  * Created by Orson on 12/02/2018.
@@ -97,7 +95,7 @@ public class CauseOfDeathLayoutProcessor {
 
     private boolean initializeChildLayout(ViewDataBinding binding, final CauseOfDeath causeOfDeath) {
         View innerRootLayout = binding.getRoot();
-        final ControlSpinnerField spnDisease = (ControlSpinnerField) innerRootLayout.findViewById(R.id.spnDisease);
+        final ControlSpinnerField spnDisease = (ControlSpinnerField) innerRootLayout.findViewById(R.id.caseData_disease);
 
 
         binding.addOnRebindCallback(new OnRebindCallback() {

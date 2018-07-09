@@ -101,7 +101,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 
     @Override
     public void onAfterLayoutBinding(final FragmentCaseNewLayoutBinding contentBinding) {
-        contentBinding.spnDisease.initializeSpinner(diseaseList, null, new ValueChangeListener() {
+        contentBinding.caseDataDisease.initializeSpinner(diseaseList, null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 if (field.getValue() == null)
@@ -110,79 +110,79 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
                 Disease disease = (Disease) field.getValue();
 
                 if (disease == Disease.OTHER) {
-                    getContentBinding().txtDiseaseDetail.setVisibility(View.VISIBLE);
-                    getContentBinding().spnPlague.setVisibility(View.GONE);
-                    getContentBinding().spnDengueFever.setVisibility(View.GONE);
+                    getContentBinding().caseDataDiseaseDetails.setVisibility(View.VISIBLE);
+                    getContentBinding().caseDataPlagueType.setVisibility(View.GONE);
+                    getContentBinding().caseDataDengueFeverType.setVisibility(View.GONE);
                 } else if (disease == Disease.PLAGUE) {
-                    getContentBinding().txtDiseaseDetail.setVisibility(View.GONE);
-                    getContentBinding().spnPlague.setVisibility(View.VISIBLE);
-                    getContentBinding().spnDengueFever.setVisibility(View.GONE);
+                    getContentBinding().caseDataDiseaseDetails.setVisibility(View.GONE);
+                    getContentBinding().caseDataPlagueType.setVisibility(View.VISIBLE);
+                    getContentBinding().caseDataDengueFeverType.setVisibility(View.GONE);
                 } else if (disease == Disease.DENGUE) {
-                    getContentBinding().txtDiseaseDetail.setVisibility(View.GONE);
-                    getContentBinding().spnPlague.setVisibility(View.GONE);
-                    getContentBinding().spnDengueFever.setVisibility(View.VISIBLE);
+                    getContentBinding().caseDataDiseaseDetails.setVisibility(View.GONE);
+                    getContentBinding().caseDataPlagueType.setVisibility(View.GONE);
+                    getContentBinding().caseDataDengueFeverType.setVisibility(View.VISIBLE);
                 } else {
-                    getContentBinding().txtDiseaseDetail.setVisibility(View.GONE);
-                    getContentBinding().spnPlague.setVisibility(View.GONE);
-                    getContentBinding().spnDengueFever.setVisibility(View.GONE);
+                    getContentBinding().caseDataDiseaseDetails.setVisibility(View.GONE);
+                    getContentBinding().caseDataPlagueType.setVisibility(View.GONE);
+                    getContentBinding().caseDataDengueFeverType.setVisibility(View.GONE);
                 }
             }
         });
 
-        contentBinding.spnPlague.initializeSpinner(plagueTypeList);
+        contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
 
-        contentBinding.spnDengueFever.initializeSpinner(dengueFeverTypeList);
+        contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
 
-        if (contentBinding.spnState != null) {
-            contentBinding.spnState.initializeSpinner(RegionLoader.getInstance().load(), null, new ValueChangeListener() {
+        if (contentBinding.caseDataRegion != null) {
+            contentBinding.caseDataRegion.initializeSpinner(RegionLoader.getInstance().load(), null, new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
                     Region selectedValue = (Region) field.getValue();
                     if (selectedValue != null) {
-                        contentBinding.spnLga.setSpinnerData(DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(selectedValue)), contentBinding.spnLga.getValue());
+                        contentBinding.caseDataDistrict.setSpinnerData(DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(selectedValue)), contentBinding.caseDataDistrict.getValue());
                     } else {
-                        contentBinding.spnLga.setSpinnerData(null);
+                        contentBinding.caseDataDistrict.setSpinnerData(null);
                     }
                 }
             });
         }
 
-        if (contentBinding.spnLga != null) {
-            contentBinding.spnLga.initializeSpinner(DistrictLoader.getInstance().load((Region) contentBinding.spnState.getValue()), null, new ValueChangeListener() {
+        if (contentBinding.caseDataDistrict != null) {
+            contentBinding.caseDataDistrict.initializeSpinner(DistrictLoader.getInstance().load((Region) contentBinding.caseDataRegion.getValue()), null, new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
                     District selectedValue = (District) field.getValue();
                     if (selectedValue != null) {
-                        contentBinding.spnWard.setSpinnerData(DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(selectedValue)), contentBinding.spnWard.getValue());
-                        contentBinding.spnFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(selectedValue, true)), contentBinding.spnFacility.getValue());
+                        contentBinding.caseDataCommunity.setSpinnerData(DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(selectedValue)), contentBinding.caseDataCommunity.getValue());
+                        contentBinding.caseDataHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(selectedValue, true)), contentBinding.caseDataHealthFacility.getValue());
                     } else {
-                        contentBinding.spnWard.setSpinnerData(null);
-                        contentBinding.spnFacility.setSpinnerData(null);
+                        contentBinding.caseDataCommunity.setSpinnerData(null);
+                        contentBinding.caseDataHealthFacility.setSpinnerData(null);
                     }
                 }
             });
         }
 
-        if (contentBinding.spnWard != null) {
-            contentBinding.spnWard.initializeSpinner(CommunityLoader.getInstance().load((District) contentBinding.spnLga.getValue()), null, new ValueChangeListener() {
+        if (contentBinding.caseDataCommunity != null) {
+            contentBinding.caseDataCommunity.initializeSpinner(CommunityLoader.getInstance().load((District) contentBinding.caseDataDistrict.getValue()), null, new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
                     Community selectedValue = (Community) field.getValue();
                     if (selectedValue != null) {
-                        contentBinding.spnFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(selectedValue, true)));
-                    } else if (contentBinding.spnLga.getValue() != null) {
-                        contentBinding.spnFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) contentBinding.spnLga.getValue(), true)));
+                        contentBinding.caseDataHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(selectedValue, true)));
+                    } else if (contentBinding.caseDataDistrict.getValue() != null) {
+                        contentBinding.caseDataHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) contentBinding.caseDataDistrict.getValue(), true)));
                     } else {
-                        contentBinding.spnFacility.setSpinnerData(null);
+                        contentBinding.caseDataHealthFacility.setSpinnerData(null);
                     }
                 }
             });
         }
 
-        List<Item> facilities = contentBinding.spnWard.getValue() != null ? FacilityLoader.getInstance().load((Community) contentBinding.spnWard.getValue(), true)
-                : FacilityLoader.getInstance().load((District) contentBinding.spnLga.getValue(), true);
-        if (contentBinding.spnFacility != null) {
-            contentBinding.spnFacility.initializeSpinner(facilities, null, new ValueChangeListener() {
+        List<Item> facilities = contentBinding.caseDataCommunity.getValue() != null ? FacilityLoader.getInstance().load((Community) contentBinding.caseDataCommunity.getValue(), true)
+                : FacilityLoader.getInstance().load((District) contentBinding.caseDataDistrict.getValue(), true);
+        if (contentBinding.caseDataHealthFacility != null) {
+            contentBinding.caseDataHealthFacility.initializeSpinner(facilities, null, new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
                     if (field.getValue() == null)
@@ -202,17 +202,17 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 //            contentBinding.txtDiseaseDetail.changeVisualState(VisualState.DISABLED);
 //        }
 
-        //contentBinding.spnState.changeVisualState(VisualState.DISABLED);
-        //contentBinding.spnLga.changeVisualState(VisualState.DISABLED);
+        //contentBinding.caseDataRegion.changeVisualState(VisualState.DISABLED);
+        //contentBinding.caseDataDistrict.changeVisualState(VisualState.DISABLED);
 
         User user = ConfigProvider.getUser();
         if (user.hasUserRole(UserRole.INFORMANT) && user.getHealthFacility() != null) {
             // this is ok, because informants are required to have a community and health facility
-            contentBinding.spnWard.changeVisualState(VisualState.DISABLED);
-            contentBinding.spnFacility.changeVisualState(VisualState.DISABLED);
+            contentBinding.caseDataCommunity.changeVisualState(VisualState.DISABLED);
+            contentBinding.caseDataHealthFacility.changeVisualState(VisualState.DISABLED);
         } else {
-            contentBinding.spnWard.changeVisualState(VisualState.NORMAL);
-            contentBinding.spnFacility.changeVisualState(VisualState.NORMAL);
+            contentBinding.caseDataCommunity.changeVisualState(VisualState.NORMAL);
+            contentBinding.caseDataHealthFacility.changeVisualState(VisualState.NORMAL);
         }
     }
 

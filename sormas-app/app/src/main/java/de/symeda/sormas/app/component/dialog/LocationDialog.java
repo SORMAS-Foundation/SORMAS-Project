@@ -137,36 +137,36 @@ public class LocationDialog extends BaseTeboAlertDialog {
 
         updateGpsTextView();
 
-        if (mContentBinding.spnState != null) {
-            mContentBinding.spnState.initializeSpinner(RegionLoader.getInstance().load(), null, new ValueChangeListener() {
+        if (mContentBinding.locationRegion != null) {
+            mContentBinding.locationRegion.initializeSpinner(RegionLoader.getInstance().load(), null, new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
                     Region selectedValue = (Region) field.getValue();
                     if (selectedValue != null) {
-                        mContentBinding.spnLga.setSpinnerData(DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(selectedValue)), mContentBinding.spnLga.getValue());
+                        mContentBinding.locationDistrict.setSpinnerData(DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(selectedValue)), mContentBinding.locationDistrict.getValue());
                     } else {
-                        mContentBinding.spnLga.setSpinnerData(null);
+                        mContentBinding.locationDistrict.setSpinnerData(null);
                     }
                 }
             });
         }
 
-        if (mContentBinding.spnLga != null) {
-            mContentBinding.spnLga.initializeSpinner(DistrictLoader.getInstance().load((Region) mContentBinding.spnState.getValue()), null, new ValueChangeListener() {
+        if (mContentBinding.locationDistrict != null) {
+            mContentBinding.locationDistrict.initializeSpinner(DistrictLoader.getInstance().load((Region) mContentBinding.locationRegion.getValue()), null, new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
                     District selectedValue = (District) field.getValue();
                     if (selectedValue != null) {
-                        mContentBinding.spnWard.setSpinnerData(DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(selectedValue)), mContentBinding.spnWard.getValue());
+                        mContentBinding.locationCommunity.setSpinnerData(DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(selectedValue)), mContentBinding.locationCommunity.getValue());
                        } else {
-                        mContentBinding.spnWard.setSpinnerData(null);
+                        mContentBinding.locationCommunity.setSpinnerData(null);
                     }
                 }
             });
         }
 
-        if (mContentBinding.spnWard != null) {
-            mContentBinding.spnWard.initializeSpinner(CommunityLoader.getInstance().load((District) mContentBinding.spnLga.getValue()));
+        if (mContentBinding.locationCommunity != null) {
+            mContentBinding.locationCommunity.initializeSpinner(CommunityLoader.getInstance().load((District) mContentBinding.locationDistrict.getValue()));
         }
     }
 

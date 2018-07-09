@@ -38,45 +38,30 @@
 
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtPersonName"
+                    android:id="@+id/caseData_person"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_case_patient_last_name"
-                    app:labelCaption="@string/label_case_patient_last_name"
-                    app:value="@{data.associatedCase.person}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{data.associatedCase.person}" />
 
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/txtSampleCode"
+                    android:id="@+id/sample_sampleCode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_sample_code"
-                    app:labelCaption="@string/label_sample_code"
-                    app:description="@string/desc_sample_code"
-                    app:required="true"
-                    app:value="@={data.sampleCode}"
-                    app:imeOptions="actionNext"
-
-
-                    />
+                    app:value="@={data.sampleCode}" />
 
 
                 <de.symeda.sormas.app.component.controls.ControlDateTimeField
-                    android:id="@+id/dtpDateAndTimeOfSampling"
+                    android:id="@+id/sample_sampleDateTime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:dateHint="@string/hint_sample_date_time_sampling"
-                    app:timeHint="@string/hint_sample_date_time_sampling"
-                    app:labelCaption="@string/label_sample_date_time_sampling"
-                    app:description="@string/desc_sample_date_time_sampling"
+                    app:dateHint="@string/hint_sample_date_of_sampling"
+                    app:timeHint="@string/hint_sample_time_of_sampling"
                     app:required="true"
-                    app:value="@={data.sampleDateTime}"
-                    />
+                    app:value="@={data.sampleDateTime}" />
 
 
                 <LinearLayout
@@ -86,92 +71,56 @@
                     >
 
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                        android:id="@+id/spnSampleMaterial"
+                        android:id="@+id/sample_sampleMaterial"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        app:hint="@string/hint_sample_material"
-                        app:labelCaption="@string/label_sample_material"
-                        app:description="@string/desc_sample_material"
                         app:required="true"
-
-                        app:value="@={data.sampleMaterial}"
-                        />
+                        app:value="@={data.sampleMaterial}" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextEditField
-                        android:id="@+id/txtSampleMaterialText"
+                        android:id="@+id/sample_sampleMaterialText"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        app:hint="@string/hint_sample_other_material"
-                        app:labelCaption="@string/label_sample_other_material"
-                        app:description="@string/desc_sample_other_material"
+                        android:layout_marginStart="@dimen/formLayoutGutterSize"
                         app:required="true"
-                        app:value="@={data.sampleMaterialText}"
-                        app:imeOptions="actionNext"
-
-
-                        />
+                        app:value="@={data.sampleMaterialText}" />
 
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/spnSampleSource"
+                    android:id="@+id/sample_sampleSource"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_sample_source"
-                    app:labelCaption="@string/label_sample_source"
-                    app:description="@string/desc_sample_source"
-                    app:required="true"
-
-                    app:value="@={data.sampleSource}"
-                    />
+                    app:value="@={data.sampleSource}" />
 
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/spnTestType"
+                    android:id="@+id/sample_suggestedTypeOfTest"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_sample_test_type"
-                    app:labelCaption="@string/label_sample_test_type"
-                    app:description="@string/desc_sample_test_type"
-                    app:required="true"
-
-                    app:value="@={data.suggestedTypeOfTest}"
-                    />
+                    app:value="@={data.suggestedTypeOfTest}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/spnLaboratory"
+                    android:id="@+id/sample_lab"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_sample_laboratory"
-                    app:labelCaption="@string/label_sample_laboratory"
-                    app:description="@string/desc_sample_laboratory"
                     app:required="true"
-
-                    app:value="@={data.lab}"
-                    />
+                    app:value="@={data.lab}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/txtLaboratoryDetails"
+                    android:id="@+id/sample_labDetails"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_sample_laboratory_details"
-                    app:labelCaption="@string/label_sample_laboratory_details"
-                    app:description="@string/desc_sample_laboratory_details"
                     app:required="true"
-                    app:value="@={data.labDetails}"
-                    app:imeOptions="actionNext"
-
-
-                    />
+                    app:value="@={data.labDetails}" />
 
                 <ImageView android:id="@+id/divShippingStatusTop" style="@style/MiniHorizontalDividerStyle"/>
 
@@ -181,55 +130,32 @@
                     android:orientation="horizontal"
                     >
 
-                    <de.symeda.sormas.app.component.controls.ControlSwitchField
-                        android:id="@+id/swhShipped"
-                        android:layout_width="@dimen/teboSwitchMinWidth"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        app:hint="@string/hint_sample_shipping_status"
-                        app:labelCaption="@string/label_sample_shipping_status"
-                        app:description="@string/desc_sample_shipping_status"
-                        app:required="true"
-                        app:slim="false"
-                        app:enumClass="@{yesNoClass}"
-                        app:defaultValue="@{YesNo.NO}"
-                        app:value="@={SampleHelper.isShipped(data.shipped)}"
-
-
-                        />
-
-
-                    <de.symeda.sormas.app.component.controls.ControlDateField
-                        android:id="@+id/dtpShipmentDate"
+                    <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                        android:id="@+id/sample_shipped"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        android:visibility="gone"
-                        app:hint="@string/hint_sample_shipping_date"
-                        app:labelCaption="@string/label_sample_shipping_date"
-                        app:description="@string/desc_sample_shipping_date"
+                        app:value="@={data.shipped}" />
+
+                    <de.symeda.sormas.app.component.controls.ControlDateField
+                        android:id="@+id/sample_shipmentDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="@dimen/textControlMarginBottom"
+                        android:layout_marginStart="@dimen/formLayoutGutterSize"
                         app:required="true"
-                        app:value="@={data.shipmentDate}"
-                        />
+                        app:value="@={data.shipmentDate}" />
+
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/txtShipmentDetails"
+                    android:id="@+id/sample_shipmentDetails"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    android:visibility="gone"
-                    app:hint="@string/hint_sample_shipment_details"
-                    app:labelCaption="@string/label_sample_shipment_details"
-                    app:description="@string/desc_sample_shipment_details"
-                    app:required="true"
-                    app:value="@={data.shipmentDetails}"
-                    app:imeOptions="actionNext"
-
-
-                    />
+                    app:value="@={data.shipmentDetails}" />
 
                 <LinearLayout
                     android:id="@+id/sampleReceivedLayout"
@@ -251,55 +177,37 @@
                         android:orientation="horizontal">
 
                         <de.symeda.sormas.app.component.controls.ControlTextReadField
-                            android:id="@+id/txtLabSampleId"
+                            android:id="@+id/sample_labSampleID"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            app:description="@string/desc_sample_lab_id"
-                            app:labelCaption="@string/label_sample_lab_id"
-                            app:value="@{data.labSampleID}"
-                            app:defaultValue='@{@string/not_available}'
-                            />
+                            app:value="@{data.labSampleID}" />
 
                         <de.symeda.sormas.app.component.controls.ControlTextReadField
-                            android:id="@+id/txtReceivedDate"
+                            android:id="@+id/sample_receivedDate"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:paddingLeft="@dimen/controlReadTextMarginBottom"
+                            android:layout_marginStart="@dimen/formLayoutGutterSize"
                             android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            app:description="@string/desc_sample_received_date"
-                            app:labelCaption="@string/label_sample_received_date"
-                            app:value="@{data.receivedDate}"
-                            app:defaultValue='@{@string/not_available}'
-                            />
+                            app:value="@{data.receivedDate}" />
 
                     </LinearLayout>
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/txtSpecimenCondition"
+                        android:id="@+id/sample_specimenCondition"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_sample_specimen_condition"
-                        app:labelCaption="@string/label_sample_specimen_condition"
-                        app:value="@{data.specimenCondition}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                        app:value="@{data.specimenCondition}" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/txtTestPossibleReason"
+                        android:id="@+id/sample_noTestPossibleReason"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_sample_test_possible_reason"
-                        app:labelCaption="@string/label_sample_test_possible_reason"
-                        app:singleLine="false"
-                        app:maxLines="2"
-                        app:value="@{data.noTestPossibleReason}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                        app:value="@{data.noTestPossibleReason}" />
 
                 </LinearLayout>
 
@@ -307,18 +215,11 @@
                 <ImageView android:id="@+id/divShippingStatusBottom" style="@style/MiniHorizontalDividerStyle"/>
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/txtComment"
+                    android:id="@+id/sample_comment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_sample_comment"
-                    app:labelCaption="@string/label_sample_comment"
-                    app:description="@string/desc_sample_comment"
-                    app:required="true"
-                    app:value="@={data.comment}"
-
-
-                    />
+                    app:value="@={data.comment}" />
 
             </LinearLayout>
 

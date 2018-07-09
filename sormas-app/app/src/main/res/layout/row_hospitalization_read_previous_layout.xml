@@ -29,84 +29,52 @@
             android:orientation="horizontal"
             >
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/txtAdmissionAndDischargeDate"
+                android:id="@+id/casePreviousHospitalization_admissionAndDischargeDate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:description="@string/desc_case_hos_prev_admission_and_discharge_date"
-                app:labelCaption="@string/label_case_hos_prev_admission_and_discharge_date"
-                app:labelColor="@color/controlReadLabelSecodaryColor"
                 app:value="@{data.admissionDate}"
                 app:appendValue="@{data.dischargeDate}"
-                app:valueFormat='@{@string/date_range_format}'
-                app:defaultValue='@{@string/not_available}'
-                />
+                app:valueFormat='@{@string/date_range_format}' />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/txtIsolation"
+                android:id="@+id/casePreviousHospitalization_isolated"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/formLayoutGutterSize"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                android:layout_marginStart="@dimen/formLayoutGutterSize"
                 android:textAlignment="viewEnd"
-                app:description="@string/desc_case_hos_prev_isolation"
-                app:labelCaption="@string/label_case_hos_prev_isolation"
-                app:labelColor="@color/controlReadLabelSecodaryColor"
-                app:value="@{data.isolated}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                app:value="@{data.isolated}" />
         </LinearLayout>
 
         <de.symeda.sormas.app.component.controls.ControlTextReadField
-            android:id="@+id/txtHospitalName"
+            android:id="@+id/casePreviousHospitalization_healthFacility"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-            app:description="@string/desc_case_hos_prev_hospital_name"
-            app:labelCaption="@string/label_case_hos_prev_hospital_name"
-            app:labelColor="@color/controlReadLabelSecodaryColor"
-            app:value="@{data.healthFacility}"
-            app:defaultValue='@{@string/not_available}'
-            />
+            app:value="@{data.healthFacility}" />
 
         <!-- TODO: Split this into separate region and district fields -->
         <de.symeda.sormas.app.component.controls.ControlTextReadField
-            android:id="@+id/txtStatAndLga"
+            android:id="@+id/casePreviousHospitalization_regionAndDistrict"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-            app:description="@string/desc_case_hos_prev_state_and_lga"
-            app:labelCaption="@string/label_case_hos_prev_state_and_lga"
-            app:labelColor="@color/controlReadLabelSecodaryColor"
-            app:value="@{data.region}"
-            app:defaultValue='@{@string/not_available}'
-            />
+            app:value="@{data.region}" />
 
         <de.symeda.sormas.app.component.controls.ControlTextReadField
-            android:id="@+id/txtWard"
+            android:id="@+id/casePreivousHospitalization_community"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-            app:description="@string/desc_case_hos_prev_ward"
-            app:labelCaption="@string/label_case_hos_prev_ward"
-            app:labelColor="@color/controlReadLabelSecodaryColor"
-            app:value="@{data.community}"
-            app:defaultValue='@{@string/not_available}'
-            />
+            app:value="@{data.community}" />
 
         <de.symeda.sormas.app.component.controls.ControlTextReadField
-            android:id="@+id/txtDescription"
+            android:id="@+id/casePreviousHospitalization_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:singleLine="false"
-            app:maxLines="2"
-            app:description="@string/desc_case_hos_prev_desc"
-            app:labelCaption="@string/label_case_hos_prev_desc"
-            app:labelColor="@color/controlReadLabelSecodaryColor"
-            app:value="@{data.description}"
-            app:defaultValue='@{@string/not_available}'
-            />
+            app:value="@{data.description}" />
 
 
     </LinearLayout>

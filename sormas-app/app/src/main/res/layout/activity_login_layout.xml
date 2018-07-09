@@ -9,7 +9,6 @@
         <variable name="data" type="de.symeda.sormas.app.login.LoginViewModel" />
     </data>
 
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -117,16 +116,7 @@
                     app:labelCaption="@string/label_login_username"
                     app:description="@string/desc_login_username"
                     app:required="true"
-                    app:value="@={data.userName}"
-                    app:inputType="text"
-
-                     />
-
-                <!--app:imeOptions="actionNext"-->
-                <!--app:nextFocusUp="@id/txtUserName"-->
-                <!--app:nextFocusLeft="@id/txtUserName"-->
-                <!--app:nextFocusDown="@+id/txtPassword"-->
-                <!--app:nextFocusRight="@+id/txtPassword"-->
+                    app:value="@={data.userName}" />
 
                 <de.symeda.sormas.app.component.controls.ControlPasswordField
                     android:id="@+id/password"
@@ -137,15 +127,7 @@
                     app:labelCaption="@string/label_login_password"
                     app:description="@string/desc_login_password"
                     app:required="true"
-                    app:value="@={data.password}"
-
-                     />
-
-                <!--app:imeOptions="actionNext"-->
-                <!--app:nextFocusUp="@id/txtUserName"-->
-                <!--app:nextFocusLeft="@id/txtUserName"-->
-                <!--app:nextFocusDown="@+id/btnLogin"-->
-                <!--app:nextFocusRight="@+id/btnLogin"-->
+                    app:value="@={data.password}" />
 
                 <Button
                     android:id="@+id/btn_login"

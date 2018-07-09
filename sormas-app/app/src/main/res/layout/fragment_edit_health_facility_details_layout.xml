@@ -18,19 +18,12 @@
         >
 
         <de.symeda.sormas.app.component.controls.ControlTextEditField
-            android:id="@+id/txtHealthFacilityDetail"
+            android:id="@+id/caseData_healthFacilityDetails"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
-            app:hint="@string/hint_case_health_facility_desc"
-            app:labelCaption="@string/label_case_health_facility_desc"
-            app:description="@string/desc_case_health_facility_desc"
             app:required="true"
-            app:value="@={data.healthFacilityDetails}"
-            app:imeOptions="actionNext"
-
-
-            />
+            app:value="@={data.healthFacilityDetails}" />
 
     </LinearLayout>
 

@@ -17,19 +17,11 @@
         >
 
         <de.symeda.sormas.app.component.controls.ControlTextEditField
-            android:id="@+id/txtTransType"
+            android:id="@+id/person_occupationDetails"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
-            app:hint="@string/hint_event_pinvolv_occupation_trans_type"
-            app:labelCaption="@string/label_event_pinvolv_occupation_trans_type"
-            app:description="@string/desc_event_pinvolv_occupation_trans_type"
-            app:required="true"
-            app:value="@={data.occupationDetails}"
-            app:imeOptions="actionNext"
-
-
-            />
+            app:value="@={data.occupationDetails}" />
 
 
     </LinearLayout>

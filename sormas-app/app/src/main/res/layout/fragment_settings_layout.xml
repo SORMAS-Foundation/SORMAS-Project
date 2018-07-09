@@ -22,54 +22,47 @@
             android:focusableInTouchMode="true">
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/txtSettingsServerUrl"
+                android:id="@+id/settings_serverUrl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="Server Address"
-                app:description="This is the URL to the restful API"
-                app:labelCaption="Server Address"/>
+                android:layout_marginBottom="@dimen/textControlMarginBottom" />
 
             <de.symeda.sormas.app.component.controls.ControlButton
-                android:id="@+id/btnSettingsChangePIN"
+                android:id="@+id/change_pin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/buttonControlMarginBottom"
                 android:text="@string/action_change_PIN"
                 app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
-                app:rounded="true"
-                />
+                app:rounded="true" />
 
 
             <de.symeda.sormas.app.component.controls.ControlButton
-                android:id="@+id/btnSettingsRepullData"
+                android:id="@+id/resynchronize_data"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/buttonControlMarginBottom"
                 app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
                 android:text="@string/action_repull_data"
-                app:rounded="true"
-                />
+                app:rounded="true" />
 
             <de.symeda.sormas.app.component.controls.ControlButton
-                android:id="@+id/btnSettingsSyncLog"
+                android:id="@+id/show_sync_log"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/buttonControlMarginBottom"
                 android:text="@string/action_open_syncLog"
                 app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
-                app:rounded="true"
-                />
+                app:rounded="true" />
 
             <de.symeda.sormas.app.component.controls.ControlButton
-                android:id="@+id/btnSettingsLogout"
+                android:id="@+id/logout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/buttonControlMarginBottom"
                 android:text="@string/action_logout"
                 app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
-                app:rounded="true"
-                />
+                app:rounded="true" />
 
             <TextView
                 android:id="@+id/sormas_version"

@@ -25,6 +25,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.I18nConstants;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.util.ResourceUtils;
 
@@ -38,7 +39,6 @@ public class ControlTextReadField extends ControlPropertyField<String> {
     // Attributes
 
     private String valueFormat;
-    private boolean singleLine;
     private int maxLines;
     private boolean distinct;
 
@@ -79,7 +79,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 
     @Override
     public String getValue() {
-        throw new UnsupportedOperationException("getValue is not supported by a read-only field");
+        return textView.getText().toString();
     }
 
     @Override
@@ -99,8 +99,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
                     0, 0);
 
             try {
-                singleLine = a.getBoolean(R.styleable.ControlTextReadField_singleLine, true);
-                maxLines = a.getInt(R.styleable.ControlTextReadField_maxLines, 1);
+                maxLines = a.getInt(R.styleable.ControlTextReadField_maxLines, 2);
                 distinct = a.getBoolean(R.styleable.ControlTextReadField_distinct, false);
             } finally {
                 a.recycle();
@@ -133,7 +132,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         super.onFinishInflate();
 
         textView = (TextView) this.findViewById(R.id.text_view);
-        setSingleLine(singleLine);
+        textView.setMaxLines(maxLines);
         textView.setImeOptions(getImeOptions());
         textView.setTextAlignment(getTextAlignment());
         if(getTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
@@ -184,17 +183,13 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         textView.setInputType(inputType);
     }
 
-    public boolean isSingleLine() {
-        return this.singleLine;
+    public int getMaxLines() {
+        return maxLines;
     }
 
-    public void setSingleLine(boolean singleLine) {
-        this.singleLine = singleLine;
-        if (singleLine) {
-            textView.setMaxLines(1);
-        } else {
-            textView.setMaxLines(maxLines);
-        }
+    public void setMaxLines(int maxLines) {
+        this.maxLines = maxLines;
+        textView.setMaxLines(maxLines);
     }
 
     /* Value types that can simply be called by setValue */
@@ -283,6 +278,11 @@ public class ControlTextReadField extends ControlPropertyField<String> {
     // Age with date
     @BindingAdapter(value={"ageWithDateValue", "valueFormat", "defaultValue"}, requireAll=false)
     public static void setAgeWithDateValue(ControlTextReadField textField, Person person, String valueFormat, String defaultValue) {
+        if (valueFormat == null) {
+            valueFormat = ResourceUtils.getString(textField.getContext(), R.string.age_with_birth_date_format);
+        }
+        textField.setValueFormat(valueFormat);
+
         if (person == null || person.getApproximateAge() == null) {
             setValue(textField, (String) null, valueFormat, defaultValue);
         } else {

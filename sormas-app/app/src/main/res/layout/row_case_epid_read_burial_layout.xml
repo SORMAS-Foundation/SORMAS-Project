@@ -39,7 +39,7 @@
             android:ellipsize="end"
             app:value="@{data.burialPersonname}"
             app:appendValue="@{data.burialRelation}"
-            app:valueFormat='@{@string/text_with_bracket_desc_format}'
+            app:valueFormat='@{@string/two_strings_with_brackets_format}'
             app:defaultValue='@{@string/epid_burial_person_unknown}'
 
 

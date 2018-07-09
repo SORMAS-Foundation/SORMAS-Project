@@ -21,7 +21,6 @@ import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
-import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.CommunityLoader;
 import de.symeda.sormas.app.component.dialog.DistrictLoader;
@@ -125,10 +124,10 @@ public class OccupationTypeLayoutProcessor {
     private boolean initializeChildLayout(ViewDataBinding binding) {
         View innerRootLayout = binding.getRoot();
 
-        spnFacilityState = (ControlSpinnerField)innerRootLayout.findViewById(R.id.spnFacilityState);
-        spnFacilityLga = (ControlSpinnerField)innerRootLayout.findViewById(R.id.spnFacilityLga);
-        spnFacilityWard = (ControlSpinnerField)innerRootLayout.findViewById(R.id.spnFacilityWard);
-        spnHealthCareFacility = (ControlSpinnerField)innerRootLayout.findViewById(R.id.spnHealthCareFacility);
+        spnFacilityState = (ControlSpinnerField)innerRootLayout.findViewById(R.id.person_occupationRegion);
+        spnFacilityLga = (ControlSpinnerField)innerRootLayout.findViewById(R.id.person_occupationDistrict);
+        spnFacilityWard = (ControlSpinnerField)innerRootLayout.findViewById(R.id.person_occupationCommunity);
+        spnHealthCareFacility = (ControlSpinnerField)innerRootLayout.findViewById(R.id.person_occupationFacility);
 
         binding.addOnRebindCallback(new OnRebindCallback() {
             @Override

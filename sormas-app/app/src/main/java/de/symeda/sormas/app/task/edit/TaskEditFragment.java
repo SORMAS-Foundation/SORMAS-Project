@@ -77,29 +77,29 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
         setupCallback();
 
         if (record.getCaze() == null) {
-            contentBinding.txtAssocCaze.setVisibility(View.GONE);
+            contentBinding.taskCaze.setVisibility(View.GONE);
         }
         if (record.getContact() == null) {
-            contentBinding.txtAssocContact.setVisibility(View.GONE);
+            contentBinding.taskContact.setVisibility(View.GONE);
         }
         if (record.getEvent() == null) {
-            contentBinding.txtAssocEvent.setVisibility(View.GONE);
+            contentBinding.taskEvent.setVisibility(View.GONE);
         }
 
         if (record.getCreatorUser() == null) {
-            contentBinding.txtCreatorUser.setVisibility(View.GONE);
+            contentBinding.taskCreatorUser.setVisibility(View.GONE);
         }
 
         updateButtonState();
 
         if (!record.getAssigneeUser().equals(ConfigProvider.getUser())) {
-            contentBinding.txtCommentOnExec.setVisibility(View.GONE);
-            contentBinding.btnDone.setVisibility(View.GONE);
-            contentBinding.btnNotExecutable.setVisibility(View.GONE);
+            contentBinding.taskAssigneeReply.setVisibility(View.GONE);
+            contentBinding.setDone.setVisibility(View.GONE);
+            contentBinding.setNotExecutable.setVisibility(View.GONE);
         }
 
         if (record.getCreatorComment() == null || record.getCreatorComment().isEmpty()) {
-            contentBinding.txtCreatorComment.setVisibility(View.GONE);
+            contentBinding.taskCreatorComment.setVisibility(View.GONE);
         }
 
         contentBinding.setData(record);
@@ -369,15 +369,15 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
     }
 
     private void updateButtonState() {
-        int btnDoneVisibleStatus = (record.getTaskStatus() == TaskStatus.PENDING) ? View.VISIBLE : View.GONE;
-        int btnNotExecutableStatus = (record.getTaskStatus() == TaskStatus.PENDING) ? View.VISIBLE : View.GONE;
+        int setDoneVisibleStatus = (record.getTaskStatus() == TaskStatus.PENDING) ? View.VISIBLE : View.GONE;
+        int setNotExecutableStatus = (record.getTaskStatus() == TaskStatus.PENDING) ? View.VISIBLE : View.GONE;
 
-        getContentBinding().btnDone.setVisibility(btnDoneVisibleStatus);
-        getContentBinding().btnNotExecutable.setVisibility(btnNotExecutableStatus);
+        getContentBinding().setDone.setVisibility(setDoneVisibleStatus);
+        getContentBinding().setNotExecutable.setVisibility(setNotExecutableStatus);
 
-        if (btnDoneVisibleStatus == View.GONE && btnNotExecutableStatus == View.GONE) {
+        if (setDoneVisibleStatus == View.GONE && setNotExecutableStatus == View.GONE) {
             getContentBinding().taskButtonPanel.setVisibility(View.GONE);
-        } else if (btnDoneVisibleStatus == View.GONE || btnNotExecutableStatus == View.GONE) {
+        } else if (setDoneVisibleStatus == View.GONE || setNotExecutableStatus == View.GONE) {
             getContentBinding().btnDivider.setVisibility(View.GONE);
         }
     }

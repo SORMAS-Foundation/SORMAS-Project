@@ -81,6 +81,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
     private void initializePropertyField(Context context, AttributeSet attrs) {
         caption = I18nProperties.getFieldCaption(getFieldCaptionPropertyId());
+        description = I18nProperties.getFieldDescription(getFieldCaptionPropertyId());
 
         if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(
@@ -89,7 +90,6 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
                     0, 0);
 
             try {
-                description = a.getString(R.styleable.ControlPropertyField_description);
                 showCaption = a.getBoolean(R.styleable.ControlPropertyField_showCaption, true);
                 textAlignment = a.getInt(R.styleable.ControlPropertyField_textAlignment, View.TEXT_ALIGNMENT_VIEW_START);
                 gravity = a.getInt(R.styleable.ControlPropertyField_gravity, Gravity.START | Gravity.CENTER_VERTICAL);
@@ -129,7 +129,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         return fieldId.substring(separatorIndex + 1);
     }
 
-    private String getFieldCaptionPropertyId() {
+    protected String getFieldCaptionPropertyId() {
         String fieldId = getFieldIdString();
         int separatorIndex = fieldId.lastIndexOf("/");
         return fieldId.substring(separatorIndex + 1, separatorIndex + 2).toUpperCase() + fieldId.substring(separatorIndex + 2).replaceAll("_", ".");
@@ -244,6 +244,10 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
     public int getImeOptions() {
         return imeOptions;
+    }
+
+    public void setImeOptions(int imeOptions) {
+        this.imeOptions = imeOptions;
     }
 
     public boolean isShowCaption() {

@@ -48,7 +48,7 @@
             />
 
         <de.symeda.sormas.app.component.controls.ControlTextEditField
-            android:id="@+id/txtLastExposurePlace"
+            android:id="@+id/epiData_sickDeadAnimalsLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/symptomRowListItemVerticalPadding"

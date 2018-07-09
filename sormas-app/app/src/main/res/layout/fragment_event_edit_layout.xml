@@ -40,29 +40,21 @@
                 >
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtAlertId"
+                    android:id="@+id/event_uuid"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_alert_id"
-                    app:labelCaption="@string/label_alert_id"
-                    app:shortUuidValue="@{data.uuid}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:shortUuidValue="@{data.uuid}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtReportDate"
+                    android:id="@+id/event_reportDateTime"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
-                    app:description="@string/desc_alert_report_date"
-                    app:labelCaption="@string/label_alert_report_date"
-                    app:value="@{data.reportDateTime}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    app:value="@{data.reportDateTime}" />
 
 
             </LinearLayout>
@@ -74,142 +66,87 @@
                 >
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtReportingUser"
+                    android:id="@+id/event_reportingUser"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_alert_reporting_user"
-                    app:labelCaption="@string/label_alert_reporting_user"
-                    app:value="@{data.reportingUser}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{data.reportingUser}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtSurveillanceOfficer"
+                    android:id="@+id/event_surveillanceOfficer"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
-                    app:description="@string/desc_alert_surveillance_officer"
-                    app:labelCaption="@string/label_alert_surveillance_officer"
-                    app:value="@{data.surveillanceOfficer}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    app:value="@{data.surveillanceOfficer}" />
 
             </LinearLayout>
 
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
-                android:id="@+id/swhAlertType"
+                android:id="@+id/event_eventType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_alert_type"
-                app:labelCaption="@string/label_alert_type"
-                app:description="@string/desc_alert_type"
-                app:slim="false"
                 app:enumClass="@{eventTypeClass}"
-                app:defaultValue="@{null}"
-                app:value="@={data.eventType}"
-
-
-                />
+                app:value="@={data.eventType}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/txtAlertDescription"
+                android:id="@+id/event_eventDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_alert_description"
-                app:labelCaption="@string/label_alert_description"
-                app:description="@string/desc_alert_description"
-                app:value="@={data.eventDesc}"
-                app:imeOptions="actionNext"
-
-
-                />
+                app:value="@={data.eventDesc}" />
 
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/spnDisease"
+                android:id="@+id/event_disease"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_alert_disease"
-                app:labelCaption="@string/label_alert_disease"
-                app:description="@string/desc_alert_disease"
-
-                app:value="@={data.disease}"
-                />
+                app:value="@={data.disease}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/txtOtherDisease"
+                android:id="@+id/event_diseaseDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_alert_other_disease"
-                app:labelCaption="@string/label_alert_other_disease"
-                app:description="@string/desc_alert_other_disease"
-                app:value="@={data.diseaseDetails}"
-                app:imeOptions="actionNext"
-
-
-                />
+                app:value="@={data.diseaseDetails}" />
 
 
             <de.symeda.sormas.app.component.controls.ControlDateField
-                android:id="@+id/dtpDateOfAlert"
+                android:id="@+id/event_eventDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_alert_date"
-                app:labelCaption="@string/label_alert_date"
-                app:description="@string/desc_alert_date"
-                app:value="@={data.eventDate}"
-                />
+                app:value="@={data.eventDate}" />
 
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/spnTypeOfPlace"
+                android:id="@+id/event_typeOfPlace"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_alert_type_of_place"
-                app:labelCaption="@string/label_alert_type_of_place"
-                app:description="@string/desc_alert_type_of_place"
-
-                app:value="@={data.typeOfPlace}"
-                />
+                app:value="@={data.typeOfPlace}" />
 
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/txtOtherEventPlace"
+                android:id="@+id/event_typeOfPlaceText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_alert_other_type_of_place"
-                app:labelCaption="@string/label_alert_other_type_of_place"
-                app:description="@string/desc_alert_other_type_of_place"
-                app:value="@={data.typeOfPlaceText}"
-                app:imeOptions="actionNext"
+                app:value="@={data.typeOfPlaceText}" />
 
-
-                />
-
-
-            <!--app:hint="Eg. No. 32 Hey Street, Maitama, Abuja, FCT"-->
             <de.symeda.sormas.app.component.controls.ControlTextPopupField
-                android:id="@+id/txtAddress"
+                android:id="@+id/event_eventLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
                 app:iconStart="@drawable/ic_edit_location_black_24dp"
-                app:hint="@string/hint_alert_location"
-                app:labelCaption="@string/label_alert_location"
-                app:description="@string/desc_alert_location"
-                />
+                app:hint="@string/hint_enter_location"
+                app:locationValue="@={data.eventLocation}" />
 
 
             <TextView
@@ -225,71 +162,47 @@
                 android:orientation="horizontal"
                 >
 
-
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/txtSourceLastName"
+                    android:id="@+id/event_srcFirstName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_alert_source_lastname"
-                    app:labelCaption="@string/label_alert_source_lastname"
-                    app:description="@string/desc_alert_source_lastname"
-                    app:value="@={data.srcLastName}"
-                    app:imeOptions="actionNext"
-
-
-                    />
-
-
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/txtSourceFirstName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
-                    app:hint="@string/hint_alert_source_firstname"
-                    app:labelCaption="@string/label_alert_source_firstname"
-                    app:description="@string/desc_alert_source_firstname"
                     app:value="@={data.srcFirstName}"
-                    app:imeOptions="actionNext"
+                    app:imeOptions="actionNext" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/event_srcLastName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    app:value="@={data.srcLastName}"
+                    app:imeOptions="actionNext" />
 
 
-                    />
             </LinearLayout>
 
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/txtSourceTelNumber"
+                android:id="@+id/event_srcTelNo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_alert_source_tel"
-                app:labelCaption="@string/label_alert_source_tel"
-                app:description="@string/desc_alert_source_tel"
                 app:value="@={data.srcTelNo}"
                 app:inputType="phone"
-                app:imeOptions="actionNext"
-
-
-                />
+                app:imeOptions="actionNext" />
 
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/txtSourceEmail"
+                android:id="@+id/event_srcEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_alert_source_email"
-                app:labelCaption="@string/label_alert_source_email"
-                app:description="@string/desc_alert_source_email"
                 app:value="@={data.srcEmail}"
                 app:imeOptions="actionNext"
-                app:inputType="textEmailAddress"
-
-
-                />
+                app:inputType="textEmailAddress" />
 
 
         </LinearLayout>

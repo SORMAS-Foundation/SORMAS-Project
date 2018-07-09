@@ -81,10 +81,10 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
     @Override
     public void onAfterLayoutBinding(FragmentContactEditLayoutBinding contentBinding) {
-        contentBinding.spnContactRelationship.initializeSpinner(relationshipList);
+        contentBinding.contactRelationToCase.initializeSpinner(relationshipList);
 
 
-        contentBinding.dtpDateOfLastContact.setFragmentManager(getFragmentManager());
+        contentBinding.contactLastContactDate.setFragmentManager(getFragmentManager());
     }
 
     @Override

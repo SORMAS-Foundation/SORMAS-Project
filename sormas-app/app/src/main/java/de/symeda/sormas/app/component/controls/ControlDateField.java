@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -211,6 +212,15 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 
         setUpOnFocusChangeListener();
         setUpOnClickListener();
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        if (getHint() == null) {
+            setHint(I18nProperties.getFieldCaption(getFieldCaptionPropertyId()));
+        }
     }
 
     @Override

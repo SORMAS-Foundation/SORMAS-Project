@@ -56,31 +56,31 @@ public class SettingsFragment extends BaseLandingFragment {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings_layout, container, false);
 
-        binding.txtSettingsServerUrl.setValue(ConfigProvider.getServerRestUrl());
-        binding.btnSettingsChangePIN.setOnClickListener(new View.OnClickListener() {
+        binding.settingsServerUrl.setValue(ConfigProvider.getServerRestUrl());
+        binding.changePin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changePIN(v);
             }
         });
-        binding.btnSettingsRepullData.setOnClickListener(new View.OnClickListener() {
+        binding.resynchronizeData.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 repullData(v);
             }
         });
-        binding.btnSettingsSyncLog.setOnClickListener(new View.OnClickListener() {
+        binding.showSyncLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openSyncLog(v);
             }
         });
-        binding.btnSettingsLogout.setOnClickListener(new View.OnClickListener() {
+        binding.logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 logout(v);
             }
         });
-        binding.btnSettingsRepullData.setVisibility(View.GONE);
+        binding.resynchronizeData.setVisibility(View.GONE);
 
         binding.sormasVersion.setText("SORMAS " + InfoProvider.get().getVersion());
         binding.sormasVersion.setOnClickListener(new View.OnClickListener() {
@@ -88,8 +88,8 @@ public class SettingsFragment extends BaseLandingFragment {
             public void onClick(View v) {
                 versionClickedCount++;
                 if (versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT) {
-                    binding.txtSettingsServerUrl.setVisibility(View.VISIBLE);
-                    binding.btnSettingsLogout.setVisibility(View.VISIBLE);
+                    binding.settingsServerUrl.setVisibility(View.VISIBLE);
+                    binding.logout.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -102,11 +102,11 @@ public class SettingsFragment extends BaseLandingFragment {
         super.onResume();
 
         boolean hasUser = ConfigProvider.getUser() != null;
-        binding.txtSettingsServerUrl.setVisibility(versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT ? View.VISIBLE : View.GONE);
-        binding.btnSettingsChangePIN.setVisibility(hasUser ? View.VISIBLE : View.GONE);
-        binding.btnSettingsRepullData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
-        binding.btnSettingsSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
-        binding.btnSettingsLogout.setVisibility(hasUser && versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT ? View.VISIBLE : View.GONE);
+        binding.settingsServerUrl.setVisibility(versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT ? View.VISIBLE : View.GONE);
+        binding.changePin.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+        binding.resynchronizeData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+        binding.showSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+        binding.logout.setVisibility(hasUser && versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -117,7 +117,7 @@ public class SettingsFragment extends BaseLandingFragment {
     }
 
     public String getServerUrl() {
-        return binding.txtSettingsServerUrl.getValue();
+        return binding.settingsServerUrl.getValue();
     }
 
     public void changePIN(View view) {

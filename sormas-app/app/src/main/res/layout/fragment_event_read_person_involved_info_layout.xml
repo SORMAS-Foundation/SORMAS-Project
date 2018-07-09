@@ -24,15 +24,11 @@
             >
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/txtInvolvementDesc"
+                android:id="@+id/eventParticipant_involvementDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:description="@string/desc_event_pinvolv_desc"
-                app:labelCaption="@string/label_event_pinvolv_desc"
-                app:value="@{data.involvementDescription}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                app:value="@{data.involvementDescription}" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -41,29 +37,23 @@
                 >
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtLastName"
+                    android:id="@+id/eventParticipant_firstName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_event_pinvolv_last_name"
-                    app:labelCaption="@string/label_event_pinvolv_last_name"
-                    app:value="@{data.person.lastName}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{data.person.firstName}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtFirstName"
+                    android:id="@+id/eventParticipant_lastName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_event_pinvolv_first_name"
-                    app:labelCaption="@string/label_event_pinvolv_first_name"
-                    app:value="@{data.person.firstName}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    app:value="@{data.person.lastName}" />
+
+
             </LinearLayout>
 
             <LinearLayout
@@ -73,29 +63,22 @@
                 >
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtNickname"
+                    android:id="@+id/person_nickname"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_event_pinvolv_nickname"
-                    app:labelCaption="@string/label_event_pinvolv_nickname"
-                    app:value="@{data.person.nickname}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{data.person.nickname}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtGender"
+                    android:id="@+id/person_sex"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:layout_marginStart="@dimen/formLayoutGutterSize"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_event_pinvolv_gender"
-                    app:labelCaption="@string/label_event_pinvolv_gender"
-                    app:value="@{data.person.sex}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{data.person.sex}" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -105,30 +88,23 @@
                 >
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtAge"
+                    android:id="@+id/person_approximateAge"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_event_pinvolv_age"
-                    app:labelCaption="@string/label_event_pinvolv_age"
                     app:ageWithDateValue="@{data.person}"
-                    app:valueFormat="@{@string/age_with_dob_format}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:valueFormat="@string/age_with_birth_date_format" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtMotherMaidenName"
+                    android:id="@+id/person_mothersMaidenName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_event_pinvolv_mum_maiden_name"
-                    app:labelCaption="@string/label_event_pinvolv_mum_maiden_name"
-                    app:value="@{data.person.mothersMaidenName}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    app:value="@{data.person.mothersMaidenName}" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -138,29 +114,22 @@
                 >
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtPhoneNumber"
+                    android:id="@+id/person_phone"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_event_pinvolv_pnumber"
-                    app:labelCaption="@string/label_event_pinvolv_pnumber"
-                    app:value="@{data.person.phone}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{data.person.phone}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtOwnerOfPhone"
+                    android:id="@+id/person_phoneOwner"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_event_pinvolv_pnumber_owner"
-                    app:labelCaption="@string/label_event_pinvolv_pnumber_owner"
-                    app:value="@{data.person.phoneOwner}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    app:value="@{data.person.phoneOwner}" />
+
             </LinearLayout>
 
             <ImageView
@@ -176,29 +145,22 @@
                 >
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtPresentCondition"
+                    android:id="@+id/person_presentCondition"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_event_pinvolv_present_condition"
-                    app:labelCaption="@string/label_event_pinvolv_present_condition"
-                    app:value="@{data.person.presentCondition}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{data.person.presentCondition}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtDateOfDeath"
+                    android:id="@+id/person_deathDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_event_pinvolv_death_date"
-                    app:labelCaption="@string/label_event_pinvolv_death_date"
-                    app:value="@{data.person.deathDate}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    app:value="@{data.person.deathDate}" />
+
             </LinearLayout>
 
             <ImageView
@@ -215,19 +177,13 @@
                 />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/txtOccupationType"
+                android:id="@+id/person_occupationType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
-                app:maxLines="2"
-                app:description="@string/desc_event_pinvolv_occupation_type"
-                app:labelCaption="@string/label_event_pinvolv_occupation_type"
                 app:value="@{data.person.occupationType}"
                 app:appendValue="@{data.person.occupationDetails}"
-                app:valueFormat="@{@string/enum_desc_format}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                app:valueFormat="@{@string/two_strings_with_hyphen_format}"  />
 
         </LinearLayout>
 

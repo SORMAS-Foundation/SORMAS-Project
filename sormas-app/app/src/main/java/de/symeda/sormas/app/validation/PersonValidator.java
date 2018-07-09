@@ -26,13 +26,13 @@ public final class PersonValidator {
 
         // Last name
         if (person.getLastName() == null || person.getLastName().trim().isEmpty()) {
-            binding.txtLastName.enableErrorState(activityContext, R.string.validation_person_last_name);
+            binding.personLastName.enableErrorState(activityContext, R.string.validation_person_last_name);
             success = false;
         }
 
         // First name
         if (person.getFirstName() == null || person.getFirstName().trim().isEmpty()) {
-            binding.txtFirstName.enableErrorState(activityContext, R.string.validation_person_first_name);
+            binding.personFirstName.enableErrorState(activityContext, R.string.validation_person_first_name);
             success = false;
         }
 
@@ -52,7 +52,7 @@ public final class PersonValidator {
     }
 
     private static final List<? extends ControlPropertyEditField<?>> getPersonDataFields(FragmentContactEditPersonLayoutBinding binding) {
-        return Arrays.asList(binding.txtFirstName, binding.txtLastName);
+        return Arrays.asList(binding.personFirstName, binding.personLastName);
     }
 
     public static boolean validatePersonData(NotificationContext activityContext, Person person, FragmentCaseEditPatientLayoutBinding binding) {
@@ -62,13 +62,13 @@ public final class PersonValidator {
 
         // Last name
         if (person.getLastName() == null || person.getLastName().trim().isEmpty()) {
-            binding.txtLastName.enableErrorState(activityContext, R.string.validation_person_last_name);
+            binding.personLastName.enableErrorState(activityContext, R.string.validation_person_last_name);
             success = false;
         }
 
         // First name
         if (person.getFirstName() == null || person.getFirstName().trim().isEmpty()) {
-            binding.txtFirstName.enableErrorState(activityContext, R.string.validation_person_first_name);
+            binding.personFirstName.enableErrorState(activityContext, R.string.validation_person_first_name);
             success = false;
         }
 
@@ -88,6 +88,6 @@ public final class PersonValidator {
     }
 
     private static final List<? extends ControlPropertyEditField<?>> getPersonDataFields(FragmentCaseEditPatientLayoutBinding binding) {
-        return Arrays.asList(binding.txtFirstName, binding.txtLastName);
+        return Arrays.asList(binding.personFirstName, binding.personLastName);
     }
 }

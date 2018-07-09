@@ -24,157 +24,86 @@
             android:paddingRight="@dimen/parentLayoutHorizontalPadding"
             >
 
-
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/txtLastName"
+                android:id="@+id/caseData_firstName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_event_pinvolv_last_name"
-                app:labelCaption="@string/label_event_pinvolv_last_name"
-                app:description="@string/desc_event_pinvolv_last_name"
-                app:required="true"
-                app:value="@={data.person.lastName}"
-                app:imeOptions="actionNext"
-
-
-                />
-
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/txtFirstName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_event_pinvolv_first_name"
-                app:labelCaption="@string/label_event_pinvolv_first_name"
-                app:description="@string/desc_event_pinvolv_first_name"
                 app:required="true"
                 app:value="@={data.person.firstName}"
-                app:imeOptions="actionNext"
-
-
-                />
-
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/spnDisease"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_case_disease"
-                app:labelCaption="@string/label_case_disease"
-                app:description="@string/desc_case_disease"
-                app:required="true"
-
-                app:value="@={data.disease}"
-                />
+                app:imeOptions="actionNext" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/txtDiseaseDetail"
+                android:id="@+id/caseData_lastName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
-                android:visibility="gone"
-                app:hint="@string/hint_case_disease_detail"
-                app:labelCaption="@string/label_case_disease_detail"
-                app:description="@string/desc_case_disease_detail"
                 app:required="true"
-                app:value="@={data.diseaseDetails}"
-                app:imeOptions="actionNext"
-
-
-                />
+                app:value="@={data.person.lastName}" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/spnPlague"
+                android:id="@+id/caseData_disease"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
-                android:visibility="gone"
-                app:hint="@string/hint_case_plague_type"
-                app:labelCaption="@string/label_case_plague_type"
-                app:description="@string/desc_case_plague_type"
                 app:required="true"
+                app:value="@={data.disease}" />
 
-                app:value="@={data.plagueType}"
-                />
-
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/spnDengueFever"
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/caseData_diseaseDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"
-                android:visibility="gone"
-                app:hint="@string/hint_case_dengue_fever_type"
-                app:labelCaption="@string/label_case_dengue_fever_type"
-                app:description="@string/desc_case_dengue_fever_type"
                 app:required="true"
-
-                app:value="@={data.dengueFeverType}"
-                />
+                app:value="@={data.diseaseDetails}" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/spnState"
+                android:id="@+id/caseData_plagueType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                app:required="true"
+                app:value="@={data.plagueType}" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/caseData_dengueFeverType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                app:required="true"
+                app:value="@={data.dengueFeverType}" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/caseData_region"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                app:hint="@string/hint_case_state"
-                app:description="@string/desc_case_state"
-                app:labelCaption="@string/label_case_state"
                 app:required="true"
-
-                app:imeOptions="actionNext"
-                app:value="@={data.region}"
-
-
-                />
+                app:value="@={data.region}" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/spnLga"
+                android:id="@+id/caseData_district"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                app:hint="@string/hint_case_lga"
-                app:description="@string/desc_case_lga"
-                app:labelCaption="@string/label_case_lga"
                 app:required="true"
-
-                app:imeOptions="actionNext"
-                app:value="@={data.district}"
-
-
-                />
+                app:value="@={data.district}" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/spnWard"
+                android:id="@+id/caseData_community"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                app:hint="@string/hint_case_ward"
-                app:description="@string/desc_case_ward"
-                app:labelCaption="@string/label_case_ward"
                 app:required="true"
-
-                app:imeOptions="actionNext"
-                app:value="@={data.community}"
-
-
-                />
+                app:value="@={data.community}" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/spnFacility"
+                android:id="@+id/caseData_healthFacility"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                app:hint="@string/hint_case_health_facility"
-                app:description="@string/desc_case_health_facility"
-                app:labelCaption="@string/label_case_health_facility"
                 app:required="true"
-
-                app:imeOptions="actionNext"
-                app:value="@={data.healthFacility}"
-
-
-                />
+                app:value="@={data.healthFacility}" />
 
 
 

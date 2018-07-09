@@ -32,72 +32,28 @@
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
-                    android:id="@+id/dtpDateOfDeath"
+                    android:id="@+id/person_deathDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_event_pinvolv_death_date"
-                    app:labelCaption="@string/label_event_pinvolv_death_date"
-                    app:description="@string/desc_event_pinvolv_death_date"
-                    app:required="true"
-                    app:value="@={data.deathDate}"
-                    />
+                    app:value="@={data.deathDate}" />
 
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/spnCauseOfDeath"
+                    android:id="@+id/person_causeOfDeath"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
-                    app:hint="@string/hint_event_pinvolv_cause_of_death"
-                    app:labelCaption="@string/label_event_pinvolv_cause_of_death"
-                    app:description="@string/desc_event_pinvolv_cause_of_death"
-                    app:required="true"
-
-                    app:value="@={data.causeOfDeath}"
-                    />
+                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    app:value="@={data.causeOfDeath}" />
 
             </LinearLayout>
 
             <include android:id="@+id/causeOfDeathInclude"
                 layout="@layout/blank_layout"
                 />
-
-
-            <!--<de.symeda.sormas.app.component.controls.TeboSpinner
-                android:id="@+id/spnDisease"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_event_pinvolv_responsible_disease"
-                app:labelCaption="@string/label_event_pinvolv_responsible_disease"
-                app:description="@string/desc_event_pinvolv_responsible_disease"
-                app:required="true"
-
-                app:value="@={data.person.causeOfDeathDisease}"
-                android:visibility="gone"
-                />
-            
-            <de.symeda.sormas.app.component.controls.TeboTextInputEditText
-                android:id="@+id/txtCauseOfDeathDisease"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_event_pinvolv_other_cause_of_death"
-                app:labelCaption="@string/label_event_pinvolv_other_cause_of_death"
-                app:description="@string/desc_event_pinvolv_other_cause_of_death"
-                app:required="true"
-                app:value="@={data.person.causeOfDeathDetails}"
-                app:nextFocusDown="@+id/txtControl1"
-                app:imeOptions="actionNext"
-
-
-                android:visibility="gone"
-                />-->
-
 
         </LinearLayout>
 

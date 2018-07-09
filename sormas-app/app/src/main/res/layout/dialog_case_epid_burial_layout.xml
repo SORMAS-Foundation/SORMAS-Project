@@ -74,7 +74,7 @@
                 app:labelCaption="@string/label_case_epid_burial_visit_deceased_person"
                 app:value="@{data.burialPersonname}"
                 app:appendValue="@{data.burialRelation}"
-                app:valueFormat='@{@string/text_with_bracket_desc_format}'
+                app:valueFormat='@{@string/two_strings_with_brackets_format}'
                 app:defaultValue='@{@string/not_available}'
                 />
 
@@ -86,7 +86,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:singleLine="false"
                 app:maxLines="2"
                 app:description="@string/desc_case_epid_burial_visit_address"
                 app:labelCaption="@string/label_case_epid_burial_visit_address"
@@ -134,7 +133,7 @@
                 >
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtWard"
+                    android:id="@+id/caseData_community"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

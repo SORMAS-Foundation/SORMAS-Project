@@ -42,9 +42,9 @@ public class CaseReadSymptomsFragment extends BaseReadFragment<FragmentCaseReadS
     @Override
     public void onLayoutBinding(FragmentCaseReadSymptomsLayoutBinding contentBinding) {
         contentBinding.setData(record);
-        contentBinding.tvSymptomsYes.setTags(yesResult);
-        contentBinding.tvSymptomsUnknown.setTags(unknownResult);
-        contentBinding.tvSymptomsNo.setTags(noResult);
+        contentBinding.symptomsSymptomsOccurred.setTags(yesResult);
+        contentBinding.symptomsSymptomsUnknownOccurred.setTags(unknownResult);
+        contentBinding.symptomsSymptomsNotOccurred.setTags(noResult);
         contentBinding.setLocationClickCallback(onLinkClickListener);
     }
 

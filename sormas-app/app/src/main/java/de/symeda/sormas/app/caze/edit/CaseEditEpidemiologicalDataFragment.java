@@ -145,15 +145,15 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
 
     @Override
     public void onAfterLayoutBinding(FragmentCaseEditEpidLayoutBinding contentBinding) {
-        contentBinding.spnSourceOfDrinkingWater.initializeSpinner(drinkingWaterSourceList, null, new ValueChangeListener() {
+        contentBinding.epiDataWaterSource.initializeSpinner(drinkingWaterSourceList, null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 WaterSource waterSource = (WaterSource) field.getValue();
 
                 if (waterSource == WaterSource.OTHER) {
-                    getContentBinding().txtSourceOfDrinkingWaterOther.setVisibility(View.VISIBLE);
+                    getContentBinding().epiDataWaterSourceOther.setVisibility(View.VISIBLE);
                 } else {
-                    getContentBinding().txtSourceOfDrinkingWaterOther.setVisibility(View.GONE);
+                    getContentBinding().epiDataWaterSourceOther.setVisibility(View.GONE);
                 }
             }
         });
@@ -392,9 +392,9 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private void verifyGatheringStatus() {
         YesNoUnknown hospitalizedPreviously = record.getGatheringAttended();
         if (hospitalizedPreviously == YesNoUnknown.YES && getGatherings().size() <= 0) {
-            getContentBinding().swhGathering.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().epiDataGatheringAttended.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
         } else {
-            getContentBinding().swhGathering.disableErrorState();
+            getContentBinding().epiDataGatheringAttended.disableErrorState();
         }
     }
 
@@ -446,9 +446,9 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private void verifyBurialStatus() {
         YesNoUnknown hospitalizedPreviously = record.getBurialAttended();
         if (hospitalizedPreviously == YesNoUnknown.YES && getBurials().size() <= 0) {
-            getContentBinding().swhBurial.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().epiDataBurialAttended.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
         } else {
-            getContentBinding().swhBurial.disableErrorState();
+            getContentBinding().epiDataBurialAttended.disableErrorState();
         }
     }
 
@@ -500,9 +500,9 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private void verifyTravelStatus() {
         YesNoUnknown hospitalizedPreviously = record.getTraveled();
         if (hospitalizedPreviously == YesNoUnknown.YES && getTravels().size() <= 0) {
-            getContentBinding().swhTraveled.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().epiDataTraveled.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
         } else {
-            getContentBinding().swhTraveled.disableErrorState();
+            getContentBinding().epiDataTraveled.disableErrorState();
         }
     }
 

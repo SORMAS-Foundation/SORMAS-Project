@@ -57,7 +57,7 @@
                 >
 
                 <TextView
-                    android:id="@+id/txtGender"
+                    android:id="@+id/person_sex"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -70,7 +70,7 @@
                     />
 
                 <TextView
-                    android:id="@+id/txtAge"
+                    android:id="@+id/person_approximateAge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -85,7 +85,7 @@
             </RelativeLayout>
 
             <TextView
-                android:id="@+id/txtPresentCondition"
+                android:id="@+id/person_presentCondition"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="top"

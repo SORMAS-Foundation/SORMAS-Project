@@ -49,7 +49,6 @@ public class CaseEditSymptomsFragment extends BaseEditFragment<FragmentCaseEditS
     private OnRecyclerViewReadyListener mOnRecyclerViewReadyListener;
     private IEntryItemOnClickListener clearAllCallback;
     private IEntryItemOnClickListener setAllToNoCallback;
-    private IEntryItemOnClickListener onAddressLinkClickedCallback;
 
     @Override
     protected String getSubHeadingTitle() {
@@ -119,16 +118,15 @@ public class CaseEditSymptomsFragment extends BaseEditFragment<FragmentCaseEditS
         contentBinding.setData(record);
         contentBinding.setClearAllCallback(clearAllCallback);
         contentBinding.setSetAllToNoCallback(setAllToNoCallback);
-        contentBinding.setAddressLinkCallback(onAddressLinkClickedCallback);
     }
 
     @Override
     public void onAfterLayoutBinding(FragmentCaseEditSymptomsInfoLayoutBinding contentBinding) {
-        contentBinding.dtpSymptomOnset.setFragmentManager(getFragmentManager());
+        contentBinding.symptomsOnsetDate.setFragmentManager(getFragmentManager());
 
-        contentBinding.spnBodyTemperature.initializeSpinner(bodyTempList, DEFAULT_BODY_TEMPERATURE);
-        contentBinding.spnBodyTemperatureSource.initializeSpinner(DataUtils.addEmptyItem(tempSourceList));
-        contentBinding.spnFirstSymptoms.initializeSpinner(DataUtils.toItems(null, true));
+        contentBinding.symptomsTemperature.initializeSpinner(bodyTempList, DEFAULT_BODY_TEMPERATURE);
+        contentBinding.symptomsTemperatureSource.initializeSpinner(DataUtils.addEmptyItem(tempSourceList));
+        contentBinding.symptomsOnsetSymptom.initializeSpinner(DataUtils.toItems(null, true));
     }
 
     @Override
@@ -184,25 +182,6 @@ public class CaseEditSymptomsFragment extends BaseEditFragment<FragmentCaseEditS
             }
         };
 
-        onAddressLinkClickedCallback = new IEntryItemOnClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                final Location location = new Location();
-                final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), location);
-
-                locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
-                    @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
-                        getContentBinding().txtSymptomaticLocation.setValue(location.toString());
-                        record.setPatientIllLocation(location.toString());
-
-                        locationDialog.dismiss();
-                    }
-                });
-
-                locationDialog.show(null);
-            }
-        };
     }
 
     private void executeRecyclerViewReadyCallback() {

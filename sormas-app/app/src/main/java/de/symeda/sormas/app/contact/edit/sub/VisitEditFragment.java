@@ -84,7 +84,7 @@ public class VisitEditFragment extends BaseEditFragment<FragmentContactEditVisit
 
     @Override
     public void onAfterLayoutBinding(FragmentContactEditVisitInfoLayoutBinding contentBinding) {
-        contentBinding.dtpDateTimeOfVisit.setFragmentManager(getFragmentManager());
+        contentBinding.visitVisitDateTime.setFragmentManager(getFragmentManager());
     }
 
     @Override

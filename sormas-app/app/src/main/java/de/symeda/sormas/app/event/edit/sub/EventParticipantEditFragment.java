@@ -239,7 +239,7 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
 
     @Override
     public void onAfterLayoutBinding(FragmentEventEditPersonInfoLayoutBinding contentBinding) {
-        contentBinding.spnOccupationType.initializeSpinner(occupationTypeList, null, new ValueChangeListener() {
+        contentBinding.personOccupationType.initializeSpinner(occupationTypeList, null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 if (!occupationTypeLayoutProcessor.processLayout((OccupationType) field.getValue()))
@@ -247,30 +247,30 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
             }
         });
 
-        contentBinding.spnGender.initializeSpinner(genderList);
+        contentBinding.personSex.initializeSpinner(genderList);
 
-        contentBinding.spnAgeType.initializeSpinner(ageTypeList, null, new ValueChangeListener() {
+        contentBinding.personApproximateAgeType.initializeSpinner(ageTypeList, null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 updateApproximateAgeField();
             }
         });
 
-        contentBinding.spnYear.initializeSpinner(yearList, null, new ValueChangeListener() {
+        contentBinding.personBirthdateYYYY.initializeSpinner(yearList, null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 updateApproximateAgeField();
             }
         });
 
-        contentBinding.spnMonth.initializeSpinner(monthList, null, new ValueChangeListener() {
+        contentBinding.personBirthdateMM.initializeSpinner(monthList, null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 updateApproximateAgeField();
             }
         });
 
-        contentBinding.spnDate.initializeSpinner(dateList, null, new ValueChangeListener() {
+        contentBinding.personBirthdateDD.initializeSpinner(dateList, null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 updateApproximateAgeField();
@@ -281,12 +281,12 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
 
     @Override
     protected void updateUI(FragmentEventEditPersonInfoLayoutBinding contentBinding, EventParticipant eventParticipant) {
-        contentBinding.spnOccupationType.setValue(eventParticipant.getPerson().getOccupationType());
-        contentBinding.spnGender.setValue(eventParticipant.getPerson().getSex());
-        contentBinding.spnAgeType.setValue(eventParticipant.getPerson().getApproximateAgeType());
-        contentBinding.spnYear.setValue(eventParticipant.getPerson().getBirthdateYYYY());
-        contentBinding.spnMonth.setValue(eventParticipant.getPerson().getBirthdateMM());
-        contentBinding.spnDate.setValue(eventParticipant.getPerson().getBirthdateDD());
+        contentBinding.personOccupationType.setValue(eventParticipant.getPerson().getOccupationType());
+        contentBinding.personSex.setValue(eventParticipant.getPerson().getSex());
+        contentBinding.personApproximateAgeType.setValue(eventParticipant.getPerson().getApproximateAgeType());
+        contentBinding.personBirthdateYYYY.setValue(eventParticipant.getPerson().getBirthdateYYYY());
+        contentBinding.personBirthdateMM.setValue(eventParticipant.getPerson().getBirthdateMM());
+        contentBinding.personBirthdateDD.setValue(eventParticipant.getPerson().getBirthdateDD());
     }
 
     @Override
@@ -338,7 +338,7 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
                 locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
-                        getContentBinding().txtPermAddress.setValue(location.toString());
+                        getContentBinding().personAddress.setValue(location.toString());
                         record.getPerson().setAddress(location);
 
                         locationDialog.dismiss();

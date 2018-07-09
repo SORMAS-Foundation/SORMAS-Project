@@ -170,9 +170,9 @@ public class NewSymptomValidator {
 
 
     private static List<? extends ControlPropertyEditField<?>> getOtherSymptomsFields(FragmentCaseEditSymptomsInfoLayoutBinding binding) {
-        return Arrays.asList(binding.dtpSymptomOnset, binding.spnFirstSymptoms,
-                binding.txtSymptomComment,
-                binding.spnBodyTemperature, binding.spnBodyTemperatureSource, binding.txtSymptomaticLocation);
+        return Arrays.asList(binding.symptomsOnsetDate, binding.symptomsOnsetSymptom,
+                binding.symptomsSymptomsComments,
+                binding.symptomsTemperature, binding.symptomsTemperatureSource);
         //binding.symptomsOther1NonHemorrhagicSymptomsText,
     }
 

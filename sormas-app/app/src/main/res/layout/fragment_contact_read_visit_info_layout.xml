@@ -30,56 +30,42 @@
                 >
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtVisitDate"
+                    android:id="@+id/visit_visitDateTime"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_contact_visit_visit_date"
-                    app:labelCaption="@string/label_contact_visit_visit_date"
-                    app:value="@{data.visitDateTime}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{data.visitDateTime}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtVisitTime"
+                    android:id="@+id/visit_visitStatus"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_contact_visit_visit_time"
-                    app:labelCaption="@string/label_contact_visit_visit_time"
-                    app:timeValue="@{data.visitDateTime}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    app:value="@{data.visitStatus}" />
+
+                <!--<de.symeda.sormas.app.component.controls.ControlTextReadField-->
+                    <!--android:id="@+id/txtVisitTime"-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:layout_marginStart="@dimen/formLayoutGutterSize"-->
+                    <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
+                    <!--app:timeValue="@{data.visitDateTime}"-->
+                    <!--app:defaultValue='@{@string/not_available}'-->
+                    <!--/>-->
+
             </LinearLayout>
 
-
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/txtAvailAndCooperative"
+                android:id="@+id/visit_visitRemarks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:description="@string/desc_contact_visit_person_avail_and_cooperative"
-                app:labelCaption="@string/label_contact_visit_person_avail_and_cooperative"
-                app:value="@{data.visitStatus}"
-                app:defaultValue='@{@string/not_available}'
-                />
-
-
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/txtVisitRemarks"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:description="@string/desc_contact_visit_remarks"
-                app:labelCaption="@string/label_contact_visit_remarks"
-                app:singleLine="false"
                 app:maxLines="5"
-                app:value="@{data.visitRemarks}"
-                app:defaultValue='@{@string/not_available}'
-                />
+                app:value="@{data.visitRemarks}" />
 
         </LinearLayout>
 

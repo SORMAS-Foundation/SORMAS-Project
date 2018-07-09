@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -196,6 +197,16 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
         setUpOnFocusChangeListener();
         initializeOnClickListener();
     }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        if (getHint() == null) {
+            setHint(I18nProperties.getFieldCaption(getFieldCaptionPropertyId()));
+        }
+    }
+
 
     @Override
     public void changeVisualState(final VisualState state) {

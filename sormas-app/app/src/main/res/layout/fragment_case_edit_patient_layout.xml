@@ -49,37 +49,25 @@
                     >
 
                     <de.symeda.sormas.app.component.controls.ControlTextEditField
-                        android:id="@+id/txtLastName"
+                        android:id="@+id/person_lastName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        app:hint="@string/hint_event_pinvolv_last_name"
-                        app:labelCaption="@string/label_event_pinvolv_last_name"
-                        app:description="@string/desc_event_pinvolv_last_name"
                         app:required="true"
                         app:value="@={data.lastName}"
-                        app:imeOptions="actionNext"
-
-
-                        />
+                        app:imeOptions="actionNext" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextEditField
-                        android:id="@+id/txtFirstName"
+                        android:id="@+id/person_firstName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        app:hint="@string/hint_event_pinvolv_first_name"
-                        app:labelCaption="@string/label_event_pinvolv_first_name"
-                        app:description="@string/desc_event_pinvolv_first_name"
+                        android:layout_marginStart="@dimen/formLayoutGutterSize"
                         app:required="true"
                         app:value="@={data.firstName}"
-                        app:imeOptions="actionNext"
-
-
-                        />
+                        app:imeOptions="actionNext" />
 
                 </LinearLayout>
 
@@ -87,216 +75,139 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextEditField
-                        android:id="@+id/txtNickname"
+                        android:id="@+id/person_nickname"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        app:hint="@string/hint_event_pinvolv_nickname"
-                        app:labelCaption="@string/label_event_pinvolv_nickname"
-                        app:description="@string/desc_event_pinvolv_nickname"
-                        app:required="true"
                         app:value="@={data.nickname}"
-                        app:imeOptions="actionNext"
-
-
-                        />
-
+                        app:imeOptions="actionNext" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextEditField
-                        android:id="@+id/txtMotherMaidenName"
+                        android:id="@+id/person_mothersMaidenName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        app:hint="@string/hint_event_pinvolv_mum_maiden_name"
-                        app:labelCaption="@string/label_event_pinvolv_mum_maiden_name"
-                        app:description="@string/desc_event_pinvolv_mum_maiden_name"
-                        app:required="true"
-                        app:value="@={data.mothersMaidenName}"
-                        app:imeOptions="actionNext"
-
-
-                        />
-
+                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        app:value="@={data.mothersMaidenName}" />
 
                 </LinearLayout>
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/form_p_date_of_birth"
+                    style="@style/ControlLabelStyle"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
-
+                    android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                        android:id="@+id/spnYear"
+                        android:id="@+id/person_birthdateYYYY"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        app:hint="@string/hint_event_pinvolv_year"
-                        app:labelCaption="@string/label_event_pinvolv_year"
-                        app:description="@string/desc_event_pinvolv_year"
-                        app:required="true"
-
-                        app:value="@={data.birthdateYYYY}"
-                        />
-
+                        app:showCaption="false"
+                        app:hint="@string/hint_select_year"
+                        app:value="@={data.birthdateYYYY}" />
 
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                        android:id="@+id/spnMonth"
+                        android:id="@+id/person_birthdateMM"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        app:hint="@string/hint_event_pinvolv_month"
-                        app:labelCaption="@string/label_event_pinvolv_month"
-                        app:description="@string/desc_event_pinvolv_month"
-                        app:required="true"
-
-                        app:value="@={data.birthdateMM}"
-                        />
-
+                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        app:showCaption="false"
+                        app:hint="@string/hint_select_month"
+                        app:value="@={data.birthdateMM}" />
 
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                        android:id="@+id/spnDate"
+                        android:id="@+id/person_birthdateDD"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        app:hint="@string/hint_event_pinvolv_date"
-                        app:labelCaption="@string/label_event_pinvolv_date"
-                        app:description="@string/desc_event_pinvolv_date"
-                        app:required="true"
-
-                        app:value="@={data.birthdateDD}"
-                        />
-
+                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        app:showCaption="false"
+                        app:hint="@string/hint_select_day"
+                        app:value="@={data.birthdateDD}" />
 
                 </LinearLayout>
-
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/txtAge"
+                        android:id="@+id/person_approximateAge"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_event_pinvolv_age"
-                        app:labelCaption="@string/label_event_pinvolv_age"
                         app:distinct="true"
                         app:value="@{data.approximateAge}"
                         app:appendValue="@{data.approximateAgeType.toString()}"
-                        app:valueFormat="@{@string/two_words_spaced_format}"
-                        app:defaultValue='@{@string/age_unknown}'
-                        />
-
+                        app:valueFormat="@{@string/two_strings_with_space_format}" />
 
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                        android:id="@+id/spnAgeType"
+                        android:id="@+id/person_approximateAgeType"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        app:hint="@string/hint_event_pinvolv_age_unit"
-                        app:labelCaption="@string/label_event_pinvolv_age_unit"
-                        app:description="@string/desc_event_pinvolv_age_unit"
-                        app:required="true"
-
-                        app:value="@={data.approximateAgeType}"
-                        />
-
+                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        app:value="@={data.approximateAgeType}" />
 
                 </LinearLayout>
 
-
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/spnGender"
+                    android:id="@+id/person_sex"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_event_pinvolv_gender"
-                    app:labelCaption="@string/label_event_pinvolv_gender"
-                    app:description="@string/desc_event_pinvolv_gender"
-                    app:required="true"
-
-                    app:value="@={data.sex}"
-                    />
-
+                    app:value="@={data.sex}" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextEditField
-                        android:id="@+id/txtPhoneNumber"
+                        android:id="@+id/person_phone"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        app:hint="@string/hint_event_pinvolv_pnumber"
-                        app:labelCaption="@string/label_event_pinvolv_pnumber"
-                        app:description="@string/desc_event_pinvolv_pnumber"
-                        app:required="true"
                         app:value="@={data.phone}"
-                        app:imeOptions="actionNext"
-
-
-                        />
+                        app:imeOptions="actionNext" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextEditField
-                        android:id="@+id/txtPhoneNumberOwner"
+                        android:id="@+id/person_phoneOwner"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
-                        app:hint="@string/hint_event_pinvolv_pnumber_owner"
-                        app:labelCaption="@string/label_event_pinvolv_pnumber_owner"
-                        app:description="@string/desc_event_pinvolv_pnumber_owner"
-                        app:required="true"
-                        app:value="@={data.phoneOwner}"
-                        app:imeOptions="actionNext"
-
-
-                        />
+                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        app:value="@={data.phoneOwner}" />
 
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/swhPresentCondition"
+                    android:id="@+id/person_presentCondition"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_event_pinvolv_present_condition"
-                    app:labelCaption="@string/label_event_pinvolv_present_condition"
-                    app:description="@string/desc_event_pinvolv_present_condition"
-                    app:required="true"
-                    app:slim="false"
                     app:enumClass="@{presentConditionClass}"
-                    app:defaultValue="@{null}"
-                    app:value="@={data.presentCondition}"
-
-
-                    />
+                    app:value="@={data.presentCondition}" />
 
             </LinearLayout>
 
@@ -319,15 +230,13 @@
                 >
 
                 <de.symeda.sormas.app.component.controls.ControlTextPopupField
-                    android:id="@+id/txtPermAddress"
+                    android:id="@+id/person_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
                     app:iconStart="@drawable/ic_edit_location_black_24dp"
-                    app:hint="@string/hint_event_pinvolv_perm_res_addy"
-                    app:labelCaption="@string/label_event_pinvolv_perm_res_addy"
-                    app:description="@string/desc_event_pinvolv_perm_res_addy"
-                    />
+                    app:hint="@string/hint_enter_location"
+                    app:locationValue="@={data.address}" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -337,23 +246,18 @@
                     />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/spnOccupationType"
+                    android:id="@+id/person_occupationType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_event_pinvolv_occupation_type"
-                    app:labelCaption="@string/label_event_pinvolv_occupation_type"
-                    app:description="@string/desc_event_pinvolv_occupation_type"
-                    app:required="true"
-
-                    app:value="@={data.occupationType}"
-                    />
+                    app:value="@={data.occupationType}" />
 
                 <include android:id="@+id/occupationDetailsInclude"
                     layout="@layout/blank_layout"
                     />
 
             </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>

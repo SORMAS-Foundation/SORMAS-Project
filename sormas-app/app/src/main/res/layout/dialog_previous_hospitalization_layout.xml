@@ -31,7 +31,7 @@
                 >
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
-                    android:id="@+id/dtpDateOfAdmission"
+                    android:id="@+id/casePreviousHospitalization_admissionDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -45,7 +45,7 @@
                     />
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
-                    android:id="@+id/dtpDateOfDischarge"
+                    android:id="@+id/casePreviousHospitalization_dischargeDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -62,7 +62,7 @@
             </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/spnState"
+                android:id="@+id/casePreviousHospitalization_region"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
@@ -79,7 +79,7 @@
                 />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/spnLga"
+                android:id="@+id/casePreviousHospitalization_district"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
@@ -96,7 +96,7 @@
                 />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/spnWard"
+                android:id="@+id/casePreviousHospitalization_community"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
@@ -113,7 +113,7 @@
                 />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/spnFacility"
+                android:id="@+id/casePreviousHospitalization_healthFacility"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
@@ -130,7 +130,7 @@
                 />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
-                android:id="@+id/swhIsolation"
+                android:id="@+id/casePreviousHospitalization_isolated"
                 android:layout_width="@dimen/teboSwitchMinWidth"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/textControlMarginBottom"

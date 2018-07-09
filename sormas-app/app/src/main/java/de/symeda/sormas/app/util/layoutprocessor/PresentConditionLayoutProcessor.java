@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.LinearLayout;
 
 import java.util.Date;
@@ -25,11 +24,9 @@ import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
-import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.shared.OnDateOfDeathChangeListener;
-import de.symeda.sormas.app.util.DataUtils;
 
 /**
  * Created by Orson on 13/02/2018.
@@ -167,11 +164,11 @@ public class PresentConditionLayoutProcessor {
 
     private View initializeChildLayout(ViewDataBinding binding) {
         final View innerLayout = binding.getRoot();
-        spnCauseOfDeath = (ControlSpinnerField)innerLayout.findViewById(R.id.spnCauseOfDeath);
-        spnDeathPlaceType = (ControlSpinnerField)innerLayout.findViewById(R.id.spnDeathPlaceType);
-        spnBurialConductor = (ControlSpinnerField)innerLayout.findViewById(R.id.spnBurialConductor);
-        dtpDateOfDeath = (ControlDateField)innerLayout.findViewById(R.id.dtpDateOfDeath);
-        dtpBurialDate = (ControlDateField)innerLayout.findViewById(R.id.dtpBurialDate);
+        spnCauseOfDeath = (ControlSpinnerField)innerLayout.findViewById(R.id.person_causeOfDeath);
+        spnDeathPlaceType = (ControlSpinnerField)innerLayout.findViewById(R.id.person_deathPlaceType);
+        spnBurialConductor = (ControlSpinnerField)innerLayout.findViewById(R.id.person_burialConductor);
+        dtpDateOfDeath = (ControlDateField)innerLayout.findViewById(R.id.person_deathDate);
+        dtpBurialDate = (ControlDateField)innerLayout.findViewById(R.id.person_burialDate);
 
         if (dtpBurialDate != null)
             dtpBurialDate.setFragmentManager(fragmentManager);
@@ -303,9 +300,9 @@ public class PresentConditionLayoutProcessor {
     }
 
     private void toggleBurialControls(View innerLayout, boolean visibility) {
-        ControlDateField dtpBurialDate = (ControlDateField)innerLayout.findViewById(R.id.dtpBurialDate);
-        ControlSpinnerField spnBurialConductor = (ControlSpinnerField)innerLayout.findViewById(R.id.spnBurialConductor);
-        ControlTextEditField txtBurialPlaceDesc = (ControlTextEditField)innerLayout.findViewById(R.id.txtBurialPlaceDesc);
+        ControlDateField dtpBurialDate = (ControlDateField)innerLayout.findViewById(R.id.person_burialDate);
+        ControlSpinnerField spnBurialConductor = (ControlSpinnerField)innerLayout.findViewById(R.id.person_burialConductor);
+        ControlTextEditField txtBurialPlaceDesc = (ControlTextEditField)innerLayout.findViewById(R.id.person_burialPlaceDescription);
 
         if (dtpBurialDate != null)
             dtpBurialDate.setVisibility(visibility ? View.VISIBLE : View.GONE);

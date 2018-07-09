@@ -144,32 +144,32 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
     @Override
     public void onAfterLayoutBinding(FragmentEventEditLayoutBinding contentBinding) {
-        contentBinding.spnDisease.initializeSpinner(diseaseList, null, new ValueChangeListener() {
+        contentBinding.eventDisease.initializeSpinner(diseaseList, null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 Disease disease = (Disease) field.getValue();
 
                 if (disease == Disease.OTHER) {
-                    getContentBinding().txtOtherDisease.setVisibility(View.VISIBLE);
+                    getContentBinding().eventDiseaseDetails.setVisibility(View.VISIBLE);
                 } else {
-                    getContentBinding().txtOtherDisease.setVisibility(View.GONE);
-                    getContentBinding().txtOtherDisease.setValue("");
+                    getContentBinding().eventDiseaseDetails.setVisibility(View.GONE);
+                    getContentBinding().eventDiseaseDetails.setValue("");
                 }
             }
         });
-        contentBinding.spnTypeOfPlace.initializeSpinner(typeOfPlaceList, null, new ValueChangeListener() {
+        contentBinding.eventTypeOfPlace.initializeSpinner(typeOfPlaceList, null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 toggleTypeOfPlaceTextField();
             }
         });
-        contentBinding.dtpDateOfAlert.setFragmentManager(getFragmentManager());
+        contentBinding.eventEventDate.setFragmentManager(getFragmentManager());
     }
 
     @Override
     protected void updateUI(FragmentEventEditLayoutBinding contentBinding, Event event) {
-        contentBinding.spnDisease.setValue(event.getDisease());
-        contentBinding.spnTypeOfPlace.setValue(event.getTypeOfPlace());
+        contentBinding.eventDisease.setValue(event.getDisease());
+        contentBinding.eventTypeOfPlace.setValue(event.getTypeOfPlace());
     }
 
     @Override
@@ -216,7 +216,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
                 locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
-                        getContentBinding().txtAddress.setValue(location.toString());
+                        getContentBinding().eventEventLocation.setValue(location.toString());
                         record.setEventLocation(location);
 
                         locationDialog.dismiss();
@@ -236,11 +236,11 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
     private void toggleTypeOfPlaceTextField() {
         TypeOfPlace typeOfPlace = (TypeOfPlace) record.getTypeOfPlace();
         if(typeOfPlace == TypeOfPlace.OTHER) {
-            setFieldVisible(getContentBinding().txtOtherEventPlace, true);
+            setFieldVisible(getContentBinding().eventTypeOfPlaceText, true);
         } else {
             // reset value
-            getContentBinding().txtOtherEventPlace.setValue("");
-            setFieldGone(getContentBinding().txtOtherEventPlace);
+            getContentBinding().eventTypeOfPlaceText.setValue("");
+            setFieldGone(getContentBinding().eventTypeOfPlaceText);
         }
     }
 

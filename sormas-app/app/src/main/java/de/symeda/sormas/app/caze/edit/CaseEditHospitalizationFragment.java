@@ -49,21 +49,21 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 
         setupCallback();
 
-        contentBinding.txtHealthFacility.setVisibility((caze.getHealthFacility() != null) ? View.VISIBLE : View.GONE);
+        contentBinding.hospitalizationHealthFacility.setVisibility((caze.getHealthFacility() != null) ? View.VISIBLE : View.GONE);
 
         if (caze.getHealthFacility() != null) {
             boolean otherHealthFacility = caze.getHealthFacility().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
             boolean noneHealthFacility = caze.getHealthFacility().getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
 
             if (otherHealthFacility) {
-                contentBinding.txtHealthFacilityDesc.setVisibility(View.VISIBLE);
+                contentBinding.hospitalizationHealthFacilityDetails.setVisibility(View.VISIBLE);
             } else if (noneHealthFacility) {
-                contentBinding.txtHealthFacilityDesc.setVisibility(View.VISIBLE);
+                contentBinding.hospitalizationHealthFacilityDetails.setVisibility(View.VISIBLE);
             } else {
-                contentBinding.txtHealthFacilityDesc.setVisibility(View.GONE);
+                contentBinding.hospitalizationHealthFacilityDetails.setVisibility(View.GONE);
             }
         } else {
-            contentBinding.txtHealthFacilityDesc.setVisibility(View.GONE);
+            contentBinding.hospitalizationHealthFacilityDetails.setVisibility(View.GONE);
         }
 
         contentBinding.setData(record);
@@ -76,9 +76,9 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 
     @Override
     public void onAfterLayoutBinding(FragmentCaseEditHospitalizationLayoutBinding contentBinding) {
-        contentBinding.dtpDateOfAdmission.setFragmentManager(getFragmentManager());
-        contentBinding.dtpDateOfDischarge.setFragmentManager(getFragmentManager());
-        contentBinding.dtpIsolationDate.setFragmentManager(getFragmentManager());
+        contentBinding.hospitalizationAdmissionDate.setFragmentManager(getFragmentManager());
+        contentBinding.hospitalizationDischargeDate.setFragmentManager(getFragmentManager());
+        contentBinding.hospitalizationIsolationDate.setFragmentManager(getFragmentManager());
     }
 
     @Override
@@ -204,9 +204,9 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
     private void verifyPrevHospitalizationStatus() {
         YesNoUnknown hospitalizedPreviously = record.getAdmittedToHealthFacility();
         if (hospitalizedPreviously == YesNoUnknown.YES && getPreviousHospitalizations().size() <= 0) {
-            getContentBinding().swhPreviousHospitalization.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().hospitalizationHospitalizedPreviously.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
         } else {
-            getContentBinding().swhPreviousHospitalization.disableErrorState();
+            getContentBinding().hospitalizationHospitalizedPreviously.disableErrorState();
         }
     }
 

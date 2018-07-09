@@ -29,19 +29,19 @@ public final class EventParticipantValidator {
 
         // Last name
         if (eventParticipant.getPerson().getLastName() == null || eventParticipant.getPerson().getLastName().trim().isEmpty()) {
-            binding.txtLastName.enableErrorState(activityContext, R.string.validation_person_last_name);
+            binding.eventParticipantLastName.enableErrorState(activityContext, R.string.validation_person_last_name);
             success = false;
         }
 
         // First name
         if (eventParticipant.getPerson().getFirstName() == null || eventParticipant.getPerson().getFirstName().trim().isEmpty()) {
-            binding.txtFirstName.enableErrorState(activityContext, R.string.validation_person_first_name);
+            binding.eventParticipantFirstName.enableErrorState(activityContext, R.string.validation_person_first_name);
             success = false;
         }
 
         // Involvement description
         if (eventParticipant.getInvolvementDescription() == null || eventParticipant.getInvolvementDescription().trim().isEmpty()) {
-            binding.txtInvolvementDesc.enableErrorState(activityContext, R.string.validation_event_participant_involvement_desc);
+            binding.eventParticipantInvolvementDescription.enableErrorState(activityContext, R.string.validation_event_participant_involvement_desc);
             success = false;
         }
 
@@ -55,19 +55,19 @@ public final class EventParticipantValidator {
 
         // Event participant's last name
         if (eventParticipant.getPerson().getLastName() == null || eventParticipant.getPerson().getLastName().trim().isEmpty()) {
-            binding.txtLastName.enableErrorState(activityContext, R.string.validation_person_last_name);
+            binding.eventParticipantLastName.enableErrorState(activityContext, R.string.validation_person_last_name);
             success = false;
         }
 
         // Event participant's first name
         if (eventParticipant.getPerson().getFirstName() == null || eventParticipant.getPerson().getFirstName().trim().isEmpty()) {
-            binding.txtFirstName.enableErrorState(activityContext, R.string.validation_person_first_name);
+            binding.eventParticipantFirstName.enableErrorState(activityContext, R.string.validation_person_first_name);
             success = false;
         }
 
         // Involvement description
         if (eventParticipant.getInvolvementDescription() == null || eventParticipant.getInvolvementDescription().trim().isEmpty()) {
-            binding.txtInvolvementDesc.enableErrorState(activityContext, R.string.validation_event_participant_involvement_desc);
+            binding.eventParticipantInvolvementDescription.enableErrorState(activityContext, R.string.validation_event_participant_involvement_desc);
             success = false;
         }
 
@@ -105,12 +105,12 @@ public final class EventParticipantValidator {
     }
 
     private static final List<ControlTextEditField> getEventParticipantDataFields(FragmentEventNewPersonShortLayoutBinding binding) {
-        return Arrays.asList(binding.txtInvolvementDesc);
+        return Arrays.asList(binding.eventParticipantInvolvementDescription);
     }
 
     private static final List<ControlTextEditField> getNewEventParticipantFields(FragmentEventNewPersonShortLayoutBinding binding) {
-        return Arrays.asList(binding.txtInvolvementDesc, binding.txtFirstName,
-                binding.txtLastName);
+        return Arrays.asList(binding.eventParticipantInvolvementDescription, binding.eventParticipantFirstName,
+                binding.eventParticipantLastName);
     }
 
 }

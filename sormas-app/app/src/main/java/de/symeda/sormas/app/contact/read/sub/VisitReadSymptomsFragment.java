@@ -70,7 +70,7 @@ public class VisitReadSymptomsFragment extends BaseReadFragment<FragmentContactR
                 sList = Symptom.makeSymptoms(visit.getDisease()).loadState(visit.getSymptoms());
             }
 
-            resultHolder.forItem().add(visit);
+//            resultHolder.forItem().add(visit);
             resultHolder.forItem().add(_symptom); //TODO: Do we need this
 
             resultHolder.forOther().add(getSymptomsYes(sList));
@@ -105,9 +105,9 @@ public class VisitReadSymptomsFragment extends BaseReadFragment<FragmentContactR
         if (record != null) {
             contentBinding.setData(record);
 
-            contentBinding.tvSymptomsYes.setTags(yesResult);
-            contentBinding.tvSymptomsUnknown.setTags(unknownResult);
-            contentBinding.tvSymptomsNo.setTags(noResult);
+            contentBinding.symptomsSymptomsOccurred.setTags(yesResult);
+            contentBinding.symptomsSymptomsUnknownOccurred.setTags(unknownResult);
+            contentBinding.symptomsSymptomsNotOccurred.setTags(noResult);
         }
     }
 

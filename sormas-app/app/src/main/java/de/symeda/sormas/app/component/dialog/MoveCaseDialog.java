@@ -166,56 +166,56 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
     protected void initializeContentView(ViewDataBinding rootBinding, final ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
         final DialogMoveCaseLayoutBinding _contentBinding = (DialogMoveCaseLayoutBinding)contentBinding;
 
-        if (_contentBinding.spnState != null) {
-            _contentBinding.spnState.initializeSpinner(RegionLoader.getInstance().load(), null, new ValueChangeListener() {
+        if (_contentBinding.caseDataRegion != null) {
+            _contentBinding.caseDataRegion.initializeSpinner(RegionLoader.getInstance().load(), null, new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
                     Region selectedValue = (Region) field.getValue();
                     if (selectedValue != null) {
-                        _contentBinding.spnLga.setSpinnerData(DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(selectedValue)), _contentBinding.spnLga.getValue());
+                        _contentBinding.caseDataDistrict.setSpinnerData(DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(selectedValue)), _contentBinding.caseDataDistrict.getValue());
                     } else {
-                        _contentBinding.spnLga.setSpinnerData(null);
+                        _contentBinding.caseDataDistrict.setSpinnerData(null);
                     }
                 }
             });
         }
 
-        if (_contentBinding.spnLga != null) {
-            _contentBinding.spnLga.initializeSpinner(DistrictLoader.getInstance().load((Region) _contentBinding.spnState.getValue()), null, new ValueChangeListener() {
+        if (_contentBinding.caseDataDistrict != null) {
+            _contentBinding.caseDataDistrict.initializeSpinner(DistrictLoader.getInstance().load((Region) _contentBinding.caseDataRegion.getValue()), null, new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
                     District selectedValue = (District) field.getValue();
                     if (selectedValue != null) {
-                        _contentBinding.spnWard.setSpinnerData(DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(selectedValue)), _contentBinding.spnWard.getValue());
-                        _contentBinding.spnFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(selectedValue, true)), _contentBinding.spnFacility.getValue());
+                        _contentBinding.caseDataCommunity.setSpinnerData(DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(selectedValue)), _contentBinding.caseDataCommunity.getValue());
+                        _contentBinding.caseDataHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(selectedValue, true)), _contentBinding.caseDataHealthFacility.getValue());
                     } else {
-                        _contentBinding.spnWard.setSpinnerData(null);
-                        _contentBinding.spnFacility.setSpinnerData(null);
+                        _contentBinding.caseDataCommunity.setSpinnerData(null);
+                        _contentBinding.caseDataHealthFacility.setSpinnerData(null);
                     }
                 }
             });
         }
 
-        if (_contentBinding.spnWard != null) {
-            _contentBinding.spnWard.initializeSpinner(CommunityLoader.getInstance().load((District) _contentBinding.spnLga.getValue()), null, new ValueChangeListener() {
+        if (_contentBinding.caseDataCommunity != null) {
+            _contentBinding.caseDataCommunity.initializeSpinner(CommunityLoader.getInstance().load((District) _contentBinding.caseDataDistrict.getValue()), null, new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
                     Community selectedValue = (Community) field.getValue();
                     if (selectedValue != null) {
-                        _contentBinding.spnFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(selectedValue, true)));
-                    } else if (_contentBinding.spnLga.getValue() != null) {
-                        _contentBinding.spnFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) _contentBinding.spnLga.getValue(), true)));
+                        _contentBinding.caseDataHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(selectedValue, true)));
+                    } else if (_contentBinding.caseDataDistrict.getValue() != null) {
+                        _contentBinding.caseDataHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) _contentBinding.caseDataDistrict.getValue(), true)));
                     } else {
-                        _contentBinding.spnFacility.setSpinnerData(null);
+                        _contentBinding.caseDataHealthFacility.setSpinnerData(null);
                     }
                 }
             });
         }
 
-        List<Item> facilities = _contentBinding.spnWard.getValue() != null ? FacilityLoader.getInstance().load((Community) _contentBinding.spnWard.getValue(), true)
-                : FacilityLoader.getInstance().load((District) _contentBinding.spnLga.getValue(), true);
-        if (_contentBinding.spnFacility != null) {
-            _contentBinding.spnFacility.initializeSpinner(facilities, null, new ValueChangeListener() {
+        List<Item> facilities = _contentBinding.caseDataCommunity.getValue() != null ? FacilityLoader.getInstance().load((Community) _contentBinding.caseDataCommunity.getValue(), true)
+                : FacilityLoader.getInstance().load((District) _contentBinding.caseDataDistrict.getValue(), true);
+        if (_contentBinding.caseDataHealthFacility != null) {
+            _contentBinding.caseDataHealthFacility.initializeSpinner(facilities, null, new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
                     if (field.getValue() == null)

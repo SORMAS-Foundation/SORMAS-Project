@@ -36,15 +36,11 @@
 
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtDiseaseName"
+                    android:id="@+id/caseData_disease"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_sample_disease"
-                    app:labelCaption="@string/label_sample_disease"
-                    app:value="@{caze.disease}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{caze.disease}" />
 
 
                 <LinearLayout
@@ -55,55 +51,37 @@
 
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/txtSampleCode"
+                        android:id="@+id/sample_sampleCode"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_sample_code"
-                        app:labelCaption="@string/label_sample_code"
-                        app:value="@{sample.sampleCode}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                        app:value="@{sample.sampleCode}" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/txtSampleMaterial"
+                        android:id="@+id/sample_sampleMaterial"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:paddingLeft="@dimen/controlReadTextMarginBottom"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_sample_material"
-                        app:labelCaption="@string/label_sample_material"
-                        app:value="@{sample.sampleMaterial}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        app:value="@{sample.sampleMaterial}" />
 
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtSampleMaterialText"
+                    android:id="@+id/sample_sampleMaterialText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:singleLine="false"
-                    app:maxLines="2"
-                    app:description="@string/desc_sample_other_material"
-                    app:labelCaption="@string/label_sample_other_material"
-                    app:value="@{sample.sampleMaterialText}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{sample.sampleMaterialText}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtSampleSource"
+                    android:id="@+id/sample_sampleSource"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_sample_source"
-                    app:labelCaption="@string/label_sample_source"
-                    app:value="@{sample.sampleSource}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{sample.sampleSource}" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -113,44 +91,32 @@
 
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/txtDateTimeOfSampling"
+                        android:id="@+id/sample_sampleDateTime"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_sample_date_time_sampling"
-                        app:labelCaption="@string/label_sample_date_time_sampling"
-                        app:value="@{sample.sampleDateTime}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                        app:value="@{sample.sampleDateTime}" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/txtTestType"
+                        android:id="@+id/sample_suggestedTypeOfTest"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:paddingLeft="@dimen/formLayoutGutterSize"
+                        android:layout_marginStart="@dimen/formLayoutGutterSize"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_sample_test_type"
-                        app:labelCaption="@string/label_sample_test_type"
-                        app:value="@{sample.suggestedTypeOfTest}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                        app:value="@{sample.suggestedTypeOfTest}" />
 
 
                 </LinearLayout>
 
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtLaboratoryName"
+                    android:id="@+id/sample_lab"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_sample_laboratory"
-                    app:labelCaption="@string/label_sample_laboratory"
-                    app:value=""
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{sample.lab}" />
 
 
                 <LinearLayout
@@ -168,15 +134,11 @@
 
 
                         <de.symeda.sormas.app.component.controls.ControlTextImageField
-                            android:id="@+id/txtShippingStatus"
+                            android:id="@+id/sample_shipped"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            app:description="@string/desc_sample_shipping_status"
-                            app:labelCaption="@string/label_sample_shipping_status"
-                            app:shipmentStatus="@{sample}"
-                            app:defaultValue='@{@string/not_available}'
-                            />
+                            app:shipmentStatus="@{sample}" />
 
                         <!--android:layout_alignParentRight="true"-->
                     </LinearLayout>
@@ -190,15 +152,11 @@
 
 
                         <de.symeda.sormas.app.component.controls.ControlTextImageField
-                            android:id="@+id/txtReceivedStatus"
+                            android:id="@+id/sample_received"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            app:description="@string/desc_sample_received_status"
-                            app:labelCaption="@string/label_sample_received_status"
-                            app:receivedStatus="@{sample}"
-                            app:defaultValue='@{@string/not_available}'
-                            />
+                            app:receivedStatus="@{sample}" />
 
 
                     </LinearLayout>
@@ -210,40 +168,25 @@
 
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtShipmentDetails"
+                    android:id="@+id/sample_shipmentDetails"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_sample_shipment_details"
-                    app:labelCaption="@string/label_sample_shipment_details"
-                    app:value="@{sample.shipmentDetails}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{sample.shipmentDetails}" />
 
 
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtComment"
+                    android:id="@+id/sample_comment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:description="@string/desc_sample_comment"
-                    app:labelCaption="@string/label_sample_comment"
-                    app:value="@{sample.comment}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{sample.comment}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtReferredTo"
+                    android:id="@+id/sample_referredTo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    app:singleLine="false"
-                    app:maxLines="2"
-                    app:description="@string/desc_sample_referred_to"
-                    app:labelCaption="@string/label_sample_referred_to"
-                    app:value="@{sample.comment}"
-                    app:defaultValue='@{@string/not_available}'
-                    />
+                    app:value="@{sample.referredTo}" />
 
                 <LinearLayout
                     android:id="@+id/sampleReceivedLayout"
@@ -265,55 +208,37 @@
                         android:orientation="horizontal">
 
                         <de.symeda.sormas.app.component.controls.ControlTextReadField
-                            android:id="@+id/txtLabSampleId"
+                            android:id="@+id/sample_labSampleID"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            app:description="@string/desc_sample_lab_id"
-                            app:labelCaption="@string/label_sample_lab_id"
-                            app:value="@{sample.labSampleID}"
-                            app:defaultValue='@{@string/not_available}'
-                            />
+                            app:value="@{sample.labSampleID}" />
 
                         <de.symeda.sormas.app.component.controls.ControlTextReadField
-                            android:id="@+id/txtReceivedDate"
+                            android:id="@+id/sample_receivedDate"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:paddingLeft="@dimen/controlReadTextMarginBottom"
                             android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            app:description="@string/desc_sample_received_date"
-                            app:labelCaption="@string/label_sample_received_date"
-                            app:value="@{sample.receivedDate}"
-                            app:defaultValue='@{@string/not_available}'
-                            />
+                            android:layout_marginStart="@dimen/formLayoutGutterSize"
+                            app:value="@{sample.receivedDate}" />
 
                     </LinearLayout>
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/txtSpecimenCondition"
+                        android:id="@+id/sample_specimenCondition"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_sample_specimen_condition"
-                        app:labelCaption="@string/label_sample_specimen_condition"
-                        app:value="@{sample.specimenCondition}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                        app:value="@{sample.specimenCondition}" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/txtTestPossibleReason"
+                        android:id="@+id/sample_noTestPossibleReason"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:description="@string/desc_sample_test_possible_reason"
-                        app:labelCaption="@string/label_sample_test_possible_reason"
-                        app:singleLine="false"
-                        app:maxLines="2"
-                        app:value="@{sample.noTestPossibleReason}"
-                        app:defaultValue='@{@string/not_available}'
-                        />
+                        app:value="@{sample.noTestPossibleReason}" />
 
                 </LinearLayout>
 

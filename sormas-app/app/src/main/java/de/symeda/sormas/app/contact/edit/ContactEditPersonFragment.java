@@ -142,7 +142,7 @@ public class ContactEditPersonFragment extends BaseEditFragment<FragmentContactE
 
     @Override
     public void onAfterLayoutBinding(FragmentContactEditPersonLayoutBinding contentBinding) {
-        contentBinding.spnOccupationType.initializeSpinner(occupationTypeList, null, new ValueChangeListener() {
+        contentBinding.personOccupationType.initializeSpinner(occupationTypeList, null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 if (!occupationTypeLayoutProcessor.processLayout((OccupationType) field.getValue()))
@@ -150,30 +150,30 @@ public class ContactEditPersonFragment extends BaseEditFragment<FragmentContactE
             }
         });
 
-        contentBinding.spnGender.initializeSpinner(genderList);
+        contentBinding.personSex.initializeSpinner(genderList);
 
-        contentBinding.spnAgeType.initializeSpinner(ageTypeList, null, new ValueChangeListener() {
+        contentBinding.personApproximateAgeType.initializeSpinner(ageTypeList, null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 updateApproximateAgeField();
             }
         });
 
-        contentBinding.spnYear.initializeSpinner(yearList, null, new ValueChangeListener() {
+        contentBinding.personBirthdateYYYY.initializeSpinner(yearList, null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 updateApproximateAgeField();
             }
         });
 
-        contentBinding.spnMonth.initializeSpinner(monthList, null, new ValueChangeListener() {
+        contentBinding.personBirthdateMM.initializeSpinner(monthList, null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 updateApproximateAgeField();
             }
         });
 
-        contentBinding.spnDate.initializeSpinner(dayList, null, new ValueChangeListener() {
+        contentBinding.personBirthdateDD.initializeSpinner(dayList, null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 updateApproximateAgeField();
@@ -183,12 +183,12 @@ public class ContactEditPersonFragment extends BaseEditFragment<FragmentContactE
 
     @Override
     protected void updateUI(FragmentContactEditPersonLayoutBinding contentBinding, Person person) {
-        contentBinding.spnOccupationType.setValue(person.getOccupationType());
-        contentBinding.spnGender.setValue(person.getSex());
-        contentBinding.spnAgeType.setValue(person.getApproximateAgeType());
-        contentBinding.spnYear.setValue(person.getBirthdateYYYY());
-        contentBinding.spnMonth.setValue(person.getBirthdateMM());
-        contentBinding.spnDate.setValue(person.getBirthdateDD());
+        contentBinding.personOccupationType.setValue(person.getOccupationType());
+        contentBinding.personSex.setValue(person.getSex());
+        contentBinding.personApproximateAgeType.setValue(person.getApproximateAgeType());
+        contentBinding.personBirthdateYYYY.setValue(person.getBirthdateYYYY());
+        contentBinding.personBirthdateMM.setValue(person.getBirthdateMM());
+        contentBinding.personBirthdateDD.setValue(person.getBirthdateDD());
     }
 
     @Override
@@ -209,7 +209,7 @@ public class ContactEditPersonFragment extends BaseEditFragment<FragmentContactE
                 locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
-                        getContentBinding().txtPermAddress.setValue(location.toString());
+                        getContentBinding().personAddress.setValue(location.toString());
                         record.setAddress(location);
 
                         locationDialog.dismiss();

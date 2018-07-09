@@ -147,48 +147,48 @@ public class SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutB
 
     @Override
     public void onAfterLayoutBinding(final FragmentSampleNewLayoutBinding contentBinding) {
-        contentBinding.spnTestType.initializeSpinner(testTypeList);
+        contentBinding.sampleSuggestedTypeOfTest.initializeSpinner(testTypeList);
 
-        contentBinding.spnSampleSource.initializeSpinner(sampleSourceList);
+        contentBinding.sampleSampleSource.initializeSpinner(sampleSourceList);
 
-        contentBinding.spnSampleMaterial.initializeSpinner(sampleMaterialList, null, new ValueChangeListener() {
+        contentBinding.sampleSampleMaterial.initializeSpinner(sampleMaterialList, null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 SampleMaterial material = (SampleMaterial) field.getValue();
 
                 if (material == SampleMaterial.OTHER) {
-                    contentBinding.txtSampleMaterialText.setVisibility(View.VISIBLE);
+                    contentBinding.sampleSampleMaterialText.setVisibility(View.VISIBLE);
                 } else {
-                    contentBinding.txtSampleMaterialText.setVisibility(View.INVISIBLE);
-                    contentBinding.txtSampleMaterialText.setValue("");
+                    contentBinding.sampleSampleMaterialText.setVisibility(View.INVISIBLE);
+                    contentBinding.sampleSampleMaterialText.setValue("");
                 }
             }
         });
 
-        contentBinding.spnLaboratory.initializeSpinner(DataUtils.toItems(labList), null, new ValueChangeListener() {
+        contentBinding.sampleLab.initializeSpinner(DataUtils.toItems(labList), null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 Facility laboratory = (Facility) field.getValue();
 
                 if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
-                    contentBinding.txtLaboratoryDetails.setVisibility(View.VISIBLE);
+                    contentBinding.sampleLabDetails.setVisibility(View.VISIBLE);
                 } else {
-                    contentBinding.txtLaboratoryDetails.setVisibility(View.GONE);
-                    contentBinding.txtLaboratoryDetails.setValue("");
+                    contentBinding.sampleLabDetails.setVisibility(View.GONE);
+                    contentBinding.sampleLabDetails.setValue("");
                 }
             }
         });
 
-        contentBinding.dtpDateAndTimeOfSampling.setFragmentManager(getFragmentManager());
-        contentBinding.dtpShipmentDate.setFragmentManager(getFragmentManager());
+        contentBinding.sampleSampleDateTime.setFragmentManager(getFragmentManager());
+        contentBinding.sampleShipmentDate.setFragmentManager(getFragmentManager());
 
     }
 
     @Override
     protected void updateUI(FragmentSampleNewLayoutBinding contentBinding, Sample sample) {
-        contentBinding.spnSampleMaterial.setValue(sample.getSampleMaterial());
-        contentBinding.spnTestType.setValue(sample.getSuggestedTypeOfTest());
-        contentBinding.spnLaboratory.setValue(sample.getLab());
+        contentBinding.sampleSampleMaterial.setValue(sample.getSampleMaterial());
+        contentBinding.sampleSuggestedTypeOfTest.setValue(sample.getSuggestedTypeOfTest());
+        contentBinding.sampleLab.setValue(sample.getLab());
     }
 
     public void onPageResume(FragmentSampleNewLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
@@ -279,11 +279,11 @@ public class SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutB
 //
 //        if (result == YesNo.YES) {
 //            //record.setShipmentDate(new Date());
-//            getContentBinding().dtpShipmentDate.setVisibility(View.VISIBLE);
+//            getContentBinding().sampleShipmentDate.setVisibility(View.VISIBLE);
 //            getContentBinding().txtShipmentDetails.setVisibility(View.VISIBLE);
 //            getContentBinding().sampleReceivedLayout.setVisibility(View.VISIBLE);
 //        } else {
-//            getContentBinding().dtpShipmentDate.setVisibility(View.GONE);
+//            getContentBinding().sampleShipmentDate.setVisibility(View.GONE);
 //            getContentBinding().txtShipmentDetails.setVisibility(View.GONE);
 //            getContentBinding().sampleReceivedLayout.setVisibility(View.GONE);
 //        }

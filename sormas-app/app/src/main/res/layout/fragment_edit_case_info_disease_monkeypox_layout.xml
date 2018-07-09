@@ -31,35 +31,19 @@
             />
 
         <de.symeda.sormas.app.component.controls.ControlSwitchField
-            android:id="@+id/swhSmallpoxVaccinationRecieved"
+            android:id="@+id/caseData_smallpoxVaccinationReceived"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
-            app:hint="@string/hint_case_quest_pregnancy"
-            app:labelCaption="@string/label_case_quest_pregnancy"
-            app:description="@string/desc_case_quest_pregnancy"
-            app:required="true"
-            app:slim="false"
             app:enumClass="@{yesNoUnknownClass}"
-            app:defaultValue="@{YesNoUnknown.UNKNOWN}"
-            app:value="@={data.smallpoxVaccinationReceived}"
-
-
-            />
+            app:value="@={data.smallpoxVaccinationReceived}" />
 
         <de.symeda.sormas.app.component.controls.ControlDateField
-            android:id="@+id/dtpLastVaccinationDate"
+            android:id="@+id/caseData_vaccinationDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/textControlMarginBottom"
-            android:paddingLeft="@dimen/formLayoutGutterSize"
-            android:visibility="gone"
-            app:hint="@string/hint_case_last_vaccination_date"
-            app:labelCaption="@string/label_case_last_vaccination_date"
-            app:description="@string/desc_case_last_vaccination_date"
-            app:required="true"
-            app:value="@={data.vaccinationDate}"
-            />
+            app:value="@={data.vaccinationDate}" />
 
 
     </LinearLayout>

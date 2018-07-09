@@ -101,7 +101,7 @@
                         />
 
                     <TextView
-                        android:id="@+id/txtTaskPriority"
+                        android:id="@+id/task_priority"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/contentHorizontalSpacing"
@@ -125,7 +125,7 @@
                         />
 
                     <TextView
-                        android:id="@+id/txtTaskStatus"
+                        android:id="@+id/task_taskStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/contentHorizontalSpacing"
@@ -156,7 +156,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/txtTaskType"
+                        android:id="@+id/task_taskType"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/listActivityRowPrimaryTextSize"
@@ -170,7 +170,7 @@
                         />
 
                     <TextView
-                        android:id="@+id/txtCreatorComment"
+                        android:id="@+id/task_creatorComment"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
@@ -180,7 +180,6 @@
                         android:textColor="@color/listActivityRowLeastText"
                         android:fontFamily="sans-serif-medium"
                         android:scrollHorizontally="true"
-                        app:singleLine="false"
                         app:maxLines="2"
                         android:ellipsize="end"
                         app:value="@{data.creatorComment}"

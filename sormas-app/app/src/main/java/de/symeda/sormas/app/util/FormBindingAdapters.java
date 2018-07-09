@@ -73,7 +73,7 @@ public class FormBindingAdapters {
             String stringValue;
             if (sample.isShipped()) {
                 stringValue = val = DateHelper.formatShortDate(sample.getShipmentDate());
-                if (stringValue != control.getValue()) {
+                if (!stringValue.equals(control.getValue())) {
                     //Set Text to shipment date
                     control.setValue(stringValue);
 
