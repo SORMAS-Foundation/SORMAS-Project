@@ -322,6 +322,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
         final ControlPropertyField thisField = field;
         if (dependencyParentField != null && dependencyParentValue != null) {
+            thisField.setVisibilityBasedOnParentField();
             dependencyParentField.setInternalValueChangedListener(new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {

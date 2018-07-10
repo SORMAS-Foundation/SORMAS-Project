@@ -5,6 +5,7 @@
     android:id="@+id/base_layout">
 
     <data>
+        <import type="de.symeda.sormas.api.caze.CaseOutcome" />
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
     </data>
 
@@ -78,6 +79,33 @@
                 app:value="@{data.disease.toString()}"
                 app:appendValue="@{data.diseaseDetails}"
                 app:valueFormat="@string/two_strings_with_hyphen_format" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_outcome"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    app:value="@{data.outcome}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_outcomeDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    app:value="@{data.outcomeDate}"
+                    app:dependencyParentField="@{caseDataOutcome}"
+                    app:dependencyParentValue="@{CaseOutcome.NO_OUTCOME}"
+                    app:dependencyParentVisibility="@{false}" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
