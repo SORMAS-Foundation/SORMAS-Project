@@ -31,27 +31,15 @@ import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.task.read.TaskReadActivity;
 import de.symeda.sormas.app.util.SubheadingHelper;
 
-/**
- * Created by Orson on 02/12/2017.
- */
-
 public class TaskListFragment extends BaseListFragment<TaskListAdapter> implements OnListItemClickListener {
-
-
-    private boolean dataLoaded = false;
-    public static final String KEY_CASE_UUID = "caseUuid";
-    public static final String KEY_CONTACT_UUID = "contactUuid";
-    public static final String KEY_EVENT_UUID = "eventUuid";
 
     private AsyncTask searchTask;
     private TaskStatus filterStatus = null;
     private SearchBy searchBy = null;
-    String recordUuid = null;
-
+    private String recordUuid = null;
     private List<Task> tasks;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerViewForList;
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -66,7 +54,7 @@ public class TaskListFragment extends BaseListFragment<TaskListAdapter> implemen
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
 
         filterStatus = (TaskStatus) getFilterStatusArg(arguments);
         searchBy = (SearchBy) getSearchStrategyArg(arguments);
@@ -77,20 +65,19 @@ public class TaskListFragment extends BaseListFragment<TaskListAdapter> implemen
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        recyclerViewForList = (RecyclerView)view.findViewById(R.id.recyclerViewForList);
+        recyclerViewForList = (RecyclerView) view.findViewById(R.id.recyclerViewForList);
 
         return view;
     }
 
     @Override
     public TaskListAdapter getNewListAdapter() {
-        return new TaskListAdapter(this.getActivity(), R.layout.row_task_list_item_layout, this,
-                this.tasks);
+        return new TaskListAdapter(this.getActivity(), R.layout.row_task_list_item_layout, this, this.tasks);
     }
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        Task t = (Task)item;
+        Task t = (Task) item;
         TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(),
                 t.getUuid(), t.getTaskStatus());
         TaskReadActivity.goToActivity(getActivity(), dataCapsule);
@@ -111,51 +98,35 @@ public class TaskListFragment extends BaseListFragment<TaskListAdapter> implemen
     public void onResume() {
         super.onResume();
 
-        //TODO: Orson - reverse this relationship
         getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Task"));
 
-        try {
-            dataLoaded = false;
-            if (!dataLoaded) {
-                ISearchExecutor<Task> executor = SearchStrategyFor.TASK.selector(searchBy, filterStatus, recordUuid);
-                searchTask = executor.search(new ISearchResultCallback<Task>() {
-                    @Override
-                    public void preExecute() {
-                        getBaseActivity().showPreloader();
-
-                    }
-
-                    @Override
-                    public void searchResult(List<Task> result, BoolResult resultStatus) {
-                        if (!resultStatus.isSuccess()) {
-                            String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Tasks");
-                            NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, message);
-
-                            return;
-                        }
-
-                        tasks = result;
-
-                        TaskListFragment.this.getListAdapter().replaceAll(tasks);
-                        TaskListFragment.this.getListAdapter().notifyDataSetChanged();
-
-                        dataLoaded = true;
-
-                        getBaseActivity().hidePreloader();
-                    }
-                    private ISearchResultCallback<Task> init() {
-                        getBaseActivity().showPreloader();
-
-                        return this;
-                    }
-                }.init());
+        ISearchExecutor<Task> executor = SearchStrategyFor.TASK.selector(searchBy, filterStatus, recordUuid);
+        searchTask = executor.search(new ISearchResultCallback<Task>() {
+            @Override
+            public void preExecute() {
+                getBaseActivity().showPreloader();
             }
-        } catch (Exception ex) {
-            getBaseActivity().hidePreloader();
-            dataLoaded = false;
-        }
 
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
+            @Override
+            public void searchResult(List<Task> result, BoolResult resultStatus) {
+                getBaseActivity().hidePreloader();
+
+                if (!resultStatus.isSuccess()) {
+                    String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Tasks");
+                    NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, message);
+                    return;
+                }
+
+                tasks = result;
+
+                if (TaskListFragment.this.isResumed()) {
+                    TaskListFragment.this.getListAdapter().replaceAll(tasks);
+                    TaskListFragment.this.getListAdapter().notifyDataSetChanged();
+                }
+            }
+        });
+
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout) this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override

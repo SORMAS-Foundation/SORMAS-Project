@@ -33,7 +33,6 @@ import de.symeda.sormas.app.util.SubheadingHelper;
 
 public class ContactListFragment extends BaseListFragment<ContactListAdapter> implements OnListItemClickListener {
 
-    private boolean dataLoaded = false;
     private AsyncTask searchTask;
     private List<Contact> contacts;
     private LinearLayoutManager linearLayoutManager;
@@ -99,52 +98,34 @@ public class ContactListFragment extends BaseListFragment<ContactListAdapter> im
     public void onResume() {
         super.onResume();
 
-        //TODO: Orson - reverse this relationship
         getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Contact"));
 
-        try {
-            dataLoaded = false;
-            if (!dataLoaded) {
-                ISearchExecutor<Contact> executor = SearchStrategyFor.CONTACT.selector(searchBy, filterStatus, recordUuid);
-                searchTask = executor.search(new ISearchResultCallback<Contact>() {
-                    @Override
-                    public void preExecute() {
-                        getBaseActivity().showPreloader();
+        ISearchExecutor<Contact> executor = SearchStrategyFor.CONTACT.selector(searchBy, filterStatus, recordUuid);
+        searchTask = executor.search(new ISearchResultCallback<Contact>() {
+            @Override
+            public void preExecute() {
+                getBaseActivity().showPreloader();
 
-                    }
-
-                    @Override
-                    public void searchResult(List<Contact> result, BoolResult resultStatus) {
-                        getBaseActivity().hidePreloader();
-
-                        if (!resultStatus.isSuccess()) {
-                            String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Contacts");
-                            NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, message);
-
-                            return;
-                        }
-
-                        contacts = result;
-
-                        ContactListFragment.this.getListAdapter().replaceAll(contacts);
-                        ContactListFragment.this.getListAdapter().notifyDataSetChanged();
-
-                        dataLoaded = true;
-
-                        getBaseActivity().hidePreloader();
-                    }
-
-                    private ISearchResultCallback<Contact> init() {
-                        getBaseActivity().showPreloader();
-
-                        return this;
-                    }
-                }.init());
             }
-        } catch (Exception ex) {
-            getBaseActivity().hidePreloader();
-            dataLoaded = false;
-        }
+
+            @Override
+            public void searchResult(List<Contact> result, BoolResult resultStatus) {
+                getBaseActivity().hidePreloader();
+
+                if (!resultStatus.isSuccess()) {
+                    String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Contacts");
+                    NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, message);
+                    return;
+                }
+
+                contacts = result;
+
+                if (ContactListFragment.this.isResumed()) {
+                    ContactListFragment.this.getListAdapter().replaceAll(contacts);
+                    ContactListFragment.this.getListAdapter().notifyDataSetChanged();
+                }
+            }
+        });
 
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout) this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
@@ -162,7 +143,6 @@ public class ContactListFragment extends BaseListFragment<ContactListAdapter> im
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //recyclerViewForList.setHasFixedSize(true);
         recyclerViewForList.setLayoutManager(linearLayoutManager);
         recyclerViewForList.setAdapter(getListAdapter());
     }

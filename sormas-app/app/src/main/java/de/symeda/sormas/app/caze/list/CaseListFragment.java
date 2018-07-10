@@ -33,7 +33,6 @@ import de.symeda.sormas.app.util.SubheadingHelper;
 
 public class CaseListFragment extends BaseListFragment<CaseListAdapter> implements OnListItemClickListener {
 
-    private boolean dataLoaded = false;
     private AsyncTask searchTask;
     private List<Case> cases;
     private LinearLayoutManager linearLayoutManager;
@@ -54,7 +53,7 @@ public class CaseListFragment extends BaseListFragment<CaseListAdapter> implemen
         super.onCreate(savedInstanceState);
 
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
 
         filterStatus = (InvestigationStatus) getFilterStatusArg(arguments);
         searchBy = (SearchBy) getSearchStrategyArg(arguments);
@@ -64,7 +63,7 @@ public class CaseListFragment extends BaseListFragment<CaseListAdapter> implemen
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        recyclerViewForList = (RecyclerView)view.findViewById(R.id.recyclerViewForList);
+        recyclerViewForList = (RecyclerView) view.findViewById(R.id.recyclerViewForList);
 
         return view;
     }
@@ -76,7 +75,7 @@ public class CaseListFragment extends BaseListFragment<CaseListAdapter> implemen
 
     @Override
     public void onListItemClick(View view, int position, Object item) {
-        Case c = (Case)item;
+        Case c = (Case) item;
         CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(), c.getUuid(), c.getCaseClassification());
         CaseReadActivity.goToActivity(getActivity(), dataCapsule);
     }
@@ -104,39 +103,34 @@ public class CaseListFragment extends BaseListFragment<CaseListAdapter> implemen
         //TODO: Orson - reverse this relationship
         getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Case"));
 
-        dataLoaded = false;
-        if (!dataLoaded) {
-            ISearchExecutor<Case> executor = SearchStrategyFor.CASE.selector(searchBy, filterStatus, null);
-            searchTask = executor.search(new ISearchResultCallback<Case>() {
-                @Override
-                public void preExecute() {
-                    getBaseActivity().showPreloader();
-                }
+        ISearchExecutor<Case> executor = SearchStrategyFor.CASE.selector(searchBy, filterStatus, null);
+        searchTask = executor.search(new ISearchResultCallback<Case>() {
+            @Override
+            public void preExecute() {
+                getBaseActivity().showPreloader();
+            }
 
-                @Override
-                public void searchResult(List<Case> result, BoolResult resultStatus) {
-                    getBaseActivity().hidePreloader();
+            @Override
+            public void searchResult(List<Case> result, BoolResult resultStatus) {
+                getBaseActivity().hidePreloader();
 
-                    if (!resultStatus.isSuccess()) {
-                        String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Cases");
-                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, message);
+                if (!resultStatus.isSuccess()) {
+                    String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Cases");
+                    NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, message);
 
-                        return;
-                    } else {
-                        cases = result;
-                        dataLoaded = true;
+                    return;
+                } else {
+                    cases = result;
 
-                        if (CaseListFragment.this.isResumed()) {
-                            CaseListFragment.this.getListAdapter().replaceAll(cases);
-                            CaseListFragment.this.getListAdapter().notifyDataSetChanged();
-                        }
-
+                    if (CaseListFragment.this.isResumed()) {
+                        CaseListFragment.this.getListAdapter().replaceAll(cases);
+                        CaseListFragment.this.getListAdapter().notifyDataSetChanged();
                     }
                 }
-            });
-        }
+            }
+        });
 
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout) this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
