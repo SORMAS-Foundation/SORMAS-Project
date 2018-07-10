@@ -174,6 +174,8 @@ public class ControlTextImageField extends ControlTextReadField {
                 textImageField.setImageBackground(R.color.indicatorTaskPriorityLow);
             }
         }
+
+        textImageField.setInternalValue(priority);
     }
 
     // Task status
@@ -194,6 +196,8 @@ public class ControlTextImageField extends ControlTextReadField {
                 textImageField.setImageBackground(R.color.indicatorTaskNotExecutable);
             }
         }
+
+        textImageField.setInternalValue(status);
     }
 
 }

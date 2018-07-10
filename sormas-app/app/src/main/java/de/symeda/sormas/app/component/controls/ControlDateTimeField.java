@@ -205,6 +205,7 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
             dateInput.setText(DateHelper.formatDate(value));
             timeInput.setText(DateHelper.formatTime(value));
         }
+        setInternalValue(value);
     }
 
     @Override

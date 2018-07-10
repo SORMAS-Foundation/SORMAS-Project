@@ -106,6 +106,7 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
     @Override
     public void setValue(Boolean value) {
         input.setChecked(value);
+        setInternalValue(value);
     }
 
     @Override

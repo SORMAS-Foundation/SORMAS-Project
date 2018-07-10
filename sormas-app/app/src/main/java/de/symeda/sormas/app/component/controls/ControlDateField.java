@@ -150,6 +150,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
         } else {
             input.setText(DateHelper.formatDate(value));
         }
+        setInternalValue(value);
     }
 
     @Override

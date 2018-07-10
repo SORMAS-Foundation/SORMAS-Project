@@ -213,33 +213,38 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         }
     }
 
+    public static void setValue(ControlTextReadField textField, String stringValue, String appendValue, String valueFormat, String defaultValue, Object originalValue) {
+        setValue(textField, stringValue, appendValue, valueFormat, defaultValue);
+        textField.setInternalValue(originalValue);
+    }
+
     @BindingAdapter(value = {"value", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setValue(ControlTextReadField textField, String stringValue, String valueFormat, String defaultValue) {
-        setValue(textField, stringValue, null, valueFormat, defaultValue);
+        setValue(textField, stringValue, null, valueFormat, defaultValue, stringValue);
     }
 
     // Integer
     @BindingAdapter(value = {"value", "appendValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setValue(ControlTextReadField textField, Integer integerValue, String appendValue, String valueFormat, String defaultValue) {
-        setValue(textField, integerValue != null ? integerValue.toString() : null, appendValue, valueFormat, defaultValue);
+        setValue(textField, integerValue != null ? integerValue.toString() : null, appendValue, valueFormat, defaultValue, integerValue);
     }
 
     // Float
     @BindingAdapter(value = {"value", "appendValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setValue(ControlTextReadField textField, Float floatValue, String appendValue, String valueFormat, String defaultValue) {
-        setValue(textField, floatValue != null ? floatValue.toString() : null, appendValue, valueFormat, defaultValue);
+        setValue(textField, floatValue != null ? floatValue.toString() : null, appendValue, valueFormat, defaultValue, floatValue);
     }
 
     // Enum
     @BindingAdapter(value = {"value", "appendValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setValue(ControlTextReadField textField, Enum enumValue, String appendValue, String valueFormat, String defaultValue) {
-        setValue(textField, enumValue != null ? enumValue.toString() : null, appendValue, valueFormat, defaultValue);
+        setValue(textField, enumValue != null ? enumValue.toString() : null, appendValue, valueFormat, defaultValue, enumValue);
     }
 
     // Abstract Domain Object
     @BindingAdapter(value = {"value", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setValue(ControlTextReadField textField, AbstractDomainObject ado, String valueFormat, String defaultValue) {
-        setValue(textField, ado != null ? ado.toString() : null, valueFormat, defaultValue);
+        setValue(textField, ado != null ? ado.toString() : null, null, valueFormat, defaultValue, ado);
     }
 
     // Date & date range
@@ -248,17 +253,17 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         if (dateValue == null || appendValue == null) {
             setValue(textField, dateValue != null ? DateHelper.formatDate(dateValue)
                     : appendValue != null ? DateHelper.formatDate(appendValue)
-                    : null, null, valueFormat, defaultValue);
+                    : null, null, valueFormat, defaultValue, dateValue);
         } else {
             setValue(textField, DateHelper.formatDate(dateValue), DateHelper.formatDate(appendValue),
-                    valueFormat, defaultValue);
+                    valueFormat, defaultValue, dateValue);
         }
     }
 
     // Boolean
     @BindingAdapter(value = {"value", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setValue(ControlTextReadField textField, Boolean booleanValue, String valueFormat, String defaultValue) {
-        setValue(textField, booleanValue != null ? booleanValue.toString() : null, valueFormat, defaultValue);
+        setValue(textField, booleanValue != null ? booleanValue.toString() : null, null, valueFormat, defaultValue, booleanValue);
     }
 
     /* Value types that need a different variable and method name */
@@ -266,13 +271,13 @@ public class ControlTextReadField extends ControlPropertyField<String> {
     // Time
     @BindingAdapter(value = {"timeValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setTimeValue(ControlTextReadField textField, Date dateValue, String valueFormat, String defaultValue) {
-        setValue(textField, dateValue != null ? DateHelper.formatTime(dateValue) : null, valueFormat, defaultValue);
+        setValue(textField, dateValue != null ? DateHelper.formatTime(dateValue) : null, null, valueFormat, defaultValue, dateValue);
     }
 
     // Short uuid
     @BindingAdapter(value = {"shortUuidValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setShortUuidValue(ControlTextReadField textField, String uuid, String valueFormat, String defaultValue) {
-        setValue(textField, uuid != null ? DataHelper.getShortUuid(uuid) : null, valueFormat, defaultValue);
+        setValue(textField, uuid != null ? DataHelper.getShortUuid(uuid) : null, null, valueFormat, defaultValue, uuid);
     }
 
     // Age with date

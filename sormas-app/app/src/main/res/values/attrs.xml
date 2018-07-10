@@ -52,7 +52,6 @@
     <attr name="includeUnknown" format="reference|boolean" />
     <attr name="useAbbreviations" format="boolean" />
 
-
     <attr name="value" format="string" />
     <attr name="valueFormat" format="reference" />
     <attr name="labelCaption" format="string" />

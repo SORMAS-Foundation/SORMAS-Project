@@ -169,6 +169,7 @@ public class ControlPasswordField extends ControlPropertyEditField<String> {
     @Override
     public void setValue(String value) {
         input.setText(value);
+        setInternalValue(value);
     }
 
     @Override

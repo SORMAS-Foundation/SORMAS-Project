@@ -3,6 +3,7 @@ package de.symeda.sormas.app.component.controls;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.databinding.BindingAdapter;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -37,10 +38,15 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
     private boolean slim;
     private boolean captionCapitalized;
     private boolean captionItalic;
+    private ControlPropertyField dependencyParentField;
+    private Object dependencyParentValue;
+    private boolean dependencyParentVisibility = true;
 
     // Other fields
 
+    private Object internalValue;
     private ArrayList<ValueChangeListener> valueChangedListeners;
+    private ValueChangeListener internalValueChangedListener;
 
     // Constructors
 
@@ -112,6 +118,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
     }
 
     protected void onValueChanged() {
+        setInternalValue(getValue());
         if (valueChangedListeners != null) {
             for (ValueChangeListener valueChangedListener : valueChangedListeners) {
                 valueChangedListener.onChange(this);
@@ -155,6 +162,32 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         input.setBackground(background);
 
         input.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+    }
+
+    private void setVisibilityBasedOnParentField() {
+        if (dependencyParentField == null || dependencyParentValue == null) {
+            return;
+        }
+
+        if (dependencyParentField.getInternalValue() == null ||
+                dependencyParentField.getVisibility() != VISIBLE) {
+            setVisibility(GONE);
+            return;
+        }
+
+        if (dependencyParentField.getInternalValue() == dependencyParentValue) {
+            if (dependencyParentVisibility) {
+                setVisibility(VISIBLE);
+            } else {
+                setVisibility(GONE);
+            }
+        } else {
+            if (dependencyParentVisibility) {
+                setVisibility(GONE);
+            } else {
+                setVisibility(VISIBLE);
+            }
+        }
     }
 
     // Overrides
@@ -260,6 +293,42 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
     public boolean isSlim() {
         return slim;
+    }
+
+    protected void setInternalValue(Object internalValue) {
+        this.internalValue = internalValue;
+
+        if (internalValueChangedListener != null) {
+            internalValueChangedListener.onChange(this);
+        }
+    }
+
+    protected Object getInternalValue() {
+        return internalValue;
+    }
+
+    protected void setInternalValueChangedListener(ValueChangeListener internalValueChangedListener) {
+        this.internalValueChangedListener = internalValueChangedListener;
+    }
+
+    @BindingAdapter(value = {"dependencyParentField", "dependencyParentValue", "dependencyParentVisibility"}, requireAll = false)
+    public static void setDependencyParentField(ControlPropertyField field, ControlPropertyField dependencyParentField, Object dependencyParentValue, Boolean dependencyParentVisibility) {
+        field.dependencyParentField = dependencyParentField;
+        field.dependencyParentValue = dependencyParentValue;
+
+        if (dependencyParentVisibility != null) {
+            field.dependencyParentVisibility = dependencyParentVisibility;
+        }
+
+        final ControlPropertyField thisField = field;
+        if (dependencyParentField != null && dependencyParentValue != null) {
+            dependencyParentField.setInternalValueChangedListener(new ValueChangeListener() {
+                @Override
+                public void onChange(ControlPropertyField field) {
+                    thisField.setVisibilityBasedOnParentField();
+                }
+            });
+        }
     }
 
 }

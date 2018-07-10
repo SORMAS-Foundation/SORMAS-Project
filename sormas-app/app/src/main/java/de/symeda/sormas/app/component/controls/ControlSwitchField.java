@@ -222,14 +222,15 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
     public void setValue(Object value) {
         if (value == null) {
             input.clearCheck();
-            return;
+        } else {
+            int selectedValueIndex = radioGroupElements.indexOf(value);
+            if (selectedValueIndex >= 0) {
+                RadioButton button = (RadioButton) input.getChildAt(selectedValueIndex);
+                input.check(button.getId());
+            }
         }
 
-        int selectedValueIndex = radioGroupElements.indexOf(value);
-        if (selectedValueIndex >= 0) {
-            RadioButton button = (RadioButton) input.getChildAt(selectedValueIndex);
-            input.check(button.getId());
-        }
+        setInternalValue(value);
     }
 
     @Override

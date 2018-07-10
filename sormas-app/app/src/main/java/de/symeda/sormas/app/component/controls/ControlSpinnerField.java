@@ -150,6 +150,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
     @Override
     public void setValue(Object value) {
         setSelectedItem(value);
+        setInternalValue(value);
     }
 
     @Override

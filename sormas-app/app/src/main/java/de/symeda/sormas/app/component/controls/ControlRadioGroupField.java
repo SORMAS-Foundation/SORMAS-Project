@@ -233,15 +233,16 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
     public void setValue(Object value) {
         if (value == null) {
             input.clearCheck();
-            return;
+        } else {
+            int checkedButtonIndex = radioGroupElements.indexOf(value);
+            if (input.getChildAt(checkedButtonIndex) != null) {
+                LinearLayout frame = (LinearLayout) input.getChildAt(checkedButtonIndex);
+                RadioButton button = (RadioButton) frame.getChildAt(0);
+                input.check(button.getId());
+            }
         }
 
-        int checkedButtonIndex = radioGroupElements.indexOf(value);
-        if (input.getChildAt(checkedButtonIndex) != null) {
-            LinearLayout frame = (LinearLayout) input.getChildAt(checkedButtonIndex);
-            RadioButton button = (RadioButton) frame.getChildAt(0);
-            input.check(button.getId());
-        }
+        setInternalValue(value);
     }
 
     @Override

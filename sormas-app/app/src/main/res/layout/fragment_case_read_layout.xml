@@ -42,7 +42,7 @@
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     android:layout_marginStart="@dimen/formLayoutGutterSize"
-                    app:value="@{data.caseClassification}" />
+                    app:value="@{data.caseClassification}"/>
 
             </LinearLayout>
 

@@ -37,10 +37,6 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
     protected InverseBindingListener inverseBindingListener;
     private OnClickListener onClickListener;
 
-    // Other variables
-
-    private AbstractDomainObject storedAdo;
-
     // Constructors
 
     public ControlTextPopupField(Context context) {
@@ -105,6 +101,7 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
     @Override
     public void setValue(String value) {
         input.setText(value);
+        setInternalValue(value);
     }
 
     @Override
@@ -272,16 +269,12 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
 
     @InverseBindingAdapter(attribute = "locationValue", event = "valueAttrChanged")
     public static Location getLocationValue(ControlTextPopupField textPopupField) {
-        return (Location) textPopupField.getStoredAdo();
+        return (Location) textPopupField.getInternalValue();
     }
 
     public void setValue(AbstractDomainObject ado) {
         input.setText(ado.toString());
-        storedAdo = ado;
-    }
-
-    public AbstractDomainObject getStoredAdo() {
-        return storedAdo;
+        setInternalValue(ado);
     }
 
 }
