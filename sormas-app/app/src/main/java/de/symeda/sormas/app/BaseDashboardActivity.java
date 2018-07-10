@@ -57,7 +57,7 @@ public abstract class BaseDashboardActivity extends BaseActivity implements Noti
         return true;
     }
 
-    protected void onCreateBaseActivity(Bundle savedInstanceState) {
+    protected void onCreateInner(Bundle savedInstanceState) {
         rootView = findViewById(R.id.base_layout);
         subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingActivityTitle);
 

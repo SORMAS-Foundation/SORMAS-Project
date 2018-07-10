@@ -3,9 +3,6 @@ package de.symeda.sormas.app.core.adapter.databinding;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.LayoutRes;
 
-/**
- * Created by Orson on 27/12/2017.
- */
 
 public abstract class DataBoundAdapter<T extends ViewDataBinding> extends BaseDataBoundAdapter<T> {
     @LayoutRes

@@ -22,8 +22,6 @@ import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 public class SampleListActivity extends BaseListActivity {
 
-    private final int DATA_XML_PAGE_MENU = R.xml.data_landing_page_sample_menu; // "xml/data_landing_page_sample_menu.xml";
-
     private ShipmentStatus statusFilters[] = new ShipmentStatus[] {
             ShipmentStatus.NOT_SHIPPED, ShipmentStatus.SHIPPED,
             ShipmentStatus.RECEIVED, ShipmentStatus.REFERRED_OTHER_LAB
@@ -33,7 +31,6 @@ public class SampleListActivity extends BaseListActivity {
     private SearchBy searchBy = null;
     private BaseListFragment activeFragment = null;
     private String recordUuid = null;
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -48,6 +45,7 @@ public class SampleListActivity extends BaseListActivity {
     protected void initializeActivity(Bundle arguments) {
         filterStatus = (ShipmentStatus) getFilterStatusArg(arguments);
         searchBy = (SearchBy) getSearchStrategyArg(arguments);
+        recordUuid = getRecordUuidArg(arguments);
     }
 
     @Override
@@ -62,7 +60,7 @@ public class SampleListActivity extends BaseListActivity {
 
     @Override
     public int getPageMenuData() {
-        return DATA_XML_PAGE_MENU;
+        return  R.xml.data_landing_page_sample_menu;
     }
 
     @Override

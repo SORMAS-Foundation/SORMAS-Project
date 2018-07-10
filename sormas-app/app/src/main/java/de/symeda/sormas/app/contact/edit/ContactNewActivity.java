@@ -48,15 +48,15 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
     private String caseUuid = null;
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        saveCaseUuidState(outState, caseUuid);
+    protected void onCreateInner(Bundle savedInstanceState) {
+        super.onCreateInner(savedInstanceState);
+        caseUuid = getCaseUuidArg(savedInstanceState);
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        caseUuid = getCaseUuidArg(savedInstanceState);
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        saveCaseUuidState(outState, caseUuid);
     }
 
     @Override

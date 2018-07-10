@@ -35,7 +35,7 @@ public abstract class BaseLandingActivity extends BaseActivity implements Notifi
         return true;
     }
 
-    protected void onCreateBaseActivity(Bundle savedInstanceState) {
+    protected void onCreateInner(Bundle savedInstanceState) {
         rootView = findViewById(R.id.base_layout);
         Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getExtras();
         initializeActivity(arguments);

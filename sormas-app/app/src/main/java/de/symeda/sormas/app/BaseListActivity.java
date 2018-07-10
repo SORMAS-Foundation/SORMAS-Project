@@ -65,7 +65,7 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
         return true;
     }
 
-    protected void onCreateBaseActivity(Bundle savedInstanceState) {
+    protected void onCreateInner(Bundle savedInstanceState) {
         rootView = findViewById(R.id.base_layout);
         subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingActivityTitle);
         pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);

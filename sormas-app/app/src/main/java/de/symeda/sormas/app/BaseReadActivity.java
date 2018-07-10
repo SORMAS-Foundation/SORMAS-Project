@@ -76,7 +76,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         return false;
     }
 
-    protected void onCreateBaseActivity(Bundle savedInstanceState) {
+    protected void onCreateInner(Bundle savedInstanceState) {
         rootView = findViewById(R.id.base_layout);
         subHeadingListActivityTitle = (TextView) findViewById(R.id.subHeadingActivityTitle);
         menuList = new ArrayList<LandingPageMenuItem>();

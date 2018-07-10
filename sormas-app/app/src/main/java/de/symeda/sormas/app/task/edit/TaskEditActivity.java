@@ -49,7 +49,7 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
 
     @Override
     protected Task buildRootEntity() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override

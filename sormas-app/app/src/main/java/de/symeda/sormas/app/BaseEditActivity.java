@@ -109,7 +109,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         saveRootEntityUuidState(outState, rootEntityUuid);
     }
 
-    protected void onCreateBaseActivity(Bundle savedInstanceState) {
+    protected void onCreateInner(Bundle savedInstanceState) {
         menuList = new ArrayList<LandingPageMenuItem>();
         rootView = findViewById(R.id.base_layout);
         subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingActivityTitle);

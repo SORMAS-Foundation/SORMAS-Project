@@ -72,7 +72,7 @@ public class SampleListFragment extends BaseListFragment<SampleListAdapter> impl
 
     @Override
     public SampleListAdapter getNewListAdapter() {
-        return new SampleListAdapter(this.getActivity(), R.layout.row_sample_list_item_layout, this, samples);
+        return new SampleListAdapter(R.layout.row_sample_list_item_layout, this, samples);
     }
 
     @Override
@@ -97,7 +97,6 @@ public class SampleListFragment extends BaseListFragment<SampleListAdapter> impl
     public void onResume() {
         super.onResume();
 
-        //TODO: Orson - reverse this relationship
         getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Sample"));
 
         ISearchExecutor<Sample> executor = SearchStrategyFor.SAMPLE.selector(searchBy, filterStatus, recordUuid);
@@ -120,18 +119,12 @@ public class SampleListFragment extends BaseListFragment<SampleListAdapter> impl
 
                 samples = result;
 
-                SampleListFragment.this.getListAdapter().replaceAll(samples);
-                SampleListFragment.this.getListAdapter().notifyDataSetChanged();
-
-                getBaseActivity().hidePreloader();
+                if (SampleListFragment.this.isResumed()) {
+                    SampleListFragment.this.getListAdapter().replaceAll(samples);
+                    SampleListFragment.this.getListAdapter().notifyDataSetChanged();
+                }
             }
-
-            private ISearchResultCallback<Sample> init() {
-                getBaseActivity().showPreloader();
-
-                return this;
-            }
-        }.init());
+        });
 
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout) this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null)
@@ -151,7 +144,6 @@ public class SampleListFragment extends BaseListFragment<SampleListAdapter> impl
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //recyclerViewForList.setHasFixedSize(true);
         recyclerViewForList.setLayoutManager(linearLayoutManager);
         recyclerViewForList.setAdapter(getListAdapter());
     }

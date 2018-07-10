@@ -173,10 +173,11 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         contentBinding.sampleShipmentDate.setFragmentManager(getFragmentManager());
 
         //TODO: Properly disable Tebo controls
-        if (!ConfigProvider.getUser().getUuid().equals(record.getReportingUser().getUuid())) {
+        if (!ConfigProvider.getUser().equals(record.getReportingUser())) {
             contentBinding.sampleSampleCode.changeVisualState(VisualState.DISABLED);
             contentBinding.sampleSampleDateTime.changeVisualState(VisualState.DISABLED);
             contentBinding.sampleSampleDateTime.changeVisualState(VisualState.DISABLED);
+            contentBinding.sampleSampleSource.changeVisualState(VisualState.DISABLED);
             contentBinding.sampleSampleMaterial.changeVisualState(VisualState.DISABLED);
             contentBinding.sampleSampleMaterialText.changeVisualState(VisualState.DISABLED);
             contentBinding.sampleSuggestedTypeOfTest.changeVisualState(VisualState.DISABLED);
@@ -187,13 +188,6 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
             contentBinding.sampleShipmentDetails.changeVisualState(VisualState.DISABLED);
         }
     }
-
-//    @Override
-//    protected void updateUI(FragmentSampleEditLayoutBinding contentBinding, Sample sample) {
-//        contentBinding.sampleSampleMaterial.setValue(sample.getSampleMaterial(), true);
-//        contentBinding.sampleSuggestedTypeOfTest.setValue(sample.getSuggestedTypeOfTest(), true);
-//        contentBinding.sampleLab.setValue(sample.getLab(), true);
-//    }
 
     @Override
     public int getEditLayout() {

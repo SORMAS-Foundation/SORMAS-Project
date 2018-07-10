@@ -52,17 +52,7 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
     @Override
     protected Contact buildRootEntity() {
-        Person _person = DatabaseHelper.getPersonDao().build();
-        Contact _contact = DatabaseHelper.getContactDao().build();
-
-        _contact.setPerson(_person);
-        _contact.setReportDateTime(new Date());
-        _contact.setContactClassification(ContactClassification.UNCONFIRMED);
-        _contact.setContactStatus(ContactStatus.ACTIVE);
-        _contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
-        _contact.setReportingUser(ConfigProvider.getUser());
-
-        return _contact;
+        throw new UnsupportedOperationException();
     }
 
     @Override

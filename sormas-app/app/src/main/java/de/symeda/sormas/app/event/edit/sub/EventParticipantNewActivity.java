@@ -53,15 +53,15 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
     private String eventUuid = null;
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        saveEventUuidState(outState, eventUuid);
+    protected void onCreateInner(Bundle savedInstanceState) {
+        super.onCreateInner(savedInstanceState);
+        eventUuid = getEventUuidArg(savedInstanceState);
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        eventUuid = getEventUuidArg(savedInstanceState);
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        saveEventUuidState(outState, eventUuid);
     }
 
     @Override

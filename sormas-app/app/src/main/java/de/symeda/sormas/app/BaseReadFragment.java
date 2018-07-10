@@ -220,6 +220,7 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
 
     public abstract void onLayoutBinding(TBinding contentBinding);
 
+    @Deprecated
     public void onAfterLayoutBinding(TBinding contentBinding) {
     }
 

@@ -88,7 +88,7 @@ public abstract class BaseReportActivity extends BaseActivity implements Notific
     public abstract BaseReportFragment getActiveFragment();
 
 
-    protected void onCreateBaseActivity(Bundle savedInstanceState) {
+    protected void onCreateInner(Bundle savedInstanceState) {
         rootView = findViewById(R.id.base_layout);
         subHeadingActivityTitle = (TextView)findViewById(R.id.subHeadingActivityTitle);
 

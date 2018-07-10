@@ -3,11 +3,12 @@ package de.symeda.sormas.app.sample.edit;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -19,25 +20,28 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
+import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
-import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 public class SampleNewActivity extends BaseEditActivity<Sample> {
 
     public static final String TAG = SampleNewActivity.class.getSimpleName();
 
-    private AsyncTask saveTask;
-
     private String caseUuid = null;
+
+    private AsyncTask saveTask;
 
     @Override
     public ShipmentStatus getPageStatus() {
-        return (ShipmentStatus)super.getPageStatus();
+        return (ShipmentStatus) super.getPageStatus();
+    }
+
+    @Override
+    protected void onCreateInner(Bundle savedInstanceState) {
+        super.onCreateInner(savedInstanceState);
+        caseUuid = getCaseUuidArg(savedInstanceState);
     }
 
     @Override
@@ -47,24 +51,15 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        caseUuid = getCaseUuidArg(savedInstanceState);
-    }
-
-    @Override
     protected Sample queryRootEntity(String recordUuid) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     protected Sample buildRootEntity() {
-        Sample sample = null;
-        if (caseUuid != null && !caseUuid.isEmpty()) {
-            Case associatedCase = DatabaseHelper.getCaseDao().queryUuidReference(caseUuid);
-            sample = DatabaseHelper.getSampleDao().build(associatedCase);
-        }
-        return sample;
+        // basic instead of reference, because we want to have at least the related person
+        Case associatedCase = DatabaseHelper.getCaseDao().queryUuidBasic(caseUuid);
+        return DatabaseHelper.getSampleDao().build(associatedCase);
     }
 
     @Override
@@ -89,7 +84,7 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
     @Override
     public void saveData() {
 
-        final Sample sampleToSave = (Sample)getActiveFragment().getPrimaryData();
+        final Sample sampleToSave = getStoredRootEntity();
 
         if (sampleToSave.getReportingUser() == null) {
             sampleToSave.setReportingUser(ConfigProvider.getUser());
@@ -98,13 +93,7 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
             sampleToSave.setReportDateTime(new Date());
         }
 
-        // TODO: re-enable validation
-//        SampleValidator.clearErrorsForSampleData(getContentBinding());
-//        if (!SampleValidator.validateSampleData(nContext, sampleToSave, getContentBinding())) {
-//            return;
-//        }
-
-        saveTask = new DefaultAsyncTask(getContext(), sampleToSave) {
+        saveTask = new SavingAsyncTask(getRootView(), sampleToSave) {
 
             @Override
             protected void onPreExecute() {
@@ -112,26 +101,28 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
             }
 
             @Override
-            public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
+            public void doInBackground(TaskResultHolder resultHolder) throws DaoException, ValidationException {
+                validateData(sampleToSave);
                 DatabaseHelper.getSampleDao().saveAndSnapshot(sampleToSave);
             }
 
             @Override
             protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-
                 hidePreloader();
-
-                if (taskResult.getResultStatus().isFailed()) {
-                    NotificationHelper.showNotification(SampleNewActivity.this, NotificationType.ERROR,
-                            String.format(getResources().getString(R.string.snackbar_save_error), sampleToSave.getEntityName()));
-                } else {
-                    NotificationHelper.showNotification(SampleNewActivity.this, NotificationType.SUCCESS,
-                            String.format(getResources().getString(R.string.snackbar_save_success), sampleToSave.getEntityName()));
-
+                super.onPostExecute(taskResult);
+                if (taskResult.getResultStatus().isSuccess()) {
                     finish();
                 }
             }
         }.executeOnThreadPool();
+    }
+
+    private void validateData(Sample data) throws ValidationException {
+        // TODO validate
+//        SampleValidator.clearErrorsForSampleData(getContentBinding());
+////        if (!SampleValidator.validateSampleData(nContext, sampleToSave, getContentBinding())) {
+////            return;
+////        }
     }
 
     @Override

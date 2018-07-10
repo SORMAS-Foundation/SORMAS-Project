@@ -125,7 +125,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         setTitle(getResources().getString(getActivityTitle()));
 
         preSetupDrawer(savedInstanceState);
-        onCreateBaseActivity(savedInstanceState);
+        onCreateInner(savedInstanceState);
 
         if (setHomeAsUpIndicator())
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_blue_36dp);
@@ -272,7 +272,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         fragmentFrame.setVisibility(View.VISIBLE);
     }
 
-    protected abstract void onCreateBaseActivity(Bundle savedInstanceState);
+    protected abstract void onCreateInner(Bundle savedInstanceState);
 
     @Override
     protected void onResume() {
