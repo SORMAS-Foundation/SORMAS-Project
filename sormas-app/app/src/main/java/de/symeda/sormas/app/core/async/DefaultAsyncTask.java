@@ -4,10 +4,9 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.google.android.gms.analytics.Tracker;
-
 import java.lang.ref.WeakReference;
 
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.core.BoolResult;
@@ -25,14 +24,15 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
     public DefaultAsyncTask(Context context) {
         this(context, null);
     }
+
     public DefaultAsyncTask(Context context, AbstractDomainObject relatedEntity) {
-        this.applicationReference = new WeakReference<>((SormasApplication)context.getApplicationContext());
+        this.applicationReference = new WeakReference<>((SormasApplication) context.getApplicationContext());
         if (relatedEntity != null) {
             entityClass = relatedEntity.getClass();
-            entityUuid  = relatedEntity.getUuid();
+            entityUuid = relatedEntity.getUuid();
         } else {
             entityClass = null;
-            entityUuid = null;
+            entityUuid = "";
         }
     }
 
@@ -46,8 +46,10 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
         try {
             doInBackground(resultHolder);
             return new AsyncTaskResult<>(resultHolder.getResultStatus(), resultHolder);
+        } catch (ValidationException val) {
+            return new AsyncTaskResult<>(val);
         } catch (Exception e) {
-            return handleException(e);
+            return handleUnexpectedException(e);
         }
     }
 
@@ -55,18 +57,22 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
      * Override onPostExecute instead
      */
     @Deprecated
-    protected void postExecute(BoolResult resultStatus, TaskResultHolder resultHolder) { }
+    protected void postExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
+
+
+    }
 
 
     @Override
     protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
         postExecute(taskResult.getResultStatus(), taskResult.getResult());
+
         if (resultCallback != null) {
             resultCallback.taskResult(taskResult.getResultStatus(), taskResult.getResult());
         }
     }
 
-    protected AsyncTaskResult handleException(Exception e) {
+    protected AsyncTaskResult handleUnexpectedException(Exception e) {
         Log.e(getClass().getName(), "Error executing an async task", e);
         Log.e(getClass().getName(), "- root cause: ", ErrorReportingHelper.getRootCause(e));
 
@@ -80,7 +86,7 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
 
     @Deprecated
     public static AsyncTask execute(DefaultAsyncTask jobDefinition) {
-        return jobDefinition.execute((ITaskResultCallback)null);
+        return jobDefinition.execute((ITaskResultCallback) null);
     }
 
     @Deprecated
@@ -93,5 +99,4 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
         executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         return this;
     }
-
 }

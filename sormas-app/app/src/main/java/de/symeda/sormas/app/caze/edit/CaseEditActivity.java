@@ -32,6 +32,7 @@ import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -313,7 +314,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             }
         }
 
-        saveTask = new DefaultAsyncTask(getContext(), cazeToSave) {
+        saveTask = new SavingAsyncTask(getRootView(), cazeToSave) {
 
                     @Override
                     protected void doInBackground(TaskResultHolder resultHolder) throws DaoException {
@@ -324,13 +325,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                     @Override
                     protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
 
-                        if (taskResult.getResultStatus().isFailed()) {
-                            NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.ERROR,
-                                    String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_case)));
-                        } else {
-                            NotificationHelper.showNotification(CaseEditActivity.this, NotificationType.SUCCESS,
-                                    String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_case)));
-
+                        if (taskResult.getResultStatus().isSuccess()) {
                             goToNextMenu();
                         }
                     }

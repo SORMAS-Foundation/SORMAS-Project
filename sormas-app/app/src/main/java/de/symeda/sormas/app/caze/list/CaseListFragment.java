@@ -122,25 +122,18 @@ public class CaseListFragment extends BaseListFragment<CaseListAdapter> implemen
                         NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, message);
 
                         return;
+                    } else {
+                        cases = result;
+                        dataLoaded = true;
+
+                        if (CaseListFragment.this.isResumed()) {
+                            CaseListFragment.this.getListAdapter().replaceAll(cases);
+                            CaseListFragment.this.getListAdapter().notifyDataSetChanged();
+                        }
+
                     }
-
-                    cases = result;
-
-                    CaseListFragment.this.getListAdapter().replaceAll(cases);
-                    CaseListFragment.this.getListAdapter().notifyDataSetChanged();
-                    //CaseListFragment.this.getListAdapter().updateUnreadIndicator();
-
-                    dataLoaded = true;
-
-                    getBaseActivity().hidePreloader();
                 }
-
-                private ISearchResultCallback<Case> init() {
-                    getBaseActivity().showPreloader();
-
-                    return this;
-                }
-            }.init());
+            });
         }
 
         final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);

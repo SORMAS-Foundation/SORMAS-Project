@@ -68,6 +68,11 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
         super.onResume();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
     public int getRootListLayout() {
         return R.layout.fragment_root_list_layout;
     }

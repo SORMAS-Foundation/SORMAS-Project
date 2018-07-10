@@ -62,7 +62,7 @@ public class MainMenuItemSelectedListener implements NavigationView.OnNavigation
     }
 
     public void showCasesView() {
-        NavigationHelper.gotoCase(activity);
+        NavigationHelper.goToCases(activity);
     }
 
     public void showCaseNewView() {
@@ -71,19 +71,19 @@ public class MainMenuItemSelectedListener implements NavigationView.OnNavigation
     }
 
     public void showContactsView() {
-        NavigationHelper.gotoContact(activity);
+        NavigationHelper.goToContacts(activity);
     }
 
     public void showEventsView() {
-        NavigationHelper.gotoEvent(activity);
+        NavigationHelper.goToEvents(activity);
     }
 
     public void showSamplesView() {
-        NavigationHelper.gotoSample(activity);
+        NavigationHelper.goToSamples(activity);
     }
 
     public void showTasksView() {
-        NavigationHelper.gotoTask(activity);
+        NavigationHelper.goToTasks(activity);
     }
 
 

@@ -93,6 +93,11 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
@@ -114,6 +119,7 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
                 statusFrame.setVisibility(View.VISIBLE);
             }
         }
+
         replaceFragment(getActiveListFragment());
     }
 

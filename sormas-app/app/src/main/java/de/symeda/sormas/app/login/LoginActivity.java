@@ -18,8 +18,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.NotificationContext;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.ActivityLoginLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -186,9 +184,9 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     private void openLandingActivity() {
         Intent intent;
         if (ConfigProvider.getUser().hasUserRole(UserRole.CONTACT_OFFICER)) {
-            NavigationHelper.gotoContact(LoginActivity.this);
+            NavigationHelper.goToContacts(LoginActivity.this);
         } else {
-            NavigationHelper.gotoCase(LoginActivity.this);
+            NavigationHelper.goToCases(LoginActivity.this);
         }
 
 

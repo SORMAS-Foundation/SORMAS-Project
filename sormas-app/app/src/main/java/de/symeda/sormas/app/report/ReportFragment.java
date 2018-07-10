@@ -7,12 +7,10 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 
 import com.google.android.gms.analytics.Tracker;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import de.symeda.sormas.api.user.UserRole;
@@ -28,8 +26,6 @@ import de.symeda.sormas.app.backend.report.WeeklyReportEntry;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ControlSpinnerField;
-import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
@@ -469,7 +465,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
         onAddMissingCase = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
-                NavigationHelper.gotoNewCase(getActivity());
+                NavigationHelper.goToNewCase(getActivity());
             }
         };
 

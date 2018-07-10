@@ -62,6 +62,10 @@ public class NotificationHelper {
         view.setVisibility(View.GONE);
     }
 
+    public static void showNotification(View notificationFrame, NotificationType type, String message) {
+        showNotification(notificationFrame, NotificationPosition.TOP, type, message);
+    }
+
     private static void showNotification(View notificationFrame, TextView tvNotificationMessage, NotificationPosition position, NotificationType type, String message) {
         if (notificationFrame == null)
             return;

@@ -9,6 +9,7 @@ import android.view.View;
 
 import com.google.android.gms.analytics.Tracker;
 
+import de.symeda.sormas.api.task.TaskHelper;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -52,9 +53,6 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
     private OnLinkClickListener contactLinkCallback;
     private OnLinkClickListener eventLinkCallback;
 
-    private AsyncTask doneCallbackTask;
-    private AsyncTask notExecCallbackTask;
-
     @Override
     protected String getSubHeadingTitle() {
         Resources r = getResources();
@@ -67,6 +65,12 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
     }
 
     @Override
+    public boolean isShowSaveAction() {
+        // see updateButtonState
+        return false;
+    }
+
+    @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
         record = getActivityRootData();
     }
@@ -75,20 +79,6 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
     public void onLayoutBinding(FragmentTaskEditLayoutBinding contentBinding) {
 
         setupCallback();
-
-        if (record.getCaze() == null) {
-            contentBinding.taskCaze.setVisibility(View.GONE);
-        }
-        if (record.getContact() == null) {
-            contentBinding.taskContact.setVisibility(View.GONE);
-        }
-        if (record.getEvent() == null) {
-            contentBinding.taskEvent.setVisibility(View.GONE);
-        }
-
-        if (record.getCreatorUser() == null) {
-            contentBinding.taskCreatorUser.setVisibility(View.GONE);
-        }
 
         updateButtonState();
 
@@ -120,177 +110,16 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
         doneCallback = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                        private View button;
-                        private String msgTaskClassificationError;
-
-                        @Override
-                        public void onPreExecute() {
-                            this.button.setEnabled(false);
-                            this.msgTaskClassificationError = getResources().getString(R.string.snackbar_task_case_classification_error);
-                            //getBaseActivity().showPreloader();
-                            //
-                        }
-
-                        @Override
-                        public void doInBackground(TaskResultHolder resultHolder) {
-                            try {
-                                final TaskDao taskDao = DatabaseHelper.getTaskDao();
-                                taskDao.saveAndSnapshot(record);
-                                taskDao.changeTaskStatus(record, TaskStatus.DONE);
-                            } catch (DaoException e) {
-                                String errorMessage = "Error while trying to update task status";
-                                resultHolder.setResultStatus(new BoolResult(false, errorMessage));
-                                Log.e(getClass().getName(), errorMessage, e);
-                                ErrorReportingHelper.sendCaughtException(tracker, e, record, true);
-                            } catch (ValidationException e) {
-                                resultHolder.setResultStatus(new BoolResult(false, this.msgTaskClassificationError));
-                            }
-                        }
-
-                        private DefaultAsyncTask init(View button) {
-                            this.button = button;
-                            return this;
-                        }
-                    }.init(v);
-                    doneCallbackTask = executor.execute(new ITaskResultCallback() {
-                        private View button;
-
-                        @Override
-                        public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                            //getBaseActivity().hidePreloader();
-                            //getBaseActivity().showFragmentView();
-
-                            if (resultHolder == null) {
-                                this.button.setEnabled(true);
-                                return;
-                            }
-
-                            if (resultStatus.isSuccess()) {
-                                if (resultStatus.getMessage().isEmpty()) {
-                                    NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, resultStatus.getMessage());
-                                } else {
-                                    NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.notification_save_task_successful);
-                                }
-
-                                getBaseActivity().synchronizeChangedData(new Callback() {
-                                    @Override
-                                    public void call() {
-                                        getActivity().finish();
-                                    }
-                                });
-                            } else if (!resultStatus.isSuccess() && !resultStatus.getMessage().isEmpty()) {
-                                NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, resultStatus.getMessage());
-                            } else {
-                                NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, R.string.notification_save_task_failed);
-                            }
-
-                            this.button.setEnabled(true);
-                            updateButtonState();
-                        }
-
-                        private ITaskResultCallback init(View button) {
-                            this.button = button;
-                            return this;
-                        }
-                    }.init(v));
-                } catch (Exception ex) {
-                    v.setEnabled(true);
-                    //getBaseActivity().hidePreloader();
-                    //getBaseActivity().showFragmentView();
-                }
+                record.setTaskStatus(TaskStatus.DONE);
+                getBaseEditActivity().saveData();
             }
         };
 
         notExecCallback = new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                try {
-                    if (record.getAssigneeReply().isEmpty()) {
-                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, R.string.snackbar_task_reply);
-                        return;
-                    }
-
-                    DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                        private View button;
-                        private String msgTaskStatusChangeError = "";
-
-                        @Override
-                        public void onPreExecute() {
-                            this.button.setEnabled(false);
-                            this.msgTaskStatusChangeError = getResources().getString(R.string.snackbar_task_status_change_error);
-                            //getBaseActivity().showPreloader();
-                            //
-                        }
-
-                        @Override
-                        public void doInBackground(TaskResultHolder resultHolder) {
-                            try {
-                                final TaskDao taskDao = DatabaseHelper.getTaskDao();
-                                taskDao.saveAndSnapshot(record);
-                                taskDao.changeTaskStatus(record, TaskStatus.NOT_EXECUTABLE);
-                            } catch (DaoException e) {
-                                resultHolder.setResultStatus(new BoolResult(false, this.msgTaskStatusChangeError));
-                                Log.e(getClass().getName(), "Error while trying to update task status", e);
-                                ErrorReportingHelper.sendCaughtException(tracker, e, record, true);
-                            } catch (ValidationException e) {
-                                resultHolder.setResultStatus(BoolResult.FALSE);
-                                // Will not happen here
-                            }
-                        }
-
-                        private DefaultAsyncTask init(View button) {
-                            this.button = button;
-                            return this;
-                        }
-                    }.init(v);
-                    notExecCallbackTask = executor.execute(new ITaskResultCallback() {
-                        private View button;
-
-                        @Override
-                        public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                            //getBaseActivity().hidePreloader();
-                            //getBaseActivity().showFragmentView();
-
-                            if (resultHolder == null) {
-                                this.button.setEnabled(true);
-                                return;
-                            }
-
-                            if (resultStatus.isSuccess()) {
-                                if (resultStatus.getMessage().isEmpty()) {
-                                    NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, resultStatus.getMessage());
-                                } else {
-                                    NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.notification_save_task_successful);
-                                }
-
-                                getBaseActivity().synchronizeChangedData(new Callback() {
-                                    @Override
-                                    public void call() {
-                                        getActivity().finish();
-                                    }
-                                });
-                            } else if (!resultStatus.isSuccess() && !resultStatus.getMessage().isEmpty()) {
-                                NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, resultStatus.getMessage());
-                            } else {
-                                NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, R.string.notification_save_task_failed);
-                            }
-
-                            this.button.setEnabled(true);
-                            updateButtonState();
-                        }
-
-                        private ITaskResultCallback init(View button) {
-                            this.button = button;
-                            return this;
-                        }
-                    }.init(v));
-                } catch (Exception ex) {
-                    v.setEnabled(true);
-                    //getBaseActivity().hidePreloader();
-                    //getBaseActivity().showFragmentView();
-                }
+                record.setTaskStatus(TaskStatus.NOT_EXECUTABLE);
+                getBaseEditActivity().saveData();
             }
         };
 
@@ -349,25 +178,6 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
         };
     }
 
-    @Override
-    public boolean includeFabNonOverlapPadding() {
-        return false;
-    }
-
-    public boolean makeHeightMatchParent() {
-        return true;
-    }
-
-    @Override
-    public boolean isShowSaveAction() {
-        return false;
-    }
-
-    @Override
-    public boolean isShowAddAction() {
-        return false;
-    }
-
     private void updateButtonState() {
         int setDoneVisibleStatus = (record.getTaskStatus() == TaskStatus.PENDING) ? View.VISIBLE : View.GONE;
         int setNotExecutableStatus = (record.getTaskStatus() == TaskStatus.PENDING) ? View.VISIBLE : View.GONE;
@@ -380,20 +190,14 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
         } else if (setDoneVisibleStatus == View.GONE || setNotExecutableStatus == View.GONE) {
             getContentBinding().btnDivider.setVisibility(View.GONE);
         }
+
+        // it's possible to edit and save the assignee reply
+        boolean isSaveAllowed = ConfigProvider.getUser().equals(record.getAssigneeUser())
+                && (record.getTaskStatus() == TaskStatus.DONE || record.getTaskStatus() == TaskStatus.NOT_EXECUTABLE);
+        getBaseEditActivity().getSaveMenu().setVisible(isSaveAllowed);
     }
 
     public static TaskEditFragment newInstance(TaskFormNavigationCapsule capsule, Task activityRootData) {
         return newInstance(TaskEditFragment.class, capsule, activityRootData);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (doneCallbackTask != null && !doneCallbackTask.isCancelled())
-            doneCallbackTask.cancel(true);
-
-        if (notExecCallbackTask != null && !notExecCallbackTask.isCancelled())
-            notExecCallbackTask.cancel(true);
     }
 }

@@ -7,23 +7,32 @@ import android.view.MenuItem;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
+import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -110,35 +119,33 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
         final Contact contactToSave = getStoredRootEntity();
 
-        // TODO validation
-//        PersonValidator.clearErrors(getContentBinding());
-//        if (!PersonValidator.validatePersonData(nContext, personToSave, getContentBinding())) {
-//            return;
-//        }
-
-        saveTask = new DefaultAsyncTask(getContext(), contactToSave) {
+        saveTask = new SavingAsyncTask(getRootView(), contactToSave) {
 
             @Override
-            public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
+            public void doInBackground(TaskResultHolder resultHolder) throws DaoException, ValidationException {
+                validateData(contactToSave);
                 DatabaseHelper.getPersonDao().saveAndSnapshot(contactToSave.getPerson());
                 DatabaseHelper.getContactDao().saveAndSnapshot(contactToSave);
             }
 
             @Override
             protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                super.onPostExecute(taskResult);
 
-                if (taskResult.getResultStatus().isFailed()) {
-                    NotificationHelper.showNotification(ContactEditActivity.this, NotificationType.ERROR,
-                            String.format(getResources().getString(R.string.snackbar_save_error), contactToSave.getEntityName()));
-                } else {
-                    NotificationHelper.showNotification(ContactEditActivity.this, NotificationType.SUCCESS,
-                            String.format(getResources().getString(R.string.snackbar_save_success), contactToSave.getEntityName()));
-
+                if (taskResult.getResultStatus().isSuccess()) {
                     goToNextMenu();
                 }
-
             }
         }.executeOnThreadPool();
+    }
+
+    private void validateData(Contact data) throws ValidationException {
+
+        // TODO validation
+//        PersonValidator.clearErrors(getContentBinding());
+//        if (!PersonValidator.validatePersonData(nContext, personToSave, getContentBinding())) {
+//            return;
+//        }
     }
 
     @Override

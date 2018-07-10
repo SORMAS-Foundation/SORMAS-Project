@@ -29,15 +29,8 @@ import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 
-/**
- * Created by Orson on 31/12/2017.
- */
-
 public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBinding, Task, Task> {
 
-    private AsyncTask onResumeTask;
-    private String recordUuid = null;
-    private TaskStatus pageStatus = null;
     private Task record;
 
     private OnLinkClickListener caseLinkCallback;
@@ -45,52 +38,15 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
     private OnLinkClickListener eventLinkCallback;
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        pageStatus = (TaskStatus) getPageStatusArg(arguments);
-    }
-
-    @Override
-    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
-        if (!executionComplete) {
-            Task task = getActivityRootData();
-
-            if (task != null) {
-                if (task.isUnreadOrChildUnread())
-                    DatabaseHelper.getTaskDao().markAsRead(task);
-            }
-
-            resultHolder.forItem().add(task);
-        } else {
-            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-            if (itemIterator.hasNext())
-                record =  itemIterator.next();
-
-            if (record == null) {
-                getActivity().finish();
-            }
-
-            setupCallback();
-        }
-
-        return true;
+    protected void prepareFragmentData(Bundle savedInstanceState) {
+        record = getActivityRootData();
     }
 
     @Override
     public void onLayoutBinding(FragmentTaskReadLayoutBinding contentBinding) {
+
+        setupCallback();
+
         contentBinding.setData(record);
         contentBinding.setCaseLinkCallback(caseLinkCallback);
         contentBinding.setContactLinkCallback(contactLinkCallback);
@@ -98,72 +54,8 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentTaskReadLayoutBinding contentBinding) {
-
-    }
-
-    @Override
-    protected void updateUI(FragmentTaskReadLayoutBinding contentBinding, Task task) {
-
-    }
-
-    @Override
-    public void onPageResume(FragmentTaskReadLayoutBinding contentBinding, boolean hasBeforeLayoutBindingAsyncReturn) {
-        if (!hasBeforeLayoutBindingAsyncReturn)
-            return;
-
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    //getBaseActivity().showPreloader();
-                    //
-                }
-
-                @Override
-                public void doInBackground(TaskResultHolder resultHolder) {
-                    Task task = getActivityRootData();
-
-                    if (task != null) {
-                        if (task.isUnreadOrChildUnread())
-                            DatabaseHelper.getTaskDao().markAsRead(task);
-                    }
-
-                    resultHolder.forItem().add(task);
-                }
-            };
-            onResumeTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getBaseActivity().hidePreloader();
-                    //getBaseActivity().showFragmentView();
-
-                    if (resultHolder == null){
-                        return;
-                    }
-
-                    ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                    if (itemIterator.hasNext())
-                        record =  itemIterator.next();
-
-                    if (record != null)
-                        requestLayoutRebind();
-                    else {
-                        getActivity().finish();
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            //getBaseActivity().hidePreloader();
-            //getBaseActivity().showFragmentView();
-        }
-    }
-
-    @Override
     protected String getSubHeadingTitle() {
-        Resources r = getResources();
-        return r.getString(R.string.caption_task_information);
+        return getResources().getString(R.string.caption_task_information);
     }
 
     @Override
@@ -189,7 +81,7 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
                 if (caze == null)
                     return;
 
-                CaseFormNavigationCapsule dataCapsule = (CaseFormNavigationCapsule)new CaseFormNavigationCapsule(getContext(),
+                CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(),
                         caze.getUuid(), caze.getCaseClassification()).setTaskUuid(task.getUuid());
                 CaseReadActivity.goToActivity(getActivity(), dataCapsule);
 
@@ -208,7 +100,7 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
                 if (contact == null)
                     return;
 
-                ContactFormNavigationCapsule dataCapsule = (ContactFormNavigationCapsule)new ContactFormNavigationCapsule(getContext(),
+                ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(),
                         contact.getUuid(), contact.getContactClassification()).setTaskUuid(task.getUuid());
                 ContactReadActivity.goToActivity(getActivity(), dataCapsule);
             }
@@ -226,7 +118,7 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
                 if (event == null)
                     return;
 
-                EventFormNavigationCapsule dataCapsule = (EventFormNavigationCapsule)new EventFormNavigationCapsule(getContext(),
+                EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(getContext(),
                         event.getUuid(), event.getEventStatus()).setTaskUuid(task.getUuid());
                 EventReadActivity.goToActivity(getActivity(), dataCapsule);
             }
@@ -236,13 +128,4 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
     public static TaskReadFragment newInstance(TaskFormNavigationCapsule capsule, Task activityRootData) {
         return newInstance(TaskReadFragment.class, capsule, activityRootData);
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (onResumeTask != null && !onResumeTask.isCancelled())
-            onResumeTask.cancel(true);
-    }
-
 }
