@@ -14,7 +14,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.contact.edit.sub.VisitEditActivity;
+import de.symeda.sormas.app.visit.edit.VisitEditActivity;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;

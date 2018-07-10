@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.contact;
+package de.symeda.sormas.app.visit;
 
 public enum VisitSection {
 

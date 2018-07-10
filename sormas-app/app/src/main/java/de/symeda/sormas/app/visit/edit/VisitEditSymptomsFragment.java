@@ -1,9 +1,6 @@
-package de.symeda.sormas.app.contact.edit.sub;
+package de.symeda.sormas.app.visit.edit;
 
-import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -14,27 +11,14 @@ import java.util.List;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
-import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.ControlSpinnerField;
-import de.symeda.sormas.app.component.VisualState;
-import de.symeda.sormas.app.component.dialog.LocationDialog;
-import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
-import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.OnRecyclerViewReadyListener;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentContactEditSymptomsInfoLayoutBinding;
 import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 import de.symeda.sormas.app.symptom.OnSymptomStateChangeListener;
@@ -46,9 +30,6 @@ import de.symeda.sormas.app.util.DataUtils;
 public class VisitEditSymptomsFragment extends BaseEditFragment<FragmentContactEditSymptomsInfoLayoutBinding, Visit, Visit> {
 
     private static final float DEFAULT_BODY_TEMPERATURE = 37.0f;
-    private AsyncTask onResumeTask;
-    private String recordUuid;
-    private VisitStatus pageStatus;
     private Visit record;
     private Symptoms symptoms;
     private SymptomFormListAdapter symptomAdapter;
@@ -64,27 +45,8 @@ public class VisitEditSymptomsFragment extends BaseEditFragment<FragmentContactE
     private IEntryItemOnClickListener setAllToNoCallback;
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        pageStatus = (VisitStatus) getPageStatusArg(arguments);
-    }
-
-    @Override
     protected String getSubHeadingTitle() {
-        Resources r = getResources();
-        return r.getString(R.string.caption_symptom_information);
+        return getResources().getString(R.string.caption_symptom_information);
     }
 
     @Override
@@ -115,7 +77,7 @@ public class VisitEditSymptomsFragment extends BaseEditFragment<FragmentContactE
                 return false;
             }
         };
-        symptomAdapter = new SymptomFormListAdapter(this.getActivity(), (NotificationContext)getActivity(), R.layout.row_edit_symptom_list_item_layout, symptomList, getFragmentManager());
+        symptomAdapter = new SymptomFormListAdapter(this.getActivity(), (NotificationContext) getActivity(), R.layout.row_edit_symptom_list_item_layout, symptomList, getFragmentManager());
         symptomAdapter.setOnSymptomStateChangeListener(new OnSymptomStateChangeListener() {
             @Override
             public void onChange(final Symptom symptom, SymptomState state) {
@@ -131,8 +93,6 @@ public class VisitEditSymptomsFragment extends BaseEditFragment<FragmentContactE
 
                     yesSymptomList.remove(result);
                 }
-
-//                getContentBinding().spnFirstSymptoms.notifyDataChanged();
             }
         });
 
@@ -198,7 +158,7 @@ public class VisitEditSymptomsFragment extends BaseEditFragment<FragmentContactE
             @Override
             public void onClick(View v, Object item) {
                 //Toast.makeText(getContext(), "Clear All", Toast.LENGTH_SHORT).show();
-                for (Symptom symptom: symptomList) {
+                for (Symptom symptom : symptomList) {
                     symptom.setState(SymptomState.UNKNOWN);
                 }
 
@@ -210,7 +170,7 @@ public class VisitEditSymptomsFragment extends BaseEditFragment<FragmentContactE
             @Override
             public void onClick(View v, Object item) {
                 //Toast.makeText(getContext(), "Set All to No", Toast.LENGTH_SHORT).show();
-                for (Symptom symptom: symptomList) {
+                for (Symptom symptom : symptomList) {
                     symptom.setState(SymptomState.NO);
                 }
 
@@ -227,7 +187,7 @@ public class VisitEditSymptomsFragment extends BaseEditFragment<FragmentContactE
     }
 
     private Symptom findSymptom(List<Symptom> list, Symptom symptom) {
-        for (Symptom s: list) {
+        for (Symptom s : list) {
             if (s.getName() == symptom.getName())
                 return s;
         }
@@ -239,10 +199,10 @@ public class VisitEditSymptomsFragment extends BaseEditFragment<FragmentContactE
         List<Item> temperature = new ArrayList<>();
 
         if (withNull)
-            temperature.add(new Item("",null));
+            temperature.add(new Item("", null));
 
         for (Float temperatureValue : SymptomsHelper.getTemperatureValues()) {
-            temperature.add(new Item(SymptomsHelper.getTemperatureString(temperatureValue),temperatureValue));
+            temperature.add(new Item(SymptomsHelper.getTemperatureString(temperatureValue), temperatureValue));
         }
 
         return temperature;
@@ -250,13 +210,5 @@ public class VisitEditSymptomsFragment extends BaseEditFragment<FragmentContactE
 
     public static VisitEditSymptomsFragment newInstance(VisitFormNavigationCapsule capsule, Visit activityRootData) {
         return newInstance(VisitEditSymptomsFragment.class, capsule, activityRootData);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (onResumeTask != null && !onResumeTask.isCancelled())
-            onResumeTask.cancel(true);
     }
 }

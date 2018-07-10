@@ -12,7 +12,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.contact.read.sub.VisitReadActivity;
+import de.symeda.sormas.app.visit.read.VisitReadActivity;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;

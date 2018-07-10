@@ -1,18 +1,21 @@
-package de.symeda.sormas.app.contact.edit.sub;
+package de.symeda.sormas.app.visit.edit;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.view.Menu;
 
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.contact.VisitSection;
+import de.symeda.sormas.app.core.async.SavingAsyncTask;
+import de.symeda.sormas.app.visit.VisitSection;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
@@ -78,11 +81,10 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
     @Override
     public void saveData() {
 
+        final Visit visit = getStoredRootEntity();
+
+        // TODO #664 should this not be done by the user?
         VisitSection activeSection = VisitSection.fromMenuKey(getActiveMenuItem().getKey());
-
-        final Visit visit = (Visit) getActiveFragment().getPrimaryData();
-
-        // TODO should this not be done by the user?
         if (activeSection == VisitSection.SYMPTOMS) {
             // Necessary because the entry could've been automatically set, in which case the setValue method of the
             // custom field has not been called
@@ -92,6 +94,31 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
             }
         }
 
+        saveTask = new SavingAsyncTask(getRootView(), visit) {
+
+            @Override
+            protected void onPreExecute() {
+                showPreloader();
+            }
+
+            @Override
+            public void doInBackground(TaskResultHolder resultHolder) throws Exception {
+                validateData(visit);
+                DatabaseHelper.getVisitDao().saveAndSnapshot(visit);
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                hidePreloader();
+                super.onPostExecute(taskResult);
+                if (taskResult.getResultStatus().isSuccess()) {
+                    goToNextMenu();
+                }
+            }
+        }.executeOnThreadPool();
+    }
+
+    private void validateData(Visit data) throws ValidationException {
         //TODO: Validation
         /*VisitValidator.clearErrorsForVisitData(visitDataBinding);
         SymptomsValidator.clearErrorsForSymptoms(symptomsBinding);
@@ -109,28 +136,6 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
             pager.setCurrentItem(validationErrorTab);
             return true;
         }*/
-
-        saveTask = new DefaultAsyncTask(getContext(), visit) {
-
-            @Override
-            public void doInBackground(TaskResultHolder resultHolder) throws Exception {
-                DatabaseHelper.getVisitDao().saveAndSnapshot(visit);
-            }
-
-            @Override
-            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-
-                if (taskResult.getResultStatus().isFailed()) {
-                    NotificationHelper.showNotification(VisitEditActivity.this, NotificationType.ERROR,
-                            String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_visit)));
-                } else {
-                    NotificationHelper.showNotification(VisitEditActivity.this, NotificationType.SUCCESS,
-                            String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_visit)));
-
-                    goToNextMenu();
-                }
-            }
-        }.executeOnThreadPool();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.contact.read.sub;
+package de.symeda.sormas.app.visit.read;
 
 import android.content.Context;
 
@@ -10,8 +10,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.contact.VisitSection;
-import de.symeda.sormas.app.contact.edit.sub.VisitEditActivity;
+import de.symeda.sormas.app.visit.VisitSection;
+import de.symeda.sormas.app.visit.edit.VisitEditActivity;
 import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 
 public class VisitReadActivity extends BaseReadActivity<Visit> {
