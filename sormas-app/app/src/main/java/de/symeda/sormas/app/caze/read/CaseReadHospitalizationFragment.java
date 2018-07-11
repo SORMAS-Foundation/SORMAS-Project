@@ -8,7 +8,10 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.databinding.FragmentCaseReadHospitalizationLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentCaseReadLayoutBinding;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
+
+import static android.view.View.GONE;
 
 public class CaseReadHospitalizationFragment extends BaseReadFragment<FragmentCaseReadHospitalizationLayoutBinding, Hospitalization, Case> {
 
@@ -28,7 +31,12 @@ public class CaseReadHospitalizationFragment extends BaseReadFragment<FragmentCa
     public void onLayoutBinding(FragmentCaseReadHospitalizationLayoutBinding contentBinding) {
         contentBinding.setData(record);
         contentBinding.setCaze(caze);
-        contentBinding.setHospitalizations(getHospitalizations());
+        contentBinding.setPreviousHospitalizations(getHospitalizations());
+    }
+
+    @Override
+    public void onAfterLayoutBinding(FragmentCaseReadHospitalizationLayoutBinding contentBinding) {
+        setUpFieldVisibilities(contentBinding);
     }
 
     @Override
@@ -50,9 +58,22 @@ public class CaseReadHospitalizationFragment extends BaseReadFragment<FragmentCa
         return newInstance(CaseReadHospitalizationFragment.class, capsule, activityRootData);
     }
 
+    @SuppressWarnings("unchecked")
     private ObservableArrayList getHospitalizations() {
         if (record != null && preHospitalizations != null)
             preHospitalizations.addAll(record.getPreviousHospitalizations());
         return preHospitalizations;
     }
+
+    private void setUpFieldVisibilities(FragmentCaseReadHospitalizationLayoutBinding contentBinding) {
+        // Previous hospitalizations list
+        if (contentBinding.getData().getPreviousHospitalizations().isEmpty()) {
+            contentBinding.listPreviousHospitalizationsLayout.setVisibility(GONE);
+        }
+
+        // Hide facilityDetails when no static health facility is selected and adjust the caption based on
+        // the selected static health facility
+        setHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
+    }
+
 }

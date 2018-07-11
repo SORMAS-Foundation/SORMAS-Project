@@ -65,29 +65,15 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 
         // Hide facilityDetails when no static health facility is selected and adjust the caption based on
         // the selected static health facility
-        ControlTextReadField healthFacilityDetailsField = contentBinding.caseDataHealthFacilityDetails;
-        Facility selectedFacility = (Facility) contentBinding.caseDataHealthFacility.getInternalValue();
-
-        if (selectedFacility != null) {
-            boolean otherHealthFacility = selectedFacility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
-            boolean noneHealthFacility = selectedFacility.getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
-
-            if (otherHealthFacility) {
-                healthFacilityDetailsField.setVisibility(VISIBLE);
-                healthFacilityDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
-            } else if (noneHealthFacility) {
-                healthFacilityDetailsField.setVisibility(VISIBLE);
-                healthFacilityDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
-            } else {
-                healthFacilityDetailsField.setVisibility(GONE);
-            }
-        } else {
-            healthFacilityDetailsField.setVisibility(GONE);
-        }
+        setHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
 
         // Vaccination date
-        setVisibleWhen(contentBinding.caseDataVaccinationDate, contentBinding.caseDataVaccination, Vaccination.VACCINATED);
-        setVisibleWhen(contentBinding.caseDataVaccinationDate, contentBinding.caseDataSmallpoxVaccinationReceived, YesNoUnknown.YES);
+        if (isVisibleAllowed(CaseDataDto.class, contentBinding.getData().getDisease(), contentBinding.caseDataVaccination)) {
+            setVisibleWhen(contentBinding.caseDataVaccinationDate, contentBinding.caseDataVaccination, Vaccination.VACCINATED);
+        }
+        if (isVisibleAllowed(CaseDataDto.class, contentBinding.getData().getDisease(), contentBinding.caseDataSmallpoxVaccinationReceived)) {
+            setVisibleWhen(contentBinding.caseDataVaccinationDate, contentBinding.caseDataSmallpoxVaccinationReceived, YesNoUnknown.YES);
+        }
     }
 
 }

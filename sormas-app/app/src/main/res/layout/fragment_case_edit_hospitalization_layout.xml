@@ -159,7 +159,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
-                        android:text="@string/heading_sub_case_hos_prev_hospitalization_history"
+                        android:text="@string/sub_heading_previous_hospitalizations"
                         style="@style/SubHeadingCompactStyle"
                         />
 

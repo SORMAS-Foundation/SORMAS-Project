@@ -21,7 +21,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 
     @Override
     public CaseClassification getPageStatus() {
-        return (CaseClassification)super.getPageStatus();
+        return (CaseClassification) super.getPageStatus();
     }
 
     @Override

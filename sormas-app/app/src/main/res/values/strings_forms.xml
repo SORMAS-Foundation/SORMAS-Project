@@ -957,7 +957,7 @@
     <!-- Sub Headings -->
     <string name="heading_sub_case_hos_most_recent_hospitalization">Most Recent Hospitalization</string>
 
-    <string name="heading_sub_case_hos_prev_hospitalization_history">Previous Hospitalizations</string>
+    <string name="sub_heading_previous_hospitalizations">Previous Hospitalizations</string>
     <string name="heading_case_hos_prev_hospitalization">Previous Hospitalization</string>
     <!-- ........................................................................ -->
 

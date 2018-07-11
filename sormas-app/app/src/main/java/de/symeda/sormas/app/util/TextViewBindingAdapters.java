@@ -801,7 +801,6 @@ public class TextViewBindingAdapters {
         } else {
             textView.setText(no);
         }
-
     }
 
     @BindingAdapter("testType")

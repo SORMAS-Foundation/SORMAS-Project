@@ -9,11 +9,16 @@ import android.view.ViewGroup;
 import com.google.android.gms.analytics.Tracker;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ControlTextReadField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 
 import static android.view.View.GONE;
@@ -120,7 +125,7 @@ public class BaseFragment extends Fragment {
         if (sourceField.getInternalValue() != null && sourceField.getInternalValue().equals(sourceValue)) {
             field.setVisibility(VISIBLE);
         } else {
-            field.hideField();
+            field.setVisibility(GONE);
         }
 
         sourceField.addValueChangedListener(new ValueChangeListener() {
@@ -133,6 +138,27 @@ public class BaseFragment extends Fragment {
                 }
             }
         });
+    }
+
+    protected void setHealthFacilityDetailsFieldVisibility(ControlPropertyField healthFacilityField, ControlPropertyField healthFacilityDetailsField) {
+        Facility selectedFacility = (Facility) healthFacilityField.getInternalValue();
+
+        if (selectedFacility != null) {
+            boolean otherHealthFacility = selectedFacility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+            boolean noneHealthFacility = selectedFacility.getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+
+            if (otherHealthFacility) {
+                healthFacilityDetailsField.setVisibility(VISIBLE);
+                healthFacilityDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+            } else if (noneHealthFacility) {
+                healthFacilityDetailsField.setVisibility(VISIBLE);
+                healthFacilityDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+            } else {
+                healthFacilityDetailsField.setVisibility(GONE);
+            }
+        } else {
+            healthFacilityDetailsField.setVisibility(GONE);
+        }
     }
 
 }

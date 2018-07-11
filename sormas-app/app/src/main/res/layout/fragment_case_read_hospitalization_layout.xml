@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:descendantFocusability="beforeDescendants"
-    android:id="@+id/base_layout">
+    android:id="@+id/base_layout"
+    android:descendantFocusability="beforeDescendants">
 
     <data>
-        <variable name="data" type="de.symeda.sormas.app.backend.hospitalization.Hospitalization"/>
-        <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
-        <variable name="hospitalizations"
-        type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization&gt;" />
-    </data>
+        <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
 
+        <variable name="data" type="de.symeda.sormas.app.backend.hospitalization.Hospitalization" />
+        <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case" />
+        <variable name="previousHospitalizations" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization&gt;" />
+    </data>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -19,33 +19,44 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="@dimen/parentLayoutVerticalMargin"
-                android:paddingBottom="@dimen/parentLayoutVerticalMargin"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                >
+                android:padding="@dimen/fragment_padding"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:id="@+id/main_content">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/heading_sub_case_hos_most_recent_hospitalization"
-                    style="@style/SubHeadingStyle"
-                    />
+                    style="@style/SubHeadingStyle" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_healthFacility"
+                        app:value="@{caze.healthFacility}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_healthFacilityDetails"
+                        app:value="@{caze.healthFacilityDetails}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/hospitalization_healthFacility"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:value="@{caze.healthFacility}"  />
+                    android:id="@+id/caseHospitalization_admittedToHealthFacility"
+                    app:value="@{data.admittedToHealthFacility}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -53,21 +64,16 @@
                     android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/hospitalization_admissionDate"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:value="@{data.admissionDate}" />
+                        android:id="@+id/caseHospitalization_admissionDate"
+                        app:value="@{data.admissionDate}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/hospitalization_dischargeDate"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        android:layout_marginStart="@dimen/control_spacing"
-                        app:value="@{data.dischargeDate}" />
+                        android:id="@+id/caseHospitalization_dischargeDate"
+                        app:value="@{data.dischargeDate}"
+                        app:dependencyParentField="@{caseHospitalizationAdmittedToHealthFacility}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
 
@@ -77,23 +83,25 @@
                     android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/hospitalization_isolated"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:value="@{data.isolated}" />
+                        android:id="@+id/caseHospitalization_isolated"
+                        app:value="@{data.isolated}"
+                        app:dependencyParentField="@{caseHospitalizationAdmittedToHealthFacility}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/hospitalization_isolationDate"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        android:layout_marginStart="@dimen/control_spacing"
-                        app:value="@{data.isolationDate}" />
+                        android:id="@+id/caseHospitalization_isolationDate"
+                        app:value="@{data.isolationDate}"
+                        app:dependencyParentField="@{caseHospitalizationIsolated}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseHospitalization_hospitalizedPreviously"
+                    app:value="@{data.hospitalizedPreviously}"
+                    style="@style/ControlSingleColumnStyle" />
 
             </LinearLayout>
 
@@ -102,55 +110,31 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@color/formListSectionBackground"
-                android:layout_marginTop="@dimen/parentLayoutVerticalMargin"
-                android:paddingTop="@dimen/parentLayoutVerticalMargin"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom">
+                android:padding="@dimen/fragment_padding"
+                android:id="@+id/list_previous_hospitalizations_layout">
 
-                <LinearLayout
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="@dimen/parentLayoutVerticalMargin">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/heading_sub_case_hos_prev_hospitalization_history"
-                        style="@style/SubHeadingCompactStyle"
-                        />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:hasValue="@{hospitalizations}"
-                        style="@style/SubHeadingCompactStyle"
-                        />
-
-                </LinearLayout>
+                    android:text="@string/sub_heading_previous_hospitalizations"
+                    android:layout_marginBottom="@dimen/subHeadlineMarginBottom"
+                    style="@style/SubHeadingCompactStyle" />
 
                 <LinearLayout
-                    android:id="@+id/listPrevHospitalizations"
+                    android:id="@+id/list_previous_hospitalizations"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:clipToPadding="false"
-                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
-                    android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
-                    android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
-                    android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
-                    app:entries="@{hospitalizations}"
-                    app:layout="@{@layout/row_hospitalization_read_previous_layout}"
-                    app:callback="@{null}"
-                    />
-
+                    android:padding="@dimen/rowListItemParentElevationVerticalPadding"
+                    app:entries="@{previousHospitalizations}"
+                    app:layout="@{@layout/row_hospitalization_read_previous_layout}" />
 
             </LinearLayout>
 
         </LinearLayout>
 
     </ScrollView>
+
 </layout>
 

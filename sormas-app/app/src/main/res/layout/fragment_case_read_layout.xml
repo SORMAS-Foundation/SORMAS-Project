@@ -10,7 +10,8 @@
         <import type="de.symeda.sormas.api.caze.CaseOutcome" />
         <import type="de.symeda.sormas.api.caze.Vaccination" />
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
-        <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
+
+        <variable name="data" type="de.symeda.sormas.app.backend.caze.Case" />
     </data>
 
     <ScrollView
