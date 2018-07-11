@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.event.edit;
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.support.v4.content.ContextCompat;
@@ -17,33 +16,18 @@ import java.util.List;
 
 import de.symeda.sormas.app.backend.event.EventParticipant;
 
-/**
- * Created by Orson on 12/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class EventEditPersonsInvolvedListAdapter extends DataBoundAdapter<RowReadPersonsInvolvedListItemLayoutBinding> {
 
     private static final String TAG = EventEditPersonsInvolvedListAdapter.class.getSimpleName();
 
-    private final Context context;
     private List<EventParticipant> data = new ArrayList<>();
     private OnListItemClickListener mOnListItemClickListener;
-    //private ActionCallback mActionCallback;
 
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;
 
-    public EventEditPersonsInvolvedListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
-        this(context, rowLayout, onListItemClickListener, new ArrayList<EventParticipant>());
-    }
-
-    public EventEditPersonsInvolvedListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<EventParticipant> data) {
+    public EventEditPersonsInvolvedListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<EventParticipant> data) {
         super(rowLayout);
-        this.context = context;
         this.mOnListItemClickListener = onListItemClickListener;
 
         if (data == null)
@@ -60,7 +44,6 @@ public class EventEditPersonsInvolvedListAdapter extends DataBoundAdapter<RowRea
         holder.setData(record);
         holder.setOnListItemClickListener(this.mOnListItemClickListener);
 
-
         //Sync Icon
         if (record.isModifiedOrChildModified()) {
             holder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
@@ -70,7 +53,6 @@ public class EventEditPersonsInvolvedListAdapter extends DataBoundAdapter<RowRea
         }
 
         updateUnreadIndicator(holder, record);
-
     }
 
     @Override

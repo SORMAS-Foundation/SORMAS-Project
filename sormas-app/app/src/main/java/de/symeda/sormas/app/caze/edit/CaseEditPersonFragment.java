@@ -5,7 +5,6 @@ import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 
 import com.android.databinding.library.baseAdapters.BR;
 
@@ -32,10 +31,8 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
@@ -52,8 +49,6 @@ public class CaseEditPersonFragment extends BaseEditFragment<FragmentCaseEditPat
 
     public static final String TAG = CaseEditPersonFragment.class.getSimpleName();
 
-    private static final int DEFAULT_YEAR = 2000;
-
     private Person record;
 
     private List<Item> dayList;
@@ -69,7 +64,6 @@ public class CaseEditPersonFragment extends BaseEditFragment<FragmentCaseEditPat
     private List<Item> burialConductorList;
 
     private IEntryItemOnClickListener onAddressLinkClickedCallback;
-
     private OccupationTypeLayoutProcessor occupationTypeLayoutProcessor;
     private PresentConditionLayoutProcessor presentConditionLayoutProcessor;
 
@@ -183,16 +177,6 @@ public class CaseEditPersonFragment extends BaseEditFragment<FragmentCaseEditPat
     }
 
     @Override
-    protected void updateUI(FragmentCaseEditPatientLayoutBinding contentBinding, Person person) {
-        contentBinding.personOccupationType.setValue(person.getOccupationType());
-        contentBinding.personSex.setValue(person.getSex());
-        contentBinding.personApproximateAgeType.setValue(person.getApproximateAgeType());
-        contentBinding.personBirthdateYYYY.setValue(person.getBirthdateYYYY());
-        contentBinding.personBirthdateMM.setValue(person.getBirthdateMM());
-        contentBinding.personBirthdateDD.setValue(person.getBirthdateDD());
-    }
-
-    @Override
     public int getEditLayout() {
         return R.layout.fragment_case_edit_patient_layout;
     }
@@ -235,6 +219,7 @@ public class CaseEditPersonFragment extends BaseEditFragment<FragmentCaseEditPat
         //TeboSpinner approximateAgeTypeField = getContentBinding().spnAgeType;
 
         if (birthyear != null) {
+            // TODO has to be taken from fields
             Integer birthday = record.getBirthdateDD();
             Integer birthmonth = record.getBirthdateMM();
 
@@ -249,10 +234,9 @@ public class CaseEditPersonFragment extends BaseEditFragment<FragmentCaseEditPat
             ApproximateAgeType ageType = approximateAge.getElement1();
             Integer age = approximateAge.getElement0();
 
+            // TODO has to be set in fields
             record.setApproximateAge(age);
             record.setApproximateAgeType(ageType);
-
-            updateUI();
         } else {
             //getContentBinding().txtAge.setEnabled(true, editOrCreateUserRight);
             //getContentBinding().spnAgeType.setEnabled(true, editOrCreateUserRight);

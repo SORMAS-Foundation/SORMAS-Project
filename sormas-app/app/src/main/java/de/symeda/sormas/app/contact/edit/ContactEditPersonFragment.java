@@ -1,11 +1,9 @@
 package de.symeda.sormas.app.contact.edit;
 
-import android.content.res.Resources;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 
 import com.android.databinding.library.baseAdapters.BR;
 
@@ -32,11 +30,8 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ControlSpinnerField;
-import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
@@ -49,14 +44,9 @@ import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.layoutprocessor.OccupationTypeLayoutProcessor;
 import de.symeda.sormas.app.util.layoutprocessor.PresentConditionLayoutProcessor;
 
-/**
- * TODO unify with case person fragment? Or at least share some code?
- */
 public class ContactEditPersonFragment extends BaseEditFragment<FragmentContactEditPersonLayoutBinding, Person, Contact> {
 
     public static final String TAG = ContactEditPersonFragment.class.getSimpleName();
-
-    private static final int DEFAULT_YEAR = 2000;
 
     private Person record;
 
@@ -78,8 +68,7 @@ public class ContactEditPersonFragment extends BaseEditFragment<FragmentContactE
 
     @Override
     protected String getSubHeadingTitle() {
-        Resources r = getResources();
-        return r.getString(R.string.caption_person_information);
+        return getResources().getString(R.string.caption_person_information);
     }
 
     @Override
@@ -182,16 +171,6 @@ public class ContactEditPersonFragment extends BaseEditFragment<FragmentContactE
     }
 
     @Override
-    protected void updateUI(FragmentContactEditPersonLayoutBinding contentBinding, Person person) {
-        contentBinding.personOccupationType.setValue(person.getOccupationType());
-        contentBinding.personSex.setValue(person.getSex());
-        contentBinding.personApproximateAgeType.setValue(person.getApproximateAgeType());
-        contentBinding.personBirthdateYYYY.setValue(person.getBirthdateYYYY());
-        contentBinding.personBirthdateMM.setValue(person.getBirthdateMM());
-        contentBinding.personBirthdateDD.setValue(person.getBirthdateDD());
-    }
-
-    @Override
     public int getEditLayout() {
         return R.layout.fragment_contact_edit_person_layout;
     }
@@ -231,6 +210,7 @@ public class ContactEditPersonFragment extends BaseEditFragment<FragmentContactE
         //TeboSpinner approximateAgeTypeField = getContentBinding().spnAgeType;
 
         if (birthyear != null) {
+            // TODO has to be taken from fields
             Integer birthday = record.getBirthdateDD();
             Integer birthmonth = record.getBirthdateMM();
 
@@ -245,10 +225,9 @@ public class ContactEditPersonFragment extends BaseEditFragment<FragmentContactE
             ApproximateAgeType ageType = approximateAge.getElement1();
             Integer age = approximateAge.getElement0();
 
+            // TODO has to be set in fields
             record.setApproximateAge(age);
             record.setApproximateAgeType(ageType);
-
-            updateUI();
         } else {
             //getContentBinding().txtAge.setEnabled(true, editOrCreateUserRight);
             //getContentBinding().spnAgeType.setEnabled(true, editOrCreateUserRight);

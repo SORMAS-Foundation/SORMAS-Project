@@ -50,8 +50,6 @@ import de.symeda.sormas.app.util.MenuOptionsHelper;
 public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomainObject> extends BaseActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, NotificationContext {
 
     private LinearLayout notificationFrame;
-    private View statusFrame = null;
-    private View applicationTitleBar = null;
     private TextView subHeadingListActivityTitle;
 
     private LandingPageMenuControl pageMenu = null;
@@ -65,7 +63,6 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     private AsyncTask getRootEntityTask;
     private ActivityRootEntity storedRootEntity = null;
 
-    private Enum pageStatus;
     private String rootEntityUuid;
 
     private MenuItem saveMenu = null;
@@ -105,7 +102,6 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         super.onSaveInstanceState(outState);
 
         saveActiveMenuState(outState, activeMenuKey);
-        savePageStatusState(outState, pageStatus);
         saveRootEntityUuidState(outState, rootEntityUuid);
     }
 
@@ -119,7 +115,6 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         ensureFabHiddenOnSoftKeyboardShown(pageMenu);
 
         activeMenuKey = getActiveMenuArg(savedInstanceState);
-        pageStatus = getPageStatusArg(savedInstanceState);
         rootEntityUuid = getRecordUuidArg(savedInstanceState);
 
         if (notificationFrame != null) {
@@ -143,36 +138,11 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
             pageMenu.setMenuParser(new LandingPageMenuParser(menuControlContext));
             pageMenu.setMenuData(getPageMenuData());
         }
-
-        if (isShowTitleBar()) {
-            applicationTitleBar = findViewById(R.id.applicationTitleBar);
-            statusFrame = findViewById(R.id.statusFrame);
-        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        if (applicationTitleBar != null && isShowTitleBar()) {
-            applicationTitleBar.setVisibility(View.VISIBLE);
-
-            if (statusFrame != null && isShowStatusFrame()) {
-                Context statusFrameContext = statusFrame.getContext();
-
-                Drawable drw = (Drawable) ContextCompat.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
-                drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource(statusFrameContext)), PorterDuff.Mode.SRC);
-
-                TextView txtStatusName = (TextView)statusFrame.findViewById(R.id.txtStatusName);
-                ImageView imgStatus = (ImageView)statusFrame.findViewById(R.id.statusIcon);
-
-
-                txtStatusName.setText(getStatusName(statusFrameContext));
-                imgStatus.setBackground(drw);
-
-                statusFrame.setVisibility(View.VISIBLE);
-            }
-        }
 
         requestRootData(new Callback.IAction<ActivityRootEntity>() {
             @Override
@@ -340,30 +310,6 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         return addMenu;
     }
 
-    public String getStatusName(Context context) {
-        Enum pageStatus = getPageStatus();
-
-        if (pageStatus != null) {
-            IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(context, pageStatus);
-            if (elaborator != null)
-                return elaborator.getFriendlyName();
-        }
-
-        return "";
-    }
-
-    public int getStatusColorResource(Context context) {
-        Enum pageStatus = getPageStatus();
-
-        if (pageStatus != null) {
-            IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(context, pageStatus);
-            if (elaborator != null)
-                return elaborator.getColorIndicatorResource();
-        }
-
-        return R.color.noColor;
-    }
-
     public void replaceFragment(BaseEditFragment f) {
         BaseFragment previousFragment = activeFragment;
         activeFragment = f;
@@ -442,20 +388,8 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         return rootView;
     }
 
-    public boolean isShowStatusFrame() {
-        return true;
-    }
-
-    public boolean isShowTitleBar() {
-        return true;
-    }
-
     public boolean isShowPageMenu() {
         return getPageMenuData() > 0;
-    }
-
-    public Enum getPageStatus() {
-        return pageStatus;
     }
 
     public int getPageMenuData() {
@@ -536,17 +470,6 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         return e;
     }
 
-    protected <E extends Enum<E>> E getPageStatusArg(Bundle arguments) {
-        E e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_PAGE_STATUS)) {
-                e = (E) arguments.getSerializable(ConstantHelper.ARG_PAGE_STATUS);
-            }
-        }
-
-        return e;
-    }
-
     protected int getActiveMenuArg(Bundle arguments) {
         if (arguments != null && !arguments.isEmpty()) {
             if (arguments.containsKey(ConstantHelper.KEY_ACTIVE_MENU)) {
@@ -587,12 +510,6 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         }
 
         return result;
-    }
-
-    protected <E extends Enum<E>> void savePageStatusState(Bundle outState, E status) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_PAGE_STATUS, status);
-        }
     }
 
     protected void saveRootEntityUuidState(Bundle outState, String recordUuid) {

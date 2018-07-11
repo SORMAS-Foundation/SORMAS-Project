@@ -273,8 +273,8 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
     }
 
     public void setValue(AbstractDomainObject ado) {
+        setInternalValue(ado); // important: do this before setText, to make sure listeners work correctly
         input.setText(ado.toString());
-        setInternalValue(ado);
     }
 
 }

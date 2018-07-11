@@ -2,17 +2,13 @@ package de.symeda.sormas.app;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -26,17 +22,14 @@ import de.symeda.sormas.app.component.menu.OnLandingPageMenuClickListener;
 import de.symeda.sormas.app.component.menu.OnNotificationCountChangingListener;
 import de.symeda.sormas.app.component.menu.OnSelectInitialActiveMenuItemListener;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
+import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
-import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.util.ConstantHelper;
 
 public abstract class BaseListActivity<TListItemData extends AbstractDomainObject> extends BaseActivity implements IUpdateSubHeadingTitle, NotificationContext, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, OnNotificationCountChangingListener {
 
-    private View statusFrame = null;
-    private View applicationTitleBar = null;
     private TextView subHeadingListActivityTitle;
     private View rootView;
     private MenuItem newMenu = null;
@@ -48,31 +41,17 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
     private int activeMenuKey = 0;
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        saveActiveMenuState(outState, activeMenuKey);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        activeMenuKey = getActiveMenuArg(savedInstanceState);
-        initializeActivity(savedInstanceState);
-    }
-
-    @Override
     protected boolean setHomeAsUpIndicator() {
         return true;
     }
 
     protected void onCreateInner(Bundle savedInstanceState) {
         rootView = findViewById(R.id.base_layout);
-        subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingActivityTitle);
+        subHeadingListActivityTitle = (TextView) findViewById(R.id.subHeadingActivityTitle);
         pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
         activeMenuKey = getActiveMenuArg(arguments);
-        initializeActivity(arguments);
 
         if (pageMenu != null) {
             pageMenu.hide();
@@ -85,11 +64,12 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
             pageMenu.setMenuParser(new LandingPageMenuParser(menuControlContext));
             pageMenu.setMenuData(getPageMenuData());
         }
+    }
 
-        if (showTitleBar()) {
-            applicationTitleBar = findViewById(R.id.applicationTitleBar);
-            statusFrame = findViewById(R.id.statusFrame);
-        }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        saveActiveMenuState(outState, activeMenuKey);
     }
 
     @Override
@@ -101,30 +81,15 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
     protected void onResume() {
         super.onResume();
 
-        if (applicationTitleBar != null && showTitleBar()) {
-            applicationTitleBar.setVisibility(View.VISIBLE);
-
-            if (statusFrame != null && showStatusFrame()) {
-                Context statusFrameContext = statusFrame.getContext();
-
-                Drawable drw = (Drawable) ContextCompat.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
-                drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource(statusFrameContext)), PorterDuff.Mode.SRC_OVER);
-
-                TextView txtStatusName = (TextView)statusFrame.findViewById(R.id.txtStatusName);
-                ImageView imgStatus = (ImageView)statusFrame.findViewById(R.id.statusIcon);
-
-                txtStatusName.setText(getStatusName(statusFrameContext));
-                imgStatus.setBackground(drw);
-
-                statusFrame.setVisibility(View.VISIBLE);
-            }
-        }
-
         replaceFragment(getActiveListFragment());
     }
 
-    @Deprecated
-    protected void initializeActivity(Bundle arguments) { }
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+        synchronizeChangedData();
+    }
 
     public abstract BaseListFragment getActiveListFragment();
 
@@ -174,9 +139,8 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
         return newMenu;
     }
 
-
     public void setSubHeadingTitle(String title) {
-        String t = (title == null)? "" : title;
+        String t = (title == null) ? "" : title;
 
         if (subHeadingListActivityTitle != null)
             subHeadingListActivityTitle.setText(t);
@@ -196,12 +160,6 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
     public void updateSubHeadingTitle(String title) {
         setSubHeadingTitle(title);
     }
-
-    public abstract Enum getStatus();
-
-    public abstract boolean showStatusFrame();
-
-    public abstract boolean showTitleBar();
 
     @Override
     protected int getRootActivityLayout() {
@@ -232,8 +190,8 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
 
         activeMenu = menuList.get(0);
 
-        for(LandingPageMenuItem m: menuList){
-            if (m.getKey() == activeMenuKey){
+        for (LandingPageMenuItem m : menuList) {
+            if (m.getKey() == activeMenuKey) {
                 activeMenu = m;
             }
         }
@@ -260,34 +218,10 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
         return null;
     }
 
-    public String getStatusName(Context context) {
-        Enum status = getStatus();
-
-        if (status != null) {
-            IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(context, status);
-            if (elaborator != null)
-                return elaborator.getFriendlyName();
-        }
-
-        return "";
-    }
-
-    public int getStatusColorResource(Context context) {
-        Enum status = getStatus();
-
-        if (status != null) {
-            IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(context, status);
-            if (elaborator != null)
-                return elaborator.getColorIndicatorResource();
-        }
-
-        return R.color.noColor;
-    }
-
     protected String getRecordUuidArg(Bundle arguments) {
         String result = null;
         if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.KEY_DATA_UUID)) {
+            if (arguments.containsKey(ConstantHelper.KEY_DATA_UUID)) {
                 result = (String) arguments.getString(ConstantHelper.KEY_DATA_UUID);
             }
         }
@@ -298,7 +232,7 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
     protected <E extends Enum<E>> E getFilterStatusArg(Bundle arguments) {
         E e = null;
         if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_FILTER_STATUS)) {
+            if (arguments.containsKey(ConstantHelper.ARG_FILTER_STATUS)) {
                 e = (E) arguments.getSerializable(ConstantHelper.ARG_FILTER_STATUS);
             }
         }
@@ -309,7 +243,7 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
     protected SearchBy getSearchStrategyArg(Bundle arguments) {
         SearchBy e = null;
         if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_SEARCH_STRATEGY)) {
+            if (arguments.containsKey(ConstantHelper.ARG_SEARCH_STRATEGY)) {
                 e = (SearchBy) arguments.getSerializable(ConstantHelper.ARG_SEARCH_STRATEGY);
             }
         }
@@ -319,7 +253,7 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
 
     protected int getActiveMenuArg(Bundle arguments) {
         if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.KEY_ACTIVE_MENU)) {
+            if (arguments.containsKey(ConstantHelper.KEY_ACTIVE_MENU)) {
                 return arguments.getInt(ConstantHelper.KEY_ACTIVE_MENU);
             }
         }

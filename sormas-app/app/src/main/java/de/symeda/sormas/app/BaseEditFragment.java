@@ -46,7 +46,6 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
     private ViewDataBinding rootBinding;
 
     private View contentViewStubRoot;
-    private boolean beforeLayoutBindingAsyncReturn;
 
     private boolean skipAfterLayoutBinding = false;
     private TActivityRootData activityRootData;
@@ -149,7 +148,6 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         vsChildFragmentFrame.setLayoutResource(getEditLayout());
 
 
-        beforeLayoutBindingAsyncReturn = false;
         jobTask = new DefaultAsyncTask(getContext()) {
             @Override
             public void onPreExecute() {
@@ -159,7 +157,6 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
             @Override
             public void doInBackground(final TaskResultHolder resultHolder) {
                 prepareFragmentData(savedInstanceState);
-                onBeforeLayoutBinding(savedInstanceState, resultHolder, null, false);
             }
 
             @Override
@@ -168,8 +165,6 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
 
                 if (taskResult.getResultStatus().isFailed())
                     return;
-
-                beforeLayoutBindingAsyncReturn = onBeforeLayoutBinding(savedInstanceState, taskResult.getResult(), taskResult.getResultStatus(), true);
 
                 vsChildFragmentFrame.inflate();
 
@@ -277,25 +272,11 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         return contentViewStubBinding;
     }
 
-    // TODO make abstract
-    protected void prepareFragmentData(Bundle savedInstanceState) {
-    }
-
-    /**
-     * @Deprecated Use prepareFragmentData and onLayoutBinding isntead
-     */
-    @Deprecated
-    protected boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
-        return true;
-    }
+    protected abstract void prepareFragmentData(Bundle savedInstanceState);
 
     protected abstract void onLayoutBinding(TBinding contentBinding);
 
-    protected void onAfterLayoutBinding(TBinding contentBinding) {
-    }
-
-    protected void updateUI(TBinding contentBinding, TData data) {
-    }
+    protected void onAfterLayoutBinding(TBinding contentBinding) { }
 
     protected static <TFragment extends BaseEditFragment, TCapsule extends INavigationCapsule> TFragment newInstance(Class<TFragment> f, TCapsule dataCapsule, AbstractDomainObject activityRootData) {
 
@@ -569,14 +550,5 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
 
         if (jobTask != null && !jobTask.isCancelled())
             jobTask.cancel(true);
-    }
-
-    protected void updateUI() {
-        this.skipAfterLayoutBinding = true;
-        if (!getContentBinding().setVariable(BR.data, getPrimaryData())) {
-            Log.e(TAG, "There is no variable 'data' in layout " + getEditLayout());
-        }
-
-        updateUI(getContentBinding(), getPrimaryData());
     }
 }

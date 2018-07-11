@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.visit.read;
 
+import android.os.Bundle;
+
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.visit.Visit;
@@ -7,6 +9,11 @@ import de.symeda.sormas.app.databinding.FragmentContactReadVisitInfoLayoutBindin
 import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 
 public class VisitReadFragment extends BaseReadFragment<FragmentContactReadVisitInfoLayoutBinding, Visit, Visit> {
+
+    @Override
+    protected void prepareFragmentData(Bundle savedInstanceState) {
+
+    }
 
     @Override
     public void onLayoutBinding(FragmentContactReadVisitInfoLayoutBinding contentBinding) {

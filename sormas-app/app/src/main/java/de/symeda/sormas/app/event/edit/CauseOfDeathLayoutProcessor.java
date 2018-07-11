@@ -19,13 +19,6 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 
-/**
- * Created by Orson on 12/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 public class CauseOfDeathLayoutProcessor {
 
     private List<Item> diseaseList;

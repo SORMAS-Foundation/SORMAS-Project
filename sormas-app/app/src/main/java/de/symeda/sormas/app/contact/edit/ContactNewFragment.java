@@ -37,8 +37,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 
     @Override
     protected String getSubHeadingTitle() {
-        Resources r = getResources();
-        return r.getString(R.string.caption_new_contact);
+        return getResources().getString(R.string.caption_new_contact);
     }
 
     @Override

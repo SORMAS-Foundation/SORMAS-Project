@@ -30,14 +30,6 @@ import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.databinding.FragmentEventEditPersonInfoLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 
-/**
- * Created by Orson on 11/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class OccupationTypeLayoutProcessor {
 
     private Context context;
@@ -69,8 +61,6 @@ public class OccupationTypeLayoutProcessor {
 
         hideRootChildLayout();
     }
-
-
 
     public boolean processLayout(OccupationType occupationType) {
         if (getRootChildLayout() == null)
@@ -207,13 +197,6 @@ public class OccupationTypeLayoutProcessor {
         return true;
     }
 
-
-
-
-
-
-
-
     private LinearLayout getRootChildLayout() {
         if (rootChildLayout == null)
             rootChildLayout = (LinearLayout)contentBinding.occupationDetailsInclude.getRoot();
@@ -266,6 +249,4 @@ public class OccupationTypeLayoutProcessor {
     public void setOnSetBindingVariable(OnSetBindingVariableListener listener) {
         this.mOnSetBindingVariableListener = listener;
     }
-
-
 }

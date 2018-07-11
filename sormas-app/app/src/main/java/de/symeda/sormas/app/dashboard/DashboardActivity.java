@@ -22,27 +22,9 @@ import de.symeda.sormas.app.dashboard.sample.SampleSummaryFragment;
 import de.symeda.sormas.app.dashboard.task.TaskSummaryFragment;
 import de.symeda.sormas.app.util.MarkAllAsReadHelper;
 
-/**
- * Created by Orson on 20/11/2017.
- */
-
 public class DashboardActivity extends BaseDashboardActivity {
 
     private List<BaseSummaryFragment> activeFragments = null;
-
-
-
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        //savePageStatusState(outState, pageStatus);
-    }
-
-    @Override
-    protected void initializeActivity(Bundle arguments) {
-        //pageStatus = (InvestigationStatus) getPageStatusArg(arguments);
-    }
 
     @Override
     protected List<BaseSummaryFragment> getSummaryFragments() {

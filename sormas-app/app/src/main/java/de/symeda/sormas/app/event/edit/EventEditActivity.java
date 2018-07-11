@@ -7,6 +7,7 @@ import android.view.MenuItem;
 
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -14,9 +15,11 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
+import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -33,7 +36,7 @@ public class EventEditActivity extends BaseEditActivity<Event> {
 
     @Override
     protected Event queryRootEntity(String recordUuid) {
-        return DatabaseHelper.getEventDao().queryUuid(recordUuid);
+        return DatabaseHelper.getEventDao().queryUuidWithEmbedded(recordUuid);
     }
 
     @Override
@@ -107,13 +110,12 @@ public class EventEditActivity extends BaseEditActivity<Event> {
 
         final Event eventToSave = (Event) getActiveFragment().getPrimaryData();
 
-        // TODO validation
-//        EventValidator.clearErrorsForEventData(getContentBinding());
-//        if (!EventValidator.validateEventData(nContext, eventToSave, getContentBinding())) {
-//            return;
-//        }
+        saveTask = new SavingAsyncTask(getRootView(), eventToSave) {
 
-        saveTask = new DefaultAsyncTask(getContext(), eventToSave) {
+            @Override
+            protected void onPreExecute() {
+                showPreloader();
+            }
 
             @Override
             public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
@@ -122,19 +124,22 @@ public class EventEditActivity extends BaseEditActivity<Event> {
 
             @Override
             protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-
-                if (taskResult.getResultStatus().isFailed()) {
-                    NotificationHelper.showNotification(EventEditActivity.this, NotificationType.ERROR,
-                            String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_event)));
-                } else {
-                    NotificationHelper.showNotification(EventEditActivity.this, NotificationType.SUCCESS,
-                            String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_event)));
-
+                hidePreloader();
+                super.onPostExecute(taskResult);
+                if (taskResult.getResultStatus().isSuccess()) {
                     goToNextMenu();
                 }
 
             }
         }.executeOnThreadPool();
+    }
+
+    private void validateData(Event data) throws ValidationException {
+        // TODO validation
+//        EventValidator.clearErrorsForEventData(getContentBinding());
+//        if (!EventValidator.validateEventData(nContext, eventToSave, getContentBinding())) {
+//            return;
+//        }
     }
 
     public static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, EventFormNavigationCapsule dataCapsule) {

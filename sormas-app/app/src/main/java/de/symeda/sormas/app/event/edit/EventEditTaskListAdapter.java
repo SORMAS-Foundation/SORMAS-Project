@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.event.edit;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -22,33 +21,18 @@ import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.backend.task.Task;
 
-/**
- * Created by Orson on 12/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class EventEditTaskListAdapter extends DataBoundAdapter<RowReadTaskListItemLayoutBinding> {
 
     private static final String TAG = EventEditTaskListAdapter.class.getSimpleName();
 
-    private final Context context;
-    private List<Task> data = new ArrayList<>();
+    private List<Task> data;
     private OnListItemClickListener mOnListItemClickListener;
-    //private ActionCallback mActionCallback;
 
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;
 
-    public EventEditTaskListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
-        this(context, rowLayout, onListItemClickListener, new ArrayList<Task>());
-    }
-
-    public EventEditTaskListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Task> data) {
+    public EventEditTaskListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Task> data) {
         super(rowLayout);
-        this.context = context;
         this.mOnListItemClickListener = onListItemClickListener;
 
         if (data == null)
@@ -68,7 +52,6 @@ public class EventEditTaskListAdapter extends DataBoundAdapter<RowReadTaskListIt
         indicatePriority(holder.binding.imgPriorityStatusIcon, record);
         indicateStatus(holder.binding.imgTaskStatusIcon, record);
 
-
         //Sync Icon
         if (record.isModifiedOrChildModified()) {
             holder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
@@ -78,7 +61,6 @@ public class EventEditTaskListAdapter extends DataBoundAdapter<RowReadTaskListIt
         }
 
         updateUnreadIndicator(holder, record);
-
     }
 
     @Override
@@ -98,8 +80,6 @@ public class EventEditTaskListAdapter extends DataBoundAdapter<RowReadTaskListIt
             }
         }
     }
-
-
 
     public void indicatePriority(ImageView imgTaskPriorityIcon, Task task) {
         Resources resources = imgTaskPriorityIcon.getContext().getResources();
@@ -130,5 +110,4 @@ public class EventEditTaskListAdapter extends DataBoundAdapter<RowReadTaskListIt
 
         imgTaskStatusIcon.setBackground(drw);
     }
-
 }

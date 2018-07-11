@@ -2,7 +2,6 @@ package de.symeda.sormas.app.contact.list;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
@@ -23,8 +22,8 @@ import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 public class ContactListActivity extends BaseListActivity {
 
-    private FollowUpStatus statusFilters[] = new FollowUpStatus[] { FollowUpStatus.FOLLOW_UP, FollowUpStatus.COMPLETED,
-            FollowUpStatus.CANCELED, FollowUpStatus.LOST,FollowUpStatus.NO_FOLLOW_UP };
+    private FollowUpStatus statusFilters[] = new FollowUpStatus[]{FollowUpStatus.FOLLOW_UP, FollowUpStatus.COMPLETED,
+            FollowUpStatus.CANCELED, FollowUpStatus.LOST, FollowUpStatus.NO_FOLLOW_UP};
 
     private FollowUpStatus filterStatus = null;
     private SearchBy searchBy = null;
@@ -41,10 +40,11 @@ public class ContactListActivity extends BaseListActivity {
     }
 
     @Override
-    protected void initializeActivity(Bundle arguments) {
-        filterStatus = (FollowUpStatus) getFilterStatusArg(arguments);
-        searchBy = (SearchBy) getSearchStrategyArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
+    protected void onCreateInner(Bundle savedInstanceState) {
+        super.onCreateInner(savedInstanceState);
+        filterStatus = (FollowUpStatus) getFilterStatusArg(savedInstanceState);
+        searchBy = (SearchBy) getSearchStrategyArg(savedInstanceState);
+        recordUuid = getRecordUuidArg(savedInstanceState);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ContactListActivity extends BaseListActivity {
     @Override
     public int onNotificationCountChangingAsync(AdapterView parent, LandingPageMenuItem menuItem, int position) {
         //TODO: Call database and retrieve notification count
-        return (int)(new Random(DateTime.now().getMillis() * 1000).nextInt()/10000000);
+        return (int) (new Random(DateTime.now().getMillis() * 1000).nextInt() / 10000000);
     }
 
     @Override
@@ -80,21 +80,6 @@ public class ContactListActivity extends BaseListActivity {
 
         activeFragment = ContactListFragment.newInstance(dataCapsule);
         return activeFragment;
-    }
-
-    @Override
-    public Enum getStatus() {
-        return null;
-    }
-
-    @Override
-    public boolean showStatusFrame() {
-        return false;
-    }
-
-    @Override
-    public boolean showTitleBar() {
-        return true;
     }
 
     @Override

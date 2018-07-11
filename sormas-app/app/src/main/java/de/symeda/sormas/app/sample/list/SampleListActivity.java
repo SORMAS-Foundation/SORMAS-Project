@@ -22,7 +22,7 @@ import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 public class SampleListActivity extends BaseListActivity {
 
-    private ShipmentStatus statusFilters[] = new ShipmentStatus[] {
+    private ShipmentStatus statusFilters[] = new ShipmentStatus[]{
             ShipmentStatus.NOT_SHIPPED, ShipmentStatus.SHIPPED,
             ShipmentStatus.RECEIVED, ShipmentStatus.REFERRED_OTHER_LAB
     };
@@ -33,19 +33,20 @@ public class SampleListActivity extends BaseListActivity {
     private String recordUuid = null;
 
     @Override
+    protected void onCreateInner(Bundle savedInstanceState) {
+        filterStatus = (ShipmentStatus) getFilterStatusArg(savedInstanceState);
+        searchBy = (SearchBy) getSearchStrategyArg(savedInstanceState);
+        recordUuid = getRecordUuidArg(savedInstanceState);
+        super.onCreateInner(savedInstanceState);
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         saveFilterStatusState(outState, filterStatus);
         saveSearchStrategyState(outState, searchBy);
         saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    protected void initializeActivity(Bundle arguments) {
-        filterStatus = (ShipmentStatus) getFilterStatusArg(arguments);
-        searchBy = (SearchBy) getSearchStrategyArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
     }
 
     @Override
@@ -60,13 +61,13 @@ public class SampleListActivity extends BaseListActivity {
 
     @Override
     public int getPageMenuData() {
-        return  R.xml.data_landing_page_sample_menu;
+        return R.xml.data_landing_page_sample_menu;
     }
 
     @Override
     public int onNotificationCountChangingAsync(AdapterView parent, LandingPageMenuItem menuItem, int position) {
         //TODO: Call database and retrieve notification count
-        return (int)(new Random(DateTime.now().getMillis() * 1000).nextInt()/10000000);
+        return (int) (new Random(DateTime.now().getMillis() * 1000).nextInt() / 10000000);
     }
 
     @Override
@@ -81,21 +82,6 @@ public class SampleListActivity extends BaseListActivity {
 
         activeFragment = SampleListFragment.newInstance(dataCapsule);
         return activeFragment;
-    }
-
-    @Override
-    public Enum getStatus() {
-        return null;
-    }
-
-    @Override
-    public boolean showStatusFrame() {
-        return false;
-    }
-
-    @Override
-    public boolean showTitleBar() {
-        return true;
     }
 
     @Override

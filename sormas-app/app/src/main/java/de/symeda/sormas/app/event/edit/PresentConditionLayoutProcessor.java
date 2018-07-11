@@ -26,14 +26,6 @@ import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.databinding.FragmentEventEditPersonInfoLayoutBinding;
 import de.symeda.sormas.app.shared.OnDateOfDeathChangeListener;
 
-/**
- * Created by Orson on 12/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class PresentConditionLayoutProcessor {
 
     private Context context;
@@ -246,5 +238,4 @@ public class PresentConditionLayoutProcessor {
     public void setOnSetBindingVariable(OnSetBindingVariableListener listener) {
         this.mOnSetBindingVariableListener = listener;
     }
-
 }

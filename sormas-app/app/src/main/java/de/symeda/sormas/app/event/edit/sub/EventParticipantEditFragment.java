@@ -1,14 +1,10 @@
 package de.symeda.sormas.app.event.edit.sub;
 
 import android.app.AlertDialog;
-import android.content.res.Resources;
 import android.databinding.ViewDataBinding;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 
 import com.android.databinding.library.baseAdapters.BR;
 
@@ -18,7 +14,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.CauseOfDeath;
@@ -31,25 +26,17 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ControlSpinnerField;
-import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
-import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentEventEditPersonInfoLayoutBinding;
 import de.symeda.sormas.app.event.edit.OccupationTypeLayoutProcessor;
 import de.symeda.sormas.app.event.edit.PresentConditionLayoutProcessor;
@@ -57,23 +44,10 @@ import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 import de.symeda.sormas.app.shared.OnDateOfDeathChangeListener;
 import de.symeda.sormas.app.util.DataUtils;
 
-/**
- * Created by Orson on 07/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 public class EventParticipantEditFragment extends BaseEditFragment<FragmentEventEditPersonInfoLayoutBinding, EventParticipant, EventParticipant> {
 
     public static final String TAG = EventParticipantEditFragment.class.getSimpleName();
 
-    private static final int DEFAULT_YEAR = 2000;
-
-    private AsyncTask onResumeTask;
-    private String recordUuid = null;
-    private EventStatus pageStatus = null;
     private EventParticipant record;
     private IEntryItemOnClickListener onAddressLinkClickedCallback;
 
@@ -88,33 +62,12 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
     private List<Item> deathPlaceTypeList;
     private List<Item> diseaseList;
 
-    private int mLastCheckedId = -1;
-
     private OccupationTypeLayoutProcessor occupationTypeLayoutProcessor;
     private PresentConditionLayoutProcessor presentConditionLayoutProcessor;
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        savePageStatusState(outState, pageStatus);
-        saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
-
-        recordUuid = getRecordUuidArg(arguments);
-        pageStatus = (EventStatus) getPageStatusArg(arguments);
-    }
-
-    @Override
     protected String getSubHeadingTitle() {
-        Resources r = getResources();
-        return r.getString(R.string.caption_person_involved);
+        return getResources().getString(R.string.caption_person_involved);
     }
 
     @Override
@@ -123,72 +76,25 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
     }
 
     @Override
-    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
-        if (!executionComplete) {
-            EventParticipant eventParticipant = getActivityRootData();
+    protected void prepareFragmentData(Bundle savedInstanceState) {
+        record = getActivityRootData();
 
-            if (eventParticipant != null) {
-                if (eventParticipant.isUnreadOrChildUnread())
-                    DatabaseHelper.getEventParticipantDao().markAsRead(eventParticipant);
-            }
-
-            resultHolder.forItem().add(eventParticipant);
-
-            resultHolder.forOther().add(DataUtils.getEnumItems(OccupationType.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(Sex.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(ApproximateAgeType.class, false));
-            resultHolder.forOther().add(DataUtils.toItems(DateHelper.getDaysInMonth(),true));
-            resultHolder.forOther().add(DataUtils.getMonthItems(true));
-            resultHolder.forOther().add(DataUtils.toItems(DateHelper.getYearsToNow(),true));
-            resultHolder.forOther().add(DataUtils.getEnumItems(CauseOfDeath.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(DeathPlaceType.class, false));
-            resultHolder.forOther().add(DataUtils.getEnumItems(Disease.class, false));
-
-        } else {
-            ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
-
-            if (itemIterator.hasNext())
-                record =  itemIterator.next();
-
-            if (record == null)
-                getActivity().finish();
-
-            if (otherIterator.hasNext())
-                occupationTypeList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                genderList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                ageTypeList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                dateList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                monthList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                yearList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                causeOfDeathList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                deathPlaceTypeList =  otherIterator.next();
-
-            if (otherIterator.hasNext())
-                diseaseList =  otherIterator.next();
-
-            setupCallback();
-        }
-
-        return true;
+        occupationTypeList = DataUtils.getEnumItems(OccupationType.class, false);
+        genderList = DataUtils.getEnumItems(Sex.class, false);
+        ageTypeList = DataUtils.getEnumItems(ApproximateAgeType.class, false);
+        dateList = DataUtils.toItems(DateHelper.getDaysInMonth(), true);
+        monthList = DataUtils.getMonthItems(true);
+        yearList = DataUtils.toItems(DateHelper.getYearsToNow(), true);
+        causeOfDeathList = DataUtils.getEnumItems(CauseOfDeath.class, false);
+        deathPlaceTypeList = DataUtils.getEnumItems(DeathPlaceType.class, false);
+        diseaseList = DataUtils.getEnumItems(Disease.class, false);
     }
 
     @Override
     public void onLayoutBinding(FragmentEventEditPersonInfoLayoutBinding contentBinding) {
+
+        setupCallback();
+
         //binding = DataBindingUtil.inflate(inflater, getEditLayout(), container, true);
 
         //TODO: Validation
@@ -280,54 +186,12 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
     }
 
     @Override
-    protected void updateUI(FragmentEventEditPersonInfoLayoutBinding contentBinding, EventParticipant eventParticipant) {
-        contentBinding.personOccupationType.setValue(eventParticipant.getPerson().getOccupationType());
-        contentBinding.personSex.setValue(eventParticipant.getPerson().getSex());
-        contentBinding.personApproximateAgeType.setValue(eventParticipant.getPerson().getApproximateAgeType());
-        contentBinding.personBirthdateYYYY.setValue(eventParticipant.getPerson().getBirthdateYYYY());
-        contentBinding.personBirthdateMM.setValue(eventParticipant.getPerson().getBirthdateMM());
-        contentBinding.personBirthdateDD.setValue(eventParticipant.getPerson().getBirthdateDD());
-    }
-
-    @Override
     public int getEditLayout() {
         return R.layout.fragment_event_edit_person_info_layout;
     }
 
-    @Override
-    public boolean includeFabNonOverlapPadding() {
-        return false;
-    }
-
-    @Override
-    public boolean isShowSaveAction() {
-        return true;
-    }
-
-    @Override
-    public boolean isShowAddAction() {
-        return false;
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="Private Methods">
 
     private void setupCallback() {
-//        onPresentConditionCheckedCallback = new OnTeboSwitchCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(ControlSwitchField teboSwitch, Object checkedItem, int checkedId) {
-//                if (checkedId < 0)
-//                    return;
-//
-//                if (mLastCheckedId == checkedId) {
-//                    return;
-//                }
-//
-//                mLastCheckedId = checkedId;
-//
-//                if (!presentConditionLayoutProcessor.processLayout((PresentCondition)checkedItem))
-//                    return;
-//            }
-//        };
 
         onAddressLinkClickedCallback = new IEntryItemOnClickListener() {
             @Override
@@ -366,42 +230,32 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
         //TeboTextRead approximateAgeTextField =  getContentBinding().txtAge;
         //TeboSpinner approximateAgeTypeField = getContentBinding().spnAgeType;
 
-        if(birthyear != null) {
+        if (birthyear != null) {
+            // TODO take values from fields
             Integer birthday = record.getPerson().getBirthdateDD();
             Integer birthmonth = record.getPerson().getBirthdateMM();
 
             Calendar birthDate = new GregorianCalendar();
-            birthDate.set(birthyear, birthmonth!=null?birthmonth-1:0, birthday!=null?birthday:1);
+            birthDate.set(birthyear, birthmonth != null ? birthmonth - 1 : 0, birthday != null ? birthday : 1);
 
             Date to = new Date();
-            if(record.getPerson().getDeathDate() != null) {
+            if (record.getPerson().getDeathDate() != null) {
                 to = record.getPerson().getDeathDate();
             }
-            DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = ApproximateAgeHelper.getApproximateAge(birthDate.getTime(),to);
+            DataHelper.Pair<Integer, ApproximateAgeType> approximateAge = ApproximateAgeHelper.getApproximateAge(birthDate.getTime(), to);
             ApproximateAgeType ageType = approximateAge.getElement1();
             Integer age = approximateAge.getElement0();
 
+            // TODO has to be set in fields
             record.getPerson().setApproximateAge(age);
             record.getPerson().setApproximateAgeType(ageType);
-
-            updateUI();
         } else {
             //getContentBinding().txtAge.setEnabled(true, editOrCreateUserRight);
             //getContentBinding().spnAgeType.setEnabled(true, editOrCreateUserRight);
         }
     }
 
-    // </editor-fold>
-
     public static EventParticipantEditFragment newInstance(EventParticipantFormNavigationCapsule capsule, EventParticipant activityRootData) {
         return newInstance(EventParticipantEditFragment.class, capsule, activityRootData);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (onResumeTask != null && !onResumeTask.isCancelled())
-            onResumeTask.cancel(true);
     }
 }

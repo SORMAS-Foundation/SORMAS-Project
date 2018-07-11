@@ -2,7 +2,6 @@ package de.symeda.sormas.app.task.list;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
@@ -21,27 +20,22 @@ import de.symeda.sormas.app.core.ListNavigationCapsule;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
 
-/**
- * Created by Orson on 01/12/2017.
- */
+public class TaskListActivity extends BaseListActivity {
 
-public class TaskListActivity  extends BaseListActivity {
-
-    private final int DATA_XML_PAGE_MENU = R.xml.data_landing_page_task_menu;//  "xml/data_landing_page_task_menu.xml";
-
-    private static final int MENU_INDEX_TASK_PENDING = 0;
-    private static final int MENU_INDEX_TASK_DONE = 1;
-    private static final int MENU_INDEX_TASK_NOT_EXECUTABLE = 2;
-
-    private TaskStatus statusFilters[] = new TaskStatus[] { TaskStatus.PENDING, TaskStatus.DONE, TaskStatus.NOT_EXECUTABLE };
+    private TaskStatus statusFilters[] = new TaskStatus[]{TaskStatus.PENDING, TaskStatus.DONE, TaskStatus.NOT_EXECUTABLE};
 
     private TaskStatus filterStatus = null;
     private SearchBy searchBy = null;
     private String recordUuid = null;
     private BaseListFragment activeFragment = null;
-    private boolean showStatusFrame;
-    private boolean showTitleBar;
-    private MenuItem newMenu = null;
+
+    @Override
+    protected void onCreateInner(Bundle savedInstanceState) {
+        super.onCreateInner(savedInstanceState);
+        filterStatus = (TaskStatus) getFilterStatusArg(savedInstanceState);
+        searchBy = (SearchBy) getSearchStrategyArg(savedInstanceState);
+        recordUuid = getRecordUuidArg(savedInstanceState);
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -53,44 +47,23 @@ public class TaskListActivity  extends BaseListActivity {
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void initializeActivity(Bundle arguments) {
-        filterStatus = (TaskStatus) getFilterStatusArg(arguments);
-        searchBy = (SearchBy) getSearchStrategyArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
-
-        this.showStatusFrame = true;
-        this.showTitleBar = true;
-    }
-
-    @Override
     public BaseListFragment getActiveListFragment() {
         if (activeFragment == null) {
             IListNavigationCapsule dataCapsule = new ListNavigationCapsule(TaskListActivity.this, filterStatus, searchBy);
             activeFragment = TaskListFragment.newInstance(dataCapsule);
         }
-
         return activeFragment;
     }
 
     @Override
     public int getPageMenuData() {
-        return DATA_XML_PAGE_MENU;
+        return R.xml.data_landing_page_task_menu;
     }
 
     @Override
     public int onNotificationCountChangingAsync(AdapterView parent, LandingPageMenuItem menuItem, int position) {
         //TODO: Call database and retrieve notification count
-        return (int)(new Random(DateTime.now().getMillis() * 1000).nextInt()/10000000);
+        return (int) (new Random(DateTime.now().getMillis() * 1000).nextInt() / 10000000);
     }
 
     @Override
@@ -108,25 +81,9 @@ public class TaskListActivity  extends BaseListActivity {
     }
 
     @Override
-    public Enum getStatus() {
-        return null;
-    }
-
-    @Override
-    public boolean showStatusFrame() {
-        return false;
-    }
-
-    @Override
-    public boolean showTitleBar() {
-        return showTitleBar;
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getNewMenu().setTitle(R.string.action_new_task);
-
         return true;
     }
 
@@ -134,7 +91,6 @@ public class TaskListActivity  extends BaseListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (!MenuOptionsHelper.handleListModuleOptionsItemSelected(this, item))
             return super.onOptionsItemSelected(item);
-
         return true;
     }
 

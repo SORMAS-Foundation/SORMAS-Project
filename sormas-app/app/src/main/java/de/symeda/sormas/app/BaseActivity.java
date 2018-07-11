@@ -5,8 +5,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -20,6 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -35,6 +38,8 @@ import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.NotificationContext;
+import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
+import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.login.LoginActivity;
@@ -57,6 +62,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     private ProgressBar preloader;
     private View fragmentFrame;
 
+    // title & status
+    private View applicationTitleBar = null;
+    private View statusFrame = null;
+    private Enum pageStatus;
+
     private ActionBarDrawerToggle menuDrawerToggle;
     private DrawerLayout menuDrawerLayout;
     private NavigationView navigationView;
@@ -71,6 +81,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected boolean isUserNeeded() {
         return true;
     }
+
     public boolean isEditing() {
         return false;
     }
@@ -85,15 +96,18 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+
+        setPageStatusState(outState, pageStatus);
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         SormasApplication application = (SormasApplication) getApplication();
         tracker = application.getDefaultTracker();
-
-        if (savedInstanceState == null) {
-            savedInstanceState = getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
-        }
 
         // Show the Enter Pin Activity if the user doesn't have access to the app
         if (!ConfigProvider.isAccessGranted()) {
@@ -103,17 +117,25 @@ public abstract class BaseActivity extends AppCompatActivity {
             return;
         }
 
+        if (savedInstanceState == null) {
+            savedInstanceState = getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
+        }
+
+        pageStatus = getPageStatusArg(savedInstanceState);
+
         setContentView(getRootActivityLayout());
 
-        preloader = (ProgressBar)findViewById(R.id.preloader);
+        preloader = (ProgressBar) findViewById(R.id.preloader);
         fragmentFrame = findViewById(R.id.fragment_frame);
+        applicationTitleBar = findViewById(R.id.applicationTitleBar);
+        statusFrame = findViewById(R.id.statusFrame);
 
         SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(this);
 
         Drawable drawable = ContextCompat.getDrawable(this,
                 R.drawable.selector_actionbar_back_button);
 
-        final Toolbar toolbar = (Toolbar)findViewById(R.id.applicationToolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.applicationToolbar);
         if (toolbar != null) {
             toolbar.setNavigationIcon(drawable);
 
@@ -133,9 +155,54 @@ public abstract class BaseActivity extends AppCompatActivity {
         setupDrawer(navigationView);
     }
 
+
+    protected abstract void onCreateInner(Bundle savedInstanceState);
+
+    @Override
+    protected void onResume() {
+        activeActivity = new WeakReference<>(this);
+        super.onResume();
+
+        if (applicationTitleBar != null && isShowTitleBar()) {
+            applicationTitleBar.setVisibility(View.VISIBLE);
+
+            if (statusFrame != null && getPageStatus() != null) {
+                Context statusFrameContext = statusFrame.getContext();
+
+                Drawable drw = (Drawable) ContextCompat.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
+                drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource(statusFrameContext)), PorterDuff.Mode.SRC);
+
+                TextView txtStatusName = (TextView)statusFrame.findViewById(R.id.txtStatusName);
+                ImageView imgStatus = (ImageView)statusFrame.findViewById(R.id.statusIcon);
+
+
+                txtStatusName.setText(getStatusName(statusFrameContext));
+                imgStatus.setBackground(drw);
+
+                statusFrame.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (activeActivity != null && activeActivity.get() == this)
+            activeActivity = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+
+        super.onDestroy();
+    }
+
     private void preSetupDrawer(Bundle savedInstanceState) {
 
-        menuDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        menuDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.main_navigation_view);
         navigationView.setNavigationItemSelectedListener(new MainMenuItemSelectedListener(this, menuDrawerLayout));
 
@@ -145,7 +212,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         eventNotificationCounter = (TextView) navigationView.getMenu().findItem(R.id.menu_item_events).getActionView().findViewById(R.id.main_menu_notification_counter);
         sampleNotificationCounter = (TextView) navigationView.getMenu().findItem(R.id.menu_item_samples).getActionView().findViewById(R.id.main_menu_notification_counter);
     }
-
 
     protected boolean setHomeAsUpIndicator() {
         return true;
@@ -166,8 +232,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             if (headerView == null)
                 return;
 
-            TextView userName = (TextView)headerView.findViewById(R.id.userFullName);
-            TextView userRole = (TextView)headerView.findViewById(R.id.userRole);
+            TextView userName = (TextView) headerView.findViewById(R.id.userFullName);
+            TextView userRole = (TextView) headerView.findViewById(R.id.userRole);
 
             if (userName == null)
                 return;
@@ -272,28 +338,36 @@ public abstract class BaseActivity extends AppCompatActivity {
         fragmentFrame.setVisibility(View.VISIBLE);
     }
 
-    protected abstract void onCreateInner(Bundle savedInstanceState);
-
-    @Override
-    protected void onResume() {
-        activeActivity = new WeakReference<>(this);
-        super.onResume();
+    public boolean isShowTitleBar() {
+        return true;
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (activeActivity != null && activeActivity.get() == this)
-            activeActivity = null;
+    public Enum getPageStatus() {
+        return pageStatus;
     }
 
-    @Override
-    protected void onDestroy() {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
+    public String getStatusName(Context context) {
+        Enum pageStatus = getPageStatus();
+
+        if (pageStatus != null) {
+            IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(context, pageStatus);
+            if (elaborator != null)
+                return elaborator.getFriendlyName();
         }
 
-        super.onDestroy();
+        return "";
+    }
+
+    public int getStatusColorResource(Context context) {
+        Enum pageStatus = getPageStatus();
+
+        if (pageStatus != null) {
+            IStatusElaborator elaborator = StatusElaboratorFactory.getElaborator(context, pageStatus);
+            if (elaborator != null)
+                return elaborator.getColorIndicatorResource();
+        }
+
+        return R.color.noColor;
     }
 
     public void synchronizeCompleteData() {
@@ -416,8 +490,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }
                 }
             });
-        }
-        else {
+        } else {
             if (swipeRefreshLayout != null) {
                 swipeRefreshLayout.setRefreshing(false);
             }
@@ -456,4 +529,21 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected abstract int getActivityTitle();
+
+    protected <E extends Enum<E>> void setPageStatusState(Bundle outState, E status) {
+        if (outState != null) {
+            outState.putSerializable(ConstantHelper.ARG_PAGE_STATUS, status);
+        }
+    }
+
+    protected <E extends Enum<E>> E getPageStatusArg(Bundle arguments) {
+        E e = null;
+        if (arguments != null && !arguments.isEmpty()) {
+            if(arguments.containsKey(ConstantHelper.ARG_PAGE_STATUS)) {
+                e = (E) arguments.getSerializable(ConstantHelper.ARG_PAGE_STATUS);
+            }
+        }
+
+        return e;
+    }
 }

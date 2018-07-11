@@ -34,7 +34,7 @@ import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 public class CaseListActivity extends BaseListActivity {
 
-    private InvestigationStatus statusFilters[] = new InvestigationStatus[] { InvestigationStatus.PENDING, InvestigationStatus.DONE, InvestigationStatus.DISCARDED };
+    private InvestigationStatus statusFilters[] = new InvestigationStatus[]{InvestigationStatus.PENDING, InvestigationStatus.DONE, InvestigationStatus.DISCARDED};
 
     private InvestigationStatus filterStatus = null;
     private SearchBy searchBy = null;
@@ -63,7 +63,7 @@ public class CaseListActivity extends BaseListActivity {
     }
 
     @Override
-    public BaseListFragment getActiveListFragment()  {
+    public BaseListFragment getActiveListFragment() {
         if (activeFragment == null) {
             IListNavigationCapsule dataCapsule = new ListNavigationCapsule(CaseListActivity.this, filterStatus, searchBy);
             activeFragment = CaseListFragment.newInstance(dataCapsule);
@@ -91,21 +91,6 @@ public class CaseListActivity extends BaseListActivity {
 
         activeFragment = CaseListFragment.newInstance(dataCapsule);
         return activeFragment;
-    }
-
-    @Override
-    public Enum getStatus() {
-        return null;
-    }
-
-    @Override
-    public boolean showStatusFrame() {
-        return false;
-    }
-
-    @Override
-    public boolean showTitleBar() {
-        return true;
     }
 
     @Override

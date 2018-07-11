@@ -6,14 +6,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
+import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -64,6 +67,33 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 
         final EventParticipant eventParticipant = (EventParticipant) getActiveFragment().getPrimaryData();
 
+        saveTask = new SavingAsyncTask(getRootView(), eventParticipant) {
+
+            @Override
+            protected void onPreExecute() {
+                showPreloader();
+            }
+
+            @Override
+            public void doInBackground(TaskResultHolder resultHolder) throws Exception, ValidationException {
+                validateData(eventParticipant);
+                DatabaseHelper.getPersonDao().saveAndSnapshot(eventParticipant.getPerson());
+                DatabaseHelper.getEventParticipantDao().saveAndSnapshot(eventParticipant);
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                hidePreloader();
+                super.onPostExecute(taskResult);
+                if (taskResult.getResultStatus().isSuccess()) {
+                    finish();
+                }
+            }
+        }.executeOnThreadPool();
+    }
+
+    private void validateData(EventParticipant data) throws ValidationException {
+
         //TODO: Validation
         /*EventParticipantFragmentLayoutBinding eventParticipantBinding = eventParticipantTab.getBinding();
         PersonEditFragmentLayoutBinding personBinding = personEditForm.getBinding();
@@ -83,29 +113,6 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
         if (validationError) {
             return true;
         }*/
-
-        saveTask = new DefaultAsyncTask(getContext(), eventParticipant) {
-
-            @Override
-            public void doInBackground(TaskResultHolder resultHolder) throws Exception {
-                DatabaseHelper.getPersonDao().saveAndSnapshot(eventParticipant.getPerson());
-                DatabaseHelper.getEventParticipantDao().saveAndSnapshot(eventParticipant);
-            }
-
-            @Override
-            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-
-                if (taskResult.getResultStatus().isFailed()) {
-                    NotificationHelper.showNotification(EventParticipantEditActivity.this, NotificationType.ERROR,
-                            String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_event_participant)));
-                } else {
-                    NotificationHelper.showNotification(EventParticipantEditActivity.this, NotificationType.SUCCESS,
-                            String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_event_participant)));
-
-                    finish();
-                }
-            }
-        }.executeOnThreadPool();
     }
 
     public static void goToActivity(Context fromActivity, EventParticipantFormNavigationCapsule dataCapsule) {

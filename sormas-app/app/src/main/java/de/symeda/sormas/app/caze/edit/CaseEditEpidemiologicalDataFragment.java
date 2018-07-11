@@ -161,11 +161,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     }
 
     @Override
-    protected void updateUI(FragmentCaseEditEpidLayoutBinding contentBinding, EpiData epiData) {
-
-    }
-
-    @Override
     public int getEditLayout() {
         return R.layout.fragment_case_edit_epid_layout;
     }

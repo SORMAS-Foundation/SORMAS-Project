@@ -2,7 +2,6 @@ package de.symeda.sormas.app.event.list;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
@@ -24,24 +23,22 @@ import de.symeda.sormas.app.core.ListNavigationCapsule;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
 
-/**
- * Created by Orson on 07/12/2017.
- */
-
 public class EventListActivity extends BaseListActivity {
 
-    private final int DATA_XML_PAGE_MENU = R.xml.data_landing_page_alert_menu; // "xml/data_landing_page_alert_menu.xml";
-
-    private static final int MENU_INDEX_EVENT_POSSIBLE = 0;
-    private static final int MENU_INDEX_EVENT_CONFIRMED = 1;
-    private static final int MENU_INDEX_EVENT_NO_EVENT = 2;
-
-    private EventStatus statusFilters[] = new EventStatus[] { EventStatus.POSSIBLE , EventStatus.CONFIRMED, EventStatus.NO_EVENT };
+    private EventStatus statusFilters[] = new EventStatus[]{EventStatus.POSSIBLE, EventStatus.CONFIRMED, EventStatus.NO_EVENT};
 
     private EventStatus filterStatus = null;
     private SearchBy searchBy = null;
     private String recordUuid = null;
     private BaseListFragment activeFragment = null;
+
+    @Override
+    protected void onCreateInner(Bundle savedInstanceState) {
+        super.onCreateInner(savedInstanceState);
+        filterStatus = (EventStatus) getFilterStatusArg(savedInstanceState);
+        searchBy = (SearchBy) getSearchStrategyArg(savedInstanceState);
+        recordUuid = getRecordUuidArg(savedInstanceState);
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -50,23 +47,6 @@ public class EventListActivity extends BaseListActivity {
         saveFilterStatusState(outState, filterStatus);
         saveSearchStrategyState(outState, searchBy);
         saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void initializeActivity(Bundle arguments) {
-        filterStatus = (EventStatus) getFilterStatusArg(arguments);
-        searchBy = (SearchBy) getSearchStrategyArg(arguments);
-        recordUuid = getRecordUuidArg(arguments);
     }
 
     @Override
@@ -81,13 +61,13 @@ public class EventListActivity extends BaseListActivity {
 
     @Override
     public int getPageMenuData() {
-        return DATA_XML_PAGE_MENU;
+        return R.xml.data_landing_page_alert_menu;
     }
 
     @Override
     public int onNotificationCountChangingAsync(AdapterView parent, LandingPageMenuItem menuItem, int position) {
         //TODO: Call database and retrieve notification count
-        return (int)(new Random(DateTime.now().getMillis() * 1000).nextInt()/10000000);
+        return (int) (new Random(DateTime.now().getMillis() * 1000).nextInt() / 10000000);
     }
 
     @Override
@@ -102,21 +82,6 @@ public class EventListActivity extends BaseListActivity {
 
         activeFragment = EventListFragment.newInstance(dataCapsule);
         return activeFragment;
-    }
-
-    @Override
-    public Enum getStatus() {
-        return null;
-    }
-
-    @Override
-    public boolean showStatusFrame() {
-        return false;
-    }
-
-    @Override
-    public boolean showTitleBar() {
-        return true;
     }
 
     @Override

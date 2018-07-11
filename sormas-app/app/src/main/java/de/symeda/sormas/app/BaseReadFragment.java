@@ -7,7 +7,6 @@ import android.databinding.ViewDataBinding;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +18,6 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
@@ -43,7 +41,6 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
     private TBinding contentViewStubBinding;
     private ViewDataBinding rootBinding;
     private View contentViewStubRoot;
-    private boolean beforeLayoutBindingAsyncReturn;
     private boolean skipAfterLayoutBinding = false;
     private TActivityRootData activityRootData;
     private View rootView;
@@ -128,7 +125,6 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
 
         vsChildFragmentFrame.setLayoutResource(getReadLayout());
 
-        beforeLayoutBindingAsyncReturn = false;
         jobTask = new DefaultAsyncTask(getContext()) {
             @Override
             public void onPreExecute() {
@@ -138,7 +134,6 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
             @Override
             public void doInBackground(final TaskResultHolder resultHolder) {
                 prepareFragmentData(savedInstanceState);
-                onBeforeLayoutBinding(savedInstanceState, resultHolder, null, false);
             }
 
             @Override
@@ -147,8 +142,6 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
 
                 if (taskResult.getResultStatus().isFailed())
                     return;
-
-                beforeLayoutBindingAsyncReturn = onBeforeLayoutBinding(savedInstanceState, taskResult.getResult(), taskResult.getResultStatus(), true);
 
                 vsChildFragmentFrame.inflate();
 
@@ -166,7 +159,6 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
                 });
             }
         }.executeOnThreadPool();
-
 
         return rootView;
     }
@@ -202,30 +194,11 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
         emptyListHintView.setVisibility(View.VISIBLE);
     }
 
-    public void requestLayoutRebind() {
-        onLayoutBinding(contentViewStubBinding);
-    }
-
-    // TODO make abstract
-    protected void prepareFragmentData(Bundle savedInstanceState) {
-    }
-
-    /**
-     * @Deprecated Use prepareFragmentData and onLayoutBinding isntead
-     */
-    @Deprecated
-    public boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
-        return true;
-    }
+    protected abstract void prepareFragmentData(Bundle savedInstanceState);
 
     public abstract void onLayoutBinding(TBinding contentBinding);
 
-    // TODO: Add comment on when to use the layout binding methods
-    public void onAfterLayoutBinding(TBinding contentBinding) {
-    }
-
-    protected void updateUI(TBinding contentBinding, TData data) {
-    }
+    public void onAfterLayoutBinding(TBinding contentBinding) { }
 
     public boolean includeFabNonOverlapPadding() {
         return false;
@@ -427,14 +400,4 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
         if (jobTask != null && !jobTask.isCancelled())
             jobTask.cancel(true);
     }
-
-    protected void updateUI() {
-        this.skipAfterLayoutBinding = true;
-        if (!getContentBinding().setVariable(BR.data, getPrimaryData())) {
-            Log.e(TAG, "There is no variable 'data' in layout " + getReadLayout());
-        }
-
-        updateUI(getContentBinding(), getPrimaryData());
-    }
-
 }

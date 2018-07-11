@@ -5,20 +5,17 @@ import android.databinding.OnRebindCallback;
 import android.databinding.ViewDataBinding;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
-import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
+import de.symeda.sormas.app.core.NotificationContext;
+import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 
 public abstract class BaseReportFragment<TBinding extends ViewDataBinding, TData> extends BaseFragment {
@@ -32,14 +29,7 @@ public abstract class BaseReportFragment<TBinding extends ViewDataBinding, TData
     private ViewDataBinding rootBinding;
     private View rootView;
     private TBinding contentViewStubBinding;
-    private View contentViewStubRoot;
-    private boolean beforeLayoutBindingAsyncReturn;
     private boolean skipAfterLayoutBinding = false;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
@@ -67,86 +57,59 @@ public abstract class BaseReportFragment<TBinding extends ViewDataBinding, TData
         rootBinding = DataBindingUtil.inflate(inflater, getRootLayoutResId(), container, false);
         rootView = rootBinding.getRoot();
 
-        if (getLayoutResId() > 0) {
-            final ViewStub vsChildFragmentFrame = (ViewStub)rootView.findViewById(R.id.vsChildFragmentFrame);
+        final ViewStub vsChildFragmentFrame = (ViewStub) rootView.findViewById(R.id.vsChildFragmentFrame);
 
-            vsChildFragmentFrame.setOnInflateListener(new ViewStub.OnInflateListener() {
-                @Override
-                public void onInflate(ViewStub stub, View inflated) {
-                    //onLayoutBindingHelper(stub, inflated);
+        vsChildFragmentFrame.setOnInflateListener(new ViewStub.OnInflateListener() {
+            @Override
+            public void onInflate(ViewStub stub, View inflated) {
+                //onLayoutBindingHelper(stub, inflated);
 
-                    contentViewStubBinding = DataBindingUtil.bind(inflated);
-                    String layoutName = getResources().getResourceEntryName(getLayoutResId());
+                contentViewStubBinding = DataBindingUtil.bind(inflated);
+                String layoutName = getResources().getResourceEntryName(getLayoutResId());
 //                    setRootNotificationBindingVariable(contentViewStubBinding, layoutName);
-                    onLayoutBinding(contentViewStubBinding);
-                    contentViewStubRoot = contentViewStubBinding.getRoot();
-                }
-            });
+                onLayoutBinding(contentViewStubBinding);
+            }
+        });
 
-            vsChildFragmentFrame.setLayoutResource(getLayoutResId());
+        vsChildFragmentFrame.setLayoutResource(getLayoutResId());
 
+        jobTask = new DefaultAsyncTask(getContext()) {
+            @Override
+            public void onPreExecute() {
+                getBaseActivity().showPreloader();
+            }
 
-            beforeLayoutBindingAsyncReturn = false;
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    getBaseActivity().showPreloader();
-                }
+            @Override
+            public void doInBackground(final TaskResultHolder resultHolder) {
+                prepareFragmentData(savedInstanceState);
+            }
 
-                @Override
-                public void doInBackground(final TaskResultHolder resultHolder) {
-                    onBeforeLayoutBinding(savedInstanceState, resultHolder, null, false);
-                }
-            };
+            @Override
+            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                getBaseActivity().hidePreloader();
 
-            jobTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    getBaseActivity().hidePreloader();
+                if (taskResult.getResultStatus().isFailed())
+                    return;
 
-                    if (resultHolder == null)
-                        return;
+                vsChildFragmentFrame.inflate();
 
-                    beforeLayoutBindingAsyncReturn = onBeforeLayoutBinding(savedInstanceState, resultHolder, resultStatus, true);
+                contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
+                    @Override
+                    public void onBound(ViewDataBinding binding) {
+                        super.onBound(binding);
 
-                    View dialogContentInflated = vsChildFragmentFrame.inflate();
+                        if (!skipAfterLayoutBinding)
+                            onAfterLayoutBinding(contentViewStubBinding);
+                        skipAfterLayoutBinding = false;
 
-                    contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
-                        @Override
-                        public void onBound(ViewDataBinding binding) {
-                            super.onBound(binding);
-
-                            //After
-                            //onAfterLayoutBindingHelper(contentViewStubBinding);
-                            if (!skipAfterLayoutBinding)
-                                onAfterLayoutBinding(contentViewStubBinding);
-
-                            skipAfterLayoutBinding = false;
-
-                            getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
-                        }
-                    });
-                }
-            });
-        } else {
-            throw new ExceptionInInitializerError("Child layout not specified");
-        }
-
+                        getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
+                    }
+                });
+            }
+        }.executeOnThreadPool();
 
         return rootView;
     }
-
-//    @Override
-//    public void onShowInputErrorShowing(View v, String message, boolean errorState) {
-//        //notificationCommunicator.showErrorNotification(NotificationType.ERROR, message);
-//        NotificationHelper.showErrorNotification((NotificationContext)getActivity(), NotificationType.ERROR, message);
-//    }
-//
-//    @Override
-//    public void onInputErrorHiding(View v, boolean errorState) {
-//        //notificationCommunicator.hideNotification();
-//        NotificationHelper.hideNotification((NotificationContext)getActivity());
-//    }
 
     protected void reloadFragment() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -168,7 +131,6 @@ public abstract class BaseReportFragment<TBinding extends ViewDataBinding, TData
         return this.baseReportActivity;
     }
 
-
     protected String getSubHeadingTitle() {
         return null;
     }
@@ -181,7 +143,7 @@ public abstract class BaseReportFragment<TBinding extends ViewDataBinding, TData
         return contentViewStubBinding;
     }
 
-    protected static <TFragment extends BaseReportFragment> TFragment newInstance(Class<TFragment> f)  {
+    protected static <TFragment extends BaseReportFragment> TFragment newInstance(Class<TFragment> f) {
 
         TFragment fragment;
         try {
@@ -199,46 +161,15 @@ public abstract class BaseReportFragment<TBinding extends ViewDataBinding, TData
         return fragment;
     }
 
-    protected void updateUI() {
-        this.skipAfterLayoutBinding = true;
-        if (!getContentBinding().setVariable(BR.data, getPrimaryData())) {
-            Log.e(TAG, "There is no variable 'data' in layout " + getLayoutResId());
-        }
-
-        updateUI(getContentBinding(), getPrimaryData());
-    }
-
-
-    protected abstract boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete);
+    protected abstract void prepareFragmentData(Bundle savedInstanceState);
 
     protected abstract void onLayoutBinding(TBinding contentBinding);
 
     protected abstract void onAfterLayoutBinding(TBinding contentBinding);
 
-    protected abstract void updateUI(TBinding contentBinding, TData data);
-
     protected abstract TData getPrimaryData();
 
     protected abstract int getLayoutResId();
-
-
-
-    public void requestLayoutRebind() {
-        onLayoutBinding(contentViewStubBinding);
-    }
-
-
-//    private void setRootNotificationBindingVariable(final ViewDataBinding binding, String layoutName) {
-//        if (!binding.setVariable(de.symeda.sormas.app.BR.showNotificationCallback, this)) {
-//            Log.e(TAG, "There is no variable 'showNotificationCallback' in layout " + layoutName);
-//        }
-//
-//        if (!binding.setVariable(de.symeda.sormas.app.BR.hideNotificationCallback, this)) {
-//            Log.e(TAG, "There is no variable 'hideNotificationCallback' in layout " + layoutName);
-//        }
-//    }
-
-
 
     @Override
     public void onDestroy() {

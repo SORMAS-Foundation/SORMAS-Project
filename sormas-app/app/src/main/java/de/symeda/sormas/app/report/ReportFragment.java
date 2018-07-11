@@ -5,10 +5,7 @@ import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.View;
-
-import com.google.android.gms.analytics.Tracker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +14,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseReportFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -31,6 +27,7 @@ import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;
+import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -50,24 +47,15 @@ import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.CharSequenceHelper;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.NavigationHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
-/**
- * Created by Orson on 24/04/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayoutBinding, WeeklyReport> {
 
     private AsyncTask onConfirmReportTask;
     private AsyncTask onWeeklyReportTask;
     private AsyncTask onPendingReportTask;
     private AsyncTask onWeeklyReportOverviewTask;
-    private Tracker mTracker;
     private ReportFilterViewModel mReportFilter = new ReportFilterViewModel();
     private int mReportFilterLastCheckedId;
     private List<Item> mYearList;
@@ -80,7 +68,6 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
     private PendingReportAdapter mPendingReportAdapter;
     private WeeklyReportOverviewAdapter mWeeklyReportOverviewAdapter;
 
-    private User mUser;
     private String mReportDate = "";
 
     private IEntryItemOnClickListener onAddMissingCase;
@@ -90,40 +77,24 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
     protected String getSubHeadingTitle() {
         Resources r = getResources();
         String defaultValue = r.getString(R.string.hint_report_not_submitted);
-        String format = !mUser.hasUserRole(UserRole.INFORMANT) ? r.getString(R.string.caption_report_date) : r.getString(R.string.caption_confirmation_date);
+        String format = !ConfigProvider.getUser().hasUserRole(UserRole.INFORMANT) ? r.getString(R.string.caption_report_date) : r.getString(R.string.caption_confirmation_date);
 
         return CharSequenceHelper.italic(String.format(format, mReportDate == null || mReportDate.isEmpty() ? defaultValue : mReportDate)).toString();
     }
 
     @Override
-    protected boolean onBeforeLayoutBinding(Bundle savedInstanceState, TaskResultHolder resultHolder, BoolResult resultStatus, boolean executionComplete) {
-        if (!executionComplete) {
-            //WeeklyReport task = queryRootEntity();
-
-            resultHolder.forOther().add(DataUtils.toItems(DateHelper.getYearsToNow()));
-            resultHolder.forOther().add(DataUtils.toItems(DateHelper.createIntegerEpiWeeksList(mReportFilter.getYear())));
-        } else {
-            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
-
-            if (otherIterator.hasNext())
-                mYearList = otherIterator.next();
-
-            if (otherIterator.hasNext())
-                mEpiWeeksList = otherIterator.next();
-
-            mLinearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-            mUser = ConfigProvider.getUser();
-            SormasApplication application = (SormasApplication) getActivity().getApplication();
-            mTracker = application.getDefaultTracker();
-
-            setupCallback();
-        }
-
-        return true;
+    protected void prepareFragmentData(Bundle savedInstanceState) {
+        mYearList = DataUtils.toItems(DateHelper.getYearsToNow());
+        mEpiWeeksList = DataUtils.toItems(DateHelper.createIntegerEpiWeeksList(mReportFilter.getYear()));
     }
 
     @Override
     protected void onLayoutBinding(FragmentReportWeeklyLayoutBinding contentBinding) {
+
+        mLinearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+
+        setupCallback();
+
         contentBinding.setData(mWeeklyReport);
         contentBinding.setReportFilter(mReportFilter);
         contentBinding.setReportFilterOptionClass(ReportFilterOption.class);
@@ -154,11 +125,11 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                     mReportFilter.setYear((int) getContentBinding().weeklyReportYear.getValue());
                     mReportFilter.setWeek((int) getContentBinding().weeklyReportEpiWeek.getValue());
 
-                    if (mUser.hasUserRole(UserRole.INFORMANT)) {
-                        mWeeklyReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(mReportFilter.getEpiWeek(), mUser);
+                    if (ConfigProvider.getUser().hasUserRole(UserRole.INFORMANT)) {
+                        mWeeklyReport = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(mReportFilter.getEpiWeek(), ConfigProvider.getUser());
 
                         BaseEpiWeekCategory category = mEpiWeekCategoryFactory.getEpiWeekCategory(mReportFilter.getEpiWeek());
-                        category.processReport(mReportFilter.getEpiWeek(), mUser, new Callback.IAction2<String, BaseEpiWeekCategory>() {
+                        category.processReport(mReportFilter.getEpiWeek(), ConfigProvider.getUser(), new Callback.IAction2<String, BaseEpiWeekCategory>() {
                             @Override
                             public void call(String reportDate, BaseEpiWeekCategory c) {
                                 showPendingReport(c);
@@ -174,20 +145,17 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                                 getContentBinding().confirmReport.setVisibility(c.showConfirmButton() ? View.VISIBLE : View.GONE);
 
                                 mReportDate = reportDate;
-                                updateUI();
                             }
                         });
                     } else {
                         hideReportControls();
 
                         showWeeklyReportOverview();
-                        updateUI();
                     }
                 } else {
                     mReportDate = "";
                     mReportFilter.setYear(null);
                     mReportFilter.setWeek(null);
-                    updateUI();
                 }
             }
         });
@@ -203,10 +171,10 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
         if (!c.showPendingReport())
             return;
 
-        if (mUser == null)
+        if (ConfigProvider.getUser() == null)
             return;
 
-        if (mUser.hasUserRole(UserRole.INFORMANT)) {
+        if (ConfigProvider.getUser().hasUserRole(UserRole.INFORMANT)) {
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 private String saveUnsuccessful;
 
@@ -263,10 +231,10 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
         if (!c.showWeeklyReport())
             return;
 
-        if (mUser == null)
+        if (ConfigProvider.getUser() == null)
             return;
 
-        if (mUser.hasUserRole(UserRole.INFORMANT)) {
+        if (ConfigProvider.getUser().hasUserRole(UserRole.INFORMANT)) {
             try {
                 DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                     private String saveUnsuccessful;
@@ -324,7 +292,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
         if (mReportFilter == null)
             return;
 
-        if (mUser == null)
+        if (ConfigProvider.getUser() == null)
             return;
 
         try {
@@ -341,7 +309,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                 @Override
                 public void doInBackground(TaskResultHolder resultHolder) {
                     List<WeeklyReportOverviewViewModel> list = new ArrayList<>();
-                    List<User> informants = DatabaseHelper.getUserDao().getByDistrictAndRole(mUser.getDistrict(), UserRole.INFORMANT, User.HEALTH_FACILITY + "_id");
+                    List<User> informants = DatabaseHelper.getUserDao().getByDistrictAndRole(ConfigProvider.getUser().getDistrict(), UserRole.INFORMANT, User.HEALTH_FACILITY + "_id");
                     for (User informant : informants) {
                         WeeklyReport report = DatabaseHelper.getWeeklyReportDao().queryForEpiWeek(mReportFilter.getEpiWeek(), informant);
                         int numberOfCases = DatabaseHelper.getCaseDao().getNumberOfCasesForEpiWeek(mReportFilter.getEpiWeek(), informant);
@@ -387,14 +355,6 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
         getContentBinding().noWeeklyReportData.setVisibility(View.GONE);
         getContentBinding().addMissingCase.setVisibility(View.GONE);
         getContentBinding().confirmReport.setVisibility(View.GONE);
-    }
-
-    @Override
-    protected void updateUI(FragmentReportWeeklyLayoutBinding contentBinding, WeeklyReport weeklyReport) {
-        contentBinding.weeklyReportStartDate.setValue(mReportFilter.getStartDate());
-        contentBinding.weeklyReportEndDate.setValue(mReportFilter.getEndDate());
-
-        getSubHeadingHandler().updateSubHeadingTitle();
     }
 
     @Override
@@ -446,7 +406,6 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
 //
 //                    getContentBinding().weeklyReportYear.notifyDataChanged();
 //                    //requestLayoutRebind();
-//                    updateUI();
 //                }
 //
 //                if (answer == ReportFilterOption.THIS_WEEK) {
@@ -457,7 +416,6 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
 //
 //                    getContentBinding().weeklyReportYear.notifyDataChanged();
 //                    //requestLayoutRebind();
-//                    updateUI();
 //                }
 //            }
 //        };
@@ -473,71 +431,45 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
             @Override
             public void onClick(View v, Object item) {
 
+                onConfirmReportTask = new DefaultAsyncTask(getContext()) {
 
-                try {
-                    DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                        private String saveUnsuccessful;
+                    @Override
+                    public void onPreExecute() {
+                        changeButtonsEnabledStatus(false);
+                    }
 
-                        @Override
-                        public void onPreExecute() {
-                            //getBaseActivity().showPreloader();
-                            //
-                            changeButtonsEnabledStatus(false);
+                    @Override
+                    public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
+                        DatabaseHelper.getWeeklyReportDao().create(mReportFilter.getEpiWeek());
+                    }
 
-                            saveUnsuccessful = getActivity().getString(R.string.snackbar_weekly_report_error);
+                    @Override
+                    protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                        changeButtonsEnabledStatus(true);
+
+                        if (!taskResult.getResultStatus().isSuccess()) {
+                            NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, taskResult.getResultStatus().getMessage());
+                            return;
                         }
 
-                        @Override
-                        public void doInBackground(TaskResultHolder resultHolder) {
-                            try {
-                                DatabaseHelper.getWeeklyReportDao().create(mReportFilter.getEpiWeek());
-                            } catch (DaoException e) {
-                                Log.e(getClass().getName(), "Error while trying to create weekly report", e);
-                                Log.e(getClass().getName(), "- root cause: ", ErrorReportingHelper.getRootCause(e));
-                                resultHolder.setResultStatus(new BoolResult(false, saveUnsuccessful));
-                                ErrorReportingHelper.sendCaughtException(mTracker, e, null, true);
-                            }
-                        }
-                    };
-                    onConfirmReportTask = executor.execute(new ITaskResultCallback() {
-                        @Override
-                        public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                            //getBaseActivity().hidePreloader();
-                            //getBaseActivity().showFragmentView();
-
-                            changeButtonsEnabledStatus(true);
-
-                            if (resultHolder == null) {
-                                return;
-                            }
-
-                            if (!resultStatus.isSuccess()) {
-                                NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, resultStatus.getMessage());
-                                return;
-                            }
-
-                            if (RetroProvider.isConnected()) {
-                                SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, getActivity(), new SyncCallback() {
-                                    @Override
-                                    public void call(boolean syncFailed, String syncFailedMessage) {
-                                        if (syncFailed) {
-                                            NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_sync_confirmed);
-                                        } else {
-                                            NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.WARNING, R.string.snackbar_weekly_report_confirmed);
-                                        }
-                                        reloadFragment();
+                        if (RetroProvider.isConnected()) {
+                            SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, getActivity(), new SyncCallback() {
+                                @Override
+                                public void call(boolean syncFailed, String syncFailedMessage) {
+                                    if (syncFailed) {
+                                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.snackbar_weekly_report_sync_confirmed);
+                                    } else {
+                                        NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.WARNING, R.string.snackbar_weekly_report_confirmed);
                                     }
-                                });
-                            } else {
-                                NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.WARNING, R.string.snackbar_weekly_report_confirmed);
-                                reloadFragment();
-                            }
+                                    reloadFragment();
+                                }
+                            });
+                        } else {
+                            NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.WARNING, R.string.snackbar_weekly_report_confirmed);
+                            reloadFragment();
                         }
-                    });
-                } catch (Exception ex) {
-                    //getBaseActivity().hidePreloader();
-                    //getBaseActivity().showFragmentView();
-                }
+                    }
+                };
             }
         };
     }

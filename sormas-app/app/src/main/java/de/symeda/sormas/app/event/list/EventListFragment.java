@@ -31,13 +31,8 @@ import de.symeda.sormas.app.searchstrategy.SearchStrategyFor;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.util.SubheadingHelper;
 
-/**
- * Created by Orson on 07/12/2017.
- */
-
 public class EventListFragment extends BaseListFragment<EventListAdapter> implements OnListItemClickListener {
 
-    private boolean dataLoaded = false;
     private AsyncTask searchTask;
     private List<Event> events;
     private LinearLayoutManager linearLayoutManager;
@@ -59,7 +54,7 @@ public class EventListFragment extends BaseListFragment<EventListAdapter> implem
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getArguments();
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
 
         filterStatus = (EventStatus) getFilterStatusArg(arguments);
         searchBy = (SearchBy) getSearchStrategyArg(arguments);
@@ -77,7 +72,7 @@ public class EventListFragment extends BaseListFragment<EventListAdapter> implem
 
     @Override
     public EventListAdapter getNewListAdapter() {
-        return new EventListAdapter(this.getActivity(), R.layout.row_event_list_item_layout, this, this.events);
+        return new EventListAdapter(R.layout.row_event_list_item_layout, this, this.events);
     }
 
     @Override
@@ -103,54 +98,35 @@ public class EventListFragment extends BaseListFragment<EventListAdapter> implem
     public void onResume() {
         super.onResume();
 
-        //TODO: Orson - reverse this relationship
         getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Event"));
 
-        try {
-            dataLoaded = false;
-            if (!dataLoaded) {
-                ISearchExecutor<Event> executor = SearchStrategyFor.EVENT.selector(searchBy, filterStatus, recordUuid);
-                searchTask = executor.search(new ISearchResultCallback<Event>() {
-                    @Override
-                    public void preExecute() {
-                        getBaseActivity().showPreloader();
-
-                    }
-
-                    @Override
-                    public void searchResult(List<Event> result, BoolResult resultStatus) {
-                        getBaseActivity().hidePreloader();
-
-                        if (!resultStatus.isSuccess()) {
-                            String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Events");
-                            NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, message);
-
-                            return;
-                        }
-
-                        events = result;
-
-                        EventListFragment.this.getListAdapter().replaceAll(events);
-                        EventListFragment.this.getListAdapter().notifyDataSetChanged();
-
-                        dataLoaded = true;
-
-                        getBaseActivity().hidePreloader();
-                    }
-
-                    private ISearchResultCallback<Event> init() {
-                        getBaseActivity().showPreloader();
-
-                        return this;
-                    }
-                }.init());
+        ISearchExecutor<Event> executor = SearchStrategyFor.EVENT.selector(searchBy, filterStatus, recordUuid);
+        searchTask = executor.search(new ISearchResultCallback<Event>() {
+            @Override
+            public void preExecute() {
+                getBaseActivity().showPreloader();
             }
-        } catch (Exception ex) {
-            getBaseActivity().hidePreloader();
-            dataLoaded = false;
-        }
 
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout)this.getView().findViewById(R.id.swiperefresh);
+            @Override
+            public void searchResult(List<Event> result, BoolResult resultStatus) {
+                getBaseActivity().hidePreloader();
+
+                if (!resultStatus.isSuccess()) {
+                    String message = String.format(getResources().getString(R.string.notification_records_not_retrieved), "Events");
+                    NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.ERROR, message);
+                    return;
+                }
+
+                events = result;
+
+                if (EventListFragment.this.isResumed()) {
+                    EventListFragment.this.getListAdapter().replaceAll(events);
+                    EventListFragment.this.getListAdapter().notifyDataSetChanged();
+                }
+            }
+        });
+
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout) this.getView().findViewById(R.id.swiperefresh);
         if (swiperefresh != null) {
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override

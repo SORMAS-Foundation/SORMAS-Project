@@ -54,18 +54,6 @@ public abstract class BaseLandingFragment<E extends Enum<E>, TAdapter extends En
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-
-    }
-
     public int getRootListLayout() {
         return R.layout.fragment_root_landing_layout;
     }

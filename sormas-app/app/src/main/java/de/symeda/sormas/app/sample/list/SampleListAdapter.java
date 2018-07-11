@@ -80,23 +80,6 @@ public class SampleListAdapter extends DataBoundAdapter<RowSampleListItemLayoutB
         }
     }
 
-    private void indicateShipmentStatus(ImageView img, Sample record) {
-        Resources resources = img.getContext().getResources();
-        Drawable drw = (Drawable) ContextCompat.getDrawable(img.getContext(), R.drawable.indicator_status_circle);
-
-        if (record.getReferredTo() != null) {
-            drw.setColorFilter(resources.getColor(R.color.indicatorShipmentReferred), PorterDuff.Mode.SRC_OVER);
-        } else if (record.isReceived()) {
-            drw.setColorFilter(resources.getColor(R.color.indicatorShipmentReceived), PorterDuff.Mode.SRC_OVER);
-        } else if (record.isShipped()) {
-            drw.setColorFilter(resources.getColor(R.color.indicatorShipmentShipped), PorterDuff.Mode.SRC_OVER);
-        } else {
-            drw.setColorFilter(resources.getColor(R.color.indicatorShipmentNotShipped), PorterDuff.Mode.SRC_OVER);
-        }
-
-        img.setBackground(drw);
-    }
-
     private String getSampleTestResultMessage(Context context, Sample record) {
         SampleTest mostRecentTest = null;
         if (record.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {

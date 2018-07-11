@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.event.list;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -9,41 +8,30 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.symeda.sormas.api.event.EventType;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.core.adapter.databinding.ISetOnListItemClickListener;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.RowEventListItemLayoutBinding;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import de.symeda.sormas.api.event.EventType;
-import de.symeda.sormas.app.backend.event.Event;
-
-/**
- * Created by Orson on 07/12/2017.
- */
-
 public class EventListAdapter extends DataBoundAdapter<RowEventListItemLayoutBinding> implements ISetOnListItemClickListener {
 
     private static final String TAG = EventListAdapter.class.getSimpleName();
 
-    private final Context context;
-    private List<Event> data = new ArrayList<>();
+    private List<Event> data;
     private OnListItemClickListener mOnListItemClickListener;
 
     private LayerDrawable backgroundRowItem;
     private Drawable unreadListItemIndicator;
 
-    public EventListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener) {
-        this(context, rowLayout, onListItemClickListener, new ArrayList<Event>());
-    }
-
-    public EventListAdapter(Context context, int rowLayout, OnListItemClickListener onListItemClickListener, List<Event> data) {
+    public EventListAdapter(int rowLayout, OnListItemClickListener onListItemClickListener, List<Event> data) {
         super(rowLayout);
-        this.context = context;
         this.mOnListItemClickListener = onListItemClickListener;
 
         if (data == null)
@@ -51,6 +39,7 @@ public class EventListAdapter extends DataBoundAdapter<RowEventListItemLayoutBin
         else
             this.data = new ArrayList<>(data);
     }
+
     @Override
     protected void bindItem(DataBoundViewHolder<RowEventListItemLayoutBinding> holder,
                             int position, List<Object> payloads) {
@@ -60,7 +49,6 @@ public class EventListAdapter extends DataBoundAdapter<RowEventListItemLayoutBin
         holder.setOnListItemClickListener(this.mOnListItemClickListener);
 
         indicateEventType(holder.binding.imgEventTypeIcon, record);
-
 
         //Sync Icon
         if (record.isModifiedOrChildModified()) {
@@ -94,7 +82,7 @@ public class EventListAdapter extends DataBoundAdapter<RowEventListItemLayoutBin
 
     public void indicateEventType(ImageView imgEventTypeIcon, Event eventRecord) {
         Resources resources = imgEventTypeIcon.getContext().getResources();
-        Drawable drw = (Drawable)ContextCompat.getDrawable(imgEventTypeIcon.getContext(), R.drawable.indicator_status_circle);
+        Drawable drw = (Drawable) ContextCompat.getDrawable(imgEventTypeIcon.getContext(), R.drawable.indicator_status_circle);
         if (eventRecord.getEventType() == EventType.RUMOR) {
             drw.setColorFilter(resources.getColor(R.color.indicatorRumorEvent), PorterDuff.Mode.SRC_OVER);
         } else if (eventRecord.getEventType() == EventType.OUTBREAK) {
@@ -104,9 +92,6 @@ public class EventListAdapter extends DataBoundAdapter<RowEventListItemLayoutBin
         imgEventTypeIcon.setBackground(drw);
     }
 
-
-
-
     public Event getEvent(int position) {
         if (position < 0)
             return null;
@@ -114,7 +99,7 @@ public class EventListAdapter extends DataBoundAdapter<RowEventListItemLayoutBin
         if (position >= this.data.size())
             return null;
 
-        return (Event)this.data.get(position);
+        return (Event) this.data.get(position);
     }
 
     public void addAll(List<Event> data) {
@@ -143,5 +128,4 @@ public class EventListAdapter extends DataBoundAdapter<RowEventListItemLayoutBin
     public void setOnListItemClickListener(OnListItemClickListener onListItemClickListener) {
         this.mOnListItemClickListener = onListItemClickListener;
     }
-
 }

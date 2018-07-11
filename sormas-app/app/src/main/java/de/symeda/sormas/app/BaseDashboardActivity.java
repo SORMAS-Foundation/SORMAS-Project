@@ -32,20 +32,7 @@ public abstract class BaseDashboardActivity extends BaseActivity implements Noti
     private View applicationTitleBar = null;
     private TextView subHeadingListActivityTitle;
 
-    private Enum pageStatus;
     private Map<String, SummaryRegisterItem> mRegisteredFragments = new HashMap<String, SummaryRegisterItem>();
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        initializeActivity(savedInstanceState);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,13 +46,9 @@ public abstract class BaseDashboardActivity extends BaseActivity implements Noti
 
     protected void onCreateInner(Bundle savedInstanceState) {
         rootView = findViewById(R.id.base_layout);
-        subHeadingListActivityTitle = (TextView)findViewById(R.id.subHeadingActivityTitle);
+        subHeadingListActivityTitle = (TextView) findViewById(R.id.subHeadingActivityTitle);
 
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
-
-        pageStatus = getPageStatusArg(arguments);
-
-        initializeActivity(arguments);
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
 
         if (showTitleBar()) {
             applicationTitleBar = findViewById(R.id.applicationTitleBar);
@@ -91,8 +74,8 @@ public abstract class BaseDashboardActivity extends BaseActivity implements Noti
                 Drawable drw = (Drawable) ContextCompat.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
                 drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource(statusFrameContext)), PorterDuff.Mode.SRC);
 
-                TextView txtStatusName = (TextView)statusFrame.findViewById(R.id.txtStatusName);
-                ImageView imgStatus = (ImageView)statusFrame.findViewById(R.id.statusIcon);
+                TextView txtStatusName = (TextView) statusFrame.findViewById(R.id.txtStatusName);
+                ImageView imgStatus = (ImageView) statusFrame.findViewById(R.id.statusIcon);
 
 
                 txtStatusName.setText(getStatusName(statusFrameContext));
@@ -109,10 +92,6 @@ public abstract class BaseDashboardActivity extends BaseActivity implements Noti
 
     public boolean showStatusFrame() {
         return false;
-    }
-
-    public Enum getPageStatus() {
-        return pageStatus;
     }
 
     public int getStatusColorResource(Context context) {
@@ -144,8 +123,6 @@ public abstract class BaseDashboardActivity extends BaseActivity implements Noti
         return rootView;
     }
 
-    protected abstract void initializeActivity(Bundle arguments);
-
     protected abstract List<BaseSummaryFragment> getSummaryFragments();
 
     private void replaceFragment(List<BaseSummaryFragment> fragments) {
@@ -163,7 +140,7 @@ public abstract class BaseDashboardActivity extends BaseActivity implements Noti
                 if (f.getArguments() == null)
                     f.setArguments(getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA));
 
-                FrameLayout frame = (FrameLayout)findViewById(f.getContainerResId());
+                FrameLayout frame = (FrameLayout) findViewById(f.getContainerResId());
 
                 if (frame == null)
                     continue;
@@ -179,23 +156,6 @@ public abstract class BaseDashboardActivity extends BaseActivity implements Noti
                 ft.addToBackStack(null);
             }
             ft.commit();
-        }
-    }
-
-    protected <E extends Enum<E>> E getPageStatusArg(Bundle arguments) {
-        E e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_PAGE_STATUS)) {
-                e = (E) arguments.getSerializable(ConstantHelper.ARG_PAGE_STATUS);
-            }
-        }
-
-        return e;
-    }
-
-    protected <E extends Enum<E>> void SavePageStatusState(Bundle outState, E status) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_PAGE_STATUS, status);
         }
     }
 
