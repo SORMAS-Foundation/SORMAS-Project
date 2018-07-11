@@ -134,6 +134,21 @@
         <item name="android:textStyle">italic</item>
     </style>
 
+    <style name="ControlSingleColumnStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="ControlFirstOfTwoColumnsStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="ControlSecondOfTwoColumnsStyle" parent="ControlFirstOfTwoColumnsStyle">
+        <item name="android:layout_marginStart">@dimen/control_spacing</item>
+    </style>
+
     <style name="ControlTextFieldStyle">
         <item name="android:layout_height">@dimen/maxControlHeight</item>
         <item name="android:minHeight">@dimen/maxControlHeight</item>
@@ -176,6 +191,7 @@
         <item name="android:textColor">@color/controlReadTextColor</item>
         <item name="android:textColorHint">@color/controlReadTextViewHint</item>
         <item name="android:textSize">@dimen/controlReadTextSize</item>
+        <item name="android:layout_marginBottom">@dimen/controlReadTextMarginBottom</item>
     </style>
 
     <style name="ControlTextFieldReadDistinctStyle" parent="ControlTextFieldReadStyle">
@@ -581,8 +597,8 @@
         <item name="android:background">@color/formEditBottomBorder</item>
         <item name="android:layout_marginTop">@dimen/contentVerticalSpacing</item>
         <item name="android:layout_marginBottom">@dimen/contentVerticalSpacing</item>
-        <item name="android:layout_marginLeft">@dimen/formLayoutGutterSize</item>
-        <item name="android:layout_marginRight">@dimen/formLayoutGutterSize</item>
+        <item name="android:layout_marginLeft">@dimen/control_spacing</item>
+        <item name="android:layout_marginRight">@dimen/control_spacing</item>
     </style>
 
 

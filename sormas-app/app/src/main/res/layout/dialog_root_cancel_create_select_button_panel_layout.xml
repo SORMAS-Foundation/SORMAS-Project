@@ -72,7 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginLeft="@dimen/formLayoutGutterSize"
+            android:layout_marginLeft="@dimen/control_spacing"
             android:layout_alignParentRight="true"
             android:visibility="@{dialog.isOkButtonVisible? View.VISIBLE : View.GONE}"
             android:text="@{config.positiveButtonText}"

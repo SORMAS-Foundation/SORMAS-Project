@@ -96,7 +96,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    android:layout_marginStart="@dimen/control_spacing"
                     app:value="@{data.onsetDate}" />
 
             </LinearLayout>

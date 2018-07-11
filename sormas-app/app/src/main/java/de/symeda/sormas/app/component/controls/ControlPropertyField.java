@@ -75,7 +75,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
     public abstract T getValue();
 
-    public abstract void setValue(T value) throws InvalidValueException;
+    public abstract void setValue(T value);
 
     protected abstract void initialize(Context context, AttributeSet attrs, int defStyle);
 
@@ -136,10 +136,16 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         return fieldId.substring(separatorIndex + 1);
     }
 
-    protected String getFieldCaptionPropertyId() {
+    public String getFieldCaptionPropertyId() {
         String fieldId = getFieldIdString();
         int separatorIndex = fieldId.lastIndexOf("/");
         return fieldId.substring(separatorIndex + 1, separatorIndex + 2).toUpperCase() + fieldId.substring(separatorIndex + 2).replaceAll("_", ".");
+    }
+
+    public String getPropertyIdWithoutPrefix() {
+        String fieldId = getFieldIdString();
+        int separatorIndex = fieldId.lastIndexOf("_");
+        return fieldId.substring(separatorIndex + 1);
     }
 
     protected void setBackgroundResourceFor(View input, int resId) {
@@ -171,7 +177,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
         if (dependencyParentField.getInternalValue() == null ||
                 dependencyParentField.getVisibility() != VISIBLE) {
-            setVisibility(GONE);
+            hideField();
             return;
         }
 
@@ -179,15 +185,20 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
             if (dependencyParentVisibility) {
                 setVisibility(VISIBLE);
             } else {
-                setVisibility(GONE);
+                hideField();
             }
         } else {
             if (dependencyParentVisibility) {
-                setVisibility(GONE);
+                hideField();
             } else {
                 setVisibility(VISIBLE);
             }
         }
+    }
+
+    public void hideField() {
+        setVisibility(GONE);
+        setValue(null);
     }
 
     // Overrides
@@ -303,7 +314,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         }
     }
 
-    protected Object getInternalValue() {
+    public Object getInternalValue() {
         return internalValue;
     }
 

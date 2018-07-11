@@ -28,8 +28,9 @@ public class SyncLogDao {
     private String parentEntityNames = null;
 
     public void pushParentEntityName(String parentEntityName) {
-        if (parentEntityName == null || parentEntityName.isEmpty())
+        if (parentEntityName == null || parentEntityName.isEmpty()) {
             throw new IllegalArgumentException("parentEntityName is null or empty");
+        }
 
         parentEntityNameStack.push(parentEntityName);
         parentEntityNames = null;

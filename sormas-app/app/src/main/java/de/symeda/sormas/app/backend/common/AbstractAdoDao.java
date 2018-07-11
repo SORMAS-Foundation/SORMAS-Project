@@ -10,6 +10,8 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
@@ -472,6 +474,9 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         ADO current = queryUuid(source.getUuid());
         ADO snapshot = querySnapshotByUuid(source.getUuid());
         String sourceEntityString = source.toString();
+        if (StringUtils.isEmpty(sourceEntityString)) {
+            sourceEntityString = source.getEntityName();
+        }
 
         try {
 

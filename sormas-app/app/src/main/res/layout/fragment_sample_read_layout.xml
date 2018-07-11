@@ -64,7 +64,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        android:layout_marginStart="@dimen/control_spacing"
                         app:value="@{sample.sampleMaterial}" />
 
                 </LinearLayout>
@@ -103,7 +103,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        android:layout_marginStart="@dimen/control_spacing"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                         app:value="@{sample.suggestedTypeOfTest}" />
 
@@ -129,7 +129,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical"
-                        android:layout_marginRight="@dimen/formLayoutGutterSize">
+                        android:layout_marginRight="@dimen/control_spacing">
 
 
 
@@ -221,7 +221,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            android:layout_marginStart="@dimen/formLayoutGutterSize"
+                            android:layout_marginStart="@dimen/control_spacing"
                             app:value="@{sample.receivedDate}" />
 
                     </LinearLayout>

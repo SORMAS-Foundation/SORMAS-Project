@@ -55,7 +55,7 @@
     <dimen name="spinnerVerticalSpacing">16dp</dimen>
     <dimen name="dialogVerticalContentSpacing">48dp</dimen>
 
-
+    <dimen name="fragment_padding">24dp</dimen>
 
 
 
@@ -85,7 +85,7 @@
     <dimen name="serviceSeparatorMarginLeft">8dp</dimen>
     <dimen name="serviceSeparatorMarginRight">8dp</dimen>
     <dimen name="signInTextSize">34dp</dimen>
-    <dimen name="formLayoutGutterSize">24dp</dimen>
+    <dimen name="control_spacing">24dp</dimen>
 
     <!-- Logo -->
     <dimen name="logoWidth">100dp</dimen>

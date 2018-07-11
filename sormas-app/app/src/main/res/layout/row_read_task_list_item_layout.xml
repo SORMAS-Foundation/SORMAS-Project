@@ -228,7 +228,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="top|left"
-                    android:layout_marginRight="@dimen/formLayoutGutterSize"
+                    android:layout_marginRight="@dimen/control_spacing"
                     android:textSize="@dimen/listActivityRowTertiaryTextSize"
                     android:textColor="@color/listActivityRowLeastText"
                     android:fontFamily="sans-serif-medium"

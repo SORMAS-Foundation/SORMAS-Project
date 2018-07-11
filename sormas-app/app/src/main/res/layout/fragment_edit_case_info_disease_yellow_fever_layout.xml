@@ -24,7 +24,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/heading_sub_case_addition_med_info"
+            android:text="@string/sub_heading_additional_medical_information"
             style="@style/SubHeadingStyle"
             />
 

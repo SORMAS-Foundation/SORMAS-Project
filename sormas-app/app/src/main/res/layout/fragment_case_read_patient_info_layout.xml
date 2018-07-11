@@ -41,7 +41,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    android:layout_marginStart="@dimen/control_spacing"
                     app:value="@{data.lastName}" />
 
             </LinearLayout>
@@ -65,7 +65,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    android:layout_marginStart="@dimen/control_spacing"
                     app:value="@{data.sex}" />
 
             </LinearLayout>
@@ -90,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    android:layout_marginStart="@dimen/control_spacing"
                     app:value="@{data.mothersMaidenName}" />
 
             </LinearLayout>
@@ -114,7 +114,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    android:layout_marginStart="@dimen/control_spacing"
                     app:value="@{data.phoneOwner}" />
 
             </LinearLayout>
@@ -147,7 +147,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    android:layout_marginStart="@dimen/control_spacing"
                     app:value="@{data.deathPlaceType}" />
 
             </LinearLayout>
@@ -180,7 +180,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    android:layout_marginStart="@dimen/control_spacing"
                     app:value="@{data.burialConductor}" />
 
             </LinearLayout>
@@ -232,7 +232,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    android:layout_marginStart="@dimen/control_spacing"
                     app:value="@{data.occupationDistrict}" />
 
             </LinearLayout>
@@ -256,7 +256,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    android:layout_marginStart="@dimen/control_spacing"
                     app:value="@{data.occupationFacility}" />
 
             </LinearLayout>

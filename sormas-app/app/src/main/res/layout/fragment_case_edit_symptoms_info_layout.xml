@@ -58,7 +58,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    android:layout_marginStart="@dimen/control_spacing"
                     app:value="@={data.temperatureSource}" />
 
             </LinearLayout>
@@ -97,7 +97,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    android:layout_marginStart="@dimen/control_spacing"
                     android:text="@string/action_set_cleared_to_no"
                     app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
                     app:slim="true"

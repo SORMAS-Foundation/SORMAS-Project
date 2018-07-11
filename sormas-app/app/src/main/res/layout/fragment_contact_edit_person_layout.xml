@@ -66,7 +66,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        android:layout_marginStart="@dimen/control_spacing"
                         app:required="true"
                         app:value="@={data.lastName}"
                         app:imeOptions="actionNext" />
@@ -97,7 +97,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        android:layout_marginStart="@dimen/control_spacing"
                         app:value="@={data.mothersMaidenName}" />
 
 
@@ -133,7 +133,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        android:layout_marginStart="@dimen/control_spacing"
                         app:showCaption="false"
                         app:value="@={data.birthdateMM}" />
 
@@ -144,7 +144,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        android:layout_marginStart="@dimen/control_spacing"
                         app:showCaption="false"
                         app:value="@={data.birthdateDD}" />
 
@@ -176,7 +176,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        android:layout_marginStart="@dimen/control_spacing"
                         app:value="@={data.approximateAgeType}" />
 
 
@@ -215,7 +215,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        android:layout_marginStart="@dimen/control_spacing"
                         app:value="@={data.phoneOwner}" />
 
                 </LinearLayout>

@@ -56,7 +56,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingLeft="@dimen/formLayoutGutterSize"
+                    android:paddingLeft="@dimen/control_spacing"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     app:description="@string/desc_case_epid_travel_to_date"
                     app:labelCaption="@string/label_case_epid_travel_to_date"

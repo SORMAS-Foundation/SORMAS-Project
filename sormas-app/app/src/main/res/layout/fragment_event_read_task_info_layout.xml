@@ -74,7 +74,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    android:layout_marginStart="@dimen/control_spacing"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     app:image="@drawable/indicator_status_circle"
                     app:imageWidth="@dimen/readControlSmallIconWidth"
@@ -102,7 +102,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="@dimen/formLayoutGutterSize"
+                    android:layout_marginStart="@dimen/control_spacing"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     app:value="@{data.dueDate}" />
 

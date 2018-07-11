@@ -62,7 +62,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        android:layout_marginStart="@dimen/control_spacing"
                         app:value="@{data.followUpStatus}" />
 
                 </LinearLayout>
@@ -93,7 +93,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        android:layout_marginStart="@dimen/control_spacing"
                         app:value="@{data.reportDateTime}" />
 
                 </LinearLayout>
@@ -117,7 +117,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        android:layout_marginStart="@dimen/formLayoutGutterSize"
+                        android:layout_marginStart="@dimen/control_spacing"
                         app:value="@{data.followUpUntil}" />
 
                 </LinearLayout>
@@ -190,7 +190,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            android:layout_marginStart="@dimen/formLayoutGutterSize"
+                            android:layout_marginStart="@dimen/control_spacing"
                             app:value="@{caze.caseClassification}" />
 
                     </LinearLayout>
@@ -224,7 +224,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            android:layout_marginStart="@dimen/formLayoutGutterSize"
+                            android:layout_marginStart="@dimen/control_spacing"
                             app:value="@{caze.person.sex}" />
 
                     </LinearLayout>
@@ -249,7 +249,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            android:layout_marginStart="@dimen/formLayoutGutterSize"
+                            android:layout_marginStart="@dimen/control_spacing"
                             app:value="@{caze.symptoms.onsetDate}" />
 
                     </LinearLayout>

@@ -14,6 +14,10 @@ import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class BaseFragment extends Fragment {
 
@@ -46,24 +50,24 @@ public class BaseFragment extends Fragment {
 
     protected void setFieldVisibleOrGone(View v, boolean visible) {
         if (visible) {
-            v.setVisibility(View.VISIBLE);
+            v.setVisibility(VISIBLE);
         } else {
-            v.setVisibility(View.GONE);
+            v.setVisibility(GONE);
             v.clearFocus();
         }
     }
 
     protected void setFieldVisible(View v, boolean visible) {
         if (visible) {
-            v.setVisibility(View.VISIBLE);
+            v.setVisibility(VISIBLE);
         } else {
-            v.setVisibility(View.GONE);
+            v.setVisibility(GONE);
             v.clearFocus();
         }
     }
 
     protected void setFieldGone(View v) {
-        v.setVisibility(View.GONE);
+        v.setVisibility(GONE);
         v.clearFocus();
     }
 
@@ -95,17 +99,40 @@ public class BaseFragment extends Fragment {
         }
     }
 
-    protected void setVisibilityByDisease(Class<?> fieldsDtoClazz, Disease disease, ViewGroup viewGroup) {
-        for (int i=0; i<viewGroup.getChildCount(); i++){
+    protected void setVisibilityByDisease(Class<?> dtoClass, Disease disease, ViewGroup viewGroup) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++){
             View child = viewGroup.getChildAt(i);
             if (child instanceof ControlPropertyField) {
-                String propertyId = ((ControlPropertyField)child).getPropertyId();
-                boolean definedOrMissing = Diseases.DiseasesConfiguration.isDefinedOrMissing(fieldsDtoClazz, propertyId, disease);
-                child.setVisibility(definedOrMissing ? View.VISIBLE : View.GONE);
-            }
-            else if (child instanceof ViewGroup) {
-                setVisibilityByDisease(fieldsDtoClazz, disease, (ViewGroup)child);
+                boolean visibleAllowed = isVisibleAllowed(dtoClass, disease, (ControlPropertyField) child);
+                child.setVisibility(visibleAllowed && child.getVisibility() == VISIBLE ? VISIBLE : GONE);
+            } else if (child instanceof ViewGroup) {
+                setVisibilityByDisease(dtoClass, disease, (ViewGroup) child);
             }
         }
     }
+
+    protected boolean isVisibleAllowed(Class<?> dtoClass, Disease disease, ControlPropertyField field) {
+        String propertyId = field.getPropertyIdWithoutPrefix();
+        return Diseases.DiseasesConfiguration.isDefinedOrMissing(dtoClass, propertyId, disease);
+    }
+
+    protected void setVisibleWhen(ControlPropertyField field, ControlPropertyField sourceField, final Object sourceValue) {
+        if (sourceField.getInternalValue() != null && sourceField.getInternalValue().equals(sourceValue)) {
+            field.setVisibility(VISIBLE);
+        } else {
+            field.hideField();
+        }
+
+        sourceField.addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                if (field.getInternalValue() != null && field.getInternalValue().equals(sourceValue)) {
+                    field.setVisibility(VISIBLE);
+                } else {
+                    field.hideField();
+                }
+            }
+        });
+    }
+
 }

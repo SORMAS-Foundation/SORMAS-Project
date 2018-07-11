@@ -220,7 +220,7 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
 
     public abstract void onLayoutBinding(TBinding contentBinding);
 
-    @Deprecated
+    // TODO: Add comment on when to use the layout binding methods
     public void onAfterLayoutBinding(TBinding contentBinding) {
     }
 

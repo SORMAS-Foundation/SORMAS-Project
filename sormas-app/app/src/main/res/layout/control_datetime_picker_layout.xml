@@ -49,7 +49,7 @@
                 android:id="@+id/time_input"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_marginStart="@dimen/formLayoutGutterSize"
+                android:layout_marginStart="@dimen/control_spacing"
                 android:inputType="time"
                 style="@style/ControlDateOrTimePickerInputStyle" />
 
