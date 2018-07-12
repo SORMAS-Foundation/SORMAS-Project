@@ -28,7 +28,6 @@ import de.symeda.sormas.app.component.menu.LandingPageMenuParser;
 import de.symeda.sormas.app.component.menu.OnLandingPageMenuClickListener;
 import de.symeda.sormas.app.component.menu.OnSelectInitialActiveMenuItemListener;
 import de.symeda.sormas.app.component.menu.PageMenuNavAdapter;
-import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotificationContext;
@@ -40,6 +39,7 @@ import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.ConstantHelper;
+import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomainObject> extends BaseActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, NotificationContext {
@@ -139,9 +139,9 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     protected void onResume() {
         super.onResume();
 
-        requestRootData(new Callback.IAction<ActivityRootEntity>() {
+        requestRootData(new Consumer<ActivityRootEntity>() {
             @Override
-            public void call(ActivityRootEntity result) {
+            public void accept(ActivityRootEntity result) {
                 replaceFragment(buildEditFragment(getActiveMenuItem(), result));
             }
         });
@@ -154,7 +154,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         return true;
     }
 
-    protected void requestRootData(final Callback.IAction<ActivityRootEntity> callback) {
+    protected void requestRootData(final Consumer<ActivityRootEntity> callback) {
 
         getRootEntityTask = new DefaultAsyncTask(getContext()) {
             @Override
@@ -200,7 +200,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
                         }
                     }
 
-                    callback.call(storedRootEntity);
+                    callback.accept(storedRootEntity);
                 }
             }
         }.executeOnThreadPool();
@@ -335,7 +335,6 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         String dataUuid = dataCapsule.getRecordUuid();
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
         IStatusElaborator pageStatus = dataCapsule.getPageStatus();
-        String sampleMaterial = dataCapsule.getSampleMaterial();
         String personUuid = dataCapsule.getPersonUuid();
         String caseUuid = dataCapsule.getCaseUuid();
         String eventUuid = dataCapsule.getEventUuid();
@@ -355,7 +354,6 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         bundle.putString(ConstantHelper.KEY_DATA_UUID, dataUuid);
         bundle.putString(ConstantHelper.KEY_PERSON_UUID, personUuid);
         bundle.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);
-        bundle.putString(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
         bundle.putString(ConstantHelper.KEY_EVENT_UUID, eventUuid);
         bundle.putString(ConstantHelper.KEY_TASK_UUID, taskUuid);
         bundle.putString(ConstantHelper.KEY_CONTACT_UUID, contactUuid);

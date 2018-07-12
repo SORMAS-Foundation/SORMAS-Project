@@ -310,7 +310,6 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         String dataUuid = dataCapsule.getRecordUuid();
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
         IStatusElaborator pageStatus = dataCapsule.getPageStatus();
-        String sampleMaterial = dataCapsule.getSampleMaterial();
         String personUuid = dataCapsule.getPersonUuid();
         String caseUuid = dataCapsule.getCaseUuid();
         String eventUuid = dataCapsule.getEventUuid();
@@ -331,7 +330,6 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         bundle.putString(ConstantHelper.KEY_DATA_UUID, dataUuid);
         bundle.putString(ConstantHelper.KEY_PERSON_UUID, personUuid);
         bundle.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);
-        bundle.putString(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
         bundle.putString(ConstantHelper.KEY_EVENT_UUID, eventUuid);
         bundle.putString(ConstantHelper.KEY_TASK_UUID, taskUuid);
         bundle.putString(ConstantHelper.KEY_CONTACT_UUID, contactUuid);

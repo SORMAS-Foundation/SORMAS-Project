@@ -272,7 +272,6 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
         IStatusElaborator pageStatus = dataCapsule.getPageStatus();
         int activeMenuKey = dataCapsule.getActiveMenuKey();
-        String sampleMaterial = dataCapsule.getSampleMaterial();
         String personUuid = dataCapsule.getPersonUuid();
         String caseUuid = dataCapsule.getCaseUuid();
         String eventUuid = dataCapsule.getEventUuid();
@@ -288,7 +287,6 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
         bundle.putString(ConstantHelper.KEY_DATA_UUID, dataUuid);
         bundle.putString(ConstantHelper.KEY_PERSON_UUID, personUuid);
         bundle.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);
-        bundle.putString(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
         bundle.putString(ConstantHelper.KEY_EVENT_UUID, eventUuid);
         bundle.putString(ConstantHelper.KEY_TASK_UUID, taskUuid);
         bundle.putString(ConstantHelper.KEY_CONTACT_UUID, contactUuid);
@@ -353,27 +351,9 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
         return e;
     }
 
-    protected String getSampleMaterialArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.KEY_SAMPLE_MATERIAL)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_SAMPLE_MATERIAL);
-            }
-        }
-
-        return result;
-    }
-
-
     protected <E extends Enum<E>> void saveFilterStatusState(Bundle outState, E status) {
         if (outState != null) {
             outState.putSerializable(ConstantHelper.ARG_FILTER_STATUS, status);
-        }
-    }
-
-    protected <E extends Enum<E>> void savePageStatusState(Bundle outState, E status) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_PAGE_STATUS, status);
         }
     }
 

@@ -69,18 +69,8 @@ public class BaseFormNavigationCapsule<T extends AbstractDomainObject, TFormNavi
     }
 
     @Override
-    public SearchBy getSearchStrategy() {
-        return searchBy;
-    }
-
-    @Override
     public int getActiveMenuKey() {
         return activeMenuKey;
-    }
-
-    @Override
-    public List<IStatusElaborator> getOtherStatus() {
-        return otherStatus;
     }
 
     @Override

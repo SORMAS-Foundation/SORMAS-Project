@@ -7,7 +7,6 @@ import android.databinding.ViewDataBinding;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +18,6 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
@@ -276,7 +274,8 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
 
     protected abstract void onLayoutBinding(TBinding contentBinding);
 
-    protected void onAfterLayoutBinding(TBinding contentBinding) { }
+    protected void onAfterLayoutBinding(TBinding contentBinding) {
+    }
 
     protected static <TFragment extends BaseEditFragment, TCapsule extends INavigationCapsule> TFragment newInstance(Class<TFragment> f, TCapsule dataCapsule, AbstractDomainObject activityRootData) {
 
@@ -296,7 +295,6 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         IStatusElaborator filterStatus = dataCapsule.getFilterStatus();
         IStatusElaborator pageStatus = dataCapsule.getPageStatus();
         int activeMenuKey = dataCapsule.getActiveMenuKey();
-        String sampleMaterial = dataCapsule.getSampleMaterial();
         String caseUuid = dataCapsule.getCaseUuid();
         String personUuid = dataCapsule.getPersonUuid();
         String eventUuid = dataCapsule.getEventUuid();
@@ -313,7 +311,6 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         bundle.putString(ConstantHelper.KEY_DATA_UUID, dataUuid);
         bundle.putString(ConstantHelper.KEY_PERSON_UUID, personUuid);
         bundle.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);
-        bundle.putString(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
         bundle.putString(ConstantHelper.KEY_EVENT_UUID, eventUuid);
         bundle.putString(ConstantHelper.KEY_TASK_UUID, taskUuid);
         bundle.putString(ConstantHelper.KEY_CONTACT_UUID, contactUuid);
@@ -455,17 +452,6 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         return e;
     }
 
-    protected String getSampleMaterialArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.KEY_SAMPLE_MATERIAL)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_SAMPLE_MATERIAL);
-            }
-        }
-
-        return result;
-    }
-
     protected <E extends Enum<E>> E getFilterStatusArg(Bundle arguments) {
         E e = null;
         if (arguments != null && !arguments.isEmpty()) {
@@ -477,62 +463,15 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         return e;
     }
 
-    protected <E extends Enum<E>> E getPageStatusArg(Bundle arguments) {
-        E e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.ARG_PAGE_STATUS)) {
-                e = (E) arguments.getSerializable(ConstantHelper.ARG_PAGE_STATUS);
-            }
-        }
-
-        return e;
-    }
-
-    protected <E extends Enum<E>> void savePageStatusState(Bundle outState, E status) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_PAGE_STATUS, status);
-        }
-    }
-
     protected void saveRecordUuidState(Bundle outState, String recordUuid) {
         if (outState != null) {
             outState.putString(ConstantHelper.KEY_DATA_UUID, recordUuid);
         }
     }
 
-    protected void savePersonUuidState(Bundle outState, String recordUuid) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_PERSON_UUID, recordUuid);
-        }
-    }
-
-    protected void saveEventUuidState(Bundle outState, String eventUuid) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_EVENT_UUID, eventUuid);
-        }
-    }
-
-    protected void saveContactUuidState(Bundle outState, String contactUuid) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_CONTACT_UUID, contactUuid);
-        }
-    }
-
-    protected void saveCaseUuidState(Bundle outState, String caseUuid) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_CASE_UUID, caseUuid);
-        }
-    }
-
     protected void saveUserRightState(Bundle outState, UserRight userRight) {
         if (outState != null) {
             outState.putSerializable(ConstantHelper.ARG_EDIT_OR_CREATE_USER_RIGHT, userRight);
-        }
-    }
-
-    protected void saveSampleMaterialState(Bundle outState, String sampleMaterial) {
-        if (outState != null) {
-            outState.putString(ConstantHelper.KEY_SAMPLE_MATERIAL, sampleMaterial);
         }
     }
 

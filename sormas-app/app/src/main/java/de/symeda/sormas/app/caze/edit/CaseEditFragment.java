@@ -48,6 +48,7 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.layoutprocessor.CaseDiseaseLayoutProcessor;
 
@@ -223,7 +224,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         });
 
         contentBinding.caseDataOutcomeDate.setFragmentManager(getFragmentManager());
-        //contentBinding.dtpDateOfLastVaccination.setFragmentManager(getFragmentManager());
     }
 
     @Override
@@ -245,31 +245,23 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         moveToAnotherHealthFacilityCallback = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final CaseEditActivity activity = (CaseEditActivity) CaseEditFragment.this.getActivity();
+                final CaseEditActivity activity = (CaseEditActivity) CaseEditFragment.this.getBaseEditActivity();
 
                 if (activity == null)
                     return;
 
-                activity.saveCaseToDatabase(new Callback.IAction<BoolResult>() {
-
+                activity.saveData(new Consumer<Case>() {
                     @Override
-                    public void call(BoolResult result) {
-                        if (!result.isSuccess()) {
-                            NotificationHelper.showNotification(activity, NotificationType.ERROR, R.string.notification_error_init_move_case);
-                            return;
-                        }
-
-                        final MoveCaseDialog moveCaseDialog = new MoveCaseDialog(BaseActivity.getActiveActivity(), record);
+                    public void accept(Case caze) {
+                        final MoveCaseDialog moveCaseDialog = new MoveCaseDialog(BaseActivity.getActiveActivity(), caze);
                         moveCaseDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                             @Override
                             public void onOkClick(View v, Object item, View viewRoot) {
                                 record = (Case) item;
                                 requestLayoutRebind();
                                 moveCaseDialog.dismiss();
-
                             }
                         });
-
                         moveCaseDialog.show(null);
                     }
                 });
