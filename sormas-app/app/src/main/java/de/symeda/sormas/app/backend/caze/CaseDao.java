@@ -127,7 +127,14 @@ public class CaseDao extends AbstractAdoDao<Case> {
         caze.setPerson(person);
 
         caze.setReportDate(new Date());
-        caze.setReportingUser(ConfigProvider.getUser());
+        User user = ConfigProvider.getUser();
+        caze.setReportingUser(user);
+
+        if (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+            caze.setSurveillanceOfficer(user);
+        } else if (user.hasUserRole(UserRole.INFORMANT)) {
+            caze.setSurveillanceOfficer(user.getAssociatedOfficer());
+        }
 
         caze.setInvestigationStatus(InvestigationStatus.PENDING);
         caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);

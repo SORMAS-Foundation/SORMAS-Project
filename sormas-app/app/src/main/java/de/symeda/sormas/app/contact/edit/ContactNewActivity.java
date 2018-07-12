@@ -4,47 +4,35 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.dialog.SelectOrCreatePersonDialog;
-import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.util.Consumer;
 
 public class ContactNewActivity extends BaseEditActivity<Contact> {
 
     public static final String TAG = ContactNewActivity.class.getSimpleName();
 
     private AsyncTask saveTask;
-    private AsyncTask createPersonTask;
     private String caseUuid = null;
 
     @Override
@@ -114,144 +102,43 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
         final Contact contactToSave = getStoredRootEntity();
 
-        if (contactToSave == null)
-            return;
-
-        DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
+        SelectOrCreatePersonDialog.selectOrCreatePerson(contactToSave.getPerson(), new Consumer<Person>() {
             @Override
-            public void onPreExecute() {
-                //TODO: Validation
-                    /*ContactNewFragmentLayoutBinding binding = contactNewForm.getBinding();
-                    ContactValidator.clearErrorsForNewContact(binding);
-                    if (!ContactValidator.validateNewContact(contact, binding)) {
-                        return true;
-                    }*/
-            }
+            public void accept(Person person) {
+                contactToSave.setPerson(person);
 
-            @Override
-            public void doInBackground(TaskResultHolder resultHolder) {
-                List<PersonNameDto> existingPersons = DatabaseHelper.getPersonDao().getPersonNameDtos();
-                List<Person> similarPersons = new ArrayList<>();
-                for (PersonNameDto existingPerson : existingPersons) {
-                    if (PersonHelper.areNamesSimilar(contactToSave.getPerson().getFirstName() + " " + contactToSave.getPerson().getLastName(),
-                            existingPerson.getFirstName() + " " + existingPerson.getLastName())) {
-                        Person person = DatabaseHelper.getPersonDao().queryForId(existingPerson.getId());
-                        similarPersons.add(person);
+                saveTask = new SavingAsyncTask(getRootView(), contactToSave) {
+                    @Override
+                    protected void onPreExecute() {
+                        showPreloader();
                     }
-                }
-                resultHolder.forList().add(similarPersons);
-            }
-        };
-        saveTask = executor.execute(new ITaskResultCallback() {
-            @Override
-            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                //getBaseActivity().hidePreloader();
-                //getBaseActivity().showFragmentView();
 
-                if (resultHolder == null) {
-                    return;
-                }
-
-                List<Person> existingPersons = new ArrayList<>();
-                ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
-
-                if (listIterator.hasNext())
-                    existingPersons = listIterator.next();
-
-
-                if (existingPersons.size() > 0) {
-                    final SelectOrCreatePersonDialog personDialog = new SelectOrCreatePersonDialog(BaseActivity.getActiveActivity(), contactToSave.getPerson(), existingPersons);
-                    personDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
-                        @Override
-                        public void onOkClick(View v, Object item, View viewRoot) {
-                            personDialog.dismiss();
-
-                            //Select
-                            if (item instanceof Person) {
-                                contactToSave.setPerson((Person) item);
-                                savePersonAndContact(contactToSave);
-                                goToCaseContacts();
-                            }
-
-                        }
-                    });
-
-                    personDialog.setOnCreateClickListener(new TeboAlertDialogInterface.CreateOnClickListener() {
-                        @Override
-                        public void onCreateClick(View v, Object item, View viewRoot) {
-                            personDialog.dismiss();
-
-                            if (item instanceof Person) {
-                                contactToSave.setPerson((Person) item);
-                                savePersonAndContact(contactToSave);
-                                goToCaseContacts();
+                    @Override
+                    protected void doInBackground(TaskResultHolder resultHolder) throws Exception {
+                        if (contactToSave.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && contactToSave.getPerson().getAddress().isEmptyLocation()) {
+                            Case contactCase = DatabaseHelper.getCaseDao().queryUuidBasic(contactToSave.getCaseUuid());
+                            if (contactCase != null) {
+                                contactToSave.getPerson().getAddress().setRegion(contactCase.getRegion());
+                                contactToSave.getPerson().getAddress().setDistrict(contactCase.getDistrict());
+                                contactToSave.getPerson().getAddress().setCommunity(contactCase.getCommunity());
                             }
                         }
-                    });
 
-                    personDialog.setOnCancelClickListener(new TeboAlertDialogInterface.CancelOnClickListener() {
+                        DatabaseHelper.getPersonDao().saveAndSnapshot(contactToSave.getPerson());
+                        DatabaseHelper.getContactDao().saveAndSnapshot(contactToSave);
+                    }
 
-                        @Override
-                        public void onCancelClick(View v, Object item, View viewRoot) {
-                            personDialog.dismiss();
+                    @Override
+                    protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                        hidePreloader();
+                        super.onPostExecute(taskResult);
+                        if (taskResult.getResultStatus().isSuccess()) {
+                            finish();
                         }
-                    });
-
-                    personDialog.show(null);
-                } else {
-                    savePersonAndContact(contactToSave);
-                    goToCaseContacts();
-                }
-
+                    }
+                }.executeOnThreadPool();
             }
         });
-    }
-
-    private void savePersonAndContact(final Contact contactToSave) {
-
-        createPersonTask = new DefaultAsyncTask(getContext(), contactToSave) {
-
-            @Override
-            protected void onPreExecute() {
-                showPreloader();
-            }
-
-            @Override
-            public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
-
-                if (contactToSave.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && contactToSave.getPerson().getAddress().isEmptyLocation()) {
-                    Case contactCase = DatabaseHelper.getCaseDao().queryUuidBasic(contactToSave.getCaseUuid());
-                    if (contactCase != null) {
-                        contactToSave.getPerson().getAddress().setRegion(contactCase.getRegion());
-                        contactToSave.getPerson().getAddress().setDistrict(contactCase.getDistrict());
-                        contactToSave.getPerson().getAddress().setCommunity(contactCase.getCommunity());
-                    }
-                }
-
-                DatabaseHelper.getPersonDao().saveAndSnapshot(contactToSave.getPerson());
-                DatabaseHelper.getContactDao().saveAndSnapshot(contactToSave);
-            }
-
-            @Override
-            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-
-                hidePreloader();
-
-                if (taskResult.getResultStatus().isFailed()) {
-                    NotificationHelper.showNotification(ContactNewActivity.this, NotificationType.ERROR,
-                            String.format(getResources().getString(R.string.snackbar_save_error), getResources().getString(R.string.entity_sample)));
-                } else {
-                    NotificationHelper.showNotification(ContactNewActivity.this, NotificationType.SUCCESS,
-                            String.format(getResources().getString(R.string.snackbar_save_success), getResources().getString(R.string.entity_sample)));
-
-                    finish();
-                }
-            }
-        }.executeOnThreadPool();
-    }
-
-    private void goToCaseContacts() {
-        ContactNewActivity.this.finish();
     }
 
     public static <TActivity extends BaseActivity> void goToActivity(Context fromActivity, ContactFormNavigationCapsule dataCapsule) {
@@ -264,8 +151,5 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
         if (saveTask != null && !saveTask.isCancelled())
             saveTask.cancel(true);
-
-        if (createPersonTask != null && !createPersonTask.isCancelled())
-            createPersonTask.cancel(true);
     }
 }

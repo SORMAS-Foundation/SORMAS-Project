@@ -1,5 +1,5 @@
 package de.symeda.sormas.app.util;
 
-public interface Consumer {
-    void accept(Object parameter);
+public interface Consumer<T> {
+    void accept(T parameter);
 }

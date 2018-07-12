@@ -10,10 +10,6 @@ import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 
 public class EventParticipantFormNavigationCapsule extends BaseFormNavigationCapsule<Event, EventParticipantFormNavigationCapsule> {
 
-    public EventParticipantFormNavigationCapsule(Context context, EventStatus pageStatus) {
-        super(context, null, pageStatus);
-    }
-
     public EventParticipantFormNavigationCapsule(Context context, String recordUuid) {
         super(context, recordUuid, null);
     }

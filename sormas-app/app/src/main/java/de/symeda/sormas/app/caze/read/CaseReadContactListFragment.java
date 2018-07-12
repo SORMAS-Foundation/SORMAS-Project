@@ -2,6 +2,7 @@ package de.symeda.sormas.app.caze.read;
 
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 
@@ -15,6 +16,7 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.contact.read.ContactReadActivity;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 

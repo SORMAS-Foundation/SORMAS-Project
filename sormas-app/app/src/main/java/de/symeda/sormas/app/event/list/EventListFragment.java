@@ -125,16 +125,6 @@ public class EventListFragment extends BaseListFragment<EventListAdapter> implem
                 }
             }
         });
-
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout) this.getView().findViewById(R.id.swiperefresh);
-        if (swiperefresh != null) {
-            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, false, true, swiperefresh, null);
-                }
-            });
-        }
     }
 
     @Override

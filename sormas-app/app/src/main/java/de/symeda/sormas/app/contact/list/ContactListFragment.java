@@ -125,17 +125,6 @@ public class ContactListFragment extends BaseListFragment<ContactListAdapter> im
                 }
             }
         });
-
-        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout) this.getView().findViewById(R.id.swiperefresh);
-        if (swiperefresh != null) {
-            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, false, true, true, swiperefresh, null);
-                }
-            });
-        }
-
     }
 
     @Override

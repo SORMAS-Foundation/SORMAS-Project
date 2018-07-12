@@ -3,52 +3,31 @@ package de.symeda.sormas.app.event.edit.sub;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
-import de.symeda.sormas.app.backend.event.EventParticipantDao;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.component.dialog.SelectOrCreatePersonDialog;
-import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
+import de.symeda.sormas.app.core.async.AsyncTaskResult;
+import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.core.notification.NotificationType;
-import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
-import de.symeda.sormas.app.util.MenuOptionsHelper;
-import de.symeda.sormas.app.util.SyncCallback;
+import de.symeda.sormas.app.util.Consumer;
 
 public class EventParticipantNewActivity extends BaseEditActivity<EventParticipant> {
 
     public static final String TAG = EventParticipantNewActivity.class.getSimpleName();
 
     private AsyncTask saveTask;
-    private AsyncTask checkExistingPersonTask;
-    private AsyncTask createPersonTask;
 
     private String eventUuid = null;
 
@@ -98,187 +77,42 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
 
     @Override
     public EventStatus getPageStatus() {
-        return (EventStatus)super.getPageStatus();
+        return (EventStatus) super.getPageStatus();
     }
 
     @Override
     public void saveData() {
-        final EventParticipant eventParticipantToSave = (EventParticipant)getActiveFragment().getPrimaryData();
 
-        // TODO validation
-//        // Validation
-//        EventParticipantValidator.clearErrorsForNewEventParticipant(getContentBinding());
-//        if (!EventParticipantValidator.validateNewEvent(nContext, eventParticipantToSave, getContentBinding())) {
-//            return;
-//        }
+        final EventParticipant eventParticipantToSave = (EventParticipant) getActiveFragment().getPrimaryData();
 
-        checkExistingPersons(eventParticipantToSave, new Callback.IAction<List<Person>>() {
+        SelectOrCreatePersonDialog.selectOrCreatePerson(eventParticipantToSave.getPerson(), new Consumer<Person>() {
             @Override
-            public void call(List<Person> existingPersons) {
-                if (existingPersons.size() > 0) {
-                    final SelectOrCreatePersonDialog personDialog = new SelectOrCreatePersonDialog(BaseActivity.getActiveActivity(), eventParticipantToSave.getPerson(), existingPersons);
-                    personDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
-                        @Override
-                        public void onOkClick(View v, Object item, View viewRoot) {
-                            personDialog.dismiss();
+            public void accept(Person person) {
+                eventParticipantToSave.setPerson(person);
 
-                            //Select
-                            if (item instanceof Person) {
-                                eventParticipantToSave.setPerson((Person)item);
-                                savePersonAndEventParticipant(eventParticipantToSave);
-                            }
-
-                        }
-                    });
-
-                    personDialog.setOnCreateClickListener(new TeboAlertDialogInterface.CreateOnClickListener() {
-                        @Override
-                        public void onCreateClick(View v, Object item, View viewRoot) {
-                            personDialog.dismiss();
-
-                            if (item instanceof Person) {
-                                eventParticipantToSave.setPerson((Person)item);
-                                savePersonAndEventParticipant(eventParticipantToSave);
-                            }
-                        }
-                    });
-
-                    personDialog.setOnCancelClickListener(new TeboAlertDialogInterface.CancelOnClickListener() {
-
-                        @Override
-                        public void onCancelClick(View v, Object item, View viewRoot) {
-                            personDialog.dismiss();
-                        }
-                    });
-
-                    personDialog.show(null);
-
-
-                } else {
-                    savePersonAndEventParticipant(eventParticipantToSave);
-                }
-
-            }
-        });
-    }
-
-    private void checkExistingPersons(final EventParticipant eventParticipantToSave, final Callback.IAction<List<Person>> callback) {
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-
-                @Override
-                public void onPreExecute() {
-                }
-
-                @Override
-                public void doInBackground(TaskResultHolder resultHolder) {
-//                    List<Person> existingPersons = DatabaseHelper.getPersonDao()
-//                            .getAllByName(eventParticipantToSave.getPerson().getFirstName(),
-//                            eventParticipantToSave.getPerson().getLastName());
-//                    resultHolder.forList().add(existingPersons);
-                }
-            };
-            checkExistingPersonTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getBaseActivity().hidePreloader();
-                    //getBaseActivity().showFragmentView();
-
-                    if (resultHolder == null || !resultStatus.isSuccess()){
-                        NotificationHelper.showNotification(EventParticipantNewActivity.this, NotificationType.ERROR,
-                                String.format(getResources().getString(R.string.snackbar_create_error),
-                                        getResources().getString(R.string.entity_event_person)));
-                        return;
+                saveTask = new SavingAsyncTask(getRootView(), eventParticipantToSave) {
+                    @Override
+                    protected void onPreExecute() {
+                        showPreloader();
                     }
 
-                    List<Person> existingPersons = new ArrayList<>();
-                    ITaskResultHolderIterator listIterator = resultHolder.forList().iterator();
+                    @Override
+                    protected void doInBackground(TaskResultHolder resultHolder) throws Exception {
+                        DatabaseHelper.getPersonDao().saveAndSnapshot(eventParticipantToSave.getPerson());
+                        final Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
+                        eventParticipantToSave.setEvent(event);
+                        DatabaseHelper.getEventParticipantDao().saveAndSnapshot(eventParticipantToSave);
+                    }
 
-                    if (listIterator.hasNext())
-                        existingPersons = listIterator.next();
-
-                    callback.call(existingPersons);
-                }
-            });
-        } catch (Exception ex) {
-            //getBaseActivity().hidePreloader();
-            //getBaseActivity().showFragmentView();
-        }
-
-    }
-
-    private void savePersonAndEventParticipant(final EventParticipant eventParticipantToSave) {
-
-        DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-            private PersonDao personDao;
-            private String saveUnsuccessful;
-
-            @Override
-            public void onPreExecute() {
-                showPreloader();
-
-                personDao = DatabaseHelper.getPersonDao();
-                saveUnsuccessful = String.format(getResources().getString(R.string.snackbar_create_error), getResources().getString(R.string.entity_event_person));
-            }
-
-            @Override
-            public void doInBackground(TaskResultHolder resultHolder) {
-                try {
-                    // save the person
-                    personDao.saveAndSnapshot(eventParticipantToSave.getPerson());
-                    // set the given event
-                    final Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
-                    eventParticipantToSave.setEvent(event);
-                    // save the contact
-                    EventParticipantDao eventParticipantDao = DatabaseHelper.getEventParticipantDao();
-                    eventParticipantDao.saveAndSnapshot(eventParticipantToSave);
-
-                    resultHolder.forItem().add(eventParticipantToSave);
-                } catch (DaoException e) {
-                    Log.e(getClass().getName(), "Error while trying to save case", e);
-                    resultHolder.setResultStatus(new BoolResult(false, saveUnsuccessful));
-                    ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
-                }
-            }
-        };
-        createPersonTask = executor.execute(new ITaskResultCallback() {
-            @Override
-            public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                hidePreloader();
-
-                if (resultHolder == null) {
-                    return;
-                }
-
-                EventParticipant savedRecord = null;
-                ITaskResultHolderIterator itemIterator = resultHolder.forItem().iterator();
-
-                if (itemIterator.hasNext())
-                    savedRecord = itemIterator.next();
-
-                if (!resultStatus.isSuccess()) {
-                    NotificationHelper.showNotification(EventParticipantNewActivity.this, NotificationType.ERROR, resultStatus.getMessage());
-                    return;
-                }
-
-                if (RetroProvider.isConnected()) {
-                    SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, getContext(), new SyncCallback() {
-                        @Override
-                        public void call(boolean syncFailed, String syncFailedMessage) {
-                            if (syncFailed) {
-                                NotificationHelper.showNotification(EventParticipantNewActivity.this, NotificationType.WARNING, String.format(getResources().getString(R.string.snackbar_sync_error_created), getResources().getString(R.string.entity_event_person)));
-                            } else {
-                                NotificationHelper.showNotification(EventParticipantNewActivity.this, NotificationType.SUCCESS, String.format(getResources().getString(R.string.snackbar_create_success), getResources().getString(R.string.entity_event_person)));
-                            }
-                            //finish();
+                    @Override
+                    protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                        hidePreloader();
+                        super.onPostExecute(taskResult);
+                        if (taskResult.getResultStatus().isSuccess()) {
+                            goToEventParticipantEditActivity();
                         }
-                    });
-                } else {
-                    NotificationHelper.showNotification(EventParticipantNewActivity.this, NotificationType.WARNING, String.format(getResources().getString(R.string.snackbar_sync_error_created), getResources().getString(R.string.entity_event_person)));
-                    //finish();
-                }
-
-                goToEventParticipantEditActivity();
+                    }
+                }.executeOnThreadPool();
             }
         });
     }

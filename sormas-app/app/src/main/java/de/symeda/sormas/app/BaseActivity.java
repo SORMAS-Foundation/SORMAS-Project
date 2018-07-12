@@ -392,9 +392,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void synchronizeData(final SynchronizeDataAsync.SyncMode syncMode, final boolean showResultSnackbar, final boolean showProgressDialog, final boolean showUpgradePrompt, final SwipeRefreshLayout swipeRefreshLayout, final Callback callback) {
 
         if (isUserNeeded() && ConfigProvider.getUser() == null) {
-            if (swipeRefreshLayout != null) {
-                swipeRefreshLayout.setRefreshing(false);
-            }
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             return;
@@ -414,7 +411,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         final long syncLogCountBefore = syncLogDao.countOf();
 
         if (!RetroProvider.isConnected()) {
-
             try {
                 RetroProvider.connect(getApplicationContext());
             } catch (ConnectException | AuthenticatorException e) {

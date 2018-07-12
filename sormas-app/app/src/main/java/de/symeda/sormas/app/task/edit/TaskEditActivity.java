@@ -3,7 +3,6 @@ package de.symeda.sormas.app.task.edit;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
@@ -18,19 +17,12 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.contact.edit.ContactEditActivity;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
-import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 public class TaskEditActivity extends BaseEditActivity<Task> {
 

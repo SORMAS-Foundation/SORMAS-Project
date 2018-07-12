@@ -3,7 +3,6 @@ package de.symeda.sormas.app.event.edit.sub;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -11,17 +10,12 @@ import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
-import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 
 public class EventParticipantEditActivity extends BaseEditActivity<EventParticipant> {

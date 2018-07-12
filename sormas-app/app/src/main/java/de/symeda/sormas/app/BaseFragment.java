@@ -3,6 +3,7 @@ package de.symeda.sormas.app;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -20,6 +21,7 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlTextReadField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -46,6 +48,16 @@ public class BaseFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout) this.getView().findViewById(R.id.swiperefresh);
+        if (swiperefresh != null) {
+            swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, false, true, true, swiperefresh, null);
+                }
+            });
+        }
     }
 
     @Override

@@ -3,7 +3,6 @@ package de.symeda.sormas.app.caze.edit;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import de.symeda.sormas.api.Disease;
@@ -44,7 +43,6 @@ import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
 import de.symeda.sormas.app.symptom.Symptom;
-import de.symeda.sormas.app.util.MenuOptionsHelper;
 import de.symeda.sormas.app.validation.NewSymptomValidator;
 import de.symeda.sormas.app.validation.PersonValidator;
 

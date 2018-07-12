@@ -2,20 +2,16 @@ package de.symeda.sormas.app;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -41,7 +37,6 @@ import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
-import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.ConstantHelper;
@@ -63,7 +58,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     private AsyncTask getRootEntityTask;
     private ActivityRootEntity storedRootEntity = null;
 
-    private String rootEntityUuid;
+    private String initialRootEntityUuid;
 
     private MenuItem saveMenu = null;
     private MenuItem addMenu = null;
@@ -102,7 +97,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         super.onSaveInstanceState(outState);
 
         saveActiveMenuState(outState, activeMenuKey);
-        saveRootEntityUuidState(outState, rootEntityUuid);
+        saveRootEntityUuidState(outState, initialRootEntityUuid);
     }
 
     protected void onCreateInner(Bundle savedInstanceState) {
@@ -115,7 +110,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         ensureFabHiddenOnSoftKeyboardShown(pageMenu);
 
         activeMenuKey = getActiveMenuArg(savedInstanceState);
-        rootEntityUuid = getRecordUuidArg(savedInstanceState);
+        initialRootEntityUuid = getRecordUuidArg(savedInstanceState);
 
         if (notificationFrame != null) {
             notificationFrame.setOnClickListener(new View.OnClickListener() {
@@ -170,8 +165,8 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
             @Override
             public void doInBackground(TaskResultHolder resultHolder) {
                 ActivityRootEntity result;
-                if (rootEntityUuid != null && !rootEntityUuid.isEmpty()) {
-                    result = queryRootEntity(rootEntityUuid);
+                if (initialRootEntityUuid != null && !initialRootEntityUuid.isEmpty()) {
+                    result = queryRootEntity(initialRootEntityUuid);
 
                     if (result == null) {
                         result = buildRootEntity();
@@ -220,7 +215,11 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     }
 
     protected String getRootEntityUuid() {
-        return rootEntityUuid;
+        if (storedRootEntity != null)  {
+            return storedRootEntity.getUuid();
+        } else {
+            return initialRootEntityUuid;
+        }
     }
 
     protected BaseEditFragment getActiveFragment() {

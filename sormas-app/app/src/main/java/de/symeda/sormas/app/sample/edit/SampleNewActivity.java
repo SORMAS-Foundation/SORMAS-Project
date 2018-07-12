@@ -3,7 +3,6 @@ package de.symeda.sormas.app.sample.edit;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.Menu;
 
 import java.util.Date;
