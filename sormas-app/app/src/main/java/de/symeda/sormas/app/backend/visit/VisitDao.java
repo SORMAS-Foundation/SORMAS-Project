@@ -18,6 +18,7 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.util.LocationService;
@@ -105,9 +106,11 @@ public class VisitDao extends AbstractAdoDao<Visit> {
     public Visit build(String contactUuid) {
         Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
         Visit visit = super.build();
+        visit.setSymptoms(DatabaseHelper.getSymptomsDao().build());
         visit.setPerson(contact.getPerson());
         visit.setDisease(contact.getCaseDisease());
         visit.setVisitDateTime(new Date());
+        visit.setVisitUser(ConfigProvider.getUser());
         return visit;
     }
 

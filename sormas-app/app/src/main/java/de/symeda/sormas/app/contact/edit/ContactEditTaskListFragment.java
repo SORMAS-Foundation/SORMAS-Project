@@ -65,6 +65,11 @@ public class ContactEditTaskListFragment extends BaseEditFragment<FragmentFormLi
     }
 
     @Override
+    public boolean isShowSaveAction() {
+        return false;
+    }
+
+    @Override
     public void onListItemClick(View view, int position, Object item) {
         Task task = (Task) item;
         TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(getContext(), task.getUuid(), task.getTaskStatus());

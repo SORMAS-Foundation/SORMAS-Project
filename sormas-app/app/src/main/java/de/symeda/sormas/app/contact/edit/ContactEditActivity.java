@@ -20,6 +20,7 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
+import de.symeda.sormas.app.visit.edit.VisitNewActivity;
 
 public class ContactEditActivity extends BaseEditActivity<Contact> {
 
@@ -132,12 +133,8 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
     @Override
     public void goToNewView() {
         ContactSection activeSection = ContactSection.fromMenuKey(getActiveMenuItem().getKey());
-
         if (activeSection == ContactSection.VISITS) {
-            // TODO #651
-//            VisitFormNavigationCapsule dataCapsule = new VisitFormNavigationCapsule(getContext(),
-//                    VisitStatus.COOPERATIVE).setContactUuid(recordUuid);
-//            VisitNewActivity.goToActivity(this, dataCapsule);
+            VisitNewActivity.goToActivity(this, getRootEntityUuid());
         }
     }
 

@@ -73,6 +73,11 @@ public class ContactEditVisitsListFragment extends BaseEditFragment<FragmentForm
     }
 
     @Override
+    public boolean isShowSaveAction() {
+        return false;
+    }
+
+    @Override
     public void onListItemClick(View view, int position, Object item) {
         Visit record = (Visit) item;
         VisitFormNavigationCapsule dataCapsule = new VisitFormNavigationCapsule(getContext(), record.getUuid(), record.getVisitStatus());
