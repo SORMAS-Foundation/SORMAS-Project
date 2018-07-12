@@ -51,8 +51,6 @@ public class CaseListFragment extends BaseListFragment<CaseListAdapter> implemen
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
 
         filterStatus = (InvestigationStatus) getFilterStatusArg(arguments);
@@ -100,7 +98,6 @@ public class CaseListFragment extends BaseListFragment<CaseListAdapter> implemen
     public void onResume() {
         super.onResume();
 
-        //TODO: Orson - reverse this relationship
         getSubHeadingHandler().updateSubHeadingTitle(SubheadingHelper.getSubHeading(getResources(), searchBy, filterStatus, "Case"));
 
         ISearchExecutor<Case> executor = SearchStrategyFor.CASE.selector(searchBy, filterStatus, null);

@@ -32,12 +32,16 @@ import java.lang.ref.WeakReference;
 import java.net.ConnectException;
 
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.NotificationContext;
+import de.symeda.sormas.app.core.async.AsyncTaskResult;
+import de.symeda.sormas.app.core.async.DefaultAsyncTask;
+import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -385,50 +389,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, refreshLayout == null, false, refreshLayout, callback);
     }
 
-    public void synchronizeData(final SynchronizeDataAsync.SyncMode syncMode, final boolean showResultSnackbar, final boolean showProgressDialog, boolean showUpgradePrompt, final SwipeRefreshLayout swipeRefreshLayout, final Callback callback) {
-
-        if (swipeRefreshLayout != null) {
-            swipeRefreshLayout.setRefreshing(true);
-        }
-
-        final SyncLogDao syncLogDao = DatabaseHelper.getSyncLogDao();
-        final long syncLogCountBefore = syncLogDao.countOf();
-
-        String errorMessage = "";
-
-        if (!RetroProvider.isConnected()) {
-            try {
-                RetroProvider.connect(getApplicationContext());
-            } catch (AuthenticatorException e) {
-                if (showResultSnackbar) {
-                    NotificationHelper.showNotification((NotificationContext) this, NotificationType.ERROR, e.getMessage());
-                    errorMessage = e.getMessage();
-                }
-                // switch to LoginActivity is done below
-            } catch (final RetroProvider.ApiVersionException e) {
-                if (showUpgradePrompt && e.getAppUrl() != null && !e.getAppUrl().isEmpty()) {
-                    if (swipeRefreshLayout != null) {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                    AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), true,
-                            new Callback() {
-                                @Override
-                                public void call() {
-                                    synchronizeData(syncMode, showResultSnackbar, showProgressDialog, false, swipeRefreshLayout, callback);
-                                }
-                            });
-                    return;
-                } else if (showResultSnackbar) {
-                    NotificationHelper.showNotification((NotificationContext) this, NotificationType.ERROR, e.getMessage());
-                    errorMessage = e.getMessage();
-                }
-            } catch (ConnectException e) {
-                if (showResultSnackbar) {
-                    NotificationHelper.showNotification((NotificationContext) this, NotificationType.ERROR, e.getMessage());
-                    errorMessage = e.getMessage();
-                }
-            }
-        }
+    public void synchronizeData(final SynchronizeDataAsync.SyncMode syncMode, final boolean showResultSnackbar, final boolean showProgressDialog, final boolean showUpgradePrompt, final SwipeRefreshLayout swipeRefreshLayout, final Callback callback) {
 
         if (isUserNeeded() && ConfigProvider.getUser() == null) {
             if (swipeRefreshLayout != null) {
@@ -439,14 +400,47 @@ public abstract class BaseActivity extends AppCompatActivity {
             return;
         }
 
-        if (RetroProvider.isConnected()) {
-
-            if (showProgressDialog) {
-                progressDialog = ProgressDialog.show(this, getString(R.string.headline_synchronization),
-                        getString(R.string.hint_synchronization), true);
-            } else {
-                progressDialog = null;
+        if (showProgressDialog) {
+            progressDialog = ProgressDialog.show(this, getString(R.string.headline_synchronization),
+                    getString(R.string.hint_synchronization), true);
+        } else {
+            progressDialog = null;
+            if (swipeRefreshLayout != null) {
+                swipeRefreshLayout.setRefreshing(true);
             }
+        }
+
+        final SyncLogDao syncLogDao = DatabaseHelper.getSyncLogDao();
+        final long syncLogCountBefore = syncLogDao.countOf();
+
+        if (!RetroProvider.isConnected()) {
+
+            try {
+                RetroProvider.connect(getApplicationContext());
+            } catch (ConnectException | AuthenticatorException e) {
+                if (showResultSnackbar) {
+                    NotificationHelper.showNotification((NotificationContext) BaseActivity.this, NotificationType.ERROR, e.getMessage());
+                }
+            } catch (RetroProvider.ApiVersionException e) {
+                if (showUpgradePrompt && !DataHelper.isNullOrEmpty(e.getAppUrl())) {
+                    if (swipeRefreshLayout != null) {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                    AppUpdateController.getInstance().updateApp(BaseActivity.this, e.getAppUrl(), e.getVersion(), true,
+                            new Callback() {
+                                @Override
+                                public void call() {
+                                    synchronizeData(syncMode, showResultSnackbar, showProgressDialog, false, swipeRefreshLayout, callback);
+                                }
+                            });
+                    return;
+                } else if (showResultSnackbar) {
+                    NotificationHelper.showNotification((NotificationContext) BaseActivity.this, NotificationType.ERROR, e.getMessage());
+                }
+            }
+        }
+
+        if (RetroProvider.isConnected()) {
 
             SynchronizeDataAsync.call(syncMode, getApplicationContext(), new SyncCallback() {
                 @Override
@@ -494,9 +488,9 @@ public abstract class BaseActivity extends AppCompatActivity {
             if (swipeRefreshLayout != null) {
                 swipeRefreshLayout.setRefreshing(false);
             }
-
-            if (showResultSnackbar) {
-                NotificationHelper.showNotification((NotificationContext) BaseActivity.this, NotificationType.ERROR, errorMessage);
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+                progressDialog = null;
             }
         }
     }

@@ -84,13 +84,6 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
         replaceFragment(getActiveListFragment());
     }
 
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-
-        synchronizeChangedData();
-    }
-
     public abstract BaseListFragment getActiveListFragment();
 
     public void replaceFragment(BaseFragment f) {

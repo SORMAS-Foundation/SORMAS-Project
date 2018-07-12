@@ -56,7 +56,9 @@ public class CaseListActivity extends BaseListActivity {
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    protected void onCreateInner(Bundle savedInstanceState) {
+        super.onCreateInner(savedInstanceState);
+
         filterStatus = (InvestigationStatus) getFilterStatusArg(savedInstanceState);
         searchBy = (SearchBy) getSearchStrategyArg(savedInstanceState);
         recordUuid = getRecordUuidArg(savedInstanceState);

@@ -53,7 +53,6 @@ public class ContactListFragment extends BaseListFragment<ContactListAdapter> im
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getArguments();
 
         filterStatus = (FollowUpStatus) getFilterStatusArg(arguments);
