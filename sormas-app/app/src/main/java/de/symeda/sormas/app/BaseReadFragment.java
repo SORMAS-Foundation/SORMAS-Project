@@ -102,19 +102,6 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
                 onLayoutBinding(contentViewStubBinding);
                 contentViewStubRoot = contentViewStubBinding.getRoot();
 
-                if (includeFabNonOverlapPadding()) {
-                    int lp = contentViewStubRoot.getPaddingLeft();
-                    int rp = contentViewStubRoot.getPaddingRight();
-                    int tp = contentViewStubRoot.getPaddingTop();
-                    int bp = (int) getResources().getDimension(R.dimen.fabNonOverlapPaddingBottom);
-
-                    contentViewStubRoot.setPadding(lp, tp, rp, bp);
-
-                    ViewGroup.LayoutParams params = contentViewStubRoot.getLayoutParams();
-                    params.height = MATCH_PARENT;
-
-                }
-
                 if (makeHeightMatchParent()) {
                     contentViewStubRoot.getLayoutParams().height = MATCH_PARENT;
                 } else {
@@ -199,10 +186,6 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
     public abstract void onLayoutBinding(TBinding contentBinding);
 
     public void onAfterLayoutBinding(TBinding contentBinding) { }
-
-    public boolean includeFabNonOverlapPadding() {
-        return false;
-    }
 
     public boolean makeHeightMatchParent() {
         return false;

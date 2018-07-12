@@ -130,11 +130,6 @@ public class VisitEditSymptomsFragment extends BaseEditFragment<FragmentContactE
     }
 
     @Override
-    public boolean includeFabNonOverlapPadding() {
-        return false;
-    }
-
-    @Override
     public boolean isShowSaveAction() {
         return true;
     }

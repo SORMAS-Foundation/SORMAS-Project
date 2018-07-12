@@ -213,6 +213,7 @@
     <string name="heading_contact_new">New Contact</string>
     <string name="heading_contact_task_info">Contact Task</string>
     <string name="heading_dialog_placeholder">Dialog Heading</string>
+    <string name="heading_event_new">New Event</string>
     <string name="heading_event_task_info">Event Task</string>
     <string name="heading_level1_cases_landing">Case Directory</string>
     <string name="heading_level1_contacts_landing">Contact Directory</string>

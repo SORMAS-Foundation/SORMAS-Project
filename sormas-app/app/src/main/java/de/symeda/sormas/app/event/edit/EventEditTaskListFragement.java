@@ -63,11 +63,6 @@ public class EventEditTaskListFragement extends BaseEditFragment<FragmentFormLis
     }
 
     @Override
-    public boolean includeFabNonOverlapPadding() {
-        return false;
-    }
-
-    @Override
     public boolean isShowSaveAction() {
         return false;
     }

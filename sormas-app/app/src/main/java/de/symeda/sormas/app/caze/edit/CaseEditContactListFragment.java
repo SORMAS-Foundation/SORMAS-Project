@@ -65,11 +65,6 @@ public class CaseEditContactListFragment extends BaseEditFragment<FragmentFormLi
     }
 
     @Override
-    public boolean includeFabNonOverlapPadding() {
-        return false;
-    }
-
-    @Override
     public boolean isShowSaveAction() {
         return false;
     }

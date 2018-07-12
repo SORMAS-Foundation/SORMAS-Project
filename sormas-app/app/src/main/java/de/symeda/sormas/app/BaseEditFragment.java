@@ -122,19 +122,6 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
                 onLayoutBinding(contentViewStubBinding);
                 contentViewStubRoot = contentViewStubBinding.getRoot();
 
-                if (includeFabNonOverlapPadding()) {
-                    int lp = contentViewStubRoot.getPaddingLeft();
-                    int rp = contentViewStubRoot.getPaddingRight();
-                    int tp = contentViewStubRoot.getPaddingTop();
-                    int bp = (int) getResources().getDimension(R.dimen.fabNonOverlapPaddingBottom);
-
-                    contentViewStubRoot.setPadding(lp, tp, rp, bp);
-
-                    ViewGroup.LayoutParams params = contentViewStubRoot.getLayoutParams();
-                    params.height = MATCH_PARENT;
-
-                }
-
                 if (makeHeightMatchParent()) {
                     contentViewStubRoot.getLayoutParams().height = MATCH_PARENT;
                 } else {
@@ -230,10 +217,6 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
     }
 
     public abstract int getEditLayout();
-
-    public boolean includeFabNonOverlapPadding() {
-        return true;
-    }
 
     public boolean makeHeightMatchParent() {
         return false;
