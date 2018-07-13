@@ -20,7 +20,7 @@ import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.databinding.DialogEpidBurialsLayoutBinding;
+import de.symeda.sormas.app.databinding.DialogCaseEpidBurialEditLayoutBinding;
 
 public class EpiDataBurialDialog extends BaseTeboAlertDialog {
 
@@ -28,7 +28,7 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
 
     private EpiDataBurial data;
     private IEntryItemOnClickListener onAddressLinkClickedCallback;
-    private DialogEpidBurialsLayoutBinding mContentBinding;
+    private DialogCaseEpidBurialEditLayoutBinding mContentBinding;
 
 
     public EpiDataBurialDialog(final FragmentActivity activity, EpiDataBurial epiDataBurial) {
@@ -36,7 +36,7 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
     }
 
     public EpiDataBurialDialog(final FragmentActivity activity, int headingResId, int subHeadingResId, EpiDataBurial epiDataBurial) {
-        super(activity, R.layout.dialog_root_layout, R.layout.dialog_epid_burials_layout,
+        super(activity, R.layout.dialog_root_layout, R.layout.dialog_case_epid_burial_edit_layout,
                 R.layout.dialog_root_three_button_panel_layout, headingResId, subHeadingResId);
 
         this.data = epiDataBurial;
@@ -67,7 +67,7 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
 
     @Override
     protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
-        this.mContentBinding = (DialogEpidBurialsLayoutBinding)binding;
+        this.mContentBinding = (DialogCaseEpidBurialEditLayoutBinding) binding;
     }
 
     @Override
@@ -75,11 +75,6 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
         if (!binding.setVariable(BR.data, data)) {
             Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
-
-        if (!binding.setVariable(BR.yesNoUnknownClass, YesNoUnknown.class)) {
-            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
-        }
-
         if (!binding.setVariable(BR.addressLinkCallback, onAddressLinkClickedCallback)) {
             Log.e(TAG, "There is no variable 'addressLinkCallback' in layout " + layoutName);
         }
@@ -92,10 +87,9 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
 
     @Override
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        //mContentBinding = (DialogEpidBurialsLayoutBinding)contentBinding;
 
-        mContentBinding.dtpBurialFromDate.initializeDateField(getFragmentManager());
-        mContentBinding.dtpBurialToDate.initializeDateField(getFragmentManager());
+        mContentBinding.epiDataBurialBurialDateFrom.initializeDateField(getFragmentManager());
+        mContentBinding.epiDataBurialBurialDateTo.initializeDateField(getFragmentManager());
     }
 
     @Override
@@ -146,12 +140,10 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
                     }
                 });
 
-
-
                 locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
-                        mContentBinding.txtBurialAddress.setValue(location);
+                        mContentBinding.epiDataBurialBurialAddress.setValue(location);
                         /*getContentBinding().txtAddress.setValue(location.toString());
                         locationDialog.dismiss();*/
                         //data.setBurialAddress(location);

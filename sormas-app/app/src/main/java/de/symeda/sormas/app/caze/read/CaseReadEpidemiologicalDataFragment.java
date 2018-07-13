@@ -5,10 +5,8 @@ import android.databinding.ObservableArrayList;
 import android.os.Bundle;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -28,7 +26,7 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
     private ObservableArrayList travels = new ObservableArrayList();
 
     private IEntryItemOnClickListener onBurialItemClickListener;
-    private IEntryItemOnClickListener onSocialEventItemClickListener;
+    private IEntryItemOnClickListener onGatheringItemClickListener;
     private IEntryItemOnClickListener onTravelItemClickListener;
 
     @Override
@@ -44,15 +42,16 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
 
         contentBinding.setData(record);
         contentBinding.setBurials(getBurialVisits());
-        contentBinding.setSocialEvents(getGatherings());
+        contentBinding.setGatherings(getGatherings());
         contentBinding.setTravels(getTravels());
-        contentBinding.epiDataAnimalContactExposed.setTags(getAnimalContactYes());
-        contentBinding.epiDataAnimalContactUnknownExposed.setTags(getAnimalContactUnknown());
-        contentBinding.epiDataAnimalContactNotExposed.setTags(getAnimalContactNo());
 
         contentBinding.setBurialItemClickCallback(onBurialItemClickListener);
-        contentBinding.setSocialEventItemClickCallback(onSocialEventItemClickListener);
+        contentBinding.setGatheringItemClickCallback(onGatheringItemClickListener);
         contentBinding.setTravelItemClickCallback(onTravelItemClickListener);
+
+        contentBinding.ctrlBurials.setVisibility(record.getBurialAttended() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+        contentBinding.ctrlGatherings.setVisibility(record.getGatheringAttended() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+        contentBinding.ctrlTravels.setVisibility(record.getTraveled() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
 
         setVisibilityByDisease(EpiDataDto.class, getActivityRootData().getDisease(), contentBinding.mainContent);
     }
@@ -79,45 +78,19 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
     private ObservableArrayList getBurialVisits() {
         if (record != null && burials != null)
             burials.addAll(record.getBurials());
-
-        //burials.add(MemoryDatabaseHelper.EPID_DATA_BURIAL.getBurials(1).get(0));
         return burials;
     }
 
     private ObservableArrayList getGatherings() {
         if (record != null && gatherings != null)
             gatherings.addAll(record.getGatherings());
-
-        //gatherings.add(MemoryDatabaseHelper.EPID_DATA_GATHERING.getGatherings(1).get(0));
         return gatherings;
     }
 
     private ObservableArrayList getTravels() {
         if (record != null && travels != null)
             travels.addAll(record.getTravels());
-
-        //travels.add(MemoryDatabaseHelper.EPID_DATA_TRAVEL.getTravels(1).get(0));
         return travels;
-    }
-
-    private List<String> getAnimalContactYes() {
-        List<String> results = new ArrayList();
-        results.add("Rodents or their excreta");
-        results.add("Bats or their excreta");
-        return results;
-    }
-
-    private List<String> getAnimalContactUnknown() {
-        List<String> results = new ArrayList();
-        results.add("Primates (monkeys)");
-        results.add("Swine");
-        return results;
-    }
-
-    private List<String> getAnimalContactNo() {
-        List<String> results = new ArrayList();
-        results.add("Poultry or wild birds");
-        return results;
     }
 
     private void setupCallback() {
@@ -126,16 +99,16 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
             @Override
             public void onClick(View v, Object item) {
                 SimpleDialog simpleDialog = new SimpleDialog(getContext(),
-                        R.layout.dialog_case_epid_burial_layout, item);
+                        R.layout.dialog_case_epid_burial_read_layout, item);
                 AlertDialog dialog = simpleDialog.show();
             }
         };
 
-        onSocialEventItemClickListener = new IEntryItemOnClickListener() {
+        onGatheringItemClickListener = new IEntryItemOnClickListener() {
             @Override
             public void onClick(View v, Object item) {
                 SimpleDialog simpleDialog = new SimpleDialog(getContext(),
-                        R.layout.dialog_case_epid_social_event_layout, item);
+                        R.layout.dialog_case_epid_gathering_read_layout, item);
                 AlertDialog dialog = simpleDialog.show();
             }
         };
@@ -144,7 +117,7 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
             @Override
             public void onClick(View v, Object item) {
                 SimpleDialog simpleDialog = new SimpleDialog(getContext(),
-                        R.layout.dialog_case_epid_travel_layout, item);
+                        R.layout.dialog_case_epid_travel_read_layout, item);
                 AlertDialog dialog = simpleDialog.show();
             }
         };

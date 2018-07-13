@@ -2,11 +2,8 @@ package de.symeda.sormas.app.caze.edit;
 
 import android.content.res.Resources;
 import android.databinding.ObservableArrayList;
-import android.databinding.ViewDataBinding;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
-import android.widget.AdapterView;
 
 import java.util.List;
 
@@ -24,17 +21,11 @@ import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ControlSpinnerField;
-import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;
-import de.symeda.sormas.app.core.OnSetBindingVariableListener;
 import de.symeda.sormas.app.databinding.FragmentCaseEditEpidLayoutBinding;
-import de.symeda.sormas.app.epid.AnimalContact;
-import de.symeda.sormas.app.epid.AnimalContactCategory;
-import de.symeda.sormas.app.epid.AnimalContactFormListAdapter;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 
@@ -53,12 +44,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private IEntryItemOnClickListener onAddTravelEntryClickListener;
     private IEntryItemOnClickListener onAddBurialEntryClickListener;
 
-    private AnimalContactFormListAdapter animalContactAdapter;
-    private AnimalContactFormListAdapter environmentalExposureAdapter;
-    private LinearLayoutManager linearLayoutManager;
-    private LinearLayoutManager linearLayoutManagerForEvnExpo;
-    private List<AnimalContact> animalContactList;
-    private List<AnimalContact> environmentalExposureList;
     private List<Item> drinkingWaterSourceList;
 
     @Override
@@ -79,57 +64,15 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         record = caze.getEpiData();
 
         drinkingWaterSourceList = DataUtils.getEnumItems(WaterSource.class, false);
-        animalContactList = AnimalContact.makeAnimalContacts(AnimalContactCategory.GENERAL).loadState(caze.getEpiData());
-        environmentalExposureList = AnimalContact.makeAnimalContacts(AnimalContactCategory.ENVIRONMENTAL_EXPOSURE).loadState(caze.getEpiData());
     }
 
     @Override
-    public void onLayoutBinding(FragmentCaseEditEpidLayoutBinding contentBinding) {
+    public void onLayoutBinding(final FragmentCaseEditEpidLayoutBinding contentBinding) {
 
-        setupCallback();
-
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false) {
-            @Override
-            public boolean canScrollVertically() {
-                return false;
-            }
-        };
-
-        linearLayoutManagerForEvnExpo = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false) {
-            @Override
-            public boolean canScrollVertically() {
-                return false;
-            }
-        };
-
-        animalContactAdapter = new AnimalContactFormListAdapter(this.getActivity(), R.layout.row_edit_animal_contact_list_item_layout, getFragmentManager(), animalContactList);
-        animalContactAdapter.setOnSetBindingVariable(new OnSetBindingVariableListener() {
-            @Override
-            public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
-//                setRootNotificationBindingVariable(binding, layoutName);
-            }
-        });
-
-        contentBinding.recyclerViewForList.setAdapter(animalContactAdapter);
-        contentBinding.recyclerViewForList.setLayoutManager(linearLayoutManager);
-
-        animalContactAdapter.notifyDataSetChanged();
-
-        environmentalExposureAdapter = new AnimalContactFormListAdapter(this.getActivity(), R.layout.row_edit_animal_contact_list_item_layout, getFragmentManager(), environmentalExposureList);
-        environmentalExposureAdapter.setOnSetBindingVariable(new OnSetBindingVariableListener() {
-            @Override
-            public void onSetBindingVariable(ViewDataBinding binding, String layoutName) {
-//                setRootNotificationBindingVariable(binding, layoutName);
-            }
-        });
-
-        contentBinding.recyclerViewForEnvExposureList.setAdapter(environmentalExposureAdapter);
-        contentBinding.recyclerViewForEnvExposureList.setLayoutManager(linearLayoutManagerForEvnExpo);
-
-        environmentalExposureAdapter.notifyDataSetChanged();
+        setUpControlListeners();
 
         contentBinding.setData(record);
-        contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
+        contentBinding.setWaterSourceClass(WaterSource.class);
         contentBinding.setGatheringList(getGatherings());
         contentBinding.setTravelList(getTravels());
         contentBinding.setBurialList(getBurials());
@@ -139,6 +82,39 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         contentBinding.setAddGatheringEntryClickCallback(onAddGatheringEntryClickListener);
         contentBinding.setAddTravelEntryClickCallback(onAddTravelEntryClickListener);
         contentBinding.setAddBurialEntryClickCallback(onAddBurialEntryClickListener);
+
+        contentBinding.epiDataBurialAttended.addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                YesNoUnknown value = (YesNoUnknown) field.getInternalValue();
+                contentBinding.ctrlBurials.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                if (value != YesNoUnknown.YES) {
+                    clearBurials();
+                }
+            }
+        });
+
+        contentBinding.epiDataGatheringAttended.addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                YesNoUnknown value = (YesNoUnknown) field.getInternalValue();
+                contentBinding.ctrlGatherings.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                if (value != YesNoUnknown.YES) {
+                    clearGatherings();
+                }
+            }
+        });
+
+        contentBinding.epiDataTraveled.addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                YesNoUnknown value = (YesNoUnknown) field.getInternalValue();
+                contentBinding.ctrlTravels.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                if (value != YesNoUnknown.YES) {
+                    clearTravels();
+                }
+            }
+        });
 
         setVisibilityByDisease(EpiDataDto.class, disease, contentBinding.mainContent);
     }
@@ -175,7 +151,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         return false;
     }
 
-    private void setupCallback() {
+    private void setUpControlListeners() {
 
         onGatheringItemClickListener = new IEntryItemOnClickListener() {
             @Override
@@ -342,15 +318,18 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         return newGatherings;
     }
 
+    private void clearGatherings() {
+        if (record == null)
+            return;
+        record.getGatherings().clear();
+        getContentBinding().setGatheringList(getGatherings());
+        verifyGatheringStatus();
+    }
+
     private void removeGatherings(EpiDataGathering item) {
         if (record == null)
             return;
-
-        if (record.getGatherings() == null)
-            return;
-
         record.getGatherings().remove(item);
-
         getContentBinding().setGatheringList(getGatherings());
         verifyGatheringStatus();
     }
@@ -358,10 +337,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private void updateGatherings(EpiDataGathering item) {
         if (record == null)
             return;
-
-        if (record.getGatherings() == null)
-            return;
-
         getContentBinding().setGatheringList(getGatherings());
         verifyGatheringStatus();
     }
@@ -369,12 +344,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private void addGatherings(EpiDataGathering item) {
         if (record == null)
             return;
-
-        if (record.getGatherings() == null)
-            return;
-
         record.getGatherings().add(0, (EpiDataGathering) item);
-
         getContentBinding().setGatheringList(getGatherings());
         verifyGatheringStatus();
     }
@@ -392,19 +362,21 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         ObservableArrayList newBurials = new ObservableArrayList();
         if (record != null)
             newBurials.addAll(record.getBurials());
-
         return newBurials;
+    }
+
+    private void clearBurials() {
+        if (record == null)
+            return;
+        record.getBurials().clear();
+        getContentBinding().setBurialList(getBurials());
+        verifyBurialStatus();
     }
 
     private void removeBurials(EpiDataBurial item) {
         if (record == null)
             return;
-
-        if (record.getBurials() == null)
-            return;
-
         record.getBurials().remove(item);
-
         getContentBinding().setBurialList(getBurials());
         verifyBurialStatus();
     }
@@ -412,10 +384,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private void updateBurials(EpiDataBurial item) {
         if (record == null)
             return;
-
-        if (record.getBurials() == null)
-            return;
-
         getContentBinding().setBurialList(getBurials());
         verifyBurialStatus();
     }
@@ -423,10 +391,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private void addBurials(EpiDataBurial item) {
         if (record == null)
             return;
-
-        if (record.getBurials() == null)
-            return;
-
         record.getBurials().add(0, (EpiDataBurial) item);
 
         getContentBinding().setBurialList(getBurials());
@@ -450,15 +414,18 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         return newTravels;
     }
 
+    private void clearTravels() {
+        if (record == null)
+            return;
+        record.getTravels().clear();
+        getContentBinding().setTravelList(getTravels());
+        verifyTravelStatus();
+    }
+
     private void removeTravels(EpiDataTravel item) {
         if (record == null)
             return;
-
-        if (record.getTravels() == null)
-            return;
-
         record.getTravels().remove(item);
-
         getContentBinding().setTravelList(getTravels());
         verifyTravelStatus();
     }

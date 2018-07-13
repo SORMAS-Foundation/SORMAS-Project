@@ -257,6 +257,7 @@
     <!-- ************************************************* -->
     <dimen name="listActivityRowItemBorderWidth">1dp</dimen>
     <dimen name="listActivityRowItemBorderTop">-1dp</dimen>
+    <dimen name="listActivityRowItemBorderBottom">-1dp</dimen>
     <dimen name="listActivityRowItemBorderRight">-1dp</dimen>
     <dimen name="listActivityRowItemBorderLeft">-1dp</dimen>
     <!-- ************************************************* -->

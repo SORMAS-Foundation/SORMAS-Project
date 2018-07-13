@@ -36,8 +36,8 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
     private int gravity;
     private int imeOptions;
     private boolean slim;
-    private boolean captionCapitalized;
-    private boolean captionItalic;
+    private Boolean captionCapitalized;
+    private Boolean captionItalic;
     private ControlPropertyField dependencyParentField;
     private Object dependencyParentValue;
     private boolean dependencyParentVisibility = true;
@@ -101,8 +101,16 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
                 gravity = a.getInt(R.styleable.ControlPropertyField_gravity, Gravity.START | Gravity.CENTER_VERTICAL);
                 imeOptions = a.getInt(R.styleable.ControlPropertyField_imeOptions, EditorInfo.IME_NULL);
                 slim = a.getBoolean(R.styleable.ControlPropertyField_slim, false);
-                captionCapitalized = a.getBoolean(R.styleable.ControlPropertyField_captionCapitalized, true);
-                captionItalic = a.getBoolean(R.styleable.ControlPropertyField_captionItalic, false);
+                if (a.hasValue(R.styleable.ControlPropertyField_captionCapitalized)) {
+                    captionCapitalized = a.getBoolean(R.styleable.ControlPropertyField_captionCapitalized, true);
+                } else {
+                    captionCapitalized = null;
+                }
+                if (a.hasValue(R.styleable.ControlPropertyField_captionItalic)) {
+                    captionItalic = a.getBoolean(R.styleable.ControlPropertyField_captionItalic, false);
+                } else {
+                    captionItalic = null;
+                }
             } finally {
                 a.recycle();
             }
@@ -242,14 +250,16 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         // TODO: Refactor this after the tooltips component has been replaced
         label.setOnClickListener(new ControlLabelOnTouchListener(this));
 
-        int typeFace = captionItalic ? Typeface.ITALIC : Typeface.NORMAL;
+        int typeFace = (captionItalic != null && captionItalic) ? Typeface.ITALIC : Typeface.NORMAL;
 
-        if (!captionCapitalized) {
-            label.setTypeface(Typeface.create("sans-serif", typeFace));
-            label.setAllCaps(false);
-        } else {
-            label.setTypeface(Typeface.create("sans-serif-medium", typeFace));
-            label.setAllCaps(true);
+        if (captionCapitalized != null) {
+            if (!captionCapitalized) {
+                label.setTypeface(Typeface.create("sans-serif", typeFace));
+                label.setAllCaps(false);
+            } else {
+                label.setTypeface(Typeface.create("sans-serif-medium", typeFace));
+                label.setAllCaps(true);
+            }
         }
     }
 

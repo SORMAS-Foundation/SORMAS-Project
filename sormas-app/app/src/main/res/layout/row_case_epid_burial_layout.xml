@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.backend.epidata.EpiDataBurial"/>
+
+        <variable
+            name="callback"
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
+    </data>
+
+    <LinearLayout
+        android:id="@+id/rowListItemBurial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+        android:background="@drawable/selector_list_section_row_background"
+        android:elevation="2dp"
+        android:onClickListener="@{(view) -> callback.onClick(view, data)}"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/parentLayoutVerticalPadding"
+        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+        android:paddingRight="@dimen/rowListItemHorizontalMargin"
+        android:paddingTop="@dimen/parentLayoutVerticalPadding"
+        >
+
+        <TextView
+            android:id="@+id/txtPatientNameAndRelationship"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="left|center_vertical"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textAllCaps="true"
+            android:textColor="@color/readInlineListSecondaryTextColor"
+            android:textSize="@dimen/readInlineListSecondaryTextSize"
+            app:appendValue="@{data.burialRelation}"
+
+
+            app:defaultValue='@{@string/epid_burial_person_unknown}'
+            app:value="@{data.burialPersonname}"
+            app:valueFormat='@{@string/two_strings_with_brackets_format}'
+            />
+
+        <TextView
+            android:id="@+id/txtBurialLocation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="left|center_vertical"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textAllCaps="true"
+
+
+            android:textColor="@color/readInlineListTertiaryTextColor"
+            android:textSize="@dimen/readInlineListTertiaryTextSize"
+            app:defaultValue='@{@string/epid_burial_location_unknown}'
+            app:locationValue="@{data.burialAddress}"
+            />
+
+        <TextView
+            android:id="@+id/txtFromToBurialDate"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="@dimen/contentVerticalSpacing"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="left|center_vertical"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textAllCaps="true"
+            android:textColor="@color/readInlineListPrimaryTextColor"
+            android:textSize="@dimen/readInlineListPrimaryTextSize"
+
+            app:appendValue="@{data.burialDateTo}"
+            app:dateRangeValue="@{data.burialDateFrom}"
+            app:defaultValue='@{@string/epid_burial_date_unknown}'
+            app:valueFormat='@{@string/date_range_format}'
+            />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:id="@+id/burial_ill"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-medium"
+                android:textAllCaps="true"
+                android:textColor="@color/readInlineListPrimaryTextColor"
+                android:textSize="@dimen/readInlineListPrimaryTextSize"
+                app:value="@{data.burialIll}"/>
+
+            <TextView
+                android:id="@+id/burial_touched"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-medium"
+                android:textAllCaps="true"
+                android:textColor="@color/readInlineListPrimaryTextColor"
+                android:textSize="@dimen/readInlineListPrimaryTextSize"
+                app:value="@{data.burialTouching}"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+</layout>

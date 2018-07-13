@@ -33,7 +33,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
     // Constants
 
-    private static final String FONT_FAMILY = "sans-serif-medium";
+    private static final String RADIO_BUTTON_FONT_FAMILY = "sans-serif-medium";
 
     // Views
 
@@ -123,31 +123,24 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
             params.setMargins(0, borderSize, 0, borderSize);
         }
 
-        int paddingTop, paddingBottom;
-        int paddingHorizontal = getResources().getDimensionPixelSize(R.dimen.defaultControlHorizontalPadding);
         float textSize;
         int heightInPixel;
-
         if (isSlim()) {
             textSize = getContext().getResources().getDimension(R.dimen.slimControlTextSize);
-            paddingTop = getContext().getResources().getDimensionPixelSize(R.dimen.slimTextViewTopPadding);
-            paddingBottom = getContext().getResources().getDimensionPixelSize(R.dimen.slimTextViewBottomPadding);
             heightInPixel = getContext().getResources().getDimensionPixelSize(R.dimen.slimControlHeight);
         } else {
             textSize = getContext().getResources().getDimension(R.dimen.switchControlTextSize);
-            paddingTop = 0;
-            paddingBottom = 0;
             heightInPixel = getContext().getResources().getDimensionPixelSize(R.dimen.maxSwitchButtonHeight);
         }
 
         button.setHeight(heightInPixel);
         button.setMinHeight(heightInPixel);
         button.setMaxHeight(heightInPixel);
-        button.setPadding(paddingHorizontal, paddingTop, paddingHorizontal, paddingBottom);
+        button.setPadding(0, 0, 0, 0);
         button.setBackground(getButtonDrawable(index == lastIndex, hasError));
         button.setButtonDrawable(null);
         button.setGravity(Gravity.CENTER);
-        button.setTypeface(Typeface.create(FONT_FAMILY, Typeface.NORMAL));
+        button.setTypeface(Typeface.create(RADIO_BUTTON_FONT_FAMILY, Typeface.NORMAL));
         button.setTextColor(textColor);
         button.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
         button.setIncludeFontPadding(false);
@@ -202,38 +195,6 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
     // Overrides
 
     @Override
-    public Object getValue() {
-        int selectedValueId = input.getCheckedRadioButtonId();
-
-        if(selectedValueId >= 0) {
-            View selectedValue = input.findViewById(selectedValueId);
-            if (selectedValue != null) {
-                int selectedValueIndex = input.indexOfChild(selectedValue);
-                return radioGroupElements.get(selectedValueIndex);
-            }
-
-            return null;
-        }
-
-        return null;
-    }
-
-    @Override
-    public void setValue(Object value) {
-        if (value == null && input.getCheckedRadioButtonId() != -1) {
-            input.clearCheck();
-        } else {
-            int selectedValueIndex = radioGroupElements.indexOf(value);
-            if (selectedValueIndex >= 0) {
-                RadioButton button = (RadioButton) input.getChildAt(selectedValueIndex);
-                input.check(button.getId());
-            }
-        }
-
-        setInternalValue(value);
-    }
-
-    @Override
     protected void initialize(Context context, AttributeSet attrs, int defStyle) {
         if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(
@@ -242,8 +203,8 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
                     0, 0);
 
             try {
-                useAbbreviations = a.getBoolean(R.styleable.ControlSwitchField_useAbbreviations, false);
-            } finally {
+                useAbbreviations = a.getBoolean(R.styleable.ControlSwitchField_useAbbreviations, isSlim());
+            } finally { // why?
                 a.recycle();
             }
         }
@@ -255,7 +216,11 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         if (inflater != null) {
-            inflater.inflate(R.layout.control_switch_layout, this);
+            if (isSlim()) {
+                inflater.inflate(R.layout.control_switch_slim_layout, this);
+            } else {
+                inflater.inflate(R.layout.control_switch_layout, this);
+            }
         } else {
             throw new RuntimeException("Unable to inflate layout in " + getClass().getName());
         }
@@ -271,6 +236,10 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
         textColor = getResources().getColorStateList(R.color.control_switch_color_selector);
         input.setBackground(background.mutate());
 
+        if (!enumClassSet) {
+            setEnumClass(YesNoUnknown.class);
+        }
+
         input.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
@@ -284,6 +253,38 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
                 }
             }
         });
+    }
+
+    @Override
+    public Object getValue() {
+        int selectedValueId = input.getCheckedRadioButtonId();
+
+        if (selectedValueId >= 0) {
+            View selectedValue = input.findViewById(selectedValueId);
+            if (selectedValue != null) {
+                int selectedValueIndex = input.indexOfChild(selectedValue);
+                return radioGroupElements.get(selectedValueIndex);
+            }
+
+            return null;
+        }
+
+        return null;
+    }
+
+    @Override
+    public void setValue(Object value) {
+        if (value == null) {
+            input.clearCheck();
+        } else {
+            int selectedValueIndex = radioGroupElements.indexOf(value);
+            if (selectedValueIndex >= 0) {
+                RadioButton button = (RadioButton) input.getChildAt(selectedValueIndex);
+                input.check(button.getId());
+            }
+        }
+
+        setInternalValue(value);
     }
 
     @Override

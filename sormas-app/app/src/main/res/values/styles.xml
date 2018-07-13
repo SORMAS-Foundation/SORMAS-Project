@@ -274,6 +274,13 @@
         <item name="android:maxLines">2</item>
     </style>
 
+    <style name="ControlLabelRowStyle" parent="ControlLabelStyle">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/listActivityRowSecondaryTextSize</item>
+        <item name="android:textColor">@color/listActivityRowPrimaryText</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
     <style name="ImageCaptionStyle">
         <item name="android:textColor">@color/controlLabelColor</item>
         <item name="android:textSize">@dimen/controlLabelSize</item>

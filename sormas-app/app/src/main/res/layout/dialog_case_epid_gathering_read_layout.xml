@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/base_layout"
+        android:descendantFocusability="beforeDescendants">
+
+    <data>
+
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.backend.epidata.EpiDataGathering"/>
+
+        <variable
+            name="callback"
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/parentLayoutVerticalPadding"
+            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+            android:paddingRight="@dimen/rowListItemHorizontalMargin"
+            android:paddingTop="@dimen/parentLayoutVerticalPadding">
+
+            <TextView
+                style="@style/SubHeadingStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/heading_sub_case_epid_social_events"
+                />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/epiDataGathering_gatheringDate"
+                style="@style/ControlSingleColumnStyle"
+                app:defaultValue='@{@string/not_available}'
+                app:value="@{data.gatheringDate}"
+                />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/epiDataGathering_description"
+                style="@style/ControlSingleColumnStyle"
+                app:defaultValue='@{@string/not_available}'
+                app:maxLines="2"
+                app:value="@{data.description}"
+                />
+
+
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/epiDataGathering_gatheringAddress"
+                style="@style/ControlSingleColumnStyle"
+                app:defaultValue='@{@string/not_available}'
+                app:maxLines="2"
+                app:value="@{data.gatheringAddress}"
+                />
+
+            <Button
+                android:id="@+id/btnDismiss"
+                style="@style/PrimaryButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginTop="@dimen/primaryButtonMarginTop"
+                android:drawableLeft="@drawable/ic_clear_black_24dp"
+                android:drawablePadding="@dimen/contentHorizontalSpacing"
+                android:drawableTint="@color/whiteOpaque"
+                android:onClickListener="@{(view) -> callback.onClick(view, data)}"
+                android:paddingLeft="@dimen/contentHorizontalSpacing"
+                android:paddingRight="@dimen/contentHorizontalSpacing"
+                android:text="@string/action_dismiss"
+                />
+
+        </LinearLayout>
+    </ScrollView>
+</layout>
+

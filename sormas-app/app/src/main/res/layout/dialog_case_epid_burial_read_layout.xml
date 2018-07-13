@@ -5,13 +5,12 @@
     android:id="@+id/base_layout">
 
     <data>
-        <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiDataTravel"/>
+        <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiDataBurial"/>
 
         <variable
             name="callback"
             type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
-
 
     <ScrollView
         android:layout_width="match_parent"
@@ -29,7 +28,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/heading_sub_case_epid_travels"
+                android:text="@string/heading_sub_case_epid_burial_visited"
                 style="@style/SubHeadingStyle"
                 />
 
@@ -40,58 +39,58 @@
                 >
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtTravelFrom"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_case_epid_travel_from_date"
-                    app:labelCaption="@string/label_case_epid_travel_from_date"
-                    app:value="@{data.travelDateFrom}"
+                    android:id="@+id/epiDataBurial_burialDateFrom"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@{data.burialDateFrom}"
                     app:defaultValue='@{@string/not_available}'
                     />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtTravelTo"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingLeft="@dimen/control_spacing"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:description="@string/desc_case_epid_travel_to_date"
-                    app:labelCaption="@string/label_case_epid_travel_to_date"
-                    app:value="@{data.travelDateTo}"
+                    android:id="@+id/epiDataBurial_burialDateTo"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:value="@{data.burialDateTo}"
                     app:defaultValue='@{@string/not_available}'
                     />
-
             </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/txtTravelType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:maxLines="2"
-                app:description="@string/desc_case_epid_travel_type"
-                app:labelCaption="@string/label_case_epid_travel_type"
-                app:value="@{data.travelType}"
+                android:id="@+id/epiDataBurial_burialRelation"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.burialPersonname}"
+                app:appendValue="@{data.burialRelation}"
+                app:valueFormat='@{@string/two_strings_with_brackets_format}'
                 app:defaultValue='@{@string/not_available}'
                 />
-
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/txtAddress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                android:id="@+id/epiDataBurial_address"
+                style="@style/ControlSingleColumnStyle"
                 app:maxLines="2"
-                app:description="@string/desc_case_epid_travel_address"
-                app:labelCaption="@string/label_case_epid_travel_address"
-                app:value="@{data.travelDestination}"
+                app:value="@{data.burialAddress}"
                 app:defaultValue='@{@string/not_available}'
                 />
+
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiDataBurial_burialIll"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@{data.burialIll}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiDataepiDataBurial_burialTouching"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:value="@{data.burialTouching}"/>
+
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btnDismiss"
@@ -107,9 +106,6 @@
                 android:onClickListener="@{(view) -> callback.onClick(view, data)}"
                 style="@style/PrimaryButtonStyle"
                 />
-
-
-
 
         </LinearLayout>
     </ScrollView>
