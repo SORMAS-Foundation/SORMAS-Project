@@ -170,19 +170,19 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         setUpFieldVisibilities(contentBinding);
 
         // Initialize ControlSpinnerFields
-        contentBinding.personBirthdateDD.initializeSpinner(dayList, null, new ValueChangeListener() {
+        contentBinding.personBirthdateDD.initializeSpinner(dayList, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 updateApproximateAgeField(contentBinding);
             }
         });
-        contentBinding.personBirthdateMM.initializeSpinner(monthList, null, new ValueChangeListener() {
+        contentBinding.personBirthdateMM.initializeSpinner(monthList, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 updateApproximateAgeField(contentBinding);
             }
         });
-        contentBinding.personBirthdateYYYY.initializeSpinner(yearList, null, new ValueChangeListener() {
+        contentBinding.personBirthdateYYYY.initializeSpinner(yearList, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 updateApproximateAgeField(contentBinding);
