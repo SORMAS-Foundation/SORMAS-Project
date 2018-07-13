@@ -86,25 +86,19 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
             @Override
             public void onClick(View v) {
                 final CaseEditActivity activity = (CaseEditActivity) CaseEditFragment.this.getActivity();
-                activity.saveCaseToDatabase(new Callback.IAction<BoolResult>() {
+                activity.saveData(new Consumer<Case>() {
                     @Override
-                    public void call(BoolResult result) {
-                        if (!result.isSuccess()) {
-                            NotificationHelper.showNotification(activity, NotificationType.ERROR, R.string.notification_error_init_move_case);
-                            return;
-                        }
-
-                        final MoveCaseDialog transferCaseDialog = new MoveCaseDialog(BaseActivity.getActiveActivity(), record);
-                        transferCaseDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+                    public void accept(Case caze) {
+                        final MoveCaseDialog moveCaseDialog = new MoveCaseDialog(BaseActivity.getActiveActivity(), caze);
+                        moveCaseDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                             @Override
                             public void onOkClick(View v, Object item, View viewRoot) {
                                 record = (Case) item;
                                 requestLayoutRebind();
-                                transferCaseDialog.dismiss();
+                                moveCaseDialog.dismiss();
                             }
                         });
-
-                        transferCaseDialog.show(null);
+                        moveCaseDialog.show(null);
                     }
                 });
             }
