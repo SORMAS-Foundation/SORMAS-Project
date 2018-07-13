@@ -104,13 +104,12 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
     // Overrides
 
     @Override
-    public void setValue(Boolean value) {
+    protected void setFieldValue(Boolean value) {
         input.setChecked(value);
-        setInternalValue(value);
     }
 
     @Override
-    public Boolean getValue() {
+    protected Boolean getFieldValue() {
         return input.isChecked();
     }
 
@@ -218,12 +217,12 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
 
     @BindingAdapter("value")
     public static void setValue(ControlCheckBoxField view, boolean value) {
-        view.setValue(value);
+        view.setFieldValue(value);
     }
 
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
     public static boolean getValue(ControlCheckBoxField view) {
-        return view.getValue();
+        return view.getFieldValue();
     }
 
     @BindingAdapter("valueAttrChanged")

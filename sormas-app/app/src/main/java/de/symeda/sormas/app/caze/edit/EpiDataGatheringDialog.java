@@ -126,7 +126,7 @@ public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
                 locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
-                        mContentBinding.epiDataGatheringGatheringAddress.setValue(location.toString());
+                        mContentBinding.epiDataGatheringGatheringAddress.setValue(location);
                         data.setGatheringAddress(location);
                         locationDialog.dismiss();
                     }

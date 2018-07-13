@@ -7,8 +7,6 @@
     <data>
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
         <variable name="data" type="de.symeda.sormas.app.backend.location.Location"/>
-        <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
-
 
         <variable
             name="pickGpsCallback"
@@ -28,53 +26,17 @@
             android:paddingRight="@dimen/rowListItemHorizontalMargin"
             >
 
-            <!--<TextView
-                android:id="@+id/txtDialogHint"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@={config.subHeading}"
-                android:textColor="@color/pageHintText"
-                android:textSize="@dimen/defaultPageHintTextSize"/>-->
-
-
-
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/txtAddressLandmark"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                app:slim="true"
-                app:hint="@string/hint_location_address"
-                app:labelCaption="@string/label_location_address"
-                app:description="@string/desc_location_address"
-                app:required="true"
+                android:id="@+id/location_address"
+                style="@style/ControlSingleColumnStyle"
                 app:value="@={data.address}"
-                app:imeOptions="actionNext"
-
-
                 />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/txtCommContactPerson"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                app:slim="true"
-                app:hint="@string/hint_location_contact_person"
-                app:labelCaption="@string/label_location_contact_person"
-                app:description="@string/desc_location_contact_person"
-                app:required="true"
+                android:id="@+id/location_details"
+                style="@style/ControlSingleColumnStyle"
                 app:value="@={data.details}"
-                app:imeOptions="actionNext"
-
-
                 />
-
-
-
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -84,45 +46,16 @@
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/location_region"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                    app:slim="true"
-                    app:hint="@string/hint_location_state"
-                    app:description="@string/desc_location_state"
-                    app:labelCaption="@string/label_location_state"
-                    app:required="true"
-
-                    app:imeOptions="actionNext"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
                     app:value="@={data.region}"
-
-
                     />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/location_district"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                    android:paddingLeft="@dimen/control_spacing"
-                    app:slim="true"
-                    app:hint="@string/hint_location_lga"
-                    app:description="@string/desc_location_lga"
-                    app:labelCaption="@string/label_location_lga"
-                    app:required="true"
-
-                    app:imeOptions="actionNext"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
                     app:value="@={data.district}"
-
-
                     />
-
             </LinearLayout>
-
-
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -132,38 +65,14 @@
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/location_community"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                    app:slim="true"
-                    app:hint="@string/hint_location_ward"
-                    app:description="@string/desc_location_ward"
-                    app:labelCaption="@string/label_location_ward"
-                    app:required="true"
-
-                    app:imeOptions="actionNext"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
                     app:value="@={data.community}"
-
-
                     />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/txtCity"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                    android:paddingLeft="@dimen/control_spacing"
-                    app:slim="true"
-                    app:hint="@string/hint_location_city"
-                    app:description="@string/desc_location_city"
-                    app:labelCaption="@string/label_location_city"
-                    app:required="true"
+                    android:id="@+id/location_city"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
                     app:value="@={data.city}"
-                    app:imeOptions="actionNext"
-
-
                     />
 
             </LinearLayout>
@@ -187,26 +96,18 @@
                     android:onClick="@{(view) -> pickGpsCallback.onClick(view, data)}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/txtGpsLatLon"
+                    android:id="@+id/location_latLon"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     android:paddingLeft="@dimen/control_spacing"
-                    app:description="@string/desc_pick_gps"
-                    app:labelCaption="@string/label_pick_gps"
-                    app:value="@{null}"
                     app:defaultValue='@{@string/hint_pick_gps}'
                     />
-
-
 
             </LinearLayout>
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
-
-
-
 
         </LinearLayout>
     </ScrollView>

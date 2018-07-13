@@ -256,7 +256,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
     }
 
     @Override
-    public Object getValue() {
+    protected Object getFieldValue() {
         int selectedValueId = input.getCheckedRadioButtonId();
 
         if (selectedValueId >= 0) {
@@ -273,7 +273,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
     }
 
     @Override
-    public void setValue(Object value) {
+    protected void setFieldValue(Object value) {
         if (value == null) {
             input.clearCheck();
         } else {
@@ -283,8 +283,6 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
                 input.check(button.getId());
             }
         }
-
-        setInternalValue(value);
     }
 
     @Override
@@ -343,12 +341,12 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
     @BindingAdapter("value")
     public static void setValue(ControlSwitchField view, Object value) {
-        view.setValue(value);
+        view.setFieldValue(value);
     }
 
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
     public static Object getValue(ControlSwitchField view) {
-        return view.getValue();
+        return view.getFieldValue();
     }
 
     @BindingAdapter("valueAttrChanged")
@@ -364,7 +362,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
             value = defaultValue;
         }
 
-        view.setValue(value);
+        view.setFieldValue(value);
     }
 
     public void setOnCheckedChangeListener(RadioGroup.OnCheckedChangeListener onCheckedChangeListener) {

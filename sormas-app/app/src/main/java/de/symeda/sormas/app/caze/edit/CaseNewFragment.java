@@ -5,7 +5,6 @@ import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 
 import com.android.databinding.library.baseAdapters.BR;
 
@@ -29,7 +28,6 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.CommunityLoader;
 import de.symeda.sormas.app.component.dialog.DistrictLoader;

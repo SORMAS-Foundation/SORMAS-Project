@@ -28,8 +28,6 @@
             android:background="@drawable/background_list_activity_row"
             >
 
-
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

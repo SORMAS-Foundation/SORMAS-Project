@@ -135,7 +135,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         if (activeSection == CaseSection.SYMPTOMS) {
             FragmentCaseEditSymptomsInfoLayoutBinding symptomsBinding = (FragmentCaseEditSymptomsInfoLayoutBinding) getActiveFragment().getContentBinding();
 
-//            // Necessary because the entry could've been automatically set, in which case the setValue method of the
+//            // Necessary because the entry could've been automatically set, in which case the setFieldValue method of the
 //            // custom field has not been called
 //            Symptom s = (Symptom) symptoms.getFirstSymptom();
 //

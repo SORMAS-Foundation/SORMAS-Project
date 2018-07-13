@@ -231,12 +231,12 @@ public class ControlTagViewField extends ControlPropertyField<String> {
     }
 
     @Override
-    public void setValue(String value) {
+    protected void setFieldValue(String value) {
         // Not needed
     }
 
     @Override
-    public String getValue() {
+    protected String getFieldValue() {
         return null;
     }
 

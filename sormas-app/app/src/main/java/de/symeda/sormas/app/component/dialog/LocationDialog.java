@@ -8,19 +8,13 @@ import android.view.View;
 
 import com.android.databinding.library.baseAdapters.BR;
 
-import java.util.List;
-
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
-import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
-import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ControlSpinnerField;
-import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
@@ -29,14 +23,6 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.LocationService;
-
-/**
- * Created by Orson on 02/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
 
 public class LocationDialog extends BaseTeboAlertDialog {
 
@@ -54,12 +40,6 @@ public class LocationDialog extends BaseTeboAlertDialog {
 
     public LocationDialog(final FragmentActivity activity, Location location) {
         this(activity, R.string.heading_location_dialog, -1, null, null, null, location);
-    }
-
-
-    public LocationDialog(final FragmentActivity activity, RegionLoader regionLoader,
-                          DistrictLoader districtLoader, CommunityLoader communityLoader, Location location) {
-        this(activity, R.string.heading_location_dialog, -1, regionLoader, districtLoader, communityLoader, location);
     }
 
     public LocationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId,
@@ -199,7 +179,7 @@ public class LocationDialog extends BaseTeboAlertDialog {
         if (mContentBinding == null)
             return;
 
-        mContentBinding.txtGpsLatLon.setValue(data.getGpsLocation());
+        mContentBinding.locationLatLon.setValue(data.getGpsLocation());
     }
 
     private void setupCallbacks() {

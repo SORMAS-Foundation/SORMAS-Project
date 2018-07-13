@@ -31,7 +31,6 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
-import de.symeda.sormas.app.component.controls.ControlTextReadField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.DataUtils;
@@ -45,7 +44,7 @@ public class BaseFragment extends Fragment {
     protected Tracker tracker;
 
     public BaseActivity getBaseActivity() {
-        return (BaseActivity)getActivity();
+        return (BaseActivity) getActivity();
     }
 
     @Override
@@ -130,7 +129,7 @@ public class BaseFragment extends Fragment {
     }
 
     protected void setVisibilityByDisease(Class<?> dtoClass, Disease disease, ViewGroup viewGroup) {
-        for (int i = 0; i < viewGroup.getChildCount(); i++){
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
             View child = viewGroup.getChildAt(i);
             if (child instanceof ControlPropertyField) {
                 boolean visibleAllowed = isVisibleAllowed(dtoClass, disease, (ControlPropertyField) child);
@@ -147,7 +146,7 @@ public class BaseFragment extends Fragment {
     }
 
     protected void setVisibleWhen(final ControlPropertyField targetField, ControlPropertyField sourceField, final Object sourceValue) {
-        if (sourceField.getInternalValue() != null && sourceField.getInternalValue().equals(sourceValue)) {
+        if (sourceField.getValue() != null && sourceField.getValue().equals(sourceValue)) {
             targetField.setVisibility(VISIBLE);
         } else {
             targetField.setVisibility(GONE);
@@ -156,7 +155,7 @@ public class BaseFragment extends Fragment {
         sourceField.addValueChangedListener(new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
-                if (field.getInternalValue() != null && field.getInternalValue().equals(sourceValue)) {
+                if (field.getValue() != null && field.getValue().equals(sourceValue)) {
                     targetField.setVisibility(VISIBLE);
                 } else {
                     targetField.hideField(true);
@@ -180,7 +179,7 @@ public class BaseFragment extends Fragment {
     }
 
     private void setHealthFacilityDetailsFieldVisibility(ControlPropertyField healthFacilityField, ControlPropertyField healthFacilityDetailsField) {
-        Facility selectedFacility = (Facility) healthFacilityField.getInternalValue();
+        Facility selectedFacility = (Facility) healthFacilityField.getValue();
 
         if (selectedFacility != null) {
             boolean otherHealthFacility = selectedFacility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
@@ -222,8 +221,8 @@ public class BaseFragment extends Fragment {
     }
 
     private void setCauseOfDeathDetailsFieldVisibility(final ControlPropertyField causeOfDeathField, final ControlPropertyField causeOfDeathDiseaseField, final ControlPropertyField causeOfDeathDetailsField) {
-        CauseOfDeath selectedCauseOfDeath = (CauseOfDeath) causeOfDeathField.getInternalValue();
-        Disease selectedCauseOfDeathDisease = (Disease) causeOfDeathDiseaseField.getInternalValue();
+        CauseOfDeath selectedCauseOfDeath = (CauseOfDeath) causeOfDeathField.getValue();
+        Disease selectedCauseOfDeathDisease = (Disease) causeOfDeathDiseaseField.getValue();
 
         if (selectedCauseOfDeath == CauseOfDeath.OTHER_CAUSE) {
             causeOfDeathDetailsField.setVisibility(VISIBLE);
@@ -251,7 +250,7 @@ public class BaseFragment extends Fragment {
     }
 
     private void setOccupationDetailsFieldVisibility(final ControlPropertyField occupationTypeField, final ControlPropertyField occupationDetailsField) {
-        OccupationType selectedOccupationType = (OccupationType) occupationTypeField.getInternalValue();
+        OccupationType selectedOccupationType = (OccupationType) occupationTypeField.getValue();
 
         switch (selectedOccupationType) {
             case BUSINESSMAN_WOMAN:

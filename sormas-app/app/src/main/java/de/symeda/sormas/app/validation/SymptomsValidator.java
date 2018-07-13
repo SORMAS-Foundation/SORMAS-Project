@@ -155,7 +155,7 @@ public final class SymptomsValidator {
 //
 //    public static void setSoftRequiredHintsForCaseSymptoms(CaseSymptomsFragmentLayoutBinding binding) {
 //        for (SymptomStateField field : getNonConditionalSymptoms(binding)) {
-//            if (field.getValue() == SymptomState.YES) {
+//            if (field.getFieldValue() == SymptomState.YES) {
 //                binding.symptomsOnsetDate.makeFieldSoftRequired();
 //                binding.symptomsOnsetSymptom.makeFieldSoftRequired();
 //                return;
@@ -169,7 +169,7 @@ public final class SymptomsValidator {
 //    public static void setSoftRequiredHintsForVisitSymptoms(boolean cooperative, CaseSymptomsFragmentLayoutBinding binding) {
 //        if (cooperative) {
 //            for (SymptomStateField field : getNonConditionalSymptoms(binding)) {
-//                if (field.getValue() == SymptomState.YES) {
+//                if (field.getFieldValue() == SymptomState.YES) {
 //                    binding.symptomsOnsetDate.makeFieldSoftRequired();
 //                    binding.symptomsOnsetSymptom.makeFieldSoftRequired();
 //                    binding.symptomsTemperature.makeFieldSoftRequired();
@@ -231,7 +231,7 @@ public final class SymptomsValidator {
 //
 //    public static boolean isSymptomatic(CaseSymptomsFragmentLayoutBinding binding) {
 //        return isAnySymptomSetTo(SymptomState.YES, getNonConditionalSymptoms(binding)) ||
-//                (binding.symptomsTemperature.getValue() != null && (Float) binding.symptomsTemperature.getValue() >= 38.0f);
+//                (binding.symptomsTemperature.getFieldValue() != null && (Float) binding.symptomsTemperature.getFieldValue() >= 38.0f);
 //    }
 //
 //    /**
@@ -240,7 +240,7 @@ public final class SymptomsValidator {
 //     */
 //    private static boolean isAnySymptomSetTo(SymptomState reqSymptomState, List<SymptomStateField> nonConditionalSymptoms) {
 //        for(SymptomStateField field : nonConditionalSymptoms) {
-//            if(field.getVisibility() == View.VISIBLE && field.getValue() == reqSymptomState) {
+//            if(field.getVisibility() == View.VISIBLE && field.getFieldValue() == reqSymptomState) {
 //                return true;
 //            }
 //        }
@@ -255,7 +255,7 @@ public final class SymptomsValidator {
 //    private static boolean markAnySymptomSetTo(SymptomState reqSymptomState, List<SymptomStateField> symptomsList, Resources resources) {
 //        boolean fieldMarked = false;
 //        for(SymptomStateField field : symptomsList) {
-//            if(field.getVisibility() == View.VISIBLE && field.getValue() == reqSymptomState) {
+//            if(field.getVisibility() == View.VISIBLE && field.getFieldValue() == reqSymptomState) {
 //                field.setError(resources.getString(R.string.validation_symptoms_symptom));
 //                fieldMarked = true;
 //            }

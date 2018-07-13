@@ -86,7 +86,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         contentBinding.epiDataBurialAttended.addValueChangedListener(new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
-                YesNoUnknown value = (YesNoUnknown) field.getInternalValue();
+                YesNoUnknown value = (YesNoUnknown) field.getValue();
                 contentBinding.ctrlBurials.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
                 if (value != YesNoUnknown.YES) {
                     clearBurials();
@@ -97,7 +97,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         contentBinding.epiDataGatheringAttended.addValueChangedListener(new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
-                YesNoUnknown value = (YesNoUnknown) field.getInternalValue();
+                YesNoUnknown value = (YesNoUnknown) field.getValue();
                 contentBinding.ctrlGatherings.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
                 if (value != YesNoUnknown.YES) {
                     clearGatherings();
@@ -108,7 +108,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         contentBinding.epiDataTraveled.addValueChangedListener(new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
-                YesNoUnknown value = (YesNoUnknown) field.getInternalValue();
+                YesNoUnknown value = (YesNoUnknown) field.getValue();
                 contentBinding.ctrlTravels.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
                 if (value != YesNoUnknown.YES) {
                     clearTravels();

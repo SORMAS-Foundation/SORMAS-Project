@@ -86,7 +86,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
         });
 
         Bundle dateBundle = new Bundle();
-        dateBundle.putSerializable(ControlDatePickerFragment.KEY_DATE, this.getValue());
+        dateBundle.putSerializable(ControlDatePickerFragment.KEY_DATE, this.getFieldValue());
         fragment.setArguments(dateBundle);
         fragment.show(fragmentManager, getResources().getText(R.string.hint_select_a_date).toString());
     }
@@ -138,8 +138,14 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 
     // Overrides
 
+
     @Override
     public Date getValue() {
+        return (Date)super.getValue();
+    }
+
+    @Override
+    protected Date getFieldValue() {
         if (StringUtils.isEmpty(input.getText())) {
             return null;
         }
@@ -148,13 +154,12 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
     }
 
     @Override
-    public void setValue(Date value) {
+    protected void setFieldValue(Date value) {
         if (value == null) {
             input.setText(null);
         } else {
             input.setText(DateHelper.formatDate(value));
         }
-        setInternalValue(value);
     }
 
     @Override
@@ -282,12 +287,12 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 
     @BindingAdapter("value")
     public static void setValue(ControlDateField view, Date date) {
-        view.setValue(date);
+        view.setFieldValue(date);
     }
 
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
     public static Date getValue(ControlDateField view) {
-        return view.getValue();
+        return view.getFieldValue();
     }
 
     @BindingAdapter("valueAttrChanged")

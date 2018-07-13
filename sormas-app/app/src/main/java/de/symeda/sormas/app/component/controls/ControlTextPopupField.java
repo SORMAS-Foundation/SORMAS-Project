@@ -14,8 +14,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import de.symeda.sormas.api.I18nProperties;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.VisualState;
@@ -29,6 +29,7 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
 
     // Attributes
 
+    private Object internalValue;
     private Drawable iconStart;
     private Drawable iconEnd;
 
@@ -98,16 +99,27 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
 
     // Overrides
 
+
     @Override
-    public void setValue(String value) {
+    public void setValue(Object value) {
+        internalValue = value;
+        setFieldValue(DataHelper.toStringNullable(value));
+    }
+
+    @Override
+    public Object getValue() {
+        return internalValue;
+    }
+
+    @Override
+    protected void setFieldValue(String value) {
         input.setText(value);
     }
 
     @Override
-    public String getValue() {
+    protected String getFieldValue() {
         if (input.getText() == null)
             return null;
-
         return input.getText().toString();
     }
 
@@ -164,7 +176,7 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
         input = (TextView) this.findViewById(R.id.input);
         input.setImeOptions(getImeOptions());
         input.setTextAlignment(getTextAlignment());
-        if(getTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
+        if (getTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
             input.setGravity(getGravity());
         }
 
@@ -178,9 +190,13 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
 
         input.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
             public void afterTextChanged(Editable editable) {
                 if (inverseBindingListener != null) {
@@ -248,13 +264,12 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
 
     @BindingAdapter("value")
     public static void setValue(ControlTextPopupField view, String text) {
-        view.setInternalValue(text);
         view.setValue(text);
     }
 
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
     public static String getValue(ControlTextPopupField view) {
-        return view.getValue();
+        return view.getFieldValue();
     }
 
     @BindingAdapter("valueAttrChanged")
@@ -269,12 +284,6 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
 
     @InverseBindingAdapter(attribute = "locationValue", event = "valueAttrChanged")
     public static Location getLocationValue(ControlTextPopupField textPopupField) {
-        return (Location) textPopupField.getInternalValue();
+        return (Location) textPopupField.getValue();
     }
-
-    public void setValue(AbstractDomainObject ado) {
-        setInternalValue(ado);
-        input.setText(ado.toString());
-    }
-
 }

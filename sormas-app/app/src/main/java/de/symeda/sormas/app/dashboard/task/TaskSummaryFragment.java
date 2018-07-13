@@ -143,7 +143,7 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
                                                             int i = 0;
                                                             for(TaskPrioritySummaryEntry entry: taskPriorityData) {
                                                                 //TODO: Set value from database
-                                                                //entry.setValue(null);
+                                                                //entry.setFieldValue(null);
 
                                                                 item.addEntry(new SummaryPieEntry(entry.getValue(), entry.getLabel(), entry.getKey()));
                                                                 item.addLegendEntry(TaskPriorityLegendEntry.findByKey(entry.getKey()).setValue(entry.getValue())

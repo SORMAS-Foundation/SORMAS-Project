@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.component.controls;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
@@ -164,19 +163,23 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
     // Overrides
 
+
     @Override
     public String getValue() {
+        return (String)super.getValue();
+    }
+
+    @Override
+    protected String getFieldValue() {
         if (input.getText() == null) {
             return null;
         }
-
         return input.getText().toString();
     }
 
     @Override
-    public void setValue(String value) {
+    protected void setFieldValue(String value) {
         input.setText(value);
-        setInternalValue(value);
     }
 
     @Override
@@ -330,22 +333,22 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
     @BindingAdapter("value")
     public static void setValue(ControlTextEditField view, String text) {
-        view.setValue(text);
+        view.setFieldValue(text);
     }
 
     @BindingAdapter("value")
     public static void setValue(ControlTextEditField view, Integer integerValue) {
-        view.setValue(String.valueOf(integerValue));
+        view.setFieldValue(String.valueOf(integerValue));
     }
 
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
     public static String getValue(ControlTextEditField view) {
-        return view.getValue();
+        return view.getFieldValue();
     }
 
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
     public static Integer getIntegerValue(ControlTextEditField view) {
-        return Integer.valueOf(view.getValue());
+        return Integer.valueOf(view.getFieldValue());
     }
 
     @BindingAdapter("valueAttrChanged")

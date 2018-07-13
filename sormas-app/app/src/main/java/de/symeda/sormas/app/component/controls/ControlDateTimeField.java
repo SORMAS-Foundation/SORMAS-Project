@@ -94,7 +94,7 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
         });
 
         Bundle dateBundle = new Bundle();
-        dateBundle.putSerializable(ControlDatePickerFragment.KEY_DATE, this.getValue());
+        dateBundle.putSerializable(ControlDatePickerFragment.KEY_DATE, this.getFieldValue());
         fragment.setArguments(dateBundle);
         fragment.show(fragmentManager, getResources().getText(R.string.hint_select_a_date).toString());
     }
@@ -120,7 +120,7 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
         });
 
         Bundle timeBundle = new Bundle();
-        timeBundle.putSerializable(ControlTimePickerFragment.KEY_TIME, this.getValue());
+        timeBundle.putSerializable(ControlTimePickerFragment.KEY_TIME, this.getFieldValue());
         fragment.setArguments(timeBundle);
         fragment.show(fragmentManager, getResources().getText(R.string.hint_select_a_time).toString());
     }
@@ -181,7 +181,7 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
     // Overrides
 
     @Override
-    public Date getValue() {
+    protected Date getFieldValue() {
         if (StringUtils.isEmpty(dateInput.getText().toString())) {
             return null;
         }
@@ -201,7 +201,7 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
     }
 
     @Override
-    public void setValue(Date value) {
+    protected void setFieldValue(Date value) {
         if (value == null) {
             dateInput.setText(null);
             timeInput.setText(null);
@@ -209,7 +209,6 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
             dateInput.setText(DateHelper.formatDate(value));
             timeInput.setText(DateHelper.formatTime(value));
         }
-        setInternalValue(value);
     }
 
     @Override
@@ -365,12 +364,12 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
 
     @BindingAdapter("value")
     public static void setValue(ControlDateTimeField view, Date date) {
-        view.setValue(date);
+        view.setFieldValue(date);
     }
 
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
     public static Date getValue(ControlDateTimeField view) {
-        return view.getValue();
+        return view.getFieldValue();
     }
 
     @BindingAdapter("valueAttrChanged")

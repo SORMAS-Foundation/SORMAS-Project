@@ -450,7 +450,7 @@ public final class ConfigProvider {
 //        if (instance.accessGranted == null) {
 //            Config config = DatabaseHelper.getConfigDao().queryForId(KEY_ACCESS_GRANTED);
 //            if (config != null) {
-//                instance.accessGranted = Boolean.parseBoolean(config.getValue());
+//                instance.accessGranted = Boolean.parseBoolean(config.getFieldValue());
 //            }
 //        }
 //        return instance.accessGranted;

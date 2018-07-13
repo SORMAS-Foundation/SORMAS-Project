@@ -188,7 +188,7 @@ public class ContactEditPersonFragment extends BaseEditFragment<FragmentContactE
                 locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
-                        getContentBinding().personAddress.setValue(location.toString());
+                        getContentBinding().personAddress.setValue(location);
                         record.setAddress(location);
 
                         locationDialog.dismiss();

@@ -37,9 +37,9 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 
     // Attributes
 
-    private String valueFormat;
     private int maxLines;
     private boolean distinct;
+    private Object internalValue;
 
     // Listeners
 
@@ -70,24 +70,6 @@ public class ControlTextReadField extends ControlPropertyField<String> {
     }
 
     // Overrides
-
-    @Override
-    public void setValue(String value) {
-        textView.setText(value);
-    }
-
-    @Override
-    public String getValue() {
-        return textView.getText().toString();
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        textView.setEnabled(enabled);
-        label.setEnabled(enabled);
-
-    }
 
     @Override
     protected void initialize(Context context, AttributeSet attrs, int defStyle) {
@@ -170,14 +152,6 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 
     // Data binding, getters & setters
 
-    public String getValueFormat() {
-        return valueFormat;
-    }
-
-    public void setValueFormat(String valueFormat) {
-        this.valueFormat = valueFormat;
-    }
-
     public void setInputType(int inputType) {
         textView.setInputType(inputType);
     }
@@ -191,12 +165,38 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         textView.setMaxLines(maxLines);
     }
 
-    /* Value types that can simply be called by setValue */
+    @Override
+    protected void setFieldValue(String value) {
+        textView.setText(value);
+    }
+
+    @Override
+    protected String getFieldValue() {
+        return textView.getText().toString();
+    }
+
+    @Override
+    public void setValue(Object value) {
+        internalValue = value;
+        setFieldValue(DataHelper.toStringNullable(value));
+    }
+
+    @Override
+    public Object getValue() {
+        return internalValue;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        textView.setEnabled(enabled);
+        label.setEnabled(enabled);
+
+    }
 
     // String
     @BindingAdapter(value = {"value", "appendValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setValue(ControlTextReadField textField, String stringValue, String appendValue, String valueFormat, String defaultValue) {
-        textField.setValueFormat(valueFormat);
 
         if (StringUtils.isEmpty(stringValue)) {
             textField.setValue(getDefaultValue(defaultValue));
@@ -214,7 +214,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 
     public static void setValue(ControlTextReadField textField, String stringValue, String appendValue, String valueFormat, String defaultValue, Object originalValue) {
         setValue(textField, stringValue, appendValue, valueFormat, defaultValue);
-        textField.setInternalValue(originalValue);
+        textField.internalValue = originalValue;
     }
 
     @BindingAdapter(value = {"value", "valueFormat", "defaultValue"}, requireAll = false)
@@ -285,7 +285,6 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         if (valueFormat == null) {
             valueFormat = ResourceUtils.getString(textField.getContext(), R.string.age_with_birth_date_format);
         }
-        textField.setValueFormat(valueFormat);
 
         if (person == null || person.getApproximateAge() == null) {
             setValue(textField, (String) null, valueFormat, defaultValue);

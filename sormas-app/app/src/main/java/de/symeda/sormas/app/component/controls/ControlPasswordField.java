@@ -7,7 +7,6 @@ import android.databinding.InverseBindingListener;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -20,7 +19,6 @@ import android.widget.TextView;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.VisualStateControlType;
 
@@ -157,8 +155,14 @@ public class ControlPasswordField extends ControlPropertyEditField<String> {
 
     // Overrides
 
+
     @Override
     public String getValue() {
+        return (String)super.getValue();
+    }
+
+    @Override
+    protected String getFieldValue() {
         if (input.getText() == null) {
             return null;
         }
@@ -167,9 +171,8 @@ public class ControlPasswordField extends ControlPropertyEditField<String> {
     }
 
     @Override
-    public void setValue(String value) {
+    protected void setFieldValue(String value) {
         input.setText(value);
-        setInternalValue(value);
     }
 
     @Override
@@ -281,12 +284,12 @@ public class ControlPasswordField extends ControlPropertyEditField<String> {
 
     @BindingAdapter("value")
     public static void setValue(ControlPasswordField view, String text) {
-        view.setValue(text);
+        view.setFieldValue(text);
     }
 
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
     public static String getValue(ControlPasswordField view) {
-        return view.getValue();
+        return view.getFieldValue();
     }
 
     @BindingAdapter("valueAttrChanged")

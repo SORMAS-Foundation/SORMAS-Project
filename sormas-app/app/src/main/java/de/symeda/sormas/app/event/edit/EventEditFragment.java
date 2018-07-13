@@ -107,7 +107,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
                 locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
                     @Override
                     public void onOkClick(View v, Object item, View viewRoot) {
-                        getContentBinding().eventEventLocation.setValue(location.toString());
+                        getContentBinding().eventEventLocation.setValue(location);
                         record.setEventLocation(location);
 
                         locationDialog.dismiss();

@@ -12,12 +12,14 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.sample.SampleTestType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -25,7 +27,6 @@ import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.backend.event.Event;
-import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
@@ -33,44 +34,10 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.core.TimeAgo;
 
-/**
- * Created by Orson on 27/12/2017.
- */
-
 public class TextViewBindingAdapters {
-
-    private boolean shortUuid;
-
-/*    @BindingAdapter(value={"value", "valueFormat", "defaultValue"}, requireAll=true)
-    public static void setValue(TextView textField, String stringValue, String valueFormat, String defaultValue) {
-        String val = defaultValue;
-
-        if (stringValue == null) {
-            textField.setText(val);
-            //textField.updateControl(val);
-        } else {
-            val = stringValue;
-            textField.setText(val);
-
-            if (valueFormat != null && valueFormat.trim() != "") {
-                textField.setText(String.format(valueFormat, stringValue));
-            } else {
-                textField.setText(val);
-            }
-        }
-    }*/
-
-
-    /*public void setShortUuid(boolean shortUuid) {
-        this.shortUuid = shortUuid;
-    }
-
-    public boolean getShortUuid() {
-        return this.shortUuid;
-    }*/
-
 
     @BindingAdapter(value={"value", "shortUuid", "valueFormat", "defaultValue"}, requireAll=false)
     public static void setUuidValue(TextView textField, String stringValue, boolean shortUuid, String valueFormat, String defaultValue) {
@@ -395,6 +362,24 @@ public class TextViewBindingAdapters {
                 textField.setText(String.format(valueFormat, val));
             } else {
                 textField.setText(val);
+            }
+        }
+    }
+
+
+    @BindingAdapter(value={"yesNoUnknown"}, requireAll=false)
+    public static void setYesNoUnknown(TextView textField, YesNoUnknown yesNoUnknown) {
+        if (yesNoUnknown == null) {
+            textField.setText("");
+        } else {
+            String val = yesNoUnknown.toString();
+            String fieldId = textField.getResources().getResourceName(textField.getId());
+            String caption = I18nProperties.getFieldCaption(ControlPropertyField.toPrefixPropertyId(fieldId));
+
+            if (DataHelper.isNullOrEmpty(caption)) {
+                textField.setText(val);
+            } else {
+                textField.setText(caption + ": " + val);
             }
         }
     }

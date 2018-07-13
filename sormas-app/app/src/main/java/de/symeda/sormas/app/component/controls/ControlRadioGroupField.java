@@ -219,7 +219,7 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
     // Overrides
 
     @Override
-    public Object getValue() {
+    protected Object getFieldValue() {
         int checkedButtonIndex = getCheckedRadioButtonIndex();
 
         if (checkedButtonIndex >= 0) {
@@ -230,7 +230,7 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
     }
 
     @Override
-    public void setValue(Object value) {
+    protected void setFieldValue(Object value) {
         if (value == null) {
             input.clearCheck();
         } else {
@@ -241,8 +241,6 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
                 input.check(button.getId());
             }
         }
-
-        setInternalValue(value);
     }
 
     @Override
@@ -337,12 +335,12 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 
     @BindingAdapter("value")
     public static void setValue(ControlRadioGroupField view, RadioButton value) {
-        view.setValue(value);
+        view.setFieldValue(value);
     }
 
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
     public static Object getValue(ControlRadioGroupField view) {
-        return view.getValue();
+        return view.getFieldValue();
     }
 
     @BindingAdapter("valueAttrChanged")
@@ -361,7 +359,7 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
     @BindingAdapter(value = {"value", "enumClass"})
     public static void setValue(ControlRadioGroupField view, Object value, Class c) {
         view.setEnumClass(c);
-        view.setValue(value);
+        view.setFieldValue(value);
     }
 
 }

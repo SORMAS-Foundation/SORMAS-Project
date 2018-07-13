@@ -1,11 +1,8 @@
 package de.symeda.sormas.app.component.controls;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
-import android.databinding.BindingMethod;
-import android.databinding.BindingMethods;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
@@ -162,9 +159,9 @@ public class ControlTextImageField extends ControlTextReadField {
     @BindingAdapter(value = {"taskPriorityValue", "defaultValue"}, requireAll = false)
     public static void setTaskPriorityValue(ControlTextImageField textImageField, TaskPriority priority, String defaultValue) {
         if (priority == null) {
-            textImageField.setValue(getDefaultValue(defaultValue));
+            textImageField.setFieldValue(getDefaultValue(defaultValue));
         } else {
-            textImageField.setValue(priority.toString());
+            textImageField.setFieldValue(priority.toString());
 
             if (priority == TaskPriority.HIGH) {
                 textImageField.setImageBackground(R.color.indicatorTaskPriorityHigh);
@@ -175,16 +172,16 @@ public class ControlTextImageField extends ControlTextReadField {
             }
         }
 
-        textImageField.setInternalValue(priority);
+        textImageField.setValue(priority);
     }
 
     // Task status
     @BindingAdapter(value = {"taskStatusValue", "defaultValue"}, requireAll = false)
     public static void setTaskStatusValue(ControlTextImageField textImageField, TaskStatus status, String defaultValue) {
         if (status == null) {
-            textImageField.setValue(getDefaultValue(defaultValue));
+            textImageField.setFieldValue(getDefaultValue(defaultValue));
         } else {
-            textImageField.setValue(status.toString());
+            textImageField.setFieldValue(status.toString());
 
             if (status == TaskStatus.PENDING) {
                 textImageField.setImageBackground(R.color.indicatorTaskPending);
@@ -197,7 +194,7 @@ public class ControlTextImageField extends ControlTextReadField {
             }
         }
 
-        textImageField.setInternalValue(status);
+        textImageField.setValue(status);
     }
 
 }

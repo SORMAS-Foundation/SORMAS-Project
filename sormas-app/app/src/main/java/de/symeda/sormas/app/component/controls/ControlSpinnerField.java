@@ -15,7 +15,6 @@ import android.widget.SpinnerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.Item;
@@ -87,39 +86,11 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
             R.layout.control_spinner_item_layout,
             R.layout.control_spinner_dropdown_item_layout,
             R.id.text));
-        setValue(selectedValue);
+        setFieldValue(selectedValue);
     }
 
     public void setSpinnerData(List<Item> items) {
         setSpinnerData(items, valueOnBind);
-    }
-
-    private void setSelectedItem(Object selectedItem) {
-        if (input == null) {
-            return;
-        }
-
-        setInternalValue(selectedItem);
-
-        if (selectedItem == null) {
-            removeSelection();
-            return;
-        }
-
-        SpinnerAdapter adapter = input.getAdapter();
-
-        if (adapter != null) {
-            for (int i = 0; i < adapter.getCount(); i++) {
-                Object value = ((Item) adapter.getItem(i)).getValue();
-                if (selectedItem.equals(value)) {
-                    input.setSelection(i);
-                    break;
-                }
-            }
-        } else {
-            valueOnBind = selectedItem;
-            removeSelection();
-        }
     }
 
     private void removeSelection() {
@@ -151,7 +122,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
     // Overrides
 
     @Override
-    public Object getValue() {
+    protected Object getFieldValue() {
         if (input.getSelectedItem() != null) {
             return ((Item) input.getSelectedItem()).getValue();
         } else if (input.getAdapter() == null && valueOnBind != null) {
@@ -162,8 +133,30 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
     }
 
     @Override
-    public void setValue(Object value) {
-        setSelectedItem(value);
+    protected void setFieldValue(Object value) {
+        if (input == null) {
+            return;
+        }
+
+        if (value == null) {
+            removeSelection();
+            return;
+        }
+
+        SpinnerAdapter adapter = input.getAdapter();
+
+        if (adapter != null) {
+            for (int i = 0; i < adapter.getCount(); i++) {
+                Object itemValue = ((Item) adapter.getItem(i)).getValue();
+                if (value.equals(itemValue)) {
+                    input.setSelection(i);
+                    break;
+                }
+            }
+        } else {
+            valueOnBind = value;
+            removeSelection();
+        }
     }
 
     @Override
@@ -280,12 +273,12 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
     @BindingAdapter("value")
     public static void setValue(ControlSpinnerField view, Object value) {
-        view.setValue(value);
+        view.setFieldValue(value);
     }
 
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
     public static Object getValue(ControlSpinnerField view) {
-        return view.getValue();
+        return view.getFieldValue();
     }
 
     @BindingAdapter("valueAttrChanged")

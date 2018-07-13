@@ -17,7 +17,6 @@ import java.util.ArrayList;
 
 import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.InvalidValueException;
 import de.symeda.sormas.app.util.ControlLabelOnTouchListener;
 
 public abstract class ControlPropertyField<T> extends LinearLayout {
@@ -44,9 +43,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
     // Other fields
 
-    private Object internalValue;
     private ArrayList<ValueChangeListener> valueChangedListeners;
-    private ArrayList<ValueChangeListener> internalValueChangedListeners;
 
     // Constructors
 
@@ -73,9 +70,9 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
     // Abstract methods
 
-    public abstract T getValue();
+    protected abstract T getFieldValue();
 
-    public abstract void setValue(T value);
+    protected abstract void setFieldValue(T value);
 
     protected abstract void initialize(Context context, AttributeSet attrs, int defStyle);
 
@@ -126,12 +123,6 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
     }
 
     protected void onValueChanged() {
-        // Read-only fields should set the internal value only once in the respective setValue binding
-        // method to ensure type consistency
-        if (this instanceof ControlPropertyEditField) {
-            setInternalValue(getValue());
-        }
-
         if (valueChangedListeners != null) {
             for (ValueChangeListener valueChangedListener : valueChangedListeners) {
                 valueChangedListener.onChange(this);
@@ -151,6 +142,10 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
     public String getFieldCaptionPropertyId() {
         String fieldId = getFieldIdString();
+        return toPrefixPropertyId(fieldId);
+    }
+
+    public static String toPrefixPropertyId(String fieldId) {
         int separatorIndex = fieldId.lastIndexOf("/");
         return fieldId.substring(separatorIndex + 1, separatorIndex + 2).toUpperCase() + fieldId.substring(separatorIndex + 2).replaceAll("_", ".");
     }
@@ -198,13 +193,13 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
             return;
         }
 
-        if (dependencyParentField.getInternalValue() == null ||
+        if (dependencyParentField.getValue() == null ||
                 dependencyParentField.getVisibility() != VISIBLE) {
             hideField(calledFromListener);
             return;
         }
 
-        if (dependencyParentField.getInternalValue() == dependencyParentValue) {
+        if (dependencyParentField.getValue() == dependencyParentValue) {
             if (dependencyParentVisibility) {
                 setVisibility(VISIBLE);
             } else {
@@ -222,7 +217,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
     public void hideField(boolean eraseValue) {
         setVisibility(GONE);
         if (eraseValue) {
-            setValue(null);
+            setFieldValue(null);
         }
     }
 
@@ -333,26 +328,13 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         return slim;
     }
 
-    protected void setInternalValue(Object internalValue) {
-        this.internalValue = internalValue;
-
-        if (internalValueChangedListeners != null) {
-            for (ValueChangeListener internalValueChangedListener : internalValueChangedListeners) {
-                internalValueChangedListener.onChange(this);
-            }
-        }
+    public void setValue(Object value) {
+        setFieldValue((T)value);
+        onValueChanged();
     }
 
-    public Object getInternalValue() {
-        return internalValue;
-    }
-
-    protected void addInternalValueChangedListener(ValueChangeListener internalValueChangedListener) {
-        if (internalValueChangedListeners == null) {
-            internalValueChangedListeners = new ArrayList<>();
-        }
-
-        internalValueChangedListeners.add(internalValueChangedListener);
+    public Object getValue() {
+        return getFieldValue();
     }
 
     @BindingAdapter(value = {"dependencyParentField", "dependencyParentValue", "dependencyParentVisibility"}, requireAll = false)
@@ -367,7 +349,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         final ControlPropertyField thisField = field;
         if (dependencyParentField != null && dependencyParentValue != null) {
             thisField.setVisibilityBasedOnParentField(false);
-            dependencyParentField.addInternalValueChangedListener(new ValueChangeListener() {
+            dependencyParentField.addValueChangedListener(new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {
                     thisField.setVisibilityBasedOnParentField(true);

@@ -2,10 +2,8 @@ package de.symeda.sormas.app.component.controls;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import de.symeda.sormas.api.user.UserRight;
@@ -64,6 +62,16 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
     protected abstract void setHint(String hint);
 
     // Instance methods
+
+    @Override
+    protected void onValueChanged() {
+        // update internal value if possible
+        if (this instanceof ControlPropertyEditField) {
+            Object value = getFieldValue();
+        }
+
+        super.onValueChanged();
+    }
 
     private void initializePropertyEditField(Context context, AttributeSet attrs) {
         if (attrs != null) {

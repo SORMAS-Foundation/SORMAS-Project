@@ -9,12 +9,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.List;
 
 import de.symeda.sormas.api.sample.SampleTestResultType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -22,20 +24,13 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.component.controls.ControlTextImageField;
 import de.symeda.sormas.app.component.controls.ControlLinkField;
+import de.symeda.sormas.app.component.controls.ControlTextImageField;
 import de.symeda.sormas.app.component.controls.ControlTextReadField;
 
 import static android.view.View.GONE;
 
-/**
- * Created by Orson on 19/12/2017.
- */
-
 public class FormBindingAdapters {
-
-
-
 
     @BindingAdapter("resultStatus")
     public static void setResultStatus(ImageView imageView, SampleTestResultType resultType) {
@@ -64,7 +59,7 @@ public class FormBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"shipmentStatus", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"shipmentStatus", "defaultValue"}, requireAll = false)
     public static void setShipmentStatus(ControlTextImageField control, Sample sample, String defaultValue) {
         String val = defaultValue;
         Context context = control.getContext();
@@ -98,7 +93,7 @@ public class FormBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"receivedStatus", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"receivedStatus", "defaultValue"}, requireAll = false)
     public static void setReceivedStatus(ControlTextImageField control, Sample sample, String defaultValue) {
         String val = defaultValue;
         Context context = control.getContext();
@@ -132,10 +127,9 @@ public class FormBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"cazeAndLocation", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"cazeAndLocation", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setCazeAndLocation(ControlLinkField control, Case caze, String valueFormat, String defaultValue) {
         String val = defaultValue;
-        control.setValueFormat(valueFormat);
 
         if (caze == null) {
             control.setValue(val);
@@ -154,10 +148,9 @@ public class FormBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"contactAndLocation", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"contactAndLocation", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setContactAndLocation(ControlLinkField control, Contact contact, String valueFormat, String defaultValue) {
         String val = defaultValue;
-        control.setValueFormat(valueFormat);
 
         if (contact == null) {
             control.setValue(val);
@@ -176,10 +169,9 @@ public class FormBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"eventAndLocation", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"eventAndLocation", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setEventAndLocation(ControlLinkField control, Event event, String valueFormat, String defaultValue) {
         String val = defaultValue;
-        control.setValueFormat(valueFormat);
 
         if (event == null) {
             control.setValue(val);
@@ -197,18 +189,6 @@ public class FormBindingAdapters {
             }
         }
     }
-
-    @BindingAdapter("goneIfNull")
-    public static void setGoneIfNull(ControlTextReadField textView, Object o) {
-        if (o == null) {
-            textView.setVisibility(GONE);
-        }
-
-        if (o instanceof String && o == "") {
-            textView.setVisibility(GONE);
-        }
-    }
-
     @BindingAdapter("userViewRight")
     public static void setUserViewRight(View view, UserRight viewRight) {
         if (!ConfigProvider.getUser().hasUserRight(viewRight)) {
@@ -217,31 +197,32 @@ public class FormBindingAdapters {
     }
 
     @BindingAdapter("goneIfEmpty")
-    public static <T> void setGoneIfNull(ImageView control, List<T> list) {
-        if (list == null || list.size() <= 0) {
-            control.setVisibility(GONE);
-        } else {
-            control.setVisibility(View.VISIBLE);
+    public static void setGoneIfEmpty(View view, Object o) {
+        if (o == null) {
+            view.setVisibility(GONE);
+        } else if (o instanceof String && o == "") {
+            view.setVisibility(GONE);
+        } else if (o instanceof YesNoUnknown && o == YesNoUnknown.NO) {
+            view.setVisibility(GONE);
         }
     }
 
-    @BindingAdapter(value={"alternateBottomMarginIfEmpty", "emptyBottomMargin", "nonEmptyBottomMargin"}, requireAll=true)
+    @BindingAdapter(value = {"alternateBottomMarginIfEmpty", "emptyBottomMargin", "nonEmptyBottomMargin"}, requireAll = true)
     public static <T> void setAlternateBottomMarginIfEmpty(RelativeLayout viewGroup, List<T> list, float emptyBottomMargin, float nonEmptyBottomMargin) {
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)viewGroup.getLayoutParams();
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) viewGroup.getLayoutParams();
 
         if (list == null || list.size() <= 0) {
-            params.bottomMargin = (int)emptyBottomMargin;
+            params.bottomMargin = (int) emptyBottomMargin;
         } else {
-            params.bottomMargin = (int)nonEmptyBottomMargin;
+            params.bottomMargin = (int) nonEmptyBottomMargin;
         }
 
         viewGroup.setLayoutParams(params);
     }
 
-    @BindingAdapter(value={"locationValue", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"locationValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setLocationValue(ControlLinkField textField, Location location, String valueFormat, String defaultValue) {
         String val = defaultValue;
-        textField.setValueFormat(valueFormat);
 
         if (location == null) {
             textField.setValue(val);

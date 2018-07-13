@@ -5,7 +5,6 @@
         android:descendantFocusability="beforeDescendants">
 
     <data>
-        <import type="de.symeda.sormas.api.utils.YesNoUnknown"/>
         <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiDataBurial"/>
     </data>
 

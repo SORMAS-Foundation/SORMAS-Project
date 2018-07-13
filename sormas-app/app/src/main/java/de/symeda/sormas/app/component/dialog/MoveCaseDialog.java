@@ -7,28 +7,23 @@ import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 
 import com.android.databinding.library.baseAdapters.BR;
 import com.google.android.gms.analytics.Tracker;
 
 import java.util.List;
 
-import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ControlSpinnerField;
-import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
@@ -107,7 +102,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
                     //getActivityCommunicator().hidePreloader();
                     //getActivityCommunicator().showFragmentView();
 
-                    if (resultHolder == null){
+                    if (resultHolder == null) {
                         if (callback != null)
                             callback.call(null);
 
@@ -147,7 +142,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
 
     @Override
     protected void recieveViewDataBinding(Context context, ViewDataBinding binding) {
-        this.mContentBinding = (DialogMoveCaseLayoutBinding)binding;
+        this.mContentBinding = (DialogMoveCaseLayoutBinding) binding;
     }
 
     @Override
@@ -164,7 +159,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
 
     @Override
     protected void initializeContentView(ViewDataBinding rootBinding, final ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        final DialogMoveCaseLayoutBinding _contentBinding = (DialogMoveCaseLayoutBinding)contentBinding;
+        final DialogMoveCaseLayoutBinding _contentBinding = (DialogMoveCaseLayoutBinding) contentBinding;
 
         if (_contentBinding.caseDataRegion != null) {
             _contentBinding.caseDataRegion.initializeSpinner(RegionLoader.getInstance().load(), null, new ValueChangeListener() {

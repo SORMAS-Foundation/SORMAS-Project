@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.caze.edit;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.databinding.ViewDataBinding;
 import android.support.v4.app.FragmentActivity;
@@ -9,7 +8,7 @@ import android.view.View;
 
 import com.android.databinding.library.baseAdapters.BR;
 
-import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.location.Location;
@@ -18,7 +17,6 @@ import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.DialogCaseEpidBurialEditLayoutBinding;
 
@@ -27,7 +25,6 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
     public static final String TAG = EpiDataBurialDialog.class.getSimpleName();
 
     private EpiDataBurial data;
-    private IEntryItemOnClickListener onAddressLinkClickedCallback;
     private DialogCaseEpidBurialEditLayoutBinding mContentBinding;
 
 
@@ -40,15 +37,10 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
                 R.layout.dialog_root_three_button_panel_layout, headingResId, subHeadingResId);
 
         this.data = epiDataBurial;
-
-        setupCallback();
     }
 
     @Override
     protected void onOkClicked(View v, Object item, View rootView, ViewDataBinding contentBinding, Callback.IAction callback) {
-        /*DialogEpiDataTravelLayoutBinding _contentBinding = (DialogEpiDataTravelLayoutBinding)contentBinding;
-
-        _contentBinding.spnState.enableErrorState("Hello");*/
         if (callback != null)
             callback.call(null);
     }
@@ -75,9 +67,6 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
         if (!binding.setVariable(BR.data, data)) {
             Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
-        if (!binding.setVariable(BR.addressLinkCallback, onAddressLinkClickedCallback)) {
-            Log.e(TAG, "There is no variable 'addressLinkCallback' in layout " + layoutName);
-        }
     }
 
     @Override
@@ -90,6 +79,8 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
 
         mContentBinding.epiDataBurialBurialDateFrom.initializeDateField(getFragmentManager());
         mContentBinding.epiDataBurialBurialDateTo.initializeDateField(getFragmentManager());
+
+        setUpControlListeners();
     }
 
     @Override
@@ -127,31 +118,26 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
         return ControlButtonType.LINE_DANGER;
     }
 
-    private void setupCallback() {
-        onAddressLinkClickedCallback = new IEntryItemOnClickListener() {
+    private void setUpControlListeners() {
+        mContentBinding.epiDataBurialBurialAddress.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v, Object item) {
-                final Location location = data.getBurialAddress();// MemoryDatabaseHelper.LOCATION.getLocations(1).get(0);
-                final LocationDialog locationDialog = new LocationDialog(getActivity(), location);
-                locationDialog.show(new Callback.IAction<AlertDialog>() {
-                    @Override
-                    public void call(AlertDialog result) {
-
-                    }
-                });
-
-                locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
-                    @Override
-                    public void onOkClick(View v, Object item, View viewRoot) {
-                        mContentBinding.epiDataBurialBurialAddress.setValue(location);
-                        /*getContentBinding().txtAddress.setValue(location.toString());
-                        locationDialog.dismiss();*/
-                        //data.setBurialAddress(location);
-                        locationDialog.dismiss();
-                    }
-                });
+            public void onClick(View v) {
+                openAddressPopup();
             }
-        };
+        });
     }
 
+    private void openAddressPopup() {
+        final Location location = (Location)mContentBinding.epiDataBurialBurialAddress.getValue();
+        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), location);
+        locationDialog.show(null);
+
+        locationDialog.setOnPositiveClickListener(new TeboAlertDialogInterface.PositiveOnClickListener() {
+            @Override
+            public void onOkClick(View v, Object item, View viewRoot) {
+                mContentBinding.epiDataBurialBurialAddress.setValue(location);
+                locationDialog.dismiss();
+            }
+        });
+    }
 }

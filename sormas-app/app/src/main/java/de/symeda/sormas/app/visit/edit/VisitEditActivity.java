@@ -82,7 +82,7 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
         // TODO #664 should this not be done by the user?
         VisitSection activeSection = VisitSection.fromMenuKey(getActiveMenuItem().getKey());
         if (activeSection == VisitSection.SYMPTOMS) {
-            // Necessary because the entry could've been automatically set, in which case the setValue method of the
+            // Necessary because the entry could've been automatically set, in which case the setFieldValue method of the
             // custom field has not been called
             Symptom s = (Symptom) visit.getSymptoms().getFirstSymptom();
             if (s != null) {

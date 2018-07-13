@@ -44,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:goneIfNull="@{data.caze}"
+                app:goneIfEmpty="@{data.caze}"
                 app:cazeAndLocation="@{data.caze}" />
 
             <de.symeda.sormas.app.component.controls.ControlLinkField
@@ -52,7 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:goneIfNull="@{data.contact}"
+                app:goneIfEmpty="@{data.contact}"
                 app:contactAndLocation="@{data.contact}" />
 
             <de.symeda.sormas.app.component.controls.ControlLinkField
@@ -60,7 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:goneIfNull="@{data.event}"
+                app:goneIfEmpty="@{data.event}"
                 app:eventAndLocation="@{data.event}" />
 
             <LinearLayout
