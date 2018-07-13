@@ -17,6 +17,19 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 
     private Person record;
 
+    // Instance methods
+
+    public static PersonReadFragment newInstance(BaseFormNavigationCapsule capsule, AbstractDomainObject activityRootData) {
+        return newInstance(PersonReadFragment.class, capsule, activityRootData);
+    }
+
+    private void setUpFieldVisibilities(FragmentPersonReadLayoutBinding contentBinding) {
+        initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
+        initializeCauseOfDeathDetailsFieldVisibility(contentBinding.personCauseOfDeath, contentBinding.personCauseOfDeathDisease, contentBinding.personCauseOfDeathDetails);
+    }
+
+    // Overrides
+
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
         AbstractDomainObject ado = getActivityRootData();
@@ -37,6 +50,11 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
     }
 
     @Override
+    public void onAfterLayoutBinding(FragmentPersonReadLayoutBinding contentBinding) {
+        setUpFieldVisibilities(contentBinding);
+    }
+
+    @Override
     protected String getSubHeadingTitle() {
         return getResources().getString(R.string.caption_patient_information);
     }
@@ -49,10 +67,6 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
     @Override
     public int getReadLayout() {
         return R.layout.fragment_person_read_layout;
-    }
-
-    public static PersonReadFragment newInstance(BaseFormNavigationCapsule capsule, AbstractDomainObject activityRootData) {
-        return newInstance(PersonReadFragment.class, capsule, activityRootData);
     }
 
 }

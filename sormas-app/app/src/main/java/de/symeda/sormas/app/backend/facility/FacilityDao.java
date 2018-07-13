@@ -67,7 +67,7 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
         }
     }
 
-    public List<Facility> getHealthFacilitiesByDistrict(District district, boolean includeStaticFacilities) {
+    public List<Facility> getHealthFacilitiesByDistrict(District district, boolean includeOtherFacility, boolean includeOtherPlace) {
 
         try {
             QueryBuilder builder = queryBuilder();
@@ -78,8 +78,10 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
                     where.or(where.ne(Facility.TYPE, FacilityType.LABORATORY), where.isNull(Facility.TYPE)));
             List<Facility> facilities = builder.orderBy(Facility.NAME, true).query();
 
-            if (includeStaticFacilities) {
+            if (includeOtherFacility) {
                 facilities.add(queryUuid(FacilityDto.OTHER_FACILITY_UUID));
+            }
+            if (includeOtherPlace) {
                 facilities.add(queryUuid(FacilityDto.NONE_FACILITY_UUID));
             }
 
@@ -91,7 +93,7 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
         }
     }
 
-    public List<Facility> getHealthFacilitiesByCommunity(Community community, boolean includeStaticFacilities) {
+    public List<Facility> getHealthFacilitiesByCommunity(Community community, boolean includeOtherFacility, boolean includeOtherPlace) {
         List<Facility> facilities = queryForEq(Facility.COMMUNITY, community, Facility.NAME, true);
         for (Facility facility : facilities) {
             if (facility.getType() == FacilityType.LABORATORY) {
@@ -99,8 +101,10 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
             }
         }
 
-        if (includeStaticFacilities) {
+        if (includeOtherFacility) {
             facilities.add(queryUuid(FacilityDto.OTHER_FACILITY_UUID));
+        }
+        if (includeOtherPlace) {
             facilities.add(queryUuid(FacilityDto.NONE_FACILITY_UUID));
         }
 

@@ -8,6 +8,7 @@
 
     <data>
         <import type="de.symeda.sormas.api.person.PresentCondition" />
+        <import type="de.symeda.sormas.api.person.OccupationType" />
         <import type="de.symeda.sormas.api.person.CauseOfDeath" />
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
 
@@ -146,6 +147,8 @@
 
             </LinearLayout>
 
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -249,30 +252,76 @@
 
             <de.symeda.sormas.app.component.controls.ControlTextPopupField
                 android:id="@+id/person_address"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
                 app:iconStart="@drawable/ic_edit_location_black_24dp"
                 app:hint="@string/hint_enter_location"
-                app:locationValue="@={data.address}" />
+                app:locationValue="@={data.address}"
+                style="@style/ControlSingleColumnStyle" />
 
-            <TextView
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/heading_sub_event_pinvolv_occupation"
-                style="@style/SubHeadingStyle"
-                />
+                android:orientation="horizontal">
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/person_occupationType"
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_occupationType"
+                    app:value="@={data.occupationType}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/person_occupationDetails"
+                    app:value="@={data.occupationDetails}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:value="@={data.occupationType}" />
+                android:orientation="horizontal">
 
-            <include android:id="@+id/occupationDetailsInclude"
-                layout="@layout/blank_layout"
-                />
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_occupationRegion"
+                    app:value="@={data.occupationRegion}"
+                    app:dependencyParentField="@{personOccupationType}"
+                    app:dependencyParentValue="@{OccupationType.HEALTHCARE_WORKER}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_occupationDistrict"
+                    app:value="@={data.occupationDistrict}"
+                    app:dependencyParentField="@{personOccupationType}"
+                    app:dependencyParentValue="@{OccupationType.HEALTHCARE_WORKER}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_occupationCommunity"
+                    app:value="@={data.occupationCommunity}"
+                    app:dependencyParentField="@{personOccupationType}"
+                    app:dependencyParentValue="@{OccupationType.HEALTHCARE_WORKER}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_occupationFacility"
+                    app:value="@={data.occupationFacility}"
+                    app:dependencyParentField="@{personOccupationType}"
+                    app:dependencyParentValue="@{OccupationType.HEALTHCARE_WORKER}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/person_occupationFacilityDetails"
+                app:value="@={data.occupationFacilityDetails}"
+                style="@style/ControlSingleColumnStyle" />
 
         </LinearLayout>
 

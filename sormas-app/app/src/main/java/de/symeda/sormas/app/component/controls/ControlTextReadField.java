@@ -25,7 +25,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.I18nConstants;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.util.ResourceUtils;
 
@@ -281,7 +280,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
     }
 
     // Age with date
-    @BindingAdapter(value={"ageWithDateValue", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"ageWithDateValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setAgeWithDateValue(ControlTextReadField textField, Person person, String valueFormat, String defaultValue) {
         if (valueFormat == null) {
             valueFormat = ResourceUtils.getString(textField.getContext(), R.string.age_with_birth_date_format);
@@ -293,26 +292,39 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         } else {
             String age = person.getApproximateAge().toString();
             ApproximateAgeType ageType = person.getApproximateAgeType();
-            String day, month, year;
-            day = person.getBirthdateDD() != null ? person.getBirthdateDD().toString() : null;
-            month = person.getBirthdateMM() != null ? person.getBirthdateMM().toString() : null;
-            year = person.getBirthdateYYYY() != null ? person.getBirthdateYYYY().toString() : null;
+            String day = person.getBirthdateDD() != null ? person.getBirthdateDD().toString() : null;
+            String month = person.getBirthdateMM() != null ? person.getBirthdateMM().toString() : null;
+            String year = person.getBirthdateYYYY() != null ? person.getBirthdateYYYY().toString() : null;
 
+            StringBuilder ageWithDateBuilder = new StringBuilder();
+            ageWithDateBuilder.append(age).append(" ").append(ageType.toString());
+
+            String dateOfBirth = null;
             if (year != null) {
                 if (month != null) {
                     if (day != null) {
-                        String dateOfBirth = String.format(ResourceUtils.getString(
-                                textField.getContext(), R.string.date_format), day, month, year);
-                        textField.setValue(String.format(valueFormat, age, ageType, dateOfBirth));
+                        dateOfBirth = String.format(
+                                ResourceUtils.getString(textField.getContext(), R.string.date_format),
+                                day, month, year);
                     } else {
-                        String dateOfBirth = String.format(ResourceUtils.getString(
-                                textField.getContext(), R.string.date_without_day_format), month, year);
-                        textField.setValue(String.format(valueFormat, age, ageType, dateOfBirth));
+                        dateOfBirth = String.format(
+                                ResourceUtils.getString(textField.getContext(), R.string.date_two_values_format),
+                                month, year);
                     }
                 } else {
-                    textField.setValue(String.format(valueFormat, age, ageType, year));
+                    dateOfBirth = year;
                 }
+            } else if (month != null && day != null) {
+                dateOfBirth = String.format(
+                        ResourceUtils.getString(textField.getContext(), R.string.date_two_values_format),
+                        day, month);
             }
+
+            if (dateOfBirth != null) {
+                ageWithDateBuilder.append(" (").append(dateOfBirth).append(")");
+            }
+
+            textField.setValue(ageWithDateBuilder.toString());
         }
     }
 

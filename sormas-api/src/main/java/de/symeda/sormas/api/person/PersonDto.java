@@ -34,6 +34,7 @@ public class PersonDto extends EntityDto {
 	public static final String CAUSE_OF_DEATH = "causeOfDeath";
 	public static final String CAUSE_OF_DEATH_DISEASE = "causeOfDeathDisease";
 	public static final String CAUSE_OF_DEATH_DETAILS = "causeOfDeathDetails";
+	public static final String CAUSE_OF_DEATH_DISEASE_DETAILS = "causeOfDeathDiseaseDetails";
 	public static final String DEATH_DATE = "deathDate";
 	public static final String DEATH_PLACE_TYPE = "deathPlaceType";
 	public static final String DEATH_PLACE_DESCRIPTION = "deathPlaceDescription";

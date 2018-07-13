@@ -147,7 +147,7 @@ public class OccupationTypeLayoutProcessor {
                             District selectedValue = (District) field.getValue();
                             if (selectedValue != null) {
                                 spnFacilityWard.setSpinnerData(DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(selectedValue)), spnFacilityWard.getValue());
-                                spnHealthCareFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(selectedValue, true)), spnHealthCareFacility.getValue());
+                                spnHealthCareFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(selectedValue, true, true)), spnHealthCareFacility.getValue());
                             } else {
                                 spnFacilityWard.setSpinnerData(null);
                                 spnHealthCareFacility.setSpinnerData(null);
@@ -162,9 +162,9 @@ public class OccupationTypeLayoutProcessor {
                         public void onChange(ControlPropertyField field) {
                             Community selectedValue = (Community) field.getValue();
                             if (selectedValue != null) {
-                                spnHealthCareFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(selectedValue, true)));
+                                spnHealthCareFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(selectedValue, true, true)));
                             } else if (spnFacilityLga.getValue() != null) {
-                                spnHealthCareFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) spnFacilityLga.getValue(), true)));
+                                spnHealthCareFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) spnFacilityLga.getValue(), true, true)));
                             } else {
                                 spnHealthCareFacility.setSpinnerData(null);
                             }

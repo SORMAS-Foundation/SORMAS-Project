@@ -311,6 +311,8 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
         if (state == VisualState.DISABLED) {
             setEnabled(false);
+        } else {
+            setEnabled(true);
         }
     }
 

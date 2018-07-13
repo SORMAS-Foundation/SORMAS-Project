@@ -154,7 +154,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
                     District selectedValue = (District) field.getValue();
                     if (selectedValue != null) {
                         contentBinding.caseDataCommunity.setSpinnerData(DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(selectedValue)), contentBinding.caseDataCommunity.getValue());
-                        contentBinding.caseDataHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(selectedValue, true)), contentBinding.caseDataHealthFacility.getValue());
+                        contentBinding.caseDataHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(selectedValue, true, true)), contentBinding.caseDataHealthFacility.getValue());
                     } else {
                         contentBinding.caseDataCommunity.setSpinnerData(null);
                         contentBinding.caseDataHealthFacility.setSpinnerData(null);
@@ -169,9 +169,9 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
                 public void onChange(ControlPropertyField field) {
                     Community selectedValue = (Community) field.getValue();
                     if (selectedValue != null) {
-                        contentBinding.caseDataHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(selectedValue, true)));
+                        contentBinding.caseDataHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(selectedValue, true, true)));
                     } else if (contentBinding.caseDataDistrict.getValue() != null) {
-                        contentBinding.caseDataHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) contentBinding.caseDataDistrict.getValue(), true)));
+                        contentBinding.caseDataHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) contentBinding.caseDataDistrict.getValue(), true, true)));
                     } else {
                         contentBinding.caseDataHealthFacility.setSpinnerData(null);
                     }

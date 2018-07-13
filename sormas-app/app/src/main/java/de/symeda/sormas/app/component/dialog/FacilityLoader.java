@@ -33,12 +33,12 @@ public class FacilityLoader {
     public List<Item> load(Community community, boolean includeStaticFacilities) {
         if (community == null)
             return new ArrayList<>();
-        return DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(community, includeStaticFacilities), false);
+        return DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(community, includeStaticFacilities, true), false);
     }
 
     public List<Item> load(District district, boolean includeStaticFacilities) {
         if (district == null)
             return new ArrayList<>();
-        return DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(district, includeStaticFacilities), false);
+        return DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(district, includeStaticFacilities, true), false);
     }
 }

@@ -62,6 +62,11 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
         setSpinnerData(dataSource, initialValue);
     }
 
+    public void initializeSpinner(List<Item> dataSource, ValueChangeListener valueChangeListener) {
+        setSpinnerData(dataSource);
+        spinnerFieldListeners.registerListener(valueChangeListener, this);
+    }
+
     public void initializeSpinner(List<Item> dataSource, Object initialValue, ValueChangeListener valueChangeListener) {
         setSpinnerData(dataSource, initialValue);
         spinnerFieldListeners.registerListener(valueChangeListener, this);
@@ -266,6 +271,8 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
         if (state == VisualState.DISABLED) {
             setEnabled(false);
+        } else {
+            setEnabled(true);
         }
     }
 

@@ -10,7 +10,6 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.DengueFeverType;
-import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -28,11 +27,7 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.MoveCaseDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
-import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.NotificationContext;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.util.Consumer;
@@ -56,7 +51,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
     private void setUpFieldVisibilities(final FragmentCaseEditLayoutBinding contentBinding) {
         setVisibilityByDisease(CaseDataDto.class, contentBinding.getData().getDisease(), contentBinding.mainContent);
-        setHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
+        initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
 
         // Vaccination date
         if (isVisibleAllowed(CaseDataDto.class, contentBinding.getData().getDisease(), contentBinding.caseDataVaccination)) {
@@ -81,8 +76,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
     }
 
-    private void setUpButtonListeners() {
-        getContentBinding().transferCase.setOnClickListener(new View.OnClickListener() {
+    private void setUpButtonListeners(FragmentCaseEditLayoutBinding contentBinding) {
+        contentBinding.transferCase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final CaseEditActivity activity = (CaseEditActivity) CaseEditFragment.this.getActivity();
@@ -134,7 +129,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
     @Override
     public void onLayoutBinding(FragmentCaseEditLayoutBinding contentBinding) {
-        setUpButtonListeners();
+        setUpButtonListeners(contentBinding);
 
         // Epid number warning state
         if (ConfigProvider.getUser().hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)) {

@@ -69,7 +69,6 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/person_approximateAge"
                     app:ageWithDateValue="@{data}"
-                    app:valueFormat="@{@string/age_with_birth_date_format}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
@@ -258,8 +257,6 @@
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/person_occupationFacilityDetails"
                 app:value="@{data.occupationFacilityDetails}"
-                app:dependencyParentField="@{personOccupationType}"
-                app:dependencyParentValue="@{OccupationType.HEALTHCARE_WORKER}"
                 style="@style/ControlSingleColumnStyle" />
 
         </LinearLayout>

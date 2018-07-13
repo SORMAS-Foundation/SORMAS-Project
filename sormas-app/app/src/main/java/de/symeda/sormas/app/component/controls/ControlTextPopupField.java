@@ -101,7 +101,6 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
     @Override
     public void setValue(String value) {
         input.setText(value);
-        setInternalValue(value);
     }
 
     @Override
@@ -249,6 +248,7 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
 
     @BindingAdapter("value")
     public static void setValue(ControlTextPopupField view, String text) {
+        view.setInternalValue(text);
         view.setValue(text);
     }
 
@@ -273,7 +273,7 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
     }
 
     public void setValue(AbstractDomainObject ado) {
-        setInternalValue(ado); // important: do this before setText, to make sure listeners work correctly
+        setInternalValue(ado);
         input.setText(ado.toString());
     }
 

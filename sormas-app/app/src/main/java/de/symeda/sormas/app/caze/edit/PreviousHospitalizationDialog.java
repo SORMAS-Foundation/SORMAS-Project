@@ -121,7 +121,7 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
                     District selectedValue = (District) field.getValue();
                     if (selectedValue != null) {
                         mContentBinding.casePreviousHospitalizationCommunity.setSpinnerData(DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(selectedValue)), mContentBinding.casePreviousHospitalizationCommunity.getValue());
-                        mContentBinding.casePreviousHospitalizationHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(selectedValue, true)), mContentBinding.casePreviousHospitalizationHealthFacility.getValue());
+                        mContentBinding.casePreviousHospitalizationHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(selectedValue, true, true)), mContentBinding.casePreviousHospitalizationHealthFacility.getValue());
                     } else {
                         mContentBinding.casePreviousHospitalizationCommunity.setSpinnerData(null);
                         mContentBinding.casePreviousHospitalizationHealthFacility.setSpinnerData(null);
@@ -136,9 +136,9 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
                 public void onChange(ControlPropertyField field) {
                     Community selectedValue = (Community) field.getValue();
                     if (selectedValue != null) {
-                        mContentBinding.casePreviousHospitalizationHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(selectedValue, true)));
+                        mContentBinding.casePreviousHospitalizationHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(selectedValue, true, true)));
                     } else if (mContentBinding.casePreviousHospitalizationDistrict.getValue() != null) {
-                        mContentBinding.casePreviousHospitalizationHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) mContentBinding.casePreviousHospitalizationDistrict.getValue(), true)));
+                        mContentBinding.casePreviousHospitalizationHealthFacility.setSpinnerData(DataUtils.toItems(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict((District) mContentBinding.casePreviousHospitalizationDistrict.getValue(), true, true)));
                     } else {
                         mContentBinding.casePreviousHospitalizationHealthFacility.setSpinnerData(null);
                     }

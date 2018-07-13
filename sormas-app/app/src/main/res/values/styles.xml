@@ -217,8 +217,8 @@
         <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:singleLine">true</item>
+        <item name="android:maxLines">5</item>
+        <item name="android:ellipsize">end</item>
         <item name="android:background">@drawable/control_link_edittextview_background_selector</item>
         <item name="android:textColor">@color/control_link_edittextview_color_selector</item>
         <item name="android:textColorHint">@color/control_link_edittextview_hint_color_selector</item>
