@@ -98,8 +98,8 @@ public class SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutB
             }
         });
 
-        contentBinding.sampleSampleDateTime.setFragmentManager(getFragmentManager());
-        contentBinding.sampleShipmentDate.setFragmentManager(getFragmentManager());
+        contentBinding.sampleSampleDateTime.initializeDateTimeField(getFragmentManager());
+        contentBinding.sampleShipmentDate.initializeDateField(getFragmentManager());
 
     }
 

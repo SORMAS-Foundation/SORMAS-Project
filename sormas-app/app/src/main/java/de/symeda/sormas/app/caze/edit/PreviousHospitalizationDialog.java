@@ -13,15 +13,12 @@ import java.util.List;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ControlSpinnerField;
-import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
@@ -100,8 +97,8 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
         //DialogPreviousHospitalizationLayoutBinding _contentBinding = (DialogPreviousHospitalizationLayoutBinding)contentBinding;
 
-        mContentBinding.casePreviousHospitalizationAdmissionDate.setFragmentManager(getFragmentManager());
-        mContentBinding.casePreviousHospitalizationDischargeDate.setFragmentManager(getFragmentManager());
+        mContentBinding.casePreviousHospitalizationAdmissionDate.initializeDateField(getFragmentManager());
+        mContentBinding.casePreviousHospitalizationDischargeDate.initializeDateField(getFragmentManager());
 
         if (mContentBinding.casePreviousHospitalizationRegion != null) {
             mContentBinding.casePreviousHospitalizationRegion.initializeSpinner(RegionLoader.getInstance().load(), null, new ValueChangeListener() {

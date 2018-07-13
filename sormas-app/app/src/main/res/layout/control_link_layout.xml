@@ -15,7 +15,7 @@
             android:scrollHorizontally="true"
             android:maxLines="1"
             android:ellipsize="end"
-            style="@style/ControlLabelReadStyle" />
+            style="@style/ControlLabelStyle" />
 
         <TextView
             android:id="@+id/text_view"

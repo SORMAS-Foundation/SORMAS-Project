@@ -14,7 +14,6 @@ import android.widget.LinearLayout;
 import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.controls.ControlDateField;
-import de.symeda.sormas.app.component.controls.ControlSwitchField;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.databinding.RowEditAnimalContactListItemLayoutBinding;
@@ -135,7 +134,7 @@ public class AnimalContactFormListAdapter  extends DataBoundAdapter<RowEditAnima
         ControlDateField dtpLastExposureDate = (ControlDateField)innerLayout.findViewById(R.id.dtpLastExposureDate);
 
         if (dtpLastExposureDate != null)
-            dtpLastExposureDate.setFragmentManager(fragmentManager);
+            dtpLastExposureDate.initializeDateField(fragmentManager);
 
         binding.addOnRebindCallback(new OnRebindCallback() {
             @Override

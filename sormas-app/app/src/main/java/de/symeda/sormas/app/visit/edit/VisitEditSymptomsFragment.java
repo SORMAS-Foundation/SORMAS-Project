@@ -115,7 +115,7 @@ public class VisitEditSymptomsFragment extends BaseEditFragment<FragmentContactE
 
     @Override
     public void onAfterLayoutBinding(FragmentContactEditSymptomsInfoLayoutBinding contentBinding) {
-        contentBinding.symptomsOnsetDate.setFragmentManager(getFragmentManager());
+        contentBinding.symptomsOnsetDate.initializeDateField(getFragmentManager());
 
         contentBinding.symptomsTemperature.initializeSpinner(bodyTempList, DEFAULT_BODY_TEMPERATURE);
 

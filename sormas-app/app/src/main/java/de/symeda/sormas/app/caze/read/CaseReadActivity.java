@@ -13,6 +13,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.person.read.PersonReadFragment;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 
 public class CaseReadActivity extends BaseReadActivity<Case> {
@@ -46,7 +47,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
                 fragment = CaseReadFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case PERSON_INFO:
-                fragment = CaseReadPersonFragment.newInstance(dataCapsule, activityRootData);
+                fragment = PersonReadFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case HOSPITALIZATION:
                 fragment = CaseReadHospitalizationFragment.newInstance(dataCapsule, activityRootData);

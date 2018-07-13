@@ -12,16 +12,11 @@ import java.util.List;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
-import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.ControlSpinnerField;
-import de.symeda.sormas.app.component.dialog.LocationDialog;
-import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.OnRecyclerViewReadyListener;
@@ -122,7 +117,7 @@ public class CaseEditSymptomsFragment extends BaseEditFragment<FragmentCaseEditS
 
     @Override
     public void onAfterLayoutBinding(FragmentCaseEditSymptomsInfoLayoutBinding contentBinding) {
-        contentBinding.symptomsOnsetDate.setFragmentManager(getFragmentManager());
+        contentBinding.symptomsOnsetDate.initializeDateField(getFragmentManager());
 
         contentBinding.symptomsTemperature.initializeSpinner(bodyTempList, DEFAULT_BODY_TEMPERATURE);
         contentBinding.symptomsTemperatureSource.initializeSpinner(DataUtils.addEmptyItem(tempSourceList));

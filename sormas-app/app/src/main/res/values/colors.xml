@@ -35,6 +35,7 @@
     <!-- Remove when done -->
     <color name="red">#FFe10002</color>
     <color name="red10">#1Ae10002</color>
+    <color name="red40">#63e10002</color>
     <color name="red50">#80e10002</color>
     <color name="lightRed">#99e10002</color>
     <color name="purple">#c600ff</color>

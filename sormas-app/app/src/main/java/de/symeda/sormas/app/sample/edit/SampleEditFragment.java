@@ -1,10 +1,8 @@
 package de.symeda.sormas.app.sample.edit;
 
 import android.databinding.ObservableArrayList;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
 
 import java.util.List;
 
@@ -24,16 +22,10 @@ import de.symeda.sormas.app.backend.sample.SampleTest;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnLinkClickListener;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
-import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.YesNo;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentSampleEditLayoutBinding;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
@@ -169,8 +161,8 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
             }
         });
 
-        contentBinding.sampleSampleDateTime.setFragmentManager(getFragmentManager());
-        contentBinding.sampleShipmentDate.setFragmentManager(getFragmentManager());
+        contentBinding.sampleSampleDateTime.initializeDateTimeField(getFragmentManager());
+        contentBinding.sampleShipmentDate.initializeDateField(getFragmentManager());
 
         //TODO: Properly disable Tebo controls
         if (!ConfigProvider.getUser().equals(record.getReportingUser())) {

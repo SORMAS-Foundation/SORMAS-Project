@@ -174,6 +174,10 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
         });
     }
 
+    public void initializeDateTimeField(final FragmentManager fm) {
+        this.fragmentManager = fm;
+    }
+
     // Overrides
 
     @Override
@@ -380,10 +384,6 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
 
     public String getTimeHint() {
         return timeInput.getHint().toString();
-    }
-
-    public void setFragmentManager(final FragmentManager fm) {
-        this.fragmentManager = fm;
     }
 
 }

@@ -250,7 +250,7 @@ public class SymptomFormListAdapter extends DataBoundAdapter<RowEditSymptomListI
                 if (dtpLesionsOnsetDate == null)
                     return;
 
-                dtpLesionsOnsetDate.setFragmentManager(fragmentManager);
+                dtpLesionsOnsetDate.initializeDateField(fragmentManager);
             }
         });
     }

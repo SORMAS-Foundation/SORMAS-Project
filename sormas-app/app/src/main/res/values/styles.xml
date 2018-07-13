@@ -153,6 +153,7 @@
         <item name="android:layout_height">@dimen/maxControlHeight</item>
         <item name="android:minHeight">@dimen/maxControlHeight</item>
         <item name="android:maxHeight">@dimen/maxControlHeight</item>
+        <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
         <item name="android:background">@drawable/selector_text_control_edit</item>
         <item name="android:cursorVisible">true</item>
         <item name="android:fontFamily">sans-serif</item>
@@ -191,7 +192,7 @@
         <item name="android:textColor">@color/controlReadTextColor</item>
         <item name="android:textColorHint">@color/controlReadTextViewHint</item>
         <item name="android:textSize">@dimen/controlReadTextSize</item>
-        <item name="android:layout_marginBottom">@dimen/controlReadTextMarginBottom</item>
+        <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
     </style>
 
     <style name="ControlTextFieldReadDistinctStyle" parent="ControlTextFieldReadStyle">
@@ -222,6 +223,7 @@
         <item name="android:textColor">@color/control_link_edittextview_color_selector</item>
         <item name="android:textColorHint">@color/control_link_edittextview_hint_color_selector</item>
         <item name="android:drawablePadding">@dimen/contentHorizontalSpacing</item>
+        <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
     </style>
 
     <style name="ControlPopupTextViewEditSlimStyle" parent="ControlPopupTextViewEditStyle">
@@ -245,6 +247,7 @@
         <item name="android:layout_height">@dimen/maxSpinnerHeight</item>
         <item name="android:minHeight">@dimen/maxSpinnerHeight</item>
         <item name="android:maxHeight">@dimen/maxSpinnerHeight</item>
+        <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
     </style>
 
     <style name="ControlSpinnerSlimStyle">
@@ -266,13 +269,16 @@
         <item name="android:clickable">true</item>
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>
-    </style>
-
-    <style name="ControlLabelReadStyle" parent="ControlLabelStyle">
         <item name="android:scrollHorizontally">true</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:maxLines">1</item>
-        <!--<item name="android:includeFontPadding">false</item>-->
+        <item name="android:maxLines">2</item>
+    </style>
+
+    <style name="ImageCaptionStyle">
+        <item name="android:textColor">@color/controlLabelColor</item>
+        <item name="android:textSize">@dimen/controlLabelSize</item>
+        <item name="android:layout_marginBottom">@dimen/field_padding_8</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
     <style name="RadioGroupLabelStyle" parent="ControlLabelStyle">
@@ -284,11 +290,10 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">top</item>
-        <item name="android:paddingStart">@dimen/contentHorizontalSpacing</item>
-        <item name="android:paddingEnd">@dimen/contentHorizontalSpacing</item>
+        <item name="android:paddingStart">6dp</item>
         <item name="android:text">@string/indicator_required</item>
         <item name="android:textColor">@color/watchOut</item>
-        <item name="android:textSize">@dimen/controlLabelSize</item>
+        <item name="android:textSize">@dimen/textSizeNormal</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
@@ -297,8 +302,17 @@
         <item name="android:textColor">@color/controlLabelColor</item>
     </style>
 
-    <style name="WarningIndicatorStyle" parent="@style/RequiredIndicatorStyle">
+    <style name="WarningIndicatorStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">top</item>
+        <item name="android:layout_marginStart">6dp</item>
         <item name="android:text">@string/indicator_warning</item>
+        <item name="android:background">@drawable/background_rounded_edges_warning</item>
+        <item name="android:textColor">@color/whiteOpaque</item>
+        <item name="android:textSize">@dimen/verySmallTextSize</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:padding">2dp</item>
     </style>
 
     <style name="DarkColorStyle">

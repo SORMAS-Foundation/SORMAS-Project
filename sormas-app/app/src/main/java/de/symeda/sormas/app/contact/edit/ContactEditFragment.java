@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.contact.edit;
 
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 
@@ -19,13 +18,6 @@ import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.OnLinkClickListener;
-import de.symeda.sormas.app.component.controls.ControlSpinnerField;
-import de.symeda.sormas.app.component.VisualState;
-import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
@@ -84,7 +76,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         contentBinding.contactRelationToCase.initializeSpinner(relationshipList);
 
 
-        contentBinding.contactLastContactDate.setFragmentManager(getFragmentManager());
+        contentBinding.contactLastContactDate.initializeDateField(getFragmentManager());
     }
 
     @Override

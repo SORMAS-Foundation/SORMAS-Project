@@ -88,7 +88,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
                 toggleTypeOfPlaceTextField();
             }
         });
-        contentBinding.eventEventDate.setFragmentManager(getFragmentManager());
+        contentBinding.eventEventDate.initializeDateField(getFragmentManager());
     }
 
     @Override

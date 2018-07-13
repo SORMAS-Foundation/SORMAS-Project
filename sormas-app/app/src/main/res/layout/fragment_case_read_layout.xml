@@ -3,13 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="contentDescription"
-    android:id="@+id/base_layout"
-    android:descendantFocusability="beforeDescendants">
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
 
     <data>
         <import type="de.symeda.sormas.api.caze.CaseOutcome" />
         <import type="de.symeda.sormas.api.caze.Vaccination" />
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
+        <import type="de.symeda.sormas.api.Disease" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case" />
     </data>
@@ -61,12 +62,33 @@
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/caseData_disease"
-                app:value="@{data.disease}"
-                app:appendValue="@{data.diseaseDetails}"
-                app:valueFormat="@string/two_strings_with_hyphen_format"
-                style="@style/ControlSingleColumnStyle" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_disease"
+                    app:value="@{data.disease}"
+                    app:appendValue="@{data.diseaseDetails}"
+                    app:valueFormat="@string/two_strings_with_hyphen_format"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_plagueType"
+                    app:value="@{data.plagueType}"
+                    app:dependencyParentField="@{caseDataDisease}"
+                    app:dependencyParentValue="@{Disease.PLAGUE}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_dengueFeverType"
+                    app:value="@{data.dengueFeverType}"
+                    app:dependencyParentField="@{caseDataDisease}"
+                    app:dependencyParentValue="@{Disease.DENGUE}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -208,8 +230,6 @@
                 app:dependencyParentField="@{caseDataSmallpoxVaccinationReceived}"
                 app:dependencyParentValue="@{YesNoUnknown.YES}"
                 style="@style/ControlSingleColumnStyle" />
-
-            <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/caseData_surveillanceOfficer"

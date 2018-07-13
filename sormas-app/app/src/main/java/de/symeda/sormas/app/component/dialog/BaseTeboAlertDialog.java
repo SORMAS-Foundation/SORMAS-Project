@@ -847,7 +847,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
         int backgroundColor = activity.getResources().getColor(type.getInverseBackgroundColor());
         int textColor = activity.getResources().getColor(type.getInverseTextColor());
 
-        LayerDrawable drawable = (LayerDrawable) activity.getResources().getDrawable(R.drawable.background_notification_dialog);
+        LayerDrawable drawable = (LayerDrawable) activity.getResources().getDrawable(R.drawable.background_full_width_border);
         Drawable backgroundLayer = drawable.findDrawableByLayerId(R.id.backgroundLayer);
         backgroundLayer.setColorFilter(backgroundColor, PorterDuff.Mode.SRC_OVER);
 

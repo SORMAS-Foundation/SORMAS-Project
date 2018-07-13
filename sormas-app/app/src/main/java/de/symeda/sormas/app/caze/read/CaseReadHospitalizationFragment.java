@@ -66,14 +66,12 @@ public class CaseReadHospitalizationFragment extends BaseReadFragment<FragmentCa
     }
 
     private void setUpFieldVisibilities(FragmentCaseReadHospitalizationLayoutBinding contentBinding) {
+        setHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
+
         // Previous hospitalizations list
         if (contentBinding.getData().getPreviousHospitalizations().isEmpty()) {
             contentBinding.listPreviousHospitalizationsLayout.setVisibility(GONE);
         }
-
-        // Hide facilityDetails when no static health facility is selected and adjust the caption based on
-        // the selected static health facility
-        setHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
     }
 
 }

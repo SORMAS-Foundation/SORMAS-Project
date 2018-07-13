@@ -63,7 +63,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 
     /**
      * Shows a date fragment linked with the value of this field.
-     * You need to set the fragment manager with setFragmentManager before calling this method.
+     * You need to set the fragment manager with initializeDateField before calling this method.
      */
     private void showDateFragment() {
         if (fragmentManager == null) {
@@ -130,6 +130,10 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
                 }
             }
         });
+    }
+
+    public void initializeDateField(final FragmentManager fm) {
+        this.fragmentManager = fm;
     }
 
     // Overrides
@@ -289,10 +293,6 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
     @BindingAdapter("valueAttrChanged")
     public static void setListener(ControlDateField view, InverseBindingListener listener) {
         view.inverseBindingListener = listener;
-    }
-
-    public void setFragmentManager(final FragmentManager fm) {
-        this.fragmentManager = fm;
     }
 
 }

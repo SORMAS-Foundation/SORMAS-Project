@@ -143,7 +143,7 @@ public class PresentConditionLayoutProcessor {
         dtpDateOfDeath = (ControlDateField)innerRootLayout.findViewById(R.id.person_deathDate);
 
 
-        dtpDateOfDeath.setFragmentManager(fragmentManager);
+        dtpDateOfDeath.initializeDateField(fragmentManager);
         dtpDateOfDeath.addValueChangedListener(new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {

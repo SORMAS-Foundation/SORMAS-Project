@@ -220,7 +220,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
     @Override
     public void setValue(Object value) {
-        if (value == null) {
+        if (value == null && input.getCheckedRadioButtonId() != -1) {
             input.clearCheck();
         } else {
             int selectedValueIndex = radioGroupElements.indexOf(value);

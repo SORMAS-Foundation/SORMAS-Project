@@ -94,8 +94,10 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
             return;
         }
 
+        setInternalValue(selectedItem);
+
         if (selectedItem == null) {
-            input.setSelection(-1);
+            removeSelection();
             return;
         }
 
@@ -111,8 +113,15 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
             }
         } else {
             valueOnBind = selectedItem;
-            input.setSelection(-1);
+            removeSelection();
         }
+    }
+
+    private void removeSelection() {
+        SpinnerAdapter adapter = input.getAdapter();
+        input.setAdapter(null);
+        input.setSelection(Spinner.INVALID_POSITION);
+        input.setAdapter(adapter);
     }
 
     public int getPositionOf(Item item) {
@@ -140,7 +149,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
     public Object getValue() {
         if (input.getSelectedItem() != null) {
             return ((Item) input.getSelectedItem()).getValue();
-        } else if (valueOnBind != null) {
+        } else if (input.getAdapter() == null && valueOnBind != null) {
             return valueOnBind;
         } else {
             return null;
@@ -150,7 +159,6 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
     @Override
     public void setValue(Object value) {
         setSelectedItem(value);
-        setInternalValue(value);
     }
 
     @Override

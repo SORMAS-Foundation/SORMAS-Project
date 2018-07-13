@@ -14,8 +14,6 @@ import de.symeda.sormas.api.epidata.TravelType;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.ControlSpinnerField;
-import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
 import de.symeda.sormas.app.core.Callback;
@@ -94,8 +92,8 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
         //DialogEpidTravelsLayoutBinding _contentBinding = (DialogEpidTravelsLayoutBinding)contentBinding;
 
-        mContentBinding.dtpTravelFromDate.setFragmentManager(getFragmentManager());
-        mContentBinding.dtpTravelToDate.setFragmentManager(getFragmentManager());
+        mContentBinding.dtpTravelFromDate.initializeDateField(getFragmentManager());
+        mContentBinding.dtpTravelToDate.initializeDateField(getFragmentManager());
 
         mContentBinding.spnTravelType.initializeSpinner(travelTypeList);
     }

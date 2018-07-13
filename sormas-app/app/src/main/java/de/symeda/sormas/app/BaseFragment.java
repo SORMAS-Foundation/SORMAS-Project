@@ -133,25 +133,29 @@ public class BaseFragment extends Fragment {
         return Diseases.DiseasesConfiguration.isDefinedOrMissing(dtoClass, propertyId, disease);
     }
 
-    protected void setVisibleWhen(ControlPropertyField field, ControlPropertyField sourceField, final Object sourceValue) {
+    protected void setVisibleWhen(final ControlPropertyField targetField, ControlPropertyField sourceField, final Object sourceValue) {
         if (sourceField.getInternalValue() != null && sourceField.getInternalValue().equals(sourceValue)) {
-            field.setVisibility(VISIBLE);
+            targetField.setVisibility(VISIBLE);
         } else {
-            field.setVisibility(GONE);
+            targetField.setVisibility(GONE);
         }
 
         sourceField.addValueChangedListener(new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 if (field.getInternalValue() != null && field.getInternalValue().equals(sourceValue)) {
-                    field.setVisibility(VISIBLE);
+                    targetField.setVisibility(VISIBLE);
                 } else {
-                    field.hideField();
+                    targetField.hideField(true);
                 }
             }
         });
     }
 
+    /**
+     * Hide facilityDetails when no static health facility is selected and adjust the caption based on
+     * the selected static health facility
+     */
     protected void setHealthFacilityDetailsFieldVisibility(ControlPropertyField healthFacilityField, ControlPropertyField healthFacilityDetailsField) {
         Facility selectedFacility = (Facility) healthFacilityField.getInternalValue();
 

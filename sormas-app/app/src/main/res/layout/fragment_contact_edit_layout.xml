@@ -264,7 +264,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:background="@drawable/background_notification_dialog"
+                android:background="@drawable/background_full_width_border"
                 android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
                 android:paddingTop="@dimen/buttonPanelVerticalMargin"

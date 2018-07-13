@@ -780,7 +780,7 @@ public final class Tooltip {
             }
             mInitialized = true;
 
-            Utils.log(TAG, VERBOSE, "[%d] setFragmentManager", mToolTipId);
+            Utils.log(TAG, VERBOSE, "[%d] initializeDateField", mToolTipId);
 
             LayoutParams params = new LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
             mView = LayoutInflater.from(getContext()).inflate(mTextResId, this, false);

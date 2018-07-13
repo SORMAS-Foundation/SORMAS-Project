@@ -171,10 +171,10 @@ public class PresentConditionLayoutProcessor {
         dtpBurialDate = (ControlDateField)innerLayout.findViewById(R.id.person_burialDate);
 
         if (dtpBurialDate != null)
-            dtpBurialDate.setFragmentManager(fragmentManager);
+            dtpBurialDate.initializeDateField(fragmentManager);
 
         if (dtpBurialDate != null) {
-            dtpDateOfDeath.setFragmentManager(fragmentManager);
+            dtpDateOfDeath.initializeDateField(fragmentManager);
             dtpDateOfDeath.addValueChangedListener(new ValueChangeListener() {
                 @Override
                 public void onChange(ControlPropertyField field) {

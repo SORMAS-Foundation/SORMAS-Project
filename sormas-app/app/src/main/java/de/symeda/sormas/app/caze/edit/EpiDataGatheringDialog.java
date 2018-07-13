@@ -87,7 +87,7 @@ public class EpiDataGatheringDialog extends BaseTeboAlertDialog {
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
         //DialogEpidSocialEventsLayoutBinding _contentBinding = (DialogEpidSocialEventsLayoutBinding)contentBinding;
 
-        mContentBinding.dtpDateOfEvent.setFragmentManager(getFragmentManager());
+        mContentBinding.dtpDateOfEvent.initializeDateField(getFragmentManager());
     }
 
     @Override

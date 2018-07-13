@@ -174,7 +174,7 @@ public class NotificationHelper {
 
         }.init(notificationFrame));
 
-        LayerDrawable drawable = (LayerDrawable) resources.getDrawable(R.drawable.background_notification_dialog);
+        LayerDrawable drawable = (LayerDrawable) resources.getDrawable(R.drawable.background_full_width_border);
         Drawable backgroundLayer = drawable.findDrawableByLayerId(R.id.backgroundLayer);
         backgroundLayer.setColorFilter(backgroundColor, PorterDuff.Mode.SRC_OVER);
 

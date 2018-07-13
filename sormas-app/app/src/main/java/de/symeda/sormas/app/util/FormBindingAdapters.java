@@ -13,9 +13,11 @@ import android.widget.RelativeLayout;
 import java.util.List;
 
 import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.location.Location;
@@ -23,6 +25,8 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.controls.ControlTextImageField;
 import de.symeda.sormas.app.component.controls.ControlLinkField;
 import de.symeda.sormas.app.component.controls.ControlTextReadField;
+
+import static android.view.View.GONE;
 
 /**
  * Created by Orson on 19/12/2017.
@@ -197,18 +201,25 @@ public class FormBindingAdapters {
     @BindingAdapter("goneIfNull")
     public static void setGoneIfNull(ControlTextReadField textView, Object o) {
         if (o == null) {
-            textView.setVisibility(View.GONE);
+            textView.setVisibility(GONE);
         }
 
         if (o instanceof String && o == "") {
-            textView.setVisibility(View.GONE);
+            textView.setVisibility(GONE);
+        }
+    }
+
+    @BindingAdapter("userViewRight")
+    public static void setUserViewRight(View view, UserRight viewRight) {
+        if (!ConfigProvider.getUser().hasUserRight(viewRight)) {
+            view.setVisibility(GONE);
         }
     }
 
     @BindingAdapter("goneIfEmpty")
     public static <T> void setGoneIfNull(ImageView control, List<T> list) {
         if (list == null || list.size() <= 0) {
-            control.setVisibility(View.GONE);
+            control.setVisibility(GONE);
         } else {
             control.setVisibility(View.VISIBLE);
         }

@@ -79,6 +79,7 @@ dependencies {
     implementation "de.symeda.sormas:sormas-api:$sormasVersion"
     implementation 'com.google.android.gms:play-services-analytics:10.0.1'
     implementation 'com.googlecode:openbeans:1.0'
+    implementation 'com.android.support:cardview-v7:24.2.1'
     implementation files('libs/MPAndroidChart-v3.0.2.jar')
     implementation (name: 'CircleProgress-v1.2.1', ext: 'aar')
     testImplementation 'junit:junit:4.12'

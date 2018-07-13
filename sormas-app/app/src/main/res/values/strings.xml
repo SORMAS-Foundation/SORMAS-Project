@@ -46,6 +46,7 @@
     <string name="action_markAllAsRead">Mark All As Read</string>
     <string name="action_move">Move</string>
     <string name="action_move_to_another_health_facility">Move to another Health Facility</string>
+    <string name="action_transfer_case">Transfer case</string>
     <string name="action_new">New</string>
     <string name="action_new_case">New Case</string>
     <string name="action_new_contact">New Contact</string>
@@ -137,6 +138,7 @@
     <string name="caption_weekly_report_start">Start</string>
     <string name="caption_weekly_report_week">Epi Week</string>
     <string name="caption_weekly_report_year">Year</string>
+    <string name="caption_smallpox_vaccination_scar_img">Smallpox Vaccination Scar</string>
 
     <string name="case_transfer">Transfer case \u279D</string>
     <string name="case_uuid_unknown">Case ID N/A</string>
@@ -381,8 +383,8 @@
     <string name="inadequate_specimen_cond">Specimen condition not adequate</string>
     <string name="indicator_case_unclassified">Unclassified</string>
     <string name="indicator_required">*</string>
-    <string name="indicator_soft_required">(*)</string>
-    <string name="indicator_warning">!</string>
+    <string name="indicator_soft_required">*</string>
+    <string name="indicator_warning">WARN</string>
     <string name="infoText_move_case_discard_changes">Moving the case will discard any unsaved changes. Do you want to continue?</string>
     <string name="infoText_resetPIN">To reset your PIN you will <b>need your SORMAS user password.</b></string>
     <string name="invalid">Invalid</string>
@@ -448,7 +450,7 @@
     <string name="notification_case_move_validation_error">%1$s could not be moved because of a validation error.</string>
     <string name="notification_empty_password">Please enter a password.</string>
     <string name="notification_empty_username">Please enter a username.</string>
-    <string name="notification_error_init_move_case">There was an internal problem while attempting to initiate a move case.</string>
+    <string name="notification_error_init_move_case">There was an internal problem while attempting to open the transfer case dialog.</string>
     <string name="notification_internal_error">There has been an internal error, contact administrator.</string>
     <string name="notification_reach_last_menu">You are at the last page. Use the navigation menu to view a specify page or the back button to visit the previous page.</string>
     <string name="notification_records_not_retrieved">Unable to retrieve %1$s</string>
