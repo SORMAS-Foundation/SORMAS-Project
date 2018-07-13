@@ -20,8 +20,9 @@ import de.symeda.sormas.app.contact.edit.ContactNewActivity;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.databinding.FragmentCaseEditPatientLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditSymptomsInfoLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
+import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.sample.edit.SampleNewActivity;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
@@ -68,7 +69,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 fragment = CaseEditFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case PERSON_INFO:
-                fragment = CaseEditPersonFragment.newInstance(dataCapsule, activityRootData);
+                fragment = PersonEditFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case HOSPITALIZATION:
                 fragment = CaseEditHospitalizationFragment.newInstance(dataCapsule, activityRootData);
@@ -124,7 +125,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
         CaseSection activeSection = CaseSection.fromMenuKey(getActiveMenuItem().getKey());
         if (activeSection == CaseSection.PERSON_INFO) {
-            FragmentCaseEditPatientLayoutBinding personBinding = (FragmentCaseEditPatientLayoutBinding) getActiveFragment().getContentBinding();
+            FragmentPersonEditLayoutBinding personBinding = (FragmentPersonEditLayoutBinding) getActiveFragment().getContentBinding();
             PersonValidator.clearErrors(personBinding);
             if (!PersonValidator.validatePersonData(this, cazeToSave.getPerson(), personBinding)) {
                 return;

@@ -10,8 +10,8 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.core.NotificationContext;
-import de.symeda.sormas.app.databinding.FragmentCaseEditPatientLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentContactEditPersonLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
 
 /**
  * Created by Mate Strysewske on 21.07.2017.
@@ -55,7 +55,7 @@ public final class PersonValidator {
         return Arrays.asList(binding.personFirstName, binding.personLastName);
     }
 
-    public static boolean validatePersonData(NotificationContext activityContext, Person person, FragmentCaseEditPatientLayoutBinding binding) {
+    public static boolean validatePersonData(NotificationContext activityContext, Person person, FragmentPersonEditLayoutBinding binding) {
         Resources resources = DatabaseHelper.getContext().getResources();
 
         boolean success = true;
@@ -75,19 +75,19 @@ public final class PersonValidator {
         return success;
     }
 
-    public static void clearErrors(FragmentCaseEditPatientLayoutBinding binding) {
+    public static void clearErrors(FragmentPersonEditLayoutBinding binding) {
         for (ControlPropertyEditField field : getPersonDataFields(binding)) {
             //field.clearError();
         }
     }
 
-    public static void setRequiredHintsForPersonData(FragmentCaseEditPatientLayoutBinding binding) {
+    public static void setRequiredHintsForPersonData(FragmentPersonEditLayoutBinding binding) {
         for (ControlPropertyEditField field : getPersonDataFields(binding)) {
             field.setRequired(true);
         }
     }
 
-    private static final List<? extends ControlPropertyEditField<?>> getPersonDataFields(FragmentCaseEditPatientLayoutBinding binding) {
+    private static final List<? extends ControlPropertyEditField<?>> getPersonDataFields(FragmentPersonEditLayoutBinding binding) {
         return Arrays.asList(binding.personFirstName, binding.personLastName);
     }
 }

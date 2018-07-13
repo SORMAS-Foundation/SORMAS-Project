@@ -38,14 +38,14 @@ import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.OnSetBindingVariableListener;
-import de.symeda.sormas.app.databinding.FragmentCaseEditPatientLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.shared.OnDateOfDeathChangeListener;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.layoutprocessor.OccupationTypeLayoutProcessor;
 import de.symeda.sormas.app.util.layoutprocessor.PresentConditionLayoutProcessor;
 
-public class CaseEditPersonFragment extends BaseEditFragment<FragmentCaseEditPatientLayoutBinding, Person, Case> {
+public class CaseEditPersonFragment extends BaseEditFragment<FragmentPersonEditLayoutBinding, Person, Case> {
 
     public static final String TAG = CaseEditPersonFragment.class.getSimpleName();
 
@@ -97,7 +97,7 @@ public class CaseEditPersonFragment extends BaseEditFragment<FragmentCaseEditPat
     }
 
     @Override
-    public void onLayoutBinding(FragmentCaseEditPatientLayoutBinding contentBinding) {
+    public void onLayoutBinding(FragmentPersonEditLayoutBinding contentBinding) {
         occupationTypeLayoutProcessor = new OccupationTypeLayoutProcessor(getContext(), contentBinding, record);
         occupationTypeLayoutProcessor.setOnSetBindingVariable(new OnSetBindingVariableListener() {
             @Override
@@ -125,11 +125,11 @@ public class CaseEditPersonFragment extends BaseEditFragment<FragmentCaseEditPat
 
         contentBinding.setData(record);
         contentBinding.setPresentConditionClass(PresentCondition.class);
-        contentBinding.setAddressLinkCallback(onAddressLinkClickedCallback);
+//        contentBinding.setAddressLinkCallback(onAddressLinkClickedCallback);
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentCaseEditPatientLayoutBinding contentBinding) {
+    public void onAfterLayoutBinding(FragmentPersonEditLayoutBinding contentBinding) {
         contentBinding.personOccupationType.initializeSpinner(occupationTypeList, null, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
@@ -178,7 +178,7 @@ public class CaseEditPersonFragment extends BaseEditFragment<FragmentCaseEditPat
 
     @Override
     public int getEditLayout() {
-        return R.layout.fragment_case_edit_patient_layout;
+        return R.layout.fragment_person_edit_layout;
     }
 
     @Override

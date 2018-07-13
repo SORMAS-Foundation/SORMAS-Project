@@ -331,9 +331,19 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         view.setValue(text);
     }
 
+    @BindingAdapter("value")
+    public static void setValue(ControlTextEditField view, Integer integerValue) {
+        view.setValue(String.valueOf(integerValue));
+    }
+
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
     public static String getValue(ControlTextEditField view) {
         return view.getValue();
+    }
+
+    @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
+    public static Integer getIntegerValue(ControlTextEditField view) {
+        return Integer.valueOf(view.getValue());
     }
 
     @BindingAdapter("valueAttrChanged")

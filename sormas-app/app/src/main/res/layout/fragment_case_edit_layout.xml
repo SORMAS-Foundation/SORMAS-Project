@@ -203,13 +203,13 @@
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/caseData_vaccination"
                     app:enumClass="@{vaccinationClass}"
-                    app:value="@{data.vaccination}"
+                    app:value="@={data.vaccination}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/caseData_smallpoxVaccinationReceived"
                     app:enumClass="@{yesNoUnknownClass}"
-                    app:value="@{data.smallpoxVaccinationReceived}"
+                    app:value="@={data.smallpoxVaccinationReceived}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
@@ -219,12 +219,12 @@
 
                     <de.symeda.sormas.app.component.controls.ControlDateField
                         android:id="@+id/caseData_vaccinationDate"
-                        app:value="@{data.vaccinationDate}"
+                        app:value="@={data.vaccinationDate}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextEditField
                         android:id="@+id/caseData_vaccinationDoses"
-                        app:value="@{data.vaccinationDoses}"
+                        app:value="@={data.vaccinationDoses}"
                         app:dependencyParentField="@{caseDataVaccination}"
                         app:dependencyParentValue="@{Vaccination.VACCINATED}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
@@ -233,7 +233,7 @@
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/caseData_vaccinationInfoSource"
-                    app:value="@{data.vaccinationInfoSource}"
+                    app:value="@={data.vaccinationInfoSource}"
                     app:dependencyParentField="@{caseDataVaccination}"
                     app:dependencyParentValue="@{Vaccination.VACCINATED}"
                     style="@style/ControlSingleColumnStyle" />
@@ -241,28 +241,19 @@
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/caseData_smallpoxVaccinationScar"
                     app:enumClass="@{yesNoUnknownClass}"
-                    app:value="@{data.smallpoxVaccinationScar}"
+                    app:value="@={data.smallpoxVaccinationScar}"
                     app:dependencyParentField="@{caseDataSmallpoxVaccinationReceived}"
                     app:dependencyParentValue="@{YesNoUnknown.YES}"
                     style="@style/ControlSingleColumnStyle" />
 
-                <android.support.v7.widget.CardView
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textAlignment="center"
+                    android:drawableTop="@drawable/smallpox_vaccination_scar"
+                    android:text="@string/caption_smallpox_vaccination_scar_img"
                     android:id="@+id/smallpox_vaccination_scar_img"
-                    android:layout_gravity="center_horizontal"
-                    app:cardElevation="5dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlMarginBottom">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:textAlignment="center"
-                        android:drawableTop="@drawable/smallpox_vaccination_scar"
-                        android:text="@string/caption_smallpox_vaccination_scar_img"
-                        style="@style/ImageCaptionStyle" />
-
-                </android.support.v7.widget.CardView>
+                    style="@style/ImageCaptionStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/caseData_surveillanceOfficer"

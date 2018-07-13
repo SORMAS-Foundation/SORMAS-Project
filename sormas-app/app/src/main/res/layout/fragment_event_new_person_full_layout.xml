@@ -106,7 +106,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/form_p_date_of_birth"
+                    android:text="@string/caption_date_of_birth"
                     style="@style/ControlLabelStyle"/>
 
                 <LinearLayout

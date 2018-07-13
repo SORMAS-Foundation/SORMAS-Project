@@ -203,7 +203,7 @@
     <string name="field_yes_no_no">No</string>
     <string name="field_yes_no_unk">Unk</string>
     <string name="field_yes_no_yes">Yes</string>
-    <string name="form_p_date_of_birth">Date of birth (year / month / day)</string>
+    <string name="caption_date_of_birth">Date of birth (year / month / day)</string>
     <string name="form_password">Password</string>
     <string name="form_username">Username</string>
     <string name="gender_unknown">Gender N/A</string>
