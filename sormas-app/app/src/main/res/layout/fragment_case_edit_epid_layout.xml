@@ -515,22 +515,28 @@
                     app:slim="true"
                     app:value="@={data.otherAnimalsDetails}"/>
 
-                <de.symeda.sormas.app.component.controls.ControlDateField
-                    android:layout_marginTop="@dimen/field_yes_no_caption_margin_top"
-                    android:id="@+id/epiData_dateOfLastExposure"
-                    style="@style/ControlSingleColumnStyle"
-                    app:value="@={data.dateOfLastExposure}"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/field_yes_no_caption_margin_top">
+
+                    <de.symeda.sormas.app.component.controls.ControlDateField
+                        android:id="@+id/epiData_dateOfLastExposure"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:value="@={data.dateOfLastExposure}"/>
+
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/epiData_animalCondition"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:value="@={data.animalCondition}"/>
+
+                </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/epiData_placeOfLastExposure"
                     style="@style/ControlSingleColumnStyle"
                     app:value="@={data.placeOfLastExposure}"/>
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/epiData_animalCondition"
-                    style="@style/ControlSingleColumnStyle"
-                    app:slim="true"
-                    app:value="@={data.animalCondition}"/>
 
             </LinearLayout>
 

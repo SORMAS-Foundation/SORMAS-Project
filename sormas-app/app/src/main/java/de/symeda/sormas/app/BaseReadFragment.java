@@ -39,9 +39,10 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
     private AsyncTask jobTask;
     private BaseReadActivity baseReadActivity;
     private IUpdateSubHeadingTitle subHeadingHandler;
+
     private TBinding contentViewStubBinding;
-    private ViewDataBinding rootBinding;
     private View contentViewStubRoot;
+    private ViewDataBinding rootBinding;
     private boolean skipAfterLayoutBinding = false;
     private TActivityRootData activityRootData;
     private View rootView;
@@ -81,6 +82,11 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
         //Inflate Root
         rootBinding = DataBindingUtil.inflate(inflater, getRootReadLayout(), container, false);
         rootView = rootBinding.getRoot();
+
+        if (getActivityRootData() == null) {
+            // may happen when android tries to re-create old fragments for an activity
+            return rootView;
+        }
 
         final ViewStub vsChildFragmentFrame = (ViewStub) rootView.findViewById(R.id.vsChildFragmentFrame);
         vsChildFragmentFrame.setOnInflateListener(new ViewStub.OnInflateListener() {
@@ -132,19 +138,6 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
                     return;
 
                 vsChildFragmentFrame.inflate();
-
-                contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
-                    @Override
-                    public void onBound(ViewDataBinding binding) {
-                        super.onBound(binding);
-
-                        if (!skipAfterLayoutBinding)
-                            onAfterLayoutBinding(contentViewStubBinding);
-                        skipAfterLayoutBinding = false;
-
-                        getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
-                    }
-                });
             }
         }.executeOnThreadPool();
 

@@ -88,12 +88,12 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
     }
 
     public void setStateColor(int checkedColor, int uncheckedColor) {
-        int[][] states = new int[][] {
-                new int[] {-android.R.attr.state_checked},
-                new int[] {android.R.attr.state_checked},
+        int[][] states = new int[][]{
+                new int[]{-android.R.attr.state_checked},
+                new int[]{android.R.attr.state_checked},
         };
 
-        int[] thumbColors = new int[] {
+        int[] thumbColors = new int[]{
                 uncheckedColor,
                 checkedColor,
         };
@@ -105,7 +105,7 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
 
     @Override
     protected void setFieldValue(Boolean value) {
-        input.setChecked(value);
+        input.setChecked(value != null ? value : false);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
         input = (CheckBox) this.findViewById(R.id.checkbox);
         input.setImeOptions(getImeOptions());
         input.setTextAlignment(getTextAlignment());
-        if(getTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
+        if (getTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
             input.setGravity(getGravity());
         }
 
@@ -219,12 +219,12 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
     // Data binding, getters & setters
 
     @BindingAdapter("value")
-    public static void setValue(ControlCheckBoxField view, boolean value) {
+    public static void setValue(ControlCheckBoxField view, Boolean value) {
         view.setFieldValue(value);
     }
 
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
-    public static boolean getValue(ControlCheckBoxField view) {
+    public static Boolean getValue(ControlCheckBoxField view) {
         return view.getFieldValue();
     }
 

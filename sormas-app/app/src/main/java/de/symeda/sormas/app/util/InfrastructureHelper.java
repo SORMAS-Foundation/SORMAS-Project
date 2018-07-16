@@ -23,7 +23,7 @@ import static de.symeda.sormas.app.util.DataUtils.toItems;
 public final class InfrastructureHelper {
 
     public static List<Item> loadRegions() {
-        return toItems(DatabaseHelper.getRegionDao().queryForAll());
+        return toItems(DatabaseHelper.getRegionDao().queryForAll(Region.NAME, true));
     }
 
     public static List<Item> loadDistricts(Region region) {

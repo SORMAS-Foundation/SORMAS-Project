@@ -13,12 +13,12 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.core.async.SavingAsyncTask;
-import de.symeda.sormas.app.visit.VisitSection;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
+import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
-import de.symeda.sormas.app.symptom.Symptom;
+import de.symeda.sormas.app.symptoms.SymptomsEditFragment;
+import de.symeda.sormas.app.visit.VisitSection;
 
 public class VisitEditActivity extends BaseEditActivity<Visit> {
 
@@ -58,7 +58,7 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
                 fragment = VisitEditFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case SYMPTOMS:
-                fragment = VisitEditSymptomsFragment.newInstance(dataCapsule, activityRootData);
+                fragment = SymptomsEditFragment.newInstance(dataCapsule, activityRootData);
                 break;
             default:
                 throw new IllegalArgumentException(DataHelper.toStringNullable(section));
@@ -78,17 +78,6 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
     public void saveData() {
 
         final Visit visit = getStoredRootEntity();
-
-        // TODO #664 should this not be done by the user?
-        VisitSection activeSection = VisitSection.fromMenuKey(getActiveMenuItem().getKey());
-        if (activeSection == VisitSection.SYMPTOMS) {
-            // Necessary because the entry could've been automatically set, in which case the setFieldValue method of the
-            // custom field has not been called
-            Symptom s = (Symptom) visit.getSymptoms().getFirstSymptom();
-            if (s != null) {
-                visit.getSymptoms().setOnsetSymptom(s.getName());
-            }
-        }
 
         saveTask = new SavingAsyncTask(getRootView(), visit) {
 

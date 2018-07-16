@@ -63,41 +63,49 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/epiData_directContactConfirmedCase"
                     style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
                     app:value="@{data.directContactConfirmedCase}"/>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/epiData_directContactProbableCase"
                     style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
                     app:value="@{data.directContactProbableCase}"/>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/epiData_closeContactProbableCase"
                     style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
                     app:value="@{data.closeContactProbableCase}"/>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/epiData_areaConfirmedCases"
                     style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
                     app:value="@{data.areaConfirmedCases}"/>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/epiData_processingConfirmedCaseFluidUnsafe"
                     style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
                     app:value="@{data.processingConfirmedCaseFluidUnsafe}"/>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/epiData_percutaneousCaseBlood"
                     style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
                     app:value="@{data.percutaneousCaseBlood}"/>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/epiData_directContactDeadUnsafe"
                     style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
                     app:value="@{data.directContactDeadUnsafe}"/>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/epiData_processingSuspectedCaseSampleUnsafe"
                     style="@style/ControlSingleColumnStyle"
+                    app:slim="true"
                     app:value="@{data.processingSuspectedCaseSampleUnsafe}"/>
 
             </LinearLayout>
@@ -352,7 +360,6 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/epiData_eatingRawAnimalsInInfectedArea"
                     style="@style/ControlSingleColumnStyle"
-                    app:slim="true"
                     app:value="@{data.eatingRawAnimalsInInfectedArea}"/>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
@@ -393,7 +400,6 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/epiData_animalCondition"
                     style="@style/ControlSingleColumnStyle"
-                    app:slim="true"
                     app:value="@{data.animalCondition}"/>
 
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
@@ -419,22 +425,17 @@
                     app:value="@{data.waterBody}"
                     app:valueFormat="@{@string/two_strings_with_hyphen_format}"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_tickBite"
+                    app:slim="true"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.tickBite}"/>
 
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/epiData_tickBite"
-                        style="@style/ControlFirstOfTwoColumnsStyle"
-                        app:value="@{data.tickBite}"/>
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/epiData_fleaBite"
-                        style="@style/ControlSecondOfTwoColumnsStyle"
-                        app:value="@{data.fleaBite}"/>
-
-                </LinearLayout>
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_fleaBite"
+                    app:slim="true"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.fleaBite}"/>
 
             </LinearLayout>
 

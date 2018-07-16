@@ -14,7 +14,9 @@ import android.widget.TextView;
 import java.util.List;
 
 import de.symeda.sormas.api.sample.SampleTestResultType;
+import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
@@ -200,9 +202,11 @@ public class FormBindingAdapters {
     public static void setGoneIfEmpty(View view, Object o) {
         if (o == null) {
             view.setVisibility(GONE);
-        } else if (o instanceof String && o == "") {
+        } else if (o instanceof String && DataHelper.isNullOrEmpty((String)o)) {
             view.setVisibility(GONE);
-        } else if (o instanceof YesNoUnknown && o == YesNoUnknown.NO) {
+        } else if (o instanceof YesNoUnknown && YesNoUnknown.NO.equals(o)) {
+            view.setVisibility(GONE);
+        } else if (o instanceof SymptomState && SymptomState.NO.equals(o)) {
             view.setVisibility(GONE);
         }
     }

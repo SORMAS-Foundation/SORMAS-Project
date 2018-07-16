@@ -25,14 +25,14 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
     }
 
     private void setUpFieldVisibilities(FragmentCaseReadLayoutBinding contentBinding) {
-        setVisibilityByDisease(CaseDataDto.class, contentBinding.getData().getDisease(), contentBinding.mainContent);
+        setVisibilityByDisease(CaseDataDto.class, record.getDisease(), contentBinding.mainContent);
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
 
         // Vaccination date
-        if (isVisibleAllowed(CaseDataDto.class, contentBinding.getData().getDisease(), contentBinding.caseDataVaccination)) {
+        if (isVisibleAllowed(CaseDataDto.class, record.getDisease(), contentBinding.caseDataVaccination)) {
             setVisibleWhen(contentBinding.caseDataVaccinationDate, contentBinding.caseDataVaccination, Vaccination.VACCINATED);
         }
-        if (isVisibleAllowed(CaseDataDto.class, contentBinding.getData().getDisease(), contentBinding.caseDataSmallpoxVaccinationReceived)) {
+        if (isVisibleAllowed(CaseDataDto.class, record.getDisease(), contentBinding.caseDataSmallpoxVaccinationReceived)) {
             setVisibleWhen(contentBinding.caseDataVaccinationDate, contentBinding.caseDataSmallpoxVaccinationReceived, YesNoUnknown.YES);
         }
 

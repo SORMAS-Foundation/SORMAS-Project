@@ -1,0 +1,778 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/base_layout"
+        android:descendantFocusability="beforeDescendants">
+
+    <data>
+
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
+
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.backend.symptoms.Symptoms"/>
+
+        <variable
+            name="symptomStateClass"
+            type="Class"/>
+
+        <variable
+            name="clearAllCallback"
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
+
+        <variable
+            name="setClearedToNoCallback"
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/main_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+            android:paddingTop="@dimen/parentLayoutVerticalMargin">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/symptoms_temperature"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@={data.temperature}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/symptoms_temperatureSource"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:value="@={data.temperatureSource}"/>
+            </LinearLayout>
+
+            <TextView
+                style="@style/SubHeadingCompactStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sub_heading_symptoms"/>
+
+            <TextView
+                android:id="@+id/symptoms_description"
+                style="@style/SubHeadingDescriptionStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/description_symptoms"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <de.symeda.sormas.app.component.controls.ControlButton
+                    android:id="@+id/btn_clear_all"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="@{(view) -> clearAllCallback.onClick(view, data)}"
+                    android:text="@string/action_clear_all"
+                    app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
+                    app:slim="true"/>
+
+                <de.symeda.sormas.app.component.controls.ControlButton
+                    android:id="@+id/btn_cleared_to_no"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/control_spacing"
+                    android:layout_weight="1"
+                    android:onClick="@{(view) -> setClearedToNoCallback.onClick(view, data)}"
+                    android:text="@string/action_set_cleared_to_no"
+                    app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
+                    app:slim="true"/>
+
+            </LinearLayout>
+
+            <ImageView
+                style="@style/FullHorizontalDividerStyleNoDefaultMargin"
+                android:layout_marginTop="@dimen/contentVerticalSpacing"/>
+
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_abdominalPain"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.abdominalPain}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_hearingloss"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.hearingloss}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_alteredConsciousness"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.alteredConsciousness}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_anorexiaAppetiteLoss"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.anorexiaAppetiteLoss}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_backache"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.backache}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_blackeningDeathOfTissue"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.blackeningDeathOfTissue}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_bloodInStool"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.bloodInStool}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_buboesGroinArmpitNeck"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.buboesGroinArmpitNeck}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_bulgingFontanelle"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.bulgingFontanelle}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_chestPain"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.chestPain}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_chillsSweats"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.chillsSweats}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_confusedDisoriented"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.confusedDisoriented}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_conjunctivitis"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.conjunctivitis}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_seizures"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.seizures}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_cough"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.cough}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_darkUrine"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.darkUrine}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_dehydration"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.dehydration}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_diarrhea"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.diarrhea}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_difficultyBreathing"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.difficultyBreathing}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_eyePainLightSensitive"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.eyePainLightSensitive}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_fatigueWeakness"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.fatigueWeakness}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_fever"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.fever}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_headache"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.headache}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_hiccups"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.hiccups}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_bedridden"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.bedridden}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_jaundice"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.jaundice}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_jointPain"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.jointPain}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_kopliksSpots"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.kopliksSpots}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_lymphadenopathyAxillary"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.lymphadenopathyAxillary}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_lymphadenopathyCervical"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.lymphadenopathyCervical}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_lymphadenopathyInguinal"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.lymphadenopathyInguinal}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_skinRash"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.skinRash}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_meningealSigns"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.meningealSigns}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_otitisMedia"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.otitisMedia}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_musclePain"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.musclePain}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_nausea"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.nausea}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_neckStiffness"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.neckStiffness}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_painfulLymphadenitis"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.painfulLymphadenitis}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_rapidBreathing"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.rapidBreathing}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_refusalFeedorDrink"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.refusalFeedorDrink}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_runnyNose"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.runnyNose}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_oralUlcers"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.oralUlcers}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_shock"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.shock}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_soreThroat"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.soreThroat}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_swollenGlands"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.swollenGlands}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_throbocytopenia"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.throbocytopenia}"/>
+
+            <!-- ============= SYMPTOMS Unexplained bleeding from any side ============= -->
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_unexplainedBleeding"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.unexplainedBleeding}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_eyesBleeding"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.eyesBleeding}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_stomachBleeding"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.stomachBleeding}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_injectionSiteBleeding"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.injectionSiteBleeding}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_bleedingVagina"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.bleedingVagina}"/>
+
+            <!-- Should be called symptoms_gumsBleeding, but this doesn't work with AS < 2.3 because of https://code.google.com/p/android/issues/detail?id=212492 -->
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_gumsBleeding"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.gumsBleeding}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_bloodUrine"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.bloodUrine}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_bloodyBlackStool"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.bloodyBlackStool}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_noseBleeding"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.noseBleeding}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_skinBruising"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.skinBruising}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_coughingBlood"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.coughingBlood}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_digestedBloodVomit"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.digestedBloodVomit}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_redBloodVomit"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.redBloodVomit}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_otherHemorrhagicSymptoms"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.otherHemorrhagicSymptoms}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/symptoms_otherHemorrhagicSymptomsText"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.otherHemorrhagicSymptomsText}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_lesions"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.lesions}"/>
+
+            <LinearLayout
+                android:id="@+id/symptoms_lesionsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/field_padding"
+                android:paddingTop="@dimen/field_padding">
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/symptoms_lesionsThatItch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:enumClass="@{symptomStateClass}"
+                    app:slim="true"
+                    app:value="@={data.lesionsThatItch}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/symptoms_lesionsSameState"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:enumClass="@{symptomStateClass}"
+                    app:slim="true"
+                    app:value="@={data.lesionsSameState}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/symptoms_lesionsSameSize"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:enumClass="@{symptomStateClass}"
+                    app:slim="true"
+                    app:value="@={data.lesionsSameSize}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/symptoms_lesionsDeepProfound"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:enumClass="@{symptomStateClass}"
+                    app:slim="true"
+                    app:value="@={data.lesionsDeepProfound}"/>
+
+                <TextView
+                    android:id="@+id/lesions_locations_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/field_caption_margin_left"
+                    android:layout_marginTop="@dimen/field_yes_no_caption_margin_top"
+                    android:layout_weight="0.6"
+                    android:text="@string/label_lesions_locations"
+                    android:textColor="?android:attr/editTextColor"
+                    android:textSize="@dimen/field_caption_size"/>
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/symptoms_lesionsFace"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:value="@={data.lesionsFace}"
+                    app:visibilityChild="@{lesionsLocationsLabel}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/symptoms_lesionsLegs"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:value="@={data.lesionsLegs}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/symptoms_lesionsSolesFeet"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:value="@={data.lesionsSolesFeet}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/symptoms_lesionsPalmsHands"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:value="@={data.lesionsPalmsHands}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/symptoms_lesionsThorax"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:value="@={data.lesionsThorax}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/symptoms_lesionsArms"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:value="@={data.lesionsArms}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/symptoms_lesionsGenitals"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:value="@={data.lesionsGenitals}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/symptoms_lesionsAllOverBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:value="@={data.lesionsAllOverBody}"/>
+
+                <LinearLayout
+                    android:id="@+id/symptoms_monkeypoxLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:paddingTop="@dimen/field_padding">
+
+                    <de.symeda.sormas.app.component.controls.ControlSwitchField
+                        android:id="@+id/symptoms_lesionsResembleImg1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin_inv"
+                        app:enumClass="@{symptomStateClass}"
+                        app:slim="true"
+                        app:value="@={data.lesionsResembleImg1}"
+                        app:visibilityChild="@{lesionsImg1}"/>
+
+                    <ImageView
+                        android:id="@+id/lesionsImg1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin"
+                        android:src="@drawable/monkeypox_lesions_1"/>
+
+                    <de.symeda.sormas.app.component.controls.ControlSwitchField
+                        android:id="@+id/symptoms_lesionsResembleImg2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin_inv"
+                        app:enumClass="@{symptomStateClass}"
+                        app:slim="true"
+                        app:value="@={data.lesionsResembleImg2}"
+                        app:visibilityChild="@{lesionsImg2}"/>
+
+                    <ImageView
+                        android:id="@+id/lesionsImg2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin"
+                        android:src="@drawable/monkeypox_lesions_2"/>
+
+                    <de.symeda.sormas.app.component.controls.ControlSwitchField
+                        android:id="@+id/symptoms_lesionsResembleImg3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin_inv"
+                        app:enumClass="@{symptomStateClass}"
+                        app:slim="true"
+                        app:value="@={data.lesionsResembleImg3}"
+                        app:visibilityChild="@{lesionsImg3}"/>
+
+                    <ImageView
+                        android:id="@+id/lesionsImg3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin"
+                        android:src="@drawable/monkeypox_lesions_3"/>
+
+                    <de.symeda.sormas.app.component.controls.ControlSwitchField
+                        android:id="@+id/symptoms_lesionsResembleImg4"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin_inv"
+                        app:enumClass="@{symptomStateClass}"
+                        app:slim="true"
+                        app:value="@={data.lesionsResembleImg4}"
+                        app:visibilityChild="@{lesionsImg4}"/>
+
+                    <ImageView
+                        android:id="@+id/lesionsImg4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin"
+                        android:src="@drawable/monkeypox_lesions_4"/>
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/symptoms_lesionsOnsetDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/field_padding"
+                    android:paddingTop="@dimen/field_padding"
+                    app:value="@={data.lesionsOnsetDate}"/>
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_vomiting"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.vomiting}"/>
+
+            <!-- ============= SYMPTOMS Other non-hemorrhagis clinical symptoms ============= -->
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_otherNonHemorrhagicSymptoms"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.otherNonHemorrhagicSymptoms}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/symptoms_otherNonHemorrhagicSymptomsText"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.otherNonHemorrhagicSymptomsText}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/symptoms_symptomsComments"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.symptomsComments}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlDateField
+                android:id="@+id/symptoms_onsetDate"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.onsetDate}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/symptoms_onsetSymptom"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.onsetSymptom}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/symptoms_patientIllLocation"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.patientIllLocation}"/>
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>
+

@@ -15,6 +15,7 @@ import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.person.read.PersonReadFragment;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.symptoms.SymptomsReadFragment;
 
 public class CaseReadActivity extends BaseReadActivity<Case> {
 
@@ -53,7 +54,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
                 fragment = CaseReadHospitalizationFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case SYMPTOMS:
-                fragment = CaseReadSymptomsFragment.newInstance(dataCapsule, activityRootData);
+                fragment = SymptomsReadFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case EPIDEMIOLOGICAL_DATA:
                 fragment = CaseReadEpidemiologicalDataFragment.newInstance(dataCapsule, activityRootData);

@@ -17,7 +17,6 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
-import de.symeda.sormas.app.symptom.Symptom;
 import de.symeda.sormas.app.visit.VisitSection;
 
 public class VisitNewActivity extends BaseEditActivity<Visit> {

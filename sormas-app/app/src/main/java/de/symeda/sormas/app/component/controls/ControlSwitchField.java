@@ -364,7 +364,9 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
     @BindingAdapter(value = {"value", "enumClass", "defaultValue"}, requireAll = false)
     public static void setValue(ControlSwitchField view, Object value, Class enumClass, Object defaultValue) {
-        view.setEnumClass(enumClass);
+        if (enumClass != null) {
+            view.setEnumClass(enumClass);
+        }
 
         if (value == null) {
             value = defaultValue;

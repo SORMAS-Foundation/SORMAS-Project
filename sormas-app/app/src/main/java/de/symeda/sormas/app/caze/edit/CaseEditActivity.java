@@ -20,14 +20,15 @@ import de.symeda.sormas.app.contact.edit.ContactNewActivity;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
-import de.symeda.sormas.app.databinding.FragmentCaseEditSymptomsInfoLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentSymptomsEditLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.sample.edit.SampleNewActivity;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
+import de.symeda.sormas.app.symptoms.SymptomsEditFragment;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.validation.PersonValidator;
 
@@ -75,7 +76,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 fragment = CaseEditHospitalizationFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case SYMPTOMS:
-                fragment = CaseEditSymptomsFragment.newInstance(dataCapsule, activityRootData);
+                fragment = SymptomsEditFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case EPIDEMIOLOGICAL_DATA:
                 fragment = CaseEditEpidemiologicalDataFragment.newInstance(dataCapsule, activityRootData);
@@ -133,7 +134,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         }
 
         if (activeSection == CaseSection.SYMPTOMS) {
-            FragmentCaseEditSymptomsInfoLayoutBinding symptomsBinding = (FragmentCaseEditSymptomsInfoLayoutBinding) getActiveFragment().getContentBinding();
+            FragmentSymptomsEditLayoutBinding symptomsBinding = (FragmentSymptomsEditLayoutBinding) getActiveFragment().getContentBinding();
 
 //            // Necessary because the entry could've been automatically set, in which case the setFieldValue method of the
 //            // custom field has not been called

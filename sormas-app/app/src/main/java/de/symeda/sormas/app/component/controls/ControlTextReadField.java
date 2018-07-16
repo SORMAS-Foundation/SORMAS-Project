@@ -23,6 +23,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.I18nConstants;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.person.Person;
@@ -101,7 +102,11 @@ public class ControlTextReadField extends ControlPropertyField<String> {
                     inflater.inflate(R.layout.control_textfield_read_distinct_layout, this);
                 }
             } else {
-                inflater.inflate(R.layout.control_textfield_read_layout, this);
+                if (isSlim()) {
+                    inflater.inflate(R.layout.control_textfield_read_slim_layout, this);
+                } else {
+                    inflater.inflate(R.layout.control_textfield_read_layout, this);
+                }
             }
         } else {
             throw new RuntimeException("Unable to inflate layout in " + getClass().getName());
@@ -259,13 +264,12 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         }
     }
 
-    // Boolean
+    /* Value types that need a different variable and method name */
+
     @BindingAdapter(value = {"value", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setValue(ControlTextReadField textField, Boolean booleanValue, String valueFormat, String defaultValue) {
-        setValue(textField, booleanValue != null ? booleanValue.toString() : null, null, valueFormat, defaultValue, booleanValue);
+        setValue(textField, booleanValue == null ? "" : (Boolean.TRUE.equals(booleanValue) ? YesNoUnknown.YES.toString() : YesNoUnknown.NO.toString()), null, valueFormat, defaultValue, booleanValue);
     }
-
-    /* Value types that need a different variable and method name */
 
     // Time
     @BindingAdapter(value = {"timeValue", "valueFormat", "defaultValue"}, requireAll = false)

@@ -37,9 +37,12 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
     private boolean slim;
     private Boolean captionCapitalized;
     private Boolean captionItalic;
+
     private ControlPropertyField dependencyParentField;
     private Object dependencyParentValue;
     private boolean dependencyParentVisibility = true;
+
+    private View visibilityChild;
 
     // Other fields
 
@@ -130,7 +133,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         }
     }
 
-    private String getFieldIdString() {
+    protected String getFieldIdString() {
         return getResources().getResourceName(getId());
     }
 
@@ -218,6 +221,14 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         setVisibility(GONE);
         if (eraseValue) {
             setFieldValue(null);
+        }
+    }
+
+    @Override
+    public void setVisibility(int visibility) {
+        super.setVisibility(visibility);
+        if (visibilityChild != null) {
+            visibilityChild.setVisibility(visibility);
         }
     }
 
@@ -355,6 +366,14 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
                     thisField.setVisibilityBasedOnParentField(true);
                 }
             });
+        }
+    }
+
+    @BindingAdapter(value = {"visibilityChild"})
+    public static void setVisibilityChild(ControlPropertyField field, View visibilityChild) {
+        field.visibilityChild = visibilityChild;
+        if (visibilityChild != null) {
+            visibilityChild.setVisibility(field.getVisibility());
         }
     }
 

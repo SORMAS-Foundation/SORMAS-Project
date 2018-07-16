@@ -153,4 +153,21 @@ public class BaseFragment extends Fragment {
             }
         });
     }
+
+    protected ControlPropertyField findFieldByPropertyId(String propertyIdWithoutPrefix, ViewGroup viewGroup) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View child = viewGroup.getChildAt(i);
+            if (child instanceof ControlPropertyField) {
+                if (propertyIdWithoutPrefix.equals(((ControlPropertyField) child).getPropertyIdWithoutPrefix())) {
+                    return (ControlPropertyField)child;
+                }
+            } else if (child instanceof ViewGroup) {
+                ControlPropertyField field = findFieldByPropertyId(propertyIdWithoutPrefix, (ViewGroup) child);
+                if (field != null) {
+                    return field;
+                }
+            }
+        }
+        return null;
+    }
 }

@@ -8,6 +8,7 @@ import android.view.View;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -45,6 +46,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private IEntryItemOnClickListener onAddBurialEntryClickListener;
 
     private List<Item> drinkingWaterSourceList;
+    private List<Item> animalConditionList;
 
     @Override
     protected String getSubHeadingTitle() {
@@ -64,6 +66,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         record = caze.getEpiData();
 
         drinkingWaterSourceList = DataUtils.getEnumItems(WaterSource.class, false);
+        animalConditionList = DataUtils.getEnumItems(AnimalCondition.class, false);
     }
 
     @Override
@@ -134,6 +137,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
             }
         });
 
+        contentBinding.epiDataAnimalCondition.initializeSpinner(animalConditionList);
     }
 
     @Override

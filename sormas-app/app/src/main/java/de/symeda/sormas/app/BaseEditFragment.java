@@ -40,10 +40,10 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
     private BaseEditActivity baseEditActivity;
     private IUpdateSubHeadingTitle subHeadingHandler;
     private NotificationContext notificationCommunicator;
-    private TBinding contentViewStubBinding;
-    private ViewDataBinding rootBinding;
 
+    private TBinding contentViewStubBinding;
     private View contentViewStubRoot;
+    private ViewDataBinding rootBinding;
 
     private boolean skipAfterLayoutBinding = false;
     private TActivityRootData activityRootData;
@@ -100,6 +100,11 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         rootBinding = DataBindingUtil.inflate(inflater, getRootEditLayout(), container, false);
         rootView = rootBinding.getRoot();
 
+        if (getActivityRootData() == null) {
+            // may happen when android tries to re-create old fragments for an activity
+            return rootView;
+        }
+
         final ViewStub vsChildFragmentFrame = (ViewStub) rootView.findViewById(R.id.vsChildFragmentFrame);
         vsChildFragmentFrame.setOnInflateListener(new ViewStub.OnInflateListener() {
             @Override
@@ -152,19 +157,6 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
                     return;
 
                 vsChildFragmentFrame.inflate();
-
-                contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
-                    @Override
-                    public void onBound(ViewDataBinding binding) {
-                        super.onBound(binding);
-
-                        if (!skipAfterLayoutBinding)
-                            onAfterLayoutBinding(contentViewStubBinding);
-                        skipAfterLayoutBinding = false;
-
-                        getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
-                    }
-                });
             }
         }.executeOnThreadPool();
 
@@ -319,105 +311,6 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         if (arguments != null && !arguments.isEmpty()) {
             if (arguments.containsKey(ConstantHelper.KEY_DATA_UUID)) {
                 result = (String) arguments.getString(ConstantHelper.KEY_DATA_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected String getPersonUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.KEY_PERSON_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_PERSON_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected String getEventUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.KEY_EVENT_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_EVENT_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected String getTaskUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.KEY_TASK_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_TASK_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected String getContactUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.KEY_CONTACT_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_CONTACT_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected String getCaseUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.KEY_CASE_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_CASE_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected String getSampleUuidArg(Bundle arguments) {
-        String result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.KEY_SAMPLE_UUID)) {
-                result = (String) arguments.getString(ConstantHelper.KEY_SAMPLE_UUID);
-            }
-        }
-
-        return result;
-    }
-
-    protected Disease getDiseaseArg(Bundle arguments) {
-        Disease result = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.ARG_DISEASE)) {
-                result = (Disease) arguments.getSerializable(ConstantHelper.ARG_DISEASE);
-            }
-        }
-
-        return result;
-    }
-
-    protected boolean getForVisitArg(Bundle arguments) {
-        boolean result = false;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.ARG_FOR_VISIT)) {
-                result = (boolean) arguments.getBoolean(ConstantHelper.ARG_FOR_VISIT);
-            }
-        }
-
-        return result;
-    }
-
-    protected boolean getVisitCooperativeArg(Bundle arguments) {
-        boolean result = false;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.ARG_VISIT_COOPERATIVE)) {
-                result = (boolean) arguments.getBoolean(ConstantHelper.ARG_VISIT_COOPERATIVE);
             }
         }
 

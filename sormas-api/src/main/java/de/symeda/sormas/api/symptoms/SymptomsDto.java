@@ -4,6 +4,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.utils.DependantOn;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
 
@@ -151,33 +152,47 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.PLAGUE,Disease.OTHER})
 	private SymptomState unexplainedBleeding;
 	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
+	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState eyesBleeding;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.OTHER})
+	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState gumsBleeding;
 	@Diseases({Disease.YELLOW_FEVER,Disease.OTHER})
+	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState stomachBleeding;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState injectionSiteBleeding;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.YELLOW_FEVER,Disease.OTHER})
+	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState noseBleeding;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState bloodyBlackStool;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.DENGUE,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.DENGUE,Disease.OTHER})	
+	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState redBloodVomit;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState digestedBloodVomit;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.PLAGUE,Disease.OTHER})
 	@Outbreaks
+	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState coughingBlood;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState bleedingVagina;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState skinBruising;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.OTHER})
+	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState bloodUrine;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.PLAGUE,Disease.OTHER})
+	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState otherHemorrhagicSymptoms;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.PLAGUE,Disease.OTHER})
+	@DependantOn(OTHER_HEMORRHAGIC_SYMPTOMS)
 	private String otherHemorrhagicSymptomsText;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.MEASLES,Disease.DENGUE,Disease.OTHER})
 	@Outbreaks
@@ -252,36 +267,52 @@ public class SymptomsDto extends EntityDto {
 	/** Vesiculopustular rash */
 	private SymptomState lesions;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	@DependantOn(LESIONS)
 	private SymptomState lesionsSameState;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	@DependantOn(LESIONS)
 	private SymptomState lesionsSameSize;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	@DependantOn(LESIONS)
 	private SymptomState lesionsDeepProfound;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	@DependantOn(LESIONS)
 	private Boolean lesionsFace;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	@DependantOn(LESIONS)
 	private Boolean lesionsLegs;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	@DependantOn(LESIONS)
 	private Boolean lesionsSolesFeet;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	@DependantOn(LESIONS)
 	private Boolean lesionsPalmsHands;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	@DependantOn(LESIONS)
 	private Boolean lesionsThorax;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	@DependantOn(LESIONS)
 	private Boolean lesionsArms;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	@DependantOn(LESIONS)
 	private Boolean lesionsGenitals;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	@DependantOn(LESIONS)
 	private Boolean lesionsAllOverBody;
 	@Diseases({Disease.MONKEYPOX})
+	@DependantOn(LESIONS)
 	private SymptomState lesionsResembleImg1;
 	@Diseases({Disease.MONKEYPOX})
+	@DependantOn(LESIONS)
 	private SymptomState lesionsResembleImg2;
 	@Diseases({Disease.MONKEYPOX})
+	@DependantOn(LESIONS)
 	private SymptomState lesionsResembleImg3;
 	@Diseases({Disease.MONKEYPOX})
+	@DependantOn(LESIONS)
 	private SymptomState lesionsResembleImg4;
 	@Diseases({Disease.MONKEYPOX})
+	@DependantOn(LESIONS)
 	private Date lesionsOnsetDate;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState lymphadenopathyInguinal;
@@ -296,6 +327,7 @@ public class SymptomsDto extends EntityDto {
 	@Outbreaks
 	private SymptomState chillsSweats;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
+	@DependantOn(LESIONS)
 	private SymptomState lesionsThatItch;
 	@Diseases({Disease.MONKEYPOX,Disease.OTHER})
 	private SymptomState bedridden;
@@ -306,6 +338,7 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState otherNonHemorrhagicSymptoms;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	@Outbreaks
+	@DependantOn(OTHER_NON_HEMORRHAGIC_SYMPTOMS)
 	private String otherNonHemorrhagicSymptomsText;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.OTHER})
 	private String symptomsComments;

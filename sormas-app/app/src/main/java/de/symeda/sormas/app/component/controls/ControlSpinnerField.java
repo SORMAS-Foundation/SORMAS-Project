@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
@@ -89,6 +90,10 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
             R.layout.control_spinner_dropdown_item_layout,
             R.id.text));
         setFieldValue(selectedValue);
+    }
+
+    public ArrayAdapter getAdapter() {
+        return (ControlSpinnerAdapter)input.getAdapter();
     }
 
     public void setSpinnerData(List<Item> items) {
