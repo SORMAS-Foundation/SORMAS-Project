@@ -4,6 +4,7 @@ import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -223,9 +225,9 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
     @Override
     public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
         input.setEnabled(enabled);
         label.setEnabled(enabled);
+        super.setEnabled(enabled);
     }
 
     @Override
@@ -245,6 +247,10 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
     @Override
     protected void changeVisualState(VisualState state) {
+        if (this.visualState == state) {
+            return;
+        }
+
         if (state != VisualState.DISABLED && getUserEditRight() != null
                 && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
             return;
@@ -261,6 +267,8 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
         label.setTextColor(labelColor);
         setBackground(drawable);
+
+        input.requestLayout();
     }
 
     // Data binding, getters & setters

@@ -307,4 +307,8 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
         }
     }
 
+    public VisualState getVisualState() {
+        return visualState;
+    }
+
 }

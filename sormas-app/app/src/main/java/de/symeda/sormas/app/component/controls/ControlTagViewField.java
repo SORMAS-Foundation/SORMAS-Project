@@ -35,34 +35,11 @@ public class ControlTagViewField extends ControlPropertyField<String> {
     private static final int TAG_MARGIN_BOTTOM = R.dimen.tagViewLineMargin;
     private static final int TAG_MARGIN = R.dimen.tagViewTagMargin;
 
-    /**
-     * tag list
-     */
     private List<String> tags = new ArrayList<>();
-
-    /**
-     * System Service
-     */
     private LayoutInflater layoutInflater;
-
-    /**
-     * listeners
-     */
-
-
-    /**
-     * view size param
-     */
     private int width;
-
-    /**
-     * layout initializeDialog flag
-     */
     private boolean initialized = false;
-
     private int tagLayoutId;
-
-    private Drawable background;
     private RelativeLayout tagsFrame;
 
     // Constructors

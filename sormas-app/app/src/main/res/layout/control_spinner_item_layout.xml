@@ -7,5 +7,5 @@
     android:ellipsize="marquee"
     android:gravity="center_vertical"
     android:textSize="@dimen/defaultControlTextSize"
-    android:textColor="@color/controlTextColor"
+    android:textColor="@color/selector_color_spinner_text"
     android:textColorHint="@color/controlTextViewHint" />

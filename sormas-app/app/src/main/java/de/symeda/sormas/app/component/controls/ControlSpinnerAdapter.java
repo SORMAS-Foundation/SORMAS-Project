@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.component.controls;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -12,9 +13,11 @@ import android.widget.TextView;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Random;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.VisualState;
 
 public class ControlSpinnerAdapter extends ArrayAdapter<Item> {
 
@@ -73,7 +76,6 @@ public class ControlSpinnerAdapter extends ArrayAdapter<Item> {
 
         if (item != null) {
             textView.setText(item.toString());
-            textView.setTextColor(getContext().getResources().getColor(R.color.controlTextColor));
         }
 
         if (textView != null && (StringUtils.isEmpty(textView.getText()))) {

@@ -248,6 +248,10 @@ public class ControlPasswordField extends ControlPropertyEditField<String> {
 
     @Override
     protected void changeVisualState(final VisualState state) {
+        if (this.visualState == state) {
+            return;
+        }
+
         if (state != VisualState.DISABLED && getUserEditRight() != null
                 && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
             return;

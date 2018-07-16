@@ -313,6 +313,10 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
 
     @Override
     protected void changeVisualState(VisualState state) {
+        if (this.visualState == state) {
+            return;
+        }
+
         if (state != VisualState.DISABLED && getUserEditRight() != null
                 && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
             return;
@@ -333,14 +337,10 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
         setBackground(drawable);
 
         if (state != VisualState.ERROR) {
-            if (textColor > 0) {
-                dateInput.setTextColor(textColor);
-                timeInput.setTextColor(textColor);
-            }
-            if (hintColor > 0) {
-                dateInput.setHintTextColor(hintColor);
-                timeInput.setHintTextColor(hintColor);
-            }
+            dateInput.setTextColor(textColor);
+            timeInput.setTextColor(textColor);
+            dateInput.setHintTextColor(hintColor);
+            timeInput.setHintTextColor(hintColor);
         }
     }
 

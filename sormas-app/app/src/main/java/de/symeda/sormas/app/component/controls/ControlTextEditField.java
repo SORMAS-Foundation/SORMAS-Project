@@ -292,6 +292,10 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
     @Override
     protected void changeVisualState(final VisualState state) {
+        if (this.visualState == state) {
+            return;
+        }
+
         if (state != VisualState.DISABLED && getUserEditRight() != null
                 && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
             return;
@@ -312,12 +316,8 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         setBackground(drawable);
 
         if (state != VisualState.ERROR) {
-            if (textColor > 0) {
-                input.setTextColor(textColor);
-            }
-            if (hintColor > 0) {
-                input.setHintTextColor(hintColor);
-            }
+            input.setTextColor(textColor);
+            input.setHintTextColor(hintColor);
         }
     }
 
