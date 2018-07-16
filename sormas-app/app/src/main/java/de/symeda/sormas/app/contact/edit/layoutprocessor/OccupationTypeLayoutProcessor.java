@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.util.layoutprocessor;
+package de.symeda.sormas.app.contact.edit.layoutprocessor;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;

@@ -40,7 +40,6 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.Consumer;
-import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomainObject> extends BaseActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, NotificationContext {
 
@@ -64,8 +63,8 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     private MenuItem addMenu = null;
 
     @Override
-    protected boolean setHomeAsUpIndicator() {
-        return false;
+    protected boolean isSubActivitiy() {
+        return true;
     }
 
     private void ensureFabHiddenOnSoftKeyboardShown(final LandingPageMenuControl landingPageMenuControl) {
@@ -149,9 +148,14 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleEditModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
-        return true;
+
+        switch(item.getItemId()) {
+            case R.id.action_save:
+                saveData();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     protected void requestRootData(final Consumer<ActivityRootEntity> callback) {

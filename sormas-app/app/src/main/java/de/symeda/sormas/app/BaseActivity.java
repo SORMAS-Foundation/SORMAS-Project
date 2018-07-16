@@ -37,11 +37,9 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.component.dialog.UserReportDialog;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.NotificationContext;
-import de.symeda.sormas.app.core.async.AsyncTaskResult;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -54,6 +52,7 @@ import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ConstantHelper;
+import de.symeda.sormas.app.util.NavigationHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.UserHelper;
 
@@ -153,7 +152,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         preSetupDrawer(savedInstanceState);
         onCreateInner(savedInstanceState);
 
-        if (setHomeAsUpIndicator())
+        if (!isSubActivitiy())
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_blue_36dp);
 
         setupDrawer(navigationView);
@@ -217,13 +216,36 @@ public abstract class BaseActivity extends AppCompatActivity {
         sampleNotificationCounter = (TextView) navigationView.getMenu().findItem(R.id.menu_item_samples).getActionView().findViewById(R.id.main_menu_notification_counter);
     }
 
-    protected boolean setHomeAsUpIndicator() {
-        return true;
-    }
+    protected abstract boolean isSubActivitiy();
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (menuDrawerToggle.onOptionsItemSelected(item)) {
+        if (!isSubActivitiy()
+            && menuDrawerToggle.onOptionsItemSelected(item)) {
             return true;
+        }
+
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                NavigationHelper.navigateUpFrom(this);
+                return true;
+
+            case R.id.option_menu_action_sync:
+                synchronizeChangedData();
+                return true;
+
+            case R.id.action_new:
+                goToNewView();
+                return true;
+
+            case R.id.option_menu_action_markAllAsRead:
+                // TODO
+                return true;
+
+            // Report problem button
+            case R.id.action_report:
+                UserReportDialog userReportDialog = new UserReportDialog(this, getClass().getSimpleName(), null);
+                userReportDialog.show(null);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);

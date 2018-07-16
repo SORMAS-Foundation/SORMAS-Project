@@ -27,7 +27,6 @@ import de.symeda.sormas.app.component.dialog.DistrictLoader;
 import de.symeda.sormas.app.component.dialog.FacilityLoader;
 import de.symeda.sormas.app.component.dialog.RegionLoader;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 
@@ -89,7 +88,7 @@ public class PreviousHospitalizationDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
+    protected void prepareDialogData() {
 
     }
 

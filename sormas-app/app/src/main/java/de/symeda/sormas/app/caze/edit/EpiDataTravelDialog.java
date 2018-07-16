@@ -17,7 +17,6 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.DialogCaseEpidTravelEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 
@@ -75,7 +74,7 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
+    protected void prepareDialogData() {
 
     }
 

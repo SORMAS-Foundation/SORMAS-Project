@@ -41,8 +41,8 @@ import de.symeda.sormas.app.databinding.FragmentContactEditPersonLayoutBinding;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.shared.OnDateOfDeathChangeListener;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.layoutprocessor.OccupationTypeLayoutProcessor;
-import de.symeda.sormas.app.util.layoutprocessor.PresentConditionLayoutProcessor;
+import de.symeda.sormas.app.contact.edit.layoutprocessor.OccupationTypeLayoutProcessor;
+import de.symeda.sormas.app.contact.edit.layoutprocessor.PresentConditionLayoutProcessor;
 
 public class ContactEditPersonFragment extends BaseEditFragment<FragmentContactEditPersonLayoutBinding, Person, Contact> {
 

@@ -153,7 +153,7 @@ public class MoveCaseDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
+    protected void prepareDialogData() {
 
     }
 

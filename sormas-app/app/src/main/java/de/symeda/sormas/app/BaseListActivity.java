@@ -41,8 +41,8 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
     private int activeMenuKey = 0;
 
     @Override
-    protected boolean setHomeAsUpIndicator() {
-        return true;
+    protected boolean isSubActivitiy() {
+        return false;
     }
 
     protected void onCreateInner(Bundle savedInstanceState) {

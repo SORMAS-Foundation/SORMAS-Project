@@ -3,12 +3,10 @@ package de.symeda.sormas.app.report;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import de.symeda.sormas.app.BaseReportActivity;
 import de.symeda.sormas.app.BaseReportFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 public class ReportLandingActivity extends BaseReportActivity {
 
@@ -37,14 +35,6 @@ public class ReportLandingActivity extends BaseReportActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleListModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
 
         return true;
     }

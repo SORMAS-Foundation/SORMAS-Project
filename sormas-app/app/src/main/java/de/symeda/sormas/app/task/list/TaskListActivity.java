@@ -3,7 +3,6 @@ package de.symeda.sormas.app.task.list;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.AdapterView;
 
 import org.joda.time.DateTime;
@@ -18,7 +17,6 @@ import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.ListNavigationCapsule;
 import de.symeda.sormas.app.core.SearchBy;
-import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 public class TaskListActivity extends BaseListActivity {
 
@@ -84,13 +82,6 @@ public class TaskListActivity extends BaseListActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getNewMenu().setTitle(R.string.action_new_task);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleListModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
         return true;
     }
 

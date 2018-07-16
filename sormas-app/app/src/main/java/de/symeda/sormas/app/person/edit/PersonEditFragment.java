@@ -10,11 +10,13 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -35,6 +37,10 @@ import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.BaseFormNavigationCapsule;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.InfrastructureHelper;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayoutBinding, Person, AbstractDomainObject> {
 
@@ -54,6 +60,10 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
     private List<Item> deathPlaceTypeList;
     private List<Item> burialConductorList;
     private List<Item> occupationTypeList;
+    private List<Item> initialOccupationRegions;
+    private List<Item> initialOccupationDistricts;
+    private List<Item> initialOccupationCommunities;
+    private List<Item> initialOccupationFacilities;
 
     // Instance methods
 
@@ -62,10 +72,13 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
     }
 
     private void setUpFieldVisibilities(FragmentPersonEditLayoutBinding contentBinding) {
-        initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
+        InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
         initializeCauseOfDeathDetailsFieldVisibility(contentBinding.personCauseOfDeath, contentBinding.personCauseOfDeathDisease, contentBinding.personCauseOfDeathDetails);
         initializeOccupationDetailsFieldVisibility(contentBinding.personOccupationType, contentBinding.personOccupationDetails);
-        initializeFacilityFields(contentBinding.personOccupationRegion, contentBinding.personOccupationDistrict, contentBinding.personOccupationCommunity, contentBinding.personOccupationFacility);
+        InfrastructureHelper.initializeFacilityFields(contentBinding.personOccupationRegion, initialOccupationRegions,
+                contentBinding.personOccupationDistrict, initialOccupationDistricts,
+                contentBinding.personOccupationCommunity, initialOccupationCommunities,
+                contentBinding.personOccupationFacility, initialOccupationFacilities);
     }
 
     private void setUpControlListeners(final FragmentPersonEditLayoutBinding contentBinding) {
@@ -155,6 +168,12 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         deathPlaceTypeList = DataUtils.getEnumItems(DeathPlaceType.class, true);
         burialConductorList = DataUtils.getEnumItems(BurialConductor.class, true);
         occupationTypeList = DataUtils.getEnumItems(OccupationType.class, true);
+
+        initialOccupationRegions = InfrastructureHelper.loadRegions();
+        initialOccupationDistricts = InfrastructureHelper.loadDistricts(record.getOccupationRegion());
+        initialOccupationCommunities = InfrastructureHelper.loadCommunities(record.getOccupationDistrict());
+        initialOccupationFacilities = InfrastructureHelper.loadFacilities(record.getOccupationDistrict(), record.getOccupationCommunity());
+
     }
 
     @Override
@@ -216,4 +235,83 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         return false;
     }
 
+
+    /**
+     * Only show the causeOfDeathDetails field when either the selected cause of death is 'Other cause'
+     * or the selected cause of death disease is 'Other'. Additionally, adjust the caption of the
+     * causeOfDeathDetails field based on the selected options.
+     */
+    public static void initializeCauseOfDeathDetailsFieldVisibility(final ControlPropertyField causeOfDeathField, final ControlPropertyField causeOfDeathDiseaseField, final ControlPropertyField causeOfDeathDetailsField) {
+        setCauseOfDeathDetailsFieldVisibility(causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField);
+        causeOfDeathField.addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                setCauseOfDeathDetailsFieldVisibility(causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField);
+            }
+        });
+        causeOfDeathDiseaseField.addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                setCauseOfDeathDetailsFieldVisibility(causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField);
+            }
+        });
+    }
+
+    private static void setCauseOfDeathDetailsFieldVisibility(final ControlPropertyField causeOfDeathField, final ControlPropertyField causeOfDeathDiseaseField, final ControlPropertyField causeOfDeathDetailsField) {
+        CauseOfDeath selectedCauseOfDeath = (CauseOfDeath) causeOfDeathField.getValue();
+        Disease selectedCauseOfDeathDisease = (Disease) causeOfDeathDiseaseField.getValue();
+
+        if (selectedCauseOfDeath == CauseOfDeath.OTHER_CAUSE) {
+            causeOfDeathDetailsField.setVisibility(VISIBLE);
+            causeOfDeathDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.CAUSE_OF_DEATH_DETAILS));
+        } else if (selectedCauseOfDeathDisease == Disease.OTHER) {
+            causeOfDeathDetailsField.setVisibility(VISIBLE);
+            causeOfDeathDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.CAUSE_OF_DEATH_DISEASE_DETAILS));
+        } else {
+            causeOfDeathDetailsField.setVisibility(GONE);
+        }
+    }
+
+    /**
+     * Only show the occupationDetails field when an appropriate occupation is selected. Additionally,
+     * adjust the caption of the occupationDetails field based on the selected occupation.
+     */
+    public static void initializeOccupationDetailsFieldVisibility(final ControlPropertyField occupationTypeField, final ControlPropertyField occupationDetailsField) {
+        setOccupationDetailsFieldVisibility(occupationTypeField, occupationDetailsField);
+        occupationTypeField.addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                setOccupationDetailsFieldVisibility(occupationTypeField, occupationDetailsField);
+            }
+        });
+    }
+
+    private static void setOccupationDetailsFieldVisibility(final ControlPropertyField occupationTypeField, final ControlPropertyField occupationDetailsField) {
+        OccupationType selectedOccupationType = (OccupationType) occupationTypeField.getValue();
+        if (selectedOccupationType != null) {
+            switch (selectedOccupationType) {
+                case BUSINESSMAN_WOMAN:
+                    occupationDetailsField.setVisibility(VISIBLE);
+                    occupationDetailsField.setCaption(I18nProperties.getFieldCaption(PersonDto.I18N_PREFIX + ".business." + PersonDto.OCCUPATION_DETAILS));
+                    break;
+                case TRANSPORTER:
+                    occupationDetailsField.setVisibility(VISIBLE);
+                    occupationDetailsField.setCaption(I18nProperties.getFieldCaption(PersonDto.I18N_PREFIX + ".transporter." + PersonDto.OCCUPATION_DETAILS));
+                    break;
+                case HEALTHCARE_WORKER:
+                    occupationDetailsField.setVisibility(VISIBLE);
+                    occupationDetailsField.setCaption(I18nProperties.getFieldCaption(PersonDto.I18N_PREFIX + ".healthcare." + PersonDto.OCCUPATION_DETAILS));
+                    break;
+                case OTHER:
+                    occupationDetailsField.setVisibility(VISIBLE);
+                    occupationDetailsField.setCaption(I18nProperties.getPrefixFieldCaption(PersonDto.I18N_PREFIX, PersonDto.OCCUPATION_DETAILS));
+                    break;
+                default:
+                    occupationDetailsField.setVisibility(GONE);
+                    break;
+            }
+        } else {
+            occupationDetailsField.setVisibility(GONE);
+        }
+    }
 }

@@ -101,8 +101,8 @@ public class SettingsActivity extends BaseLandingActivity {
     }
 
     @Override
-    protected boolean setHomeAsUpIndicator() {
-        return ConfigProvider.getUser() != null;
+    protected boolean isSubActivitiy() {
+        return false;
     }
 
     protected int getActivityTitle() {

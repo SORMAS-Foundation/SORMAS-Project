@@ -30,8 +30,8 @@ public abstract class BaseReportActivity extends BaseActivity implements Notific
     }
 
     @Override
-    protected boolean setHomeAsUpIndicator() {
-        return true;
+    protected boolean isSubActivitiy() {
+        return false;
     }
 
     public void setSubHeadingTitle(String title) {
@@ -64,11 +64,6 @@ public abstract class BaseReportActivity extends BaseActivity implements Notific
         processActionbarMenu();
 
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

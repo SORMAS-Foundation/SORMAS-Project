@@ -21,7 +21,7 @@ import de.symeda.sormas.app.EnterPinActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.component.SyncLogDialog;
+import de.symeda.sormas.app.component.dialog.SyncLogDialog;
 import de.symeda.sormas.app.component.dialog.TeboProgressDialog;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.Callback;

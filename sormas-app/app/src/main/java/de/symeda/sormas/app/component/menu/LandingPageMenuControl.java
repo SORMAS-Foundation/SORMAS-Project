@@ -43,7 +43,7 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 
 /**
  * Created by Orson on 25/11/2017.
- *
+ * <p>
  * www.technologyboard.org
  * sampson.orson@gmail.com
  * sampson.orson@technologyboard.org
@@ -196,7 +196,7 @@ public class LandingPageMenuControl extends LinearLayout {
         }
 
         if (adapter instanceof IPageMenuAdapter) {
-            ((IPageMenuAdapter)adapter).initialize(menuList, cellLayout, counterBackgroundColor, counterBackgroundActiveColor,
+            ((IPageMenuAdapter) adapter).initialize(menuList, cellLayout, counterBackgroundColor, counterBackgroundActiveColor,
                     iconColor, iconActiveColor, positionColor, positionActiveColor, titleColor, titleActiveColor);
         } else {
             Log.e(TAG, "Page menu adapters must implement IPageMenuAdapter");
@@ -263,7 +263,7 @@ public class LandingPageMenuControl extends LinearLayout {
                 @Override
                 public void doInBackground(TaskResultHolder resultHolder) {
                     int position = 0;
-                    for(final LandingPageMenuItem entry: inputMenuList) {
+                    for (final LandingPageMenuItem entry : inputMenuList) {
                         int result = performNotificationCountChange(entry, position);
                         entry.setNotificationCount(result);
                         //resultHolder.<LandingPageMenuItem>forEnumerable().add(entry);
@@ -277,7 +277,7 @@ public class LandingPageMenuControl extends LinearLayout {
             updateNotificationCountTask = executor.execute(new ITaskResultCallback() {
                 @Override
                 public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    if (resultHolder == null){
+                    if (resultHolder == null) {
                         return;
                     }
 
@@ -338,6 +338,7 @@ public class LandingPageMenuControl extends LinearLayout {
     public void setOnSelectInitialActiveMenuItem(@Nullable OnSelectInitialActiveMenuItemListener listener) {
         mOnSelectInitialActiveMenuItemListener = listener;
     }
+
     @Nullable
     public final OnSelectInitialActiveMenuItemListener getOnSelectInitialActiveMenuItemListener() {
         return mOnSelectInitialActiveMenuItemListener;
@@ -373,7 +374,7 @@ public class LandingPageMenuControl extends LinearLayout {
 
 
     public void markActiveMenuItem(LandingPageMenuItem menuItem) {
-        for(LandingPageMenuItem m: menuList) {
+        for (LandingPageMenuItem m : menuList) {
             m.setActive(false);
         }
 
@@ -414,10 +415,10 @@ public class LandingPageMenuControl extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        taskLandingMenuTitle = (TextView)findViewById(R.id.sub_menu_title);
-        taskLandingMenuGridView = (GridView)findViewById(R.id.sub_menu_grid);
-        fabFrame = (FrameLayout)findViewById(R.id.button_frame);
-        fab = (FloatingActionButton)findViewById(R.id.sub_menu_button);
+        taskLandingMenuTitle = (TextView) findViewById(R.id.sub_menu_title);
+        taskLandingMenuGridView = (GridView) findViewById(R.id.sub_menu_grid);
+        fabFrame = (FrameLayout) findViewById(R.id.button_frame);
+        fab = (FloatingActionButton) findViewById(R.id.sub_menu_button);
 
 
         setVisibility(View.VISIBLE);
@@ -469,19 +470,19 @@ public class LandingPageMenuControl extends LinearLayout {
 
             if (v != null) {
                 if (v.getLayoutParams() instanceof LinearLayout.LayoutParams) {
-                    LinearLayout.LayoutParams param = (LinearLayout.LayoutParams)v.getLayoutParams();
+                    LinearLayout.LayoutParams param = (LinearLayout.LayoutParams) v.getLayoutParams();
                     param.bottomMargin = this.mParentBottomOffset;
                     v.setLayoutParams(param);
                 } else if (v.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
-                    RelativeLayout.LayoutParams param = (RelativeLayout.LayoutParams)v.getLayoutParams();
+                    RelativeLayout.LayoutParams param = (RelativeLayout.LayoutParams) v.getLayoutParams();
                     param.bottomMargin = this.mParentBottomOffset;
                     v.setLayoutParams(param);
                 } else if (v.getLayoutParams() instanceof FrameLayout.LayoutParams) {
-                    FrameLayout.LayoutParams param = (FrameLayout.LayoutParams)v.getLayoutParams();
+                    FrameLayout.LayoutParams param = (FrameLayout.LayoutParams) v.getLayoutParams();
                     param.bottomMargin = this.mParentBottomOffset;
                     v.setLayoutParams(param);
                 } else if (v.getLayoutParams() instanceof ScrollView.LayoutParams) {
-                    ScrollView.LayoutParams param = (ScrollView.LayoutParams)v.getLayoutParams();
+                    ScrollView.LayoutParams param = (ScrollView.LayoutParams) v.getLayoutParams();
                     param.bottomMargin = this.mParentBottomOffset;
                     v.setLayoutParams(param);
                 }
@@ -645,32 +646,35 @@ public class LandingPageMenuControl extends LinearLayout {
             public boolean onSwipeTop() {
                 return true;
             }
+
             public boolean onSwipeRight() {
                 if (fab.getLayoutParams() instanceof FrameLayout.LayoutParams) {
-                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)fab.getLayoutParams();
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) fab.getLayoutParams();
                     params.gravity = Gravity.END;
                     fab.setLayoutParams(params);
                 } else if (fab.getLayoutParams() instanceof PercentFrameLayout.LayoutParams) {
-                    PercentFrameLayout.LayoutParams params = (PercentFrameLayout.LayoutParams)fab.getLayoutParams();
+                    PercentFrameLayout.LayoutParams params = (PercentFrameLayout.LayoutParams) fab.getLayoutParams();
                     params.gravity = Gravity.END;
                     fab.setLayoutParams(params);
                 }
 
                 return true;
             }
+
             public boolean onSwipeLeft() {
                 if (fab.getLayoutParams() instanceof FrameLayout.LayoutParams) {
-                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)fab.getLayoutParams();
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) fab.getLayoutParams();
                     params.gravity = Gravity.START;
                     fab.setLayoutParams(params);
                 } else if (fab.getLayoutParams() instanceof PercentFrameLayout.LayoutParams) {
-                    PercentFrameLayout.LayoutParams params = (PercentFrameLayout.LayoutParams)fab.getLayoutParams();
+                    PercentFrameLayout.LayoutParams params = (PercentFrameLayout.LayoutParams) fab.getLayoutParams();
                     params.gravity = Gravity.START;
                     fab.setLayoutParams(params);
                 }
 
                 return true;
             }
+
             public boolean onSwipeBottom() {
                 return true;
             }
@@ -707,7 +711,7 @@ public class LandingPageMenuControl extends LinearLayout {
 
     private void setFabFrameVisibility(boolean visibility) {
         if (fabFrame != null)
-            fabFrame.setVisibility(mCollapsible && visibility && showPageMenu()? VISIBLE : GONE);
+            fabFrame.setVisibility(mCollapsible && visibility && showPageMenu() ? VISIBLE : GONE);
     }
 
     public void disableClipOnParents(View v) {

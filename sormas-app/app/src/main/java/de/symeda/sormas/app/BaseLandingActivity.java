@@ -31,7 +31,7 @@ public abstract class BaseLandingActivity extends BaseActivity implements Notifi
         super.onCreate(savedInstanceState);
     }
 
-    protected boolean setHomeAsUpIndicator() {
+    protected boolean isSubActivitiy() {
         return true;
     }
 

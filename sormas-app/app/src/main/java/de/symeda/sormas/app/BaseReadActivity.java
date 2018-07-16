@@ -20,6 +20,7 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.component.dialog.UserReportDialog;
 import de.symeda.sormas.app.component.menu.LandingPageMenuControl;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.component.menu.LandingPageMenuParser;
@@ -37,7 +38,7 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.util.ConstantHelper;
-import de.symeda.sormas.app.util.MenuOptionsHelper;
+import de.symeda.sormas.app.util.NavigationHelper;
 
 public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomainObject> extends BaseActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, NotificationContext {
 
@@ -64,8 +65,8 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     }
 
     @Override
-    protected boolean setHomeAsUpIndicator() {
-        return false;
+    protected boolean isSubActivitiy() {
+        return true;
     }
 
     protected void onCreateInner(Bundle savedInstanceState) {
@@ -119,13 +120,6 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
                 }
             }
         });
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleReadModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
-        return true;
     }
 
     protected void requestRootData(final Callback.IAction<ActivityRootEntity> callback) {
@@ -228,6 +222,16 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         }
 
         return activeMenu;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_edit:
+                goToEditView();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

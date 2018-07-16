@@ -17,7 +17,6 @@ import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.DialogCaseEpidBurialEditLayoutBinding;
 
 public class EpiDataBurialDialog extends BaseTeboAlertDialog {
@@ -70,7 +69,7 @@ public class EpiDataBurialDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
+    protected void prepareDialogData() {
 
     }
 

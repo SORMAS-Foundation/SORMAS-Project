@@ -147,7 +147,7 @@ public class UserReportDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
+    protected void prepareDialogData() {
 
     }
 

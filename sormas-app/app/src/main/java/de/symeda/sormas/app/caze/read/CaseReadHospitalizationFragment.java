@@ -9,6 +9,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.databinding.FragmentCaseReadHospitalizationLayoutBinding;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.util.InfrastructureHelper;
 
 import static android.view.View.GONE;
 
@@ -65,7 +66,7 @@ public class CaseReadHospitalizationFragment extends BaseReadFragment<FragmentCa
     }
 
     private void setUpFieldVisibilities(FragmentCaseReadHospitalizationLayoutBinding contentBinding) {
-        initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
+        InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
 
         // Previous hospitalizations list
         if (contentBinding.getData().getPreviousHospitalizations().isEmpty()) {

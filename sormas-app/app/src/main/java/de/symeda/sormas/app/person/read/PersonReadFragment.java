@@ -10,6 +10,8 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.core.BaseFormNavigationCapsule;
 import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
+import de.symeda.sormas.app.person.edit.PersonEditFragment;
+import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayoutBinding, Person, AbstractDomainObject> {
 
@@ -24,8 +26,8 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
     }
 
     private void setUpFieldVisibilities(FragmentPersonReadLayoutBinding contentBinding) {
-        initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
-        initializeCauseOfDeathDetailsFieldVisibility(contentBinding.personCauseOfDeath, contentBinding.personCauseOfDeathDisease, contentBinding.personCauseOfDeathDetails);
+        InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
+        PersonEditFragment.initializeCauseOfDeathDetailsFieldVisibility(contentBinding.personCauseOfDeath, contentBinding.personCauseOfDeathDisease, contentBinding.personCauseOfDeathDetails);
     }
 
     // Overrides

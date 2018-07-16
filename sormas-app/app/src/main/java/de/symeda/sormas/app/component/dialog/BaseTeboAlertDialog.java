@@ -25,20 +25,12 @@ import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.NotificationContext;
+import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogRootLayoutBinding;
-
-/**
- * Created by Orson on 02/02/2018.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
 
 
 public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.component.dialog.IDialogDismissOnClickListener,
@@ -547,7 +539,7 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
 
     protected abstract void setBindingVariable(Context context, ViewDataBinding binding, String layoutName);
 
-    protected abstract void initializeData(TaskResultHolder resultHolder, boolean executionComplete);
+    protected abstract void prepareDialogData();
 
     protected abstract void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding);
 
@@ -578,34 +570,25 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
     //AlertDialog
     public void show(final Callback.IAction<AlertDialog> callback) {
         this.rootBinding = bindRootLayout(activity);
-        try {
-            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                @Override
-                public void onPreExecute() {
-                    //getBaseActivity().showPreloader();
-                    //
-                }
 
-                @Override
-                public void doInBackground(TaskResultHolder resultHolder) {
-                    initializeData(resultHolder, false);
-                }
-            };
-            dialogTask = executor.execute(new ITaskResultCallback() {
-                @Override
-                public void taskResult(BoolResult resultStatus, TaskResultHolder resultHolder) {
-                    //getBaseActivity().hidePreloader();
-                    //getBaseActivity().showFragmentView();
+        dialogTask = new DefaultAsyncTask(getContext()) {
+            @Override
+            protected void onPreExecute() {
+                // TODO show pre loader
+            }
 
-                    if (resultHolder == null){
-                        return;
-                    }
+            @Override
+            protected void doInBackground(TaskResultHolder resultHolder) {
+                prepareDialogData();
+            }
 
-                    initializeData(resultHolder, true);
+            @Override
+            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                super.onPostExecute(taskResult);
 
+                if (taskResult.getResultStatus().isSuccess()) {
                     initializeContentView(rootBinding, contentViewStubBinding, btnPanelViewStubBinding);
                     dialog = builder.show();
-
 
                     float width = getWidth();
                     float height = getHeight();
@@ -621,11 +604,8 @@ public abstract class BaseTeboAlertDialog implements de.symeda.sormas.app.compon
                     if (callback != null)
                         callback.call(dialog);
                 }
-            });
-        } catch (Exception ex) {
-            //getBaseActivity().hidePreloader();
-            //getBaseActivity().showFragmentView();
-        }
+            }
+        }.executeOnThreadPool();
     }
 
     public void dismiss() {

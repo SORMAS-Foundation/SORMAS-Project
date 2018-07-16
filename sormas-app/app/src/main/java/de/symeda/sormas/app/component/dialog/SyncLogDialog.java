@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.component;
+package de.symeda.sormas.app.component.dialog;
 
 import android.app.AlertDialog;
 import android.content.Context;

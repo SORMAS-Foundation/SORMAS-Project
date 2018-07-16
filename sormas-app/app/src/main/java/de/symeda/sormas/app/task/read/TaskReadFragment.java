@@ -1,27 +1,17 @@
 package de.symeda.sormas.app.task.read;
 
-import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.View;
 
-import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.OnLinkClickListener;
 import de.symeda.sormas.app.contact.read.ContactReadActivity;
-import de.symeda.sormas.app.core.BoolResult;
-import de.symeda.sormas.app.core.async.DefaultAsyncTask;
-import de.symeda.sormas.app.core.async.ITaskResultCallback;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.FragmentTaskReadLayoutBinding;
 import de.symeda.sormas.app.event.read.EventReadActivity;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
@@ -75,7 +65,7 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
                 if (item == null)
                     return;
 
-                Task task = (Task)item;
+                Task task = (Task) item;
                 Case caze = task.getCaze();
 
                 if (caze == null)
@@ -94,7 +84,7 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
                 if (item == null)
                     return;
 
-                Task task = (Task)item;
+                Task task = (Task) item;
                 Contact contact = task.getContact();
 
                 if (contact == null)
@@ -112,7 +102,7 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
                 if (item == null)
                     return;
 
-                Task task = (Task)item;
+                Task task = (Task) item;
                 Event event = task.getEvent();
 
                 if (event == null)

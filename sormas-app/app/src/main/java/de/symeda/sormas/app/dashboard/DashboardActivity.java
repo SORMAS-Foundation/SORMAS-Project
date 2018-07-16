@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.dashboard;
 
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,7 +19,6 @@ import de.symeda.sormas.app.dashboard.contact.ContactSummaryFragment;
 import de.symeda.sormas.app.dashboard.event.EventSummaryFragment;
 import de.symeda.sormas.app.dashboard.sample.SampleSummaryFragment;
 import de.symeda.sormas.app.dashboard.task.TaskSummaryFragment;
-import de.symeda.sormas.app.util.MarkAllAsReadHelper;
 
 public class DashboardActivity extends BaseDashboardActivity {
 
@@ -63,16 +61,6 @@ public class DashboardActivity extends BaseDashboardActivity {
 
             case R.id.option_menu_action_sync:
                 synchronizeChangedData();
-                return true;
-
-            case R.id.option_menu_action_markAllAsRead:
-                MarkAllAsReadHelper.markCasesAsRead(this, new Callback.IAction<AsyncTask>() {
-                    @Override
-                    public void call(AsyncTask asyncTask) {
-                        /*if (asyncTask != null && !asyncTask.isCancelled())
-                            asyncTask.cancel(true);*/
-                    }
-                });
                 return true;
 
             // Report problem button

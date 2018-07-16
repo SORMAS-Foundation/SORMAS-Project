@@ -8,46 +8,35 @@ import android.view.View;
 
 import com.android.databinding.library.baseAdapters.BR;
 
+import java.util.List;
+
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
-import de.symeda.sormas.app.backend.region.District;
-import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
-import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
-import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
-import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.InfrastructureHelper;
 import de.symeda.sormas.app.util.LocationService;
 
 public class LocationDialog extends BaseTeboAlertDialog {
 
     public static final String TAG = LocationDialog.class.getSimpleName();
 
-    private Location data;
     private FragmentActivity activity;
+
+    private Location data;
+    private List<Item> initialRegions;
+    private List<Item> initialDistricts;
+    private List<Item> initialCommunities;
+
     private DialogLocationLayoutBinding mContentBinding;
-
-    private RegionLoader regionLoader;
-    private DistrictLoader districtLoader;
-    private CommunityLoader communityLoader;
-
     private IEntryItemOnClickListener pickGpsCallback;
 
     public LocationDialog(final FragmentActivity activity, Location location) {
-        this(activity, R.string.heading_location_dialog, -1, null, null, null, location);
-    }
-
-    public LocationDialog(final FragmentActivity activity, int headingResId, int subHeadingResId,
-                          RegionLoader regionLoader, DistrictLoader districtLoader,
-                          CommunityLoader communityLoader, Location location) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_location_layout,
-                R.layout.dialog_root_two_button_panel_layout, headingResId, subHeadingResId);
-
+                R.layout.dialog_root_two_button_panel_layout,R.string.heading_location_dialog, -1);
 
         this.activity = activity;
         this.data = location;
@@ -92,23 +81,10 @@ public class LocationDialog extends BaseTeboAlertDialog {
     }
 
     @Override
-    protected void initializeData(TaskResultHolder resultHolder, boolean executionComplete) {
-        if (!executionComplete) {
-            resultHolder.forOther().add(regionLoader == null? RegionLoader.getInstance() : regionLoader);
-            resultHolder.forOther().add(districtLoader == null? DistrictLoader.getInstance() : districtLoader);
-            resultHolder.forOther().add(communityLoader == null? CommunityLoader.getInstance() : communityLoader);
-        } else {
-            ITaskResultHolderIterator otherIterator = resultHolder.forOther().iterator();
-
-            if (otherIterator.hasNext())
-                this.regionLoader = otherIterator.next();
-
-            if (otherIterator.hasNext())
-                this.districtLoader = otherIterator.next();
-
-            if (otherIterator.hasNext())
-                this.communityLoader = otherIterator.next();
-        }
+    protected void prepareDialogData() {
+        initialRegions = InfrastructureHelper.loadRegions();
+        initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
+        initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
     }
 
     @Override
@@ -117,37 +93,9 @@ public class LocationDialog extends BaseTeboAlertDialog {
 
         updateGpsTextView();
 
-        if (mContentBinding.locationRegion != null) {
-            mContentBinding.locationRegion.initializeSpinner(RegionLoader.getInstance().load(), null, new ValueChangeListener() {
-                @Override
-                public void onChange(ControlPropertyField field) {
-                    Region selectedValue = (Region) field.getValue();
-                    if (selectedValue != null) {
-                        mContentBinding.locationDistrict.setSpinnerData(DataUtils.toItems(DatabaseHelper.getDistrictDao().getByRegion(selectedValue)), mContentBinding.locationDistrict.getValue());
-                    } else {
-                        mContentBinding.locationDistrict.setSpinnerData(null);
-                    }
-                }
-            });
-        }
-
-        if (mContentBinding.locationDistrict != null) {
-            mContentBinding.locationDistrict.initializeSpinner(DistrictLoader.getInstance().load((Region) mContentBinding.locationRegion.getValue()), null, new ValueChangeListener() {
-                @Override
-                public void onChange(ControlPropertyField field) {
-                    District selectedValue = (District) field.getValue();
-                    if (selectedValue != null) {
-                        mContentBinding.locationCommunity.setSpinnerData(DataUtils.toItems(DatabaseHelper.getCommunityDao().getByDistrict(selectedValue)), mContentBinding.locationCommunity.getValue());
-                       } else {
-                        mContentBinding.locationCommunity.setSpinnerData(null);
-                    }
-                }
-            });
-        }
-
-        if (mContentBinding.locationCommunity != null) {
-            mContentBinding.locationCommunity.initializeSpinner(CommunityLoader.getInstance().load((District) mContentBinding.locationDistrict.getValue()));
-        }
+        InfrastructureHelper.initializeRegionFields(mContentBinding.locationRegion, initialRegions,
+                mContentBinding.locationDistrict, initialDistricts,
+                mContentBinding.locationCommunity, initialCommunities);
     }
 
     @Override

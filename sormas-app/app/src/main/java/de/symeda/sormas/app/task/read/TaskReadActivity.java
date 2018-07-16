@@ -2,7 +2,6 @@ package de.symeda.sormas.app.task.read;
 
 import android.content.Context;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.BaseReadActivity;
@@ -13,7 +12,6 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
-import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 public class TaskReadActivity extends BaseReadActivity<Task> {
 
@@ -39,13 +37,6 @@ public class TaskReadActivity extends BaseReadActivity<Task> {
         boolean result = super.onCreateOptionsMenu(menu);
         getEditMenu().setTitle(R.string.action_edit_task);
         return result;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleReadModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
-        return true;
     }
 
     @Override

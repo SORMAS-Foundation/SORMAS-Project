@@ -40,8 +40,8 @@ public abstract class BaseDashboardActivity extends BaseActivity implements Noti
     }
 
     @Override
-    protected boolean setHomeAsUpIndicator() {
-        return true;
+    protected boolean isSubActivitiy() {
+        return false;
     }
 
     protected void onCreateInner(Bundle savedInstanceState) {

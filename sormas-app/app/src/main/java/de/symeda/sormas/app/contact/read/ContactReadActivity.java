@@ -2,7 +2,6 @@ package de.symeda.sormas.app.contact.read;
 
 import android.content.Context;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -15,7 +14,6 @@ import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.contact.edit.ContactEditActivity;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
-import de.symeda.sormas.app.util.MenuOptionsHelper;
 
 public class ContactReadActivity extends BaseReadActivity<Contact> {
 
@@ -67,14 +65,6 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getEditMenu().setTitle(R.string.action_edit_contact);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!MenuOptionsHelper.handleReadModuleOptionsItemSelected(this, item))
-            return super.onOptionsItemSelected(item);
 
         return true;
     }
