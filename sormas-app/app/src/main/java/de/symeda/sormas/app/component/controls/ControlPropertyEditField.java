@@ -57,21 +57,11 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     // Abstract methods
 
-    public abstract void changeVisualState(VisualState state);
+    protected abstract void changeVisualState(VisualState state);
 
     protected abstract void setHint(String hint);
 
     // Instance methods
-
-    @Override
-    protected void onValueChanged() {
-        // update internal value if possible
-        if (this instanceof ControlPropertyEditField) {
-            Object value = getFieldValue();
-        }
-
-        super.onValueChanged();
-    }
 
     private void initializePropertyEditField(Context context, AttributeSet attrs) {
         if (attrs != null) {
@@ -282,6 +272,21 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         setHint(hint);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (enabled) {
+            if (hasError) {
+                changeVisualState(VisualState.ERROR);
+            } else if (isFocused()) {
+                changeVisualState(VisualState.FOCUSED);
+            } else {
+                changeVisualState(VisualState.NORMAL);
+            }
+        } else {
+            changeVisualState(VisualState.DISABLED);
+        }
     }
 
     // Data binding, getters & setters

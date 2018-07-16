@@ -244,7 +244,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
     }
 
     @Override
-    public void changeVisualState(VisualState state) {
+    protected void changeVisualState(VisualState state) {
         if (state != VisualState.DISABLED && getUserEditRight() != null
                 && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
             return;
@@ -261,12 +261,6 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
         label.setTextColor(labelColor);
         setBackground(drawable);
-
-        if (state == VisualState.DISABLED) {
-            setEnabled(false);
-        } else {
-            setEnabled(true);
-        }
     }
 
     // Data binding, getters & setters

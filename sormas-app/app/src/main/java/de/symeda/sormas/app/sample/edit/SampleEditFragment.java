@@ -164,20 +164,19 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         contentBinding.sampleSampleDateTime.initializeDateTimeField(getFragmentManager());
         contentBinding.sampleShipmentDate.initializeDateField(getFragmentManager());
 
-        //TODO: Properly disable Tebo controls
         if (!ConfigProvider.getUser().equals(record.getReportingUser())) {
-            contentBinding.sampleSampleCode.changeVisualState(VisualState.DISABLED);
-            contentBinding.sampleSampleDateTime.changeVisualState(VisualState.DISABLED);
-            contentBinding.sampleSampleDateTime.changeVisualState(VisualState.DISABLED);
-            contentBinding.sampleSampleSource.changeVisualState(VisualState.DISABLED);
-            contentBinding.sampleSampleMaterial.changeVisualState(VisualState.DISABLED);
-            contentBinding.sampleSampleMaterialText.changeVisualState(VisualState.DISABLED);
-            contentBinding.sampleSuggestedTypeOfTest.changeVisualState(VisualState.DISABLED);
-            contentBinding.sampleLab.changeVisualState(VisualState.DISABLED);
-            contentBinding.sampleLabDetails.changeVisualState(VisualState.DISABLED);
-            contentBinding.sampleShipped.changeVisualState(VisualState.DISABLED);
-            contentBinding.sampleShipmentDate.changeVisualState(VisualState.DISABLED);
-            contentBinding.sampleShipmentDetails.changeVisualState(VisualState.DISABLED);
+            contentBinding.sampleSampleCode.setEnabled(false);
+            contentBinding.sampleSampleDateTime.setEnabled(false);
+            contentBinding.sampleSampleDateTime.setEnabled(false);
+            contentBinding.sampleSampleSource.setEnabled(false);
+            contentBinding.sampleSampleMaterial.setEnabled(false);
+            contentBinding.sampleSampleMaterialText.setEnabled(false);
+            contentBinding.sampleSuggestedTypeOfTest.setEnabled(false);
+            contentBinding.sampleLab.setEnabled(false);
+            contentBinding.sampleLabDetails.setEnabled(false);
+            contentBinding.sampleShipped.setEnabled(false);
+            contentBinding.sampleShipmentDate.setEnabled(false);
+            contentBinding.sampleShipmentDetails.setEnabled(false);
         }
     }
 

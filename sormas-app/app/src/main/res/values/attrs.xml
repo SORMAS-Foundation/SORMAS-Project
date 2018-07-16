@@ -20,6 +20,7 @@
     <attr name="titleActiveColor" format="reference" />
     <attr name="singleLine" format="boolean"/>
     <attr name="maxLines" format="integer"/>
+    <attr name="maxLength" format="integer"/>
     <attr name="textArea" format="boolean"/>
     <attr name="image" format="reference"/>
     <attr name="imageColor" format="reference"/>
@@ -199,6 +200,7 @@
         <attr name="required" />
         <attr name="singleLine" />
         <attr name="maxLines" />
+        <attr name="maxLength" />
         <attr name="textArea" />
         <attr name="userEditRight" />
         <attr name="inputType" />
@@ -225,6 +227,7 @@
         <!--<attr name="hint" />-->
         <attr name="singleLine" />
         <attr name="maxLines" />
+        <attr name="maxLength" />
         <attr name="inputType" />
 
         <attr name="textColorHint" />
@@ -271,6 +274,7 @@
         <attr name="description" />
         <attr name="singleLine" />
         <attr name="maxLines" />
+        <attr name="maxLength" />
         <attr name="distinct" />
         <attr name="slim" />
     </declare-styleable>

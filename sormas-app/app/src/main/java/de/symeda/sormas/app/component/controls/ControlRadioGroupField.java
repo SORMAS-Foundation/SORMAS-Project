@@ -296,7 +296,7 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
     }
 
     @Override
-    public void changeVisualState(VisualState state) {
+    protected void changeVisualState(VisualState state) {
         if (state != VisualState.DISABLED && getUserEditRight() != null
                 && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
             return;
@@ -309,7 +309,6 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 
         if (state == VisualState.DISABLED) {
             setStateColor(labelColor, labelColor);
-            setEnabled(false);
             return;
         }
 

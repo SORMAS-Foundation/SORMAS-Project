@@ -85,16 +85,16 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
     @SuppressWarnings("unchecked")
     public void setEnumClass(Class c) {
-        if (!enumClassSet) {
-            List<Item> items = DataUtils.getEnumItems(c, false);
+        removeAllItems();
 
-            int itemTotal = items.size();
-            for (int i = 0; i < items.size(); i++) {
-                addItem(i, itemTotal - 1, items.get(i));
-            }
+        List<Item> items = DataUtils.getEnumItems(c, false);
 
-            enumClassSet = true;
+        int itemTotal = items.size();
+        for (int i = 0; i < items.size(); i++) {
+            addItem(i, itemTotal - 1, items.get(i));
         }
+
+        enumClassSet = true;
     }
 
     private void addItem(int index, int lastIndex, Item item) {
@@ -102,6 +102,11 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
         input.addView(button);
         radioGroupElements.add(item.getValue());
         setChildViewEnabledState(button);
+    }
+
+    private void removeAllItems() {
+        input.removeAllViews();
+        radioGroupElements.clear();
     }
 
     private RadioButton createRadioButton(int index, int lastIndex, Item item) {
@@ -305,7 +310,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
     }
 
     @Override
-    public void changeVisualState(VisualState state) {
+    protected void changeVisualState(VisualState state) {
         if (state != VisualState.DISABLED && getUserEditRight() != null
                 && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
             return;
@@ -320,7 +325,6 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
             Drawable disabledStateDrawable = getResources().getDrawable(R.drawable.control_switch_background_border_disabled);
             disabledStateDrawable = disabledStateDrawable.mutate();
             input.setBackground(disabledStateDrawable);
-            setEnabled(false);
             return;
         }
 

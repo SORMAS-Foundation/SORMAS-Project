@@ -114,6 +114,7 @@
                     android:id="@+id/person_approximateAge"
                     app:value="@={data.approximateAge}"
                     app:inputType="number"
+                    app:maxLength="3"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField

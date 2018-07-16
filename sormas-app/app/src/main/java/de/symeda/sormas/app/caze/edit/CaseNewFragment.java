@@ -206,11 +206,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         User user = ConfigProvider.getUser();
         if (user.hasUserRole(UserRole.INFORMANT) && user.getHealthFacility() != null) {
             // this is ok, because informants are required to have a community and health facility
-            contentBinding.caseDataCommunity.changeVisualState(VisualState.DISABLED);
-            contentBinding.caseDataHealthFacility.changeVisualState(VisualState.DISABLED);
-        } else {
-            contentBinding.caseDataCommunity.changeVisualState(VisualState.NORMAL);
-            contentBinding.caseDataHealthFacility.changeVisualState(VisualState.NORMAL);
+            contentBinding.caseDataCommunity.setEnabled(false);
+            contentBinding.caseDataHealthFacility.setEnabled(false);
         }
     }
 

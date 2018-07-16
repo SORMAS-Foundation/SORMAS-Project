@@ -178,7 +178,7 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
     }
 
     @Override
-    public void changeVisualState(VisualState state) {
+    protected void changeVisualState(VisualState state) {
         if (state != VisualState.DISABLED && getUserEditRight() != null
                 && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
             return;
@@ -191,7 +191,6 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
 
         if (state == VisualState.DISABLED) {
             setStateColor(labelColor, labelColor);
-            input.setEnabled(false);
             return;
         }
 

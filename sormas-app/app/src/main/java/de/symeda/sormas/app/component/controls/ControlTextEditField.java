@@ -7,6 +7,7 @@ import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -34,6 +35,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
     private boolean singleLine;
     private int maxLines;
+    private int maxLength;
     private boolean textArea;
     private int inputType;
 
@@ -205,6 +207,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
             try {
                 singleLine = a.getBoolean(R.styleable.ControlTextEditField_singleLine, true);
                 maxLines = a.getInt(R.styleable.ControlTextEditField_maxLines, 1);
+                maxLength = a.getInt(R.styleable.ControlTextEditField_maxLength, -1);
                 textArea = a.getBoolean(R.styleable.ControlTextEditField_textArea, false);
                 inputType = a.getInt(R.styleable.ControlTextEditField_inputType, InputType.TYPE_CLASS_TEXT);
             } finally {
@@ -247,6 +250,11 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         }
         input.setInputType(inputType);
         setSingleLine(singleLine);
+        if (maxLength >= 0) {
+            input.setFilters(new InputFilter[] {
+                    new InputFilter.LengthFilter(maxLength)
+            });
+        }
 
         input.addTextChangedListener(new TextWatcher() {
             @Override
@@ -283,7 +291,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
     }
 
     @Override
-    public void changeVisualState(final VisualState state) {
+    protected void changeVisualState(final VisualState state) {
         if (state != VisualState.DISABLED && getUserEditRight() != null
                 && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
             return;
@@ -310,12 +318,6 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
             if (hintColor > 0) {
                 input.setHintTextColor(hintColor);
             }
-        }
-
-        if (state == VisualState.DISABLED) {
-            setEnabled(false);
-        } else {
-            setEnabled(true);
         }
     }
 
@@ -348,7 +350,11 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
     public static Integer getIntegerValue(ControlTextEditField view) {
-        return Integer.valueOf(view.getFieldValue());
+        if (!view.getFieldValue().isEmpty()) {
+            return Integer.valueOf(view.getFieldValue());
+        } else {
+            return 0;
+        }
     }
 
     @BindingAdapter("valueAttrChanged")

@@ -312,7 +312,7 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
     }
 
     @Override
-    public void changeVisualState(VisualState state) {
+    protected void changeVisualState(VisualState state) {
         if (state != VisualState.DISABLED && getUserEditRight() != null
                 && !ConfigProvider.getUser().hasUserRight(getUserEditRight())) {
             return;
@@ -341,10 +341,6 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
                 dateInput.setHintTextColor(hintColor);
                 timeInput.setHintTextColor(hintColor);
             }
-        }
-
-        if (state == VisualState.DISABLED) {
-            setEnabled(false);
         }
     }
 
