@@ -360,9 +360,9 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private void verifyGatheringStatus() {
         YesNoUnknown hospitalizedPreviously = record.getGatheringAttended();
         if (hospitalizedPreviously == YesNoUnknown.YES && getGatherings().size() <= 0) {
-            getContentBinding().epiDataGatheringAttended.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().epiDataGatheringAttended.enableWarningState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
         } else {
-            getContentBinding().epiDataGatheringAttended.disableErrorState();
+            getContentBinding().epiDataGatheringAttended.disableWarningState();
         }
     }
 
@@ -408,9 +408,9 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private void verifyBurialStatus() {
         YesNoUnknown hospitalizedPreviously = record.getBurialAttended();
         if (hospitalizedPreviously == YesNoUnknown.YES && getBurials().size() <= 0) {
-            getContentBinding().epiDataBurialAttended.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().epiDataBurialAttended.enableWarningState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
         } else {
-            getContentBinding().epiDataBurialAttended.disableErrorState();
+            getContentBinding().epiDataBurialAttended.disableWarningState();
         }
     }
 
@@ -465,9 +465,9 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     private void verifyTravelStatus() {
         YesNoUnknown hospitalizedPreviously = record.getTraveled();
         if (hospitalizedPreviously == YesNoUnknown.YES && getTravels().size() <= 0) {
-            getContentBinding().epiDataTraveled.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().epiDataTraveled.enableWarningState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
         } else {
-            getContentBinding().epiDataTraveled.disableErrorState();
+            getContentBinding().epiDataTraveled.disableWarningState();
         }
     }
 

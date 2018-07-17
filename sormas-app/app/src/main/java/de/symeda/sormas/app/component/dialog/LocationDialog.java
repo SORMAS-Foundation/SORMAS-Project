@@ -135,17 +135,31 @@ public class LocationDialog extends BaseTeboAlertDialog {
 
             @Override
             public void onClick(View v, Object item) {
-                android.location.Location phoneLocation = LocationService.instance().getLocation(activity);
-                if (phoneLocation != null) {
-                    data.setLatitude(phoneLocation.getLatitude());
-                    data.setLongitude(phoneLocation.getLongitude());
-                    data.setLatLonAccuracy(phoneLocation.getAccuracy());
-                } else {
-                    data.setLatitude(null);
-                    data.setLongitude(null);
-                    data.setLatLonAccuracy(null);
-                }
-                updateGpsTextView();
+
+                final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
+                        R.string.heading_confirmation_dialog,
+                        R.string.heading_sub_confirmation_notification_dialog_pick_gps);
+
+                confirmationDialog.setOnPositiveClickListener(new de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface.PositiveOnClickListener() {
+                    @Override
+                    public void onOkClick(View v, Object confirmationItem, View viewRoot) {
+                        confirmationDialog.dismiss();
+
+                        android.location.Location phoneLocation = LocationService.instance().getLocation(activity);
+                        if (phoneLocation != null) {
+                            data.setLatitude(phoneLocation.getLatitude());
+                            data.setLongitude(phoneLocation.getLongitude());
+                            data.setLatLonAccuracy(phoneLocation.getAccuracy());
+                        } else {
+                            data.setLatitude(null);
+                            data.setLongitude(null);
+                            data.setLatLonAccuracy(null);
+                        }
+                        updateGpsTextView();
+                    }
+                });
+
+                confirmationDialog.show(null);
             }
         };
     }
