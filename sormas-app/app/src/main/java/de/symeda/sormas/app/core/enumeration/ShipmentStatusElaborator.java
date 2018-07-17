@@ -1,32 +1,22 @@
 package de.symeda.sormas.app.core.enumeration;
 
-import android.content.res.Resources;
-
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.shared.ShipmentStatus;
 
 public class ShipmentStatusElaborator implements IStatusElaborator {
 
-    private Resources resources = null;
     private ShipmentStatus status = null;
 
-    public ShipmentStatusElaborator(ShipmentStatus status, Resources resources) {
+    public ShipmentStatusElaborator(ShipmentStatus status) {
         this.status = status;
-        this.resources = resources;
     }
 
     @Override
     public String getFriendlyName() {
-        if (status == ShipmentStatus.NOT_SHIPPED) {
-            return resources.getString(R.string.status_shipment_not_shipped);
-        } else if (status == ShipmentStatus.SHIPPED) {
-            return resources.getString(R.string.status_shipment_shipped);
-        } else if (status == ShipmentStatus.RECEIVED) {
-            return resources.getString(R.string.status_shipment_received);
-        } else if (status == ShipmentStatus.REFERRED_OTHER_LAB) {
-            return resources.getString(R.string.status_shipment_referred_other_lab);
+        if (status != null) {
+            return status.toShortString();
         }
-return "";
+        return "";
     }
 
     @Override

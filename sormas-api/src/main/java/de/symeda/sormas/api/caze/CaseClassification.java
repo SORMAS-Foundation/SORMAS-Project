@@ -19,6 +19,10 @@ public enum CaseClassification implements StatisticsGroupingKey {
 		return I18nProperties.getEnumCaption(this);
 	}
 	
+	public String toShortString() {
+		return I18nProperties.getEnumCaption(this, "Short");
+	}
+	
 	@Override
 	public int keyCompareTo(StatisticsGroupingKey o) {
 		if (o == null) {

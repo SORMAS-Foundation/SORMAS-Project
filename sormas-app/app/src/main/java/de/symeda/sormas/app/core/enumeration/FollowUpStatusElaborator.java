@@ -1,38 +1,21 @@
 package de.symeda.sormas.app.core.enumeration;
 
-import android.content.res.Resources;
-
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.R;
 
-import de.symeda.sormas.api.contact.FollowUpStatus;
-
-/**
- * Created by Orson on 25/12/2017.
- */
 public class FollowUpStatusElaborator implements IStatusElaborator {
 
-    private Resources resources = null;
     private FollowUpStatus status = null;
 
-    public FollowUpStatusElaborator(FollowUpStatus status, Resources resources) {
+    public FollowUpStatusElaborator(FollowUpStatus status) {
         this.status = status;
-        this.resources = resources;
     }
 
     @Override
     public String getFriendlyName() {
-        if (status == FollowUpStatus.FOLLOW_UP) {
-            return resources.getString(R.string.status_followup_follow_up);
-        } else if (status == FollowUpStatus.COMPLETED) {
-            return resources.getString(R.string.status_followup_completed);
-        } else if (status == FollowUpStatus.CANCELED) {
-            return resources.getString(R.string.status_followup_canceled);
-        } else if (status == FollowUpStatus.LOST) {
-            return resources.getString(R.string.status_followup_lost);
-        } else if (status == FollowUpStatus.NO_FOLLOW_UP) {
-            return resources.getString(R.string.status_followup_no_follow_up);
+        if (status != null) {
+            return status.toString();
         }
-
         return "";
     }
 
