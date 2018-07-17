@@ -186,6 +186,11 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         setFieldValue(DataHelper.toStringNullable(value));
     }
 
+    public void setValue(Object value, Object internalValue) {
+        this.internalValue = internalValue;
+        setFieldValue(DataHelper.toStringNullable(value));
+    }
+
     @Override
     public Object getValue() {
         return internalValue;
@@ -196,30 +201,28 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         super.setEnabled(enabled);
         textView.setEnabled(enabled);
         label.setEnabled(enabled);
-
     }
 
-    // String
-    @BindingAdapter(value = {"value", "appendValue", "valueFormat", "defaultValue"}, requireAll = false)
-    public static void setValue(ControlTextReadField textField, String stringValue, String appendValue, String valueFormat, String defaultValue) {
+
+    public static void setValue(ControlTextReadField textField, String stringValue, String appendValue, String valueFormat, String defaultValue, Object originalValue) {
 
         if (StringUtils.isEmpty(stringValue)) {
-            textField.setValue(getDefaultValue(defaultValue));
+            textField.setValue(getDefaultValue(defaultValue), originalValue);
         } else {
             if (!StringUtils.isEmpty(valueFormat) && !StringUtils.isEmpty(appendValue)) {
-                textField.setValue(String.format(valueFormat, stringValue, appendValue));
+                textField.setValue(String.format(valueFormat, stringValue, appendValue), originalValue);
             } else if (!StringUtils.isEmpty(appendValue)){
                 // Default fallback if no valueFormat has been specified
-                textField.setValue(stringValue + " - " + appendValue);
+                textField.setValue(stringValue + " - " + appendValue, originalValue);
             } else {
-                textField.setValue(stringValue);
+                textField.setValue(stringValue, originalValue);
             }
         }
     }
 
-    public static void setValue(ControlTextReadField textField, String stringValue, String appendValue, String valueFormat, String defaultValue, Object originalValue) {
-        setValue(textField, stringValue, appendValue, valueFormat, defaultValue);
-        textField.internalValue = originalValue;
+    @BindingAdapter(value = {"value", "appendValue", "valueFormat", "defaultValue"}, requireAll = false)
+    public static void setValue(ControlTextReadField textField, String stringValue, String appendValue, String valueFormat, String defaultValue) {
+       setValue(textField, stringValue, appendValue, valueFormat, defaultValue, stringValue);
     }
 
     @BindingAdapter(value = {"value", "valueFormat", "defaultValue"}, requireAll = false)
