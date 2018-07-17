@@ -21,7 +21,7 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
         return newInstance(EventParticipantReadFragment.class, capsule, activityRootData);
     }
 
-    private void setUpFieldVisibilities(FragmentPersonReadLayoutBinding contentBinding) {
+    private void setUpPersonFragmentFieldVisibilities(FragmentPersonReadLayoutBinding contentBinding) {
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
         PersonEditFragment.initializeCauseOfDeathDetailsFieldVisibility(contentBinding.personCauseOfDeath, contentBinding.personCauseOfDeathDisease, contentBinding.personCauseOfDeathDetails);
     }
@@ -40,7 +40,7 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
 
     @Override
     public void onAfterLayoutBinding(FragmentEventReadPersonInvolvedInfoLayoutBinding contentBinding) {
-        setUpFieldVisibilities(contentBinding.eventParticipantPersonLayout);
+        setUpPersonFragmentFieldVisibilities(contentBinding.eventParticipantPersonLayout);
     }
 
     @Override
