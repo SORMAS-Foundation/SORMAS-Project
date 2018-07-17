@@ -5,13 +5,13 @@ import android.os.Bundle;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.EventParticipant;
-import de.symeda.sormas.app.databinding.FragmentEventReadPersonInvolvedInfoLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentEventParticipantReadLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
-public class EventParticipantReadFragment extends BaseReadFragment<FragmentEventReadPersonInvolvedInfoLayoutBinding, EventParticipant, EventParticipant> {
+public class EventParticipantReadFragment extends BaseReadFragment<FragmentEventParticipantReadLayoutBinding, EventParticipant, EventParticipant> {
 
     private EventParticipant record;
 
@@ -34,13 +34,15 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
     }
 
     @Override
-    public void onLayoutBinding(FragmentEventReadPersonInvolvedInfoLayoutBinding contentBinding) {
+    public void onLayoutBinding(FragmentEventParticipantReadLayoutBinding contentBinding) {
         contentBinding.setData(record);
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentEventReadPersonInvolvedInfoLayoutBinding contentBinding) {
-        setUpPersonFragmentFieldVisibilities(contentBinding.eventParticipantPersonLayout);
+    public void onAfterLayoutBinding(FragmentEventParticipantReadLayoutBinding contentBinding) {
+        if (contentBinding.eventParticipantPersonLayout != null) {
+            setUpPersonFragmentFieldVisibilities(contentBinding.eventParticipantPersonLayout);
+        }
     }
 
     @Override
@@ -55,7 +57,7 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
 
     @Override
     public int getReadLayout() {
-        return R.layout.fragment_event_read_person_involved_info_layout;
+        return R.layout.fragment_event_participant_read_layout;
     }
 
 }

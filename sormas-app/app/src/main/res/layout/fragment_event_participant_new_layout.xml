@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:descendantFocusability="beforeDescendants"
     android:id="@+id/base_layout">
 
@@ -17,36 +16,34 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            >
+            android:padding="@dimen/fragment_padding"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/main_content">
+
+            <requestFocus/>
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/eventParticipant_involvementDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                android:nextFocusForward="@id/eventParticipant_firstName"
                 app:required="true"
                 app:value="@={data.involvementDescription}"
-                app:imeOptions="actionNext" />
+                app:imeOptions="actionNext"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/eventParticipant_firstName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                android:nextFocusForward="@id/eventParticipant_lastName"
                 app:required="true"
                 app:value="@={data.person.firstName}"
-                app:imeOptions="actionNext" />
+                app:imeOptions="actionNext"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/eventParticipant_lastName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
                 app:required="true"
-                app:value="@={data.person.lastName}" />
+                app:value="@={data.person.lastName}"
+                style="@style/ControlSingleColumnStyle" />
 
         </LinearLayout>
 

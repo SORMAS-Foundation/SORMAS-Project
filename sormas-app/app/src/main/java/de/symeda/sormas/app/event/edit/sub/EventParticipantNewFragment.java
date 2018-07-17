@@ -5,14 +5,22 @@ import android.os.Bundle;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.EventParticipant;
-import de.symeda.sormas.app.databinding.FragmentEventNewPersonShortLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentEventParticipantNewLayoutBinding;
 import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 
-public class EventParticipantNewFragment extends BaseEditFragment<FragmentEventNewPersonShortLayoutBinding, EventParticipant, EventParticipant> {
+public class EventParticipantNewFragment extends BaseEditFragment<FragmentEventParticipantNewLayoutBinding, EventParticipant, EventParticipant> {
 
     public static final String TAG = EventParticipantNewFragment.class.getSimpleName();
 
     private EventParticipant record;
+
+    // Instance methods
+
+    public static EventParticipantNewFragment newInstance(EventParticipantFormNavigationCapsule capsule, EventParticipant activityRootData) {
+        return newInstance(EventParticipantNewFragment.class, capsule, activityRootData);
+    }
+
+    // Overrides
 
     @Override
     protected String getSubHeadingTitle() {
@@ -30,13 +38,13 @@ public class EventParticipantNewFragment extends BaseEditFragment<FragmentEventN
     }
 
     @Override
-    public void onLayoutBinding(FragmentEventNewPersonShortLayoutBinding contentBinding) {
+    public void onLayoutBinding(FragmentEventParticipantNewLayoutBinding contentBinding) {
         contentBinding.setData(record);
     }
 
     @Override
     public int getEditLayout() {
-        return R.layout.fragment_event_new_person_short_layout;
+        return R.layout.fragment_event_participant_new_layout;
     }
 
     @Override
@@ -49,7 +57,4 @@ public class EventParticipantNewFragment extends BaseEditFragment<FragmentEventN
         return false;
     }
 
-    public static EventParticipantNewFragment newInstance(EventParticipantFormNavigationCapsule capsule, EventParticipant activityRootData) {
-        return newInstance(EventParticipantNewFragment.class, capsule, activityRootData);
-    }
 }

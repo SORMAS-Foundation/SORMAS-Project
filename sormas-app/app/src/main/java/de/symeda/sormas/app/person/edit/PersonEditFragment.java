@@ -48,82 +48,30 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
     private Person record;
 
-    // Spinner lists
-
-    private List<Item> dayList;
-    private List<Item> monthList;
-    private List<Item> yearList;
-    private List<Item> approximateAgeTypeList;
-    private List<Item> sexList;
-    private List<Item> causeOfDeathList;
-    private List<Item> diseaseList;
-    private List<Item> deathPlaceTypeList;
-    private List<Item> burialConductorList;
-    private List<Item> occupationTypeList;
-    private List<Item> initialOccupationRegions;
-    private List<Item> initialOccupationDistricts;
-    private List<Item> initialOccupationCommunities;
-    private List<Item> initialOccupationFacilities;
-
     // Instance methods
 
     public static PersonEditFragment newInstance(BaseFormNavigationCapsule capsule, AbstractDomainObject activityRootData) {
         return newInstance(PersonEditFragment.class, capsule, activityRootData);
     }
 
-    // Overrides
+    public static void setUpLayoutBinding(final BaseEditFragment fragment, final Person record, final FragmentPersonEditLayoutBinding contentBinding) {
+        setUpControlListeners(record, contentBinding);
 
-    @Override
-    protected String getSubHeadingTitle() {
-        Resources r = getResources();
-        return r.getString(R.string.caption_person_information);
-    }
+        List<Item> dayList = DataUtils.toItems(DateHelper.getDaysInMonth(), true);
+        List<Item> monthList = DataUtils.getMonthItems(true);
+        List<Item> yearList = DataUtils.toItems(DateHelper.getYearsToNow(), true);
+        List<Item> approximateAgeTypeList = DataUtils.getEnumItems(ApproximateAgeType.class, true);
+        List<Item> sexList = DataUtils.getEnumItems(Sex.class, true);
+        List<Item> causeOfDeathList = DataUtils.getEnumItems(CauseOfDeath.class, true);
+        List<Item> diseaseList = DataUtils.getEnumItems(Disease.class, true);
+        List<Item> deathPlaceTypeList = DataUtils.getEnumItems(DeathPlaceType.class, true);
+        List<Item> burialConductorList = DataUtils.getEnumItems(BurialConductor.class, true);
+        List<Item> occupationTypeList = DataUtils.getEnumItems(OccupationType.class, true);
 
-    @Override
-    public Person getPrimaryData() {
-        return record;
-    }
-
-    @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
-        AbstractDomainObject ado = getActivityRootData();
-
-        if (ado instanceof Case) {
-            record = ((Case) ado).getPerson();
-        } else if (ado instanceof Contact) {
-            record = ((Contact) ado).getPerson();
-        } else {
-            throw new UnsupportedOperationException("ActivityRootData of class " + ado.getClass().getSimpleName()
-                    + " does not support PersonReadFragment");
-        }
-
-        dayList = DataUtils.toItems(DateHelper.getDaysInMonth(), true);
-        monthList = DataUtils.getMonthItems(true);
-        yearList = DataUtils.toItems(DateHelper.getYearsToNow(), true);
-        approximateAgeTypeList = DataUtils.getEnumItems(ApproximateAgeType.class, true);
-        sexList = DataUtils.getEnumItems(Sex.class, true);
-        causeOfDeathList = DataUtils.getEnumItems(CauseOfDeath.class, true);
-        diseaseList = DataUtils.getEnumItems(Disease.class, true);
-        deathPlaceTypeList = DataUtils.getEnumItems(DeathPlaceType.class, true);
-        burialConductorList = DataUtils.getEnumItems(BurialConductor.class, true);
-        occupationTypeList = DataUtils.getEnumItems(OccupationType.class, true);
-
-        initialOccupationRegions = InfrastructureHelper.loadRegions();
-        initialOccupationDistricts = InfrastructureHelper.loadDistricts(record.getOccupationRegion());
-        initialOccupationCommunities = InfrastructureHelper.loadCommunities(record.getOccupationDistrict());
-        initialOccupationFacilities = InfrastructureHelper.loadFacilities(record.getOccupationDistrict(), record.getOccupationCommunity());
-    }
-
-    @Override
-    public void onLayoutBinding(FragmentPersonEditLayoutBinding contentBinding) {
-        setUpControlListeners(contentBinding);
-
-        contentBinding.setData(record);
-        contentBinding.setPresentConditionClass(PresentCondition.class);
-    }
-
-    @Override
-    public void onAfterLayoutBinding(final FragmentPersonEditLayoutBinding contentBinding) {
+        List<Item> initialOccupationRegions = InfrastructureHelper.loadRegions();
+        List<Item> initialOccupationDistricts = InfrastructureHelper.loadDistricts(record.getOccupationRegion());
+        List<Item> initialOccupationCommunities = InfrastructureHelper.loadCommunities(record.getOccupationDistrict());
+        List<Item> initialOccupationFacilities = InfrastructureHelper.loadFacilities(record.getOccupationDistrict(), record.getOccupationCommunity());
 
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
         initializeCauseOfDeathDetailsFieldVisibility(contentBinding.personCauseOfDeath, contentBinding.personCauseOfDeathDisease, contentBinding.personCauseOfDeathDetails);
@@ -163,25 +111,20 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         contentBinding.personOccupationType.initializeSpinner(occupationTypeList);
 
         // Initialize ControlDateFields
-        contentBinding.personDeathDate.initializeDateField(getFragmentManager());
-        contentBinding.personBurialDate.initializeDateField(getFragmentManager());
+        contentBinding.personDeathDate.initializeDateField(fragment.getFragmentManager());
+        contentBinding.personBurialDate.initializeDateField(fragment.getFragmentManager());
     }
 
-    @Override
-    public int getEditLayout() {
-        return R.layout.fragment_person_edit_layout;
-    }
-
-    private void setUpControlListeners(final FragmentPersonEditLayoutBinding contentBinding) {
+    public static void setUpControlListeners(final Person record, final FragmentPersonEditLayoutBinding contentBinding) {
         contentBinding.personAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openAddressPopup(contentBinding);
+                openAddressPopup(record, contentBinding);
             }
         });
     }
 
-    private void updateApproximateAgeField(FragmentPersonEditLayoutBinding contentBinding) {
+    private static void updateApproximateAgeField(FragmentPersonEditLayoutBinding contentBinding) {
         Integer birthYear = (Integer) contentBinding.personBirthdateYYYY.getValue();
 
         if (birthYear != null) {
@@ -209,7 +152,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         }
     }
 
-    private void openAddressPopup(final FragmentPersonEditLayoutBinding contentBinding) {
+    private static void openAddressPopup(final Person record, final FragmentPersonEditLayoutBinding contentBinding) {
         final Location location = record.getAddress();
         final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), location);
         locationDialog.show(null);
@@ -301,4 +244,47 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
             occupationDetailsField.setVisibility(GONE);
         }
     }
+
+    // Overrides
+
+    @Override
+    protected String getSubHeadingTitle() {
+        return getResources().getString(R.string.caption_person_information);
+    }
+
+    @Override
+    public Person getPrimaryData() {
+        return record;
+    }
+
+    @Override
+    protected void prepareFragmentData(Bundle savedInstanceState) {
+        AbstractDomainObject ado = getActivityRootData();
+
+        if (ado instanceof Case) {
+            record = ((Case) ado).getPerson();
+        } else if (ado instanceof Contact) {
+            record = ((Contact) ado).getPerson();
+        } else {
+            throw new UnsupportedOperationException("ActivityRootData of class " + ado.getClass().getSimpleName()
+                    + " does not support PersonReadFragment");
+        }
+    }
+
+    @Override
+    public void onLayoutBinding(FragmentPersonEditLayoutBinding contentBinding) {
+        contentBinding.setData(record);
+        contentBinding.setPresentConditionClass(PresentCondition.class);
+    }
+
+    @Override
+    public void onAfterLayoutBinding(final FragmentPersonEditLayoutBinding contentBinding) {
+        PersonEditFragment.setUpLayoutBinding(this, record, contentBinding);
+    }
+
+    @Override
+    public int getEditLayout() {
+        return R.layout.fragment_person_edit_layout;
+    }
+
 }

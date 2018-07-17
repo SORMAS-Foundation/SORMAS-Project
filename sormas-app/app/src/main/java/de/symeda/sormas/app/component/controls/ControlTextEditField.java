@@ -357,7 +357,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         if (view.getFieldValue() != null && !view.getFieldValue().isEmpty()) {
             return Integer.valueOf(view.getFieldValue());
         } else {
-            return 0;
+            return null;
         }
     }
 
