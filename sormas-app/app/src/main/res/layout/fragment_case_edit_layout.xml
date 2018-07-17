@@ -51,6 +51,7 @@
                         android:id="@+id/caseData_epidNumber"
                         app:value="@={data.epidNumber}"
                         app:userEditRight="@{UserRight.CASE_CHANGE_EPID_NUMBER}"
+                        app:softRequired="true"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
@@ -77,6 +78,7 @@
                     <de.symeda.sormas.app.component.controls.ControlDateField
                         android:id="@+id/caseData_outcomeDate"
                         app:value="@={data.outcomeDate}"
+                        app:softRequired="true"
                         app:dependencyParentField="@{caseDataOutcome}"
                         app:dependencyParentValue="@{CaseOutcome.NO_OUTCOME}"
                         app:dependencyParentVisibility="@{false}"
@@ -250,6 +252,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textAlignment="center"
+                    android:layout_marginBottom="@dimen/controlMarginBottom"
                     android:drawableTop="@drawable/smallpox_vaccination_scar"
                     android:text="@string/caption_smallpox_vaccination_scar_img"
                     android:id="@+id/smallpox_vaccination_scar_img"

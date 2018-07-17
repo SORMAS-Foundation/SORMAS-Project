@@ -200,6 +200,7 @@
     <dimen name="slimTextControlMarginBottom">24dp</dimen>
     <dimen name="controlReadTextMarginBottom">24dp</dimen>
     <dimen name="controlMarginBottom">24dp</dimen>
+    <dimen name="controlHalfMarginBottom">12dp</dimen>
     <dimen name="pageBottomControlPanel">70dp</dimen>
     <dimen name="subHeadlineMarginBottom">24dp</dimen>
 

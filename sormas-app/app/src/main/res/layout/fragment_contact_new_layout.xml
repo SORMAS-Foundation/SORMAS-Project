@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:descendantFocusability="beforeDescendants"
     android:id="@+id/base_layout">
 
     <data>
-
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
         <variable name="contactProximityClass" type="Class" />
     </data>
@@ -15,66 +13,54 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
         <LinearLayout
-            android:id="@+id/mainContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
             android:orientation="vertical"
-            >
-
-            <de.symeda.sormas.app.component.controls.ControlDateField
-                android:id="@+id/contact_lastContactDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:value="@={data.lastContactDate}" />
+            android:padding="@dimen/fragment_padding"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/main_content">
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/person_firstName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                android:nextFocusForward="@+id/person_lastName"
                 app:required="true"
                 app:value="@={data.person.firstName}"
-                app:imeOptions="actionNext" />
+                app:imeOptions="actionNext"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/person_lastName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
                 app:required="true"
-                app:value="@={data.person.lastName}" />
+                app:value="@={data.person.lastName}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlDateField
+                android:id="@+id/contact_lastContactDate"
+                app:value="@={data.lastContactDate}"
+                app:softRequired="true"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlRadioGroupField
                 android:id="@+id/contact_contactProximity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
                 app:enumClass="@{contactProximityClass}"
-                app:value="@={data.contactProximity}" />
+                app:value="@={data.contactProximity}"
+                app:softRequired="true"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/contact_relationToCase"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:value="@={data.relationToCase}" />
+                app:value="@={data.relationToCase}"
+                app:softRequired="true"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/contact_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:value="@={data.description}" />
-
+                app:value="@={data.description}"
+                style="@style/ControlSingleColumnStyle" />
 
         </LinearLayout>
-
 
     </ScrollView>
 

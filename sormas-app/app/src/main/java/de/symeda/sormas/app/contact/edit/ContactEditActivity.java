@@ -19,6 +19,7 @@ import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
+import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.visit.edit.VisitNewActivity;
 
@@ -60,7 +61,7 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
                 fragment = ContactEditFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case PERSON_INFO:
-                fragment = ContactEditPersonFragment.newInstance(dataCapsule, activityRootData);
+                fragment = PersonEditFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case VISITS:
                 fragment = ContactEditVisitsListFragment.newInstance(dataCapsule, activityRootData);

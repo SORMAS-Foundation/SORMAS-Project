@@ -2,6 +2,7 @@ package de.symeda.sormas.app.contact.read;
 
 import android.content.Context;
 import android.view.Menu;
+import android.view.View;
 
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -13,6 +14,7 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.contact.edit.ContactEditActivity;
+import de.symeda.sormas.app.person.read.PersonReadFragment;
 import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 
 public class ContactReadActivity extends BaseReadActivity<Contact> {
@@ -47,7 +49,7 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
                 fragment = ContactReadFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case PERSON_INFO:
-                fragment = ContactReadPersonFragment.newInstance(dataCapsule, activityRootData);
+                fragment = PersonReadFragment.newInstance(dataCapsule, activityRootData);
                 break;
             case VISITS:
                 fragment = ContactReadFollowUpVisitListFragment.newInstance(dataCapsule, activityRootData);
@@ -83,5 +85,6 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
     public static void goToActivity(Context fromActivity, ContactFormNavigationCapsule dataCapsule) {
         BaseReadActivity.goToActivity(fromActivity, ContactReadActivity.class, dataCapsule);
     }
+
 }
 

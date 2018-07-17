@@ -21,6 +21,7 @@
     <string name="action_create">Create</string>
     <string name="action_createCaseFromContact">Create a case for this contact person</string>
     <string name="action_create_case">Create Case</string>
+    <string name="action_create_case_from_contact">Create a case for this contact person</string>
     <string name="action_delete">Delete</string>
     <string name="action_dimiss">Dismiss</string>
     <string name="action_dismiss">Dismiss</string>
@@ -57,6 +58,8 @@
     <string name="action_not_executable">Not Executable</string>
     <string name="action_ok">Ok</string>
     <string name="action_open_case">Open Case</string>
+    <string name="action_open_source_case">Open Source Case</string>
+    <string name="action_open_resulting_case">Open Resulting Case</string>
     <string name="action_open_reports">Open Reports</string>
     <string name="action_open_syncLog">Synchronization conflicts</string>
     <string name="action_options">Options</string>

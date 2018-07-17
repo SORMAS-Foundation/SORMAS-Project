@@ -4,8 +4,11 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
 
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.util.Callback;
 
 public class ControlLinkField extends ControlTextReadField {
 
@@ -43,6 +46,11 @@ public class ControlLinkField extends ControlTextReadField {
 
         textView.setPaintFlags(textView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         textView.setImeOptions(getImeOptions());
+    }
+
+    @Override
+    public void setOnClickListener(OnClickListener listener) {
+        textView.setOnClickListener(listener);
     }
 
 }

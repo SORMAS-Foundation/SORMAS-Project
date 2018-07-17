@@ -523,7 +523,7 @@
     <string name="hint_contact_symptoms_comment">Comment</string>
     <string name="hint_contact_symptoms_first_symptom_date">Date of Symptom Onset</string><!--Date of First Symptom-->
     <string name="hint_contact_symptoms_first_symptom">First Symptom</string>
-    <string name="description_source_case">You can open the source case for this contact person by clicking the case ID.</string>
+    <string name="description_source_case">You can open the source case for this contact person by touching the case ID.</string>
 
 
     <!-- Label -->

@@ -259,6 +259,19 @@
         <item name="android:textSize">@dimen/slimControlTextSize</item>
     </style>
 
+    <style name="ControlLinkStyle">
+        <item name="android:height">@dimen/linkButtonHeight</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">@dimen/formActivityLinkButtonTextSize</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
+        <item name="android:textColor">@color/selector_color_form_activity_link_button</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+    </style>
+
     <style name="ControlLabelStyle">
         <item name="android:textColor">@color/controlLabelColor</item>
         <item name="android:textSize">@dimen/controlLabelSize</item>
@@ -326,17 +339,6 @@
         <item name="android:textColor">@color/normalText</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textAllCaps">true</item>
-    </style>
-
-    <style name="ControlLinkStyle">
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:height">@dimen/linkButtonHeight</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">@dimen/formActivityLinkButtonTextSize</item>
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
-        <item name="android:textColor">@color/selector_color_form_activity_link_button</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
     </style>
 
     <style name="PrimaryButtonStyle">
