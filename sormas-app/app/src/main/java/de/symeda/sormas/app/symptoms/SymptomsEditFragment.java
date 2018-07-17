@@ -107,6 +107,8 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
         contentBinding.symptomsTemperatureSource.initializeSpinner(DataUtils.addEmptyItem(tempSourceList));
         contentBinding.symptomsOnsetSymptom.initializeSpinner(DataUtils.toItems(null, true));
 
+        contentBinding.symptomsTemperature.setSelectionOnOpen(37.0f);
+
         initSymptomFields(contentBinding);
         initOnsetSymptomField(contentBinding);
     }

@@ -71,14 +71,105 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         return newInstance(PersonEditFragment.class, capsule, activityRootData);
     }
 
-    private void setUpFieldVisibilities(FragmentPersonEditLayoutBinding contentBinding) {
+    // Overrides
+
+    @Override
+    protected String getSubHeadingTitle() {
+        Resources r = getResources();
+        return r.getString(R.string.caption_person_information);
+    }
+
+    @Override
+    public Person getPrimaryData() {
+        return record;
+    }
+
+    @Override
+    protected void prepareFragmentData(Bundle savedInstanceState) {
+        AbstractDomainObject ado = getActivityRootData();
+
+        if (ado instanceof Case) {
+            record = ((Case) ado).getPerson();
+        } else if (ado instanceof Contact) {
+            record = ((Contact) ado).getPerson();
+        } else {
+            throw new UnsupportedOperationException("ActivityRootData of class " + ado.getClass().getSimpleName()
+                    + " does not support PersonReadFragment");
+        }
+
+        dayList = DataUtils.toItems(DateHelper.getDaysInMonth(), true);
+        monthList = DataUtils.getMonthItems(true);
+        yearList = DataUtils.toItems(DateHelper.getYearsToNow(), true);
+        approximateAgeTypeList = DataUtils.getEnumItems(ApproximateAgeType.class, true);
+        sexList = DataUtils.getEnumItems(Sex.class, true);
+        causeOfDeathList = DataUtils.getEnumItems(CauseOfDeath.class, true);
+        diseaseList = DataUtils.getEnumItems(Disease.class, true);
+        deathPlaceTypeList = DataUtils.getEnumItems(DeathPlaceType.class, true);
+        burialConductorList = DataUtils.getEnumItems(BurialConductor.class, true);
+        occupationTypeList = DataUtils.getEnumItems(OccupationType.class, true);
+
+        initialOccupationRegions = InfrastructureHelper.loadRegions();
+        initialOccupationDistricts = InfrastructureHelper.loadDistricts(record.getOccupationRegion());
+        initialOccupationCommunities = InfrastructureHelper.loadCommunities(record.getOccupationDistrict());
+        initialOccupationFacilities = InfrastructureHelper.loadFacilities(record.getOccupationDistrict(), record.getOccupationCommunity());
+    }
+
+    @Override
+    public void onLayoutBinding(FragmentPersonEditLayoutBinding contentBinding) {
+        setUpControlListeners(contentBinding);
+
+        contentBinding.setData(record);
+        contentBinding.setPresentConditionClass(PresentCondition.class);
+    }
+
+    @Override
+    public void onAfterLayoutBinding(final FragmentPersonEditLayoutBinding contentBinding) {
+
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
         initializeCauseOfDeathDetailsFieldVisibility(contentBinding.personCauseOfDeath, contentBinding.personCauseOfDeathDisease, contentBinding.personCauseOfDeathDetails);
         initializeOccupationDetailsFieldVisibility(contentBinding.personOccupationType, contentBinding.personOccupationDetails);
+
         InfrastructureHelper.initializeFacilityFields(contentBinding.personOccupationRegion, initialOccupationRegions,
                 contentBinding.personOccupationDistrict, initialOccupationDistricts,
                 contentBinding.personOccupationCommunity, initialOccupationCommunities,
                 contentBinding.personOccupationFacility, initialOccupationFacilities);
+
+        // Initialize ControlSpinnerFields
+        contentBinding.personBirthdateDD.initializeSpinner(dayList, new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                updateApproximateAgeField(contentBinding);
+            }
+        });
+        contentBinding.personBirthdateMM.initializeSpinner(monthList, new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                updateApproximateAgeField(contentBinding);
+            }
+        });
+        contentBinding.personBirthdateYYYY.initializeSpinner(yearList, new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                updateApproximateAgeField(contentBinding);
+            }
+        });
+        contentBinding.personBirthdateYYYY.setSelectionOnOpen(2000);
+        contentBinding.personApproximateAgeType.initializeSpinner(approximateAgeTypeList);
+        contentBinding.personSex.initializeSpinner(sexList);
+        contentBinding.personCauseOfDeath.initializeSpinner(causeOfDeathList);
+        contentBinding.personCauseOfDeathDisease.initializeSpinner(diseaseList);
+        contentBinding.personDeathPlaceType.initializeSpinner(deathPlaceTypeList);
+        contentBinding.personBurialConductor.initializeSpinner(burialConductorList);
+        contentBinding.personOccupationType.initializeSpinner(occupationTypeList);
+
+        // Initialize ControlDateFields
+        contentBinding.personDeathDate.initializeDateField(getFragmentManager());
+        contentBinding.personBurialDate.initializeDateField(getFragmentManager());
+    }
+
+    @Override
+    public int getEditLayout() {
+        return R.layout.fragment_person_edit_layout;
     }
 
     private void setUpControlListeners(final FragmentPersonEditLayoutBinding contentBinding) {
@@ -131,110 +222,6 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
             }
         });
     }
-
-    // Overrides
-
-    @Override
-    protected String getSubHeadingTitle() {
-        Resources r = getResources();
-        return r.getString(R.string.caption_person_information);
-    }
-
-    @Override
-    public Person getPrimaryData() {
-        return record;
-    }
-
-    @Override
-    protected void prepareFragmentData(Bundle savedInstanceState) {
-        AbstractDomainObject ado = getActivityRootData();
-
-        if (ado instanceof Case) {
-            record = ((Case) ado).getPerson();
-        } else if (ado instanceof Contact) {
-            record = ((Contact) ado).getPerson();
-        } else {
-            throw new UnsupportedOperationException("ActivityRootData of class " + ado.getClass().getSimpleName()
-                    + " does not support PersonReadFragment");
-        }
-
-        dayList = DataUtils.toItems(DateHelper.getDaysInMonth(), true);
-        monthList = DataUtils.getMonthItems(true);
-        yearList = DataUtils.toItems(DateHelper.getYearsToNow(), true);
-        approximateAgeTypeList = DataUtils.getEnumItems(ApproximateAgeType.class, true);
-        sexList = DataUtils.getEnumItems(Sex.class, true);
-        causeOfDeathList = DataUtils.getEnumItems(CauseOfDeath.class, true);
-        diseaseList = DataUtils.getEnumItems(Disease.class, true);
-        deathPlaceTypeList = DataUtils.getEnumItems(DeathPlaceType.class, true);
-        burialConductorList = DataUtils.getEnumItems(BurialConductor.class, true);
-        occupationTypeList = DataUtils.getEnumItems(OccupationType.class, true);
-
-        initialOccupationRegions = InfrastructureHelper.loadRegions();
-        initialOccupationDistricts = InfrastructureHelper.loadDistricts(record.getOccupationRegion());
-        initialOccupationCommunities = InfrastructureHelper.loadCommunities(record.getOccupationDistrict());
-        initialOccupationFacilities = InfrastructureHelper.loadFacilities(record.getOccupationDistrict(), record.getOccupationCommunity());
-
-    }
-
-    @Override
-    public void onLayoutBinding(FragmentPersonEditLayoutBinding contentBinding) {
-        setUpControlListeners(contentBinding);
-
-        contentBinding.setData(record);
-        contentBinding.setPresentConditionClass(PresentCondition.class);
-    }
-
-    @Override
-    public void onAfterLayoutBinding(final FragmentPersonEditLayoutBinding contentBinding) {
-        setUpFieldVisibilities(contentBinding);
-
-        // Initialize ControlSpinnerFields
-        contentBinding.personBirthdateDD.initializeSpinner(dayList, new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                updateApproximateAgeField(contentBinding);
-            }
-        });
-        contentBinding.personBirthdateMM.initializeSpinner(monthList, new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                updateApproximateAgeField(contentBinding);
-            }
-        });
-        contentBinding.personBirthdateYYYY.initializeSpinner(yearList, new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                updateApproximateAgeField(contentBinding);
-            }
-        });
-        contentBinding.personApproximateAgeType.initializeSpinner(approximateAgeTypeList);
-        contentBinding.personSex.initializeSpinner(sexList);
-        contentBinding.personCauseOfDeath.initializeSpinner(causeOfDeathList);
-        contentBinding.personCauseOfDeathDisease.initializeSpinner(diseaseList);
-        contentBinding.personDeathPlaceType.initializeSpinner(deathPlaceTypeList);
-        contentBinding.personBurialConductor.initializeSpinner(burialConductorList);
-        contentBinding.personOccupationType.initializeSpinner(occupationTypeList);
-
-        // Initialize ControlDateFields
-        contentBinding.personDeathDate.initializeDateField(getFragmentManager());
-        contentBinding.personBurialDate.initializeDateField(getFragmentManager());
-    }
-
-    @Override
-    public int getEditLayout() {
-        return R.layout.fragment_person_edit_layout;
-    }
-
-    @Override
-    public boolean isShowSaveAction() {
-        return true;
-    }
-
-    @Override
-    public boolean isShowAddAction() {
-        return false;
-    }
-
 
     /**
      * Only show the causeOfDeathDetails field when either the selected cause of death is 'Other cause'

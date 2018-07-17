@@ -138,6 +138,10 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         });
 
         contentBinding.epiDataAnimalCondition.initializeSpinner(animalConditionList);
+
+        verifyBurialStatus();
+        verifyGatheringStatus();
+        verifyTravelStatus();
     }
 
     @Override

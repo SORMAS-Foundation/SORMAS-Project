@@ -24,15 +24,6 @@ public class LocationDao extends AbstractAdoDao<Location> {
         return Location.class;
     }
 
-    public void initializeLocation(Location location) {
-        RegionDao regionDao = DatabaseHelper.getRegionDao();
-        if(location.getRegion() != null) location.setRegion(regionDao.queryForId(location.getRegion().getId()));
-        DistrictDao districtDao = DatabaseHelper.getDistrictDao();
-        if(location.getDistrict() != null) location.setDistrict(districtDao.queryForId(location.getDistrict().getId()));
-        CommunityDao communityDao = DatabaseHelper.getCommunityDao();
-        if(location.getCommunity() != null) location.setCommunity(communityDao.queryForId(location.getCommunity().getId()));
-    }
-
     @Override
     public String getTableName() {
         return Location.TABLE_NAME;

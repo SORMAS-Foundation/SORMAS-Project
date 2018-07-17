@@ -128,7 +128,7 @@
                     android:clipToPadding="false"
                     android:padding="@dimen/rowListItemParentElevationVerticalPadding"
                     app:entries="@{previousHospitalizations}"
-                    app:layout="@{@layout/row_hospitalization_read_previous_layout}" />
+                    app:layout="@{@layout/row_case_previous_hospitalization_layout}" />
 
             </LinearLayout>
 

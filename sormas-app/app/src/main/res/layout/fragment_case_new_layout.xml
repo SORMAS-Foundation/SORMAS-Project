@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:descendantFocusability="beforeDescendants"
-    android:id="@+id/base_layout">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/base_layout"
+        android:descendantFocusability="beforeDescendants">
 
     <data>
-
-        <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
+        <import type="de.symeda.sormas.api.Disease" />
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.backend.caze.Case"/>
     </data>
 
 
@@ -19,103 +21,99 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            >
+            android:padding="@dimen/fragment_padding"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/main_content">
+
+            <requestFocus/>
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/caseData_firstName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                style="@style/ControlSingleColumnStyle"
                 app:required="true"
-                app:value="@={data.person.firstName}"
-                app:imeOptions="actionNext" />
+                app:value="@={data.person.firstName}"/>
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/caseData_lastName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                style="@style/ControlSingleColumnStyle"
                 app:required="true"
-                app:value="@={data.person.lastName}" />
+                app:value="@={data.person.lastName}"/>
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/caseData_disease"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                style="@style/ControlSingleColumnStyle"
                 app:required="true"
-                app:value="@={data.disease}" />
+                app:value="@={data.disease}"/>
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/caseData_diseaseDetails"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{caseDataDisease}"
+                app:dependencyParentValue="@{Disease.OTHER}"
                 app:required="true"
-                app:value="@={data.diseaseDetails}" />
+                app:value="@={data.diseaseDetails}"/>
+
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/caseData_plagueType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:required="true"
-                app:value="@={data.plagueType}" />
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{caseDataDisease}"
+                app:dependencyParentValue="@{Disease.PLAGUE}"
+                app:softRequired="true"
+                app:value="@={data.plagueType}"/>
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/caseData_dengueFeverType"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{caseDataDisease}"
+                app:dependencyParentValue="@{Disease.DENGUE}"
+                app:value="@={data.dengueFeverType}"/>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:required="true"
-                app:value="@={data.dengueFeverType}" />
+                android:orientation="horizontal">
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/caseData_region"
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_region"
+                    app:value="@={data.region}"
+                    app:required="true"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_district"
+                    app:value="@={data.district}"
+                    app:required="true"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_community"
+                    app:value="@={data.community}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_healthFacility"
+                    app:value="@={data.healthFacility}"
+                    app:required="true"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/caseData_healthFacilityDetails"
+                app:value="@={data.healthFacilityDetails}"
                 app:required="true"
-                app:value="@={data.region}" />
-
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/caseData_district"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                app:required="true"
-                app:value="@={data.district}" />
-
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/caseData_community"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                app:required="true"
-                app:value="@={data.community}" />
-
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/caseData_healthFacility"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                app:required="true"
-                app:value="@={data.healthFacility}" />
-
-
-
-            <include android:id="@+id/healthFacilityInclude"
-                layout="@layout/blank_layout"
-                />
-
-
-
+                style="@style/ControlSingleColumnStyle" />
 
         </LinearLayout>
-
 
     </ScrollView>
 

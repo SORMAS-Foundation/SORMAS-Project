@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:descendantFocusability="beforeDescendants"
-    android:id="@+id/base_layout">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/base_layout"
+        android:descendantFocusability="beforeDescendants">
 
     <data>
-        <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
-        <variable name="data" type="de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization"/>
-        <variable name="config" type="de.symeda.sormas.app.component.dialog.DialogViewConfig"/>
-        <variable name="yesNoUnknownClass" type="Class" />
+
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization"/>
     </data>
 
 
@@ -17,12 +17,15 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/main_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:orientation="vertical"
-            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-            android:paddingRight="@dimen/rowListItemHorizontalMargin"
-            >
+            android:padding="@dimen/fragment_padding">
+
+            <requestFocus/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -32,134 +35,71 @@
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/casePreviousHospitalization_admissionDate"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:hint="@string/hint_case_hos_admission_date"
-                    app:labelCaption="@string/label_case_hos_admission_date"
-                    app:description="@string/desc_case_hos_admission_date"
-                    app:required="true"
-                    app:slim="true"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
                     app:value="@={data.admissionDate}"
                     />
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/casePreviousHospitalization_dischargeDate"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    android:paddingLeft="@dimen/control_spacing"
-                    app:hint="@string/hint_case_hos_admission_date"
-                    app:labelCaption="@string/label_case_hos_admission_date"
-                    app:description="@string/desc_case_hos_admission_date"
-                    app:required="true"
-                    app:slim="true"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
                     app:value="@={data.dischargeDate}"
                     />
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/casePreviousHospitalization_region"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                app:slim="true"
-                app:hint="@string/hint_case_state"
-                app:description="@string/desc_case_state"
-                app:labelCaption="@string/label_case_state"
-                app:required="true"
+                android:orientation="horizontal">
 
-                app:imeOptions="actionNext"
-                app:value="@={data.region}"
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/casePreviousHospitalization_region"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:required="true"
+                    app:value="@={data.region}"/>
 
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/casePreviousHospitalization_district"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:required="true"
+                    app:value="@={data.district}"/>
 
-                />
+            </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/casePreviousHospitalization_district"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                app:slim="true"
-                app:hint="@string/hint_case_lga"
-                app:description="@string/desc_case_lga"
-                app:labelCaption="@string/label_case_lga"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/casePreviousHospitalization_community"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@={data.community}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/casePreviousHospitalization_healthFacility"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:required="true"
+                    app:value="@={data.healthFacility}"/>
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/casePreviousHospitalization_healthFacilityDetails"
+                style="@style/ControlSingleColumnStyle"
                 app:required="true"
-
-                app:imeOptions="actionNext"
-                app:value="@={data.district}"
-
-
-                />
-
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/casePreviousHospitalization_community"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                app:slim="true"
-                app:hint="@string/hint_case_ward"
-                app:description="@string/desc_case_ward"
-                app:labelCaption="@string/label_case_ward"
-                app:required="true"
-
-                app:imeOptions="actionNext"
-                app:value="@={data.community}"
-
-
-                />
-
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/casePreviousHospitalization_healthFacility"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/slimTextControlMarginBottom"
-                app:slim="true"
-                app:hint="@string/hint_case_health_facility"
-                app:description="@string/desc_case_health_facility"
-                app:labelCaption="@string/label_case_health_facility"
-                app:required="true"
-
-                app:imeOptions="actionNext"
-                app:value="@={data.healthFacility}"
-
-
-                />
+                app:value="@={data.healthFacilityDetails}"/>
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/casePreviousHospitalization_isolated"
-                android:layout_width="@dimen/teboSwitchMinWidth"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_case_hos_isolation"
-                app:labelCaption="@string/label_case_hos_isolation"
-                app:description="@string/desc_case_hos_isolation"
-                app:required="true"
-                app:slim="true"
-                app:enumClass="@{yesNoUnknownClass}"
-                app:defaultValue="@{YesNoUnknown.UNKNOWN}"
+                style="@style/ControlSingleColumnStyle"
                 app:value="@={data.isolated}"
-
-
                 />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/txtPrevHosDesc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:hint="@string/hint_case_hos_prev_desc"
-                app:labelCaption="@string/label_case_hos_prev_desc"
-                app:description="@string/desc_case_hos_prev_desc"
-                app:required="true"
-                app:slim="true"
+                android:id="@+id/casePreviousHospitalization_description"
+                style="@style/ControlSingleColumnStyle"
                 app:value="@={data.description}"
-                app:imeOptions="actionNext"
-
-
                 />
 
 

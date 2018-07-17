@@ -39,6 +39,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
     // Other fields
 
     private Object valueOnBind;
+    private int indexOnOpen;
 
     // Constructors
 
@@ -210,6 +211,9 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
+                    if (getValue() == null) {
+                        input.setSelection(indexOnOpen);
+                    }
                     InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     if (imm != null) {
                         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
@@ -274,6 +278,15 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
         setBackground(drawable);
 
         input.requestLayout();
+    }
+
+    public void setSelectionOnOpen(Object object) {
+        for(int i = 0; i < getAdapter().getCount(); i++) {
+            if(object.equals(((Item)getAdapter().getItem(i)).getValue())) {
+                indexOnOpen = i;
+                break;
+            }
+        }
     }
 
     // Data binding, getters & setters

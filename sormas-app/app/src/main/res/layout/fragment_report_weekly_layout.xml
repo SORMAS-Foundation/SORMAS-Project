@@ -41,7 +41,6 @@
                     android:id="@+id/report_selector"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:slim="true"
                     app:showCaption="false"
                     app:enumClass="@{reportFilterOptionClass}"
                     app:defaultValue="@{ReportFilterOption.THIS_WEEK}"

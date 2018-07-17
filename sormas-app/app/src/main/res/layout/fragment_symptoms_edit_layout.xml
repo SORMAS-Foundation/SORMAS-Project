@@ -322,6 +322,13 @@
                 app:value="@={data.lymphadenopathyInguinal}"/>
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_oralUlcers"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.oralUlcers}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/symptoms_skinRash"
                 style="@style/ControlSingleColumnStyle"
                 app:enumClass="@{symptomStateClass}"
@@ -392,13 +399,6 @@
                 app:value="@={data.runnyNose}"/>
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
-                android:id="@+id/symptoms_oralUlcers"
-                style="@style/ControlSingleColumnStyle"
-                app:enumClass="@{symptomStateClass}"
-                app:slim="true"
-                app:value="@={data.oralUlcers}"/>
-
-            <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/symptoms_shock"
                 style="@style/ControlSingleColumnStyle"
                 app:enumClass="@{symptomStateClass}"
@@ -435,6 +435,13 @@
                 app:value="@={data.unexplainedBleeding}"/>
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_injectionSiteBleeding"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.injectionSiteBleeding}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/symptoms_eyesBleeding"
                 style="@style/ControlSingleColumnStyle"
                 app:enumClass="@{symptomStateClass}"
@@ -447,13 +454,6 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.stomachBleeding}"/>
-
-            <de.symeda.sormas.app.component.controls.ControlSwitchField
-                android:id="@+id/symptoms_injectionSiteBleeding"
-                style="@style/ControlSingleColumnStyle"
-                app:enumClass="@{symptomStateClass}"
-                app:slim="true"
-                app:value="@={data.injectionSiteBleeding}"/>
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/symptoms_bleedingVagina"
@@ -485,13 +485,6 @@
                 app:value="@={data.bloodyBlackStool}"/>
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
-                android:id="@+id/symptoms_noseBleeding"
-                style="@style/ControlSingleColumnStyle"
-                app:enumClass="@{symptomStateClass}"
-                app:slim="true"
-                app:value="@={data.noseBleeding}"/>
-
-            <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/symptoms_skinBruising"
                 style="@style/ControlSingleColumnStyle"
                 app:enumClass="@{symptomStateClass}"
@@ -518,6 +511,13 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.redBloodVomit}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_noseBleeding"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.noseBleeding}"/>
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/symptoms_otherHemorrhagicSymptoms"

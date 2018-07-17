@@ -5,7 +5,6 @@ import android.databinding.ObservableArrayList;
 import android.os.Bundle;
 import android.view.View;
 
-import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -13,6 +12,8 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;
@@ -45,55 +46,40 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
     }
 
     @Override
-    public void onLayoutBinding(FragmentCaseEditHospitalizationLayoutBinding contentBinding) {
+    public void onLayoutBinding(final FragmentCaseEditHospitalizationLayoutBinding contentBinding) {
 
         setupCallback();
 
-        contentBinding.hospitalizationHealthFacility.setVisibility((caze.getHealthFacility() != null) ? View.VISIBLE : View.GONE);
-
-        if (caze.getHealthFacility() != null) {
-            boolean otherHealthFacility = caze.getHealthFacility().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
-            boolean noneHealthFacility = caze.getHealthFacility().getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
-
-            if (otherHealthFacility) {
-                contentBinding.hospitalizationHealthFacilityDetails.setVisibility(View.VISIBLE);
-            } else if (noneHealthFacility) {
-                contentBinding.hospitalizationHealthFacilityDetails.setVisibility(View.VISIBLE);
-            } else {
-                contentBinding.hospitalizationHealthFacilityDetails.setVisibility(View.GONE);
+        contentBinding.caseHospitalizationHospitalizedPreviously.addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                YesNoUnknown value = (YesNoUnknown) field.getValue();
+                contentBinding.ctrlPrevHospitalization.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+                if (value != YesNoUnknown.YES) {
+                    clearPreviousHospitalizations();
+                }
             }
-        } else {
-            contentBinding.hospitalizationHealthFacilityDetails.setVisibility(View.GONE);
-        }
+        });
+
+        contentBinding.caseHospitalizationAdmissionDate.initializeDateField(getFragmentManager());
+        contentBinding.caseHospitalizationDischargeDate.initializeDateField(getFragmentManager());
+        contentBinding.caseHospitalizationIsolationDate.initializeDateField(getFragmentManager());
 
         contentBinding.setData(record);
         contentBinding.setCaze(caze);
-        contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
         contentBinding.setPreviousHospitalizationList(getPreviousHospitalizations());
         contentBinding.setPrevHosItemClickCallback(onPrevHosItemClickListener);
         contentBinding.setAddEntryClickCallback(onAddEntryClickListener);
     }
 
     @Override
-    public void onAfterLayoutBinding(FragmentCaseEditHospitalizationLayoutBinding contentBinding) {
-        contentBinding.hospitalizationAdmissionDate.initializeDateField(getFragmentManager());
-        contentBinding.hospitalizationDischargeDate.initializeDateField(getFragmentManager());
-        contentBinding.hospitalizationIsolationDate.initializeDateField(getFragmentManager());
+    protected void onAfterLayoutBinding(FragmentCaseEditHospitalizationLayoutBinding contentBinding) {
+        verifyPrevHospitalizationStatus();
     }
 
     @Override
     public int getEditLayout() {
         return R.layout.fragment_case_edit_hospitalization_layout;
-    }
-
-    @Override
-    public boolean isShowSaveAction() {
-        return true;
-    }
-
-    @Override
-    public boolean isShowAddAction() {
-        return false;
     }
 
     private void setupCallback() {
@@ -161,13 +147,17 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
         return newPreHospitalizations;
     }
 
+    private void clearPreviousHospitalizations() {
+        if (record == null)
+            return;
+        record.getPreviousHospitalizations().clear();
+        getContentBinding().setPreviousHospitalizationList(getPreviousHospitalizations());
+        verifyPrevHospitalizationStatus();
+    }
+
     private void removePreviousHospitalizations(PreviousHospitalization item) {
         if (record == null)
             return;
-
-        if (record.getPreviousHospitalizations() == null)
-            return;
-
         record.getPreviousHospitalizations().remove(item);
 
         getContentBinding().setPreviousHospitalizationList(getPreviousHospitalizations());
@@ -177,13 +167,6 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
     private void updatePreviousHospitalizations(PreviousHospitalization item) {
         if (record == null)
             return;
-
-        if (record.getPreviousHospitalizations() == null)
-            return;
-
-        //record.getPreviousHospitalizations().remove(item);
-        //record.getPreviousHospitalizations().add(0, (PreviousHospitalization)item);
-
         getContentBinding().setPreviousHospitalizationList(getPreviousHospitalizations());
         verifyPrevHospitalizationStatus();
     }
@@ -191,10 +174,6 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
     private void addPreviousHospitalizations(PreviousHospitalization item) {
         if (record == null)
             return;
-
-        if (record.getPreviousHospitalizations() == null)
-            return;
-
         record.getPreviousHospitalizations().add(0, (PreviousHospitalization) item);
 
         getContentBinding().setPreviousHospitalizationList(getPreviousHospitalizations());
@@ -202,11 +181,11 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
     }
 
     private void verifyPrevHospitalizationStatus() {
-        YesNoUnknown hospitalizedPreviously = record.getAdmittedToHealthFacility();
+        YesNoUnknown hospitalizedPreviously = record.getHospitalizedPreviously();
         if (hospitalizedPreviously == YesNoUnknown.YES && getPreviousHospitalizations().size() <= 0) {
-            getContentBinding().hospitalizationHospitalizedPreviously.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
+            getContentBinding().caseHospitalizationHospitalizedPreviously.enableErrorState((NotificationContext) getActivity(), R.string.validation_soft_add_list_entry);
         } else {
-            getContentBinding().hospitalizationHospitalizedPreviously.disableErrorState();
+            getContentBinding().caseHospitalizationHospitalizedPreviously.disableErrorState();
         }
     }
 

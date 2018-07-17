@@ -27,8 +27,6 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     public static final String TAG = CaseNewActivity.class.getSimpleName();
 
-    private AsyncTask createPersonTask;
-    private AsyncTask selectPersonTask;
     private AsyncTask saveTask;
 
     @Override
@@ -135,12 +133,6 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
         if (saveTask != null && !saveTask.isCancelled())
             saveTask.cancel(true);
-
-        if (createPersonTask != null && !createPersonTask.isCancelled())
-            createPersonTask.cancel(true);
-
-        if (selectPersonTask != null && !selectPersonTask.isCancelled())
-            selectPersonTask.cancel(true);
     }
 
 }

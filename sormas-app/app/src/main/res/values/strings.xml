@@ -63,7 +63,7 @@
     <string name="action_open_reports">Open Reports</string>
     <string name="action_open_syncLog">Synchronization conflicts</string>
     <string name="action_options">Options</string>
-    <string name="action_pick_gps">Pick GPS</string>
+    <string name="action_pick_gps">Pick GPS of address</string>
     <string name="action_redownload_app">Redownload</string>
     <string name="action_redownload_app_later">Redownload later</string>
     <string name="action_reload">Refresh</string>
