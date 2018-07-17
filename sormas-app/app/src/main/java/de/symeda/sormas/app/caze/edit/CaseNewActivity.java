@@ -15,7 +15,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.component.dialog.SelectOrCreatePersonDialog;
+import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;

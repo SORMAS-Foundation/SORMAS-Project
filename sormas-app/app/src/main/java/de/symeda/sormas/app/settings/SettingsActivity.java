@@ -69,17 +69,6 @@ public class SettingsActivity extends BaseLandingActivity {
 
                 return super.onOptionsItemSelected(item);
 
-            // Report problem button
-            case R.id.action_report:
-                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
-                userReportDialog.show(new Callback.IAction<AlertDialog>() {
-                    @Override
-                    public void call(AlertDialog result) {
-
-                    }
-                });
-                return true;
-
             case R.id.action_save:
                 String serverUrl = settingsFragment.getServerUrl();
                 ConfigProvider.setServerRestUrl(serverUrl);

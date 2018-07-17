@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.component.dialog;
+package de.symeda.sormas.app.person;
 
 import android.content.Context;
 import android.databinding.Observable;
@@ -21,6 +21,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.controls.ControlButton;
+import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
+import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;

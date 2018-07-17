@@ -20,7 +20,6 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.component.dialog.UserReportDialog;
 import de.symeda.sormas.app.component.menu.LandingPageMenuControl;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.component.menu.LandingPageMenuParser;
@@ -38,7 +37,6 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.util.ConstantHelper;
-import de.symeda.sormas.app.util.NavigationHelper;
 
 public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomainObject> extends BaseActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, NotificationContext {
 

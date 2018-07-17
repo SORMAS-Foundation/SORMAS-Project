@@ -22,7 +22,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
-import de.symeda.sormas.app.component.dialog.MissingWeeklyReportDialog;
+import de.symeda.sormas.app.report.MissingWeeklyReportDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.IListNavigationCapsule;

@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.dashboard;
 
-import android.os.AsyncTask;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -12,7 +11,6 @@ import de.symeda.sormas.app.BaseDashboardActivity;
 import de.symeda.sormas.app.BaseSummaryFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.dialog.UserReportDialog;
-import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.DashboardNavigationCapsule;
 import de.symeda.sormas.app.dashboard.caze.CaseSummaryFragment;
 import de.symeda.sormas.app.dashboard.contact.ContactSummaryFragment;

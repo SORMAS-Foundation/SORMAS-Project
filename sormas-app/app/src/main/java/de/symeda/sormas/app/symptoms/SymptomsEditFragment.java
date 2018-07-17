@@ -32,6 +32,9 @@ import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.shared.VisitFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditLayoutBinding, Symptoms, Case> {
 
     private Symptoms record;
@@ -96,9 +99,9 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 
         setVisibilityByDisease(SymptomsDto.class, disease, contentBinding.mainContent);
 
-        if (contentBinding.symptomsBulgingFontanelle.getVisibility() == View.VISIBLE
+        if (contentBinding.symptomsBulgingFontanelle.getVisibility() == VISIBLE
                 && !isInfant) {
-            contentBinding.symptomsBulgingFontanelle.setVisibility(View.GONE);
+            contentBinding.symptomsBulgingFontanelle.setVisibility(GONE);
         }
 
         contentBinding.symptomsOnsetDate.initializeDateField(getFragmentManager());
@@ -129,7 +132,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 
                 ControlPropertyField childField = findFieldByPropertyId(childSymptomPropertyId, contentBinding.mainContent);
                 if (symptomField != null && childField != null
-                        && childField.getVisibility() == View.VISIBLE) {
+                        && childField.getVisibility() == VISIBLE) {
                     // only do this for fields that are visible (based on visibility by disease)
                     ControlPropertyField.setDependencyParentField(childField, symptomField, SymptomState.YES, null);
                 }
@@ -157,6 +160,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
                             onsetSymptomField.getAdapter().remove(onsetSymptomField.getAdapter().getItem(position));
                         }
                     }
+                    onsetSymptomField.setEnabled(!onsetSymptomField.getAdapter().isEmpty());
                 }
             });
 
@@ -166,6 +170,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
         }
 
         onsetSymptomField.initializeSpinner(initialSpinnerItems);
+        onsetSymptomField.setEnabled(!onsetSymptomField.getAdapter().isEmpty());
     }
 
     @Override
@@ -198,7 +203,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
             @Override
             public void onClick(View v, Object item) {
                 for (ControlSwitchField symptomField : symptomFields) {
-                    if (symptomField.getVisibility() == View.VISIBLE
+                    if (symptomField.getVisibility() == VISIBLE
                             && symptomField.getValue() == null) {
                         symptomField.setValue(SymptomState.NO);
                     }

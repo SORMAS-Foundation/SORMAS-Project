@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.component.dialog;
+package de.symeda.sormas.app.report;
 
 import android.content.Context;
 import android.databinding.ViewDataBinding;
@@ -12,6 +12,7 @@ import com.google.android.gms.analytics.Tracker;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
+import de.symeda.sormas.app.component.dialog.BaseTeboAlertDialog;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.databinding.DialogMissingWeeklyReportLayoutBinding;
 

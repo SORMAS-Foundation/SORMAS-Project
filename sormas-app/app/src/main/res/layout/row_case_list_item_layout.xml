@@ -152,7 +152,7 @@
 
 
                 <RelativeLayout
-                    android:layout_width="100dp"
+                    android:layout_width="140dp"
                     android:layout_height="match_parent"
                     android:paddingLeft="24dp"
                     >
