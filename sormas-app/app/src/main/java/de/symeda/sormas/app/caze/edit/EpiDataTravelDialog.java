@@ -80,7 +80,7 @@ public class EpiDataTravelDialog extends BaseTeboAlertDialog {
 
     @Override
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding contentBinding, ViewDataBinding buttonPanelBinding) {
-        mContentBinding.epiDataTravelTravelDateTo.initializeDateField(getFragmentManager());
+        mContentBinding.epiDataTravelTravelDateFrom.initializeDateField(getFragmentManager());
         mContentBinding.epiDataTravelTravelDateTo.initializeDateField(getFragmentManager());
 
         mContentBinding.epiDataTravelTravelType.initializeSpinner(travelTypeList);

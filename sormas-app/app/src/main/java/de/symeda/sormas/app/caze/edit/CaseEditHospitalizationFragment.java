@@ -19,6 +19,7 @@ import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHospitalizationLayoutBinding;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCaseEditHospitalizationLayoutBinding, Hospitalization, Case> {
 
@@ -74,6 +75,10 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 
     @Override
     protected void onAfterLayoutBinding(FragmentCaseEditHospitalizationLayoutBinding contentBinding) {
+
+        InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
+                contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
+
         verifyPrevHospitalizationStatus();
     }
 

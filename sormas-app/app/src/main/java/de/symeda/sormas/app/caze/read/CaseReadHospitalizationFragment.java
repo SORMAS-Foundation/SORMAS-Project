@@ -36,7 +36,12 @@ public class CaseReadHospitalizationFragment extends BaseReadFragment<FragmentCa
 
     @Override
     public void onAfterLayoutBinding(FragmentCaseReadHospitalizationLayoutBinding contentBinding) {
-        setUpFieldVisibilities(contentBinding);
+        InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
+
+        // Previous hospitalizations list
+        if (contentBinding.getData().getPreviousHospitalizations().isEmpty()) {
+            contentBinding.listPreviousHospitalizationsLayout.setVisibility(GONE);
+        }
     }
 
     @Override
@@ -64,14 +69,4 @@ public class CaseReadHospitalizationFragment extends BaseReadFragment<FragmentCa
             preHospitalizations.addAll(record.getPreviousHospitalizations());
         return preHospitalizations;
     }
-
-    private void setUpFieldVisibilities(FragmentCaseReadHospitalizationLayoutBinding contentBinding) {
-        InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
-
-        // Previous hospitalizations list
-        if (contentBinding.getData().getPreviousHospitalizations().isEmpty()) {
-            contentBinding.listPreviousHospitalizationsLayout.setVisibility(GONE);
-        }
-    }
-
 }

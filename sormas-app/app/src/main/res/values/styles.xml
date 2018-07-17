@@ -1,7 +1,7 @@
 <resources>
-<!-- Martin
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />-->
+    <!-- Martin
+        <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+        <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />-->
 
     <!-- Toolbar styles -->
     <style name="AppToolbar" parent="Widget.AppCompat.Toolbar">
@@ -13,7 +13,9 @@
         <!-- navigation icon color -->
         <item name="colorControlNormal">@color/blue</item>
         <item name="colorControlHighlight">@color/toolbarActionButtonPressed</item>
-        <item name="subtitleTextAppearance">@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle</item>
+        <item name="subtitleTextAppearance">
+            @style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle
+        </item>
         <!--<item name="titleTextAppearance">@style/SormasActionBarTitleTextStyle</item>-->
         <item name="android:minHeight">@dimen/toolBarMinHeight</item>
     </style>
@@ -21,7 +23,9 @@
     <style name="AppToolbarPopup" parent="Base.ThemeOverlay.AppCompat.ActionBar">
         <item name="android:textColorPrimary">@color/popupMenuListText</item>
         <item name="android:minHeight">@dimen/toolBarPopupMinHeight</item>
-        <item name="android:listPreferredItemHeightSmall">@dimen/toolBarListPreferredItemHeightSmall</item>
+        <item name="android:listPreferredItemHeightSmall">
+            @dimen/toolBarListPreferredItemHeightSmall
+        </item>
         <item name="android:dropDownListViewStyle">@style/PopupMenuListView</item>
     </style>
 
@@ -75,7 +79,6 @@
         <item name="android:gravity">center</item>
     </style>
     <!-- /Toolbar styles -->
-
 
 
     <style name="CheckBoxLabelStyle">
@@ -219,9 +222,11 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:maxLines">5</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:background">@drawable/control_link_edittextview_background_selector</item>
+        <item name="android:background">@drawable/control_link_edittextview_background_selector
+        </item>
         <item name="android:textColor">@color/control_link_edittextview_color_selector</item>
-        <item name="android:textColorHint">@color/control_link_edittextview_hint_color_selector</item>
+        <item name="android:textColorHint">@color/control_link_edittextview_hint_color_selector
+        </item>
         <item name="android:drawablePadding">@dimen/contentHorizontalSpacing</item>
         <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
     </style>
@@ -332,6 +337,8 @@
         <item name="android:textColor">@color/whiteOpaque</item>
         <item name="android:textSize">@dimen/verySmallTextSize</item>
         <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:minWidth">30dp</item>
         <item name="android:padding">2dp</item>
     </style>
 
@@ -350,6 +357,7 @@
         <item name="android:background">@drawable/selector_button_primary</item>
         <item name="android:elevation">@dimen/primaryButtonElevation</item>
     </style>
+
     <style name="SecondaryButtonStyle">
         <item name="android:layout_height">@dimen/secondaryButtonHeight</item>
         <item name="android:gravity">center</item>
@@ -359,6 +367,7 @@
         <item name="android:background">@drawable/selector_button_secondary</item>
         <item name="android:elevation">@dimen/secondaryButtonElevation</item>
     </style>
+
     <style name="SuccessButtonStyle">
         <item name="android:layout_height">@dimen/primaryButtonHeight</item>
         <item name="android:gravity">center</item>
@@ -368,6 +377,7 @@
         <item name="android:background">@drawable/selector_button_success</item>
         <item name="android:elevation">@dimen/primaryButtonElevation</item>
     </style>
+
     <style name="DangerButtonStyle">
         <item name="android:layout_height">@dimen/primaryButtonHeight</item>
         <item name="android:gravity">center</item>
@@ -377,6 +387,7 @@
         <item name="android:background">@drawable/selector_button_danger</item>
         <item name="android:elevation">@dimen/primaryButtonElevation</item>
     </style>
+
     <style name="WarningButtonStyle">
         <item name="android:layout_height">@dimen/primaryButtonHeight</item>
         <item name="android:gravity">center</item>
@@ -396,6 +407,7 @@
         <item name="android:background">@drawable/selector_button_inverse_primary</item>
         <!--<item name="android:elevation">@dimen/inverseButtonElevation</item>-->
     </style>
+
     <style name="WarningInverseButtonStyle">
         <item name="android:layout_height">@dimen/primaryButtonHeight</item>
         <item name="android:gravity">center</item>
@@ -405,6 +417,7 @@
         <item name="android:background">@drawable/selector_button_inverse_warning</item>
         <item name="android:elevation">@dimen/inverseButtonElevation</item>
     </style>
+
     <style name="DangerInverseButtonStyle">
         <item name="android:layout_height">@dimen/primaryButtonHeight</item>
         <item name="android:gravity">center</item>
@@ -414,6 +427,7 @@
         <item name="android:background">@drawable/selector_button_inverse_danger</item>
         <item name="android:elevation">@dimen/inverseButtonElevation</item>
     </style>
+
     <style name="LoginHeading1">
         <item name="android:textColor">@color/normalText</item>
         <item name="android:textSize">@dimen/loginHeadingTextSize</item>
@@ -540,7 +554,8 @@
         <item name="donut_finished_color">@color/circularProgressFinishedDefault</item>
         <item name="donut_unfinished_color">@color/circularProgressUnfinishedDefault</item>
         <item name="donut_finished_stroke_width">@dimen/circularProgressFinishedStrokeWidth</item>
-        <item name="donut_unfinished_stroke_width">@dimen/circularProgressUnfinishedStrokeWidth</item>
+        <item name="donut_unfinished_stroke_width">@dimen/circularProgressUnfinishedStrokeWidth
+        </item>
         <item name="donut_max">@integer/circularProgressMaxValue</item>
         <item name="donut_text_size">@dimen/circularProgressTextSize</item>
     </style>
@@ -625,7 +640,6 @@
     </style>
 
 
-
     <style name="MiniHorizontalDividerStyle">
         <item name="android:layout_width">@dimen/miniHorizontalSeparatorWidth</item>
         <item name="android:layout_height">@dimen/separatorThickness</item>
@@ -640,7 +654,6 @@
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:background">@color/viewSeparator</item>
     </style>
-
 
 
     <!-- Tooltip -->
