@@ -68,8 +68,8 @@ public class FacilityBackendTest {
         District district = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.DISTRICT_UUID);
 
         // There should be exactly one health facility in this district - labs are not included
-        assertThat(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(district, false).size(),  is(1));
+        assertThat(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(district, false, false).size(),  is(1));
 
-        assertThat(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(district, true).size(),  is(3));
+        assertThat(DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(district, true, false).size(),  is(3));
     }
 }
