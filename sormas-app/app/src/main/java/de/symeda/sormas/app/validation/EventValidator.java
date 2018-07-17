@@ -60,27 +60,4 @@ public final class EventValidator {
             field.clearError();
         }*/
     }
-
-    public static void setRequiredHintsForEventData(FragmentEventEditLayoutBinding binding) {
-        for (ControlPropertyEditField field : getEventDataFields(binding)) {
-            field.setRequired(true);
-        }
-    }
-
-    public static void setSoftRequiredHintsForEventData(FragmentEventEditLayoutBinding binding) {
-        for (ControlPropertyEditField field : getSoftRequiredEventDataFields(binding)) {
-            field.setSoftRequired(true);
-            //field.makeFieldSoftRequired();
-        }
-    }
-
-    private static final List<? extends ControlPropertyEditField<?>> getEventDataFields(FragmentEventEditLayoutBinding binding) {
-        return Arrays.asList(binding.eventEventDesc, binding.eventTypeOfPlace, binding.eventDiseaseDetails); //binding.swhAlertType,
-    }
-
-    private static final List<? extends ControlPropertyEditField<?>> getSoftRequiredEventDataFields(FragmentEventEditLayoutBinding binding) {
-        return Arrays.asList(binding.eventEventDate, binding.eventSrcFirstName, binding.eventSrcLastName, binding.eventSrcTelNo, binding.eventTypeOfPlace);
-        //return Arrays.asList(binding.dtpDateOfAlert, binding.txtSourceFirstName, binding.txtSourceLastName, binding.txtSourceTelNumber, binding.spnTypeOfPlace, binding.txtSurveillanceOfficer);
-    }
-
 }

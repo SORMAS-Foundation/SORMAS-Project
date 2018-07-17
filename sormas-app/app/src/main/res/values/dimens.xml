@@ -57,6 +57,7 @@
     <dimen name="dialogVerticalContentSpacing">48dp</dimen>
 
     <dimen name="fragment_padding">24dp</dimen>
+    <dimen name="fragment_padding_negative">-24dp</dimen>
 
 
 
@@ -200,6 +201,7 @@
     <dimen name="slimTextControlMarginBottom">24dp</dimen>
     <dimen name="controlReadTextMarginBottom">24dp</dimen>
     <dimen name="controlMarginBottom">24dp</dimen>
+    <dimen name="controlNegativeMarginTop">-24dp</dimen>
     <dimen name="controlHalfMarginBottom">12dp</dimen>
     <dimen name="pageBottomControlPanel">70dp</dimen>
     <dimen name="subHeadlineMarginBottom">24dp</dimen>

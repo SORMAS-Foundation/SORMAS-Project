@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
     android:descendantFocusability="beforeDescendants"
     android:id="@+id/base_layout">
 
     <data>
         <variable name="data" type="de.symeda.sormas.app.backend.event.EventParticipant"/>
     </data>
-
 
     <ScrollView
         android:layout_width="match_parent"
@@ -16,175 +17,180 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            android:paddingBottom="@dimen/parentLayoutVerticalMargin"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            >
-
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/eventParticipant_involvementDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:value="@{data.involvementDescription}" />
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="vertical"
+                android:paddingTop="@dimen/fragment_padding"
+                android:paddingLeft="@dimen/fragment_padding"
+                android:paddingRight="@dimen/fragment_padding"
+                android:layout_marginBottom="@dimen/fragment_padding_negative"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:id="@+id/main_content">
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/eventParticipant_firstName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:value="@{data.person.firstName}" />
+                    android:id="@+id/eventParticipant_involvementDescription"
+                    app:value="@{data.involvementDescription}"
+                    style="@style/ControlSingleColumnStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/eventParticipant_lastName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:layout_marginStart="@dimen/control_spacing"
-                    app:value="@{data.person.lastName}" />
-
+                <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+            <include
+                android:id="@+id/eventParticipant_person_layout"
+                layout="@layout/fragment_person_read_layout"
+                app:data="@{data.person}"/>
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_nickname"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:value="@{data.person.nickname}" />
+            <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="horizontal">-->
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_sex"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="@dimen/control_spacing"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:value="@{data.person.sex}" />
+            <!--<de.symeda.sormas.app.component.controls.ControlTextReadField-->
+            <!--android:id="@+id/eventParticipant_firstName"-->
+            <!--app:value="@{data.person.firstName}"-->
+            <!--style="@style/ControlFirstOfTwoColumnsStyle" />-->
 
-            </LinearLayout>
+            <!--<de.symeda.sormas.app.component.controls.ControlTextReadField-->
+            <!--android:id="@+id/eventParticipant_lastName"-->
+            <!--app:value="@{data.person.lastName}"-->
+            <!--style="@style/ControlSecondOfTwoColumnsStyle" />-->
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_approximateAge"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:ageWithDateValue="@{data.person}"
-                    app:valueFormat="@string/age_with_birth_date_format" />
+            <!--</LinearLayout>-->
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_mothersMaidenName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:layout_marginStart="@dimen/control_spacing"
-                    app:value="@{data.person.mothersMaidenName}" />
+            <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="horizontal"-->
+            <!--&gt;-->
 
-            </LinearLayout>
+            <!--<de.symeda.sormas.app.component.controls.ControlTextReadField-->
+            <!--android:id="@+id/person_nickname"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
+            <!--app:value="@{data.person.nickname}" />-->
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+            <!--<de.symeda.sormas.app.component.controls.ControlTextReadField-->
+            <!--android:id="@+id/person_sex"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_marginStart="@dimen/control_spacing"-->
+            <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
+            <!--app:value="@{data.person.sex}" />-->
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_phone"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:value="@{data.person.phone}" />
+            <!--</LinearLayout>-->
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_phoneOwner"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:layout_marginStart="@dimen/control_spacing"
-                    app:value="@{data.person.phoneOwner}" />
+            <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="horizontal"-->
+            <!--&gt;-->
 
-            </LinearLayout>
+            <!--<de.symeda.sormas.app.component.controls.ControlTextReadField-->
+            <!--android:id="@+id/person_approximateAge"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
+            <!--app:ageWithDateValue="@{data.person}"-->
+            <!--app:valueFormat="@string/age_with_birth_date_format" />-->
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/separatorThickness"
-                android:background="@color/viewSeparator"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom" />
+            <!--<de.symeda.sormas.app.component.controls.ControlTextReadField-->
+            <!--android:id="@+id/person_mothersMaidenName"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
+            <!--android:layout_marginStart="@dimen/control_spacing"-->
+            <!--app:value="@{data.person.mothersMaidenName}" />-->
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+            <!--</LinearLayout>-->
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_presentCondition"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:value="@{data.person.presentCondition}" />
+            <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="horizontal"-->
+            <!--&gt;-->
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_deathDate"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:layout_marginStart="@dimen/control_spacing"
-                    app:value="@{data.person.deathDate}" />
+            <!--<de.symeda.sormas.app.component.controls.ControlTextReadField-->
+            <!--android:id="@+id/person_phone"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
+            <!--app:value="@{data.person.phone}" />-->
 
-            </LinearLayout>
+            <!--<de.symeda.sormas.app.component.controls.ControlTextReadField-->
+            <!--android:id="@+id/person_phoneOwner"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
+            <!--android:layout_marginStart="@dimen/control_spacing"-->
+            <!--app:value="@{data.person.phoneOwner}" />-->
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/separatorThickness"
-                android:background="@color/viewSeparator"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom" />
+            <!--</LinearLayout>-->
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/heading_sub_event_pinvolv_occupation"
-                style="@style/SubHeadingStyle"
-                />
+            <!--<ImageView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="@dimen/separatorThickness"-->
+            <!--android:background="@color/viewSeparator"-->
+            <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom" />-->
 
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/person_occupationType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                app:value="@{data.person.occupationType}"
-                app:appendValue="@{data.person.occupationDetails}"
-                app:valueFormat="@{@string/two_strings_with_hyphen_format}"  />
+            <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="horizontal"-->
+            <!--&gt;-->
 
+            <!--<de.symeda.sormas.app.component.controls.ControlTextReadField-->
+            <!--android:id="@+id/person_presentCondition"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
+            <!--app:value="@{data.person.presentCondition}" />-->
+
+            <!--<de.symeda.sormas.app.component.controls.ControlTextReadField-->
+            <!--android:id="@+id/person_deathDate"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
+            <!--android:layout_marginStart="@dimen/control_spacing"-->
+            <!--app:value="@{data.person.deathDate}" />-->
+
+            <!--</LinearLayout>-->
+
+            <!--<ImageView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="@dimen/separatorThickness"-->
+            <!--android:background="@color/viewSeparator"-->
+            <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom" />-->
+
+            <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/heading_sub_event_pinvolv_occupation"-->
+            <!--style="@style/SubHeadingStyle"-->
+            <!--/>-->
+
+            <!--<de.symeda.sormas.app.component.controls.ControlTextReadField-->
+            <!--android:id="@+id/person_occupationType"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginBottom="@dimen/controlReadTextMarginBottom"-->
+            <!--app:value="@{data.person.occupationType}"-->
+            <!--app:appendValue="@{data.person.occupationDetails}"-->
+            <!--app:valueFormat="@{@string/two_strings_with_hyphen_format}"  />-->
         </LinearLayout>
 
     </ScrollView>

@@ -12,6 +12,14 @@ public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutB
 
     private Event record;
 
+    // Instance methods
+
+    public static EventReadFragment newInstance(EventFormNavigationCapsule capsule, Event activityRootData) {
+        return newInstance(EventReadFragment.class, capsule, activityRootData);
+    }
+
+    // Overrides
+
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
         record = getActivityRootData();
@@ -37,7 +45,4 @@ public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutB
         return R.layout.fragment_event_read_layout;
     }
 
-    public static EventReadFragment newInstance(EventFormNavigationCapsule capsule, Event activityRootData) {
-        return newInstance(EventReadFragment.class, capsule, activityRootData);
-    }
 }

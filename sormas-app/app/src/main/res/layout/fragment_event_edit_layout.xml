@@ -2,204 +2,194 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
     android:descendantFocusability="beforeDescendants"
     android:id="@+id/base_layout">
 
     <data>
         <import type="de.symeda.sormas.api.event.EventType" />
+        <import type="de.symeda.sormas.api.event.TypeOfPlace" />
+        <import type="de.symeda.sormas.api.Disease" />
+
         <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
         <variable name="eventTypeClass" type="Class" />
-        <variable
-            name="addressLinkCallback"
-            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
-
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-            android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-            >
+            android:padding="@dimen/fragment_padding"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/main_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_uuid"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:shortUuidValue="@{data.uuid}" />
+                    app:shortUuidValue="@{data.uuid}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/event_reportDateTime"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:layout_marginStart="@dimen/control_spacing"
-                    app:value="@{data.reportDateTime}" />
-
+                    android:id="@+id/event_eventStatus"
+                    app:value="@{data.eventStatus}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_reportDateTime"
+                    app:value="@{data.reportDateTime}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_reportingUser"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:value="@{data.reportingUser}" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/event_surveillanceOfficer"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    android:layout_marginStart="@dimen/control_spacing"
-                    app:value="@{data.surveillanceOfficer}" />
+                    app:value="@{data.reportingUser}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
 
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_surveillanceOfficer"
+                app:value="@{data.surveillanceOfficer}"
+                style="@style/ControlSingleColumnStyle" />
 
-            <de.symeda.sormas.app.component.controls.ControlSwitchField
-                android:id="@+id/event_eventType"
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:enumClass="@{eventTypeClass}"
-                app:value="@={data.eventType}" />
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/event_eventDate"
+                    app:value="@={data.eventDate}"
+                    app:softRequired="true"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/event_eventType"
+                    app:enumClass="@{eventTypeClass}"
+                    app:value="@={data.eventType}"
+                    app:required="true"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/event_eventDesc"
+                app:value="@={data.eventDesc}"
+                app:required="true"
+                style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:value="@={data.eventDesc}" />
+                android:orientation="horizontal">
 
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/event_disease"
+                    app:value="@={data.disease}"
+                    app:required="true"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/event_disease"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:value="@={data.disease}" />
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/event_diseaseDetails"
+                    app:value="@={data.diseaseDetails}"
+                    app:required="true"
+                    app:dependencyParentField="@{eventDisease}"
+                    app:dependencyParentValue="@{Disease.OTHER}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/event_diseaseDetails"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:value="@={data.diseaseDetails}" />
+            </LinearLayout>
 
-
-            <de.symeda.sormas.app.component.controls.ControlDateField
-                android:id="@+id/event_eventDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:value="@={data.eventDate}" />
-
-
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/event_typeOfPlace"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:value="@={data.typeOfPlace}" />
-
-
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/event_typeOfPlaceText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:value="@={data.typeOfPlaceText}" />
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <de.symeda.sormas.app.component.controls.ControlTextPopupField
                 android:id="@+id/event_eventLocation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
                 app:iconStart="@drawable/ic_edit_location_black_24dp"
                 app:hint="@string/hint_enter_location"
-                app:locationValue="@={data.eventLocation}" />
+                app:locationValue="@={data.eventLocation}"
+                style="@style/ControlSingleColumnStyle" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/event_typeOfPlace"
+                    app:value="@={data.typeOfPlace}"
+                    app:softRequired="true"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/event_typeOfPlaceText"
+                    app:value="@={data.typeOfPlaceText}"
+                    app:dependencyParentField="@{eventTypeOfPlace}"
+                    app:dependencyParentValue="@{TypeOfPlace.OTHER}"
+                    app:softRequired="true"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/heading_sub_alert_source_of_information"
-                style="@style/SubHeadingStyle"
-                />
+                style="@style/SubHeadingStyle" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/event_srcFirstName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:value="@={data.srcFirstName}"
-                    app:imeOptions="actionNext" />
+                    app:value="@{data.srcFirstName}"
+                    app:softRequired="true"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/event_srcLastName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    android:layout_marginStart="@dimen/control_spacing"
-                    app:value="@={data.srcLastName}"
-                    app:imeOptions="actionNext" />
-
+                    app:value="@{data.srcLastName}"
+                    app:softRequired="true"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
 
-
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/event_srcTelNo"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:value="@={data.srcTelNo}"
-                app:inputType="phone"
-                app:imeOptions="actionNext" />
+                android:orientation="horizontal">
 
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/event_srcTelNo"
+                    app:value="@{data.srcTelNo}"
+                    app:softRequired="true"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/event_srcEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom"
-                app:value="@={data.srcEmail}"
-                app:imeOptions="actionNext"
-                app:inputType="textEmailAddress" />
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/event_srcEmail"
+                    app:value="@{data.srcEmail}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
+            </LinearLayout>
 
         </LinearLayout>
 

@@ -5,6 +5,7 @@ import android.view.View;
 
 import java.util.List;
 
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
@@ -33,6 +34,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
     // Enum lists
 
     private List<Item> relationshipList;
+    private List<Item> contactClassificationList;
 
     // Instance methods
 
@@ -101,6 +103,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         }
 
         relationshipList = DataUtils.getEnumItems(ContactRelation.class, true);
+        contactClassificationList = DataUtils.getEnumItems(ContactClassification.class, true);
     }
 
     @Override
@@ -118,6 +121,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
         // Initialize ControlSpinnerFields
         contentBinding.contactRelationToCase.initializeSpinner(relationshipList);
+        contentBinding.contactContactClassification.initializeSpinner(contactClassificationList);
 
         // Initialize ControlDateFields
         contentBinding.contactLastContactDate.initializeDateField(getFragmentManager());

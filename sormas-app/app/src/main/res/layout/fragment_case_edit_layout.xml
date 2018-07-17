@@ -284,7 +284,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
-                    app:iconStart="@drawable/ic_create_case_black_24dp"
+                    app:iconStart="@drawable/ic_transfer_case_24dp"
                     app:rounded="true"
                     android:text="@string/action_transfer_case" />
 
