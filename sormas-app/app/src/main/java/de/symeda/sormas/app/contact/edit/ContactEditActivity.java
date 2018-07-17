@@ -14,7 +14,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
@@ -50,7 +50,7 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
     }
 
     @Override
-    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, Contact activityRootData) {
+    protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Contact activityRootData) {
         ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(ContactEditActivity.this,
                 getRootEntityUuid(), getPageStatus());
 

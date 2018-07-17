@@ -8,7 +8,7 @@ import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.sample.edit.SampleEditActivity;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.shared.ShipmentStatus;
@@ -26,13 +26,13 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
     }
 
     @Override
-    protected BaseReadFragment buildReadFragment(LandingPageMenuItem menuItem, Sample activityRootData) {
+    protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Sample activityRootData) {
         SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
         return SampleReadFragment.newInstance(dataCapsule, activityRootData);
     }
 
     @Override
-    public LandingPageMenuItem getActiveMenuItem() {
+    public PageMenuItem getActiveMenuItem() {
         return null;
     }
 

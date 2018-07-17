@@ -23,7 +23,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.dialog.SyncLogDialog;
 import de.symeda.sormas.app.component.dialog.TeboProgressDialog;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
@@ -237,12 +237,12 @@ public class SettingsFragment extends BaseLandingFragment {
     }
 
     @Override
-    public boolean onLandingPageMenuClick(AdapterView parent, View view, LandingPageMenuItem menuItem, int position, long id) {
+    public boolean onPageMenuClick(AdapterView parent, View view, PageMenuItem menuItem, int position, long id) {
         return false;
     }
 
     @Override
-    public int onNotificationCountChangingAsync(AdapterView parent, LandingPageMenuItem menuItem, int position) {
+    public int onNotificationCountChangingAsync(AdapterView parent, PageMenuItem menuItem, int position) {
         return 0;
     }
 }

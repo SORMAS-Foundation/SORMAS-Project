@@ -11,7 +11,7 @@ import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
@@ -45,7 +45,7 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
     }
 
     @Override
-    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, EventParticipant activityRootData) {
+    protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, EventParticipant activityRootData) {
         EventParticipantFormNavigationCapsule dataCapsule = new EventParticipantFormNavigationCapsule(
                 EventParticipantEditActivity.this, getRootEntityUuid());
         return EventParticipantEditFragment.newInstance(dataCapsule, activityRootData);

@@ -301,7 +301,7 @@
         <attr name="text" />
     </declare-styleable>
 
-    <declare-styleable name="LandingPageMenuControl">
+    <declare-styleable name="PageMenuControl">
         <attr name="dataResource" />
         <attr name="cellLayout" />
         <attr name="counterBackgroundColor" />

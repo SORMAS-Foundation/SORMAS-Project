@@ -17,16 +17,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.IDashboardNavigationCapsule;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.dashboard.SummaryRegisterItem;
 import de.symeda.sormas.app.util.ConstantHelper;
 
-public abstract class BaseDashboardActivity extends BaseActivity implements NotificationContext {
+public abstract class BaseDashboardActivity extends BaseActivity {
 
-    private View rootView;
     private View fragmentFrame = null;
     private View statusFrame = null;
     private View applicationTitleBar = null;
@@ -44,8 +43,12 @@ public abstract class BaseDashboardActivity extends BaseActivity implements Noti
         return false;
     }
 
+    @Override
+    public boolean openPage(PageMenuItem menuItem) {
+        throw new UnsupportedOperationException();
+    }
+
     protected void onCreateInner(Bundle savedInstanceState) {
-        rootView = findViewById(R.id.base_layout);
         subHeadingListActivityTitle = (TextView) findViewById(R.id.subHeadingActivityTitle);
 
         Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
@@ -116,11 +119,6 @@ public abstract class BaseDashboardActivity extends BaseActivity implements Noti
         }
 
         return "";
-    }
-
-    @Override
-    public View getRootView() {
-        return rootView;
     }
 
     protected abstract List<BaseSummaryFragment> getSummaryFragments();

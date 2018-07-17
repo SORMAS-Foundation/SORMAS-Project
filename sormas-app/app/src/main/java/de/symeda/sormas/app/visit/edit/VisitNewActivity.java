@@ -12,7 +12,7 @@ import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
@@ -56,7 +56,7 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
     }
 
     @Override
-    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, Visit activityRootData) {
+    protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Visit activityRootData) {
         VisitFormNavigationCapsule dataCapsule = new VisitFormNavigationCapsule(
                 VisitNewActivity.this, getRootEntityUuid(), getPageStatus());
         return VisitEditFragment.newInstance(dataCapsule, activityRootData);

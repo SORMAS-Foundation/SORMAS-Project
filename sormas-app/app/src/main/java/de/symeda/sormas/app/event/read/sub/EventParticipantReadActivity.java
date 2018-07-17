@@ -7,7 +7,7 @@ import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.event.edit.sub.EventParticipantEditActivity;
 import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 
@@ -19,7 +19,7 @@ public class EventParticipantReadActivity extends BaseReadActivity<EventParticip
     }
 
     @Override
-    protected BaseReadFragment buildReadFragment(LandingPageMenuItem menuItem, EventParticipant activityRootData) {
+    protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, EventParticipant activityRootData) {
         EventParticipantFormNavigationCapsule dataCapsule = new EventParticipantFormNavigationCapsule(this, getRootEntityUuid());
         return EventParticipantReadFragment.newInstance(dataCapsule, activityRootData);
     }

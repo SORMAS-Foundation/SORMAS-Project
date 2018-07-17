@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.LinearLayout;
@@ -41,25 +40,17 @@ import de.symeda.sormas.app.core.async.ITaskResultCallback;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 
 
-/**
- * Created by Orson on 25/11/2017.
- * <p>
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
+public class PageMenuControl extends LinearLayout {
 
-public class LandingPageMenuControl extends LinearLayout {
-
-    public static final String TAG = LandingPageMenuControl.class.getSimpleName();
+    public static final String TAG = PageMenuControl.class.getSimpleName();
 
     private AsyncTask updateNotificationCountTask;
-    private OnNotificationCountChangingListener mOnNotificationCountChangingListener;
-    private OnLandingPageMenuClickListener mOnLandingPageMenuClickListener;
-    private OnSelectInitialActiveMenuItemListener mOnSelectInitialActiveMenuItemListener;
+    private NotificationCountChangingListener mOnNotificationCountChangingListener;
+    private PageMenuClickListener mOnLandingPageMenuClickListener;
+    private SelectInitialPageMenuItemListener mOnSelectInitialActiveMenuItemListener;
 
-    private BaseAdapter adapter;
-    private List<LandingPageMenuItem> menuList;
+    private PageMenuAdapter adapter;
+    private List<PageMenuItem> menuList;
 
     private int dataResourceId;
     private int cellLayout;
@@ -76,8 +67,7 @@ public class LandingPageMenuControl extends LinearLayout {
     private TextView taskLandingMenuTitle;
     private GridView taskLandingMenuGridView;
 
-    private ILandingPageContext landingPageContext;
-    private IMenuParser parser;
+    private PageMenuParser parser;
     private boolean mVisible;
     private boolean mCollapsible;
     private boolean mIsAnimatingIn;
@@ -103,12 +93,12 @@ public class LandingPageMenuControl extends LinearLayout {
         HIDE;
     }
 
-    public LandingPageMenuControl(Context context) {
+    public PageMenuControl(Context context) {
         super(context);
         initializeViews(context, null);
     }
 
-    public LandingPageMenuControl(Context context, AttributeSet attrs) {
+    public PageMenuControl(Context context, AttributeSet attrs) {
         super(context, attrs);
         initializeViews(context, attrs);
     }
@@ -117,25 +107,25 @@ public class LandingPageMenuControl extends LinearLayout {
         if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(
                     attrs,
-                    R.styleable.LandingPageMenuControl,
+                    R.styleable.PageMenuControl,
                     0, 0);
 
             try {
-                dataResourceId = a.getResourceId(R.styleable.LandingPageMenuControl_dataResource, -1);
-                cellLayout = a.getResourceId(R.styleable.LandingPageMenuControl_cellLayout, 0);
+                dataResourceId = a.getResourceId(R.styleable.PageMenuControl_dataResource, -1);
+                cellLayout = a.getResourceId(R.styleable.PageMenuControl_cellLayout, 0);
 
-                counterBackgroundColor = a.getResourceId(R.styleable.LandingPageMenuControl_counterBackgroundColor, 0);
-                counterBackgroundActiveColor = a.getResourceId(R.styleable.LandingPageMenuControl_counterBackgroundActiveColor, 0);
-                iconColor = a.getResourceId(R.styleable.LandingPageMenuControl_iconColor, 0);
-                iconActiveColor = a.getResourceId(R.styleable.LandingPageMenuControl_iconActiveColor, 0);
+                counterBackgroundColor = a.getResourceId(R.styleable.PageMenuControl_counterBackgroundColor, 0);
+                counterBackgroundActiveColor = a.getResourceId(R.styleable.PageMenuControl_counterBackgroundActiveColor, 0);
+                iconColor = a.getResourceId(R.styleable.PageMenuControl_iconColor, 0);
+                iconActiveColor = a.getResourceId(R.styleable.PageMenuControl_iconActiveColor, 0);
 
-                positionColor = a.getResourceId(R.styleable.LandingPageMenuControl_positionColor, 0);
-                positionActiveColor = a.getResourceId(R.styleable.LandingPageMenuControl_positionActiveColor, 0);
-                titleColor = a.getResourceId(R.styleable.LandingPageMenuControl_titleColor, 0);
-                titleActiveColor = a.getResourceId(R.styleable.LandingPageMenuControl_titleActiveColor, 0);
-                mVisible = a.getBoolean(R.styleable.LandingPageMenuControl_visibility, false);
-                mCollapsible = a.getBoolean(R.styleable.LandingPageMenuControl_collapsible, false);
-                mMarginBottomOffsetResId = a.getResourceId(R.styleable.LandingPageMenuControl_marginBottomOffsetResId, -1);
+                positionColor = a.getResourceId(R.styleable.PageMenuControl_positionColor, 0);
+                positionActiveColor = a.getResourceId(R.styleable.PageMenuControl_positionActiveColor, 0);
+                titleColor = a.getResourceId(R.styleable.PageMenuControl_titleColor, 0);
+                titleActiveColor = a.getResourceId(R.styleable.PageMenuControl_titleActiveColor, 0);
+                mVisible = a.getBoolean(R.styleable.PageMenuControl_visibility, false);
+                mCollapsible = a.getBoolean(R.styleable.PageMenuControl_collapsible, false);
+                mMarginBottomOffsetResId = a.getResourceId(R.styleable.PageMenuControl_marginBottomOffsetResId, -1);
 
 
             } finally {
@@ -181,11 +171,11 @@ public class LandingPageMenuControl extends LinearLayout {
         this.dataResourceId = dataResId;
     }
 
-    public void setMenuParser(IMenuParser parser) {
+    public void setMenuParser(PageMenuParser parser) {
         this.parser = parser;
     }
 
-    public void setAdapter(BaseAdapter adapter) {
+    public void setAdapter(PageMenuAdapter adapter) {
         this.adapter = adapter;
     }
 
@@ -195,13 +185,8 @@ public class LandingPageMenuControl extends LinearLayout {
             return;
         }
 
-        if (adapter instanceof IPageMenuAdapter) {
-            ((IPageMenuAdapter) adapter).initialize(menuList, cellLayout, counterBackgroundColor, counterBackgroundActiveColor,
-                    iconColor, iconActiveColor, positionColor, positionActiveColor, titleColor, titleActiveColor);
-        } else {
-            Log.e(TAG, "Page menu adapters must implement IPageMenuAdapter");
-            return;
-        }
+        adapter.initialize(menuList, cellLayout, counterBackgroundColor, counterBackgroundActiveColor,
+                iconColor, iconActiveColor, positionColor, positionActiveColor, titleColor, titleActiveColor);
 
         taskLandingMenuGridView.setAdapter(adapter);
         taskLandingMenuGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -220,7 +205,7 @@ public class LandingPageMenuControl extends LinearLayout {
         mConfigured = true;
     }
 
-    private List<LandingPageMenuItem> extractAndLoadMenuData() {
+    private List<PageMenuItem> extractAndLoadMenuData() {
         if (dataResourceId <= 0)
             throw new IllegalArgumentException("The dataResourceId file argument is empty.");
 
@@ -229,8 +214,8 @@ public class LandingPageMenuControl extends LinearLayout {
 
         menuList.clear();
 
-        parser = new LandingPageMenuParser(getContext());
-        LandingPageMenu menu = parser.parse(getResources().getXml(dataResourceId));
+        parser = new PageMenuParser(getContext());
+        PageMenu menu = parser.parse(getResources().getXml(dataResourceId));
 
         //Set Title
         setMenuTitle(menu.getTitle());
@@ -252,7 +237,7 @@ public class LandingPageMenuControl extends LinearLayout {
         return menuList;
     }
 
-    private void updateNotificationCount(final List<LandingPageMenuItem> inputMenuList, final Callback.IAction<BoolResult> callback) {
+    private void updateNotificationCount(final List<PageMenuItem> inputMenuList, final Callback.IAction<BoolResult> callback) {
         try {
             DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
                 @Override
@@ -263,10 +248,10 @@ public class LandingPageMenuControl extends LinearLayout {
                 @Override
                 public void doInBackground(TaskResultHolder resultHolder) {
                     int position = 0;
-                    for (final LandingPageMenuItem entry : inputMenuList) {
+                    for (final PageMenuItem entry : inputMenuList) {
                         int result = performNotificationCountChange(entry, position);
                         entry.setNotificationCount(result);
-                        //resultHolder.<LandingPageMenuItem>forEnumerable().add(entry);
+                        //resultHolder.<PageMenuItem>forEnumerable().add(entry);
 
                         position = position + 1;
                     }
@@ -283,7 +268,7 @@ public class LandingPageMenuControl extends LinearLayout {
 
                     callback.call(resultStatus);
 
-                    /*ITaskResultHolderEnumerableIterator<LandingPageMenuItem> enumerableIterator = resultHolder.forEnumerable().iterator();
+                    /*ITaskResultHolderEnumerableIterator<PageMenuItem> enumerableIterator = resultHolder.forEnumerable().iterator();
 
                     if (enumerableIterator.hasNext()) {
                         callback.call(enumerableIterator.next());
@@ -295,12 +280,12 @@ public class LandingPageMenuControl extends LinearLayout {
         }
     }
 
-    public void setOnNotificationCountChangingListener(@Nullable OnNotificationCountChangingListener listener) {
+    public void setOnNotificationCountChangingListener(@Nullable NotificationCountChangingListener listener) {
         mOnNotificationCountChangingListener = listener;
     }
 
     @Nullable
-    public final OnNotificationCountChangingListener getOnNotificationCountChangingListener() {
+    public final NotificationCountChangingListener getOnNotificationCountChangingListener() {
         return mOnNotificationCountChangingListener;
     }
 
@@ -317,7 +302,7 @@ public class LandingPageMenuControl extends LinearLayout {
         });
     }
 
-    public int performNotificationCountChange(LandingPageMenuItem menuItem, int position) {
+    public int performNotificationCountChange(PageMenuItem menuItem, int position) {
         int result = 0;
         if (mOnNotificationCountChangingListener != null) {
             result = mOnNotificationCountChangingListener.onNotificationCountChangingAsync(taskLandingMenuGridView, menuItem, position);
@@ -326,29 +311,29 @@ public class LandingPageMenuControl extends LinearLayout {
         return result;
     }
 
-    public void setOnLandingPageMenuClickListener(@Nullable OnLandingPageMenuClickListener listener) {
+    public void setOnLandingPageMenuClickListener(@Nullable PageMenuClickListener listener) {
         mOnLandingPageMenuClickListener = listener;
     }
 
     @Nullable
-    public final OnLandingPageMenuClickListener getOnLandingPageMenuClickListener() {
+    public final PageMenuClickListener getOnLandingPageMenuClickListener() {
         return mOnLandingPageMenuClickListener;
     }
 
-    public void setOnSelectInitialActiveMenuItem(@Nullable OnSelectInitialActiveMenuItemListener listener) {
+    public void setOnSelectInitialActiveMenuItem(@Nullable SelectInitialPageMenuItemListener listener) {
         mOnSelectInitialActiveMenuItemListener = listener;
     }
 
     @Nullable
-    public final OnSelectInitialActiveMenuItemListener getOnSelectInitialActiveMenuItemListener() {
+    public final SelectInitialPageMenuItemListener getOnSelectInitialActiveMenuItemListener() {
         return mOnSelectInitialActiveMenuItemListener;
     }
 
     public boolean selectInitialActiveMenuItem() {
         boolean returnVal = false;
-        LandingPageMenuItem result = null;
+        PageMenuItem result = null;
         if (mOnSelectInitialActiveMenuItemListener != null) {
-            result = mOnSelectInitialActiveMenuItemListener.onSelectInitialActiveMenuItem(menuList);
+            result = mOnSelectInitialActiveMenuItemListener.onSelectInitialPageMenuItem(menuList);
 
             if (result != null) {
                 result.setActive(true);
@@ -359,10 +344,10 @@ public class LandingPageMenuControl extends LinearLayout {
         return returnVal;
     }
 
-    public boolean performLandingPageMenuItemClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws InstantiationException, IllegalAccessException {
+    public boolean performLandingPageMenuItemClick(AdapterView<?> parent, View view, PageMenuItem menuItem, int position, long id) throws InstantiationException, IllegalAccessException {
         boolean result = false;
         if (mOnLandingPageMenuClickListener != null) {
-            result = mOnLandingPageMenuClickListener.onLandingPageMenuClick(parent, view, menuItem, position, id); //IMPORTANT
+            result = mOnLandingPageMenuClickListener.onPageMenuClick(parent, view, menuItem, position, id); //IMPORTANT
 
             if (result) {
                 markActiveMenuItem(menuItem);
@@ -373,8 +358,8 @@ public class LandingPageMenuControl extends LinearLayout {
     }
 
 
-    public void markActiveMenuItem(LandingPageMenuItem menuItem) {
-        for (LandingPageMenuItem m : menuList) {
+    public void markActiveMenuItem(PageMenuItem menuItem) {
+        for (PageMenuItem m : menuList) {
             m.setActive(false);
         }
 
@@ -387,7 +372,7 @@ public class LandingPageMenuControl extends LinearLayout {
         requestLayout();
     }
 
-    private void onMenuItemActive(LandingPageMenuItem menuItem) {
+    private void onMenuItemActive(PageMenuItem menuItem) {
 
     }
 
@@ -405,10 +390,6 @@ public class LandingPageMenuControl extends LinearLayout {
 
     public String getMenuTitle() {
         return taskLandingMenuTitle.getText().toString();
-    }
-
-    public ILandingPageContext getLandingPageContext() {
-        return this.landingPageContext;
     }
 
     @Override
@@ -531,12 +512,12 @@ public class LandingPageMenuControl extends LinearLayout {
             this.animate().y(this.mOpenPositionY).setInterpolator(new AccelerateInterpolator()).setListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
-                    setY(LandingPageMenuControl.this.mClosePositionY);
+                    setY(PageMenuControl.this.mClosePositionY);
                 }
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    setY(LandingPageMenuControl.this.mOpenPositionY);
+                    setY(PageMenuControl.this.mOpenPositionY);
                     mLastAnimation = ActionType.SHOW;
                 }
 
@@ -588,7 +569,7 @@ public class LandingPageMenuControl extends LinearLayout {
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    setY(LandingPageMenuControl.this.mClosePositionY);
+                    setY(PageMenuControl.this.mClosePositionY);
                     mLastAnimation = ActionType.HIDE;
                 }
 

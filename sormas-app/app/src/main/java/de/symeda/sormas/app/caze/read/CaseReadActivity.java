@@ -12,7 +12,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.caze.edit.CaseEditActivity;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.person.read.PersonReadFragment;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 import de.symeda.sormas.app.symptoms.SymptomsReadFragment;
@@ -37,7 +37,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
     }
 
     @Override
-    protected BaseReadFragment buildReadFragment(LandingPageMenuItem menuItem, Case activityRootData) {
+    protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Case activityRootData) {
         CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
 
         CaseSection section = CaseSection.fromMenuKey(menuItem.getKey());

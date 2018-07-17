@@ -4,27 +4,19 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 
-/**
- * Created by Orson on 25/11/2017.
- *
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
-public class LandingPageMenuItem implements Parcelable {
+public class PageMenuItem implements Parcelable {
     private int key;
     private int notificationCount;
-    private LandingPageMenuItemIcon icon;
+    private PageMenuItemIcon icon;
     private String title;
     private String description;
     private boolean active;
 
-    public LandingPageMenuItem(Parcel in ) {
+    public PageMenuItem(Parcel in ) {
         readFromParcel( in );
     }
 
-    public LandingPageMenuItem(int key, String title, String description, LandingPageMenuItemIcon icon, int notificationCount, boolean active) {
+    public PageMenuItem(int key, String title, String description, PageMenuItemIcon icon, int notificationCount, boolean active) {
         this.key = key;
         this.notificationCount = notificationCount;
         this.icon = icon;
@@ -33,7 +25,7 @@ public class LandingPageMenuItem implements Parcelable {
         this.active = active;
     }
 
-    public LandingPageMenuItem(int key, String title, String description, LandingPageMenuItemIcon icon, boolean active) {
+    public PageMenuItem(int key, String title, String description, PageMenuItemIcon icon, boolean active) {
         this.key = key;
         this.notificationCount = 0;
         this.icon = icon;
@@ -46,7 +38,7 @@ public class LandingPageMenuItem implements Parcelable {
         this.notificationCount = notificationCount;
     }
 
-    public void setIcon(LandingPageMenuItemIcon icon) {
+    public void setIcon(PageMenuItemIcon icon) {
         this.icon = icon;
     }
 
@@ -62,7 +54,7 @@ public class LandingPageMenuItem implements Parcelable {
         return this.notificationCount;
     }
 
-    public LandingPageMenuItemIcon getIcon() {
+    public PageMenuItemIcon getIcon() {
         return this.icon;
     }
 
@@ -93,12 +85,12 @@ public class LandingPageMenuItem implements Parcelable {
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         @Override
         public Object createFromParcel(Parcel source) {
-            return new LandingPageMenuItem(source);
+            return new PageMenuItem(source);
         }
 
         @Override
         public Object[] newArray(int size) {
-            return new LandingPageMenuItem[0];
+            return new PageMenuItem[0];
         }
     };
 
@@ -122,7 +114,7 @@ public class LandingPageMenuItem implements Parcelable {
 
         this.key = in.readInt();
         this.notificationCount = in.readInt();
-        this.icon = in.readParcelable(LandingPageMenuItemIcon.class.getClassLoader());
+        this.icon = in.readParcelable(PageMenuItemIcon.class.getClassLoader());
         this.title = in.readString();
         this.description = in.readString();
         this.active = in.readInt() == 1;

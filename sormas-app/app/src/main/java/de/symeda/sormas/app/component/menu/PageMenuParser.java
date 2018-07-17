@@ -8,17 +8,9 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 
-/**
- * Created by Orson on 25/11/2017.
- *
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
+public class PageMenuParser {
 
-public class LandingPageMenuParser implements IMenuParser {
-
-    private static final String TAG = LandingPageMenuParser.class.getSimpleName();
+    private static final String TAG = PageMenuParser.class.getSimpleName();
 
     private static final String NS = null;
     private Context context;
@@ -34,15 +26,14 @@ public class LandingPageMenuParser implements IMenuParser {
     private final String TAG_ATTR_NAME_ICON_SKIP = "skip";
     private final String TAG_ATTR_NAME_ICON_VIEW_TYPE = "def-viewType";
 
-    private LandingPageMenu mMenus;
+    private PageMenu mMenus;
 
-    public LandingPageMenuParser(Context context) {
+    public PageMenuParser(Context context) {
         this.context = context;
     }
 
 
-    @Override
-    public LandingPageMenu parse(XmlResourceParser parser) {
+    public PageMenu parse(XmlResourceParser parser) {
         try {
             while(parser.next() != XmlResourceParser.END_DOCUMENT) {
                 if (parser.getEventType() == XmlResourceParser.START_TAG) {
@@ -64,13 +55,13 @@ public class LandingPageMenuParser implements IMenuParser {
         return mMenus;
     }
 
-    private LandingPageMenu readMenusTag(XmlResourceParser parser) throws IOException, XmlPullParserException {
+    private PageMenu readMenusTag(XmlResourceParser parser) throws IOException, XmlPullParserException {
 
         parser.require(XmlResourceParser.START_TAG, NS, TAG_NAME_MENUS);
         String menuName = parser.getAttributeValue(NS, TAG_ATTR_MENUS_NAME);
         String menuTitle = parser.getAttributeValue(NS, TAG_ATTR_MENUS_TITLE);
 
-        mMenus = new LandingPageMenu(menuName, menuTitle);
+        mMenus = new PageMenu(menuName, menuTitle);
 
         while (parser.next() != XmlResourceParser.END_TAG) {
             if (parser.getEventType() != XmlResourceParser.START_TAG) {
@@ -88,12 +79,12 @@ public class LandingPageMenuParser implements IMenuParser {
         return mMenus;
     }
 
-    private LandingPageMenuItem readMenuTag(XmlResourceParser parser) throws XmlPullParserException, IOException {
+    private PageMenuItem readMenuTag(XmlResourceParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlResourceParser.START_TAG, NS, TAG_NAME_MENU_ENTRY);
         int key = -1;
         String title = null;
         String description = null;
-        LandingPageMenuItemIcon icon = null;
+        PageMenuItemIcon icon = null;
 
         while (parser.next() != XmlResourceParser.END_TAG) {
             if (parser.getEventType() != XmlResourceParser.START_TAG) {
@@ -114,7 +105,7 @@ public class LandingPageMenuParser implements IMenuParser {
             }
         }
 
-        return new LandingPageMenuItem(key, title, description, icon, false);
+        return new PageMenuItem(key, title, description, icon, false);
     }
 
     private int readKeyTag(XmlResourceParser parser) throws IOException, XmlPullParserException {
@@ -138,10 +129,10 @@ public class LandingPageMenuParser implements IMenuParser {
         return result;
     }
 
-    private LandingPageMenuItemIcon readIconTag(XmlResourceParser parser) throws IOException, XmlPullParserException {
+    private PageMenuItemIcon readIconTag(XmlResourceParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlResourceParser.START_TAG, NS, TAG_NAME_ICON);
 
-        LandingPageMenuItemIcon itemIcon = null;
+        PageMenuItemIcon itemIcon = null;
         boolean skip = parser.getAttributeBooleanValue(NS, TAG_ATTR_NAME_ICON_SKIP, false);
         String defType = parser.getAttributeValue(NS, TAG_ATTR_NAME_ICON_VIEW_TYPE);
         String iconName = parser.nextText();
@@ -152,7 +143,7 @@ public class LandingPageMenuParser implements IMenuParser {
             return itemIcon;
 
         parser.require(XmlResourceParser.END_TAG, NS, TAG_NAME_ICON);
-        itemIcon = new LandingPageMenuItemIcon(iconName, defType);
+        itemIcon = new PageMenuItemIcon(iconName, defType);
 
         return itemIcon;
     }

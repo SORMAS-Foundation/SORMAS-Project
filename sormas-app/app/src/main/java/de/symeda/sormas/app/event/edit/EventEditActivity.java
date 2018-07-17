@@ -14,7 +14,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
@@ -49,7 +49,7 @@ public class EventEditActivity extends BaseEditActivity<Event> {
     }
 
     @Override
-    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, Event activityRootData) {
+    protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Event activityRootData) {
         EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(EventEditActivity.this,
                 getRootEntityUuid(), getPageStatus());
 

@@ -2,34 +2,21 @@ package de.symeda.sormas.app;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.AdapterView;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.component.menu.LandingPageMenuControl;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.component.menu.LandingPageMenuParser;
-import de.symeda.sormas.app.component.menu.OnLandingPageMenuClickListener;
-import de.symeda.sormas.app.component.menu.OnSelectInitialActiveMenuItemListener;
-import de.symeda.sormas.app.component.menu.PageMenuNavAdapter;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.INavigationCapsule;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.ITaskResultHolderIterator;
@@ -38,17 +25,11 @@ import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.util.ConstantHelper;
 
-public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomainObject> extends BaseActivity implements IUpdateSubHeadingTitle, OnLandingPageMenuClickListener, OnSelectInitialActiveMenuItemListener, NotificationContext {
+public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomainObject> extends BaseActivity implements IUpdateSubHeadingTitle {
 
     private AsyncTask getRootEntityTask;
-    private View rootView;
     private ActivityRootEntity storedRootEntity = null;
     private TextView subHeadingListActivityTitle;
-
-    private LandingPageMenuControl pageMenu = null;
-    private List<LandingPageMenuItem> menuList;
-    private LandingPageMenuItem activeMenu = null;
-    private int activeMenuKey = 0;
 
     private String rootEntityUuid;
 
@@ -58,7 +39,6 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        saveActiveMenuState(outState, activeMenuKey);
         saveRootEntityUuidState(outState, rootEntityUuid);
     }
 
@@ -68,56 +48,12 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     }
 
     protected void onCreateInner(Bundle savedInstanceState) {
-        rootView = findViewById(R.id.base_layout);
-        subHeadingListActivityTitle = (TextView) findViewById(R.id.subHeadingActivityTitle);
-        menuList = new ArrayList<LandingPageMenuItem>();
-        pageMenu = (LandingPageMenuControl) findViewById(R.id.landingPageMenuControl);
 
-        ensureFabHiddenOnSoftKeyboardShown(pageMenu);
+        subHeadingListActivityTitle = (TextView) findViewById(R.id.subHeadingActivityTitle);
 
         Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
 
-        activeMenuKey = getActiveMenuArg(arguments);
         rootEntityUuid = getRecordUuidArg(arguments);
-
-        if (pageMenu != null)
-            pageMenu.hide();
-
-        if (pageMenu != null) {
-            Context menuControlContext = this.pageMenu.getContext();
-
-            pageMenu.setOnLandingPageMenuClickListener(this);
-            pageMenu.setOnSelectInitialActiveMenuItem(this);
-
-            pageMenu.setAdapter(new PageMenuNavAdapter(menuControlContext));
-            pageMenu.setMenuParser(new LandingPageMenuParser(menuControlContext));
-            pageMenu.setMenuData(getPageMenuData());
-        }
-    }
-
-    private void ensureFabHiddenOnSoftKeyboardShown(final LandingPageMenuControl landingPageMenuControl) {
-        final View _rootView = getRootView();
-
-        if (_rootView == null)
-            return;
-
-        _rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                Rect r = new Rect();
-                _rootView.getWindowVisibleDisplayFrame(r);
-                int heightDiff = _rootView.getRootView().getHeight() - (r.bottom - r.top);
-
-                if (heightDiff > 100) {
-
-                    if (landingPageMenuControl != null) {
-                        landingPageMenuControl.hideAll();
-                    }
-                } else {
-                    landingPageMenuControl.showFab();
-                }
-            }
-        });
     }
 
     protected void requestRootData(final Callback.IAction<ActivityRootEntity> callback) {
@@ -185,7 +121,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     @Override
     public void updateSubHeadingTitle() {
         String subHeadingTitle = "";
-        LandingPageMenuItem activeMenu = getActiveMenuItem();
+        PageMenuItem activeMenu = getActiveMenuItem();
 
         if (activeFragment != null) {
             subHeadingTitle = (activeMenu == null) ? activeFragment.getSubHeadingTitle() : activeMenu.getTitle();
@@ -205,26 +141,8 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     }
 
     @Override
-    public LandingPageMenuItem onSelectInitialActiveMenuItem(List<LandingPageMenuItem> menuList) {
-        if (menuList == null || menuList.size() <= 0)
-            return null;
-
-        this.menuList = menuList;
-
-        activeMenu = menuList.get(0);
-
-        for (LandingPageMenuItem m : menuList) {
-            if (m.getKey() == activeMenuKey) {
-                activeMenu = m;
-            }
-        }
-
-        return activeMenu;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.action_edit:
                 goToEditView();
                 return true;
@@ -352,53 +270,26 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         fromActivity.startActivity(intent);
     }
 
-    public LandingPageMenuItem getActiveMenuItem() {
-        return activeMenu;
-    }
-
-    @Override
-    public View getRootView() {
-        return rootView;
-    }
-
-    public boolean showPageMenu() {
-        return getPageMenuData() > 0;
-    }
-
-    public int getPageMenuData() {
-        return -1;
-    }
-
-    public int getActiveMenuKey() {
-        return activeMenuKey;
-    }
-
     protected String getRootEntityUuid() {
         return rootEntityUuid;
     }
 
-    protected void setActiveMenu(LandingPageMenuItem menuItem) {
-        activeMenu = menuItem;
-        activeMenuKey = menuItem.getKey();
-    }
-
-    public boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
+    @Override
+    public boolean openPage(PageMenuItem menuItem) {
         BaseReadFragment newActiveFragment = buildReadFragment(menuItem, storedRootEntity);
 
         if (newActiveFragment == null)
             return false;
 
-        setActiveMenu(menuItem);
+        setPageMenuItem(menuItem);
         replaceFragment(newActiveFragment);
-
-        processActionbarMenu();
 
         return true;
     }
 
     public abstract void goToEditView();
 
-    protected abstract BaseReadFragment buildReadFragment(LandingPageMenuItem menuItem, ActivityRootEntity activityRootData);
+    protected abstract BaseReadFragment buildReadFragment(PageMenuItem menuItem, ActivityRootEntity activityRootData);
 
     protected String getRecordUuidArg(Bundle arguments) {
         String result = null;
@@ -420,15 +311,6 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         }
 
         return e;
-    }
-
-    protected int getActiveMenuArg(Bundle arguments) {
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.KEY_ACTIVE_MENU)) {
-                return arguments.getInt(ConstantHelper.KEY_ACTIVE_MENU);
-            }
-        }
-        return 0;
     }
 
     protected <E extends Enum<E>> void saveFilterStatusState(Bundle outState, E status) {
@@ -455,10 +337,5 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
 
         if (getRootEntityTask != null && !getRootEntityTask.isCancelled())
             getRootEntityTask.cancel(true);
-
-        if (pageMenu != null) {
-            pageMenu.onDestroy();
-        }
     }
-
 }

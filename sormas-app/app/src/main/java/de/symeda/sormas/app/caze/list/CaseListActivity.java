@@ -24,7 +24,7 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.report.MissingWeeklyReportDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.ListNavigationCapsule;
 import de.symeda.sormas.app.core.SearchBy;
@@ -73,14 +73,14 @@ public class CaseListActivity extends BaseListActivity {
     }
 
     @Override
-    public int onNotificationCountChangingAsync(AdapterView parent, LandingPageMenuItem menuItem, int position) {
+    public int onNotificationCountChangingAsync(AdapterView parent, PageMenuItem menuItem, int position) {
         //TODO: Call database and retrieve notification count
         return new Random().nextInt(100);
         //return (int)(new Random(DateTime.now().getMillis() * 1000).nextInt()/10000000);
     }
 
     @Override
-    protected BaseListFragment getListFragment(LandingPageMenuItem menuItem) {
+    protected BaseListFragment getListFragment(PageMenuItem menuItem) {
         InvestigationStatus status = statusFilters[menuItem.getKey()];
 
         if (status == null)

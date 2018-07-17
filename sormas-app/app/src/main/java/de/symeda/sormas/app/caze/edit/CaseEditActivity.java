@@ -15,7 +15,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.caze.CaseSection;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.contact.edit.ContactNewActivity;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
@@ -59,7 +59,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     }
 
     @Override
-    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, Case activityRootData) {
+    protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Case activityRootData) {
         CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
 
         CaseSection section = CaseSection.fromMenuKey(menuItem.getKey());

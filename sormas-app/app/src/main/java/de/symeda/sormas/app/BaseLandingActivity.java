@@ -5,15 +5,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
-import de.symeda.sormas.app.core.NotificationContext;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 
-public abstract class BaseLandingActivity extends BaseActivity implements NotificationContext {
+public abstract class BaseLandingActivity extends BaseActivity {
 
     public static final String TAG = BaseLandingActivity.class.getSimpleName();
 
-    private View rootView;
     private CharSequence mainViewTitle;
 
     private BaseLandingFragment activeFragment;
@@ -35,16 +33,19 @@ public abstract class BaseLandingActivity extends BaseActivity implements Notifi
         return true;
     }
 
+    @Override
+    public boolean openPage(PageMenuItem menuItem) {
+        throw new UnsupportedOperationException();
+    }
+
     protected void onCreateInner(Bundle savedInstanceState) {
-        rootView = findViewById(R.id.base_layout);
-        Bundle arguments = (savedInstanceState != null)? savedInstanceState : getIntent().getExtras();
+        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getIntent().getExtras();
         initializeActivity(arguments);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         replaceFragment(getActiveLandingFragment());
     }
 
@@ -114,10 +115,5 @@ public abstract class BaseLandingActivity extends BaseActivity implements Notifi
     @Override
     public void onStop() {
         super.onStop();
-    }
-
-    @Override
-    public View getRootView() {
-        return rootView;
     }
 }

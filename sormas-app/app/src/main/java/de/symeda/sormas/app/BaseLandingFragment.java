@@ -8,22 +8,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
-import de.symeda.sormas.app.component.menu.LandingPageMenuAdapter;
-import de.symeda.sormas.app.component.menu.LandingPageMenuControl;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.component.menu.LandingPageMenuParser;
-import de.symeda.sormas.app.component.menu.OnLandingPageMenuClickListener;
-import de.symeda.sormas.app.component.menu.OnNotificationCountChangingListener;
+import de.symeda.sormas.app.component.menu.PageMenuAdapter;
+import de.symeda.sormas.app.component.menu.PageMenuControl;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.component.menu.PageMenuParser;
+import de.symeda.sormas.app.component.menu.PageMenuClickListener;
+import de.symeda.sormas.app.component.menu.NotificationCountChangingListener;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 
-public abstract class BaseLandingFragment<E extends Enum<E>, TAdapter extends EnumMapDataBinderAdapter<E>> extends BaseFragment implements OnNotificationCountChangingListener, OnLandingPageMenuClickListener {
+public abstract class BaseLandingFragment<E extends Enum<E>, TAdapter extends EnumMapDataBinderAdapter<E>> extends BaseFragment implements NotificationCountChangingListener, PageMenuClickListener {
 
     private BaseLandingActivity baseLandingActivity;
     private RecyclerView.LayoutManager layoutManager;
     private TAdapter adapter;
     private RecyclerView recyclerView;
-    private LandingPageMenuControl menuControl;
+    private PageMenuControl menuControl;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,8 +46,8 @@ public abstract class BaseLandingFragment<E extends Enum<E>, TAdapter extends En
             this.menuControl.setOnNotificationCountChangingListener(this);
             this.menuControl.setOnLandingPageMenuClickListener(this);
 
-            this.menuControl.setAdapter(new LandingPageMenuAdapter(menuControlContext));
-            this.menuControl.setMenuParser(new LandingPageMenuParser(menuControlContext));
+            this.menuControl.setAdapter(new PageMenuAdapter(menuControlContext));
+            this.menuControl.setMenuParser(new PageMenuParser(menuControlContext));
             this.menuControl.setMenuData(getMenuData());
         }
 
@@ -58,8 +58,8 @@ public abstract class BaseLandingFragment<E extends Enum<E>, TAdapter extends En
         return R.layout.fragment_root_landing_layout;
     }
 
-    public LandingPageMenuControl createMenuControl(View view) {
-        return (LandingPageMenuControl)view.findViewById(R.id.landingPageMenuControl);
+    public PageMenuControl createMenuControl(View view) {
+        return (PageMenuControl)view.findViewById(R.id.landingPageMenuControl);
     }
 
     public RecyclerView createRecyclerView(View view) {
@@ -72,9 +72,9 @@ public abstract class BaseLandingFragment<E extends Enum<E>, TAdapter extends En
 
     public abstract int getMenuData();
 
-    public abstract int onNotificationCountChangingAsync(AdapterView<?> parent, LandingPageMenuItem menuItem, int position);
+    public abstract int onNotificationCountChangingAsync(AdapterView<?> parent, PageMenuItem menuItem, int position);
 
-    public abstract boolean onLandingPageMenuClick(AdapterView<?> parent, View view, LandingPageMenuItem menuItem, int position, long id);
+    public abstract boolean onPageMenuClick(AdapterView<?> parent, View view, PageMenuItem menuItem, int position, long id);
 
     public int getFragmentMenuIndex() {
         return 0;
@@ -100,7 +100,7 @@ public abstract class BaseLandingFragment<E extends Enum<E>, TAdapter extends En
         return this.recyclerView;
     }
 
-    public LandingPageMenuControl getMenuControl() {
+    public PageMenuControl getMenuControl() {
         return this.menuControl;
     }
 

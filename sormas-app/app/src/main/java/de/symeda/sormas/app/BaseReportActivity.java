@@ -6,19 +6,17 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import de.symeda.sormas.app.core.NotificationContext;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.util.ConstantHelper;
 
-public abstract class BaseReportActivity extends BaseActivity implements NotificationContext, IUpdateSubHeadingTitle {
+public abstract class BaseReportActivity extends BaseActivity implements IUpdateSubHeadingTitle {
 
     private final static String TAG = BaseReportActivity.class.getSimpleName();
 
-    private View rootView;
     private View applicationTitleBar = null;
     private BaseReportFragment activeFragment = null;
     private TextView subHeadingActivityTitle;
@@ -35,10 +33,15 @@ public abstract class BaseReportActivity extends BaseActivity implements Notific
     }
 
     public void setSubHeadingTitle(String title) {
-        String t = (title == null)? "" : title;
+        String t = (title == null) ? "" : title;
 
         if (subHeadingActivityTitle != null)
             subHeadingActivityTitle.setText(t);
+    }
+
+    @Override
+    public boolean openPage(PageMenuItem menuItem) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -71,21 +74,13 @@ public abstract class BaseReportActivity extends BaseActivity implements Notific
         return R.layout.activity_root_with_title_layout;
     }
 
-    @Override
-    public View getRootView() {
-        return rootView;
-    }
-
-
-
     protected abstract void initializeActivity(Bundle arguments);
 
     public abstract BaseReportFragment getActiveFragment();
 
 
     protected void onCreateInner(Bundle savedInstanceState) {
-        rootView = findViewById(R.id.base_layout);
-        subHeadingActivityTitle = (TextView)findViewById(R.id.subHeadingActivityTitle);
+        subHeadingActivityTitle = (TextView) findViewById(R.id.subHeadingActivityTitle);
 
         if (showTitleBar()) {
             applicationTitleBar = findViewById(R.id.applicationTitleBar);
@@ -132,6 +127,4 @@ public abstract class BaseReportActivity extends BaseActivity implements Notific
         if (activeFragment == null)
             return;
     }
-
-
 }

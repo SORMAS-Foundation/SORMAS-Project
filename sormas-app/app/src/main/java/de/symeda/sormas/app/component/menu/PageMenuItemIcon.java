@@ -3,23 +3,15 @@ package de.symeda.sormas.app.component.menu;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by Orson on 25/11/2017.
- *
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
-public class LandingPageMenuItemIcon implements Parcelable {
+public class PageMenuItemIcon implements Parcelable {
     private String iconName;
     private String defType;
 
-    public LandingPageMenuItemIcon(Parcel in ) {
+    public PageMenuItemIcon(Parcel in ) {
         readFromParcel( in );
     }
 
-    public LandingPageMenuItemIcon(String iconName, String defType) {
+    public PageMenuItemIcon(String iconName, String defType) {
         this.iconName = iconName;
         this.defType = defType;
     }
@@ -48,12 +40,12 @@ public class LandingPageMenuItemIcon implements Parcelable {
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         @Override
         public Object createFromParcel(Parcel source) {
-            return new LandingPageMenuItemIcon(source);
+            return new PageMenuItemIcon(source);
         }
 
         @Override
         public Object[] newArray(int size) {
-            return new LandingPageMenuItemIcon[0];
+            return new PageMenuItemIcon[0];
         }
     };
 

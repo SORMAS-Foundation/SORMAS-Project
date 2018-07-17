@@ -12,7 +12,7 @@ import java.util.Random;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.ListNavigationCapsule;
 import de.symeda.sormas.app.core.SearchBy;
@@ -63,13 +63,13 @@ public class SampleListActivity extends BaseListActivity {
     }
 
     @Override
-    public int onNotificationCountChangingAsync(AdapterView parent, LandingPageMenuItem menuItem, int position) {
+    public int onNotificationCountChangingAsync(AdapterView parent, PageMenuItem menuItem, int position) {
         //TODO: Call database and retrieve notification count
         return (int) (new Random(DateTime.now().getMillis() * 1000).nextInt() / 10000000);
     }
 
     @Override
-    protected BaseListFragment getListFragment(LandingPageMenuItem menuItem) {
+    protected BaseListFragment getListFragment(PageMenuItem menuItem) {
         ShipmentStatus status = statusFilters[menuItem.getKey()];
 
         if (status == null)

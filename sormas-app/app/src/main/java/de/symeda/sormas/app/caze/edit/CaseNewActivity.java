@@ -15,8 +15,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
@@ -54,7 +54,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
     }
 
     @Override
-    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, Case activityRootData) {
+    protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Case activityRootData) {
         CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
         return CaseNewFragment.newInstance(dataCapsule, activityRootData);
     }

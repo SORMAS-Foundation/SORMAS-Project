@@ -6,31 +6,23 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Orson on 01/12/2017.
- *
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
-public class LandingPageMenu implements Parcelable {
+public class PageMenu implements Parcelable {
 
     private String name;
     private String title;
-    private List<LandingPageMenuItem> menuItems;
+    private List<PageMenuItem> menuItems;
 
-    public LandingPageMenu(Parcel in ) {
-        readFromParcel( in );
+    public PageMenu(Parcel in) {
+        readFromParcel(in);
     }
 
-    public LandingPageMenu(String name, String title) {
+    public PageMenu(String name, String title) {
         this.name = name;
         this.title = title;
-        this.menuItems = new ArrayList<LandingPageMenuItem>();
+        this.menuItems = new ArrayList<PageMenuItem>();
     }
 
-    public LandingPageMenu(String name, String title, List<LandingPageMenuItem> menuItems) {
+    public PageMenu(String name, String title, List<PageMenuItem> menuItems) {
         this.name = name;
         this.title = title;
         this.menuItems = menuItems;
@@ -52,15 +44,15 @@ public class LandingPageMenu implements Parcelable {
         this.title = title;
     }
 
-    public List<LandingPageMenuItem> getMenuItems() {
+    public List<PageMenuItem> getMenuItems() {
         return menuItems;
     }
 
-    public void setMenuItems(List<LandingPageMenuItem> list) {
+    public void setMenuItems(List<PageMenuItem> list) {
         this.menuItems = list;
     }
 
-    public void addMenuItem(LandingPageMenuItem menuItem) {
+    public void addMenuItem(PageMenuItem menuItem) {
         if (this.menuItems == null)
             throw new IllegalArgumentException("The menu item list is null.");
 
@@ -70,12 +62,12 @@ public class LandingPageMenu implements Parcelable {
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         @Override
         public Object createFromParcel(Parcel source) {
-            return new LandingPageMenu(source);
+            return new PageMenu(source);
         }
 
         @Override
         public Object[] newArray(int size) {
-            return new LandingPageMenu[0];
+            return new PageMenu[0];
         }
     };
 
@@ -92,12 +84,12 @@ public class LandingPageMenu implements Parcelable {
         dest.writeTypedList(this.menuItems);
     }
 
-    private void readFromParcel(Parcel in ) {
+    private void readFromParcel(Parcel in) {
         if (this.menuItems == null)
-            this.menuItems = in.createTypedArrayList(LandingPageMenuItem.CREATOR);
+            this.menuItems = in.createTypedArrayList(PageMenuItem.CREATOR);
 
         this.name = in.readString();
         this.title = in.readString();
-        in.readTypedList(this.menuItems, LandingPageMenu.CREATOR);
+        in.readTypedList(this.menuItems, PageMenu.CREATOR);
     }
 }

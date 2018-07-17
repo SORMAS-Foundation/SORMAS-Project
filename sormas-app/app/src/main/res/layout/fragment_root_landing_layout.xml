@@ -28,7 +28,7 @@
     </ScrollView>
 
 
-    <de.symeda.sormas.app.component.menu.LandingPageMenuControl
+    <de.symeda.sormas.app.component.menu.PageMenuControl
         android:id="@+id/landingPageMenuControl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

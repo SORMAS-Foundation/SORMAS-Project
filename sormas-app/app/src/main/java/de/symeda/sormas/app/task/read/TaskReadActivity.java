@@ -9,7 +9,7 @@ import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.task.Task;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
 
@@ -26,7 +26,7 @@ public class TaskReadActivity extends BaseReadActivity<Task> {
     }
 
     @Override
-    protected BaseReadFragment buildReadFragment(LandingPageMenuItem menuItem, Task activityRootData) {
+    protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Task activityRootData) {
         TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(this,
                 getRootEntityUuid(), getPageStatus());
         return TaskReadFragment.newInstance(dataCapsule, activityRootData);

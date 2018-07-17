@@ -9,8 +9,7 @@ import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
-import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.symptoms.SymptomsReadFragment;
 import de.symeda.sormas.app.visit.VisitSection;
 import de.symeda.sormas.app.visit.edit.VisitEditActivity;
@@ -36,7 +35,7 @@ public class VisitReadActivity extends BaseReadActivity<Visit> {
     }
 
     @Override
-    protected BaseReadFragment buildReadFragment(LandingPageMenuItem menuItem, Visit activityRootData) {
+    protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Visit activityRootData) {
         VisitFormNavigationCapsule dataCapsule = new VisitFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
 
         VisitSection section = VisitSection.fromMenuKey(menuItem.getKey());

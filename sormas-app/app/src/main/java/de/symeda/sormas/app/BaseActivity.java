@@ -4,12 +4,11 @@ import android.accounts.AuthenticatorException;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -22,6 +21,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -30,6 +31,8 @@ import com.google.android.gms.analytics.Tracker;
 
 import java.lang.ref.WeakReference;
 import java.net.ConnectException;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -38,6 +41,12 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.dialog.UserReportDialog;
+import de.symeda.sormas.app.component.menu.PageMenuAdapter;
+import de.symeda.sormas.app.component.menu.PageMenuControl;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.component.menu.PageMenuParser;
+import de.symeda.sormas.app.component.menu.PageMenuClickListener;
+import de.symeda.sormas.app.component.menu.SelectInitialPageMenuItemListener;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
@@ -56,12 +65,13 @@ import de.symeda.sormas.app.util.NavigationHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.UserHelper;
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity implements SelectInitialPageMenuItemListener, NotificationContext {
 
     public static final String TAG = BaseActivity.class.getSimpleName();
 
     protected Tracker tracker;
 
+    private View rootView;
     private ProgressBar preloader;
     private View fragmentFrame;
 
@@ -69,6 +79,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     private View applicationTitleBar = null;
     private View statusFrame = null;
     private Enum pageStatus;
+
+    // footer menu
+    private PageMenuControl pageMenu = null;
+    private List<PageMenuItem> pageMenuItems = new ArrayList();
+    private PageMenuItem pageMenuItem = null;
+    private int pageMenuItemKey = 0;
 
     private ActionBarDrawerToggle menuDrawerToggle;
     private DrawerLayout menuDrawerLayout;
@@ -103,6 +119,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState, outPersistentState);
 
         setPageStatusState(outState, pageStatus);
+        saveActiveMenuState(outState, pageMenuItemKey);
     }
 
     @Override
@@ -125,15 +142,34 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
 
         pageStatus = getPageStatusArg(savedInstanceState);
+        pageMenuItemKey = getActiveMenuArg(savedInstanceState);
 
         setContentView(getRootActivityLayout());
 
+        rootView = findViewById(R.id.base_layout);
         preloader = (ProgressBar) findViewById(R.id.preloader);
         fragmentFrame = findViewById(R.id.fragment_frame);
         applicationTitleBar = findViewById(R.id.applicationTitleBar);
         statusFrame = findViewById(R.id.statusFrame);
 
-        SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(this);
+        pageMenu = (PageMenuControl) findViewById(R.id.landingPageMenuControl);
+        if (pageMenu != null && getPageMenuData() > 0) {
+            ensureFabHiddenOnSoftKeyboardShown(pageMenu);
+            pageMenu.hide();
+            Context menuControlContext = this.pageMenu.getContext();
+
+            pageMenu.setOnLandingPageMenuClickListener(new PageMenuClickListener() {
+                @Override
+                public boolean onPageMenuClick(AdapterView<?> parent, View view, PageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
+                    return openPage(menuItem);
+                }
+            });
+            pageMenu.setOnSelectInitialActiveMenuItem(this);
+
+            pageMenu.setAdapter(new PageMenuAdapter(menuControlContext));
+            pageMenu.setMenuParser(new PageMenuParser(menuControlContext));
+            pageMenu.setMenuData(getPageMenuData());
+        }
 
         Drawable drawable = ContextCompat.getDrawable(this,
                 R.drawable.selector_actionbar_back_button);
@@ -175,8 +211,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                 Drawable drw = (Drawable) ContextCompat.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
                 drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource(statusFrameContext)), PorterDuff.Mode.SRC);
 
-                TextView txtStatusName = (TextView)statusFrame.findViewById(R.id.txtStatusName);
-                ImageView imgStatus = (ImageView)statusFrame.findViewById(R.id.statusIcon);
+                TextView txtStatusName = (TextView) statusFrame.findViewById(R.id.txtStatusName);
+                ImageView imgStatus = (ImageView) statusFrame.findViewById(R.id.statusIcon);
 
 
                 txtStatusName.setText(getStatusName(statusFrameContext));
@@ -200,6 +236,10 @@ public abstract class BaseActivity extends AppCompatActivity {
             progressDialog.dismiss();
         }
 
+        if (pageMenu != null) {
+            pageMenu.onDestroy();
+        }
+
         super.onDestroy();
     }
 
@@ -220,11 +260,11 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
         if (!isSubActivitiy()
-            && menuDrawerToggle.onOptionsItemSelected(item)) {
+                && menuDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
 
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case android.R.id.home:
                 NavigationHelper.navigateUpFrom(this);
                 return true;
@@ -348,6 +388,36 @@ public abstract class BaseActivity extends AppCompatActivity {
 //        contactNotificationCounter.setText("7");
 //        eventNotificationCounter.setText("12");
 //        sampleNotificationCounter.setText("50");
+    }
+
+    public int getPageMenuData() {
+        return -1;
+    }
+
+    protected void setPageMenuItem(PageMenuItem menuItem) {
+        pageMenuItem = menuItem;
+    }
+
+    public PageMenuItem getActiveMenuItem() {
+        return pageMenuItem;
+    }
+
+    @Override
+    public PageMenuItem onSelectInitialPageMenuItem(List<PageMenuItem> menuList) {
+        if (menuList == null || menuList.size() <= 0)
+            return null;
+
+        this.pageMenuItems = menuList;
+
+        pageMenuItem = menuList.get(0);
+
+        for (PageMenuItem m : menuList) {
+            if (m.getKey() == pageMenuItemKey) {
+                pageMenuItem = m;
+            }
+        }
+
+        return pageMenuItem;
     }
 
     public Context getContext() {
@@ -536,6 +606,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         throw new NotImplementedException("goToNewView");
     }
 
+    @Override
+    public View getRootView() {
+        return rootView;
+    }
+
     protected int getRootActivityLayout() {
         return R.layout.activity_root_layout;
     }
@@ -551,11 +626,72 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected <E extends Enum<E>> E getPageStatusArg(Bundle arguments) {
         E e = null;
         if (arguments != null && !arguments.isEmpty()) {
-            if(arguments.containsKey(ConstantHelper.ARG_PAGE_STATUS)) {
+            if (arguments.containsKey(ConstantHelper.ARG_PAGE_STATUS)) {
                 e = (E) arguments.getSerializable(ConstantHelper.ARG_PAGE_STATUS);
             }
         }
 
         return e;
     }
+
+    protected void saveActiveMenuState(Bundle outState, int activeMenuKey) {
+        if (outState != null) {
+            outState.putInt(ConstantHelper.KEY_ACTIVE_MENU, activeMenuKey);
+        }
+    }
+
+    protected int getActiveMenuArg(Bundle arguments) {
+        if (arguments != null && !arguments.isEmpty()) {
+            if (arguments.containsKey(ConstantHelper.KEY_ACTIVE_MENU)) {
+                return arguments.getInt(ConstantHelper.KEY_ACTIVE_MENU);
+            }
+        }
+        return 0;
+    }
+
+    public abstract boolean openPage(PageMenuItem menuItem);
+
+    protected boolean goToNextMenu() {
+        if (pageMenu == null)
+            return false;
+
+        if (pageMenuItems == null || pageMenuItems.size() <= 0)
+            return false;
+        int lastMenuKey = pageMenuItems.size() - 1;
+
+        if (pageMenuItemKey == lastMenuKey)
+            return false;
+
+        int newMenukey = pageMenuItemKey + 1;
+
+        PageMenuItem m = pageMenuItems.get(newMenukey);
+        setPageMenuItem(m);
+        return openPage(m);
+    }
+
+    private void ensureFabHiddenOnSoftKeyboardShown(final PageMenuControl landingPageMenuControl) {
+        final View _rootView = getRootView();
+
+        if (_rootView == null)
+            return;
+
+        _rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Rect r = new Rect();
+                _rootView.getWindowVisibleDisplayFrame(r);
+                int heightDiff = _rootView.getRootView().getHeight() - (r.bottom - r.top);
+
+                if (heightDiff > 100) {
+                    if (landingPageMenuControl != null) {
+                        landingPageMenuControl.hideAll();
+                    }
+                } else {
+                    landingPageMenuControl.showFab();
+                }
+            }
+        });
+    }
+
+
 }

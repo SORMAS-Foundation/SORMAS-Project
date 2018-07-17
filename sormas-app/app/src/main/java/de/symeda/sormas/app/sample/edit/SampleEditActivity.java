@@ -11,7 +11,7 @@ import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
@@ -45,7 +45,7 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
     }
 
     @Override
-    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, Sample activityRootData) {
+    protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Sample activityRootData) {
 
         SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(
                 SampleEditActivity.this, getRootEntityUuid(), getPageStatus());

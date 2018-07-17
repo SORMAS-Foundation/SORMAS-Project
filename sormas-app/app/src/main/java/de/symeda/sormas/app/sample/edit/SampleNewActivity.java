@@ -17,7 +17,7 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
@@ -69,7 +69,7 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
     }
 
     @Override
-    protected BaseEditFragment buildEditFragment(LandingPageMenuItem menuItem, Sample activityRootData) {
+    protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Sample activityRootData) {
         SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(
                 SampleNewActivity.this, getRootEntityUuid(), getPageStatus()).setCaseUuid(caseUuid);
         return SampleNewFragment.newInstance(dataCapsule, activityRootData);

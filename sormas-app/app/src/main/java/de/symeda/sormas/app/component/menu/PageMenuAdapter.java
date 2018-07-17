@@ -9,23 +9,14 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.app.R;
 
-/**
- * Created by Orson on 25/11/2017.
- *
- * www.technologyboard.org
- * sampson.orson@gmail.com
- * sampson.orson@technologyboard.org
- */
-
-public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdapter {
+public class PageMenuAdapter extends BaseAdapter {
 
     private Context context;
-    private List<LandingPageMenuItem> data;
+    private List<PageMenuItem> data;
     private int cellLayout;
 
     private int counterBackgroundColor;
@@ -40,18 +31,11 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
 
     private boolean initialized = false;
 
-    public LandingPageMenuAdapter(Context context, int cellLayout) {
-        this.context = context;
-        this.cellLayout = cellLayout;
-        this.data = new ArrayList<>();
-    }
-
-    public LandingPageMenuAdapter(Context context) {
+    public PageMenuAdapter(Context context) {
         this.context = context;
     }
 
-    @Override
-    public void initialize(List<LandingPageMenuItem> data, int cellLayout,
+    public void initialize(List<PageMenuItem> data, int cellLayout,
                            int counterBackgroundColor, int counterBackgroundActiveColor,
                            int iconColor, int iconActiveColor,
                            int positionColor, int positionActiveColor, int titleColor, int titleActiveColor) {
@@ -93,7 +77,7 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        List<LandingPageMenuItem> menuItems = this.data;
+        List<PageMenuItem> menuItems = this.data;
 
         Drawable icon;
         String iconName;
@@ -104,35 +88,36 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
 
         if (convertView == null) {
             // if it's not recycled, initializeDialog some attributes
-            LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             layout = inflater.inflate(this.cellLayout, parent, false);
         } else {
             layout = (View) convertView;
         }
 
+        PageMenuItem pageMenuItem = menuItems.get(position);
         viewHolder = new ViewHolder(layout);
 
-        LandingPageMenuItem landingPageMenuItem = menuItems.get(position);
-        viewHolder.txtNotificationCounter.setText(String.valueOf(landingPageMenuItem.getNotificationCount()));
-        // TODO show notifications count
-        viewHolder.txtNotificationCounter.setVisibility(View.GONE);
+        if (viewHolder.txtNotificationCounter != null) {
+            viewHolder.txtNotificationCounter.setText(String.valueOf(pageMenuItem.getNotificationCount()));
+            // TODO show notifications count
+            viewHolder.txtNotificationCounter.setVisibility(View.GONE);
 
-        Drawable counterDrawable = viewHolder.txtNotificationCounter.getBackground();
-
-        if (landingPageMenuItem.isActive()) {
-            counterDrawable.setTint(context.getResources().getColor(this.counterBackgroundActiveColor));
-        } else {
-            counterDrawable.setTint(context.getResources().getColor(this.counterBackgroundColor));
+            Drawable counterDrawable = viewHolder.txtNotificationCounter.getBackground();
+            if (pageMenuItem.isActive()) {
+                counterDrawable.setTint(context.getResources().getColor(this.counterBackgroundActiveColor));
+            } else {
+                counterDrawable.setTint(context.getResources().getColor(this.counterBackgroundColor));
+            }
         }
 
-        if (landingPageMenuItem.getIcon() != null) {
-            iconName = landingPageMenuItem.getIcon().getIconName();
-            defType = landingPageMenuItem.getIcon().getDefType();
+        if (pageMenuItem.getIcon() != null) {
+            iconName = pageMenuItem.getIcon().getIconName();
+            defType = pageMenuItem.getIcon().getDefType();
 
             if ((iconName != null && !iconName.isEmpty()) && (defType != null && !defType.isEmpty())) {
                 icon = context.getResources().getDrawable(context.getResources().getIdentifier(iconName, defType, context.getPackageName()));
 
-                if (landingPageMenuItem.isActive()) {
+                if (pageMenuItem.isActive()) {
                     icon.setTint(context.getResources().getColor(this.iconActiveColor));
                     icon.setAlpha(255);
                 } else {
@@ -144,7 +129,22 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
             }
         }
 
-        viewHolder.txtMenuItemTitle.setText(landingPageMenuItem.getTitle());
+        if (viewHolder.txtPosition != null) {
+            viewHolder.txtPosition.setText(String.valueOf(pageMenuItem.getKey() + 1));
+            if (pageMenuItem.isActive()) {
+                viewHolder.txtPosition.setTextColor(context.getResources().getColor(this.positionActiveColor));
+            } else {
+                viewHolder.txtPosition.setTextColor(context.getResources().getColor(this.positionColor));
+            }
+        }
+
+        viewHolder.txtMenuItemTitle.setText(pageMenuItem.getTitle());
+        if (pageMenuItem.isActive()) {
+            viewHolder.txtMenuItemTitle.setTextColor(context.getResources().getColor(this.titleActiveColor));
+        } else {
+            viewHolder.txtMenuItemTitle.setTextColor(context.getResources().getColor(this.titleColor));
+        }
+
 
         return layout;
     }
@@ -154,6 +154,7 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
         TextView txtNotificationCounter;
         ImageView imgMenuItemIcon;
         TextView txtMenuItemTitle;
+        TextView txtPosition;
 
         public ViewHolder(View layout) {
             this.layout = layout;
@@ -161,6 +162,7 @@ public class LandingPageMenuAdapter extends BaseAdapter implements IPageMenuAdap
             txtNotificationCounter = (TextView) this.layout.findViewById(R.id.counter);
             imgMenuItemIcon = (ImageView) this.layout.findViewById(R.id.icon);
             txtMenuItemTitle = (TextView) this.layout.findViewById(R.id.title);
+            txtPosition = (TextView) this.layout.findViewById(R.id.navigation_number);
         }
     }
 }

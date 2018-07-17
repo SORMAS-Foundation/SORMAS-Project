@@ -2,7 +2,6 @@ package de.symeda.sormas.app.contact.read;
 
 import android.content.Context;
 import android.view.Menu;
-import android.view.View;
 
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -11,7 +10,7 @@ import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.component.menu.LandingPageMenuItem;
+import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.contact.edit.ContactEditActivity;
 import de.symeda.sormas.app.person.read.PersonReadFragment;
@@ -38,7 +37,7 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
     }
 
     @Override
-    protected BaseReadFragment buildReadFragment(LandingPageMenuItem menuItem, Contact activityRootData) {
+    protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Contact activityRootData) {
         ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(
                 ContactReadActivity.this, getRootEntityUuid(), getPageStatus());
 
