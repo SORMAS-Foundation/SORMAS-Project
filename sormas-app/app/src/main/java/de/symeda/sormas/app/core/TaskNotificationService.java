@@ -9,6 +9,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
@@ -30,12 +31,12 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDao;
-import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
+import de.symeda.sormas.app.util.ConstantHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 
 /**
@@ -99,7 +100,7 @@ public class TaskNotificationService extends Service {
             notificationRangeStart = new DateTime().minusDays(1).toDate();
         }
         // start after the last check
-        notificationRangeStart = new Date(notificationRangeStart.getTime()+1);
+        notificationRangeStart = new Date(notificationRangeStart.getTime() + 1);
 
         Date notificationRangeEnd = new Date();
 
@@ -109,11 +110,11 @@ public class TaskNotificationService extends Service {
         CaseDao caseDAO = DatabaseHelper.getCaseDao();
         ContactDao contactDAO = DatabaseHelper.getContactDao();
         EventDao eventDAO = DatabaseHelper.getEventDao();
-        PersonDao personDAO = DatabaseHelper.getPersonDao();
 
         for (Task task : taskList) {
             Intent notificationIntent = new Intent(context, TaskEditActivity.class);
-            notificationIntent.putExtra(Task.UUID, task.getUuid());
+            Bundle bundle = new Bundle();
+            bundle.putString(ConstantHelper.KEY_DATA_UUID, task.getUuid());
 
             Case caze = null;
             Contact contact = null;
@@ -144,6 +145,7 @@ public class TaskNotificationService extends Service {
                     continue;
             }
 
+            notificationIntent.putExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA, bundle);
             // Just for your information: The issue here was that the second argument of the getActivity call
             // was set to 0, which leads to previous intents to be recycled; passing the task's ID instead
             // makes sure that a new intent with the right task behind it is created
@@ -174,7 +176,7 @@ public class TaskNotificationService extends Service {
     }
 
     public static void startTaskNotificationAlarm(Context context) {
-        AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         Intent intent = new Intent(context, TaskNotificationService.class);
         PendingIntent alarmIntent = PendingIntent.getService(context, 1414, intent, 0);

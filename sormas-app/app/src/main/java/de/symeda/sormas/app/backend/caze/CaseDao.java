@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Location;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
@@ -306,15 +307,12 @@ public class CaseDao extends AbstractAdoDao<Case> {
         if (currentCase != null && mergedCase != null && currentCase.getDisease() != mergedCase.getDisease()) {
             Context context = DatabaseHelper.getContext();
 
-
-
-            //TODO: Talk to Martin about this
             Intent notificationIntent = new Intent(context, CaseReadActivity.class);
-            notificationIntent.putExtra(ConstantHelper.KEY_DATA_UUID, mergedCase.getUuid());
-            notificationIntent.putExtra(ConstantHelper.ARG_PAGE_STATUS, mergedCase.getCaseClassification());
+            Bundle bundle = new Bundle();
+            bundle.putString(ConstantHelper.KEY_DATA_UUID, mergedCase.getUuid());
+            bundle.putSerializable(ConstantHelper.ARG_PAGE_STATUS, mergedCase.getCaseClassification());
 
-
-
+            notificationIntent.putExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA, bundle);
 
             StringBuilder content = new StringBuilder();
             content.append("<b>").append(mergedCase.toString()).append("</b><br/>");
