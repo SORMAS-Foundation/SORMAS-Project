@@ -5,15 +5,9 @@
     android:id="@+id/base_layout">
 
     <data>
-        <variable name="sample" type="de.symeda.sormas.app.backend.sample.Sample"/>
-        <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
+        <variable name="data" type="de.symeda.sormas.app.backend.sample.Sample"/>
         <variable name="results" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.sample.SampleTest&gt;" />
-
-        <variable
-            name="recentTestItemClickCallback"
-            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
-
 
     <ScrollView
         android:layout_width="match_parent"
@@ -28,95 +22,87 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="@dimen/parentLayoutVerticalMargin"
-                android:paddingBottom="@dimen/parentLayoutVerticalMargin"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                >
+                android:padding="@dimen/fragment_padding"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:id="@+id/main_content">
 
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_disease"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:value="@{caze.disease}" />
-
+                <requestFocus/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/sample_casePersonName"
+                        app:value="@{data.associatedCase.person}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
 
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_disease"
+                        app:value="@{data.associatedCase.disease}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/sample_sampleCode"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:value="@{sample.sampleCode}" />
+                        app:value="@{data.sampleCode}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/sample_sampleMaterial"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        android:layout_marginStart="@dimen/control_spacing"
-                        app:value="@{sample.sampleMaterial}" />
+                        android:id="@+id/sample_sampleDateTime"
+                        app:value="@{data.sampleDateTime}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/sample_sampleMaterialText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:value="@{sample.sampleMaterialText}" />
+                    android:id="@+id/sample_sampleMaterial"
+                    app:value="@{data.sampleMaterial}"
+                    app:appendValue="@{data.sampleMaterialText}"
+                    app:valueFormat="@string/two_strings_with_hyphen_format"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/sample_sampleSource"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:value="@{sample.sampleSource}" />
+                    app:value="@{data.sampleSource}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/sample_sampleDateTime"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:value="@{sample.sampleDateTime}" />
-
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/sample_suggestedTypeOfTest"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="@dimen/control_spacing"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:value="@{sample.suggestedTypeOfTest}" />
+                        app:value="@{data.suggestedTypeOfTest}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
 
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/sample_lab"
+                        app:value="@{data.lab}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/sample_labDetails"
+                    app:value="@{data.labDetails}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/sample_lab"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:value="@{sample.lab}" />
+                    android:id="@+id/sample_comment"
+                    app:value="@{sample.comment}"
+                    style="@style/ControlSingleColumnStyle" />
+
+
 
 
                 <LinearLayout
@@ -175,12 +161,6 @@
                     app:value="@{sample.shipmentDetails}" />
 
 
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/sample_comment"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:value="@{sample.comment}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/sample_referredTo"

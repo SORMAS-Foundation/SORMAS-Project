@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.event.edit.sub;
+package de.symeda.sormas.app.event.edit.eventparticipant;
 
 import android.os.Bundle;
 

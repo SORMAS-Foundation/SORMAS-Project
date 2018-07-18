@@ -1,4 +1,4 @@
-package de.symeda.sormas.app.event.read.sub;
+package de.symeda.sormas.app.event.read.eventparticipant;
 
 import android.content.Context;
 
@@ -8,7 +8,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.event.edit.sub.EventParticipantEditActivity;
+import de.symeda.sormas.app.event.edit.eventparticipant.EventParticipantEditActivity;
 import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 
 public class EventParticipantReadActivity extends BaseReadActivity<EventParticipant> {

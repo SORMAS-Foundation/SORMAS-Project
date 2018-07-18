@@ -13,7 +13,7 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
-import de.symeda.sormas.app.event.edit.sub.EventParticipantEditActivity;
+import de.symeda.sormas.app.event.edit.eventparticipant.EventParticipantEditActivity;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.shared.EventParticipantFormNavigationCapsule;
 

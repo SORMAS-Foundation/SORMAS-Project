@@ -19,7 +19,7 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.event.EventSection;
-import de.symeda.sormas.app.event.edit.sub.EventParticipantNewActivity;
+import de.symeda.sormas.app.event.edit.eventparticipant.EventParticipantNewActivity;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 
 public class EventEditActivity extends BaseEditActivity<Event> {
