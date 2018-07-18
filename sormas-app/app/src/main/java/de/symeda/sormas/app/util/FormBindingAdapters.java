@@ -29,103 +29,23 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.controls.ControlLinkField;
 import de.symeda.sormas.app.component.controls.ControlTextImageField;
 import de.symeda.sormas.app.component.controls.ControlTextReadField;
+import de.symeda.sormas.app.core.enumeration.SampleTestResultTypeElaborator;
+import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 
 import static android.view.View.GONE;
 
 public class FormBindingAdapters {
 
-    @BindingAdapter("resultStatus")
-    public static void setResultStatus(ImageView imageView, SampleTestResultType resultType) {
+    @BindingAdapter("resultStatusIcon")
+    public static void setResultStatusIcon(ImageView imageView, SampleTestResultType resultType) {
         if (resultType != null) {
-            Drawable drw;
             Context context = imageView.getContext();
-            Resources resources = context.getResources();
+            SampleTestResultTypeElaborator elaborator = (SampleTestResultTypeElaborator)
+                    StatusElaboratorFactory.getElaborator(context, resultType);
 
-            if (resultType == SampleTestResultType.POSITIVE) {
-                drw = (Drawable) ContextCompat.getDrawable(context, R.drawable.ic_add_24dp).mutate();
-                drw.setTint(resources.getColor(R.color.samplePositive));
-                imageView.setBackground(drw);
-            } else if (resultType == SampleTestResultType.NEGATIVE) {
-                drw = (Drawable) ContextCompat.getDrawable(context, R.drawable.ic_remove_24dp).mutate();
-                drw.setTint(resources.getColor(R.color.sampleNegative));
-                imageView.setBackground(drw);
-            } else if (resultType == SampleTestResultType.PENDING) {
-                drw = (Drawable) ContextCompat.getDrawable(context, R.drawable.ic_pending_24dp).mutate();
-                drw.setTint(resources.getColor(R.color.samplePending));
-                imageView.setBackground(drw);
-            } else if (resultType == SampleTestResultType.INDETERMINATE) {
-                drw = (Drawable) ContextCompat.getDrawable(context, R.drawable.ic_do_not_disturb_on_24dp).mutate();
-                drw.setTint(resources.getColor(R.color.sampleIndeterminate));
-                imageView.setBackground(drw);
-            }
-        }
-    }
-
-    @BindingAdapter(value = {"shipmentStatus", "defaultValue"}, requireAll = false)
-    public static void setShipmentStatus(ControlTextImageField control, Sample sample, String defaultValue) {
-        String val = defaultValue;
-        Context context = control.getContext();
-        Resources resources = context.getResources();
-
-        if (sample == null) {
-            control.setValue(val);
-        } else {
-
-            String stringValue;
-            if (sample.isShipped()) {
-                stringValue = val = DateHelper.formatShortDate(sample.getShipmentDate());
-                if (!stringValue.equals(control.getValue())) {
-                    //Set Text to shipment date
-                    control.setValue(stringValue);
-
-                    //Set icon to check & tint
-                    control.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.goodJob);
-                }
-
-            } else {
-                stringValue = val = resources.getString(R.string.no);
-                if (stringValue != control.getValue()) {
-                    //Set text to No
-                    control.setValue(stringValue);
-
-                    //Set icon to cancel & tint
-                    control.setImageBackground(R.drawable.ic_cancel_24dp, R.color.watchOut);
-                }
-            }
-        }
-    }
-
-    @BindingAdapter(value = {"receivedStatus", "defaultValue"}, requireAll = false)
-    public static void setReceivedStatus(ControlTextImageField control, Sample sample, String defaultValue) {
-        String val = defaultValue;
-        Context context = control.getContext();
-        Resources resources = context.getResources();
-
-        if (sample == null) {
-            control.setValue(val);
-        } else {
-
-            String stringValue;
-            if (sample.isReceived()) {
-                stringValue = val = DateHelper.formatShortDate(sample.getReceivedDate());
-                if (stringValue != control.getValue()) {
-                    //Set Text to shipment date
-                    control.setValue(stringValue);
-
-                    //Set icon to check & tint
-                    control.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.goodJob);
-                }
-
-            } else {
-                stringValue = val = resources.getString(R.string.no);
-                if (stringValue != control.getValue()) {
-                    //Set text to No
-                    control.setValue(stringValue);
-
-                    //Set icon to cancel & tint
-                    control.setImageBackground(R.drawable.ic_cancel_24dp, R.color.watchOut);
-                }
-            }
+            Drawable drawable = elaborator.getDrawable(context);
+            drawable.setTint(context.getResources().getColor(elaborator.getColorIndicatorResource()));
+            imageView.setBackground(drawable);
         }
     }
 

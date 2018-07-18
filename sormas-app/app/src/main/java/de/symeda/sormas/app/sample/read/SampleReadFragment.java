@@ -17,12 +17,36 @@ import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentSampleReadLayoutBinding;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 
+import static android.view.View.GONE;
+
 public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayoutBinding, Sample, Sample> {
 
     private Sample record;
     private SampleTest mostRecentTest;
 
-    private IEntryItemOnClickListener onRecentTestItemClickListener;
+    // Instance methods
+
+    public static SampleReadFragment newInstance(SampleFormNavigationCapsule capsule, Sample activityRootData) {
+        return newInstance(SampleReadFragment.class, capsule, activityRootData);
+    }
+
+    private void setUpFieldVisibilities(FragmentSampleReadLayoutBinding contentBinding) {
+        // Most recent test layout
+        if (!record.isReceived() || record.getSpecimenCondition() != SpecimenCondition.ADEQUATE) {
+            contentBinding.mostRecentTestLayout.setVisibility(GONE);
+        } else {
+            if (mostRecentTest != null) {
+                contentBinding.noRecentTest.setVisibility(GONE);
+            }
+        }
+
+        // Lab details
+        if (!record.getLab().getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+            contentBinding.sampleLabDetails.setVisibility(GONE);
+        }
+    }
+
+    // Overrides
 
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
@@ -32,46 +56,13 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
 
     @Override
     public void onLayoutBinding(FragmentSampleReadLayoutBinding contentBinding) {
-
-        setupCallback();
-
-        contentBinding.sampleShipmentDetails.setVisibility((record.isShipped()) ? View.VISIBLE : View.GONE);
-        contentBinding.sampleSampleMaterialText.setVisibility((record.getSampleMaterial() == SampleMaterial.OTHER) ? View.VISIBLE : View.GONE);
-        contentBinding.sampleSampleSource.setVisibility((record.getAssociatedCase().getDisease() == Disease.NEW_INFLUENCA) ? View.VISIBLE : View.GONE);
-        contentBinding.sampleReceivedLayout.setVisibility((record.isReceived()) ? View.VISIBLE : View.GONE);
-
-        if (record.getSpecimenCondition() != SpecimenCondition.NOT_ADEQUATE) {
-            contentBinding.recentTestLayout.setVisibility(View.VISIBLE);
-            if (mostRecentTest != null) {
-                contentBinding.sampleSuggestedTypeOfTest.setVisibility(View.VISIBLE);
-                //contentBinding.sampleTestResult.setVisibility(View.VISIBLE);
-            }
-
-            //contentBinding.sampleSuggestedTypeOfTest.setVisibility((mostRecentTest != null) ? View.VISIBLE : View.GONE);
-            contentBinding.sampleNoRecentTestText.setVisibility((mostRecentTest == null) ? View.VISIBLE : View.GONE);
-        }
-
-        // only show referred to field when there is a referred sample
-        if (record.getReferredTo() != null) {
-            Sample referredSample = record.getReferredTo();
-            contentBinding.sampleReferredTo.setVisibility(View.VISIBLE);
-            contentBinding.sampleReferredTo.setValue(getActivity().getResources().getString(R.string.sample_referred_to) + " " + referredSample.getLab().toString() + " " + "\u279D");
-        } else {
-            contentBinding.sampleReferredTo.setVisibility(View.GONE);
-        }
-
-        contentBinding.setSample(record);
-        contentBinding.setCaze(record.getAssociatedCase());
-
-        contentBinding.setResults(getTestResults());
-        contentBinding.setRecentTestItemClickCallback(onRecentTestItemClickListener);
+        contentBinding.setData(record);
+        contentBinding.setSampleTest(mostRecentTest);
     }
 
     @Override
     public void onAfterLayoutBinding(FragmentSampleReadLayoutBinding contentBinding) {
-        contentBinding.sampleLab.setValue(record.getLab() +
-                (record.getLab().getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID) ?
-                        (" (" + record.getLabDetails() + ")") : ""));
+        setUpFieldVisibilities(contentBinding);
     }
 
     @Override
@@ -89,25 +80,4 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
         return R.layout.fragment_sample_read_layout;
     }
 
-    private ObservableArrayList getTestResults() {
-        ObservableArrayList results = new ObservableArrayList();
-
-        if (mostRecentTest != null)
-            results.add(mostRecentTest);
-
-        return results;
-    }
-
-    private void setupCallback() {
-        onRecentTestItemClickListener = new IEntryItemOnClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                // add some functionality here
-            }
-        };
-    }
-
-    public static SampleReadFragment newInstance(SampleFormNavigationCapsule capsule, Sample activityRootData) {
-        return newInstance(SampleReadFragment.class, capsule, activityRootData);
-    }
 }

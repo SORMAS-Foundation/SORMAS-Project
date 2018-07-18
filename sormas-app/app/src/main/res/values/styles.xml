@@ -146,10 +146,11 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginEnd">@dimen/control_spacing</item>
     </style>
 
     <style name="ControlSecondOfTwoColumnsStyle" parent="ControlFirstOfTwoColumnsStyle">
-        <item name="android:layout_marginStart">@dimen/control_spacing</item>
+        <item name="android:layout_marginEnd">0dp</item>
     </style>
 
     <style name="ControlTextFieldStyle">
@@ -294,7 +295,7 @@
 
     <style name="ControlLabelRowStyle" parent="ControlLabelStyle">
         <item name="android:textAllCaps">false</item>
-        <item name="android:textSize">@dimen/listActivityRowSecondaryTextSize</item>
+        <item name="android:textSize">@dimen/row_entry_secondary_text_size</item>
         <item name="android:textColor">@color/listActivityRowPrimaryText</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>

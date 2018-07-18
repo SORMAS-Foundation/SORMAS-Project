@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.component.controls;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
@@ -10,10 +11,12 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.app.backend.sample.Sample;
 
 public class ControlTextImageField extends ControlTextReadField {
 
@@ -195,6 +198,36 @@ public class ControlTextImageField extends ControlTextReadField {
         }
 
         textImageField.setValue(status);
+    }
+
+    @BindingAdapter(value = {"shipmentStatus", "defaultValue"}, requireAll = false)
+    public static void setShipmentStatus(ControlTextImageField textImageField, Sample sample, String defaultValue) {
+        if (sample == null) {
+            textImageField.setValue(getDefaultValue(defaultValue), false);
+        } else {
+            if (sample.isShipped()) {
+                textImageField.setValue(DateHelper.formatShortDate(sample.getShipmentDate()), true);
+                textImageField.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.green);
+            } else {
+                textImageField.setValue(textImageField.getResources().getString(R.string.no), false);
+                textImageField.setImageBackground(R.drawable.ic_cancel_24dp, R.color.red);
+            }
+        }
+    }
+
+    @BindingAdapter(value = {"receivedStatus", "defaultValue"}, requireAll = false)
+    public static void setReceivedStatus(ControlTextImageField textImageField, Sample sample, String defaultValue) {
+        if (sample == null) {
+            textImageField.setValue(getDefaultValue(defaultValue), false);
+        } else {
+            if (sample.isReceived()) {
+                textImageField.setValue(DateHelper.formatShortDate(sample.getReceivedDate()), true);
+                textImageField.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.green);
+            } else {
+                textImageField.setValue(textImageField.getResources().getString(R.string.no), false);
+                textImageField.setImageBackground(R.drawable.ic_cancel_24dp, R.color.red);
+            }
+        }
     }
 
 }

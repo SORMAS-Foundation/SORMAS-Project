@@ -22,14 +22,25 @@ import de.symeda.sormas.app.databinding.FragmentSampleNewLayoutBinding;
 import de.symeda.sormas.app.shared.SampleFormNavigationCapsule;
 import de.symeda.sormas.app.util.DataUtils;
 
-public class SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sample, Sample> {
+public class
+SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sample, Sample> {
 
     private Sample record;
 
+    // Enum lists
+
     private List<Item> sampleMaterialList;
-    private List<Item> testTypeList;
+    private List<Item> sampleTestTypeList;
     private List<Item> sampleSourceList;
     private List<Facility> labList;
+
+    // Instance methods
+
+    public static SampleNewFragment newInstance(SampleFormNavigationCapsule capsule, Sample activityRootData) {
+        return newInstance(SampleNewFragment.class, capsule, activityRootData);
+    }
+
+    // Overrides
 
     @Override
     protected String getSubHeadingTitle() {
@@ -44,63 +55,39 @@ public class SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutB
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
         record = getActivityRootData();
+
+        sampleMaterialList = DataUtils.getEnumItems(SampleMaterial.class, true);
+        sampleTestTypeList = DataUtils.getEnumItems(SampleTestType.class, true);
+        sampleSourceList = DataUtils.getEnumItems(SampleSource.class, true);
         labList = DatabaseHelper.getFacilityDao().getLaboratories(true);
-        sampleMaterialList = DataUtils.getEnumItems(SampleMaterial.class, false);
-        testTypeList = DataUtils.getEnumItems(SampleTestType.class, false);
-        sampleSourceList = DataUtils.getEnumItems(SampleSource.class, false);
     }
 
     @Override
     public void onLayoutBinding(FragmentSampleNewLayoutBinding contentBinding) {
-
-        //TODO: Set required hints for sample data
-        //SampleValidator.setRequiredHintsForSampleData(contentBinding);``
-
-//        contentBinding.setShippedYesCallback(this);
-        contentBinding.setYesNoClass(YesNo.class);
         contentBinding.setData(record);
-        contentBinding.setCaze(record.getAssociatedCase());
-        contentBinding.setLab(record.getLab());
-
     }
 
     @Override
     public void onAfterLayoutBinding(final FragmentSampleNewLayoutBinding contentBinding) {
-        contentBinding.sampleSuggestedTypeOfTest.initializeSpinner(testTypeList);
-
+        // Initialize ControlSpinnerFields
+        contentBinding.sampleSampleMaterial.initializeSpinner(sampleMaterialList);
+        contentBinding.sampleSuggestedTypeOfTest.initializeSpinner(sampleTestTypeList);
         contentBinding.sampleSampleSource.initializeSpinner(sampleSourceList);
-
-        contentBinding.sampleSampleMaterial.initializeSpinner(sampleMaterialList, null, new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                SampleMaterial material = (SampleMaterial) field.getValue();
-
-                if (material == SampleMaterial.OTHER) {
-                    contentBinding.sampleSampleMaterialText.setVisibility(View.VISIBLE);
-                } else {
-                    contentBinding.sampleSampleMaterialText.setVisibility(View.INVISIBLE);
-                    contentBinding.sampleSampleMaterialText.setValue("");
-                }
-            }
-        });
-
-        contentBinding.sampleLab.initializeSpinner(DataUtils.toItems(labList), null, new ValueChangeListener() {
+        contentBinding.sampleLab.initializeSpinner(DataUtils.toItems(labList), new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
                 Facility laboratory = (Facility) field.getValue();
-
                 if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
                     contentBinding.sampleLabDetails.setVisibility(View.VISIBLE);
                 } else {
-                    contentBinding.sampleLabDetails.setVisibility(View.GONE);
-                    contentBinding.sampleLabDetails.setValue("");
+                    contentBinding.sampleLabDetails.hideField(true);
                 }
             }
         });
 
+        // Initialize ControlDateFields and ControlDateTimeFields
         contentBinding.sampleSampleDateTime.initializeDateTimeField(getFragmentManager());
         contentBinding.sampleShipmentDate.initializeDateField(getFragmentManager());
-
     }
 
     @Override
@@ -108,7 +95,4 @@ public class SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutB
         return R.layout.fragment_sample_new_layout;
     }
 
-    public static SampleNewFragment newInstance(SampleFormNavigationCapsule capsule, Sample activityRootData) {
-        return newInstance(SampleNewFragment.class, capsule, activityRootData);
-    }
 }

@@ -19,7 +19,7 @@
 
         <!---->
         <LinearLayout
-            android:id="@+id/rowListItem"
+            android:id="@+id/row_item"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -42,7 +42,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="top|right"
-                    android:textSize="@dimen/listActivityRowDateTextSize"
+                    android:textSize="@dimen/row_entry_date_text_size"
                     android:textColor="@color/listActivityRowDateText"
                     android:fontFamily="sans-serif"
                     app:dueTimeAgoValue="@{data}"
@@ -106,9 +106,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/contentHorizontalSpacing"
                         android:gravity="center_vertical"
-                        android:textSize="@dimen/listActivityRowStatusTextSize"
+                        android:textSize="@dimen/row_entry_status_text_size"
                         android:textAllCaps="true"
-                        android:textColor="@color/listActivityRowStatusText"
+                        android:textColor="@color/row_entry_status_text"
                         android:fontFamily="sans-serif-medium"
                         app:value="@{data.priority}"
                         app:defaultValue='@{@string/task_priority_unknown}'
@@ -130,9 +130,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/contentHorizontalSpacing"
                         android:gravity="center_vertical"
-                        android:textSize="@dimen/listActivityRowStatusTextSize"
+                        android:textSize="@dimen/row_entry_status_text_size"
                         android:textAllCaps="true"
-                        android:textColor="@color/listActivityRowStatusText"
+                        android:textColor="@color/row_entry_status_text"
                         android:fontFamily="sans-serif-medium"
                         app:value="@{data.taskStatus}"
                         app:defaultValue='@{@string/task_status_unknown}'/>

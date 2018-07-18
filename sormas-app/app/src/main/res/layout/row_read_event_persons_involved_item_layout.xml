@@ -20,7 +20,7 @@
         <!--android:clickable="true"
         android:onClick="@{(view) -> callback.onListItemClick(view, position, data)}"-->
         <LinearLayout
-            android:id="@+id/rowListItem"
+            android:id="@+id/row_item"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -85,8 +85,8 @@
                         android:layout_weight="1"
                         android:gravity="top"
                         android:layout_marginBottom="@dimen/listActivityRowSecondaryTextMarginBottom"
-                        android:textSize="@dimen/listActivityRowSecondaryTextSize"
-                        android:textColor="@color/listActivityRowSecondaryText"
+                        android:textSize="@dimen/row_entry_secondary_text_size"
+                        android:textColor="@color/row_entry_secondary_text"
                         app:value="@{data.involvementDescription.toString()}"
                         app:defaultValue='@{@string/involvement_desc_unknown}'
                         />

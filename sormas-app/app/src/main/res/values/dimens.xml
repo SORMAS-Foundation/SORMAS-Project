@@ -4,7 +4,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="activity_vertical_margin_inv">-16dp</dimen>
 
-    <dimen name="field_caption_size">17dp</dimen>
+    <dimen name="field_caption_size">17sp</dimen>
     <dimen name="field_radio_font_size">11dp</dimen>
     <dimen name="field_caption_margin_left">4dp</dimen>
     <dimen name="field_caption_margin_bottom">0dp</dimen>
@@ -16,6 +16,7 @@
     <dimen name="field_padding_8">8dp</dimen>
     <dimen name="field_yes_no_caption_margin_top">5dp</dimen>
     <dimen name="list_item_margin_bottom">15dp</dimen>
+    <dimen name="empty_list_hint_size">16sp</dimen>
 
     <!-- ***************************************************** -->
 
@@ -252,11 +253,13 @@
 
 
     <!-- List Layoutrs -->
+    <dimen name="rowListItemPadding">24dp</dimen>
     <dimen name="rowListItemHorizontalMargin">24dp</dimen>
     <dimen name="rowListItemHorizontalPadding">24dp</dimen>
     <dimen name="rowListItemVerticalPadding">24dp</dimen>
     <dimen name="rowListItemParentElevationVerticalPadding">4dp</dimen>
     <dimen name="rowListItemParentElevationHorizontalPadding">4dp</dimen>
+    <dimen name="rowListItemParentPadding">4dp</dimen>
     <!-- ************************************************* -->
     <dimen name="listActivityRowItemBorderWidth">1dp</dimen>
     <dimen name="listActivityRowItemBorderTop">-1dp</dimen>
@@ -372,11 +375,11 @@
 
 
     <dimen name="listActivityRowPrimaryTextSize">16sp</dimen>
-    <dimen name="listActivityRowSecondaryTextSize">14sp</dimen>
+    <dimen name="row_entry_secondary_text_size">14sp</dimen>
     <dimen name="listActivityRowSecondaryTextMarginBottom">8dp</dimen>
     <dimen name="listActivityRowTertiaryTextSize">12sp</dimen>
-    <dimen name="listActivityRowStatusTextSize">12sp</dimen>
-    <dimen name="listActivityRowDateTextSize">12sp</dimen>
+    <dimen name="row_entry_status_text_size">12sp</dimen>
+    <dimen name="row_entry_date_text_size">12sp</dimen>
 
 
     <dimen name="sectionListRowStrokeWidth">1dp</dimen>

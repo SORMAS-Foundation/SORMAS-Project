@@ -1,315 +1,238 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
     android:descendantFocusability="beforeDescendants"
     android:id="@+id/base_layout">
 
     <data>
-        <import type="de.symeda.sormas.app.util.SampleHelper" />
-        <import type="de.symeda.sormas.app.core.YesNo" />
+        <import type="de.symeda.sormas.api.sample.SpecimenCondition" />
+        <import type="de.symeda.sormas.api.sample.SampleMaterial" />
+        <import type="de.symeda.sormas.api.Disease" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.Sample"/>
-        <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
-        <variable name="lab" type="de.symeda.sormas.app.backend.facility.Facility"/>
-        <variable name="results" type="android.databinding.ObservableList&lt;de.symeda.sormas.app.backend.sample.SampleTest&gt;" />
-        <variable
-            name="recentTestItemClickCallback"
-            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
-
-
-        <variable name="yesNoClass" type="Class" />
-
-        <variable
-            name="referralLinkCallback"
-            type="de.symeda.sormas.app.component.OnLinkClickListener" />
+        <variable name="sampleTest" type="de.symeda.sormas.app.backend.sample.SampleTest" />
     </data>
-
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
 
-            <!--android:paddingBottom="@dimen/parentLayoutVerticalMargin"-->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="@dimen/parentLayoutVerticalMargin"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                >
+                android:padding="@dimen/fragment_padding"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:id="@+id/main_content">
 
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_person"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:value="@{data.associatedCase.person}" />
-
-
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/sample_sampleCode"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:value="@={data.sampleCode}" />
-
-
-                <de.symeda.sormas.app.component.controls.ControlDateTimeField
-                    android:id="@+id/sample_sampleDateTime"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:dateHint="@string/hint_sample_date_of_sampling"
-                    app:timeHint="@string/hint_sample_time_of_sampling"
-                    app:required="true"
-                    app:value="@={data.sampleDateTime}" />
-
+                <requestFocus/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/sample_casePersonName"
+                        app:value="@{data.associatedCase.person}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_disease"
+                        app:value="@{data.associatedCase.disease}"
+                        app:appendValue="@{data.associatedCase.diseaseDetails}"
+                        app:valueFormat="@string/two_strings_with_hyphen_format"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/sample_sampleCode"
+                    app:value="@={data.sampleCode}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateTimeField
+                    android:id="@+id/sample_sampleDateTime"
+                    app:dateHint="@string/hint_sample_date_of_sampling"
+                    app:timeHint="@string/hint_sample_time_of_sampling"
+                    app:required="true"
+                    app:value="@={data.sampleDateTime}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/sample_sampleMaterial"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/textControlMarginBottom"
                         app:required="true"
-                        app:value="@={data.sampleMaterial}" />
+                        app:value="@={data.sampleMaterial}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextEditField
                         android:id="@+id/sample_sampleMaterialText"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:layout_marginStart="@dimen/control_spacing"
                         app:required="true"
-                        app:value="@={data.sampleMaterialText}" />
+                        app:value="@={data.sampleMaterialText}"
+                        app:dependencyParentField="@{sampleSampleMaterial}"
+                        app:dependencyParentValue="@{SampleMaterial.OTHER}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/sample_sampleSource"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:value="@={data.sampleSource}" />
-
+                    app:value="@={data.sampleSource}"
+                    app:softRequired="true"
+                    app:dependencyParentField="@{caseDataDisease}"
+                    app:dependencyParentValue="@{Disease.NEW_INFLUENCA}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/sample_suggestedTypeOfTest"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:value="@={data.suggestedTypeOfTest}" />
-
+                    app:value="@={data.suggestedTypeOfTest}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/sample_lab"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
                     app:required="true"
-                    app:value="@={data.lab}" />
+                    app:value="@={data.lab}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/sample_labDetails"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
                     app:required="true"
-                    app:value="@={data.labDetails}" />
+                    app:value="@={data.labDetails}"
+                    style="@style/ControlSingleColumnStyle" />
 
-                <ImageView android:id="@+id/divShippingStatusTop" style="@style/MiniHorizontalDividerStyle"/>
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/sample_comment"
+                    app:value="@={data.comment}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <ImageView style="@style/FullHorizontalDividerStyle"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                         android:id="@+id/sample_shipped"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        app:value="@={data.shipped}" />
-
+                        app:value="@={data.shipped}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlDateField
                         android:id="@+id/sample_shipmentDate"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/textControlMarginBottom"
-                        android:layout_marginStart="@dimen/control_spacing"
                         app:required="true"
-                        app:value="@={data.shipmentDate}" />
+                        app:value="@={data.shipmentDate}"
+                        app:dependencyParentField="@{sampleShipped}"
+                        app:dependencyParentValue="@{true}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/sample_shipmentDetails"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:value="@={data.shipmentDetails}" />
+                    app:value="@={data.shipmentDetails}"
+                    app:dependencyParentField="@{sampleShipped}"
+                    app:dependencyParentValue="@{true}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <ImageView style="@style/FullHorizontalDividerStyle"/>
 
                 <LinearLayout
-                    android:id="@+id/sampleReceivedLayout"
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone">
+                    android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/heading_sub_sample_received"
-                        style="@style/SubHeadingStyle"
-                        />
+                    <de.symeda.sormas.app.component.controls.ControlTextImageField
+                        android:id="@+id/sample_received"
+                        app:receivedStatus="@{data}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/sample_labSampleID"
+                        app:value="@{data.labSampleID}"
+                        app:dependencyParentField="@{sampleReceived}"
+                        app:dependencyParentValue="@{true}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
 
-                        <de.symeda.sormas.app.component.controls.ControlTextReadField
-                            android:id="@+id/sample_labSampleID"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            app:value="@{data.labSampleID}" />
+                </LinearLayout>
 
-                        <de.symeda.sormas.app.component.controls.ControlTextReadField
-                            android:id="@+id/sample_receivedDate"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="@dimen/control_spacing"
-                            android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                            app:value="@{data.receivedDate}" />
-
-                    </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/sample_specimenCondition"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:value="@{data.specimenCondition}" />
+                        app:value="@{data.specimenCondition}"
+                        app:dependencyParentField="@{sampleReceived}"
+                        app:dependencyParentValue="@{true}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/sample_noTestPossibleReason"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:value="@{data.noTestPossibleReason}" />
+                        app:value="@{data.noTestPossibleReason}"
+                        app:dependencyParentField="@{sampleSpecimenCondition}"
+                        app:dependencyParentValue="@{SpecimenCondition.NOT_ADEQUATE}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
 
 
-                <ImageView android:id="@+id/divShippingStatusBottom" style="@style/MiniHorizontalDividerStyle"/>
-
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/sample_comment"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:value="@={data.comment}" />
-
-                <de.symeda.sormas.app.component.controls.ControlLinkField
-                    android:id="@+id/sample_referredTo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
-                    app:defaultValue="@string/no_referral" />
-
+                <!-- TODO: Re-enable and test after issue #699 has been done -->
+                <!--<de.symeda.sormas.app.component.controls.ControlLinkField-->
+                <!--android:id="@+id/sample_referredTo"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginBottom="@dimen/textControlMarginBottom"-->
+                <!--app:defaultValue="@string/no_referral" />-->
 
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/recent_test_layout"
+                android:id="@+id/most_recent_test_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@color/formListSectionBackground"
-                android:paddingTop="@dimen/parentLayoutVerticalMargin"
-                android:paddingBottom="@dimen/parentLayoutVerticalMargin"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                >
+                android:padding="@dimen/fragment_padding">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/heading_sub_recent_tests"
-                    style="@style/SubHeadingStyle"
-                    />
+                    android:text="@string/heading_sub_most_recent_test"
+                    style="@style/SubHeadingStyle" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:clipToPadding="false"
-                    android:paddingTop="@dimen/rowListItemParentElevationVerticalPadding"
-                    android:paddingBottom="@dimen/rowListItemParentElevationVerticalPadding"
-                    android:paddingLeft="@dimen/rowListItemParentElevationHorizontalPadding"
-                    android:paddingRight="@dimen/rowListItemParentElevationHorizontalPadding"
-                    app:entries="@{results}"
-                    app:layout="@{@layout/row_samples_recent_test_layout}"
-                    app:callback="@{recentTestItemClickCallback}"
-                    />
-
-                <!--<de.symeda.sormas.app.component.TeboHint
-                    android:id="@+id/sample_no_recent_test_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:visibility="gone"
-                    app:singleLine="false"
-                    app:maxLines="5"
-                    app:inputType="textMultiLine"
-                    app:labelCaption="@string/no_recent_test"
-                    app:description="@string/no_recent_test"
-                    app:value="@{@string/symptoms_infoText}"
-                    />-->
+                <include
+                    android:id="@+id/most_recent_test"
+                    layout="@layout/row_sample_test_layout"
+                    app:data="@{sampleTest}"
+                    android:padding="@dimen/rowListItemParentPadding" />
 
                 <TextView
+                    android:id="@+id/no_recent_test"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/no_recent_test"
-                    android:id="@+id/sample_no_recent_test_text"
                     android:textColor="@android:color/tab_indicator_text"
-                    android:textSize="@dimen/field_caption_size"
-                    android:paddingBottom="10dp"
-                    android:visibility="gone" />
-
+                    android:textSize="@dimen/empty_list_hint_size" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-
     </ScrollView>
-
-
-
 
 </layout>
 

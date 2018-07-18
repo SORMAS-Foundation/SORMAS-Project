@@ -203,9 +203,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         label.setEnabled(enabled);
     }
 
-
     public static void setValue(ControlTextReadField textField, String stringValue, String appendValue, String valueFormat, String defaultValue, Object originalValue) {
-
         if (StringUtils.isEmpty(stringValue)) {
             textField.setValue(getDefaultValue(defaultValue), originalValue);
         } else {

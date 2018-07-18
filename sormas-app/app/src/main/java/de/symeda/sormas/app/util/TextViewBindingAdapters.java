@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.util;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableList;
@@ -36,6 +37,8 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.core.TimeAgo;
+import de.symeda.sormas.app.core.enumeration.SampleTestResultTypeElaborator;
+import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 
 public class TextViewBindingAdapters {
 
@@ -788,27 +791,14 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter("testType")
-    public static void setTestType(TextView textView, SampleTestType testType) {
-        if (testType != null) {
-            textView.setText(testType.name());
-        }
-    }
-
     @BindingAdapter("resultType")
     public static void setResultType(TextView textView, SampleTestResultType resultType) {
         if (resultType != null) {
+            Context context = textView.getContext();
+            SampleTestResultTypeElaborator elaborator =
+                    (SampleTestResultTypeElaborator) StatusElaboratorFactory.getElaborator(context, resultType);
             textView.setText(resultType.name());
-
-            if (resultType == SampleTestResultType.POSITIVE) {
-                textView.setTextColor(textView.getContext().getResources().getColor(R.color.samplePositive));
-            } else if (resultType == SampleTestResultType.NEGATIVE) {
-                textView.setTextColor(textView.getContext().getResources().getColor(R.color.sampleNegative));
-            } else if (resultType == SampleTestResultType.PENDING) {
-                textView.setTextColor(textView.getContext().getResources().getColor(R.color.samplePending));
-            } else if (resultType == SampleTestResultType.INDETERMINATE) {
-                textView.setTextColor(textView.getContext().getResources().getColor(R.color.sampleIndeterminate));
-            }
+            textView.setTextColor(context.getResources().getColor(elaborator.getColorIndicatorResource()));
         }
     }
 

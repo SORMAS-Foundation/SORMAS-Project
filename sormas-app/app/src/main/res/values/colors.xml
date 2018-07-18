@@ -444,9 +444,9 @@
     <color name="listActivityRowFocusedBackground">@color/listItemPressed</color>
     <color name="listActivityRowSelectedBackground">@color/listItemPressed</color>
     <color name="listActivityRowPrimaryText">@color/normalText</color>
-    <color name="listActivityRowSecondaryText">@color/normalText</color>
+    <color name="row_entry_secondary_text">@color/normalText</color>
     <color name="listActivityRowTertiaryText">@color/blue</color>
-    <color name="listActivityRowStatusText">@color/normalText</color>
+    <color name="row_entry_status_text">@color/normalText</color>
     <color name="listActivityRowDateText">@color/normalText80</color>
     <color name="listActivityRowLeastText">@color/normalText80</color>
 
