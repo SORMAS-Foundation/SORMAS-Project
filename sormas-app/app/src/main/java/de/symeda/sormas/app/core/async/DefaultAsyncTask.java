@@ -48,7 +48,7 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
         } catch (ValidationException val) {
             return new AsyncTaskResult<>(val);
         } catch (Exception e) {
-            return handleUnexpectedException(e);
+            return handleException(e);
         }
     }
 
@@ -59,7 +59,7 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
         }
     }
 
-    protected AsyncTaskResult handleUnexpectedException(Exception e) {
+    protected AsyncTaskResult handleException(Exception e) {
         Log.e(getClass().getName(), "Error executing an async task", e);
         Log.e(getClass().getName(), "- root cause: ", ErrorReportingHelper.getRootCause(e));
 
@@ -69,6 +69,10 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
         }
 
         return new AsyncTaskResult<>(e);
+    }
+
+    protected  WeakReference<SormasApplication> getApplicationReference() {
+        return applicationReference;
     }
 
     @Deprecated

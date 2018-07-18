@@ -977,6 +977,17 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
     }
 
+    public boolean isEmpty() {
+
+        try {
+            ADO result = queryBuilder().queryForFirst();
+            return result == null;
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform isEmpty");
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * @see Dao#queryForAll()
      */

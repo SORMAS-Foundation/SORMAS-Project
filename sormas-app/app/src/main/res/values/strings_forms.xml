@@ -1165,6 +1165,7 @@
     <string name="heading_sub_confirmation_notification_dialog">Are you sure you want to do this?</string>
     <string name="heading_sub_confirmation_notification_dialog_delete">Are you sure you want to delete this record?</string>
     <string name="heading_sub_confirmation_notification_dialog_pick_gps">Are you in this place right now?</string>
+    <string name="heading_sub_confirmation_notification_dialog_resync">Re-sync will probably take several minutes.</string>
     <!-- ........................................................................ -->
 
 

@@ -1,6 +1,5 @@
 package de.symeda.sormas.app.settings;
 
-import android.accounts.AuthenticatorException;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,29 +11,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.net.ConnectException;
-
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.BaseLandingFragment;
-import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.SyncLogDialog;
 import de.symeda.sormas.app.component.dialog.TeboProgressDialog;
-import de.symeda.sormas.app.core.Callback;
-import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
-import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.core.notification.NotificationPosition;
-import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
+import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
-import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.util.AppUpdateController;
+import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
-import de.symeda.sormas.app.util.SyncCallback;
 
 /**
  * Created by Orson on 03/11/2017.
@@ -124,54 +114,22 @@ public class SettingsFragment extends BaseLandingFragment {
         startActivity(intent);
     }
 
-    /**
-     * Only possible when server connection is available
-     */
     private void repullData(View view) {
 
-        if (!RetroProvider.isConnected()) {
-            try {
-                RetroProvider.connect(getContext());
-            } catch (AuthenticatorException e) {
-                //Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                NotificationHelper.showNotification((NotificationContext)getActivity(), NotificationPosition.BOTTOM, NotificationType.ERROR, e.getMessage());
-            } catch (RetroProvider.ApiVersionException e) {
-                if (e.getAppUrl() != null) {
-                    //TODO: Orson Remove Version Check
-                    AppUpdateController.getInstance().updateApp(this.getActivity(), e.getAppUrl(), e.getVersion(), true, null);
-                    return;
-                } else {
-                    //Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                    NotificationHelper.showNotification((NotificationContext)getActivity(), NotificationPosition.BOTTOM, NotificationType.ERROR, e.getMessage());
-                }
-            } catch (ConnectException e) {
-                //Snackbar.make(getActivity().findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                NotificationHelper.showNotification((NotificationContext)getActivity(), NotificationPosition.BOTTOM, NotificationType.ERROR, e.getMessage());
+        final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
+                R.string.heading_confirmation_dialog,
+                R.string.heading_sub_confirmation_notification_dialog_resync);
+
+        confirmationDialog.setOnPositiveClickListener(new de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface.PositiveOnClickListener() {
+            @Override
+            public void onOkClick(View v, Object confirmationItem, View viewRoot) {
+                confirmationDialog.dismiss();
+
+                getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.CompleteAndRepull, true, true, null, null);
             }
-        }
+        });
 
-        if (RetroProvider.isConnected()) {
-            progressDialog.show(new Callback.IAction<AlertDialog>() {
-                @Override
-                public void call(AlertDialog result) {
-
-                }
-            });
-            //binding.configProgressBar.setVisibility(View.VISIBLE);
-
-            DatabaseHelper.clearTables(false);
-            SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.CompleteAndRepull, getContext(), new SyncCallback() {
-                @Override
-                public void call(boolean syncFailed, String syncFailedMessage) {
-                    SettingsFragment.this.onResume();
-                    progressDialog.dismiss();
-                    //binding.configProgressBar.setVisibility(View.GONE);
-                }
-            });
-        } else {
-            //Snackbar.make(getActivity().findViewById(R.id.base_layout), R.string.snackbar_no_connection, Snackbar.LENGTH_LONG).show();
-            NotificationHelper.showNotification((NotificationContext)getActivity(), NotificationPosition.BOTTOM, NotificationType.ERROR, R.string.snackbar_no_connection);
-        }
+        confirmationDialog.show(null);
     }
 
     public void openSyncLog(View view) {

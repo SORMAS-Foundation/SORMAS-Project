@@ -360,7 +360,7 @@ public final class ConfigProvider {
                     }
 
                     if (instance.serverRestUrl == null) {
-                        setServerRestUrl("http://192.168.1.6:6080/sormas-rest/");
+                        setServerRestUrl("https://sormas.org.ng/sormas-rest/");
                     }
                 }
             }

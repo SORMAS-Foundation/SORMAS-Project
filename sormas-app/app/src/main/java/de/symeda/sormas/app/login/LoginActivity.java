@@ -1,21 +1,18 @@
 package de.symeda.sormas.app.login;
 
-import android.accounts.AuthenticatorException;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import java.net.ConnectException;
-
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.databinding.ActivityLoginLayoutBinding;
@@ -23,7 +20,7 @@ import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.util.AppUpdateController;
-import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.NavigationHelper;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
@@ -130,46 +127,38 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     }
 
     private void processLogin(boolean checkLoginAndVersion) {
-        // try to connect -> validates login and version
-        if (checkLoginAndVersion && ConfigProvider.getUsername() != null) {
-            boolean versionCompatible = false;
-            try {
-                RetroProvider.connect(getApplicationContext());
-                versionCompatible = true;
-                RetroProvider.matchAppAndApiVersions();
-            } catch (AuthenticatorException e) {
-                // clear login data if authentication failed
-                ConfigProvider.clearUsernameAndPassword();
-                Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-            } catch (RetroProvider.ApiVersionException e) {
-                if (e.getAppUrl() != null && !e.getAppUrl().isEmpty()) {
-                    boolean canWorkOffline = ConfigProvider.getUser() != null;
-                    AppUpdateController.getInstance().updateApp(this, e.getAppUrl(), e.getVersion(), versionCompatible || canWorkOffline,
-                            new Callback() {
-                                @Override
-                                public void call() {
-                                    if (ConfigProvider.getUser() != null || RetroProvider.isConnected()) {
-                                        processLogin(false);
-                                    } else {
-                                        closeApp();
-                                    }
-                                }
-                            }
-                    );
-                    return;
-                } else {
-                    Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-                }
-            } catch (ConnectException e) {
-                Snackbar.make(findViewById(R.id.base_layout), e.getMessage(), Snackbar.LENGTH_LONG).show();
-            }
+
+        if (progressDialog == null || !progressDialog.isShowing()) {
+            progressDialog = ProgressDialog.show(this, getString(R.string.headline_synchronization),
+                    getString(R.string.hint_synchronization), true);
         }
 
+        // try to connect -> validates login and version
+        if (checkLoginAndVersion && ConfigProvider.getUsername() != null) {
+            RetroProvider.connectAsyncHandled(this, true, true,
+                    new Consumer<Boolean>() {
+                        @Override
+                        public void accept(Boolean result) {
+                            if (ConfigProvider.getUser() != null || RetroProvider.isConnected()) {
+                                processLogin(false);
+                            } else {
+                                if (progressDialog != null && progressDialog.isShowing()) {
+                                    progressDialog.dismiss();
+                                    progressDialog = null;
+                                }
+                            }
+                        }
+                    });
+            return;
+        }
+
+        boolean hideProgressDialog = true;
         if (ConfigProvider.getUsername() != null) {
             // valid login
-            if (ConfigProvider.getUser() == null) {
-                // no user yet? sync...
-                progressDialog = SynchronizeDataAsync.callWithProgressDialog(SynchronizeDataAsync.SyncMode.Changes, LoginActivity.this, new SyncCallback() {
+            if (ConfigProvider.getUser() == null
+                    || DatabaseHelper.getCaseDao().isEmpty()) {
+                // no user or data yet? sync...
+                SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.Changes, LoginActivity.this, new SyncCallback() {
                     @Override
                     public void call(boolean syncFailed, String syncFailedMessage) {
                         if (ConfigProvider.getUser() != null) {
@@ -177,13 +166,20 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                         }
                     }
                 });
+                hideProgressDialog = false;
             } else {
                 openLandingActivity();
             }
         }
+
+        if (hideProgressDialog && progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+            progressDialog = null;
+        }
     }
 
     private void openLandingActivity() {
+
         Intent intent;
         if (ConfigProvider.getUser().hasUserRole(UserRole.CONTACT_OFFICER)) {
             NavigationHelper.goToContacts(LoginActivity.this);

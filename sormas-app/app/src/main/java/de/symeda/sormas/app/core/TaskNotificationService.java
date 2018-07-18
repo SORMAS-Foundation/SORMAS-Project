@@ -67,27 +67,30 @@ public class TaskNotificationService extends Service {
         BaseActivity activeActivity = BaseActivity.getActiveActivity();
         if (activeActivity == null || !activeActivity.isEditing()) {
 
-            if (!RetroProvider.isConnected()) {
-                try {
-                    RetroProvider.connect(getApplicationContext());
-                } catch (AuthenticatorException e) {
-                    // do nothing
-                } catch (RetroProvider.ApiVersionException e) {
-                    // do nothing
-                } catch (ConnectException e) {
-                    // do nothing
-                }
-            }
-
-            if (RetroProvider.isConnected()) {
-                SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.Changes, this, new SyncCallback() {
-                    @Override
-                    public void call(boolean syncFailed, String syncFailedMessage) {
-                        if (syncFailed) {
-                            RetroProvider.disconnect();
-                        }
+            if (ConfigProvider.getUser() != null) {
+                // only when we do have a user
+                if (!RetroProvider.isConnected()) {
+                    try {
+                        RetroProvider.connect(getApplicationContext());
+                    } catch (AuthenticatorException e) {
+                        // do nothing
+                    } catch (RetroProvider.ApiVersionException e) {
+                        // do nothing
+                    } catch (ConnectException e) {
+                        // do nothing
                     }
-                });
+                }
+
+                if (RetroProvider.isConnected()) {
+                    SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.Changes, this, new SyncCallback() {
+                        @Override
+                        public void call(boolean syncFailed, String syncFailedMessage) {
+                            if (syncFailed) {
+                                RetroProvider.disconnect();
+                            }
+                        }
+                    });
+                }
             }
         }
 
