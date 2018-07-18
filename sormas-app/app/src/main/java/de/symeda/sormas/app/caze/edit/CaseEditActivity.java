@@ -115,7 +115,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         saveData(new Consumer<Case>() {
             @Override
             public void accept(Case parameter) {
-                goToNextMenu();
+                goToNextPage();
             }
         });
     }
@@ -124,7 +124,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
         final Case cazeToSave = getStoredRootEntity();
 
-        CaseSection activeSection = CaseSection.fromMenuKey(getActiveMenuItem().getKey());
+        CaseSection activeSection = CaseSection.fromMenuKey(getActivePage().getKey());
         if (activeSection == CaseSection.PERSON_INFO) {
             FragmentPersonEditLayoutBinding personBinding = (FragmentPersonEditLayoutBinding) getActiveFragment().getContentBinding();
             PersonValidator.clearErrors(personBinding);
@@ -178,7 +178,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
     @Override
     public void goToNewView() {
-        CaseSection activeSection = CaseSection.fromMenuKey(getActiveMenuItem().getKey());
+        CaseSection activeSection = CaseSection.fromMenuKey(getActivePage().getKey());
 
         if (activeSection == CaseSection.CONTACTS) {
             ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(),

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -31,12 +30,7 @@ public abstract class BaseDashboardActivity extends BaseActivity {
     private View applicationTitleBar = null;
     private TextView subHeadingListActivityTitle;
 
-    private Map<String, SummaryRegisterItem> mRegisteredFragments = new HashMap<String, SummaryRegisterItem>();
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+    private Map<String, SummaryRegisterItem> activeFragments = new HashMap<String, SummaryRegisterItem>();
 
     @Override
     protected boolean isSubActivitiy() {
@@ -44,14 +38,12 @@ public abstract class BaseDashboardActivity extends BaseActivity {
     }
 
     @Override
-    public boolean openPage(PageMenuItem menuItem) {
+    protected boolean openPage(PageMenuItem menuItem) {
         throw new UnsupportedOperationException();
     }
 
     protected void onCreateInner(Bundle savedInstanceState) {
         subHeadingListActivityTitle = (TextView) findViewById(R.id.subHeadingActivityTitle);
-
-        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getIntent().getBundleExtra(ConstantHelper.ARG_NAVIGATION_CAPSULE_INTENT_DATA);
 
         if (showTitleBar()) {
             applicationTitleBar = findViewById(R.id.applicationTitleBar);
@@ -59,9 +51,6 @@ public abstract class BaseDashboardActivity extends BaseActivity {
         }
 
         fragmentFrame = findViewById(R.id.fragment_frame);
-        if (fragmentFrame != null && savedInstanceState == null) {
-            replaceFragment(getSummaryFragments());
-        }
     }
 
     @Override
@@ -87,6 +76,8 @@ public abstract class BaseDashboardActivity extends BaseActivity {
                 statusFrame.setVisibility(View.VISIBLE);
             }
         }
+
+        replaceFragments(buildSummaryFragments());
     }
 
     public boolean showTitleBar() {
@@ -121,12 +112,12 @@ public abstract class BaseDashboardActivity extends BaseActivity {
         return "";
     }
 
-    protected abstract List<BaseSummaryFragment> getSummaryFragments();
+    protected abstract List<BaseSummaryFragment> buildSummaryFragments();
 
-    private void replaceFragment(List<BaseSummaryFragment> fragments) {
+    private void replaceFragments(List<BaseSummaryFragment> fragments) {
 
-        boolean hadFragments = mRegisteredFragments != null && !mRegisteredFragments.isEmpty();
-        this.mRegisteredFragments.clear();
+        boolean hadFragments = activeFragments != null && !activeFragments.isEmpty();
+        this.activeFragments.clear();
 
         if (fragments != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -144,7 +135,7 @@ public abstract class BaseDashboardActivity extends BaseActivity {
                     continue;
 
                 ft.replace(f.getContainerResId(), f);
-                mRegisteredFragments.put(f.getIdentifier(), new SummaryRegisterItem(f));
+                activeFragments.put(f.getIdentifier(), new SummaryRegisterItem(f));
 
                 //frame.setMinimumHeight(getResources().getDimensionPixelSize(f.getMinHeightResId()));
                 frame.setVisibility(View.VISIBLE);

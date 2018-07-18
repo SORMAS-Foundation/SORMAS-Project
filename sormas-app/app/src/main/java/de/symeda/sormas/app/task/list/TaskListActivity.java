@@ -22,15 +22,12 @@ public class TaskListActivity extends BaseListActivity {
 
     private TaskStatus statusFilters[] = new TaskStatus[]{TaskStatus.PENDING, TaskStatus.DONE, TaskStatus.NOT_EXECUTABLE};
 
-    private TaskStatus filterStatus = null;
     private SearchBy searchBy = null;
     private String recordUuid = null;
-    private BaseListFragment activeFragment = null;
 
     @Override
     protected void onCreateInner(Bundle savedInstanceState) {
         super.onCreateInner(savedInstanceState);
-        filterStatus = (TaskStatus) getFilterStatusArg(savedInstanceState);
         searchBy = (SearchBy) getSearchStrategyArg(savedInstanceState);
         recordUuid = getRecordUuidArg(savedInstanceState);
     }
@@ -39,18 +36,8 @@ public class TaskListActivity extends BaseListActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        saveFilterStatusState(outState, filterStatus);
         saveSearchStrategyState(outState, searchBy);
         saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public BaseListFragment getActiveListFragment() {
-        if (activeFragment == null) {
-            IListNavigationCapsule dataCapsule = new ListNavigationCapsule(TaskListActivity.this, filterStatus, searchBy);
-            activeFragment = TaskListFragment.newInstance(dataCapsule);
-        }
-        return activeFragment;
     }
 
     @Override
@@ -65,17 +52,10 @@ public class TaskListActivity extends BaseListActivity {
     }
 
     @Override
-    protected BaseListFragment getListFragment(PageMenuItem menuItem) {
+    protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
         TaskStatus status = statusFilters[menuItem.getKey()];
-
-        if (status == null)
-            return null;
-
-        filterStatus = status;
-        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(TaskListActivity.this, filterStatus, searchBy);
-
-        activeFragment = TaskListFragment.newInstance(dataCapsule);
-        return activeFragment;
+        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(TaskListActivity.this, status, searchBy);
+        return TaskListFragment.newInstance(dataCapsule);
     }
 
     @Override

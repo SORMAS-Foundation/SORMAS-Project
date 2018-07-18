@@ -26,15 +26,12 @@ public class EventListActivity extends BaseListActivity {
 
     private EventStatus statusFilters[] = new EventStatus[]{EventStatus.POSSIBLE, EventStatus.CONFIRMED, EventStatus.NO_EVENT};
 
-    private EventStatus filterStatus = null;
     private SearchBy searchBy = null;
     private String recordUuid = null;
-    private BaseListFragment activeFragment = null;
 
     @Override
     protected void onCreateInner(Bundle savedInstanceState) {
         super.onCreateInner(savedInstanceState);
-        filterStatus = (EventStatus) getFilterStatusArg(savedInstanceState);
         searchBy = (SearchBy) getSearchStrategyArg(savedInstanceState);
         recordUuid = getRecordUuidArg(savedInstanceState);
     }
@@ -42,20 +39,8 @@ public class EventListActivity extends BaseListActivity {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        saveFilterStatusState(outState, filterStatus);
         saveSearchStrategyState(outState, searchBy);
         saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public BaseListFragment getActiveListFragment() {
-        if (activeFragment == null) {
-            IListNavigationCapsule dataCapsule = new ListNavigationCapsule(EventListActivity.this, filterStatus, searchBy);
-            activeFragment = EventListFragment.newInstance(dataCapsule);
-        }
-
-        return activeFragment;
     }
 
     @Override
@@ -70,24 +55,16 @@ public class EventListActivity extends BaseListActivity {
     }
 
     @Override
-    protected BaseListFragment getListFragment(PageMenuItem menuItem) {
+    protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
         EventStatus status = statusFilters[menuItem.getKey()];
-
-        if (status == null)
-            return null;
-
-        filterStatus = status;
-        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(EventListActivity.this, filterStatus, searchBy);
-
-        activeFragment = EventListFragment.newInstance(dataCapsule);
-        return activeFragment;
+        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(EventListActivity.this, status, searchBy);
+        return EventListFragment.newInstance(dataCapsule);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getNewMenu().setTitle(R.string.action_new_event);
-
         return true;
     }
 
@@ -106,6 +83,7 @@ public class EventListActivity extends BaseListActivity {
     public void goToNewView() {
         EventNewActivity.goToActivity(this);
     }
+
     public static void goToActivity(Context fromActivity, IListNavigationCapsule dataCapsule) {
         BaseListActivity.goToActivity(fromActivity, EventListActivity.class, dataCapsule);
     }

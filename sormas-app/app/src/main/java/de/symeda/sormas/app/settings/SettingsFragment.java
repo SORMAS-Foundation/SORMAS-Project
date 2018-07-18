@@ -230,19 +230,4 @@ public class SettingsFragment extends BaseLandingFragment {
     public RecyclerView.LayoutManager createLayoutManager() {
         return null;
     }
-
-    @Override
-    public int getMenuData() {
-        return -1;
-    }
-
-    @Override
-    public boolean onPageMenuClick(AdapterView parent, View view, PageMenuItem menuItem, int position, long id) {
-        return false;
-    }
-
-    @Override
-    public int onNotificationCountChangingAsync(AdapterView parent, PageMenuItem menuItem, int position) {
-        return 0;
-    }
 }

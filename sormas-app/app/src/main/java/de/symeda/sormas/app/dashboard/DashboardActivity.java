@@ -23,7 +23,7 @@ public class DashboardActivity extends BaseDashboardActivity {
     private List<BaseSummaryFragment> activeFragments = null;
 
     @Override
-    protected List<BaseSummaryFragment> getSummaryFragments() {
+    protected List<BaseSummaryFragment> buildSummaryFragments() {
         if (activeFragments == null) {
             activeFragments = new ArrayList<BaseSummaryFragment>() {{
                 add(TaskSummaryFragment.newInstance(new DashboardNavigationCapsule(DashboardActivity.this)));

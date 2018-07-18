@@ -52,7 +52,6 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
         saveRootEntityUuidState(outState, initialRootEntityUuid);
     }
 
@@ -80,7 +79,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         requestRootData(new Consumer<ActivityRootEntity>() {
             @Override
             public void accept(ActivityRootEntity result) {
-                replaceFragment(buildEditFragment(getActiveMenuItem(), result));
+                replaceFragment(buildEditFragment(getActivePage(), result));
             }
         });
     }
@@ -181,7 +180,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         String subHeadingTitle = "";
 
         if (activeFragment != null) {
-            subHeadingTitle = (getActiveMenuItem() == null) ? activeFragment.getSubHeadingTitle() : getActiveMenuItem().getTitle();
+            subHeadingTitle = (getActivePage() == null) ? activeFragment.getSubHeadingTitle() : getActivePage().getTitle();
         }
 
         setSubHeadingTitle(subHeadingTitle);
@@ -302,15 +301,11 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     protected abstract BaseEditFragment buildEditFragment(PageMenuItem menuItem, ActivityRootEntity activityRootData);
 
     @Override
-    public boolean openPage(PageMenuItem menuItem) {
+    protected boolean openPage(PageMenuItem menuItem) {
         BaseEditFragment newActiveFragment = buildEditFragment(menuItem, storedRootEntity);
-
         if (newActiveFragment == null)
             return false;
-
-        setPageMenuItem(menuItem);
         replaceFragment(newActiveFragment);
-
         return true;
     }
 

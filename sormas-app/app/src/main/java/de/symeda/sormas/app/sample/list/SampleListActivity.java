@@ -25,14 +25,11 @@ public class SampleListActivity extends BaseListActivity {
             ShipmentStatus.RECEIVED, ShipmentStatus.REFERRED_OTHER_LAB
     };
 
-    private ShipmentStatus filterStatus = null;
     private SearchBy searchBy = null;
-    private BaseListFragment activeFragment = null;
     private String recordUuid = null;
 
     @Override
     protected void onCreateInner(Bundle savedInstanceState) {
-        filterStatus = (ShipmentStatus) getFilterStatusArg(savedInstanceState);
         searchBy = (SearchBy) getSearchStrategyArg(savedInstanceState);
         recordUuid = getRecordUuidArg(savedInstanceState);
         super.onCreateInner(savedInstanceState);
@@ -42,19 +39,8 @@ public class SampleListActivity extends BaseListActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        saveFilterStatusState(outState, filterStatus);
         saveSearchStrategyState(outState, searchBy);
         saveRecordUuidState(outState, recordUuid);
-    }
-
-    @Override
-    public BaseListFragment getActiveListFragment() {
-        if (activeFragment == null) {
-            IListNavigationCapsule dataCapsule = new ListNavigationCapsule(SampleListActivity.this, filterStatus, searchBy);
-            activeFragment = SampleListFragment.newInstance(dataCapsule);
-        }
-
-        return activeFragment;
     }
 
     @Override
@@ -69,17 +55,10 @@ public class SampleListActivity extends BaseListActivity {
     }
 
     @Override
-    protected BaseListFragment getListFragment(PageMenuItem menuItem) {
+    protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
         ShipmentStatus status = statusFilters[menuItem.getKey()];
-
-        if (status == null)
-            return null;
-
-        filterStatus = status;
-        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(SampleListActivity.this, filterStatus, searchBy);
-
-        activeFragment = SampleListFragment.newInstance(dataCapsule);
-        return activeFragment;
+        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(SampleListActivity.this, status, searchBy);
+        return SampleListFragment.newInstance(dataCapsule);
     }
 
     @Override

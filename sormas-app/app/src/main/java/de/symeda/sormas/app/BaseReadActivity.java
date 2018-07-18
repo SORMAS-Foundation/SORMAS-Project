@@ -106,7 +106,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         requestRootData(new Callback.IAction<ActivityRootEntity>() {
             @Override
             public void call(ActivityRootEntity result) {
-                replaceFragment(buildReadFragment(getActiveMenuItem(), result));
+                replaceFragment(buildReadFragment(getActivePage(), result));
             }
         });
     }
@@ -121,7 +121,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     @Override
     public void updateSubHeadingTitle() {
         String subHeadingTitle = "";
-        PageMenuItem activeMenu = getActiveMenuItem();
+        PageMenuItem activeMenu = getActivePage();
 
         if (activeFragment != null) {
             subHeadingTitle = (activeMenu == null) ? activeFragment.getSubHeadingTitle() : activeMenu.getTitle();
@@ -275,15 +275,11 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     }
 
     @Override
-    public boolean openPage(PageMenuItem menuItem) {
+    protected boolean openPage(PageMenuItem menuItem) {
         BaseReadFragment newActiveFragment = buildReadFragment(menuItem, storedRootEntity);
-
         if (newActiveFragment == null)
             return false;
-
-        setPageMenuItem(menuItem);
         replaceFragment(newActiveFragment);
-
         return true;
     }
 

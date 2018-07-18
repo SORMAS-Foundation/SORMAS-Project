@@ -46,8 +46,8 @@ public class PageMenuControl extends LinearLayout {
 
     private AsyncTask updateNotificationCountTask;
     private NotificationCountChangingListener mOnNotificationCountChangingListener;
-    private PageMenuClickListener mOnLandingPageMenuClickListener;
-    private SelectInitialPageMenuItemListener mOnSelectInitialActiveMenuItemListener;
+    private PageMenuClickListener pageMenuClickListener;
+    private PageMenuInitialSelectionProvider pageMenuInitialSelectionProvider;
 
     private PageMenuAdapter adapter;
     private List<PageMenuItem> menuList;
@@ -193,7 +193,7 @@ public class PageMenuControl extends LinearLayout {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
-                    performLandingPageMenuItemClick(parent, view, menuList.get(position), position, id);
+                    performPageMenuItemClick(parent, view, menuList.get(position), position, id);
                 } catch (InstantiationException e) {
                     Log.e(TAG, e.getMessage());
                 } catch (IllegalAccessException e) {
@@ -311,29 +311,29 @@ public class PageMenuControl extends LinearLayout {
         return result;
     }
 
-    public void setOnLandingPageMenuClickListener(@Nullable PageMenuClickListener listener) {
-        mOnLandingPageMenuClickListener = listener;
+    public void setPageMenuClickListener(@Nullable PageMenuClickListener pageMenuClickListener) {
+        this.pageMenuClickListener = pageMenuClickListener;
     }
 
     @Nullable
-    public final PageMenuClickListener getOnLandingPageMenuClickListener() {
-        return mOnLandingPageMenuClickListener;
+    public final PageMenuClickListener getPageMenuClickListener() {
+        return pageMenuClickListener;
     }
 
-    public void setOnSelectInitialActiveMenuItem(@Nullable SelectInitialPageMenuItemListener listener) {
-        mOnSelectInitialActiveMenuItemListener = listener;
+    public void setPageMenuInititalSelectionProvider(@Nullable PageMenuInitialSelectionProvider pageMenuInitialSelectionProvider) {
+        this.pageMenuInitialSelectionProvider = pageMenuInitialSelectionProvider;
     }
 
     @Nullable
-    public final SelectInitialPageMenuItemListener getOnSelectInitialActiveMenuItemListener() {
-        return mOnSelectInitialActiveMenuItemListener;
+    public final PageMenuInitialSelectionProvider getPageMenuInitialSelectionProvider() {
+        return pageMenuInitialSelectionProvider;
     }
 
     public boolean selectInitialActiveMenuItem() {
         boolean returnVal = false;
         PageMenuItem result = null;
-        if (mOnSelectInitialActiveMenuItemListener != null) {
-            result = mOnSelectInitialActiveMenuItemListener.onSelectInitialPageMenuItem(menuList);
+        if (pageMenuInitialSelectionProvider != null) {
+            result = pageMenuInitialSelectionProvider.getInititalSelectedPageMenuItem(menuList);
 
             if (result != null) {
                 result.setActive(true);
@@ -344,16 +344,14 @@ public class PageMenuControl extends LinearLayout {
         return returnVal;
     }
 
-    public boolean performLandingPageMenuItemClick(AdapterView<?> parent, View view, PageMenuItem menuItem, int position, long id) throws InstantiationException, IllegalAccessException {
+    public boolean performPageMenuItemClick(AdapterView<?> parent, View view, PageMenuItem menuItem, int position, long id) throws InstantiationException, IllegalAccessException {
         boolean result = false;
-        if (mOnLandingPageMenuClickListener != null) {
-            result = mOnLandingPageMenuClickListener.onPageMenuClick(parent, view, menuItem, position, id); //IMPORTANT
-
+        if (pageMenuClickListener != null) {
+            result = pageMenuClickListener.onPageMenuClick(parent, view, menuItem, position, id); //IMPORTANT
             if (result) {
                 markActiveMenuItem(menuItem);
             }
         }
-
         return result;
     }
 
@@ -712,5 +710,17 @@ public class PageMenuControl extends LinearLayout {
     public void onDestroy() {
         if (updateNotificationCountTask != null && !updateNotificationCountTask.isCancelled())
             updateNotificationCountTask.cancel(true);
+    }
+
+    public interface PageMenuInitialSelectionProvider {
+        PageMenuItem getInititalSelectedPageMenuItem(List<PageMenuItem> menuList);
+    }
+
+    public interface PageMenuClickListener {
+        boolean onPageMenuClick(AdapterView<?> parent, View view, PageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException;
+    }
+
+    public interface NotificationCountChangingListener {
+        int onNotificationCountChangingAsync(AdapterView<?> parent, PageMenuItem menuItem, int position);
     }
 }

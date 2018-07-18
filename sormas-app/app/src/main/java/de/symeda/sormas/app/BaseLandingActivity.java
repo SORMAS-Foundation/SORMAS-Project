@@ -17,16 +17,7 @@ public abstract class BaseLandingActivity extends BaseActivity {
     private BaseLandingFragment activeFragment;
     private MenuItem newMenu = null;
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        initializeActivity(savedInstanceState);
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreateInner(Bundle savedInstanceState) {
     }
 
     protected boolean isSubActivitiy() {
@@ -34,24 +25,21 @@ public abstract class BaseLandingActivity extends BaseActivity {
     }
 
     @Override
-    public boolean openPage(PageMenuItem menuItem) {
+    protected boolean openPage(PageMenuItem menuItem) {
         throw new UnsupportedOperationException();
-    }
-
-    protected void onCreateInner(Bundle savedInstanceState) {
-        Bundle arguments = (savedInstanceState != null) ? savedInstanceState : getIntent().getExtras();
-        initializeActivity(arguments);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        replaceFragment(getActiveLandingFragment());
+        replaceFragment(buildLandingFragment());
     }
 
-    protected abstract void initializeActivity(Bundle arguments);
+    public abstract BaseLandingFragment buildLandingFragment();
 
-    public abstract BaseLandingFragment getActiveLandingFragment();
+    public BaseLandingFragment getActiveFragment() {
+        return activeFragment;
+    }
 
     public void replaceFragment(BaseLandingFragment f) {
         BaseFragment previousFragment = activeFragment;

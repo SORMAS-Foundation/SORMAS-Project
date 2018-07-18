@@ -32,7 +32,7 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
     }
 
     @Override
-    public PageMenuItem getActiveMenuItem() {
+    public PageMenuItem getActivePage() {
         return null;
     }
 

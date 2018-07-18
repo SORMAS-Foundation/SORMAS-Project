@@ -22,12 +22,6 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
     private TextView subHeadingActivityTitle;
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        initializeActivity(savedInstanceState);
-    }
-
-    @Override
     protected boolean isSubActivitiy() {
         return false;
     }
@@ -40,7 +34,7 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
     }
 
     @Override
-    public boolean openPage(PageMenuItem menuItem) {
+    protected boolean openPage(PageMenuItem menuItem) {
         throw new UnsupportedOperationException();
     }
 
@@ -74,10 +68,9 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
         return R.layout.activity_root_with_title_layout;
     }
 
-    protected abstract void initializeActivity(Bundle arguments);
-
-    public abstract BaseReportFragment getActiveFragment();
-
+    public BaseReportFragment getActiveFragment() {
+        return activeFragment;
+    }
 
     protected void onCreateInner(Bundle savedInstanceState) {
         subHeadingActivityTitle = (TextView) findViewById(R.id.subHeadingActivityTitle);
@@ -93,8 +86,10 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
     @Override
     protected void onResume() {
         super.onResume();
-        replaceFragment(getActiveFragment());
+        replaceFragment(buildReportFragment());
     }
+
+    protected abstract BaseReportFragment buildReportFragment();
 
     protected boolean showTitleBar() {
         return true;

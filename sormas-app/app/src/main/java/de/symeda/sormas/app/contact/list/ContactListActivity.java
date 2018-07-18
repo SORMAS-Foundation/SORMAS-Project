@@ -23,16 +23,13 @@ public class ContactListActivity extends BaseListActivity {
     private FollowUpStatus statusFilters[] = new FollowUpStatus[]{FollowUpStatus.FOLLOW_UP, FollowUpStatus.COMPLETED,
             FollowUpStatus.CANCELED, FollowUpStatus.LOST, FollowUpStatus.NO_FOLLOW_UP};
 
-    private FollowUpStatus filterStatus = null;
     private SearchBy searchBy = null;
     private String recordUuid = null;
-    private BaseListFragment activeFragment = null;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        saveFilterStatusState(outState, filterStatus);
         saveSearchStrategyState(outState, searchBy);
         saveRecordUuidState(outState, recordUuid);
     }
@@ -40,20 +37,10 @@ public class ContactListActivity extends BaseListActivity {
     @Override
     protected void onCreateInner(Bundle savedInstanceState) {
         super.onCreateInner(savedInstanceState);
-        filterStatus = (FollowUpStatus) getFilterStatusArg(savedInstanceState);
         searchBy = (SearchBy) getSearchStrategyArg(savedInstanceState);
         recordUuid = getRecordUuidArg(savedInstanceState);
     }
 
-    @Override
-    public BaseListFragment getActiveListFragment() {
-        if (activeFragment == null) {
-            IListNavigationCapsule dataCapsule = new ListNavigationCapsule(ContactListActivity.this, filterStatus, searchBy);
-            activeFragment = ContactListFragment.newInstance(dataCapsule);
-        }
-
-        return activeFragment;
-    }
 
     @Override
     public int getPageMenuData() {
@@ -67,24 +54,16 @@ public class ContactListActivity extends BaseListActivity {
     }
 
     @Override
-    protected BaseListFragment getListFragment(PageMenuItem menuItem) {
+    protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
         FollowUpStatus status = statusFilters[menuItem.getKey()];
-
-        if (status == null)
-            return null;
-
-        filterStatus = status;
-        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(ContactListActivity.this, filterStatus, searchBy);
-
-        activeFragment = ContactListFragment.newInstance(dataCapsule);
-        return activeFragment;
+        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(ContactListActivity.this, status, searchBy);
+        return ContactListFragment.newInstance(dataCapsule);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getNewMenu().setTitle(R.string.action_new_contact);
-
         return true;
     }
 
@@ -95,13 +74,5 @@ public class ContactListActivity extends BaseListActivity {
 
     public static void goToActivity(Context fromActivity, IListNavigationCapsule dataCapsule) {
         BaseListActivity.goToActivity(fromActivity, ContactListActivity.class, dataCapsule);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if (activeFragment != null)
-            activeFragment.cancelTaskExec();
     }
 }

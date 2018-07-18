@@ -22,22 +22,20 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
-import de.symeda.sormas.app.report.MissingWeeklyReportDialog;
 import de.symeda.sormas.app.component.dialog.TeboAlertDialogInterface;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.ListNavigationCapsule;
 import de.symeda.sormas.app.core.SearchBy;
+import de.symeda.sormas.app.report.MissingWeeklyReportDialog;
 import de.symeda.sormas.app.shared.CaseFormNavigationCapsule;
 
 public class CaseListActivity extends BaseListActivity {
 
     private InvestigationStatus statusFilters[] = new InvestigationStatus[]{InvestigationStatus.PENDING, InvestigationStatus.DONE, InvestigationStatus.DISCARDED};
 
-    private InvestigationStatus filterStatus = null;
     private SearchBy searchBy = null;
     private String recordUuid = null;
-    private BaseListFragment activeFragment = null;
 
     @Override
     public int getPageMenuData() {
@@ -47,8 +45,6 @@ public class CaseListActivity extends BaseListActivity {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        saveFilterStatusState(outState, filterStatus);
         saveSearchStrategyState(outState, searchBy);
         saveRecordUuidState(outState, recordUuid);
     }
@@ -56,20 +52,8 @@ public class CaseListActivity extends BaseListActivity {
     @Override
     protected void onCreateInner(Bundle savedInstanceState) {
         super.onCreateInner(savedInstanceState);
-
-        filterStatus = (InvestigationStatus) getFilterStatusArg(savedInstanceState);
         searchBy = (SearchBy) getSearchStrategyArg(savedInstanceState);
         recordUuid = getRecordUuidArg(savedInstanceState);
-    }
-
-    @Override
-    public BaseListFragment getActiveListFragment() {
-        if (activeFragment == null) {
-            IListNavigationCapsule dataCapsule = new ListNavigationCapsule(CaseListActivity.this, filterStatus, searchBy);
-            activeFragment = CaseListFragment.newInstance(dataCapsule);
-        }
-
-        return activeFragment;
     }
 
     @Override
@@ -80,24 +64,16 @@ public class CaseListActivity extends BaseListActivity {
     }
 
     @Override
-    protected BaseListFragment getListFragment(PageMenuItem menuItem) {
+    protected BaseListFragment buildListFragment(PageMenuItem menuItem) {
         InvestigationStatus status = statusFilters[menuItem.getKey()];
-
-        if (status == null)
-            return null;
-
-        filterStatus = status;
-        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(CaseListActivity.this, filterStatus, searchBy);
-
-        activeFragment = CaseListFragment.newInstance(dataCapsule);
-        return activeFragment;
+        IListNavigationCapsule dataCapsule = new ListNavigationCapsule(CaseListActivity.this, status, searchBy);
+        return CaseListFragment.newInstance(dataCapsule);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getNewMenu().setTitle(R.string.action_new_case);
-
         return true;
     }
 
@@ -139,13 +115,5 @@ public class CaseListActivity extends BaseListActivity {
     public boolean isEntryCreateAllowed() {
         User user = ConfigProvider.getUser();
         return user.hasUserRight(UserRight.CASE_CREATE);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if (activeFragment != null)
-            activeFragment.cancelTaskExec();
     }
 }

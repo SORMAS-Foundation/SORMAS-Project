@@ -8,7 +8,6 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -45,8 +44,6 @@ import de.symeda.sormas.app.component.menu.PageMenuAdapter;
 import de.symeda.sormas.app.component.menu.PageMenuControl;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.menu.PageMenuParser;
-import de.symeda.sormas.app.component.menu.PageMenuClickListener;
-import de.symeda.sormas.app.component.menu.SelectInitialPageMenuItemListener;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
@@ -65,7 +62,7 @@ import de.symeda.sormas.app.util.NavigationHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import de.symeda.sormas.app.util.UserHelper;
 
-public abstract class BaseActivity extends AppCompatActivity implements SelectInitialPageMenuItemListener, NotificationContext {
+public abstract class BaseActivity extends AppCompatActivity implements NotificationContext {
 
     public static final String TAG = BaseActivity.class.getSimpleName();
 
@@ -82,9 +79,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SelectIn
 
     // footer menu
     private PageMenuControl pageMenu = null;
-    private List<PageMenuItem> pageMenuItems = new ArrayList();
-    private PageMenuItem pageMenuItem = null;
-    private int pageMenuItemKey = 0;
+    private List<PageMenuItem> pageItems = new ArrayList();
+    private PageMenuItem activePageItem = null;
+    private int activePageKey = 0;
 
     private ActionBarDrawerToggle menuDrawerToggle;
     private DrawerLayout menuDrawerLayout;
@@ -115,11 +112,10 @@ public abstract class BaseActivity extends AppCompatActivity implements SelectIn
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
-
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         setPageStatusState(outState, pageStatus);
-        saveActiveMenuState(outState, pageMenuItemKey);
+        saveActiveMenuState(outState, activePageKey);
     }
 
     @Override
@@ -142,7 +138,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SelectIn
         }
 
         pageStatus = getPageStatusArg(savedInstanceState);
-        pageMenuItemKey = getActiveMenuArg(savedInstanceState);
+        activePageKey = getActiveMenuArg(savedInstanceState);
 
         setContentView(getRootActivityLayout());
 
@@ -158,13 +154,18 @@ public abstract class BaseActivity extends AppCompatActivity implements SelectIn
             pageMenu.hide();
             Context menuControlContext = this.pageMenu.getContext();
 
-            pageMenu.setOnLandingPageMenuClickListener(new PageMenuClickListener() {
+            pageMenu.setPageMenuClickListener(new PageMenuControl.PageMenuClickListener() {
                 @Override
                 public boolean onPageMenuClick(AdapterView<?> parent, View view, PageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-                    return openPage(menuItem);
+                    return setActivePage(menuItem);
                 }
             });
-            pageMenu.setOnSelectInitialActiveMenuItem(this);
+            pageMenu.setPageMenuInititalSelectionProvider(new PageMenuControl.PageMenuInitialSelectionProvider() {
+                @Override
+                public PageMenuItem getInititalSelectedPageMenuItem(List<PageMenuItem> menuList) {
+                    return initPageMenuAndGetInitialSelection(menuList);
+                }
+            });
 
             pageMenu.setAdapter(new PageMenuAdapter(menuControlContext));
             pageMenu.setMenuParser(new PageMenuParser(menuControlContext));
@@ -394,30 +395,14 @@ public abstract class BaseActivity extends AppCompatActivity implements SelectIn
         return -1;
     }
 
-    protected void setPageMenuItem(PageMenuItem menuItem) {
-        pageMenuItem = menuItem;
+    protected boolean setActivePage(PageMenuItem menuItem) {
+        activePageItem = menuItem;
+        activePageKey = activePageItem.getKey();
+        return openPage(activePageItem);
     }
 
-    public PageMenuItem getActiveMenuItem() {
-        return pageMenuItem;
-    }
-
-    @Override
-    public PageMenuItem onSelectInitialPageMenuItem(List<PageMenuItem> menuList) {
-        if (menuList == null || menuList.size() <= 0)
-            return null;
-
-        this.pageMenuItems = menuList;
-
-        pageMenuItem = menuList.get(0);
-
-        for (PageMenuItem m : menuList) {
-            if (m.getKey() == pageMenuItemKey) {
-                pageMenuItem = m;
-            }
-        }
-
-        return pageMenuItem;
+    public PageMenuItem getActivePage() {
+        return activePageItem;
     }
 
     public Context getContext() {
@@ -649,24 +634,26 @@ public abstract class BaseActivity extends AppCompatActivity implements SelectIn
         return 0;
     }
 
-    public abstract boolean openPage(PageMenuItem menuItem);
+    protected abstract boolean openPage(PageMenuItem menuItem);
 
-    protected boolean goToNextMenu() {
-        if (pageMenu == null)
-            return false;
+    public PageMenuItem initPageMenuAndGetInitialSelection(List<PageMenuItem> menuList) {
+        this.pageItems = menuList;
+        activePageItem = menuList.get(0);
+        for (PageMenuItem m : menuList) {
+            if (m.getKey() == activePageKey) {
+                activePageItem = m;
+            }
+        }
+        return activePageItem;
+    }
 
-        if (pageMenuItems == null || pageMenuItems.size() <= 0)
-            return false;
-        int lastMenuKey = pageMenuItems.size() - 1;
 
-        if (pageMenuItemKey == lastMenuKey)
-            return false;
-
-        int newMenukey = pageMenuItemKey + 1;
-
-        PageMenuItem m = pageMenuItems.get(newMenukey);
-        setPageMenuItem(m);
-        return openPage(m);
+    protected boolean goToNextPage() {
+        if (activePageKey == pageItems.size() - 1)
+            return false; // last page
+        int newMenukey = activePageKey + 1;
+        PageMenuItem m = pageItems.get(newMenukey);
+        return setActivePage(m);
     }
 
     private void ensureFabHiddenOnSoftKeyboardShown(final PageMenuControl landingPageMenuControl) {

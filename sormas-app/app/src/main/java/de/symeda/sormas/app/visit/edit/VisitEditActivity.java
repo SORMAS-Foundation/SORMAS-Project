@@ -97,7 +97,7 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
                 hidePreloader();
                 super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
-                    goToNextMenu();
+                    goToNextPage();
                 }
             }
         }.executeOnThreadPool();

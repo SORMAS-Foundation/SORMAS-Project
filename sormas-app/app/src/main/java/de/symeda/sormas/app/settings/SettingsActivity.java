@@ -20,30 +20,9 @@ import de.symeda.sormas.app.core.notification.NotificationPosition;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.AppUpdateController;
 
-/**
- * Created by Orson on 03/11/2017.
- */
-
 public class SettingsActivity extends BaseLandingActivity {
 
-    //TODO: Create an interface to enforce Form Instantiation
-    //TODO: Create an abstract method to set root layout
-    //TODO: Create an interface to set Activity Title
-    //TODO: Method to access the Form
-
-    //TODO: Fix issues when you change address to api (works but behave strangely)
-
     private SettingsFragment settingsFragment;
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void initializeActivity(Bundle arguments) {
-
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -82,7 +61,7 @@ public class SettingsActivity extends BaseLandingActivity {
     }
 
     @Override
-    public BaseLandingFragment getActiveLandingFragment() {
+    public BaseLandingFragment buildLandingFragment() {
         if (settingsFragment == null)
             settingsFragment = new SettingsFragment();
 

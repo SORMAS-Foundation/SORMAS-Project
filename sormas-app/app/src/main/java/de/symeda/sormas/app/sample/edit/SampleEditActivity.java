@@ -80,7 +80,7 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
                 hidePreloader();
                 super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
-                    goToNextMenu();
+                    goToNextPage();
                 }
             }
         }.executeOnThreadPool();

@@ -86,7 +86,7 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
     @Override
     public void saveData() {
 
-        ContactSection activeSection = ContactSection.fromMenuKey(getActiveMenuItem().getKey());
+        ContactSection activeSection = ContactSection.fromMenuKey(getActivePage().getKey());
 
         if (activeSection == ContactSection.VISITS || activeSection == ContactSection.TASKS)
             return;
@@ -107,7 +107,7 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
                 super.onPostExecute(taskResult);
 
                 if (taskResult.getResultStatus().isSuccess()) {
-                    goToNextMenu();
+                    goToNextPage();
                 }
             }
         }.executeOnThreadPool();
@@ -133,7 +133,7 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
     @Override
     public void goToNewView() {
-        ContactSection activeSection = ContactSection.fromMenuKey(getActiveMenuItem().getKey());
+        ContactSection activeSection = ContactSection.fromMenuKey(getActivePage().getKey());
         if (activeSection == ContactSection.VISITS) {
             VisitNewActivity.goToActivity(this, getRootEntityUuid());
         }

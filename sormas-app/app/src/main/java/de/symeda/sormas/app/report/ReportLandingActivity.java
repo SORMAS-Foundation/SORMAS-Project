@@ -12,31 +12,9 @@ public class ReportLandingActivity extends BaseReportActivity {
 
     private final static String TAG = ReportLandingActivity.class.getSimpleName();
 
-    private BaseReportFragment activeFragment = null;
-
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void initializeActivity(Bundle arguments) {
-
-    }
-
-    @Override
-    public BaseReportFragment getActiveFragment() {
-        if (activeFragment == null) {
-            activeFragment = ReportFragment.newInstance();
-        }
-        return activeFragment;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-
-        return true;
+    public BaseReportFragment buildReportFragment() {
+        return ReportFragment.newInstance();
     }
 
     @Override

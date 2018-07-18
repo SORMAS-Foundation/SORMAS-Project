@@ -86,7 +86,7 @@ public class EventEditActivity extends BaseEditActivity<Event> {
     @Override
     public void goToNewView() {
 
-        EventSection section = EventSection.fromMenuKey(getActiveMenuItem().getKey());
+        EventSection section = EventSection.fromMenuKey(getActivePage().getKey());
         switch (section) {
             case EVENT_PERSONS:
 
@@ -121,7 +121,7 @@ public class EventEditActivity extends BaseEditActivity<Event> {
                 hidePreloader();
                 super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
-                    goToNextMenu();
+                    goToNextPage();
                 }
 
             }

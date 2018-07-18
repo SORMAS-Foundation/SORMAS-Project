@@ -10,20 +10,19 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.component.menu.PageMenuControl;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.component.menu.NotificationCountChangingListener;
 import de.symeda.sormas.app.core.IListNavigationCapsule;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.SearchBy;
 import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.util.ConstantHelper;
 
-public abstract class BaseListActivity<TListItemData extends AbstractDomainObject> extends BaseActivity implements IUpdateSubHeadingTitle, NotificationCountChangingListener {
+public abstract class BaseListActivity extends BaseActivity implements IUpdateSubHeadingTitle, PageMenuControl.NotificationCountChangingListener {
 
     private TextView subHeadingListActivityTitle;
     private MenuItem newMenu = null;
-    private BaseFragment activeFragment = null;
+    private BaseListFragment activeFragment = null;
 
     @Override
     protected boolean isSubActivitiy() {
@@ -37,13 +36,15 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
     @Override
     protected void onResume() {
         super.onResume();
-        replaceFragment(getActiveListFragment());
+        replaceFragment(buildListFragment(getActivePage()));
     }
 
-    public abstract BaseListFragment getActiveListFragment();
+    public BaseListFragment getActiveFragment() {
+        return activeFragment;
+    }
 
-    public void replaceFragment(BaseFragment f) {
-        BaseFragment previousFragment = activeFragment;
+    public void replaceFragment(BaseListFragment f) {
+        BaseListFragment previousFragment = activeFragment;
         activeFragment = f;
 
         if (activeFragment != null) {
@@ -118,21 +119,15 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
     public abstract int onNotificationCountChangingAsync(AdapterView<?> parent, PageMenuItem menuItem, int position);
 
     @Override
-    public boolean openPage(PageMenuItem menuItem) {
-        BaseListFragment newActiveFragment = getListFragment(menuItem); //, storedListData
-
+    protected boolean openPage(PageMenuItem menuItem) {
+        BaseListFragment newActiveFragment = buildListFragment(menuItem); //, storedListData
         if (newActiveFragment == null)
             return false;
-
-        setPageMenuItem(menuItem);
         replaceFragment(newActiveFragment);
-
         return true;
     }
 
-    protected BaseListFragment getListFragment(PageMenuItem menuItem) {
-        return null;
-    }
+    protected abstract BaseListFragment buildListFragment(PageMenuItem menuItem);
 
     protected String getRecordUuidArg(Bundle arguments) {
         String result = null;
@@ -145,17 +140,6 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
         return result;
     }
 
-    protected <E extends Enum<E>> E getFilterStatusArg(Bundle arguments) {
-        E e = null;
-        if (arguments != null && !arguments.isEmpty()) {
-            if (arguments.containsKey(ConstantHelper.ARG_FILTER_STATUS)) {
-                e = (E) arguments.getSerializable(ConstantHelper.ARG_FILTER_STATUS);
-            }
-        }
-
-        return e;
-    }
-
     protected SearchBy getSearchStrategyArg(Bundle arguments) {
         SearchBy e = null;
         if (arguments != null && !arguments.isEmpty()) {
@@ -165,12 +149,6 @@ public abstract class BaseListActivity<TListItemData extends AbstractDomainObjec
         }
 
         return e;
-    }
-
-    protected <E extends Enum<E>> void saveFilterStatusState(Bundle outState, E status) {
-        if (outState != null) {
-            outState.putSerializable(ConstantHelper.ARG_FILTER_STATUS, status);
-        }
     }
 
     protected void saveRecordUuidState(Bundle outState, String recordUuid) {
