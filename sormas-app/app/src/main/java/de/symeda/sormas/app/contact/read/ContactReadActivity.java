@@ -76,8 +76,9 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
     }
 
     @Override
-    public void goToEditView() {
+    public void goToEditView(PageMenuItem menuItem) {
         ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
+        if (menuItem != null) dataCapsule.setActiveMenu(menuItem.getKey());
         ContactEditActivity.goToActivity(ContactReadActivity.this, dataCapsule);
     }
 

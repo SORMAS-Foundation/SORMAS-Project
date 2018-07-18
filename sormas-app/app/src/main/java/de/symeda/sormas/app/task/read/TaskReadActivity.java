@@ -45,8 +45,9 @@ public class TaskReadActivity extends BaseReadActivity<Task> {
     }
 
     @Override
-    public void goToEditView() {
+    public void goToEditView(PageMenuItem menuItem) {
         TaskFormNavigationCapsule dataCapsule = new TaskFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
+        if (menuItem != null) dataCapsule.setActiveMenu(menuItem.getKey());
         TaskEditActivity.goToActivity(this, dataCapsule);
     }
 

@@ -63,8 +63,9 @@ public class VisitReadActivity extends BaseReadActivity<Visit> {
     }
 
     @Override
-    public void goToEditView() {
+    public void goToEditView(PageMenuItem menuItem) {
         VisitFormNavigationCapsule dataCapsule = new VisitFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
+        if (menuItem != null) dataCapsule.setActiveMenu(menuItem.getKey());
         VisitEditActivity.goToActivity(VisitReadActivity.this, dataCapsule);
     }
 }

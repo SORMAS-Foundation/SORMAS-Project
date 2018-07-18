@@ -356,23 +356,17 @@ public class PageMenuControl extends LinearLayout {
         return result;
     }
 
-
     public void markActiveMenuItem(PageMenuItem menuItem) {
         for (PageMenuItem m : menuList) {
             m.setActive(false);
         }
 
         menuItem.setActive(true);
-        onMenuItemActive(menuItem);
 
         adapter.notifyDataSetChanged();
 
         invalidate();
         requestLayout();
-    }
-
-    private void onMenuItemActive(PageMenuItem menuItem) {
-
     }
 
     public void setMenuTitle(String title) {

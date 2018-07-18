@@ -652,8 +652,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         if (activePageKey == pageItems.size() - 1)
             return false; // last page
         int newMenukey = activePageKey + 1;
-        PageMenuItem m = pageItems.get(newMenukey);
-        return setActivePage(m);
+        PageMenuItem pageItem = pageItems.get(newMenukey);
+        pageMenu.markActiveMenuItem(pageItem);
+        return setActivePage(pageItem);
     }
 
     private void ensureFabHiddenOnSoftKeyboardShown(final PageMenuControl landingPageMenuControl) {

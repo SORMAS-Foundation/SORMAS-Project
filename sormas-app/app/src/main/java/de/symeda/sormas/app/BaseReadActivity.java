@@ -144,7 +144,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_edit:
-                goToEditView();
+                goToEditView(getActivePage());
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -283,7 +283,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         return true;
     }
 
-    public abstract void goToEditView();
+    public abstract void goToEditView(PageMenuItem menuItem);
 
     protected abstract BaseReadFragment buildReadFragment(PageMenuItem menuItem, ActivityRootEntity activityRootData);
 

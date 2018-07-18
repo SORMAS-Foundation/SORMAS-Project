@@ -25,8 +25,9 @@ public class EventParticipantReadActivity extends BaseReadActivity<EventParticip
     }
 
     @Override
-    public void goToEditView() {
+    public void goToEditView(PageMenuItem menuItem) {
         EventParticipantFormNavigationCapsule dataCapsule = new EventParticipantFormNavigationCapsule(this, getRootEntityUuid());
+        if (menuItem != null) dataCapsule.setActiveMenu(menuItem.getKey());
         EventParticipantEditActivity.goToActivity(this, dataCapsule);
     }
 

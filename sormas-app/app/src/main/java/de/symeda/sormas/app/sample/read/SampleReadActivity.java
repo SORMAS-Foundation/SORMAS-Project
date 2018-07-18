@@ -49,8 +49,9 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
     }
 
     @Override
-    public void goToEditView() {
+    public void goToEditView(PageMenuItem menuItem) {
         SampleFormNavigationCapsule dataCapsule = new SampleFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
+        if (menuItem != null) dataCapsule.setActiveMenu(menuItem.getKey());
         SampleEditActivity.goToActivity(this, dataCapsule);
     }
 

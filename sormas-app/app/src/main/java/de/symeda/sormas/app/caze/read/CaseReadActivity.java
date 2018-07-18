@@ -88,8 +88,9 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
     }
 
     @Override
-    public void goToEditView() {
+    public void goToEditView(PageMenuItem menuItem) {
         CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(this, getRootEntityUuid(), getPageStatus());
+        if (menuItem != null) dataCapsule.setActiveMenu(menuItem.getKey());
         CaseEditActivity.goToActivity(CaseReadActivity.this, dataCapsule);
     }
 
