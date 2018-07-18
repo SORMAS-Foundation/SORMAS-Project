@@ -19,13 +19,61 @@ import de.symeda.sormas.app.shared.ContactFormNavigationCapsule;
 import de.symeda.sormas.app.shared.EventFormNavigationCapsule;
 import de.symeda.sormas.app.shared.TaskFormNavigationCapsule;
 
+import static android.view.View.GONE;
+
 public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBinding, Task, Task> {
 
     private Task record;
 
-    private OnLinkClickListener caseLinkCallback;
-    private OnLinkClickListener contactLinkCallback;
-    private OnLinkClickListener eventLinkCallback;
+    // Instance methods
+
+    public static TaskReadFragment newInstance(TaskFormNavigationCapsule capsule, Task activityRootData) {
+        return newInstance(TaskReadFragment.class, capsule, activityRootData);
+    }
+
+    private void setUpControlListeners(FragmentTaskReadLayoutBinding contentBinding) {
+        if (record.getCaze() != null) {
+            contentBinding.taskCaze.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Case caze = record.getCaze();
+                    if (caze != null) {
+                        CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(),
+                                caze.getUuid(), caze.getCaseClassification()).setTaskUuid(record.getUuid());
+                        CaseReadActivity.goToActivity(getActivity(), dataCapsule);
+                    }
+                }
+            });
+        }
+
+        if (record.getContact() != null) {
+            contentBinding.taskContact.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Contact contact = record.getContact();
+                    if (contact != null) {
+                        ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(),
+                                contact.getUuid(), contact.getContactClassification()).setTaskUuid(record.getUuid());
+                        ContactReadActivity.goToActivity(getActivity(), dataCapsule);
+                    }
+                }
+            });
+        }
+
+        if (record.getEvent() != null) {
+            contentBinding.taskEvent.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Event event = record.getEvent();
+                    if (event != null) {
+                        EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(getContext(),
+                                event.getUuid(), event.getEventStatus()).setTaskUuid(record.getUuid());
+                        EventReadActivity.goToActivity(getActivity(), dataCapsule);
+                    }
+                }
+            });
+        }
+    }
 
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
@@ -34,13 +82,9 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
 
     @Override
     public void onLayoutBinding(FragmentTaskReadLayoutBinding contentBinding) {
-
-        setupCallback();
+        setUpControlListeners(contentBinding);
 
         contentBinding.setData(record);
-        contentBinding.setCaseLinkCallback(caseLinkCallback);
-        contentBinding.setContactLinkCallback(contactLinkCallback);
-        contentBinding.setEventLinkCallback(eventLinkCallback);
     }
 
     @Override
@@ -58,64 +102,4 @@ public class TaskReadFragment extends BaseReadFragment<FragmentTaskReadLayoutBin
         return R.layout.fragment_task_read_layout;
     }
 
-    private void setupCallback() {
-        caseLinkCallback = new OnLinkClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                if (item == null)
-                    return;
-
-                Task task = (Task) item;
-                Case caze = task.getCaze();
-
-                if (caze == null)
-                    return;
-
-                CaseFormNavigationCapsule dataCapsule = new CaseFormNavigationCapsule(getContext(),
-                        caze.getUuid(), caze.getCaseClassification()).setTaskUuid(task.getUuid());
-                CaseReadActivity.goToActivity(getActivity(), dataCapsule);
-
-            }
-        };
-
-        contactLinkCallback = new OnLinkClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                if (item == null)
-                    return;
-
-                Task task = (Task) item;
-                Contact contact = task.getContact();
-
-                if (contact == null)
-                    return;
-
-                ContactFormNavigationCapsule dataCapsule = new ContactFormNavigationCapsule(getContext(),
-                        contact.getUuid(), contact.getContactClassification()).setTaskUuid(task.getUuid());
-                ContactReadActivity.goToActivity(getActivity(), dataCapsule);
-            }
-        };
-
-        eventLinkCallback = new OnLinkClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                if (item == null)
-                    return;
-
-                Task task = (Task) item;
-                Event event = task.getEvent();
-
-                if (event == null)
-                    return;
-
-                EventFormNavigationCapsule dataCapsule = new EventFormNavigationCapsule(getContext(),
-                        event.getUuid(), event.getEventStatus()).setTaskUuid(task.getUuid());
-                EventReadActivity.goToActivity(getActivity(), dataCapsule);
-            }
-        };
-    }
-
-    public static TaskReadFragment newInstance(TaskFormNavigationCapsule capsule, Task activityRootData) {
-        return newInstance(TaskReadFragment.class, capsule, activityRootData);
-    }
 }

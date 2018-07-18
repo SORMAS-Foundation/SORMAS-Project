@@ -1,164 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
     android:descendantFocusability="beforeDescendants"
     android:id="@+id/base_layout">
 
     <data>
-        <import type="de.symeda.sormas.app.core.BoxingUtil" />
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
-        <variable name="data" type="de.symeda.sormas.app.backend.task.Task"/>
-        <variable name="person" type="de.symeda.sormas.app.backend.person.Person"/>
-        <variable name="callback" type="android.view.View.OnClickListener"/>
-        <variable
-            name="caseLinkCallback"
-            type="de.symeda.sormas.app.component.OnLinkClickListener" />
-        <variable
-            name="contactLinkCallback"
-            type="de.symeda.sormas.app.component.OnLinkClickListener" />
-        <variable
-            name="eventLinkCallback"
-            type="de.symeda.sormas.app.component.OnLinkClickListener" />
 
-        <variable
-            name="doneCallback"
-            type="android.view.View.OnClickListener" />
-
-        <variable
-            name="notExecCallback"
-            type="android.view.View.OnClickListener" />
+        <variable name="data" type="de.symeda.sormas.app.backend.task.Task" />
     </data>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingTop="@dimen/parentLayoutVerticalMargin"
-            >
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                >
+                android:padding="@dimen/fragment_padding"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:id="@+id/main_content">
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/task_taskType"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:value="@{data.taskType}" />
+                    app:value="@{data.taskType}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlLinkField
                     android:id="@+id/task_caze"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     app:goneIfEmpty="@{data.caze}"
-                    app:cazeAndLocation="@{data.caze}" />
+                    app:value="@{data.caze.toString()}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlLinkField
                     android:id="@+id/task_contact"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     app:goneIfEmpty="@{data.contact}"
-                    app:contactAndLocation="@{data.contact}" />
+                    app:value="@{data.contact.toString()}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlLinkField
                     android:id="@+id/task_event"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                     app:goneIfEmpty="@{data.event}"
-                    app:eventAndLocation="@{data.event}" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/task_creatorUser"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:value="@{data.creatorUser}" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/task_creatorComment"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:value="@{data.creatorComment}" />
+                    app:value="@{data.event.toString()}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextImageField
                         android:id="@+id/task_priority"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:imageColor="@color/green"
                         app:image="@drawable/indicator_status_circle"
                         app:imageWidth="@dimen/readControlSmallIconWidth"
                         app:imageHeight="@dimen/readControlSmallIconHeight"
-                        app:taskPriorityValue="@{data.priority}" />
+                        app:taskPriorityValue="@{data.priority}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextImageField
                         android:id="@+id/task_taskStatus"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="@dimen/control_spacing"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                         app:image="@drawable/indicator_status_circle"
                         app:imageWidth="@dimen/readControlSmallIconWidth"
                         app:imageHeight="@dimen/readControlSmallIconHeight"
-                        app:taskStatusValue="@{data.taskStatus}" />
+                        app:taskStatusValue="@{data.taskStatus}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/task_suggestedStart"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:value="@{data.suggestedStart}" />
+                        app:value="@{data.suggestedStart}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/task_dueDate"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="@dimen/control_spacing"
-                        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                        app:value="@{data.dueDate}" />
+                        app:value="@{data.dueDate}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/task_assigneeUser"
+                    app:value="@{data.assigneeUser}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/task_creatorComment"
+                    app:value="@{data.creatorComment}"
+                    app:goneIfEmpty="@{taskCreatorComment}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/task_assigneeReply"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
-                    app:value="@={data.assigneeReply}" />
+                    app:value="@={data.assigneeReply}"
+                    style="@style/ControlSingleColumnStyle" />
+
             </LinearLayout>
 
             <RelativeLayout
-                android:id="@+id/taskButtonPanel"
+                android:id="@+id/task_button_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -167,27 +121,23 @@
                 android:paddingRight="@dimen/parentLayoutHorizontalPadding"
                 android:paddingTop="@dimen/buttonPanelVerticalMargin"
                 android:paddingBottom="@dimen/buttonPanelVerticalMargin"
-                android:elevation="16dp"
-                >
+                android:elevation="16dp">
 
                 <de.symeda.sormas.app.component.controls.ControlButton
                     android:id="@+id/set_not_executable"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toStartOf="@+id/btnDivider"
+                    android:layout_toStartOf="@+id/button_divider"
                     android:text="@string/action_not_executable"
                     app:buttonType="@{ControlButtonType.LINE_DANGER}"
                     app:rounded="true"
-                    app:iconStart="@drawable/ic_block_black_24dp"
-                    android:onClick="@{notExecCallback}" />
-
+                    app:iconStart="@drawable/ic_block_black_24dp" />
 
                 <ImageView
-                    android:id="@+id/btnDivider"
+                    android:id="@+id/button_divider"
                     android:layout_toStartOf="@+id/set_done"
                     android:layout_centerVertical="true"
-                    style="@style/FormButtonDividerStyle"
-                    />
+                    style="@style/FormButtonDividerStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlButton
                     android:id="@+id/set_done"
@@ -197,8 +147,7 @@
                     android:text="@string/action_done"
                     app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                     app:rounded="true"
-                    app:iconStart="@drawable/ic_done_black_24dp"
-                    android:onClick="@{doneCallback}" />
+                    app:iconStart="@drawable/ic_done_black_24dp" />
 
             </RelativeLayout>
 

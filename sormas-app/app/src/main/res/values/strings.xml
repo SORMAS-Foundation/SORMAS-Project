@@ -58,6 +58,8 @@
     <string name="action_not_executable">Not Executable</string>
     <string name="action_ok">Ok</string>
     <string name="action_open_case">Open Case</string>
+    <string name="action_open_contact">Open Contact</string>
+    <string name="action_open_event">Open Event</string>
     <string name="action_open_source_case">Open Source Case</string>
     <string name="action_open_resulting_case">Open Resulting Case</string>
     <string name="action_open_reports">Open Reports</string>

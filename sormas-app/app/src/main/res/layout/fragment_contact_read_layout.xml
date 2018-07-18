@@ -210,7 +210,7 @@
             </LinearLayout>
 
             <RelativeLayout
-                android:id="@+id/contact_buttons_panel"
+                android:id="@+id/task_buttons_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"

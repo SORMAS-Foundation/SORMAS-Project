@@ -164,7 +164,7 @@ public class ControlTextImageField extends ControlTextReadField {
         if (priority == null) {
             textImageField.setFieldValue(getDefaultValue(defaultValue));
         } else {
-            textImageField.setFieldValue(priority.toString());
+            textImageField.setValue(priority.toString(), priority);
 
             if (priority == TaskPriority.HIGH) {
                 textImageField.setImageBackground(R.color.indicatorTaskPriorityHigh);
@@ -174,8 +174,6 @@ public class ControlTextImageField extends ControlTextReadField {
                 textImageField.setImageBackground(R.color.indicatorTaskPriorityLow);
             }
         }
-
-        textImageField.setValue(priority);
     }
 
     // Task status
@@ -184,7 +182,7 @@ public class ControlTextImageField extends ControlTextReadField {
         if (status == null) {
             textImageField.setFieldValue(getDefaultValue(defaultValue));
         } else {
-            textImageField.setFieldValue(status.toString());
+            textImageField.setValue(status.toString(), status);
 
             if (status == TaskStatus.PENDING) {
                 textImageField.setImageBackground(R.color.indicatorTaskPending);
@@ -196,8 +194,6 @@ public class ControlTextImageField extends ControlTextReadField {
                 textImageField.setImageBackground(R.color.indicatorTaskNotExecutable);
             }
         }
-
-        textImageField.setValue(status);
     }
 
     @BindingAdapter(value = {"shipmentStatus", "defaultValue"}, requireAll = false)
