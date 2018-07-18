@@ -1,10 +1,7 @@
 package de.symeda.sormas.app.settings;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,16 +10,12 @@ import de.symeda.sormas.app.BaseLandingActivity;
 import de.symeda.sormas.app.BaseLandingFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.component.dialog.UserReportDialog;
-import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationPosition;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.AppUpdateController;
 
 public class SettingsActivity extends BaseLandingActivity {
-
-    private SettingsFragment settingsFragment;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -34,6 +27,11 @@ public class SettingsActivity extends BaseLandingActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         return true;
+    }
+
+    @Override
+    public SettingsFragment getActiveFragment() {
+        return (SettingsFragment)super.getActiveFragment();
     }
 
     @Override
@@ -49,7 +47,7 @@ public class SettingsActivity extends BaseLandingActivity {
                 return super.onOptionsItemSelected(item);
 
             case R.id.action_save:
-                String serverUrl = settingsFragment.getServerUrl();
+                String serverUrl = getActiveFragment().getServerUrl();
                 ConfigProvider.setServerRestUrl(serverUrl);
                 onResume();
 
@@ -62,10 +60,7 @@ public class SettingsActivity extends BaseLandingActivity {
 
     @Override
     public BaseLandingFragment buildLandingFragment() {
-        if (settingsFragment == null)
-            settingsFragment = new SettingsFragment();
-
-        return settingsFragment;
+        return new SettingsFragment();
     }
 
     @Override

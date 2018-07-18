@@ -9,7 +9,6 @@ import java.lang.ref.WeakReference;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 
 public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskResult<TaskResultHolder>> {
@@ -53,20 +52,8 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
         }
     }
 
-    /**
-     * Override onPostExecute instead
-     */
-    @Deprecated
-    protected void postExecute(BoolResult resultStatus, TaskResultHolder resultHolder) {
-
-
-    }
-
-
     @Override
     protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-        postExecute(taskResult.getResultStatus(), taskResult.getResult());
-
         if (resultCallback != null) {
             resultCallback.taskResult(taskResult.getResultStatus(), taskResult.getResult());
         }
@@ -82,11 +69,6 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
         }
 
         return new AsyncTaskResult<>(e);
-    }
-
-    @Deprecated
-    public static AsyncTask execute(DefaultAsyncTask jobDefinition) {
-        return jobDefinition.execute((ITaskResultCallback) null);
     }
 
     @Deprecated

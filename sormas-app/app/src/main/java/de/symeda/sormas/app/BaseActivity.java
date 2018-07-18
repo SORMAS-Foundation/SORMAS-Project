@@ -50,6 +50,7 @@ import de.symeda.sormas.app.core.enumeration.IStatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.menu.MainMenuItemSelectedListener;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -453,17 +454,12 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
     public void synchronizeCompleteData() {
         SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        synchronizeData(SynchronizeDataAsync.SyncMode.Complete, true, refreshLayout == null, true, refreshLayout, null);
+        synchronizeData(SynchronizeDataAsync.SyncMode.Complete, true, true, true, refreshLayout, null);
     }
 
     public void synchronizeChangedData() {
         SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, refreshLayout == null, true, refreshLayout, null);
-    }
-
-    public void synchronizeChangedData(Callback callback) {
-        SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, refreshLayout == null, false, refreshLayout, callback);
+        synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, true, true, refreshLayout, null);
     }
 
     public void synchronizeData(final SynchronizeDataAsync.SyncMode syncMode, final boolean showResultSnackbar, final boolean showProgressDialog, final boolean showUpgradePrompt, final SwipeRefreshLayout swipeRefreshLayout, final Callback callback) {

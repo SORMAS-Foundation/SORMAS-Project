@@ -107,20 +107,22 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         super.onDestroy();
     }
 
+    /**
+     * Called by onClick
+     */
     public void login(View view) {
         //Hide notification
         //NotificationHelper.hideNotification(binding);
         binding.username.disableErrorState();
         binding.password.disableErrorState();
 
-        String errorMessage = null;
         String userName = binding.username.getValue().trim();
         String password = binding.password.getValue();
 
         if (userName.isEmpty()) {
-            binding.username.enableErrorState((NotificationContext)this, R.string.notification_empty_username);
+            binding.username.enableErrorState(this, R.string.notification_empty_username);
         } else if (password.isEmpty()) {
-            binding.password.enableErrorState((NotificationContext)this, R.string.notification_empty_password);
+            binding.password.enableErrorState(this, R.string.notification_empty_password);
         } else {
             ConfigProvider.setUsernameAndPassword(userName, password);
             processLogin(true);

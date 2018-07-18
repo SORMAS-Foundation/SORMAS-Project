@@ -11,19 +11,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 import java.net.ConnectException;
 
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.BaseLandingFragment;
-import de.symeda.sormas.app.EnterPinActivity;
+import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.dialog.SyncLogDialog;
 import de.symeda.sormas.app.component.dialog.TeboProgressDialog;
-import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;

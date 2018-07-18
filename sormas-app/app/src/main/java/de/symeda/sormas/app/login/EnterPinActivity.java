@@ -1,4 +1,4 @@
-package de.symeda.sormas.app;
+package de.symeda.sormas.app.login;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import java.util.regex.Pattern;
 
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -217,7 +218,7 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
             return false;
         }
 
-        boolean sameNumbers = Pattern.matches("\\\\d*?(\\\\d)\\\\1{2,}\\\\d*", number);
+        boolean sameNumbers = Pattern.matches("\\d*?(\\d)\\1{2,}\\d*", number);
         if (sameNumbers) {
             if (showSnackbar) {
                 NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.snackbar_pin_no_same);
@@ -234,15 +235,15 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
             enteredPIN += pinFields[i].getText().toString();
         }
 
-        if (!validateNumber(enteredPIN, true)) {
-            onResume();
-            return;
-        }
-
         String savedPIN = ConfigProvider.getPin();
 
         if (savedPIN == null) {
             if (lastEnteredPIN == null) {
+                // validate the entered pin
+                if (!validateNumber(enteredPIN, true)) {
+                    onResume();
+                    return;
+                }
                 // Store the entered PIN and restart the activity because the user has to enter it twice
                 lastEnteredPIN = enteredPIN;
                 onResume();
@@ -264,6 +265,12 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
             if (calledFromSettings) {
                 if (confirmedCurrentPIN) {
                     if (lastEnteredPIN == null) {
+                        // validate the entered pin
+                        if (!validateNumber(enteredPIN, true)) {
+                            onResume();
+                            return;
+                        }
+                        // Store the entered PIN and restart the activity because the user has to enter it twice
                         lastEnteredPIN = enteredPIN;
                         onResume();
                     } else {

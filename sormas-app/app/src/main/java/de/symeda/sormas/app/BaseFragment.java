@@ -56,7 +56,7 @@ public class BaseFragment extends Fragment {
             swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.Changes, false, true, true, swiperefresh, null);
+                    getBaseActivity().synchronizeChangedData();
                 }
             });
         }
