@@ -136,7 +136,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                                 showWeeklyReport(c);
 
                                 if (c.showShowReportNotSubmittedNotification()) {
-                                    NotificationHelper.showNotification((NotificationContext) ReportFragment.this, NotificationType.WARNING, R.string.hint_report_not_submitted);
+                                    NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.WARNING, R.string.hint_report_not_submitted);
                                 }
 
                                 getContentBinding().noWeeklyReportHint.setVisibility(c.showNoReportNotification() ? View.VISIBLE : View.GONE);
