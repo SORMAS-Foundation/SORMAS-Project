@@ -49,10 +49,6 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
         contentBinding.setGatheringItemClickCallback(onGatheringItemClickListener);
         contentBinding.setTravelItemClickCallback(onTravelItemClickListener);
 
-        contentBinding.ctrlBurials.setVisibility(record.getBurialAttended() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-        contentBinding.ctrlGatherings.setVisibility(record.getGatheringAttended() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-        contentBinding.ctrlTravels.setVisibility(record.getTraveled() == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-
         setVisibilityByDisease(EpiDataDto.class, getActivityRootData().getDisease(), contentBinding.mainContent);
     }
 
