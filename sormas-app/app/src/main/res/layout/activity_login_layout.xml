@@ -109,9 +109,7 @@
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/username"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    style="@style/ControlSingleColumnStyle"
                     app:hint="@string/hint_login_username"
                     app:labelCaption="@string/label_login_username"
                     app:description="@string/desc_login_username"
@@ -120,9 +118,7 @@
 
                 <de.symeda.sormas.app.component.controls.ControlPasswordField
                     android:id="@+id/password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/textControlMarginBottom"
+                    style="@style/ControlSingleColumnStyle"
                     app:hint="@string/hint_login_password"
                     app:labelCaption="@string/label_login_password"
                     app:description="@string/desc_login_password"

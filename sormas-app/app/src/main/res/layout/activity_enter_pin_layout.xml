@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:descendantFocusability="beforeDescendants"
-    android:id="@+id/base_layout">
+    android:id="@+id/base_layout"
+    android:descendantFocusability="beforeDescendants">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -12,10 +12,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_gravity="center"
-            android:gravity="center_horizontal"
             android:layout_marginTop="@dimen/pinLayoutMarginTop"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
             android:paddingLeft="@dimen/layoutRootViewHorizontalPadding"
             android:paddingRight="@dimen/layoutRootViewHorizontalPadding">
 
@@ -24,57 +24,55 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/pinHeading1MarginBottom"
-                android:textSize="@dimen/headingEnterPinTextSize"
-                android:text="@string/headline_create_pin"
+                android:fontFamily="sans-serif-black"
                 android:textColor="@color/pinHeading1"
-                android:fontFamily="sans-serif-black"/>
+                android:textSize="@dimen/headingEnterPinTextSize"/>
 
             <TextView
                 android:id="@+id/pin_hint_createOrEnter"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/pinSubHeadingHeight"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/headingSubEnterPinMarginBottom"
-                android:textSize="@dimen/headingSubEnterPinTextSize"
-                android:textColor="@color/normalText"
                 android:ellipsize="start"
                 android:gravity="center"
-                android:text="@string/hint_create_pin" />
+                android:textColor="@color/normalText"
+                android:textSize="@dimen/headingSubEnterPinTextSize"/>
 
             <LinearLayout
                 android:id="@+id/pin_fields_layout"
-                android:orientation="horizontal"
-                android:layout_marginBottom="@dimen/enterPinInputDisplayMarginBottom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/background_pin_mask_frame">
+                android:layout_marginBottom="@dimen/enterPinInputDisplayMarginBottom"
+                android:background="@drawable/background_pin_mask_frame"
+                android:orientation="horizontal">
 
                 <EditText
                     android:id="@+id/pin_char1"
+                    style="@style/EnterPinInputDisplayStyle"
                     android:layout_width="@dimen/enterPinInputDisplayWidth"
                     android:layout_height="@dimen/enterPinInputDisplayHeight"
-                    android:background="@drawable/background_pin_mask_first"
-                    style="@style/EnterPinInputDisplayStyle" />
+                    android:background="@drawable/background_pin_mask_first"/>
 
                 <EditText
                     android:id="@+id/pin_char2"
+                    style="@style/EnterPinInputDisplayStyle"
                     android:layout_width="@dimen/enterPinInputDisplayWidth"
                     android:layout_height="@dimen/enterPinInputDisplayHeight"
-                    android:background="@drawable/background_pin_mask_others"
-                    style="@style/EnterPinInputDisplayStyle"/>
+                    android:background="@drawable/background_pin_mask_others"/>
 
                 <EditText
                     android:id="@+id/pin_char3"
+                    style="@style/EnterPinInputDisplayStyle"
                     android:layout_width="@dimen/enterPinInputDisplayWidth"
                     android:layout_height="@dimen/enterPinInputDisplayHeight"
-                    android:background="@drawable/background_pin_mask_others"
-                    style="@style/EnterPinInputDisplayStyle"/>
+                    android:background="@drawable/background_pin_mask_others"/>
 
                 <EditText
                     android:id="@+id/pin_char4"
+                    style="@style/EnterPinInputDisplayStyle"
                     android:layout_width="@dimen/enterPinInputDisplayWidth"
                     android:layout_height="@dimen/enterPinInputDisplayHeight"
-                    android:background="@drawable/background_pin_mask_last"
-                    style="@style/EnterPinInputDisplayStyle"/>
+                    android:background="@drawable/background_pin_mask_last"/>
 
             </LinearLayout>
 
@@ -142,10 +140,10 @@
                     android:id="@+id/buttonBack"
                     android:layout_width="@dimen/pinButtonWidth"
                     android:layout_height="@dimen/pinButtonHeight"
-                    android:textColor="@color/selector_color_text_pin_button"
                     android:background="@drawable/selector_pin_button"
                     android:onClick="deleteNumber"
-                    android:src="@drawable/ic_backspace_red_36dp"/>
+                    android:src="@drawable/ic_backspace_red_36dp"
+                    android:textColor="@color/selector_color_text_pin_button"/>
 
                 <Button
                     android:id="@+id/buttonNo0"
@@ -157,38 +155,38 @@
                     android:id="@+id/action_submit"
                     android:layout_width="@dimen/pinButtonWidth"
                     android:layout_height="@dimen/pinButtonHeight"
-                    android:textColor="@color/selector_color_text_pin_button"
                     android:background="@drawable/selector_pin_button"
                     android:onClick="submit"
-                    android:src="@drawable/ic_check_blue_36dp"/>
+                    android:src="@drawable/ic_check_blue_36dp"
+                    android:textColor="@color/selector_color_text_pin_button"/>
             </GridLayout>
 
 
             <LinearLayout
-                android:orientation="horizontal"
-                android:layout_marginTop="48dp"
-                android:layout_gravity="bottom"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginTop="48dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/action_backToSettings"
+                    style="@style/LinkButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="backToSettings"
                     android:text="@string/action_back_to_settings"
-                    style="@style/LinkButtonStyle"
-                    android:textAlignment="viewStart"
-                    android:onClick="backToSettings" />
+                    android:textAlignment="viewStart"/>
 
 
                 <TextView
                     android:id="@+id/action_forgotPIN"
+                    style="@style/LinkButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="forgotPIN"
                     android:text="@string/action_forgot_PIN"
-                    style="@style/LinkButtonStyle"
-                    android:textAlignment="viewEnd"
-                    android:onClick="forgotPIN"/>
+                    android:textAlignment="viewEnd"/>
 
             </LinearLayout>
         </LinearLayout>

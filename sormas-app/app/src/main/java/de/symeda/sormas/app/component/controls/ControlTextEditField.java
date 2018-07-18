@@ -399,7 +399,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
     public void setInputType(int inputType) {
         this.inputType = inputType;
-        input.setInputType(inputType);
+        if (input != null) input.setInputType(inputType);
     }
 
 }
