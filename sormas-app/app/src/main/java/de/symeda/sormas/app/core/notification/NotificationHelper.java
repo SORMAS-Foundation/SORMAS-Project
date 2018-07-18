@@ -12,6 +12,8 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
+
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.NotificationContext;
 
@@ -87,18 +89,17 @@ public class NotificationHelper {
             layoutParams.gravity = Gravity.BOTTOM;
 
         notificationFrame.setOnClickListener(new View.OnClickListener() {
-            private View nf;
+            private WeakReference<View> nf;
 
             @Override
             public void onClick(View v) {
-                hideNotification(nf);
+                if (nf.get() != null) hideNotification(nf.get());
             }
 
             private View.OnClickListener init(View nf) {
-                this.nf = nf;
+                this.nf = new WeakReference<>(nf);
                 return this;
             }
-
         }.init(notificationFrame));
 
         notificationFrame.setBackgroundColor(backgroundColor);
@@ -106,6 +107,21 @@ public class NotificationHelper {
         tvNotificationMessage.setText(message);
 
         notificationFrame.setVisibility(View.VISIBLE);
+
+        if (type == NotificationType.INFO || type == NotificationType.SUCCESS) {
+            notificationFrame.postDelayed(new Runnable() {
+                private WeakReference<View> nf;
+
+                public void run() {
+                    if (nf.get() != null) hideNotification(nf.get());
+                }
+
+                private Runnable init(View nf) {
+                    this.nf = new WeakReference<>(nf);
+                    return this;
+                }
+            }.init(notificationFrame), 3000);
+        }
     }
 
     private static void showNotification(View notificationRoot, NotificationPosition position, NotificationType type, String message) {
@@ -160,18 +176,17 @@ public class NotificationHelper {
         int textColor = resources.getColor(type.getInverseTextColor());
 
         notificationFrame.setOnClickListener(new View.OnClickListener() {
-            private View nf;
+            private WeakReference<View> nf;
 
             @Override
             public void onClick(View v) {
-                hideDialogNotification(nf);
+                if (nf.get() != null) hideNotification(nf.get());
             }
 
             private View.OnClickListener init(View nf) {
-                this.nf = nf;
+                this.nf = new WeakReference<>(nf);
                 return this;
             }
-
         }.init(notificationFrame));
 
         LayerDrawable drawable = (LayerDrawable) resources.getDrawable(R.drawable.background_full_width_border);
@@ -183,6 +198,21 @@ public class NotificationHelper {
 
         notificationFrame.setBackground(drawable);
         notificationFrame.setVisibility(View.VISIBLE);
+
+        if (type == NotificationType.INFO || type == NotificationType.SUCCESS) {
+            notificationFrame.postDelayed(new Runnable() {
+                private WeakReference<View> nf;
+
+                public void run() {
+                    if (nf.get() != null) hideNotification(nf.get());
+                }
+
+                private Runnable init(View nf) {
+                    this.nf = new WeakReference<>(nf);
+                    return this;
+                }
+            }.init(notificationFrame), 3000);
+        }
     }
 
     private static void showDialogNotification(View notificationRoot, NotificationPosition position, NotificationType type, String message) {
